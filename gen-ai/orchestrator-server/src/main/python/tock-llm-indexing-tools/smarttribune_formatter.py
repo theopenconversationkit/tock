@@ -32,7 +32,7 @@ Options:
                 be silent but for errors)
 
 Turns a Smart Tribune CSV export file into a ready-to-index CSV file
-(one 'title'|'url'|'text' line per filtered entry).
+(one 'title'|'source'|'text' line per filtered entry).
 """
 import logging
 import sys
@@ -71,7 +71,7 @@ def format(args):
     result_df = result_df.rename(
         columns={
             'Question Title': 'title',
-            prefixed_column: 'url',
+            prefixed_column: 'source',
             'FAQ answer (text)': 'text',
         }
     )

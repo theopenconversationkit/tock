@@ -169,7 +169,7 @@ def get_example_runs_content(example_id):
             "filter": "eq(is_root, true)",
             "select": [
                 "status",
-                # "inputs",
+                # "input",
                 "outputs",
                 "end_time",
                 "total_cost",
@@ -204,8 +204,8 @@ def append_example_runs(dataset_example, _session_ids):
 
     # Init csv line
     csv_line = [
-        dataset_example["inputs"]["metadata"]["topic"],
-        dataset_example["inputs"]["question"],
+        dataset_example["input"]["metadata"]["topic"],
+        dataset_example["input"]["question"],
         dataset_example["outputs"]["answer"]
     ]
 

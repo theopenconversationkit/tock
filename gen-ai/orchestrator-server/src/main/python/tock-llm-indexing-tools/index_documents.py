@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
+"""Index a ready-to-index CSV ('title'|'source'|'text' lines) file contents into a given vector database.
 
 Usage:
     index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
@@ -36,13 +36,13 @@ Options:
     -v          Verbose output for debugging
 
 Index a ready-to-index CSV file contents into an OpenSearch vector database.
-CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to
+CSV columns are 'title'|'source'|'text'. 'text' will be chunked according to
 chunks_size, and embedded using configuration described in embeddings_json_config (it
 uses the embeddings constructor from the orchestrator module, so JSON file
 shall follow corresponding format). Documents will be indexed in a vector store (vector_store_json_config)
 under index_name index (index_name is generated following the naming restrictions of the vector store,
 example for OpenSearch : ns-{namespace}-bot-{bot_id}-session-{uuid4})
-This The index_name is unique and will be printed to the console at the end of successful execution
+The index_name is unique and will be printed to the console at the end
 """
 import asyncio
 import csv
@@ -75,13 +75,15 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
 
+from indexing_details import IndexingDetails
+
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)
 
 
 async def index_documents(args):
     """
-    Read a ready-to-index CSV file, then index its contents to an OpenSearch DB.
+    Read a ready-to-index CSV file, then index its contents to a Vector Store DB.
 
     Args:
 
@@ -94,7 +96,7 @@ async def index_documents(args):
                                         '<chunks_size>'
 
     Returns:
-        The indexing session unique id.
+        The indexing details.
     """
     # unique date / uuid for each indexing session (stored as metadata)
     session_uuid = str(uuid4())
@@ -103,7 +105,7 @@ async def index_documents(args):
     )
 
     logging.debug(f"Read input CSV file {args['<input_csv>']}")
-    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0) # names=['title', 'source', 'text']
+    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0)
     # Prevent NaN value in the 'source' column with a default value 'UNKNOWN', then replace it with None
     df['source'] = df['source'].fillna('UNKNOWN')
     df['source'] = df['source'].replace('UNKNOWN', None)
@@ -170,7 +172,14 @@ async def index_documents(args):
     await embedding_and_indexing(splitted_docs, vector_store)
 
     # Return indexing details
-    return index_name, session_uuid, len(docs), len(splitted_docs)
+    return IndexingDetails(
+        index_name = index_name,
+        session_uuid = session_uuid,
+        documents_count = len(docs),
+        chunks_count = len(splitted_docs),
+        em_settings = em_settings,
+        vector_store_settings = vector_store_settings
+    )
 
 
 async def embedding_and_indexing(splitted_docs: List[Document], vector_store):
@@ -312,27 +321,26 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Main func
-    index_name, indexing_session_uuid, documents_count, chunks_count = asyncio.run(index_documents(cli_args))
+    details = asyncio.run(index_documents(cli_args))
 
     # Print statistics
     duration = datetime.now() - start_time
-    logging.debug(
-        f"Indexed {chunks_count} chunks in '{index_name}' from {documents_count} documents (csv line) in '{cli_args['<input_csv>']}' (duration: {duration})"
-    )
 
     # Print indexation session's unique id
     logging.info(
         f"""
-------------------- Indexing details ----------------------
-                 Index name : {index_name}
-           Index session ID : {indexing_session_uuid}
-        Documents extracted : {documents_count} (Docs)
-          Documents chunked : {chunks_count} (Chunks)
-                 Chunk size : {cli_args['<chunks_size>']} (Characters)
-                  Input csv : {cli_args['<input_csv>']}
-   Embeddings configuration : {cli_args['<embeddings_json_config>']}
- Vector Store configuration : {cli_args['<vector_store_json_config>']}
-                   Duration : {humanize.precisedelta(duration)}
-                       Date : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-------------------------------------------------------------
+---------------------- Indexing details -----------------------------------------
+Index name            : {details.index_name}
+Index session ID      : {details.indexing_session_uuid}
+Documents extracted   : {details.documents_count} (Docs)
+Documents chunked     : {details.chunks_count} (Chunks)
+Chunk size            : {cli_args['<chunks_size>']} (Characters)
+Input csv             : {cli_args['<input_csv>']}
+Embeddings settings   : {cli_args['<embeddings_json_config>']}
+                        Provider = {details.em_settings.provider}
+Vector Store settings : {cli_args['<vector_store_json_config>']}
+                        Provider = {details.vector_store_settings.provider}
+Duration              : {humanize.precisedelta(duration)}
+Date                  : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+---------------------------------------------------------------------------------
         """)
