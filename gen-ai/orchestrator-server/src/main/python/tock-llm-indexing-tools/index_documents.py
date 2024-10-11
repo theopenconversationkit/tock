@@ -50,19 +50,19 @@ import json
 import logging
 import re
 import sys
+import time
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import List
 from uuid import uuid4
 
-import humanize
 import pandas as pd
 from docopt import docopt
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import PGVectorStoreSetting
@@ -72,9 +72,11 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_vector_store_factory,
 )
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
+from openai import RateLimitError
 
 from indexing_details import IndexingDetails
 
@@ -183,11 +185,32 @@ async def index_documents(args):
 async def embedding_and_indexing(splitted_docs: List[Document], vector_store):
     # Index all chunks in vector DB
     logging.debug('Index chunks in DB')
-    # Index respecting bulk_size (500 is from_documents current default: it is described for clarity only)
-    bulk_size = 500
+    bulk_size = 500  # Adjust bulk_size to suit your use case
     for i in range(0, len(splitted_docs), bulk_size):
         logging.debug(f'i={i}, splitted_docs={len(splitted_docs)}')
-        await vector_store.aadd_documents(documents=splitted_docs[i: i + bulk_size], bulk_size=bulk_size)
+        await retry_vector_store_add_documents(vector_store, splitted_docs[i: i + bulk_size], bulk_size)
+
+MAX_RETRIES = 5  # Define a maximum number of retries
+INITIAL_WAIT_TIME = 15  # Initial wait time in seconds
+async def retry_vector_store_add_documents(vector_store, docs_chunk, bulk_size):
+    retries = 0
+    wait_time = INITIAL_WAIT_TIME
+    while retries < MAX_RETRIES:
+        try:
+            await vector_store.aadd_documents(documents=docs_chunk, bulk_size=bulk_size)
+            return  # If successful, exit the retry loop
+        except RateLimitError as e:
+            # Capture the rate limit error and log it
+            logging.warning(f"Rate limit exceeded. Waiting for {wait_time} seconds before retrying...")
+            retries += 1
+            if retries == MAX_RETRIES:
+                logging.error("Maximum retries reached. Unable to index documents.")
+                raise  # Rethrow the exception if max retries are reached
+            time.sleep(wait_time)  # Wait before retrying
+            wait_time *= 2  # Exponential backoff: double the wait time after each retry
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            raise  # Re-raise other types of exceptions
 
 
 def load_setting(data: dict, provider_mapping: dict, base_class):
