@@ -77,7 +77,7 @@ async def test_qa_chain(
         return_value=[
             Document(
                 page_content='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut placerat dolor.',
-                metadata={'title': 'Title', 'url': 'URL'},
+                metadata={'title': 'Title', 'source': 'URL'},
             )
         ]
     )
@@ -112,7 +112,7 @@ async def test_qa_chain(
             [
                 mocked_source(
                     title=source.metadata['title'],
-                    url=source.metadata['url'],
+                    url=source.metadata['source'],
                     content=source.page_content,
                 )
                 for source in mocked_qa_answer
