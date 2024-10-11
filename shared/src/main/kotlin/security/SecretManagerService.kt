@@ -20,7 +20,6 @@ import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
-import ai.tock.shared.security.key.AwsSecretKey
 import ai.tock.shared.security.key.SecretKey
 
 // The expected values correspond to the names of the SecretManagerProviderType elements
@@ -98,6 +97,11 @@ interface SecretManagerService {
      * @return true if supported. Else no.
      */
     fun isSecretTypeSupported(secret : SecretKey): Boolean
+
+    /**
+     * Delete a secret
+     */
+    fun deleteSecret(secretName: String)
 
 }
 

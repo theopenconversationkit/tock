@@ -17,7 +17,6 @@
 package ai.tock.genai.orchestratorcore.models.vectorstore
 
 
-import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey

@@ -18,11 +18,11 @@ package ai.tock.genai.orchestratorcore.utils
 
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.SecretManagerService
-import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.genAISecretManagerProvider
-import ai.tock.shared.security.key.*
+import ai.tock.shared.security.key.NamedSecretKey
+import ai.tock.shared.security.key.RawSecretKey
+import ai.tock.shared.security.key.SecretKey
 import mu.KLogger
 import mu.KotlinLogging
 
@@ -83,5 +83,31 @@ object SecurityUtils {
             secretMangerService.createOrUpdateSecretKey(namespace, botId, feature, secretValue)
         } ?: RawSecretKey(secretValue)
 
+    /**
+     * Delete a secret
+     * @param secret the secret key
+     */
+    fun deleteSecret(secret: SecretKey) {
+        try {
+            // If the secret is a raw value, there's nothing to be done
+            if(secret is RawSecretKey) return
+
+            // Check SecretManagerProvider if it is defined
+            if (genAISecretManagerProvider == null) {
+                throw IllegalArgumentException("No Gen AI secret manager provider has been defined to delete the secret. Type=${secret.type}")
+            }
+
+            // Check whether the SecretManagerProvider supports secret
+            if(secretMangerService.isSecretTypeSupported(secret)) {
+                return secretMangerService.deleteSecret((secret as NamedSecretKey).secretName)
+            }else{
+                throw IllegalArgumentException("The secret manager provider type '${secret.type}' is not supported by " +
+                        "the instantiated service ${secretMangerService::class.simpleName}.")
+            }
+        } catch (e: Exception) {
+            logger.warn("The secret has not been deleted.", e)
+            // Do not block treatment if it fails.
+        }
+    }
 
 }

@@ -38,6 +38,8 @@ import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.service.ObservabilityService
+import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.story.*
 import ai.tock.bot.admin.story.dump.*
 import ai.tock.bot.admin.user.UserReportDAO
@@ -49,6 +51,8 @@ import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.engine.user.PlayerType
+import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.front.client.FrontClient
@@ -1141,23 +1145,30 @@ object BotAdminService {
         }
 
         // delete the RAG configuration
-        ragConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
-            ragConfigurationDAO.delete(it._id)
+        ragConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
+            ragConfigurationDAO.delete(config._id)
+            config.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            config.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
         }
 
         // delete the Sentence Generation configuration
-        sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
-            sentenceGenerationConfigurationDAO.delete(it._id)
+        sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
+            sentenceGenerationConfigurationDAO.delete(config._id)
+            config.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
         }
 
         // delete the Observability configuration
-        observabilityConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
-            observabilityConfigurationDAO.delete(it._id)
+        observabilityConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
+            observabilityConfigurationDAO.delete(config._id)
+            config.setting.takeIf { it is LangfuseObservabilitySetting }?.let {
+                SecurityUtils.deleteSecret((config.setting as LangfuseObservabilitySetting).secretKey)
+            }
         }
 
         // delete the Vector Store configuration
-        vectorStoreConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
-            vectorStoreConfigurationDAO.delete(it._id)
+        vectorStoreConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
+            vectorStoreConfigurationDAO.delete(config._id)
+            SecurityUtils.deleteSecret(config.setting.password)
         }
     }
 
