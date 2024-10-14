@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, ValidationErrors, Validators } from 
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
-import { getExportFileName } from '../../../shared/utils';
+import { deepCopy, getExportFileName } from '../../../shared/utils';
 import { saveAs } from 'file-saver-es';
 import Papa from 'papaparse';
 
@@ -190,7 +190,7 @@ export class DataExportComponent implements OnInit, OnDestroy {
           this.download(Array.isArray(result) ? result : result.rows);
         });
       } else {
-        this.download(this.data);
+        this.download(deepCopy(this.data));
       }
     }
   }
