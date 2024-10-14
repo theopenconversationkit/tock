@@ -1,0 +1,31 @@
+@import '@nebular/theme/styles/global/breakpoints';
+
+.grid-button {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 0.5rem;
+}
+
+@include media-breakpoint-up(sm) {
+  .grid-button {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+
+    button {
+      width: fit-content;
+    }
+  }
+}
+
+.index-change-buttons {
+  width: 4em;
+
+  .index-change-button {
+    padding: 0 !important;
+    nb-icon {
+      height: 2em;
+      width: 2em;
+      margin: 0;
+    }
+  }
+}

@@ -3,11 +3,12 @@
 
   <section class="grid-actions">
     <button
+      [disabled]="loading.list || !faqs?.length"
       nbButton
       ghost
       shape="round"
       nbTooltip="Export all faqs"
-      (click)="download()"
+      (click)="openExport()"
     >
       <nb-icon icon="download"></nb-icon>
     </button>
@@ -35,7 +36,7 @@
   </section>
 </div>
 
-<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings">
+<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings || isSidePanelOpen.export">
   <tock-no-data-found
     *ngIf="configurations?.length === 0"
     title="No bot configuration detected"
@@ -103,6 +104,15 @@
     class="aside"
     (onClose)="closeSidePanel()"
   ></tock-faq-management-settings>
+
+  <tock-data-export
+    *ngIf="isSidePanelOpen.export"
+    class="aside"
+    [data]="faqs"
+    exportFileNameType="Faqs"
+    [searchQuery]="getExportSearchQuery()"
+    (onClose)="closeSidePanel()"
+  ></tock-data-export>
 </section>
 
 <tock-scroll-top-button></tock-scroll-top-button>

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { NbToastrService } from '@nebular/theme';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -36,7 +36,8 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
 
   isSidePanelOpen = {
     edit: false,
-    settings: false
+    settings: false,
+    export: false
   };
 
   loading = {
@@ -179,6 +180,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   closeSidePanel(): void {
     this.isSidePanelOpen.settings = false;
     this.isSidePanelOpen.edit = false;
+    this.isSidePanelOpen.export = false;
     this.faqEdit = undefined;
   }
 
@@ -228,10 +230,12 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       this.faqEdit._initQuestion = initQuestion;
     }
 
+    this.closeSidePanel();
     this.isSidePanelOpen.edit = true;
   }
 
   editFaq(faq: FaqDefinitionExtended) {
+    this.closeSidePanel();
     this.faqEdit = faq;
     this.isSidePanelOpen.edit = true;
   }
@@ -313,33 +317,40 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
           }
         });
     } else {
+      this.closeSidePanel();
       this.isSidePanelOpen.settings = true;
     }
   }
 
-  download() {
+  openExport(): void {
+    if (this.faqSettingsComponent) {
+      this.faqSettingsComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel') {
+            this.isSidePanelOpen.export = true;
+          }
+        });
+    } else if (this.faqEditComponent) {
+      this.faqEditComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel') {
+            this.isSidePanelOpen.export = true;
+          }
+        });
+    } else {
+      this.isSidePanelOpen.export = true;
+    }
+  }
+
+  getExportSearchQuery(): Observable<PaginatedFaqResult> {
     let query: PaginatedQuery = this.stateService.createPaginatedQuery(0, 9999);
     const request = this.toSearchQuery(query);
 
-    this.rest
-      .post('/faq/search', request)
-      .pipe(takeUntil(this.destroy))
-      .subscribe((faqsResult: PaginatedFaqResult) => {
-        const jsonBlob = new Blob([JSON.stringify(faqsResult.rows)], {
-          type: 'application/json'
-        });
-
-        const exportFileName = getExportFileName(
-          this.stateService.currentApplication.namespace,
-          this.stateService.currentApplication.name,
-          'Faqs',
-          'json'
-        );
-
-        saveAs(jsonBlob, exportFileName);
-
-        this.toastrService.show(`Faqs dump provided`, 'Faqs dump', { duration: 3000, status: 'success' });
-      });
+    return this.rest.post('/faq/search', request);
   }
 
   ngOnDestroy() {
