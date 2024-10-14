@@ -66,9 +66,12 @@ def _parse_sheet(filename: str, sheet_index: int) -> pd.DataFrame:
     df = df.drop(0, axis=0)  # Remove header row
     df = df.drop([3, 4, 6, 7], axis=1)  # Remove unnecessary columns
     df = df.rename(columns={0: 'topic', 1: 'question', 2: 'answer', 5: 'quality'})
-    df = df.loc[df['quality'].notnull()]  # Ignore not annotated questions
-    df = df.loc[df['answer'].notnull()]  # Ignore not answered questions
-    df['topic'] = df['topic'].ffill()  # Fill in blanks in topic
+    # df = df.loc[df['quality'].notnull()]  # Ignore not annotated questions
+    # df = df.loc[df['answer'].notnull()]  # Ignore not answered questions
+    df['quality'] = df['quality'].fillna('No default quality')
+    df['answer'] = df['answer'].fillna('No default answer')
+    df['topic'] = df['topic'].fillna('No default topic')
+    #df['topic'] = df['topic'].ffill()  # Fill in blanks in topic
     return df
 
 
