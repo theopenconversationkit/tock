@@ -14,7 +14,7 @@
 #
 """Index a ready-to-index CSV ('title'|'source'|'text' lines) file contents into a given vector database.
 Usage:
-    index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
+    index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> <ignore_source> [<env_file>]
     index_documents.py -h | --help
     index_documents.py --version
 
@@ -28,7 +28,8 @@ Arguments:
     vector_store_json_config  path to a vector store configuration file (JSON format)
                     (shall describe settings for one of OpenSearch or PGVector store)
     chunks_size     size of the embedded chunks of documents
-
+    ignore_source   To ignore source
+TODO MASS
 Options:
     -h --help   Show this screen
     --version   Show version
@@ -96,6 +97,7 @@ async def index_documents(args):
                                         '<embeddings_json_config>'
                                         '<vector_store_json_config>'
                                         '<chunks_size>'
+                                        '<ignore_source>'
 
     Returns:
         The indexing details.
@@ -108,9 +110,16 @@ async def index_documents(args):
 
     logging.debug(f"Read input CSV file {args['<input_csv>']}")
     df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0)
+    # Filter the DataFrame to only include rows where the 'text' column is not empty or null
+    df_filtered = df[df['text'].notnull() & df['text'].str.strip().ne('')]
     # Prevent NaN value in the 'source' column with a default value 'UNKNOWN', then replace it with None
-    df['source'] = df['source'].fillna('UNKNOWN').replace('UNKNOWN', None)
-    loader = DataFrameLoader(df, page_content_column='text')
+    if bool(args['<ignore_source>']):
+        df_filtered['source'] = None
+    else:
+        df_filtered['source'] = df_filtered['source'].fillna('UNKNOWN')
+        df_filtered['source'] = df_filtered['source'].replace('UNKNOWN', None)
+
+    loader = DataFrameLoader(df_filtered, page_content_column='text')
     docs = loader.load()
 
     for doc in docs:
@@ -153,7 +162,7 @@ async def index_documents(args):
 
     # Use embeddings factory from orchestrator
     em_factory = get_em_factory(em_settings)
-    await em_factory.check_embedding_model_setting()
+    #await em_factory.check_embedding_model_setting()
     embeddings = em_factory.get_embedding_model()
 
     # generating index name
@@ -164,7 +173,7 @@ async def index_documents(args):
         index_name=index_name,
         embedding_function=embeddings
     )
-    await vector_store_factory.check_vector_store_connection()
+    # await vector_store_factory.check_vector_store_connection()
     vector_store = vector_store_factory.get_vector_store()
 
     await embedding_and_indexing(splitted_docs, vector_store)
@@ -177,6 +186,7 @@ async def index_documents(args):
         chunk_size = args['<chunks_size>'],
         em_settings = em_settings,
         vector_store_settings = vector_store_settings,
+        ignore_source = args['<ignore_source>'],
         input_csv = args['<input_csv>'],
         duration = datetime.now() - start_time
     )
@@ -315,11 +325,11 @@ def setup_logging(cli_args):
 
     log_file_name = log_dir / f"index_documents_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
     file_handler = RotatingFileHandler(log_file_name, maxBytes=10 * 1024 * 1024, backupCount=5)
-    file_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
+    file_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.INFO)
     file_handler.setFormatter(logging.Formatter(log_format))
 
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
+    console_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.INFO)
     console_handler.setFormatter(logging.Formatter(log_format))
 
     logger = logging.getLogger()
@@ -327,6 +337,17 @@ def setup_logging(cli_args):
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
+
+def str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ['true', '1', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'no']:
+        return False
+    else:
+        raise ValueError(f"Cannot proceed: {value} is not a valid boolean value")
+
 
 async def main(args):
     return await index_documents(args)
@@ -356,6 +377,13 @@ if __name__ == '__main__':
         int(cli_args['<chunks_size>'])
     except ValueError:
         logging.error(f"Cannot proceed: chunks size ({cli_args['<chunks_size>']}) is not a number")
+        sys.exit(1)
+
+    try:
+        cli_args['<ignore_source>'] = str_to_bool(cli_args['<ignore_source>'])
+    except ValueError as e:
+        logging.error(e)
+        logging.error(f"Cannot proceed: ignore source ({cli_args['<ignore_source>']}) is not a boolean")
         sys.exit(1)
 
     # Main func

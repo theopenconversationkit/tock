@@ -29,9 +29,10 @@ class IndexingDetails(BaseModel):
         description='The chunk size.',
         examples=[1000]
     )
+    input_csv: str = Field(description='The input csv file name.')
     em_settings: BaseEMSetting = Field(description='The Embeddings settings.')
     vector_store_settings: BaseVectorStoreSetting = Field(description='The Vector Store settings.')
-    input_csv: str = Field(description='The input csv file name.')
+    ignore_source: bool = Field(description='Boolean to ignore or not document sources.')
     duration: timedelta = Field(description='The indexing execution time.')
 
 
@@ -46,6 +47,7 @@ Chunk size          : {self.chunk_size} (Characters)
 Input csv           : {self.input_csv}
 Embeddings          : {self.em_settings.provider}
 Vector Store        : {self.vector_store_settings.provider}
+Ignoring sources    : {self.ignore_source}
 Duration            : {humanize.precisedelta(self.duration)}
 Date                : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
