@@ -35,16 +35,21 @@ Options:
 
 Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
 """
-
+import base64
 import logging
 import os
 from json import loads
 from pathlib import Path
 from typing import List
 
+import boto3
+import httpx
 import pandas as pd
 from docopt import docopt
 from dotenv import load_dotenv
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
+from gen_ai_orchestrator.models.security.proxy_server_type import ProxyServerType
+from httpx_auth_awssigv4 import SigV4Auth
 from langfuse import Langfuse
 from langsmith import Client
 
@@ -128,18 +133,53 @@ def _send_to_langsmith(dataset: pd.DataFrame, dataset_name: str):
     )
 
 
+def initLangfuse():
+    if ProxyServerType.AWS_LAMBDA == application_settings.observability_proxy_server:
+        """
+        This AWSLambda proxy is used when the architecture implemented for the Langfuse
+        observability tool places it behind an API Gateway which requires its
+        own authentication, itself invoked by an AWS Lambda.
+        The API Gateway uses the standard "Authorization" header,
+        and uses observability_proxy_server_authorization_header_name
+        to define the "Authorization bearer token" for Langfuse.
+        """
+        aws_session = boto3.Session()
+        aws_credentials = aws_session.get_credentials()
+        auth = SigV4Auth(
+            access_key=aws_credentials.access_key,
+            secret_key=aws_credentials.secret_key,
+            token=aws_credentials.token,
+            service="lambda",
+            region=aws_session.region_name,
+        )
+
+        langfuse_creds = base64.b64encode(
+            f"{os.environ['LANGFUSE_PUBLIC_KEY']}:{os.environ['LANGFUSE_SECRET_KEY']}".encode()
+        ).decode()
+
+        return Langfuse(httpx_client=httpx.Client(
+            auth=auth,
+            headers={
+                application_settings.observability_proxy_server_authorization_header_name: f"Basic {langfuse_creds}"
+            },
+        ))
+
+    return Langfuse()
+
+
 def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
     # Transforms dataset to JSON format
     records = dataset.to_json(orient='records')
     records = loads(str(records))
 
     # Initializes the Langfuse client
-    client = Langfuse()
+    client = initLangfuse()
 
     logging.info('Creating dataset %s on Langfuse...', dataset_name)
 
     # Creates dataset in Langfuse
     lf_dataset = client.create_dataset(name=dataset_name)
+    dataset = client.get_dataset(dataset_name)
 
     logging.info('Creating examples on Langfuse dataset id %s...', lf_dataset.id)
 

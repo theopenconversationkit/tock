@@ -62,6 +62,8 @@ from tenacity import (
     stop_after_attempt,
     wait_random_exponential, )
 
+from generate_dataset import initLangfuse
+
 
 def test_rag(args):
     """
@@ -105,13 +107,13 @@ def test_rag(args):
                 llm_or_chain_factory=_construct_chain,
                 project_name=run_name_dataset,
                 project_metadata={
-                    'index_session_id': index_session_id,
+                    'document_index_name': document_index_name,
                     'k': k,
                 },
                 concurrency_level=concurrency_level,
             )
         elif args['<dataset_provider>'].lower() == 'langfuse':
-            client = Langfuse()
+            client = initLangfuse()
             dataset = client.get_dataset(args['<dataset_name>'])
 
             for item in dataset.items:
@@ -119,7 +121,7 @@ def test_rag(args):
                 handler = item.get_langchain_handler(
                     run_name=run_name_dataset,
                     run_metadata={
-                        'index_session_id': index_session_id,
+                        'document_index_name': document_index_name,
                         'k': k,
                     },
                 )
@@ -129,10 +131,8 @@ def test_rag(args):
                 )
             client.flush()
 
+    document_index_name = rag_query['document_index_name']
     search_params = rag_query['document_search_params']
-    index_session_id = search_params['filter'][0]['term'][
-        'metadata.index_session_id.keyword'
-    ]
     k = search_params['k']
 
     # This is LangSmith's default concurrency level
@@ -149,7 +149,7 @@ def test_rag(args):
     minutes, seconds = divmod(remainder, 60)
     formatted_duration = '{:02}:{:02}:{:02}'.format(hours, minutes, seconds)
     logging.debug(
-        f'Ran RAGQuery (k={k}, index_session_id={index_session_id}) on '
+        f'Ran RAGQuery (k={k}, document_index_name={document_index_name}) on '
         f"{args['<dataset_name>']} dataset (duration: {formatted_duration})"
     )
 
