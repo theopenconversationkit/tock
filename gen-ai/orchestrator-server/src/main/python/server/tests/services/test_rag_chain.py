@@ -23,6 +23,7 @@ from requests.exceptions import HTTPError
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
+    GenAIUnknownLabelException,
 )
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
@@ -308,7 +309,7 @@ def test_guardrail_parse_fail(mocked_guardrail_response):
 
 
 @patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
-def test_compress_documents(mocked_rerank):
+def test_compress_documents_should_succeed(mocked_rerank):
     bloomz_reranker = BloomzRerank(label='entailement', endpoint='http://example.com')
     documents = [
         Document(
@@ -384,6 +385,43 @@ def test_compress_documents(mocked_rerank):
     ]
 
 
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+def test_compress_documents_with_unknown_label(mocked_rerank):
+    bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com')
+    documents = [
+        Document(
+            page_content='Page content 1',
+            metadata={
+                'source': 'doc1.pdf',
+            },
+        ),
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+            },
+        ),
+    ]
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'entailement', 'score': 0.1},
+            ]
+        ]
+    }
+    mocked_rerank.return_value = mocked_response
+
+    with pytest.raises(GenAIUnknownLabelException) as exc:
+        bloomz_reranker.compress_documents(documents=documents, query='Some query')
+
+    assert exc.value.error_code.value == 1006
+    assert exc.value.message == 'Unknown label.'
+    assert exc.value.detail == 'Check the label you sent.'
+
+
 def test_check_guardrail_output_find_toxicities():
     guardrail_output = {
         'content': 'This is a sample text.',
@@ -391,11 +429,11 @@ def test_check_guardrail_output_find_toxicities():
         'output_toxicity_reason': ['threat', 'hate speech'],
     }
 
-    with pytest.raises(HTTPException) as exc_found:
+    with pytest.raises(GenAIGuardCheckException) as exc_found:
         check_guardrail_output(guardrail_output)
 
-    assert exc_found.value.status_code == 451
-    assert 'Toxicity detected' in exc_found.value.detail
+    assert exc_found.value.error_code.value == 1004
+    assert 'Guard check failed.' in exc_found.value.message
 
 
 def test_check_guardrail_output_is_ok():

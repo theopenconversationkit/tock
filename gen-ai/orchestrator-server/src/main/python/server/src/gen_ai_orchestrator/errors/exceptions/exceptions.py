@@ -97,3 +97,10 @@ class GenAIPromptTemplateException(GenAIOrchestratorException):
 
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR, info)
+
+
+class GenAIUnknownLabelException(GenAIOrchestratorException):
+    """Unknown Label error"""
+
+    def __init__(self, info: ErrorInfo):
+        super().__init__(ErrorCode.GEN_AI_UNKNOWN_LABEL_ERROR, info)

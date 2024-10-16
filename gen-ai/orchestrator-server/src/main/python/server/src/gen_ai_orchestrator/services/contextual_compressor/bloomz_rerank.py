@@ -23,6 +23,11 @@ from langchain.retrievers.document_compressors.base import (
 )
 from langchain_core.documents import Document
 
+from gen_ai_orchestrator.errors.exceptions.exceptions import (
+    GenAIUnknownLabelException,
+)
+from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+
 logger = logging.getLogger(__name__)
 
 logging.basicConfig()
@@ -77,12 +82,17 @@ class BloomzRerank(BaseDocumentCompressor):
 
         final_results = []
         for i, doc_results in enumerate(response.json()['response']):
-            doc_entailment = list(
-                filter(lambda cls: cls['label'] == self.label, doc_results)
-            )[0]
-            if doc_entailment['score'] >= self.min_score:
-                documents[i].metadata['retriever_score'] = doc_entailment['score']
-                final_results.append(documents[i])
+            try:
+                doc_entailment = next(
+                    filter(lambda cls: cls['label'] == self.label, doc_results)
+                )
+                if doc_entailment['score'] >= self.min_score:
+                    documents[i].metadata['retriever_score'] = doc_entailment['score']
+                    final_results.append(documents[i])
+
+            except StopIteration:
+                message = "The label doesn't match any known labels."
+                raise GenAIUnknownLabelException(ErrorInfo(cause=message))
 
         return sorted(
             final_results, key=lambda d: d.metadata['retriever_score'], reverse=True
