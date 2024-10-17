@@ -1,8 +1,8 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbDialogService, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
-import { Observable, of } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { pairwise, take, takeUntil } from 'rxjs/operators';
 
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
@@ -10,11 +10,32 @@ import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
+import Quill, { QuillOptions } from 'quill';
+import QuillTableBetter from 'quill-table-better';
+import { lexer } from 'marked';
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import { unified } from 'unified';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeRemark from 'rehype-remark';
+import rehypeParse from 'rehype-parse';
+import remarkStringify from 'remark-stringify';
+import remarkGemoji from 'remark-gemoji';
+import { VFile } from 'rehype-raw/lib';
+import rehypeFormat from 'rehype-format';
 
 export enum FaqTabs {
   INFO = 'info',
   QUESTION = 'question',
   ANSWER = 'answer'
+}
+
+enum AnswerExportFormats {
+  MARKDOWN = 'MARKDOWN',
+  HTML = 'HTML'
 }
 
 interface FaqEditForm {
@@ -23,6 +44,7 @@ interface FaqEditForm {
   tags: FormArray<FormControl<string>>;
   utterances: FormArray<FormControl<string>>;
   answer: FormControl<string>;
+  answerExportFormat: FormControl<AnswerExportFormats>;
 }
 
 @Component({
@@ -30,17 +52,22 @@ interface FaqEditForm {
   templateUrl: './faq-management-edit.component.html',
   styleUrls: ['./faq-management-edit.component.scss']
 })
-export class FaqManagementEditComponent implements OnChanges {
+export class FaqManagementEditComponent implements OnInit, OnChanges {
+  destroy$: Subject<unknown> = new Subject();
+
   @Input() loading: boolean;
   @Input() faq?: FaqDefinitionExtended;
   @Input() tagsCache?: string[];
+  @Input() expanded?: boolean;
 
   @Output() onClose = new EventEmitter<boolean>();
+  @Output() onExpandSidePanel = new EventEmitter<boolean>();
   @Output() onSave = new EventEmitter();
 
   @ViewChild('tagInput') tagInput: ElementRef;
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
+  @ViewChild('answerEditorTarget') answerEditorTarget: ElementRef;
 
   constructor(private nbDialogService: NbDialogService, private nlp: NlpService, private readonly state: StateService) {}
 
@@ -48,21 +75,172 @@ export class FaqManagementEditComponent implements OnChanges {
   isSubmitted: boolean = false;
   currentTab = FaqTabs.INFO;
 
+  answerExportFormats = AnswerExportFormats;
+
   controlsMaxLength = {
     description: 500,
-    answer: 960
+    answer: 5000
   };
 
   setCurrentTab(tab: NbTabComponent): void {
     this.currentTab = tab.tabTitle as FaqTabs;
+    if (this.currentTab === FaqTabs.ANSWER) {
+      setTimeout(() => {
+        this.initQuill();
+      });
+    }
+  }
+
+  ngOnInit(): void {
+    this.answerExportFormat.valueChanges
+      .pipe(takeUntil(this.destroy$), pairwise())
+      .subscribe(([prev, next]: [AnswerExportFormats, AnswerExportFormats]) => {
+        this.convertAnswerFormat(prev, next);
+      });
+  }
+
+  async convertAnswerFormat(prev: AnswerExportFormats, next: AnswerExportFormats) {
+    if (prev === AnswerExportFormats.MARKDOWN && next === AnswerExportFormats.HTML) {
+      const html = await this.markdownToHtml(this.answer.value);
+      this.answer.patchValue(String(html));
+      this.answer.markAsDirty();
+    }
+
+    if (prev === AnswerExportFormats.HTML && next === AnswerExportFormats.MARKDOWN) {
+      const markdown = await this.htmlToMarkdown(this.answer.value);
+      this.answer.patchValue(String(markdown));
+      this.answer.markAsDirty();
+      // update editor
+      const previewHtml = await this.markdownToHtml(this.answer.value);
+      const delta = this.quillInstance.clipboard.convert({ html: String(previewHtml) });
+      this.quillInstance.setContents(delta, 'silent');
+    }
+  }
+
+  quillInstance: Quill;
+
+  initQuill() {
+    if (!this.answerEditorTarget?.nativeElement) return;
+
+    Quill.register(
+      {
+        'modules/table-better': QuillTableBetter
+      },
+      true
+    );
+
+    const toolbarOptions = [[{ header: 1 }, { header: 2 }], ['bold', 'italic', 'underline', 'strike'], ['table-better']];
+
+    const options: QuillOptions = {
+      // debug: 'info',
+      theme: 'snow',
+      modules: {
+        table: false,
+        toolbar: '#toolbar-container',
+        'table-better': {
+          language: 'en_US',
+          menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'delete'],
+          toolbarTable: true
+        },
+        keyboard: {
+          bindings: QuillTableBetter.keyboardBindings
+        }
+      },
+      placeholder: 'Enter faq answer...'
+    };
+
+    this.quillInstance = new Quill(this.answerEditorTarget.nativeElement, options);
+
+    this.setQuillContent();
+
+    this.quillInstance.on('text-change', async (delta, oldDelta, source) => {
+      if (this.answerExportFormat.value === AnswerExportFormats.HTML) {
+        this.answer.patchValue(this.quillInstance.getSemanticHTML());
+      }
+
+      if (this.answerExportFormat.value === AnswerExportFormats.MARKDOWN) {
+        const markdown = await this.htmlToMarkdown(this.quillInstance.getSemanticHTML());
+        this.answer.patchValue(String(markdown));
+      }
+
+      this.answer.markAsDirty();
+    });
+  }
+
+  async setQuillContent() {
+    let rawData = this.answer.value;
+
+    function isMarkdownValue(text: string): boolean {
+      function containsNonTextOrHtmlTokens(tokens) {
+        return tokens.some((token) => {
+          if (!['text', 'paragraph', 'html', 'space'].includes(token.type)) {
+            return true;
+          }
+          // Check recursively for nested tokens
+          if (token.tokens && containsNonTextOrHtmlTokens(token.tokens)) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      const tokens = lexer(text);
+
+      return containsNonTextOrHtmlTokens(tokens);
+    }
+
+    let htmlData;
+
+    if (isMarkdownValue(rawData)) {
+      htmlData = await this.markdownToHtml(rawData);
+      this.answerExportFormat.setValue(AnswerExportFormats.MARKDOWN);
+    } else {
+      htmlData = rawData;
+      this.answerExportFormat.setValue(AnswerExportFormats.HTML);
+    }
+
+    const delta = this.quillInstance.clipboard.convert({ html: String(htmlData) });
+    this.quillInstance.updateContents(delta, 'silent');
+  }
+
+  async markdownToHtml(rawData: string): Promise<VFile> {
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkGemoji)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeFormat)
+      .use(rehypeRaw)
+      .use(rehypeSanitize)
+      .use(rehypeStringify);
+
+    return processor.process(rawData);
+  }
+
+  async htmlToMarkdown(rawData: string) {
+    const processor = await unified().use(rehypeParse).use(rehypeFormat).use(rehypeRemark).use(remarkGfm).use(remarkStringify);
+    return processor.process(rawData);
+  }
+
+  validateQuillContent(control: FormControl): ValidationErrors | null {
+    if (!this.quillInstance) return null;
+    if (!this.quillInstance.getText().trim().length) {
+      return { minlength: { requiredLength: 1 } };
+    }
+    return null;
   }
 
   form = new FormGroup<FaqEditForm>({
-    title: new FormControl(undefined, [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
+    title: new FormControl(undefined, [Validators.required, Validators.minLength(5), Validators.maxLength(40)]),
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),
     utterances: new FormArray([], Validators.required),
-    answer: new FormControl('', [Validators.required, Validators.maxLength(this.controlsMaxLength.answer)])
+    answer: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(this.controlsMaxLength.answer),
+      this.validateQuillContent.bind(this)
+    ]),
+    answerExportFormat: new FormControl(undefined)
   });
 
   getControlLengthIndicatorClass(controlName: string): string {
@@ -71,6 +249,10 @@ export class FaqManagementEditComponent implements OnChanges {
 
   get answer(): FormControl {
     return this.form.get('answer') as FormControl;
+  }
+
+  get answerExportFormat(): FormControl {
+    return this.form.get('answerExportFormat') as FormControl;
   }
 
   get description(): FormControl {
@@ -107,6 +289,8 @@ export class FaqManagementEditComponent implements OnChanges {
 
       if (faq) {
         this.form.patchValue(faq);
+
+        this.initQuill();
 
         if (faq.tags?.length) {
           faq.tags.forEach((tag) => {
@@ -395,5 +579,14 @@ export class FaqManagementEditComponent implements OnChanges {
       generatedSentences.forEach((generatedSentence: string) => this.addUtterance(generatedSentence));
       dialogRef.close();
     });
+  }
+
+  expandSidePanel() {
+    this.onExpandSidePanel.emit(true);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

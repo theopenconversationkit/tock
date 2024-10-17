@@ -353,6 +353,12 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     return this.rest.post('/faq/search', request);
   }
 
+  sidePanelExpanded: boolean = false;
+
+  onExpandSidePanel() {
+    this.sidePanelExpanded = !this.sidePanelExpanded;
+  }
+
   ngOnDestroy() {
     this.destroy.next(true);
     this.destroy.complete();
