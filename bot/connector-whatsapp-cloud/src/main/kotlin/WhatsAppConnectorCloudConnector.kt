@@ -37,7 +37,6 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
@@ -67,7 +66,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
 
-    private val restrictedPhoneNumbers = listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
+    private val restrictedPhoneNumbers =
+        listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -196,10 +196,13 @@ class WhatsAppConnectorCloudConnector internal constructor(
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit
     ) {
+        val copyRecipientId = recipientId.copy(
+            id = encodeRecipientId(recipientId.id),
+        )
         controller.handle(
 
             SendChoice(
-                recipientId,
+                copyRecipientId,
                 connectorId,
                 PlayerId(connectorId, bot),
                 intent.wrappedIntent().name,
@@ -210,5 +213,11 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 WhatsAppConnectorCloudCallback(connectorId)
             )
         )
+    }
+
+    private fun encodeRecipientId(input: String): String {
+        return input.replace(" ", "+").let {
+            if (it.endsWith("\r\n")) it else "$it\r\n"
+        }
     }
 }
