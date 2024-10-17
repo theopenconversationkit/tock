@@ -5,20 +5,40 @@
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
       {{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}
-      <button
-        type="button"
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Close"
-        (click)="close()"
-      >
-        <nb-icon icon="x-lg"></nb-icon>
-      </button>
+
+      <div class="d-flex">
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          [nbTooltip]="expanded ? 'Reduce' : 'Expand'"
+          (click)="expandSidePanel()"
+        >
+          <nb-icon
+            *ngIf="!expanded"
+            icon="arrows-angle-expand"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="expanded"
+            icon="arrows-angle-contract"
+          ></nb-icon>
+        </button>
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="close()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
     </div>
   </nb-card-header>
 
-  <nb-card-body>
+  <nb-card-body class="pt-0">
     <form [formGroup]="form">
       <nb-tabset
         fullWidth
@@ -30,6 +50,7 @@
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!(title.errors || description.errors || intentNameExistInApp)"
           [active]="currentTab === faqTabs.INFO"
+          class="pb-0"
         >
         </nb-tab>
         <nb-tab
@@ -38,6 +59,7 @@
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!utterances.errors"
           [active]="currentTab === faqTabs.QUESTION"
+          class="pb-0"
         >
         </nb-tab>
         <nb-tab
@@ -46,6 +68,7 @@
           badgeStatus="danger"
           [badgeDot]="isSubmitted && !!answer.errors"
           [active]="currentTab === faqTabs.ANSWER"
+          class="pb-0"
         >
         </nb-tab>
       </nb-tabset>
@@ -298,6 +321,25 @@
 
       <div *ngIf="currentTab === 'answer'">
         <tock-form-control
+          label="Format"
+          name="answerExportFormat"
+          [controls]="answerExportFormat"
+          [showError]="isSubmitted"
+          [required]="true"
+        >
+          <nb-radio-group
+            formControlName="answerExportFormat"
+            class="d-flex"
+          >
+            <nb-radio
+              *ngFor="let format of answerExportFormats | keyvalue"
+              [value]="format.value"
+              >{{ format.value }}</nb-radio
+            >
+          </nb-radio-group>
+        </tock-form-control>
+
+        <tock-form-control
           label="Answer"
           name="answer"
           [controls]="answer"
@@ -305,14 +347,95 @@
           [required]="true"
           data-testid="answer"
         >
+          <div id="toolbar-container">
+            <span class="ql-formats">
+              <select class="ql-font"></select>
+              <select class="ql-size"></select>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-header"
+                value="1"
+              ></button>
+              <button
+                class="ql-header"
+                value="2"
+              ></button>
+
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+              </span>
+              <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+              </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-script"
+                  value="sub"
+                ></button>
+                <button
+                  class="ql-script"
+                  value="super"
+                ></button>
+              </span>
+
+              <button class="ql-blockquote"></button>
+              <button class="ql-code-block"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                value="ordered"
+              ></button>
+              <button
+                class="ql-list"
+                value="bullet"
+              ></button>
+              <button
+                class="ql-indent"
+                value="-1"
+              ></button>
+              <button
+                class="ql-indent"
+                value="+1"
+              ></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-direction"
+                value="rtl"
+              ></button>
+              <select class="ql-align"></select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-table-better"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-link"></button>
+              <button class="ql-image"></button>
+              <button class="ql-video"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-clean"></button>
+            </span>
+          </div>
+          <div
+            #answerEditorTarget
+            nbInput
+          ></div>
+
+          <!-- class="d-none" -->
           <textarea
-            tockAutofocusElement
             nbInput
             formControlName="answer"
             fullWidth
             id="answer"
             type="text"
-            rows="15"
+            rows="6"
             placeholder="Enter answer"
           ></textarea>
           <small [ngClass]="getControlLengthIndicatorClass('answer')">

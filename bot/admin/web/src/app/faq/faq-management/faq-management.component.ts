@@ -342,6 +342,12 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       });
   }
 
+  sidePanelExpanded: boolean = false;
+
+  onExpandSidePanel() {
+    this.sidePanelExpanded = !this.sidePanelExpanded;
+  }
+
   ngOnDestroy() {
     this.destroy.next(true);
     this.destroy.complete();

@@ -25,8 +25,15 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/img"],
-            "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css",
-              "node_modules/bootstrap-icons/font/bootstrap-icons.css"],
+            "styles": [
+              "src/app/theme/styles/styles.scss",
+              "src/styles.css",
+              "src/jsoneditor.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/quill/dist/quill.core.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/quill-table-better/dist/quill-table-better.css"
+            ],
             "scripts": []
           },
           "configurations": {
