@@ -23,7 +23,9 @@ import ai.tock.nlp.front.service.frontModule
 import ai.tock.nlp.front.storage.mongo.frontMongoModule
 import ai.tock.nlp.model.service.modelModule
 import ai.tock.nlp.model.service.storage.mongo.modelMongoModule
+import ai.tock.shared.Loader
 import ai.tock.shared.injector
+import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.shared.sharedModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.Kodein.Module
@@ -37,7 +39,8 @@ object FrontIoc {
 
     private val logger = KotlinLogging.logger {}
 
-    val coreModules: List<Module> =
+    private val coreModules: List<Module> = run {
+        val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
         listOf(
             sharedModule,
             coreModule,
@@ -46,7 +49,11 @@ object FrontIoc {
             frontMongoModule,
             frontModule,
             ducklingModule
-        )
+        ).plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
+            // Add custom modules/services to override default modules/services.
+            // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
+            .plus(additionalModulesService.flatMap { it.customModules() }.toList())
+    }
 
     fun setup(vararg modules: Module) {
         setup(modules.toList())
