@@ -2,6 +2,10 @@
 @import '@nebular/theme/styles/theming';
 @import '@nebular/theme/styles/themes';
 
+.maincard {
+  max-height: calc(100vh - 12rem);
+}
+
 .grid-button {
   display: grid;
   grid-template-columns: 1fr;
@@ -48,4 +52,8 @@
 .add-utterances {
   display: grid;
   grid-template-columns: 1fr auto auto;
+}
+
+.hidden {
+  display: none;
 }
