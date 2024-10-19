@@ -1,10 +1,13 @@
 <nb-card
-  class="mb-0"
+  class="mb-0 main-card"
+  [class.maincard]="!expanded"
   [nbSpinner]="loading"
 >
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      {{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}
+      <div class="ellipsis initial-capitalize">
+        {{ faq?.id ? faq.title : 'New faq' }}
+      </div>
 
       <div class="d-flex">
         <button
@@ -321,7 +324,7 @@
 
       <div *ngIf="currentTab === 'answer'">
         <tock-form-control
-          label="Format"
+          label="Answer format"
           name="answerExportFormat"
           [controls]="answerExportFormat"
           [showError]="isSubmitted"
@@ -332,111 +335,118 @@
             class="d-flex"
           >
             <nb-radio
-              *ngFor="let format of answerExportFormats | keyvalue"
+              *ngFor="let format of answerExportFormatsRadios"
               [value]="format.value"
-              >{{ format.value }}</nb-radio
+              class="text-nowrap"
+              >{{ format.label }}</nb-radio
             >
           </nb-radio-group>
         </tock-form-control>
 
         <tock-form-control
-          label="Answer"
+          label="Answer content"
           name="answer"
           [controls]="answer"
           [showError]="isSubmitted"
           [required]="true"
           data-testid="answer"
         >
-          <div id="toolbar-container">
-            <span class="ql-formats">
-              <select class="ql-font"></select>
-              <select class="ql-size"></select>
-            </span>
-            <span class="ql-formats">
-              <button
-                class="ql-header"
-                value="1"
-              ></button>
-              <button
-                class="ql-header"
-                value="2"
-              ></button>
-
+          <ng-container *ngIf="answerExportFormat.value !== answerExportFormats.PLAINTEXT">
+            <div id="toolbar-container">
               <span class="ql-formats">
-                <button class="ql-bold"></button>
-                <button class="ql-italic"></button>
-                <button class="ql-underline"></button>
-                <button class="ql-strike"></button>
-              </span>
-              <span class="ql-formats">
-                <select class="ql-color"></select>
-                <select class="ql-background"></select>
+                <select class="ql-font"></select>
+                <select class="ql-size"></select>
               </span>
               <span class="ql-formats">
                 <button
-                  class="ql-script"
-                  value="sub"
+                  class="ql-header"
+                  value="1"
                 ></button>
                 <button
-                  class="ql-script"
-                  value="super"
+                  class="ql-header"
+                  value="2"
+                ></button>
+
+                <span class="ql-formats">
+                  <button class="ql-bold"></button>
+                  <button class="ql-italic"></button>
+                  <button class="ql-underline"></button>
+                  <button class="ql-strike"></button>
+                </span>
+                <span
+                  class="ql-formats"
+                  [class.hidden]="!answerIsHtml"
+                >
+                  <select class="ql-color"></select>
+                  <select class="ql-background"></select>
+                </span>
+                <span class="ql-formats">
+                  <button
+                    class="ql-script"
+                    value="sub"
+                  ></button>
+                  <button
+                    class="ql-script"
+                    value="super"
+                  ></button>
+                </span>
+
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+              </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-list"
+                  value="ordered"
+                ></button>
+                <button
+                  class="ql-list"
+                  value="bullet"
+                ></button>
+                <button
+                  class="ql-indent"
+                  value="-1"
+                ></button>
+                <button
+                  class="ql-indent"
+                  value="+1"
                 ></button>
               </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-direction"
+                  value="rtl"
+                ></button>
+                <select class="ql-align"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-table-better"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+                <button class="ql-video"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-clean"></button>
+              </span>
+            </div>
 
-              <button class="ql-blockquote"></button>
-              <button class="ql-code-block"></button>
-            </span>
-            <span class="ql-formats">
-              <button
-                class="ql-list"
-                value="ordered"
-              ></button>
-              <button
-                class="ql-list"
-                value="bullet"
-              ></button>
-              <button
-                class="ql-indent"
-                value="-1"
-              ></button>
-              <button
-                class="ql-indent"
-                value="+1"
-              ></button>
-            </span>
-            <span class="ql-formats">
-              <button
-                class="ql-direction"
-                value="rtl"
-              ></button>
-              <select class="ql-align"></select>
-            </span>
-            <span class="ql-formats">
-              <button class="ql-table-better"></button>
-            </span>
-            <span class="ql-formats">
-              <button class="ql-link"></button>
-              <button class="ql-image"></button>
-              <button class="ql-video"></button>
-            </span>
-            <span class="ql-formats">
-              <button class="ql-clean"></button>
-            </span>
-          </div>
-          <div
-            #answerEditorTarget
-            nbInput
-          ></div>
+            <div
+              #answerEditorTarget
+              nbInput
+            ></div>
+          </ng-container>
 
-          <!-- class="d-none" -->
           <textarea
+            *ngIf="answerExportFormat.value === answerExportFormats.PLAINTEXT"
             nbInput
             formControlName="answer"
             fullWidth
             id="answer"
             type="text"
             rows="6"
-            placeholder="Enter answer"
+            placeholder="Enter faq answer..."
           ></textarea>
           <small [ngClass]="getControlLengthIndicatorClass('answer')">
             {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max

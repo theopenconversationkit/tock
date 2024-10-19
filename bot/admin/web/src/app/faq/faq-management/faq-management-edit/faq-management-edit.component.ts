@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, 
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbDialogService, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, Subject, of } from 'rxjs';
-import { pairwise, take, takeUntil } from 'rxjs/operators';
+import { pairwise, startWith, take, takeUntil } from 'rxjs/operators';
 
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
@@ -34,6 +34,7 @@ export enum FaqTabs {
 }
 
 enum AnswerExportFormats {
+  PLAINTEXT = 'PLAINTEXT',
   MARKDOWN = 'MARKDOWN',
   HTML = 'HTML'
 }
@@ -77,6 +78,12 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
 
   answerExportFormats = AnswerExportFormats;
 
+  answerExportFormatsRadios = [
+    { label: 'Plain text', value: AnswerExportFormats.PLAINTEXT },
+    { label: 'Markdown', value: AnswerExportFormats.MARKDOWN },
+    { label: 'Html', value: AnswerExportFormats.HTML }
+  ];
+
   controlsMaxLength = {
     description: 500,
     answer: 5000
@@ -93,10 +100,132 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.answerExportFormat.valueChanges
-      .pipe(takeUntil(this.destroy$), pairwise())
+      .pipe(takeUntil(this.destroy$), startWith(this.answerExportFormat.value), pairwise())
       .subscribe(([prev, next]: [AnswerExportFormats, AnswerExportFormats]) => {
         this.convertAnswerFormat(prev, next);
       });
+  }
+
+  form = new FormGroup<FaqEditForm>({
+    title: new FormControl(undefined, [Validators.required, Validators.minLength(5), Validators.maxLength(40)]),
+    description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
+    tags: new FormArray([]),
+    utterances: new FormArray([], Validators.required),
+    answer: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(this.controlsMaxLength.answer),
+      this.validateQuillContent.bind(this)
+    ]),
+    answerExportFormat: new FormControl(undefined)
+  });
+
+  getControlLengthIndicatorClass(controlName: string): string {
+    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
+  }
+
+  validateQuillContent(control: FormControl): ValidationErrors | null {
+    if (!this.form?.value) return null;
+    if (this.answerExportFormat.value === AnswerExportFormats.PLAINTEXT) return null;
+    if (!this.quillInstance) return null;
+    if (!this.quillInstance.getText().trim().length) {
+      return { minlength: { requiredLength: 1 } };
+    }
+    return null;
+  }
+
+  get answer(): FormControl {
+    return this.form.get('answer') as FormControl;
+  }
+
+  get answerExportFormat(): FormControl {
+    return this.form.get('answerExportFormat') as FormControl;
+  }
+
+  get description(): FormControl {
+    return this.form.get('description') as FormControl;
+  }
+
+  get title(): FormControl {
+    return this.form.get('title') as FormControl;
+  }
+
+  get tags(): FormArray {
+    return this.form.get('tags') as FormArray;
+  }
+
+  get utterances(): FormArray {
+    return this.form.get('utterances') as FormArray;
+  }
+
+  get canSave(): boolean {
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
+  }
+
+  get answerIsText(): boolean {
+    return this.answerExportFormat.value === AnswerExportFormats.PLAINTEXT;
+  }
+  get answerIsMarkdown(): boolean {
+    return this.answerExportFormat.value === AnswerExportFormats.MARKDOWN;
+  }
+  get answerIsHtml(): boolean {
+    return this.answerExportFormat.value === AnswerExportFormats.HTML;
+  }
+
+  tagsAutocompleteValues: Observable<any[]>;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.faq?.currentValue) {
+      const faq: FaqDefinitionExtended = changes.faq.currentValue;
+
+      this.form.reset();
+      this.tags.clear();
+      this.utterances.clear();
+      this.resetAlerts();
+      this.isSubmitted = false;
+
+      if (faq) {
+        this.form.patchValue(faq);
+
+        if (faq.tags?.length) {
+          faq.tags.forEach((tag) => {
+            this.tags.push(new FormControl(tag));
+          });
+        }
+
+        faq.utterances.forEach((utterance) => {
+          this.utterances.push(new FormControl(utterance));
+        });
+
+        if (faq._initQuestion) {
+          this.form.markAsDirty();
+          this.form.markAsTouched();
+
+          this.setCurrentTab({ tabTitle: FaqTabs.QUESTION } as NbTabComponent);
+
+          setTimeout(() => {
+            this.addUtterance(faq._initQuestion);
+            delete faq._initQuestion;
+          });
+        }
+
+        this.detectAnswerFormat();
+      }
+
+      if (!faq.id && !faq._initQuestion) {
+        this.setCurrentTab({ tabTitle: FaqTabs.INFO } as NbTabComponent);
+      }
+    }
+
+    this.tagsAutocompleteValues = of(this.tagsCache);
+
+    if (
+      this.currentTab === FaqTabs.ANSWER &&
+      [AnswerExportFormats.HTML, AnswerExportFormats.MARKDOWN].includes(this.answerExportFormat.value)
+    ) {
+      setTimeout(() => {
+        this.initQuill();
+      });
+    }
   }
 
   async convertAnswerFormat(prev: AnswerExportFormats, next: AnswerExportFormats) {
@@ -104,17 +233,75 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
       const html = await this.markdownToHtml(this.answer.value);
       this.answer.patchValue(String(html));
       this.answer.markAsDirty();
+
+      // update editor
+      const delta = this.quillInstance.clipboard.convert({ html: String(html) });
+      this.quillInstance.setContents(undefined, 'silent');
+      this.quillInstance.updateContents(delta, 'silent');
     }
 
     if (prev === AnswerExportFormats.HTML && next === AnswerExportFormats.MARKDOWN) {
       const markdown = await this.htmlToMarkdown(this.answer.value);
       this.answer.patchValue(String(markdown));
       this.answer.markAsDirty();
+
       // update editor
       const previewHtml = await this.markdownToHtml(this.answer.value);
       const delta = this.quillInstance.clipboard.convert({ html: String(previewHtml) });
-      this.quillInstance.setContents(delta, 'silent');
+      this.quillInstance.setContents(undefined, 'silent');
+      this.quillInstance.updateContents(delta, 'silent');
     }
+
+    if (prev === AnswerExportFormats.PLAINTEXT) {
+      setTimeout(() => {
+        this.initQuill();
+      });
+    }
+  }
+
+  detectAnswerFormat() {
+    let rawData = this.answer.value;
+    const guessedFormat = this.guessAnswerFormat(rawData);
+    this.answerExportFormat.setValue(guessedFormat);
+  }
+
+  guessAnswerFormat(data: string) {
+    function containsHTML(str) {
+      var a = document.createElement('div');
+      a.innerHTML = str;
+
+      for (var c = a.childNodes, i = c.length; i--; ) {
+        if (c[i].nodeType == 1) return true;
+      }
+
+      return false;
+    }
+
+    function containsMARKDOWN(text: string): boolean {
+      function containsNonTextOrHtmlTokens(tokens) {
+        return tokens.some((token) => {
+          if (!['text', 'paragraph', 'html', 'space'].includes(token.type)) {
+            return true;
+          }
+          // Check recursively for nested tokens
+          if (token.tokens && containsNonTextOrHtmlTokens(token.tokens)) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      const tokens = lexer(text);
+      console.log(tokens);
+
+      return containsNonTextOrHtmlTokens(tokens);
+    }
+
+    if (containsHTML(data)) return AnswerExportFormats.HTML;
+
+    if (containsMARKDOWN(data)) return AnswerExportFormats.MARKDOWN;
+
+    return AnswerExportFormats.PLAINTEXT;
   }
 
   quillInstance: Quill;
@@ -129,14 +316,16 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
       true
     );
 
-    const toolbarOptions = [[{ header: 1 }, { header: 2 }], ['bold', 'italic', 'underline', 'strike'], ['table-better']];
+    // const toolbarOptions = [[{ header: 1 }, { header: 2 }], ['bold', 'italic', 'underline', 'strike'], ['table-better']];
 
     const options: QuillOptions = {
       // debug: 'info',
       theme: 'snow',
       modules: {
         table: false,
-        toolbar: '#toolbar-container',
+        toolbar: {
+          container: '#toolbar-container'
+        },
         'table-better': {
           language: 'en_US',
           menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'delete'],
@@ -168,39 +357,19 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
   }
 
   async setQuillContent() {
-    let rawData = this.answer.value;
+    const rawData = this.answer.value;
 
-    function isMarkdownValue(text: string): boolean {
-      function containsNonTextOrHtmlTokens(tokens) {
-        return tokens.some((token) => {
-          if (!['text', 'paragraph', 'html', 'space'].includes(token.type)) {
-            return true;
-          }
-          // Check recursively for nested tokens
-          if (token.tokens && containsNonTextOrHtmlTokens(token.tokens)) {
-            return true;
-          }
-          return false;
-        });
-      }
-
-      const tokens = lexer(text);
-
-      return containsNonTextOrHtmlTokens(tokens);
+    if (this.answerExportFormat.value === AnswerExportFormats.MARKDOWN) {
+      const htmlData = await this.markdownToHtml(rawData);
+      const delta = this.quillInstance.clipboard.convert({ html: String(htmlData) });
+      this.quillInstance.setContents(undefined, 'silent');
+      this.quillInstance.updateContents(delta, 'silent');
     }
-
-    let htmlData;
-
-    if (isMarkdownValue(rawData)) {
-      htmlData = await this.markdownToHtml(rawData);
-      this.answerExportFormat.setValue(AnswerExportFormats.MARKDOWN);
-    } else {
-      htmlData = rawData;
-      this.answerExportFormat.setValue(AnswerExportFormats.HTML);
+    if (this.answerExportFormat.value === AnswerExportFormats.HTML) {
+      const delta = this.quillInstance.clipboard.convert({ html: rawData });
+      this.quillInstance.setContents(undefined, 'silent');
+      this.quillInstance.updateContents(delta, 'silent');
     }
-
-    const delta = this.quillInstance.clipboard.convert({ html: String(htmlData) });
-    this.quillInstance.updateContents(delta, 'silent');
   }
 
   async markdownToHtml(rawData: string): Promise<VFile> {
@@ -220,107 +389,6 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
   async htmlToMarkdown(rawData: string) {
     const processor = await unified().use(rehypeParse).use(rehypeFormat).use(rehypeRemark).use(remarkGfm).use(remarkStringify);
     return processor.process(rawData);
-  }
-
-  validateQuillContent(control: FormControl): ValidationErrors | null {
-    if (!this.quillInstance) return null;
-    if (!this.quillInstance.getText().trim().length) {
-      return { minlength: { requiredLength: 1 } };
-    }
-    return null;
-  }
-
-  form = new FormGroup<FaqEditForm>({
-    title: new FormControl(undefined, [Validators.required, Validators.minLength(5), Validators.maxLength(40)]),
-    description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
-    tags: new FormArray([]),
-    utterances: new FormArray([], Validators.required),
-    answer: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(this.controlsMaxLength.answer),
-      this.validateQuillContent.bind(this)
-    ]),
-    answerExportFormat: new FormControl(undefined)
-  });
-
-  getControlLengthIndicatorClass(controlName: string): string {
-    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
-  }
-
-  get answer(): FormControl {
-    return this.form.get('answer') as FormControl;
-  }
-
-  get answerExportFormat(): FormControl {
-    return this.form.get('answerExportFormat') as FormControl;
-  }
-
-  get description(): FormControl {
-    return this.form.get('description') as FormControl;
-  }
-
-  get title(): FormControl {
-    return this.form.get('title') as FormControl;
-  }
-
-  get tags(): FormArray {
-    return this.form.get('tags') as FormArray;
-  }
-
-  get utterances(): FormArray {
-    return this.form.get('utterances') as FormArray;
-  }
-
-  get canSave(): boolean {
-    return this.isSubmitted ? this.form.valid : this.form.dirty;
-  }
-
-  tagsAutocompleteValues: Observable<any[]>;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.faq?.currentValue) {
-      const faq: FaqDefinitionExtended = changes.faq.currentValue;
-
-      this.form.reset();
-      this.tags.clear();
-      this.utterances.clear();
-      this.resetAlerts();
-      this.isSubmitted = false;
-
-      if (faq) {
-        this.form.patchValue(faq);
-
-        this.initQuill();
-
-        if (faq.tags?.length) {
-          faq.tags.forEach((tag) => {
-            this.tags.push(new FormControl(tag));
-          });
-        }
-
-        faq.utterances.forEach((utterance) => {
-          this.utterances.push(new FormControl(utterance));
-        });
-
-        if (faq._initQuestion) {
-          this.form.markAsDirty();
-          this.form.markAsTouched();
-
-          this.setCurrentTab({ tabTitle: FaqTabs.QUESTION } as NbTabComponent);
-
-          setTimeout(() => {
-            this.addUtterance(faq._initQuestion);
-            delete faq._initQuestion;
-          });
-        }
-      }
-
-      if (!faq.id && !faq._initQuestion) {
-        this.setCurrentTab({ tabTitle: FaqTabs.INFO } as NbTabComponent);
-      }
-    }
-
-    this.tagsAutocompleteValues = of(this.tagsCache);
   }
 
   updateTagsAutocompleteValues(event: any) {
