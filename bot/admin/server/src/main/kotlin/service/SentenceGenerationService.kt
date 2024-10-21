@@ -37,9 +37,23 @@ object SentenceGenerationService {
 
     /**
      * Get the LLM Sentence Generation configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
      */
     fun getSentenceGenerationConfiguration(namespace: String, botId: String): BotSentenceGenerationConfiguration? {
         return sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+    }
+
+    /**
+     * Deleting the LLM Sentence Generation Configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
+     */
+    fun deleteConfig(namespace: String, botId: String) {
+        val sentenceGenerationConfiguration = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+            ?: WebVerticle.badRequest("No LLM Sentence Generation configuration is defined yet [namespace: $namespace, botId: $botId]")
+        logger.info { "Deleting the LLM Sentence Generation Configuration [namespace: $namespace, botId: $botId]" }
+        return sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
     }
 
     /**
@@ -66,9 +80,11 @@ object SentenceGenerationService {
         val sentenceGenerationConfig = sentenceGenerationConfiguration.toSentenceGenerationConfiguration()
 
         // Check validity of the configuration
-        SentenceGenerationValidationService.validate(sentenceGenerationConfig).let { errors ->
-            if(errors.isNotEmpty()) {
-                throw BadRequestException(errors)
+        if(sentenceGenerationConfig.enabled) {
+            SentenceGenerationValidationService.validate(sentenceGenerationConfig).let { errors ->
+                if (errors.isNotEmpty()) {
+                    throw BadRequestException(errors)
+                }
             }
         }
 

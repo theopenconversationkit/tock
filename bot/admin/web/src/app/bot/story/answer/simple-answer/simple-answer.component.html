@@ -22,7 +22,7 @@
     size="small"
     (click)="toggleDisplay()"
   >
-    <nb-icon icon="globe-2-outline"></nb-icon>
+    <nb-icon icon="globe2"></nb-icon>
     I18n
   </button>
   <button
@@ -32,7 +32,7 @@
     size="small"
     (click)="toggleDisplay()"
   >
-    <nb-icon icon="globe-2-outline"></nb-icon>
+    <nb-icon icon="globe2"></nb-icon>
     Answers list
   </button>
 </div>
@@ -53,7 +53,7 @@
         nbTooltip="Move upward"
         (click)="upward(a)"
       >
-        <nb-icon icon="arrow-upward-outline"></nb-icon>
+        <nb-icon icon="arrow-up"></nb-icon>
       </button>
       <button
         *ngIf="canDownward(a)"
@@ -65,7 +65,7 @@
         nbTooltip="Move downward"
         (click)="downward(a)"
       >
-        <nb-icon icon="arrow-downward-outline"></nb-icon>
+        <nb-icon icon="arrow-down"></nb-icon>
       </button>
     </div>
     <textarea
@@ -85,7 +85,7 @@
         nbTooltip="Choose media message"
         (click)="displayMediaMessage(a)"
       >
-        <nb-icon icon="image-outline"></nb-icon>
+        <nb-icon icon="image"></nb-icon>
       </button>
       <button
         *ngIf="answer.allowNoAnswer || answer.answers.length !== 1"
@@ -96,7 +96,7 @@
         nbTooltip="Delete {{ answerLabel }}"
         (click)="deleteAnswer(a, true)"
       >
-        <nb-icon icon="trash-2-outline"></nb-icon>
+        <nb-icon icon="trash"></nb-icon>
       </button>
     </div>
   </div>
@@ -118,7 +118,7 @@
         nbTooltip="Edit media message"
         (click)="displayMediaMessage()"
       >
-        <nb-icon icon="image-outline"></nb-icon>
+        <nb-icon icon="image"></nb-icon>
       </button>
       <button
         nbButton
@@ -127,7 +127,7 @@
         nbTooltip="Add {{ answerLabel }}"
         (click)="addAnswer()"
       >
-        <nb-icon icon="plus-outline"></nb-icon>
+        <nb-icon icon="plus-lg"></nb-icon>
       </button>
     </div>
   </div>

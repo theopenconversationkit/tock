@@ -28,7 +28,7 @@ import { StoriesFilters } from './stories-filter/stories-filter.component';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { StoriesUploadComponent } from './stories-upload/stories-upload.component';
-import { normalize } from '../../../shared/utils';
+import { getExportFileName, normalize } from '../../../shared/utils';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
 export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
@@ -204,7 +204,14 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   downloadStory(story: StoryDefinitionConfigurationSummary) {
     setTimeout((_) => {
       this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'Story',
+          'json',
+          story.storyId
+        );
+        saveAs(blob, exportFileName);
         this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
       });
     }, 1);
@@ -238,7 +245,13 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   download() {
     setTimeout((_) => {
       this.bot.exportStories(this.state.currentApplication.name).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_stories.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'Stories',
+          'json'
+        );
+        saveAs(blob, exportFileName);
         this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
       });
     }, 1);

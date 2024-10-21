@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -9,7 +9,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ObservabilityProvider, ProvidersConfiguration, ProvidersConfigurations } from './models/providers-configuration';
 import { ObservabilitySettings } from './models/observability-settings';
 import { deepCopy } from '../../shared/utils';
-import { DebugViewerWindowComponent } from '../../shared/components';
+import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
 
 interface ObservabilitySettingsForm {
   id: FormControl<string>;
@@ -41,7 +41,8 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     private rest: RestService,
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
-    private nbWindowService: NbWindowService
+    private nbWindowService: NbWindowService,
+    private nbDialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
@@ -57,6 +58,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
+      delete this.settingsBackup;
       this.loading = true;
       this.configurations = confs;
       this.form.reset();
@@ -192,6 +194,41 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  confirmSettingsDeletion() {
+    const confirmAction = 'Delete';
+    const cancelAction = 'Cancel';
+
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
+      context: {
+        title: `Delete observability settings`,
+        subtitle: `Are you sure you want to delete the currently saved observability settings?`,
+        modalStatus: 'danger',
+        actions: [
+          { actionName: cancelAction, buttonStatus: 'basic' },
+          { actionName: confirmAction, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result?.toLowerCase() === confirmAction.toLowerCase()) {
+        this.deleteSettings();
+      }
+    });
+  }
+
+  deleteSettings() {
+    const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+    this.rest.delete<boolean>(url).subscribe(() => {
+      delete this.settingsBackup;
+      this.form.reset();
+      this.form.markAsPristine();
+      this.toastrService.success(`Observability settings succesfully deleted`, 'Success', {
+        duration: 5000,
+        status: 'success'
+      });
+    });
   }
 
   ngOnDestroy(): void {

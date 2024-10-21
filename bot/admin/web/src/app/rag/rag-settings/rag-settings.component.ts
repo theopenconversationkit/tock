@@ -7,12 +7,13 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
 import { RagSettings } from './models';
-import { NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
 import { EnginesConfiguration, LLMProvider } from '../../shared/model/ai-settings';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -22,6 +23,7 @@ interface RagSettingsForm {
   noAnswerStoryId: FormControl<string>;
 
   indexSessionId: FormControl<string>;
+  indexName: FormControl<string>;
 
   llmEngine: FormControl<LLMProvider>;
   llmSetting: FormGroup<any>;
@@ -59,7 +61,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     private rest: RestService,
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
-    private nbWindowService: NbWindowService
+    private nbWindowService: NbWindowService,
+    private nbDialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
@@ -82,6 +85,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
+      delete this.settingsBackup;
       this.loading = true;
       this.configurations = confs;
       this.form.reset();
@@ -114,6 +118,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     noAnswerSentence: new FormControl(undefined, [Validators.required]),
     noAnswerStoryId: new FormControl(undefined),
     indexSessionId: new FormControl(undefined),
+    indexName: new FormControl(undefined),
     llmEngine: new FormControl(undefined, [Validators.required]),
     llmSetting: new FormGroup<any>({}),
     emEngine: new FormControl(undefined, [Validators.required]),
@@ -139,6 +144,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   get indexSessionId(): FormControl {
     return this.form.get('indexSessionId') as FormControl;
+  }
+
+  get indexName(): FormControl {
+    return this.form.get('indexName') as FormControl;
   }
 
   get canSave(): boolean {
@@ -286,8 +295,12 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
             ragSettings.noAnswerStoryId = null;
           }
           this.settingsBackup = ragSettings;
+
+          this.indexName.reset();
+
           this.form.patchValue(ragSettings);
           this.form.markAsPristine();
+
           this.isSubmitted = false;
           this.toastrService.success(`Rag settings succesfully saved`, 'Success', {
             duration: 5000,
@@ -313,6 +326,41 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  confirmSettingsDeletion() {
+    const confirmAction = 'Delete';
+    const cancelAction = 'Cancel';
+
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
+      context: {
+        title: `Delete Rag settings`,
+        subtitle: `Are you sure you want to delete the currently saved Rag settings?`,
+        modalStatus: 'danger',
+        actions: [
+          { actionName: cancelAction, buttonStatus: 'basic' },
+          { actionName: confirmAction, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result?.toLowerCase() === confirmAction.toLowerCase()) {
+        this.deleteSettings();
+      }
+    });
+  }
+
+  deleteSettings() {
+    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    this.rest.delete<boolean>(url).subscribe(() => {
+      delete this.settingsBackup;
+      this.form.reset();
+      this.form.markAsPristine();
+      this.toastrService.success(`Rag settings succesfully deleted`, 'Success', {
+        duration: 5000,
+        status: 'success'
+      });
+    });
   }
 
   ngOnDestroy(): void {

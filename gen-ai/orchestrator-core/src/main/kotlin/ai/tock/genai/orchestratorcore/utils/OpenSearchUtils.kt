@@ -22,11 +22,13 @@ object OpenSearchUtils {
      * Normalize the document index name
      * Here, OpenSearch rules are used
      * See: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/indexing.html#indexing-naming
-     * @param ragConfig the RAG configuration
+     * @param namespace the namespace
+     * @param botId the bot ID
+     * @param indexSessionId the index session ID
      */
-    fun normalizeDocumentIndexName(namespace: String, botId: String): String {
+    fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String {
         // Convert to lowercase
-        var normalized = "ns-$namespace-bot-$botId".lowercase()
+        var normalized = "ns-$namespace-bot-$botId-session-$indexSessionId".lowercase()
         // Replace underscores and space with hyphens
         normalized = normalized.replace('_', '-').replace(' ', '-')
         // Remove invalid characters

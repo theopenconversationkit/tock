@@ -24,11 +24,14 @@ from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
 )
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import (
+    OllamaEMSetting,
+)
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
     OpenAIEMSetting,
 )
 
 EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting, BloomzEMSetting],
+    Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting, BloomzEMSetting],
     Body(discriminator='provider'),
 ]

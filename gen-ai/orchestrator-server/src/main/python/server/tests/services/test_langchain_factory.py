@@ -17,7 +17,6 @@ import pytest
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
-    VectorStoreUnknownException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
     GenAIUnknownObservabilityProviderException,
@@ -57,6 +56,12 @@ from gen_ai_orchestrator.models.observability.observability_provider import (
 )
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
+)
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
+    OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
+    PGVectorStoreSetting,
 )
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
@@ -100,6 +105,9 @@ from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory imp
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import (
     OpenSearchFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
+    PGVectorFactory,
 )
 
 
@@ -239,19 +247,48 @@ def test_get_open_search_vector_store_factory():
         )
     )
     open_search = get_vector_store_factory(
-        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
+        setting=OpenSearchVectorStoreSetting(
+            **{
+                'provider': 'OpenSearch',
+                'host': 'localhost',
+                'port': 9200,
+                'password': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'username': 'admin',
+            }
+        ),
+        index_name='my-index-name',
         embedding_function=em_factory.get_embedding_model(),
-        index_name='an index name',
+    )
+    pgvector = get_vector_store_factory(
+        setting=PGVectorStoreSetting(
+            **{
+                'provider': 'PGVector',
+                'host': 'localhost',
+                'port': 5432,
+                'password': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'username': 'postgres',
+                'database': 'postgres',
+            }
+        ),
+        index_name='my-index-name',
+        embedding_function=em_factory.get_embedding_model(),
     )
     assert isinstance(open_search, OpenSearchFactory)
+    assert isinstance(pgvector, PGVectorFactory)
 
 
 def test_get_unknown_vector_store_factory():
-    with pytest.raises(VectorStoreUnknownException):
+    with pytest.raises(GenAIUnknownVectorStoreProviderSettingException):
         get_vector_store_factory(
-            vector_store_provider='an incorrect vector store provider',
+            setting='an incorrect vector store provider',
+            index_name=None,
             embedding_function=None,
-            index_name='an index name',
         )
 
 

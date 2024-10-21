@@ -27,7 +27,7 @@
       (click)="createNamespace()"
       nbTooltip="Create a new namespace"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
+      <nb-icon icon="plus-lg"></nb-icon>
       NEW NAMESPACE
     </button>
   </section>
@@ -62,7 +62,7 @@
         <nb-icon
           *ngIf="n.owner"
           nbTooltip="Owner"
-          icon="shield-outline"
+          icon="shield-check"
         ></nb-icon>
       </div>
 
@@ -74,7 +74,7 @@
         (click)="manageUsers(n.namespace)"
         nbTooltip="Manage Users"
       >
-        <nb-icon icon="person-outline"></nb-icon>
+        <nb-icon icon="person"></nb-icon>
       </button>
       <button
         *ngIf="n.owner && isAdmin()"
@@ -84,7 +84,7 @@
         (click)="manageSharingSettings(n.namespace)"
         nbTooltip="Configure sharing settings"
       >
-        <nb-icon icon="settings-2-outline"></nb-icon>
+        <nb-icon icon="gear"></nb-icon>
       </button>
     </div>
 
@@ -109,7 +109,7 @@
             <nb-icon
               *ngIf="u.owner"
               nbTooltip="Owner"
-              icon="shield-outline"
+              icon="shield-check"
             ></nb-icon>
           </div>
 
@@ -121,27 +121,39 @@
             (click)="deleteUserNamespace(u)"
             nbTooltip="Delete User"
           >
-            <nb-icon icon="trash-2-outline"></nb-icon>
+            <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
       </nb-card-body>
 
       <nb-card-footer>
         <div class="d-flex gap-1 align-items-center">
-          <input
-            nbInput
-            [(ngModel)]="newLogin"
-            placeholder="New User"
-          />
+          <nb-form-field>
+            <nb-icon
+              nbPrefix
+              icon="person"
+            ></nb-icon>
+            <input
+              nbInput
+              [(ngModel)]="newLogin"
+              placeholder="New User"
+            />
+          </nb-form-field>
+
           <nb-checkbox
             [(checked)]="newOwner"
             class="checkbox"
+            nbTooltip="Set the new user as owner of the namespace (allowed to add and remove users)"
             >Owner</nb-checkbox
           >
+
           <button
             nbButton
+            status="primary"
+            size="medium"
             (click)="addUserNamespace()"
           >
+            <nb-icon icon="plus"></nb-icon>
             Add
           </button>
         </div>
@@ -186,15 +198,27 @@
           </nb-select>
         </p>
       </nb-card-body>
-      <nb-card-footer>
+      <nb-card-footer class="text-right">
+        <button
+          nbButton
+          ghost
+          status="basic"
+          (click)="closeEdition()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+          Close
+        </button>
         <button
           nbButton
           status="primary"
           (click)="saveNamespaceConfiguration()"
         >
+          <nb-icon icon="floppy"></nb-icon>
           Save
         </button>
       </nb-card-footer>
     </nb-card>
   </nb-card-body>
 </nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

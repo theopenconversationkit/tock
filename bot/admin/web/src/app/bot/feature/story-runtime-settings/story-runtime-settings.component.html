@@ -29,7 +29,7 @@
       nbTooltip="Refresh"
       (click)="refresh()"
     >
-      <nb-icon icon="refresh-outline"></nb-icon>
+      <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
     <tock-info-button
       message="Stories configured by tags."
@@ -64,7 +64,7 @@
             >
               <nb-icon
                 [icon]="getStoryIcon(story)"
-                class="valign-middle"
+                class="align-middle"
               ></nb-icon>
               {{ story.name }}
             </span>
@@ -97,7 +97,10 @@
               class="pointer"
               nbTooltip="Click to view story details"
             >
-              <nb-icon [icon]="getStoryIcon(story)"></nb-icon>
+              <nb-icon
+                [icon]="getStoryIcon(story)"
+                class="align-middle"
+              ></nb-icon>
               {{ story.name }}
             </span>
           </div>
@@ -129,7 +132,10 @@
               class="pointer"
               nbTooltip="Click to view story details"
             >
-              <nb-icon [icon]="getStoryIcon(story)"></nb-icon>
+              <nb-icon
+                [icon]="getStoryIcon(story)"
+                class="align-middle"
+              ></nb-icon>
               {{ story.name }}
             </span>
           </div>
@@ -161,7 +167,10 @@
               class="pointer"
               nbTooltip="Click to view story details"
             >
-              <nb-icon [icon]="getStoryIcon(story)"></nb-icon>
+              <nb-icon
+                [icon]="getStoryIcon(story)"
+                class="align-middle"
+              ></nb-icon>
               {{ story.name }}
             </span>
           </div>

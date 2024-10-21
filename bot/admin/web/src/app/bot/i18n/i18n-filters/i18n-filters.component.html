@@ -5,7 +5,7 @@
         <nb-form-field class="flex-grow-1">
           <nb-icon
             nbPrefix
-            icon="search-outline"
+            icon="search"
           ></nb-icon>
           <input
             nbInput
@@ -27,7 +27,7 @@
             type="button"
             (click)="resetControl(getFormControl('search'))"
           >
-            <nb-icon icon="close-outline"></nb-icon>
+            <nb-icon icon="x-lg"></nb-icon>
           </button>
         </nb-form-field>
       </div>
@@ -37,7 +37,7 @@
           <nb-form-field nbTooltip="Filter by locale">
             <nb-icon
               nbPrefix
-              icon="globe-outline"
+              icon="globe2"
             ></nb-icon>
             <nb-select
               size="small"
@@ -73,7 +73,7 @@
           <nb-form-field nbTooltip="Filter by category">
             <nb-icon
               nbPrefix
-              icon="grid-outline"
+              icon="grid"
             ></nb-icon>
             <nb-select
               size="small"
@@ -96,7 +96,7 @@
           <nb-form-field nbTooltip="Filter by state">
             <nb-icon
               nbPrefix
-              icon="checkmark-circle-outline"
+              icon="check2-circle"
             ></nb-icon>
             <nb-select
               size="small"
@@ -115,7 +115,7 @@
           <nb-form-field nbTooltip="Filter by usage">
             <nb-icon
               nbPrefix
-              icon="calendar-outline"
+              icon="calendar-x"
             ></nb-icon>
             <nb-select
               size="small"
@@ -143,7 +143,7 @@
             nbTooltip="Validate all existing labels"
             (click)="validateAll()"
           >
-            <nb-icon icon="checkmark-circle-outline"></nb-icon>
+            <nb-icon icon="check-circle"></nb-icon>
             Validate All
           </button>
         </div>
@@ -158,7 +158,7 @@
             (click)="translate()"
             *ngIf="state.currentApplication.supportedLocales.length !== 1"
           >
-            <nb-icon icon="globe-outline"></nb-icon>
+            <nb-icon icon="globe2"></nb-icon>
             Translate All
           </button>
         </div>
@@ -172,7 +172,7 @@
             nbTooltip="Import"
             (click)="import()"
           >
-            <nb-icon icon="upload-outline"></nb-icon>
+            <nb-icon icon="upload"></nb-icon>
             Import
           </button>
         </div>
@@ -186,7 +186,7 @@
             nbTooltip="Export"
             (click)="export()"
           >
-            <nb-icon icon="download-outline"></nb-icon>
+            <nb-icon icon="download"></nb-icon>
             Export
           </button>
         </div>

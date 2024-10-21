@@ -156,6 +156,15 @@ and attempts to send them if and when the SSE connection is re-established.
 The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
 two SSE pings (default: 10).
 
+#### Push messages
+
+When SSE is enabled, the web connector allows sending push messages through the
+[`notify` method](https://github.com/theopenconversationkit/tock/blob/master/bot/engine/src/main/kotlin/definition/DefinitionBuilders.kt).
+
+Note that unlike with messaging apps, there is absolutely no guarantee that a user receives the message,
+as they may have closed their browser since the last interaction. If they reopen the corresponding browsing tab,
+they may still receive the message thanks to the aforementioned retry mechanism.
+
 ### React chat widget
 
 The [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) component provides integration with

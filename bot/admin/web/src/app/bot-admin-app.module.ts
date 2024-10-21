@@ -36,8 +36,6 @@ import {
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
-import { ragIcon } from './theme/icons/rag';
-import { ragexcludeIcon } from './theme/icons/ragexclude';
 import { NlpService } from './core-nlp/nlp.service';
 
 @NgModule({
@@ -74,9 +72,7 @@ import { NlpService } from './core-nlp/nlp.service';
 })
 export class BotAdminAppModule {
   constructor(private iconLibraries: NbIconLibraries) {
-    this.iconLibraries.registerSvgPack('tock-custom', {
-      rag: ragIcon,
-      ragexclude: ragexcludeIcon
-    });
+    this.iconLibraries.registerFontPack('bootstrap-icons', { iconClassPrefix: 'bi' });
+    this.iconLibraries.setDefaultPack('bootstrap-icons');
   }
 }

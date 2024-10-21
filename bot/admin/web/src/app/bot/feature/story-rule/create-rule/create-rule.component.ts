@@ -5,16 +5,17 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BotService } from '../../../bot-service';
 import { StateService } from '../../../../core-nlp/state.service';
 import { Observable, of, take } from 'rxjs';
+import { getStoryIcon } from '../../../../shared/utils';
 
 enum mainOrTarget {
-  mainStory = 'mainStory',
-  targetStory = 'targetStory'
+  mainStoryId = 'mainStoryId',
+  targetStoryId = 'targetStoryId'
 }
 
 interface CreateRuleForm {
-  mainStory: FormControl<StoryDefinitionConfiguration>;
+  mainStoryId: FormControl<string>;
   enabled: FormControl<boolean>;
-  targetStory: FormControl<StoryDefinitionConfiguration>;
+  targetStoryId: FormControl<string>;
 }
 
 @Component({
@@ -37,6 +38,8 @@ export class CreateRuleComponent implements OnInit {
 
   isSubmitted: boolean = false;
 
+  getStoryIcon = getStoryIcon;
+
   @Input() type: RuleType;
 
   @Output() onSave = new EventEmitter();
@@ -47,7 +50,7 @@ export class CreateRuleComponent implements OnInit {
     this.loadStories();
 
     if (this.hasTarget()) {
-      this.targetStory.addValidators(Validators.required);
+      this.targetStoryId.addValidators(Validators.required);
     }
   }
 
@@ -76,21 +79,21 @@ export class CreateRuleComponent implements OnInit {
   }
 
   form = new FormGroup<CreateRuleForm>({
-    mainStory: new FormControl(undefined, [Validators.required]),
+    mainStoryId: new FormControl(undefined, [Validators.required]),
     enabled: new FormControl(true),
-    targetStory: new FormControl(undefined)
+    targetStoryId: new FormControl(undefined)
   });
 
-  get mainStory(): FormControl {
-    return this.form.get('mainStory') as FormControl;
+  get mainStoryId(): FormControl {
+    return this.form.get('mainStoryId') as FormControl;
   }
 
   get enabled(): FormControl {
     return this.form.get('enabled') as FormControl;
   }
 
-  get targetStory(): FormControl {
-    return this.form.get('targetStory') as FormControl;
+  get targetStoryId(): FormControl {
+    return this.form.get('targetStoryId') as FormControl;
   }
 
   get canSave(): boolean {
@@ -104,7 +107,7 @@ export class CreateRuleComponent implements OnInit {
   }
 
   getCurrentStoryLabel(wich: mainOrTarget): string {
-    const currentStory = this.availableStories?.find((story) => story === this.form.get(wich as string).value);
+    const currentStory = this.availableStories?.find((story) => story.storyId === this.form.get(wich as string).value);
     return currentStory?.name || '';
   }
 
@@ -113,14 +116,17 @@ export class CreateRuleComponent implements OnInit {
   }
 
   storyInputBlur(wich: mainOrTarget, e: FocusEvent): void {
-    const target: HTMLInputElement = e.target as HTMLInputElement;
-    target.value = this.getCurrentStoryLabel(wich);
+    setTimeout(() => {
+      // timeout needed to avoid reseting input and filtered stories when clicking on autocomplete suggestions (which fires blur event)
+      const target: HTMLInputElement = e.target as HTMLInputElement;
+      target.value = this.getCurrentStoryLabel(wich);
 
-    this.filteredStories$ = of(this.availableStories);
+      this.filteredStories$ = of(this.availableStories);
+    }, 100);
   }
 
-  onStorySelectionChange(wich: mainOrTarget, story: StoryDefinitionConfiguration): void {
-    this.form.get(wich as string).patchValue(story);
+  onStorySelectionChange(wich: mainOrTarget, storyId: string): void {
+    this.form.get(wich as string).patchValue(storyId);
     this.form.markAsDirty();
   }
 
@@ -138,11 +144,11 @@ export class CreateRuleComponent implements OnInit {
       const newFeature = new StoryFeature(
         this.botApplicationConfigurationId,
         this.enabled.value,
-        this.type === RuleType.Redirection ? this.targetStory.value.storyId : null,
-        this.type === RuleType.Ending ? this.targetStory.value.storyId : null
+        this.type === RuleType.Redirection ? this.targetStoryId.value : null,
+        this.type === RuleType.Ending ? this.targetStoryId.value : null
       );
 
-      newFeature.story = this.mainStory.value;
+      newFeature.story = this.availableStories?.find((story) => story.storyId === this.mainStoryId.value);
       newFeature.story.features.push(newFeature);
 
       this.botService.saveStory(newFeature.story).subscribe((_) => {
@@ -154,17 +160,5 @@ export class CreateRuleComponent implements OnInit {
 
   cancel(): void {
     this.nbDialogRef.close({});
-  }
-
-  getStoryIcon(story: StoryDefinitionConfiguration): string {
-    if (story.isBuiltIn()) {
-      return 'cube';
-    }
-    if (story.isSimpleAnswer()) {
-      return 'message-square-outline';
-    }
-    if (story.isScriptAnswer()) {
-      return 'code';
-    }
   }
 }

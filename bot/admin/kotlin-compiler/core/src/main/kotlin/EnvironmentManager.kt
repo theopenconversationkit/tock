@@ -63,7 +63,6 @@ import java.nio.file.Path
  */
 internal object EnvironmentManager {
     private val logger = KotlinLogging.logger {}
-    private var registry: Getter<FileTypeRegistry>? = null
     var environment: KotlinCoreEnvironment? = null
     private val disposable = Disposable { }
 
@@ -119,7 +118,6 @@ internal object EnvironmentManager {
 
         registerExtensionPoints(Extensions.getRootArea())
 
-        registry = FileTypeRegistry.ourInstanceGetter
         return environment
     }
 

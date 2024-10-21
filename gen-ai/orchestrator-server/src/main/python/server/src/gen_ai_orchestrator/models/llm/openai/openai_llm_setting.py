@@ -20,6 +20,8 @@ from pydantic import Field
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
 class OpenAILLMSetting(BaseLLMSetting):
@@ -31,6 +33,15 @@ class OpenAILLMSetting(BaseLLMSetting):
     provider: Literal[LLMProvider.OPEN_AI] = Field(
         description='The Large Language Model Provider.', examples=[LLMProvider.OPEN_AI]
     )
+    api_key: SecretKey = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
+    )
     model: str = Field(
         description='The model id', examples=['gpt-3.5-turbo'], min_length=1
+    )
+    base_url: str = Field(
+        description='The OpenAI endpoint base URL',
+        examples=["https://api.openai.com/v1"],
+        default="https://api.openai.com/v1"
     )

@@ -13,7 +13,7 @@
         nbTooltip="Close"
         (click)="close()"
       >
-        <nb-icon icon="close-outline"></nb-icon>
+        <nb-icon icon="x-lg"></nb-icon>
       </button>
     </div>
   </nb-card-header>
@@ -171,7 +171,7 @@
                 [disabled]="!addUtteranceInput.value || lookingForSameUterranceInOtherInent"
                 (click)="addUtterance()"
               >
-                <nb-icon icon="plus-outline"></nb-icon>
+                <nb-icon icon="plus-lg"></nb-icon>
               </button>
             </nb-form-field>
 
@@ -185,7 +185,7 @@
               (click)="generateSentences()"
               [disabled]="!utterances.controls.length"
             >
-              <nb-icon icon="bulb-outline"></nb-icon>
+              <nb-icon icon="list-columns"></nb-icon>
             </button>
           </div>
         </tock-form-control>
@@ -250,7 +250,7 @@
                 size="small"
                 (click)="editUtterance(utterance.value)"
               >
-                <nb-icon icon="edit-outline"></nb-icon>
+                <nb-icon icon="pencil"></nb-icon>
               </button>
               <button
                 *ngIf="utterance === editedUtterance"
@@ -262,7 +262,7 @@
                 status="success"
                 (click)="validateEditUtterance(utterance)"
               >
-                <nb-icon icon="checkmark-outline"></nb-icon>
+                <nb-icon icon="check-lg"></nb-icon>
               </button>
 
               <button
@@ -276,7 +276,7 @@
                 status="danger"
                 (click)="removeUtterance(utterance.value)"
               >
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash"></nb-icon>
               </button>
 
               <button
@@ -289,7 +289,7 @@
                 size="small"
                 (click)="cancelEditUtterance()"
               >
-                <nb-icon icon="close-outline"></nb-icon>
+                <nb-icon icon="x-lg"></nb-icon>
               </button>
             </li>
           </ul>

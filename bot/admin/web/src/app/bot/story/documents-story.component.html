@@ -20,19 +20,19 @@
         <div class="font-weight-bold">
           <nb-icon
             *ngIf="getStoryWithThisMediaFile(file).isBuiltIn()"
-            class="valign-middle"
+            class="align-middle"
             nbTooltip="Built-in Story"
-            icon="cube"
+            icon="box"
           ></nb-icon>
           <nb-icon
             *ngIf="getStoryWithThisMediaFile(file).isSimpleAnswer()"
-            class="valign-middle"
+            class="align-middle"
             nbTooltip="Message Story"
-            icon="message-square-outline"
+            icon="chat-left"
           ></nb-icon>
           <nb-icon
             *ngIf="getStoryWithThisMediaFile(file).isScriptAnswer()"
-            class="valign-middle"
+            class="align-middle"
             nbTooltip="Script Story"
             icon="code"
           ></nb-icon>
@@ -72,7 +72,7 @@
           nbTooltip="Update File"
           (click)="displayMediaMessage(file)"
         >
-          <nb-icon icon="edit-outline"></nb-icon>
+          <nb-icon icon="pencil"></nb-icon>
         </button>
       </div>
     </div>

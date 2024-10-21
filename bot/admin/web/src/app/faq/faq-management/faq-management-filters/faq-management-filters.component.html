@@ -7,7 +7,7 @@
       <nb-form-field>
         <nb-icon
           nbPrefix
-          icon="search-outline"
+          icon="search"
         ></nb-icon>
         <input
           nbInput
@@ -19,20 +19,27 @@
         />
       </nb-form-field>
 
-      <nb-select
-        multiple
-        placeholder="Tags"
-        fullWidth
-        optionsListClass="option-list--break-word"
-        formControlName="tags"
-      >
-        <nb-option
-          *ngFor="let tag of tagsCache"
-          value="{{ tag }}"
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="bookmark"
+        ></nb-icon>
+
+        <nb-select
+          multiple
+          placeholder="Tags"
+          fullWidth
+          optionsListClass="option-list--break-word"
+          formControlName="tags"
         >
-          <span class="initial-capitalize">{{ tag }}</span>
-        </nb-option>
-      </nb-select>
+          <nb-option
+            *ngFor="let tag of tagsCache"
+            value="{{ tag }}"
+          >
+            <span class="initial-capitalize">{{ tag }}</span>
+          </nb-option>
+        </nb-select>
+      </nb-form-field>
 
       <nb-checkbox
         [checked]="enabled.value"
@@ -52,7 +59,7 @@
         (click)="clearFilters()"
         data-testid="clear-button"
       >
-        <nb-icon icon="close-outline"></nb-icon>
+        <nb-icon icon="x-lg"></nb-icon>
       </button>
     </form>
   </nb-card-body>

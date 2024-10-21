@@ -12,11 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch
+import os
 
-from gen_ai_orchestrator.configurations.environment.settings import fetch_open_search_credentials, _Settings
+from gen_ai_orchestrator.configurations.environment.settings import _Settings, application_settings
 from gen_ai_orchestrator.configurations.logging.logger import setup_logging
 from gen_ai_orchestrator.models.security.credentials import Credentials
+from unittest.mock import patch
+
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import SecretManagerProvider
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import fetch_default_vector_store_credentials
 
 
 def test_environment():
@@ -29,34 +34,107 @@ def test_logging():
     setup_logging()
 
 
-
 @patch('boto3.client')
 @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
-@patch('gen_ai_orchestrator.configurations.environment.settings.application_settings',
-       _Settings(open_search_aws_secret_manager_name='my_secret_key'))
-def test_fetch_open_search_credentials(mock_get_credentials, mock_boto3_client):
+@patch('gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+       _Settings(
+           vector_store_provider = VectorStoreProvider.OPEN_SEARCH,
+           vector_store_host = None,
+           vector_store_port = None,
+           vector_store_user = None,
+           vector_store_pwd = None,
+           vector_store_database = None,
+           vector_store_secret_manager_provider = SecretManagerProvider.AWS,
+           vector_store_credentials_secret_name = 'my_secret_key'
+       )
+)
+def test_fetch_aws_secret_credentials(mock_get_credentials, mock_boto3_client):
     # Test data
-    open_search_credentials = Credentials(username="user", password="pwd123456")
+    my_credentials = Credentials(username="user", password="pwd123456")
 
     # Configure the mocks to return specific values
     mock_boto3_client.return_value = None
-    mock_get_credentials.return_value = open_search_credentials
+    mock_get_credentials.return_value = my_credentials
 
-
-    # Call the function to fetch aws secret key
-    username, password = fetch_open_search_credentials()
+    # Call the function to fetch the credentials of the default vector store
+    credentials = fetch_default_vector_store_credentials()
 
     # Check test results
     mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-    mock_get_credentials.assert_called_once_with(secret_name='my_secret_key')
-    assert username == open_search_credentials.username
-    assert password == open_search_credentials.password
+    mock_get_credentials.assert_called_once_with('my_secret_key')
+    assert credentials.username == my_credentials.username
+    assert credentials.password == my_credentials.password
+
+@patch('google.cloud.secretmanager.SecretManagerServiceClient')
+@patch('gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client.GCPSecretManagerClient.get_credentials')
+@patch('gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+       _Settings(
+           vector_store_provider = VectorStoreProvider.OPEN_SEARCH,
+           vector_store_host = None,
+           vector_store_port = None,
+           vector_store_user = None,
+           vector_store_pwd = None,
+           vector_store_database = None,
+           vector_store_secret_manager_provider = SecretManagerProvider.GCP,
+           vector_store_credentials_secret_name = 'my_secret_key'
+       )
+)
+def test_fetch_gcp_secret_credentials(mock_get_credentials, mock_gcp_secretmanager_client):
+    # Test data
+    my_credentials = Credentials(username="user", password="pwd123456")
+
+    # Configure the mocks to return specific values
+    mock_gcp_secretmanager_client.return_value = None
+    mock_get_credentials.return_value = my_credentials
+
+    # Call the function to fetch the credentials of the default vector store
+    credentials = fetch_default_vector_store_credentials()
+
+    # Check test results
+    mock_gcp_secretmanager_client.assert_called_once()
+    mock_get_credentials.assert_called_once_with('my_secret_key')
+    assert credentials.username == my_credentials.username
+    assert credentials.password == my_credentials.password
 
 @patch('boto3.client')
 @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
-@patch('gen_ai_orchestrator.configurations.environment.settings.application_settings',
-       _Settings(open_search_aws_secret_manager_name='my_secret_key'))
-def test_fetch_bad_open_search_credentials(mock_get_credentials, mock_boto3_client):
+@patch('gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+       _Settings(
+           vector_store_provider=None,
+           vector_store_host=None,
+           vector_store_port=None,
+           vector_store_user='default_user',
+           vector_store_pwd='default_pwd',
+           vector_store_database=None,
+           vector_store_secret_manager_provider=None,
+           vector_store_credentials_secret_name=None
+       ))
+def test_fetch_default_credentials(mock_get_credentials, mock_boto3_client):
+        # Call the function to fetch the credentials of the default vector store
+        credentials = fetch_default_vector_store_credentials()
+
+        # Check test results
+        assert not mock_boto3_client.called
+        assert not mock_get_credentials.called
+        assert credentials.username == 'default_user'
+        assert credentials.password == 'default_pwd'
+
+
+@patch('boto3.client')
+@patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
+@patch('gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+       _Settings(
+           vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
+           vector_store_host=None,
+           vector_store_port=None,
+           vector_store_user=None,
+           vector_store_pwd=None,
+           vector_store_database=None,
+           vector_store_secret_manager_provider=SecretManagerProvider.AWS,
+           vector_store_credentials_secret_name='my_secret_key'
+       )
+       )
+def test_fetch_bad_credentials(mock_get_credentials, mock_boto3_client):
     # Test data
     open_search_credentials = None
 
@@ -64,25 +142,10 @@ def test_fetch_bad_open_search_credentials(mock_get_credentials, mock_boto3_clie
     mock_boto3_client.return_value = None
     mock_get_credentials.return_value = open_search_credentials
 
-    # Call the function to fetch aws secret key
-    username, password = fetch_open_search_credentials()
+    # Call the function to fetch the credentials of the default vector store
+    credentials = fetch_default_vector_store_credentials()
 
     # Check test results
     mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-    mock_get_credentials.assert_called_once_with(secret_name='my_secret_key')
-    assert username is None
-    assert password is None
-
-@patch('boto3.client')
-@patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
-@patch('gen_ai_orchestrator.configurations.environment.settings.application_settings',
-       _Settings(open_search_user='default_user', open_search_pwd='default_pwd'))
-def test_fetch_default_open_search_credentials(mock_get_credentials, mock_boto3_client):
-    # Call the function to fetch aws secret key
-    username, password = fetch_open_search_credentials()
-
-    # Check test results
-    assert not mock_boto3_client.called
-    assert not mock_get_credentials.called
-    assert username == 'default_user'
-    assert password == 'default_pwd'
+    mock_get_credentials.assert_called_once_with('my_secret_key')
+    assert credentials is None

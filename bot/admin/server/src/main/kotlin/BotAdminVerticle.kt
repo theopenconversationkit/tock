@@ -47,13 +47,8 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
-import ai.tock.shared.allowAccessToAllNamespaces
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.error
-import ai.tock.shared.injector
+import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.ServerStatus
@@ -62,6 +57,7 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
+import ch.tutteli.kbox.isNotNullAndNotBlank
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -449,9 +445,9 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, configuration: BotRAGConfigurationDTO  ->
-            if (context.organization == configuration.namespace) {
-                BotRAGConfigurationDTO(RAGService.saveRag(configuration))
+        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, request: BotRAGConfigurationDTO  ->
+            if (context.organization == request.namespace) {
+                BotRAGConfigurationDTO(RAGService.saveRag(request))
             } else {
                 unauthorized()
             }
@@ -459,9 +455,11 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet("/configuration/bots/:botId/rag", admin) { context  ->
             RAGService.getRAGConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotRAGConfigurationDTO(it)
-                }
+                ?.let { BotRAGConfigurationDTO(it) }
+        }
+
+        blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
+            RAGService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost("/configuration/bots/:botId/observability", admin) { context, configuration: BotObservabilityConfigurationDTO  ->
@@ -477,6 +475,29 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?.let {
                     BotObservabilityConfigurationDTO(it)
                 }
+        }
+
+        blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
+            ObservabilityService.deleteConfig(context.organization, context.path("botId"))
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/vector-store", admin) { context, configuration: BotVectorStoreConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotVectorStoreConfigurationDTO(VectorStoreService.saveVectorStore(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/vector-store", admin) { context  ->
+            VectorStoreService.getVectorStoreConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotVectorStoreConfigurationDTO(it)
+                }
+        }
+
+        blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
+            VectorStoreService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(
@@ -1105,6 +1126,13 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?.let {
                     BotSentenceGenerationInfoDTO(it)
                 } ?: BotSentenceGenerationInfoDTO()
+        }
+
+        blockingDelete(
+            "/configuration/bots/:botId/sentence-generation/configuration",
+            admin
+        ) { context ->
+            SentenceGenerationService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonGet("/configuration") {

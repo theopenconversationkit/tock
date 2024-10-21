@@ -25,5 +25,3 @@ package ai.tock.iadvize.client
 fun property(name: String, defaultValue: String = ""): String = System.getProperty(name) ?: System.getenv(name) ?: defaultValue
 
 fun intProperty(name: String, defaultValue: Int = 3128): Int = property(name, defaultValue.toString()).toInt()
-
-fun booleanProperty(name: String, defaultValue: Boolean = false): Boolean = property(name, defaultValue.toString()).toBoolean()

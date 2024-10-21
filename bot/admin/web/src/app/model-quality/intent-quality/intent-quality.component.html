@@ -24,7 +24,7 @@
     (click)="search()"
     nbTooltip="Refresh"
   >
-    <nb-icon icon="refresh-outline"></nb-icon>
+    <nb-icon icon="arrow-clockwise"></nb-icon>
   </button>
 </div>
 
@@ -35,14 +35,20 @@
   <nb-card-body>
     <form [formGroup]="form">
       <label class="label mr-2">Filter out occurrences below</label>
-      <input
-        nbInput
-        fullWidth
-        placeholder="Filter out occurrences below"
-        type="number"
-        min="1"
-        formControlName="minOccurrences"
-      />
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="hash"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          placeholder="Filter out occurrences below"
+          type="number"
+          min="1"
+          formControlName="minOccurrences"
+        />
+      </nb-form-field>
     </form>
   </nb-card-body>
 </nb-card>
@@ -106,3 +112,5 @@
     </table>
   </nb-card-body>
 </nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

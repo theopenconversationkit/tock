@@ -48,6 +48,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
     def get_language_model(self) -> BaseLanguageModel:
         return ChatOpenAI(
             openai_api_key=fetch_secret_key_value(self.setting.api_key),
+            base_url=self.setting.base_url,
             model_name=self.setting.model,
             temperature=self.setting.temperature,
             request_timeout=application_settings.llm_provider_timeout,

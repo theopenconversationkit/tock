@@ -1,0 +1,5 @@
+{
+  "provider": "Ollama",
+  "model": "all-minilm",
+  "base_url": "http://localhost:11434"
+}

@@ -1,0 +1,10 @@
+{
+  "provider": "OpenSearch",
+  "host": "localhost",
+  "port": 9200,
+  "username": "admin",
+  "password": {
+    "type": "Raw",
+    "value": "admin"
+  }
+}

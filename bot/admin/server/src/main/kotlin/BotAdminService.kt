@@ -29,8 +29,11 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
@@ -72,6 +75,9 @@ object BotAdminService {
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
+    private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
+    private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
+    private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -452,7 +458,7 @@ object BotAdminService {
         return storyToImport.copy(_id = existingStory1?._id ?: existingStory2?._id ?: storyToImport._id)
     }
 
-    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotAdminService.BotStoryDefinitionConfigurationDumpController) {
+    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotStoryDefinitionConfigurationDumpController) {
         val mainIntent = createOrGetIntent(
             botConf.namespace,
             storyToImport.intent.name,
@@ -1022,7 +1028,7 @@ object BotAdminService {
     }
 
     fun getFeatures(botId: String, namespace: String): List<FeatureState> {
-        return featureDAO.getFeatures(botId, namespace)
+        return featureDAO.getFeatures(botId, namespace).sortedBy { it.category + it.name }
     }
 
     fun toggleFeature(botId: String, namespace: String, feature: Feature) {
@@ -1036,7 +1042,7 @@ object BotAdminService {
                 feature.name,
                 feature.startDate,
                 feature.endDate,
-                feature.applicationId
+                feature.applicationId,
             )
         }
     }
@@ -1049,7 +1055,8 @@ object BotAdminService {
             feature.name,
             feature.startDate,
             feature.endDate,
-            feature.applicationId
+            feature.applicationId,
+            feature.graduation
         )
     }
 
@@ -1062,7 +1069,8 @@ object BotAdminService {
             name = feature.name,
             startDate = feature.startDate,
             endDate = feature.endDate,
-            applicationId = feature.applicationId
+            applicationId = feature.applicationId,
+            graduation = feature.graduation
         )
     }
 
@@ -1130,6 +1138,26 @@ object BotAdminService {
             app.namespace, app.name
         ).forEach { story ->
             storyDefinitionDAO.delete(story)
+        }
+
+        // delete the RAG configuration
+        ragConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            ragConfigurationDAO.delete(it._id)
+        }
+
+        // delete the Sentence Generation configuration
+        sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            sentenceGenerationConfigurationDAO.delete(it._id)
+        }
+
+        // delete the Observability configuration
+        observabilityConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            observabilityConfigurationDAO.delete(it._id)
+        }
+
+        // delete the Vector Store configuration
+        vectorStoreConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            vectorStoreConfigurationDAO.delete(it._id)
         }
     }
 

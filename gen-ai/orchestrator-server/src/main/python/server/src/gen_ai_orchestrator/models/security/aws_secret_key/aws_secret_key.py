@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating OpenAILLMSetting."""
+"""Model for creating AwsSecretKey."""
 
 from typing import Literal
 

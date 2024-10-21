@@ -43,7 +43,8 @@ import {
   NbDialogModule,
   NbRadioModule,
   NbToggleModule,
-  NbIconModule
+  NbIconModule,
+  NbFormFieldModule
 } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from './chart/chart.component';
@@ -51,7 +52,6 @@ import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
 import { ActivityComponent } from './activity/activity.component';
 import { BehaviorComponent } from './behavior/behavior.component';
 import { FlowComponent } from './flow/flow.component';
-import { CytoComponent } from './flow/cyto.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { SatisfactionComponent } from './satisfaction/satisfaction.component';
@@ -60,20 +60,18 @@ import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-detail
 import { AnalyticsRoutingModule } from './analytics-routing.module';
 import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
 
-export function importEcharts() {
-  return import('echarts');
-}
-
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     AnalyticsRoutingModule,
     InfiniteScrollModule,
     MomentModule,
     BotSharedModule,
     BotModule,
+    NbFormFieldModule,
     NbRouteTabsetModule,
     NbCheckboxModule,
     NbCardModule,
@@ -82,6 +80,7 @@ export function importEcharts() {
     NbButtonModule,
     NbInputModule,
     NbSelectModule,
+    NbFormFieldModule,
     NbCalendarModule,
     NbUserModule,
     NbDatepickerModule,
@@ -95,15 +94,13 @@ export function importEcharts() {
     NbToggleModule,
     NbIconModule,
     NgxEchartsModule.forRoot({
-      echarts: importEcharts
-    }),
-    ReactiveFormsModule
+      echarts: () => import('echarts')
+    })
   ],
   declarations: [
     AnalyticsTabsComponent,
     DialogsComponent,
     FlowComponent,
-    CytoComponent,
     UsersComponent,
     ChartComponent,
     ActivityComponent,

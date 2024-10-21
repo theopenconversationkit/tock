@@ -18,6 +18,7 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
@@ -60,6 +61,7 @@ open class BotDefinitionBase(
     override val ragExcludedStory: StoryDefinition = defaultRagExcludedStory,
     override val ragStory: StoryDefinition = defaultRagStory,
     override var ragConfiguration: BotRAGConfiguration? = null,
+    override var vectorStoreConfiguration: BotVectorStoreConfiguration? = null,
     override var observabilityConfiguration: BotObservabilityConfiguration? = null
 ) : BotDefinition {
 

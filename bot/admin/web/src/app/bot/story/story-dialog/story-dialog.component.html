@@ -25,7 +25,7 @@
       nbTooltip="Close"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
   <nb-card-body>
@@ -97,7 +97,7 @@
           [(ngModel)]="intent"
           (keyup)="intentCategoryChange()"
           (focus)="intentCategoryChange()"
-          (change)="intent = $any($event.target)"
+          (change)="intent = $any($event.target).value"
         />
       </tock-form-control>
       <nb-autocomplete

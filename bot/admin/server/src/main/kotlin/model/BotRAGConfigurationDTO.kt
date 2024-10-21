@@ -17,12 +17,14 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.service.VectorStoreService
 import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
+import ai.tock.genai.orchestratorcore.models.em.toDTO
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
-import ai.tock.genai.orchestratorcore.utils.SecurityUtils
+import ai.tock.genai.orchestratorcore.models.llm.toDTO
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -34,42 +36,53 @@ data class BotRAGConfigurationDTO(
     val llmSetting: LLMSettingDTO,
     val emSetting: EMSettingDTO,
     val indexSessionId: String? = null,
+    val indexName: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
 ) {
     constructor(configuration: BotRAGConfiguration) : this(
-        configuration._id.toString(),
-        configuration.namespace,
-        configuration.botId,
-        configuration.enabled,
-        LLMSettingMapper.toDTO(configuration.llmSetting),
-        EMSettingMapper.toDTO(configuration.emSetting),
-        configuration.indexSessionId,
-        configuration.noAnswerSentence,
-        configuration.noAnswerStoryId
+        id = configuration._id.toString(),
+        namespace = configuration.namespace,
+        botId = configuration.botId,
+        enabled = configuration.enabled,
+        llmSetting = configuration.llmSetting.toDTO(),
+        emSetting = configuration.emSetting.toDTO(),
+        indexSessionId = configuration.indexSessionId,
+        indexName = configuration.generateIndexName(),
+        noAnswerSentence = configuration.noAnswerSentence,
+        noAnswerStoryId = configuration.noAnswerStoryId
     )
 
     fun toBotRAGConfiguration(): BotRAGConfiguration =
         BotRAGConfiguration(
-            id?.toId() ?: newId(),
-            namespace,
-            botId,
-            enabled,
-            LLMSettingMapper.toEntity(
-                llmSetting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_RAG_QUESTION_ANSWERING
-                )
+            _id = id?.toId() ?: newId(),
+            namespace = namespace,
+            botId = botId,
+            enabled = enabled,
+            llmSetting = LLMSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_RAG_QUESTION_ANSWERING,
+                dto = llmSetting
             ),
-            EMSettingMapper.toEntity(
-                emSetting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_RAG_EMBEDDING_QUESTION)
+            emSetting = EMSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_RAG_EMBEDDING_QUESTION,
+                dto = emSetting
             ),
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
             noAnswerStoryId = noAnswerStoryId
         )
+}
+
+private fun BotRAGConfiguration.generateIndexName(): String? {
+    return indexSessionId?.takeIf { it.isNotBlank() }?.let {
+        VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
+            ?.setting
+            ?.normalizeDocumentIndexName(namespace, botId, it)
+    }
 }
 
 

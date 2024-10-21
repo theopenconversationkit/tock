@@ -12,66 +12,91 @@
       <tbody>
         <tr>
           <td>
-            <nb-select
-              class="sync-select"
-              placeholder="Source Namespace"
-              [(selected)]="this.sourceNamespace"
-              (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
-            >
-              <nb-option
-                *ngFor="let namespace of namespaces"
-                [value]="namespace"
-                >{{ namespace.namespace }}</nb-option
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="folder"
+              ></nb-icon>
+
+              <nb-select
+                class="sync-select"
+                placeholder="Source Namespace"
+                [(selected)]="this.sourceNamespace"
+                (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
               >
-            </nb-select>
+                <nb-option
+                  *ngFor="let namespace of namespaces"
+                  [value]="namespace"
+                  >{{ namespace.namespace }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
           </td>
           <td rowspan="3">
             <nb-icon
-              class="arrow-right"
+              class="arrow-right m-2"
               icon="arrow-right"
             ></nb-icon>
           </td>
           <td>
-            <nb-select
-              class="sync-select"
-              placeholder="Target Namespace"
-              [(selected)]="this.targetNamespace"
-              (selectedChange)="selectTargetNamespace(this.targetNamespace)"
-            >
-              <nb-option
-                *ngFor="let namespace of namespaces"
-                [value]="namespace"
-                >{{ namespace.namespace }}</nb-option
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="folder"
+              ></nb-icon>
+              <nb-select
+                class="sync-select"
+                placeholder="Target Namespace"
+                [(selected)]="this.targetNamespace"
+                (selectedChange)="selectTargetNamespace(this.targetNamespace)"
               >
-            </nb-select>
+                <nb-option
+                  *ngFor="let namespace of namespaces"
+                  [value]="namespace"
+                  >{{ namespace.namespace }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
           </td>
         </tr>
         <tr>
           <td>
-            <nb-select
-              class="sync-select"
-              placeholder="Source Application"
-              [(selected)]="this.sourceApplication"
-            >
-              <nb-option
-                *ngFor="let app of sourceApplications"
-                [value]="app"
-                >{{ app.name }}</nb-option
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="window"
+              ></nb-icon>
+              <nb-select
+                class="sync-select"
+                placeholder="Source Application"
+                [(selected)]="this.sourceApplication"
               >
-            </nb-select>
+                <nb-option
+                  *ngFor="let app of sourceApplications"
+                  [value]="app"
+                  >{{ app.name }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
           </td>
           <td>
-            <nb-select
-              class="sync-select"
-              placeholder="Target Application"
-              [(selected)]="this.targetApplication"
-            >
-              <nb-option
-                *ngFor="let app of targetApplications"
-                [value]="app"
-                >{{ app.name }}</nb-option
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="window"
+              ></nb-icon>
+              <nb-select
+                class="sync-select"
+                placeholder="Target Application"
+                [(selected)]="this.targetApplication"
               >
-            </nb-select>
+                <nb-option
+                  *ngFor="let app of targetApplications"
+                  [value]="app"
+                  >{{ app.name }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
           </td>
         </tr>
       </tbody>

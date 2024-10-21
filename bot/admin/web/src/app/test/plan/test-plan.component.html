@@ -77,7 +77,7 @@
         *ngIf="!testPlanCreation"
         nbTooltip="Create a new Test Plan"
       >
-        <nb-icon icon="plus-square-outline"></nb-icon>
+        <nb-icon icon="plus-square"></nb-icon>
       </nb-action>
     </nb-actions>
   </nb-card-header>
@@ -110,7 +110,7 @@
           class="create"
         >
           <nb-icon
-            icon="checkmark-circle-2-outline"
+            icon="check-circle"
             status="success"
           ></nb-icon>
         </nb-action>
@@ -120,7 +120,7 @@
           nbTooltip="Cancel"
         >
           <nb-icon
-            icon="close-circle-outline"
+            icon="x-circle"
             status="danger"
           ></nb-icon>
         </nb-action>
@@ -143,7 +143,7 @@
               style="color: #73a1ff"
               nbTooltip="Launch"
             >
-              <nb-icon icon="external-link-outline"></nb-icon>
+              <nb-icon icon="box-arrow-up-right"></nb-icon>
             </button>
             <div *ngIf="executePlan && p === this.runningTestPlan">
               <br />
@@ -163,7 +163,7 @@
                 nbTooltip="Delete"
               >
                 <nb-icon
-                  icon="trash-2-outline"
+                  icon="trash"
                   status="danger"
                 ></nb-icon>
               </nb-action>
@@ -178,7 +178,7 @@
                 nbButton
                 (click)="showDialogs(p)"
               >
-                <nb-icon icon="eye-outline"></nb-icon>
+                <nb-icon icon="eye"></nb-icon>
                 Display Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
               </button>
               <button
@@ -186,7 +186,7 @@
                 nbButton
                 (click)="hideDialogs(p)"
               >
-                <nb-icon icon="eye-off-outline"></nb-icon>
+                <nb-icon icon="eye-slash"></nb-icon>
                 Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
               </button>
             </span>
@@ -210,7 +210,7 @@
                 nbButton
                 (click)="d.displayActions = true"
               >
-                <nb-icon icon="eye-outline"></nb-icon>
+                <nb-icon icon="eye"></nb-icon>
                 Display all sentences
               </button>
               <button
@@ -218,7 +218,7 @@
                 nbButton
                 (click)="d.displayActions = false"
               >
-                <nb-icon icon="eye-off-outline"></nb-icon>
+                <nb-icon icon="eye-slash"></nb-icon>
                 Hide all sentences
               </button>
               <button
@@ -226,7 +226,7 @@
                 (click)="removeDialog(p, d)"
                 color="warn"
               >
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash"></nb-icon>
                 Remove dialog
               </button>
               <tock-chat-ui *ngIf="d.displayActions">
@@ -251,13 +251,13 @@
                 <span class="last-execution-status">&nbsp;- last execution status :</span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
                   <nb-icon
-                    icon="checkmark-circle-2-outline"
+                    icon="check-circle"
                     status="success"
                   ></nb-icon>
                 </span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors !== 0">
                   <nb-icon
-                    icon="close-circle-outline"
+                    icon="x-circle"
                     status="danger"
                   ></nb-icon>
                 </span>
@@ -271,7 +271,7 @@
                       nbButton
                       (click)="e.displayExecution = true"
                     >
-                      <nb-icon icon="eye-outline"></nb-icon>
+                      <nb-icon icon="eye"></nb-icon>
                       Display details
                     </button>
                     <button
@@ -279,19 +279,19 @@
                       nbButton
                       (click)="e.displayExecution = false"
                     >
-                      <nb-icon icon="eye-off-outline"></nb-icon>
+                      <nb-icon icon="eye-slash"></nb-icon>
                       Hide details
                     </button>
                     <span *ngIf="e.nbErrors === 0">
                       <nb-icon
-                        icon="checkmark-circle-2-outline"
+                        icon="check-circle"
                         status="success"
                       ></nb-icon>
                       {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
                     </span>
                     <span *ngIf="e.nbErrors !== 0">
                       <nb-icon
-                        icon="close-circle-outline"
+                        icon="x-circle"
                         status="danger"
                       ></nb-icon>
                       {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} / {{ e.dialogs.length }} conversation{{
@@ -302,7 +302,7 @@
                       <li *ngFor="let details of e.dialogs">
                         <span *ngIf="!details.error">
                           <nb-icon
-                            icon="checkmark-circle-2-outline"
+                            icon="check-circle"
                             status="success"
                           ></nb-icon>
                           Success</span
@@ -310,7 +310,7 @@
 
                         <span *ngIf="details.error">
                           <nb-icon
-                            icon="close-circle-outline"
+                            icon="x-circle"
                             status="danger"
                           ></nb-icon>
                           Error
@@ -357,3 +357,5 @@
     </div>
   </nb-card-body>
 </nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

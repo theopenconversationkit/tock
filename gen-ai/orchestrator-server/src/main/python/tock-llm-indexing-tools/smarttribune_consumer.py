@@ -33,13 +33,12 @@ Options:
                 be silent but for errors)
 
 Import and Format a Smart Tribune data by API  into a ready-to-index CSV file
-(one 'title'|'url'|'text' line per filtered entry).
+(one 'title'|'source'|'text' line per filtered entry).
 """
 import asyncio
 import logging
 import os
 import sys
-import urllib
 from functools import partial
 from pathlib import Path
 from time import time
@@ -48,17 +47,15 @@ from urllib.parse import urlparse
 import aiohttp
 import aiometer
 import pandas as pd
-import requests
-from aiohttp_socks import ProxyConnector
 from docopt import docopt
 from dotenv import load_dotenv
 
 
 async def _get_number_page(row, token):
     # request numberPage of question with length page's equal to 200
-    url_base_api, headers, connector = await prep_call(token)
+    url_base_api, headers = await prep_call(token)
 
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         url = f'{url_base_api}knowledge-bases/{row[1]}/search'
 
         body = dict(knowledgeType=['question'], channel='faq')
@@ -67,7 +64,7 @@ async def _get_number_page(row, token):
         params = dict(limit=200)
 
         async with session.post(
-            url=url, json=body, headers=headers, params=params
+                url=url, json=body, headers=headers, params=params
         ) as response:
             if response.status != 200:
                 logging.error(await response.text(), response.status)
@@ -83,9 +80,9 @@ async def _get_number_page(row, token):
 
 async def _get_question(token, row, current_page):
     # request documentId and question by page with length page's equal to 200
-    url_base_api, headers, connector = await prep_call(token)
+    url_base_api, headers = await prep_call(token)
 
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         url = f'{url_base_api}knowledge-bases/{row.iloc[0]}/search'
         body = dict(knowledgeType=['question'], channel='faq')
         if cli_args.get('--tag_title') is not None:
@@ -93,7 +90,7 @@ async def _get_question(token, row, current_page):
         params = dict(limit=200, page=current_page)
 
         async with session.post(
-            url, json=body, headers=headers, params=params
+                url, json=body, headers=headers, params=params
         ) as response:
             if response.status != 200:
                 logging.error(await response.text(), response.status)
@@ -112,13 +109,13 @@ async def _get_question(token, row, current_page):
 
 
 async def _get_answer(token, row):
-    url_base_api, headers, connector = await prep_call(token)
+    url_base_api, headers = await prep_call(token)
     if cli_args.get('--tag_title') is not None:
         headers['customResponses'] = cli_args.get('--tag_title')
     # Définir l'URL de la requête
     url = f"{url_base_api}knowledge-bases/{row.get('knowledge_base_id')}/questions/{row.get('documentId')}/channels/{row.get('channel_id')}/responses"
 
-    async with aiohttp.ClientSession(connector=connector) as session:
+    async with aiohttp.ClientSession(trust_env=True) as session:
         async with session.get(url, headers=headers) as response:
             if response.status != 200:
                 row['Text'] = None
@@ -154,7 +151,7 @@ async def _get_answer(token, row):
 def receipt_id_from_allowed_desired_knowledge_base(allowed_knowledge_bases):
     filtered_data = filter(
         lambda item: item.get('name') in cli_args.get('--knowledge_base')
-        and any(channel.get('systemName') == 'faq' for channel in item.get('channels')),
+                     and any(channel.get('systemName') == 'faq' for channel in item.get('channels')),
         allowed_knowledge_bases,
     )
     knowledge_bases_id_list = [
@@ -180,16 +177,19 @@ async def prep_call(token=None):
     headers = {'Content-Type': 'application/json', 'Accept-Language': 'fr'}
     if token:
         headers['Authorization'] = f'Bearer {token}'
-    if urllib.request.getproxies().get('https'):
-        proxy = urllib.request.getproxies().get('https')
-        connector = ProxyConnector.from_url(url=proxy, rdns=True)
-    elif urllib.request.getproxies().get('http'):
-        proxy = urllib.request.getproxies().get('http')
-        connector = ProxyConnector.from_url(url=proxy, rdns=True)
-    else:
-        connector = None
 
-    return url_base_api, headers, connector
+    return url_base_api, headers
+
+
+async def fetch_auth_token(session, url, headers, json=None):
+    async with session.post(url, json=json, headers=headers) as response:
+        data = await response.json()
+        return data
+
+async def fetch_allowed_knowledge_bases(session, url, headers):
+    async with session.get(url, headers=headers) as response:
+        data = await response.json()
+        return data
 
 
 async def _main(args, body_credentials):
@@ -211,30 +211,30 @@ async def _main(args, body_credentials):
 
     # receipt auth token
     _start = time()
-    url_base_api, headers, connector = await prep_call()
+    url_base_api, headers = await prep_call()
 
     logging.debug('request token with apiKey and apiSecret')
     url = f'{url_base_api}auth'
     headers = {'Content-Type': 'application/json'}
-    response_auth = requests.post(url, json=body_credentials, headers=headers)
 
-    if not response_auth.ok:
-        logging.error(response_auth.text, response_auth.status_code)
+    async with aiohttp.ClientSession(trust_env=True) as session:
+        response_auth = await fetch_auth_token(session=session, json=body_credentials, url=url, headers=headers)
+    if not response_auth:
+        logging.error(response_auth.get('text'), response_auth.get('status_code'))
         sys.exit(1)
 
     # save token
-    token = response_auth.json().get('token')
-
+    token = response_auth.get('token')
     # request knowledge bases accessible with this token
     logging.debug('request allowed knowledge bases list and associated channels')
     url = f'{url_base_api}knowledge-bases?limit=200'
     headers['Authorization'] = f'Bearer {token}'
-    response_allowed_knowledge_bases = requests.get(url, headers=headers)
-
-    if not response_allowed_knowledge_bases.ok:
+    async with aiohttp.ClientSession(trust_env=True) as session:
+        response_allowed_knowledge_bases = await fetch_allowed_knowledge_bases(session=session, url=url, headers=headers)
+    if not response_allowed_knowledge_bases.get('data'):
         logging.error(
-            response_allowed_knowledge_bases.text,
-            response_allowed_knowledge_bases.status_code,
+            response_allowed_knowledge_bases.get('text'),
+            response_allowed_knowledge_bases.get('status_code'),
         )
         sys.exit(1)
 
@@ -242,7 +242,7 @@ async def _main(args, body_credentials):
     logging.debug(
         'filtering knowledge base allowed for take knowledge_base_id and channel_id associated'
     )
-    results_allowed_knowledge_bases = response_allowed_knowledge_bases.json().get(
+    results_allowed_knowledge_bases = response_allowed_knowledge_bases.get(
         'data'
     )
     df_knowledge_bases = receipt_id_from_allowed_desired_knowledge_base(
@@ -288,7 +288,7 @@ async def _main(args, body_credentials):
     logging.info(
         f'finished {len(df_all_questions)} questions in {time() - _start:.2f} seconds'
     )
-    df_all_questions.get(['Title', 'URL', 'Text']).to_csv(
+    df_all_questions.get(['title', 'source', 'text']).to_csv(
         args.get('<output_csv>'), sep='|', index=False
     )
 

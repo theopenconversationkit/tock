@@ -73,7 +73,8 @@ class RAGServiceTest : AbstractTest() {
                 apiKey = "apikey",
                 model = MODEL,
                 prompt = PROMPT,
-                temperature = TEMPERATURE
+                temperature = TEMPERATURE,
+                baseUrl = "https://api.openai.com/v1"
             ),
             emSetting = AzureOpenAIEMSettingDTO(
                 apiKey = "apiKey",

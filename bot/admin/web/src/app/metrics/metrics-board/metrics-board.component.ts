@@ -458,6 +458,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   }
 
   get responseRate(): number {
+    if (!this.answeredQuestions) return 0;
+
     return Math.round((100 - (this.notUnderstoodQuestions * 100) / this.answeredQuestions) * 100) / 100;
   }
 

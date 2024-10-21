@@ -5,6 +5,7 @@ import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { CreateRuleComponent } from '../create-rule/create-rule.component';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { BotService } from '../../../bot-service';
+import { getStoryIcon } from '../../../../shared/utils';
 
 @Component({
   selector: 'tock-story-rules-table',
@@ -19,6 +20,8 @@ export class StoryRulesTableComponent implements OnChanges, OnDestroy {
   filteredFeatures: StoryFeature[] = [];
 
   searchFilterString: string;
+
+  getStoryIcon = getStoryIcon;
 
   @Input() type: RuleType;
 
@@ -36,18 +39,6 @@ export class StoryRulesTableComponent implements OnChanges, OnDestroy {
 
   hasTarget(): boolean {
     return [RuleType.Redirection, RuleType.Ending].includes(this.type);
-  }
-
-  getStoryIcon(story: StoryDefinitionConfiguration): string {
-    if (story.isBuiltIn()) {
-      return 'cube';
-    }
-    if (story.isSimpleAnswer()) {
-      return 'message-square-outline';
-    }
-    if (story.isScriptAnswer()) {
-      return 'code';
-    }
   }
 
   newRule(): void {

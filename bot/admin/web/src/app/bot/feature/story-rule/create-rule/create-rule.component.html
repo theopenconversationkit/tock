@@ -12,7 +12,7 @@
       nbTooltip="Close"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
 
@@ -22,33 +22,39 @@
         <div [ngClass]="{ 'w-50': hasTarget(), 'w-100': !hasTarget() }">
           <tock-form-control
             label="Story"
-            name="mainStory"
-            [controls]="mainStory"
+            name="mainStoryId"
+            [controls]="mainStoryId"
             [showError]="isSubmitted"
             [required]="true"
           >
-            <input
-              nbInput
-              id="mainStory"
-              fullWidth
-              type="text"
-              placeholder="Story"
-              [value]="getCurrentStoryLabel(mainOrTarget.mainStory)"
-              autocomplete="off"
-              [nbAutocomplete]="storyAutocomplete"
-              (input)="filterStoriesList($any($event.target).value)"
-              (change)="onStoryChange(mainOrTarget.mainStory, $any($event.target).value)"
-              (focus)="storyInputFocus()"
-              (blur)="storyInputBlur(mainOrTarget.mainStory, $event)"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="chat-left"
+              ></nb-icon>
+              <input
+                nbInput
+                id="mainStoryId"
+                fullWidth
+                type="text"
+                placeholder="Story"
+                [value]="getCurrentStoryLabel(mainOrTarget.mainStoryId)"
+                autocomplete="off"
+                [nbAutocomplete]="storyAutocomplete"
+                (input)="filterStoriesList($any($event.target).value)"
+                (change)="onStoryChange(mainOrTarget.mainStoryId, $any($event.target).value)"
+                (focus)="storyInputFocus()"
+                (blur)="storyInputBlur(mainOrTarget.mainStoryId, $event)"
+              />
+            </nb-form-field>
 
             <nb-autocomplete
               #storyAutocomplete
-              (selectedChange)="onStorySelectionChange(mainOrTarget.mainStory, $event)"
+              (selectedChange)="onStorySelectionChange(mainOrTarget.mainStoryId, $event)"
             >
               <nb-option
                 *ngFor="let option of filteredStories$ | async"
-                [value]="option"
+                [value]="option.storyId"
                 class="align-items-center"
               >
                 <nb-icon
@@ -66,33 +72,39 @@
         >
           <tock-form-control
             label="{{ type }} story"
-            name="targetStory"
-            [controls]="targetStory"
+            name="targetStoryId"
+            [controls]="targetStoryId"
             [showError]="isSubmitted"
             [required]="true"
           >
-            <input
-              nbInput
-              id="targetStory"
-              fullWidth
-              type="text"
-              placeholder="{{ type }} story"
-              [value]="getCurrentStoryLabel(mainOrTarget.targetStory)"
-              autocomplete="off"
-              [nbAutocomplete]="targetAutocomplete"
-              (input)="filterStoriesList($any($event.target).value)"
-              (change)="onStoryChange(mainOrTarget.targetStory, $any($event.target).value)"
-              (focus)="storyInputFocus()"
-              (blur)="storyInputBlur(mainOrTarget.targetStory, $event)"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="chat-left"
+              ></nb-icon>
+              <input
+                nbInput
+                id="targetStoryId"
+                fullWidth
+                type="text"
+                placeholder="{{ type }} story"
+                [value]="getCurrentStoryLabel(mainOrTarget.targetStoryId)"
+                autocomplete="off"
+                [nbAutocomplete]="targetAutocomplete"
+                (input)="filterStoriesList($any($event.target).value)"
+                (change)="onStoryChange(mainOrTarget.targetStoryId, $any($event.target).value)"
+                (focus)="storyInputFocus()"
+                (blur)="storyInputBlur(mainOrTarget.targetStoryId, $event)"
+              />
+            </nb-form-field>
 
             <nb-autocomplete
               #targetAutocomplete
-              (selectedChange)="onStorySelectionChange(mainOrTarget.targetStory, $event)"
+              (selectedChange)="onStorySelectionChange(mainOrTarget.targetStoryId, $event)"
             >
               <nb-option
                 *ngFor="let option of filteredStories$ | async"
-                [value]="option"
+                [value]="option.storyId"
                 class="align-items-center"
               >
                 <nb-icon
@@ -136,6 +148,7 @@
       type="button"
       (click)="cancel()"
     >
+      <nb-icon icon="x-lg"></nb-icon>
       Cancel
     </button>
     <button
@@ -145,6 +158,7 @@
       size="small"
       (click)="save()"
     >
+      <nb-icon icon="plus"></nb-icon>
       Create rule
     </button>
   </nb-card-footer>

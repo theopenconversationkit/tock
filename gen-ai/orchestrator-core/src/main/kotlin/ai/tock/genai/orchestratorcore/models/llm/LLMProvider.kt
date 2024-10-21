@@ -18,7 +18,8 @@ package ai.tock.genai.orchestratorcore.models.llm
 
 enum class LLMProvider{
     OpenAI,
-    AzureOpenAIService;
+    AzureOpenAIService,
+    Ollama;
 
     companion object {
         fun findByName(provider: String): LLMProvider? {

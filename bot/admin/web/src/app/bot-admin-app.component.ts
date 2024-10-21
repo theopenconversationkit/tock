@@ -123,87 +123,89 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
     this.menu = [
       {
         title: 'Language Understanding',
-        icon: 'message-circle-outline',
+        icon: 'chat-dots',
         hidden: !this.state.hasRole(UserRole.nlpUser),
         children: [
           {
             link: '/language-understanding/try',
-            title: 'New Sentence',
-            icon: 'plus-circle-outline'
+            title: 'New sentence',
+            icon: 'plus-circle'
           },
           {
             link: '/language-understanding/inbox',
-            title: 'Inbox',
-            icon: 'inbox-outline'
+            title: 'Inbox sentences',
+            icon: 'inboxes'
           },
           {
             link: '/language-understanding/search',
-            title: 'Search',
-            icon: 'search-outline'
+            title: 'Search sentences',
+            icon: 'search'
           },
           {
             link: '/language-understanding/unknown',
-            title: 'Unknown',
-            icon: 'question-mark-circle-outline'
+            title: 'Unknown sentences',
+            icon: 'question-circle'
           },
           {
             link: '/language-understanding/intents',
             title: 'Intents',
-            icon: 'compass-outline'
+            icon: 'compass'
           },
           {
             link: '/language-understanding/entities',
             title: 'Entities',
-            icon: 'attach-outline'
+            icon: 'paperclip'
           },
           {
             link: '/language-understanding/logs',
-            title: 'Logs',
-            icon: 'list-outline'
+            title: 'Sentences logs',
+            icon: 'justify-left'
           }
         ]
       },
       {
         title: 'Stories & Answers',
-        icon: 'book-open-outline',
+        icon: 'book',
         hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/build/story-create',
             title: 'New Story',
-            icon: 'plus-circle-outline'
+            icon: 'plus-circle'
           },
           {
             link: '/build/story-search',
             title: 'All stories',
-            icon: 'layers-outline'
+            icon: 'chat-left'
           },
           {
             link: '/faq/management',
-            title: 'FAQs management',
-            icon: 'message-square-outline'
+            title: 'FAQs stories',
+            icon: 'chat-left-text'
           },
-          {
-            link: '/build/story-rules',
-            title: 'Rules',
-            icon: 'toggle-right-outline'
-          },
+
           {
             link: '/build/i18n',
             title: 'Answers',
-            icon: 'color-palette-outline'
+            icon: 'chat-right-quote'
           },
           {
             link: '/build/story-documents',
             title: 'Documents',
-            icon: 'folder-outline'
+            icon: 'images'
+          },
+
+          {
+            link: '/build/story-rules',
+            title: 'Rules',
+            icon: 'toggle-on'
           }
         ]
       },
 
       {
         title: 'Gen AI',
-        icon: 'bulb-outline',
+        icon: 'cpu',
         children: [
           // {
           //   link: '/rag/sources',
@@ -215,24 +217,30 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           {
             link: '/rag/settings',
             title: 'Rag settings',
-            icon: 'settings-outline',
+            icon: 'lightbulb',
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
             link: '/rag/exclusions',
-            title: 'Rag exclusions',
-            icon: { icon: 'ragexclude', pack: 'tock-custom' }
+            title: 'Sentences Rag exclusions',
+            icon: 'lightbulb-off'
           },
           {
             title: 'Sentence generation settings',
             link: '/configuration/sentence-generation-settings',
-            icon: 'list-outline',
+            icon: 'list-columns',
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
             title: 'Observability settings',
             link: '/configuration/observability-settings',
-            icon: 'monitor-outline',
+            icon: 'display',
+            hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
+            link: '/configuration/vector-db-settings',
+            title: 'Vector DB settings',
+            icon: 'database',
             hidden: !this.state.hasRole(UserRole.admin)
           }
         ]
@@ -240,154 +248,154 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
 
       {
         title: 'Test',
-        icon: 'play-circle-outline',
+        icon: 'play-circle',
         hidden: !this.state.hasRole(UserRole.botUser),
 
         children: [
           {
             link: '/test/test',
             title: 'Test',
-            icon: 'smiling-face-outline'
+            icon: 'terminal'
           },
           {
             link: '/test/plan',
             title: 'Test plans',
-            icon: 'map-outline'
+            icon: 'map'
           }
         ]
       },
       {
         title: 'Analytics',
-        icon: 'trending-up-outline',
+        icon: 'activity',
         hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/analytics/activity',
             title: 'Activity',
-            icon: 'activity-outline'
+            icon: 'graph-up-arrow'
           },
           {
             link: '/analytics/behavior',
             title: 'Behavior',
-            icon: 'pie-chart-outline'
+            icon: 'pie-chart'
           },
           {
             link: '/analytics/flow',
             title: 'Flow',
-            icon: 'funnel-outline'
+            icon: 'funnel'
           },
           {
             link: '/analytics/users',
             title: 'Users',
-            icon: 'people-outline'
+            icon: 'people'
           },
           {
             link: '/analytics/dialogs',
-            title: 'Search',
-            icon: 'search-outline'
+            title: 'Dialogs',
+            icon: 'wechat'
           },
           {
             link: '/analytics/preferences',
             title: 'Preferences',
-            icon: 'settings-2-outline'
+            icon: 'sliders'
           },
           {
             link: '/analytics/satisfaction',
             title: 'Satisfaction',
-            icon: 'star-outline'
+            icon: 'star'
           }
         ]
       },
       {
         title: 'Custom Metrics',
-        icon: 'pie-chart-outline',
+        icon: 'clipboard-data',
         hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/business-metrics/board',
             title: 'Metrics',
-            icon: 'pie-chart-outline'
+            icon: 'clipboard2-pulse'
           },
           {
             link: '/business-metrics/indicators',
             title: 'Indicators',
-            icon: 'compass-outline'
+            icon: 'sign-merge-left'
           }
         ]
       },
       {
         title: 'Model Quality',
-        icon: 'clipboard-outline',
+        icon: 'box-seam',
         hidden: !this.state.hasRole(UserRole.nlpUser),
         children: [
           {
             link: '/model-quality/log-stats',
             title: 'Model Stats',
-            icon: 'activity-outline'
+            icon: 'award'
           },
           {
             link: '/model-quality/intent-quality',
             title: 'Intent Distance',
-            icon: 'pantone-outline'
+            icon: 'rulers'
           },
           {
             link: '/model-quality/count-stats',
             title: 'Count Stats',
-            icon: 'hash-outline'
+            icon: 'hash'
           },
           {
             link: '/model-quality/model-builds',
             title: 'Model Builds',
-            icon: 'save-outline'
+            icon: 'building'
           },
           {
             link: '/model-quality/test-builds',
             title: 'Test Trends',
-            icon: 'trending-down-outline'
+            icon: 'graph-down-arrow'
           },
           {
             link: '/model-quality/test-intent-errors',
             title: 'Test Intent Errors',
-            icon: 'alert-triangle-outline'
+            icon: 'bug'
           },
           {
             link: '/model-quality/test-entity-errors',
             title: 'Test Entity Errors',
-            icon: 'alert-triangle-outline'
+            icon: 'bug'
           }
         ]
       },
       {
         title: 'Settings',
-        icon: 'settings-outline',
+        icon: 'gear',
         children: [
           {
             title: 'Applications',
             link: '/configuration/nlp',
-            icon: 'browser-outline'
+            icon: 'window-stack'
           },
           {
             title: 'Configurations',
             link: '/configuration/bot',
-            icon: 'link-outline',
+            icon: 'link-45deg',
             hidden: !this.state.hasRole(UserRole.admin)
           },
 
           {
             title: 'Namespaces',
             link: '/configuration/namespaces',
-            icon: 'folder-outline'
+            icon: 'folder'
           },
           {
             title: 'Log',
             link: '/configuration/users/logs',
-            icon: 'eye-outline',
+            icon: 'eye',
             hidden: !this.state.hasRole(UserRole.technicalAdmin)
           },
           {
             title: 'Synchronization',
             link: '/configuration/synchronization',
-            icon: 'sync'
+            icon: 'arrow-repeat'
           }
         ]
       }

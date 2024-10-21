@@ -28,7 +28,7 @@
       nbTooltip="Add a new Feature"
       (click)="newFeature()"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
+      <nb-icon icon="plus-lg"></nb-icon>
       New {{ type }} feature
     </button>
   </nb-card-header>
@@ -52,6 +52,7 @@
           <td style="width: 20%">Configuration</td>
           <td style="width: 10%">Start date</td>
           <td style="width: 10%">End date</td>
+          <td style="width: 10%">Graduation</td>
           <td
             class="text-center"
             style="width: 10%"
@@ -136,6 +137,20 @@
             ></nb-datepicker>
           </td>
 
+          <td>
+            <input
+              nbInput
+              type="number"
+              fieldSize="small"
+              placeholder="%"
+              min="0"
+              max="100"
+              (blur)="changeGraduation(feature, $event)"
+              [(ngModel)]="feature.graduation"
+              [nbTooltip]="feature.graduation ? 'Enabled at : ' + feature.graduation + '%' : 'Fully (en/dis)abled'"
+            />
+          </td>
+
           <td class="text-center">
             <nb-toggle
               class="nb-toggle-reset-label-margin mt-1"
@@ -154,7 +169,7 @@
               nbTooltip="Delete rule"
               (click)="askDeleteFeature(feature)"
             >
-              <nb-icon icon="trash-2-outline"></nb-icon>
+              <nb-icon icon="trash"></nb-icon>
             </button>
           </td>
         </tr>

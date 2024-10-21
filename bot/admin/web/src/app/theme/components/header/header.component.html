@@ -14,11 +14,8 @@
   ~ limitations under the License.
   -->
 
-<div class="header-container">
-  <div
-    class="logo-containter"
-    style="display: contents"
-  >
+<div class="d-flex align-items-center justify-content-between w-100">
+  <div class="logo-containter">
     <div
       class="logo"
       (click)="goToHome()"
@@ -27,79 +24,94 @@
         class="logo-img"
         src="{{ baseHref }}assets/images/logo-black.svg"
       />
-      Tock Studio
+      <span class="logo-txt"> Tock Studio </span>
     </div>
   </div>
-</div>
 
-<div class="header-container">
-  <nb-icon
-    icon="sun-outline"
-    nbTooltip="Light Mode"
-  ></nb-icon>
-  <nb-toggle
-    [ngModel]="isDarkTheme()"
-    (change)="switchTheme()"
-    class="darkmode-toggle"
-    nbTooltip="Switch mode"
-  ></nb-toggle>
-  <nb-icon
-    icon="moon-outline"
-    nbTooltip="Dark Mode"
-  ></nb-icon>
+  <div class="d-flex align-items-center gap-1">
+    <div class="d-flex gap-1 align-items-center mode-switch">
+      <nb-icon
+        nbTooltip="Light Mode"
+        icon="brightness-high"
+      ></nb-icon>
+      <nb-toggle
+        [ngModel]="isDarkTheme()"
+        (change)="switchTheme()"
+        class="darkmode-toggle nb-toggle-reset-label-margin"
+        nbTooltip="Switch mode"
+      ></nb-toggle>
+      <nb-icon
+        nbTooltip="Dark Mode"
+        icon="brightness-low"
+      ></nb-icon>
+    </div>
 
-  <nb-select
-    *ngIf="state.currentApplication"
-    (selectedChange)="changeApplication($event)"
-    [ngModel]="state.currentApplication.name"
-    nbTooltip="Select current application"
-    class="selects"
-  >
-    <nb-option
-      *ngFor="let app of state.applications"
-      [value]="app.name"
-      >{{ app.label }}
-    </nb-option>
-  </nb-select>
+    <nb-form-field *ngIf="state.currentApplication">
+      <nb-icon
+        nbPrefix
+        icon="window"
+      ></nb-icon>
+      <nb-select
+        (selectedChange)="changeApplication($event)"
+        [ngModel]="currentApplicationName"
+        nbTooltip="Select current application"
+        class="mb-0 min-width-5 max-width-15em"
+      >
+        <nb-option
+          *ngFor="let app of state.applications"
+          [value]="app.name"
+          >{{ app.label }}
+        </nb-option>
+      </nb-select>
+    </nb-form-field>
 
-  <nb-select
-    *ngIf="namespaces"
-    (selectedChange)="changeNamespace($event)"
-    [selected]="currentNamespaceName"
-    nbTooltip="Select current namespace"
-    class="selects"
-  >
-    <nb-option
-      *ngFor="let namespace of namespaces"
-      [value]="namespace.namespace"
-      >{{ namespace.namespace }}
-    </nb-option>
-  </nb-select>
+    <nb-form-field *ngIf="namespaces">
+      <nb-icon
+        nbPrefix
+        icon="folder"
+      ></nb-icon>
+      <nb-select
+        (selectedChange)="changeNamespace($event)"
+        [selected]="currentNamespaceName"
+        nbTooltip="Select current namespace"
+        class="mb-0 min-width-5 max-width-15em"
+      >
+        <nb-option
+          *ngFor="let namespace of namespaces"
+          [value]="namespace.namespace"
+          >{{ namespace.namespace }}
+        </nb-option>
+      </nb-select>
+    </nb-form-field>
 
-  <nb-select
-    *ngIf="state.currentApplication"
-    (selectedChange)="changeLocale($event)"
-    [ngModel]="state.currentLocale"
-    nbTooltip="Select current locale"
-    class="locale"
-  >
-    <nb-option
-      *ngFor="let l of state.currentApplication.supportedLocales"
-      [value]="l"
-      >{{ state.localeName(l) }}</nb-option
-    >
-  </nb-select>
-  <nb-actions
-    size="medium"
-    style="cursor: pointer"
-  >
-    <nb-action
-      class="control-item"
+    <nb-form-field *ngIf="state.currentApplication">
+      <nb-icon
+        nbPrefix
+        icon="globe2"
+      ></nb-icon>
+      <nb-select
+        (selectedChange)="changeLocale($event)"
+        [ngModel]="state.currentLocale"
+        nbTooltip="Select current locale"
+        class="mb-0 min-width-5 max-width-15em"
+      >
+        <nb-option
+          *ngFor="let l of state.currentApplication.supportedLocales"
+          [value]="l"
+          >{{ state.localeName(l) }}</nb-option
+        >
+      </nb-select>
+    </nb-form-field>
+
+    <button
+      nbButton
+      ghost
+      size="medium"
       *ngIf="auth.isLoggedIn() && !auth.isSSO()"
       (click)="auth.logout()"
       nbTooltip="Logout"
     >
-      <nb-icon icon="log-out-outline"></nb-icon>
-    </nb-action>
-  </nb-actions>
+      <nb-icon icon="box-arrow-right"></nb-icon>
+    </button>
+  </div>
 </div>

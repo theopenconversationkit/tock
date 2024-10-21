@@ -26,15 +26,12 @@ from gen_ai_orchestrator.models.guardrail.guardrail_types import (
     GuardrailSetting,
 )
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
-    LangfuseObservabilitySetting,
-)
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
 )
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     DocumentSearchParams,
 )
 
@@ -64,11 +61,87 @@ class ObservabilityProviderSettingStatusQuery(BaseModel):
     )
 
 
-class RagQuery(BaseModel):
+class BaseQuery(BaseModel):
+    """The Base query model"""
+
+    embedding_question_em_setting: EMSetting = Field(
+        description="Embedding model setting, used to calculate the user's question vector."
+    )
+    document_index_name: str = Field(
+        description='Index name corresponding to a document collection in the vector database.',
+    )
+    document_search_params: DocumentSearchParams = Field(
+        description='The document search parameters. Ex: number of documents, metadata filter',
+    )
+    vector_store_setting: Optional[VectorStoreSetting] = Field(
+        description='The vector store settings.', default=None
+    )
+    observability_setting: Optional[ObservabilitySetting] = Field(
+        description='The observability settings.', default=None
+    )
+
+
+class QAQuery(BaseQuery):
+    user_query: str = Field(
+        description="The user's request. Will be sent as is to the model."
+    )
+
+    model_config = {
+        'json_schema_extra': {
+            'examples': [
+                {
+                    'embedding_question_em_setting': {
+                        'provider': 'OpenAI',
+                        'api_key': {
+                            'type': 'Raw',
+                            'value': 'ab7***************************A1IV4B',
+                        },
+                        'model': 'text-embedding-ada-002',
+                    },
+                    'user_query': 'How to get started playing guitar ?',
+                    'document_index_name': 'my-index-name',
+                    'document_search_params': {
+                        'provider': 'OpenSearch',
+                        'filter': [
+                            {
+                                'term': {
+                                    'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
+                                }
+                            }
+                        ],
+                        'k': 4,
+                    },
+                }
+            ]
+        }
+    }
+
+
+class VectorStoreProviderSettingStatusQuery(BaseModel):
+    """The query for the Vector Store Provider Setting Status"""
+
+    vector_store_setting: Optional[VectorStoreSetting] = Field(
+        description='The Vector Store Provider setting to be checked.', default=None
+    )
+    em_setting: Optional[EMSetting] = Field(
+        description="Embedding model setting, used to calculate the user's question vector.",
+        default=None,
+    )
+    document_index_name: Optional[str] = Field(
+        description='Index name corresponding to a document collection in the vector database.',
+        default=None,
+    )
+
+
+class RagQuery(BaseQuery):
     """The RAG query model"""
 
     history: list[ChatMessage] = Field(
         description="Conversation history, used to reformulate the user's question."
+    )
+    question_answering_prompt_inputs: Any = Field(
+        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
+        'chat_history field must not be specified here, it will be override by the history field',
     )
     # condense_question_llm_setting: LLMSetting =
     #   Field(description="LLM setting, used to condense the user's question.")

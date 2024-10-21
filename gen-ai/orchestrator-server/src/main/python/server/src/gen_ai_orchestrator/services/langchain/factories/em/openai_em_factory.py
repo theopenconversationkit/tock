@@ -17,6 +17,7 @@ from typing import List
 
 from langchain.embeddings.base import Embeddings
 from langchain_openai import OpenAIEmbeddings
+from openai import base_url
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -46,6 +47,7 @@ class OpenAIEMFactory(LangChainEMFactory):
     def get_embedding_model(self) -> Embeddings:
         return OpenAIEmbeddings(
             openai_api_key=fetch_secret_key_value(self.setting.api_key),
+            base_url=self.setting.base_url,
             model=self.setting.model,
             timeout=application_settings.em_provider_timeout,
         )

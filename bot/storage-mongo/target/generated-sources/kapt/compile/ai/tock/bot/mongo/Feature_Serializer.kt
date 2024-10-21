@@ -41,6 +41,11 @@ internal class Feature_Serializer : StdSerializer<Feature>(Feature::class.java),
         if(_endDate_ == null) { gen.writeNull() } else {
                 serializers.defaultSerializeValue(_endDate_, gen)
                 }
+        gen.writeFieldName("graduation")
+        val _graduation_ = value.graduation
+        if(_graduation_ == null) { gen.writeNull() } else {
+                gen.writeNumber(_graduation_)
+                }
         gen.writeEndObject()
     }
 }

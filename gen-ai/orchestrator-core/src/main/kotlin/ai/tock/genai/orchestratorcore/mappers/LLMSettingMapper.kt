@@ -16,10 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
-import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
@@ -33,13 +30,33 @@ object LLMSettingMapper {
      * @return [LLMSettingDTO]
      */
     fun toDTO(entity: LLMSetting): LLMSettingDTO =
-        with(entity){
-            val secretKey = SecurityUtils.fetchSecretKeyValue(apiKey)
-            when(this){
+        with(entity) {
+
+            when (this) {
                 is OpenAILLMSetting ->
-                    OpenAILLMSetting(secretKey, temperature, prompt, model)
+                    OpenAILLMSetting(
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 is AzureOpenAILLMSetting ->
-                    AzureOpenAILLMSetting(secretKey, temperature, prompt, apiBase, deploymentName, apiVersion)
+                    AzureOpenAILLMSetting(
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        apiBase = apiBase,
+                        deploymentName = deploymentName,
+                        apiVersion = apiVersion
+                    )
+                is OllamaLLMSetting ->
+                    OllamaLLMSetting(
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
@@ -47,18 +64,34 @@ object LLMSettingMapper {
 
     /**
      * Convert the LLM setting DTO to an Entity
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param dto the [LLMSettingDTO]
-     * @param secretName the secret name
      * @return [LLMSetting]
      */
-    fun toEntity(dto: LLMSettingDTO, secretName: String): LLMSetting =
-        with(dto){
-            val secretKey = SecurityUtils.getSecretKey(apiKey, secretName)
-            when(this){
+    fun toEntity(namespace: String, botId: String, feature: String, dto: LLMSettingDTO): LLMSetting =
+        with(dto) {
+            when (this) {
                 is OpenAILLMSetting ->
-                    OpenAILLMSetting(secretKey, temperature, prompt, model)
+                    OpenAILLMSetting(
+                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 is AzureOpenAILLMSetting ->
-                    AzureOpenAILLMSetting(secretKey, temperature, prompt, apiBase, deploymentName, apiVersion)
+                    AzureOpenAILLMSetting(
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        temperature,
+                        prompt,
+                        apiBase,
+                        deploymentName,
+                        apiVersion
+                    )
+                is OllamaLLMSetting ->
+                    OllamaLLMSetting(temperature, prompt, model, baseUrl)
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }

@@ -37,6 +37,8 @@ object ObservabilityService {
     private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
     /**
      * Get the Observability configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
      */
     fun getObservabilityConfiguration(namespace: String, botId: String): BotObservabilityConfiguration? {
         return observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
@@ -50,6 +52,18 @@ object ObservabilityService {
      */
     fun getObservabilityConfiguration(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration? {
         return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
+    }
+
+    /**
+     * Deleting the Observability Configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
+     */
+    fun deleteConfig(namespace: String, botId: String) {
+        val observabilityConfig = observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+            ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
+        logger.info { "Deleting the Observability Configuration [namespace: $namespace, botId: $botId]" }
+        return observabilityConfigurationDAO.delete(observabilityConfig._id)
     }
 
     /**
@@ -76,9 +90,11 @@ object ObservabilityService {
         val observabilityConfig = observabilityConfiguration.toBotObservabilityConfiguration()
 
         // Check validity of the observability configuration
-        ObservabilityValidationService.validate(observabilityConfig).let { errors ->
-            if (errors.isNotEmpty()) {
-                throw BadRequestException(errors)
+        if(observabilityConfig.enabled) {
+            ObservabilityValidationService.validate(observabilityConfig).let { errors ->
+                if (errors.isNotEmpty()) {
+                    throw BadRequestException(errors)
+                }
             }
         }
 

@@ -24,5 +24,6 @@ data class Feature(
     val enabled: Boolean,
     val startDate: ZonedDateTime?,
     val endDate: ZonedDateTime?,
-    val applicationId: String?
+    val applicationId: String?,
+    val graduation: Int? = null,
 )

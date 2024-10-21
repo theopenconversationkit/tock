@@ -27,37 +27,49 @@
     >
       <div class="w-50">
         <label class="label mr-2">Filter by intent</label>
-        <nb-select
-          fullWidth
-          placeholder="Filter by intent"
-          formControlName="intent"
-        >
-          <nb-option value="">All intents</nb-option>
-          <nb-option-group
-            *ngFor="let category of state.currentIntentsCategories | async"
-            [title]="category.category"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="compass"
+          ></nb-icon>
+          <nb-select
+            fullWidth
+            placeholder="Filter by intent"
+            formControlName="intent"
           >
-            <nb-option
-              *ngFor="let intent of category.intents"
-              [value]="intent.qualifiedName()"
+            <nb-option value="">All intents</nb-option>
+            <nb-option-group
+              *ngFor="let category of state.currentIntentsCategories | async"
+              [title]="category.category"
             >
-              {{ intent.intentLabel() }}
-            </nb-option>
-          </nb-option-group>
-          <nb-option value="unknown">Unknown</nb-option>
-        </nb-select>
+              <nb-option
+                *ngFor="let intent of category.intents"
+                [value]="intent.qualifiedName()"
+              >
+                {{ intent.intentLabel() }}
+              </nb-option>
+            </nb-option-group>
+            <nb-option value="unknown">Unknown</nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
 
       <div class="w-50">
         <label class="label mr-2">Minimum count</label>
-        <input
-          nbInput
-          fullWidth
-          type="number"
-          min="1"
-          placeholder="Minimum Count"
-          formControlName="minCount"
-        />
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="hash"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            type="number"
+            min="1"
+            placeholder="Minimum Count"
+            formControlName="minCount"
+          />
+        </nb-form-field>
       </div>
     </form>
   </nb-card-body>
@@ -150,15 +162,14 @@
             <nb-icon
               *ngIf="!row.validated"
               status="basic"
-              icon="close-outline"
               nbTooltip="No"
+              icon="x-lg"
             ></nb-icon>
-
             <nb-icon
               *ngIf="row.validated"
               status="success"
-              icon="checkmark-outline"
               nbTooltip="Yes"
+              icon="check-lg"
             ></nb-icon>
           </td>
 
@@ -193,3 +204,5 @@
     (onPaginationChange)="refresh()"
   ></tock-pagination>
 </div>
+
+<tock-scroll-top-button></tock-scroll-top-button>

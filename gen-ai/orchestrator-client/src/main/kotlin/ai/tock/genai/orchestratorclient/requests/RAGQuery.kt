@@ -15,10 +15,11 @@
  */
 
 package ai.tock.genai.orchestratorclient.requests
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMProvider
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBase
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
 data class RAGQuery(
     // val condenseQuestionLlmSetting: LLMSetting,
@@ -28,7 +29,8 @@ data class RAGQuery(
     val questionAnsweringPromptInputs: Map<String, String>,
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
-    val documentSearchParams: DocumentSearchParams,
+    val documentSearchParams: DocumentSearchParamsBase,
+    val vectorStoreSetting: VectorStoreSetting?,
     val observabilitySetting: ObservabilitySetting?
 )
 
@@ -41,19 +43,3 @@ enum class ChatMessageType{
     HUMAN,
     AI
 }
-
-enum class VectorStoreProvider{
-    OpenSearch
-}
-abstract class DocumentSearchParams(
-    val provider: VectorStoreProvider,
-)
-
-data class OpenSearchParams(
-    val k: Int,
-    val filter: List<Term>
-): DocumentSearchParams(VectorStoreProvider.OpenSearch)
-
-data class Term(
-    val term: Map<String, Any>
-)

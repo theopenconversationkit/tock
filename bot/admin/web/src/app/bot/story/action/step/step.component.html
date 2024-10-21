@@ -30,7 +30,7 @@
         *ngIf="canUpward"
         class="d-block"
       >
-        <nb-icon icon="arrow-upward-outline"></nb-icon>
+        <nb-icon icon="arrow-up-short"></nb-icon>
       </button>
 
       <button
@@ -43,7 +43,7 @@
         *ngIf="canDownward"
         class="d-block"
       >
-        <nb-icon icon="arrow-downward-outline"></nb-icon>
+        <nb-icon icon="arrow-down-short"></nb-icon>
       </button>
     </div>
 
@@ -118,10 +118,12 @@
         (click)="setEntity()"
         *ngIf="!step.entity || step.entity.value"
       >
+        {{ step.entity ? step.entity.entityRole : '' }}
         <nb-icon
-          icon="attach-outline"
+          icon="paperclip"
           [status]="step.entity ? 'primary' : 'basic'"
         ></nb-icon>
+        {{ step.entity ? (step.entity.value ? step.entity.value : '') : '' }}
       </button>
       <button
         nbButton
@@ -131,8 +133,8 @@
         (click)="setEntity()"
         *ngIf="step.entity && !step.entity.value"
       >
-        <nb-icon icon="attach-outline"></nb-icon>
         {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
+        <nb-icon icon="paperclip"></nb-icon>
       </button>
     </tock-form-control>
 
@@ -215,7 +217,7 @@
         size="small"
         (click)="removeStep()"
       >
-        <nb-icon icon="minus-outline"></nb-icon>
+        <nb-icon icon="dash-lg"></nb-icon>
         Remove Action
       </button>
 
@@ -227,7 +229,7 @@
         (click)="addChild()"
         *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
       >
-        <nb-icon icon="plus-outline"></nb-icon>
+        <nb-icon icon="plus-lg"></nb-icon>
         Add action
       </button>
 
@@ -237,7 +239,7 @@
         size="small"
         (click)="duplicateStep()"
       >
-        <nb-icon icon="copy-outline"></nb-icon>
+        <nb-icon icon="copy"></nb-icon>
         Duplicate
       </button>
 
@@ -248,7 +250,7 @@
         (click)="generateChildren()"
         *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
       >
-        <nb-icon icon="plus-square-outline"></nb-icon>
+        <nb-icon icon="plus-square"></nb-icon>
         Generate from entity
       </button>
     </div>

@@ -16,10 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
-import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.em.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 
@@ -35,12 +32,22 @@ object EMSettingMapper {
      */
     fun toDTO(entity: EMSetting): EMSettingDTO =
         with(entity){
-            val secretKey = SecurityUtils.fetchSecretKeyValue(apiKey)
             when(this){
                 is OpenAIEMSetting ->
-                    OpenAIEMSetting(secretKey, model)
+                    OpenAIEMSetting(
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 is AzureOpenAIEMSetting ->
-                    AzureOpenAIEMSetting(secretKey, apiBase, deploymentName, apiVersion)
+                    AzureOpenAIEMSetting(
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        apiBase = apiBase,
+                        deploymentName = deploymentName,
+                        apiVersion = apiVersion
+                    )
+                is OllamaEMSetting ->
+                    OllamaEMSetting(model = model, baseUrl = baseUrl)
                 else ->
                     throw IllegalArgumentException("Unsupported EM Setting")
             }
@@ -48,18 +55,30 @@ object EMSettingMapper {
 
     /**
      * Convert the Embedding setting DTO to an Entity
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param dto the [EMSettingDTO]
-     * @param secretName the secret name
      * @return [EMSetting]
      */
-    fun toEntity(dto: EMSettingDTO, secretName: String): EMSetting =
+    fun toEntity(namespace: String, botId: String, feature: String, dto: EMSettingDTO): EMSetting =
         with(dto){
-            val secretKey = SecurityUtils.getSecretKey(apiKey, secretName)
             when(this){
                 is OpenAIEMSetting ->
-                    OpenAIEMSetting(secretKey, model)
+                    OpenAIEMSetting(
+                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 is AzureOpenAIEMSetting ->
-                    AzureOpenAIEMSetting(secretKey, apiBase, deploymentName, apiVersion)
+                    AzureOpenAIEMSetting(
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        apiBase = apiBase,
+                        deploymentName = deploymentName,
+                        apiVersion = apiVersion
+                    )
+                is OllamaEMSetting ->
+                    OllamaEMSetting(model = model, baseUrl = baseUrl)
                 else ->
                     throw IllegalArgumentException("Unsupported EM Setting")
             }

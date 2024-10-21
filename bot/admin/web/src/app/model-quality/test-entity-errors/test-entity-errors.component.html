@@ -24,7 +24,7 @@
     (click)="download()"
     nbTooltip="Download the whole error list"
   >
-    <nb-icon icon="cloud-download-outline"></nb-icon>
+    <nb-icon icon="download"></nb-icon>
   </button>
 </div>
 
@@ -35,26 +35,32 @@
   <nb-card-body class="d-flex gap-1 align-items-center">
     <div class="flex-grow-1">
       <label class="label mr-2">Filter by intent</label>
-      <nb-select
-        fullWidth
-        placeholder="Filter by intent"
-        [(ngModel)]="intent"
-        (selectedChange)="search()"
-      >
-        <nb-option value="">All intents</nb-option>
-        <nb-option-group
-          *ngFor="let category of state.currentIntentsCategories | async"
-          [title]="category.category"
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="compass"
+        ></nb-icon>
+        <nb-select
+          fullWidth
+          placeholder="Filter by intent"
+          [(ngModel)]="intent"
+          (selectedChange)="search()"
         >
-          <nb-option
-            *ngFor="let intent of category.intents"
-            [value]="intent.qualifiedName()"
+          <nb-option value="">All intents</nb-option>
+          <nb-option-group
+            *ngFor="let category of state.currentIntentsCategories | async"
+            [title]="category.category"
           >
-            {{ intent.intentLabel() }}
-          </nb-option>
-        </nb-option-group>
-        <nb-option value="unknown">Unknown</nb-option>
-      </nb-select>
+            <nb-option
+              *ngFor="let intent of category.intents"
+              [value]="intent.qualifiedName()"
+            >
+              {{ intent.intentLabel() }}
+            </nb-option>
+          </nb-option-group>
+          <nb-option value="unknown">Unknown</nb-option>
+        </nb-select>
+      </nb-form-field>
     </div>
   </nb-card-body>
 </nb-card>
@@ -186,7 +192,7 @@
               (click)="validate(row)"
               nbTooltip="Validate entities"
             >
-              <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+              <nb-icon icon="check-circle"></nb-icon>
             </button>
 
             <button
@@ -196,7 +202,7 @@
               (click)="change(row)"
               nbTooltip="Change entities"
             >
-              <nb-icon icon="edit-outline"></nb-icon>
+              <nb-icon icon="pencil"></nb-icon>
             </button>
 
             <button
@@ -206,7 +212,7 @@
               (click)="reveal(row)"
               nbTooltip="Reveal the obfuscated part(s) of the sentence"
             >
-              <nb-icon icon="eye-outline"></nb-icon>
+              <nb-icon icon="eye"></nb-icon>
             </button>
           </td>
         </tr>
@@ -224,3 +230,5 @@
     (onPaginationChange)="refresh()"
   ></tock-pagination>
 </div>
+
+<tock-scroll-top-button></tock-scroll-top-button>

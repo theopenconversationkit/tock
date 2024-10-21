@@ -25,17 +25,9 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/img"],
-            "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css"],
-            "scripts": [
-              "node_modules/cytoscape/dist/cytoscape.min.js",
-              "node_modules/webcola/WebCola/cola.min.js",
-              "node_modules/cytoscape-cola/cytoscape-cola.js",
-              "node_modules/layout-base/layout-base.js",
-              "node_modules/cose-base/cose-base.js",
-              "node_modules/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js",
-              "node_modules/dagre/dist/dagre.min.js",
-              "node_modules/cytoscape-dagre/cytoscape-dagre.js"
-            ]
+            "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"],
+            "scripts": []
           },
           "configurations": {
             "production": {

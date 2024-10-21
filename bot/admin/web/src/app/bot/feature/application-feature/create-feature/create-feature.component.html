@@ -9,7 +9,7 @@
       nbTooltip="Close"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
 
@@ -42,14 +42,20 @@
             [showError]="isSubmitted"
             [required]="true"
           >
-            <input
-              nbInput
-              formControlName="category"
-              id="category"
-              fullWidth
-              type="text"
-              placeholder="Enter a category"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="grid"
+              ></nb-icon>
+              <input
+                nbInput
+                formControlName="category"
+                id="category"
+                fullWidth
+                type="text"
+                placeholder="Enter a category"
+              />
+            </nb-form-field>
           </tock-form-control>
         </div>
       </div>
@@ -62,16 +68,22 @@
             [controls]="startDate"
             [showError]="isSubmitted"
           >
-            <input
-              nbInput
-              formControlName="startDate"
-              id="startDate"
-              fullWidth
-              type="text"
-              autocomplete="off"
-              placeholder="Enter a start date"
-              [nbDatepicker]="startDatePicker"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="calendar-check"
+              ></nb-icon>
+              <input
+                nbInput
+                formControlName="startDate"
+                id="startDate"
+                fullWidth
+                type="text"
+                autocomplete="off"
+                placeholder="Enter a start date"
+                [nbDatepicker]="startDatePicker"
+              />
+            </nb-form-field>
 
             <nb-datepicker
               #startDatePicker
@@ -86,16 +98,22 @@
             [controls]="endDate"
             [showError]="isSubmitted"
           >
-            <input
-              nbInput
-              formControlName="endDate"
-              id="endDate"
-              fullWidth
-              type="text"
-              autocomplete="off"
-              placeholder="Enter a start date"
-              [nbDatepicker]="endDatePicker"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="calendar-x"
+              ></nb-icon>
+              <input
+                nbInput
+                formControlName="endDate"
+                id="endDate"
+                fullWidth
+                type="text"
+                autocomplete="off"
+                placeholder="Enter an end date"
+                [nbDatepicker]="endDatePicker"
+              />
+            </nb-form-field>
 
             <nb-datepicker
               #endDatePicker
@@ -117,13 +135,36 @@
         ></tock-select-bot>
       </tock-form-control>
 
-      <nb-toggle
-        formControlName="enabled"
-        nbTooltip="Status"
-      >
-        <span *ngIf="enabled.value">Feature enabled</span>
-        <span *ngIf="!enabled.value">Feature disabled</span>
-      </nb-toggle>
+      <div class="d-flex gap-1">
+        <div class="w-50">
+          <nb-toggle
+            formControlName="enabled"
+            nbTooltip="Status"
+          >
+            <span *ngIf="enabled.value">Feature enabled</span>
+            <span *ngIf="!enabled.value">Feature disabled</span>
+          </nb-toggle>
+        </div>
+        <div class="w-50">
+          <tock-form-control
+            label="Graduation"
+            name="graduation"
+            [controls]="graduation"
+            [showError]="isSubmitted"
+            [required]="false"
+          >
+            <input
+              nbInput
+              formControlName="graduation"
+              id="graduation"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="% of activation"
+            />
+          </tock-form-control>
+        </div>
+      </div>
     </form>
   </nb-card-body>
 
@@ -135,6 +176,7 @@
       type="button"
       (click)="cancel()"
     >
+      <nb-icon icon="x-lg"></nb-icon>
       Cancel
     </button>
     <button
@@ -144,6 +186,7 @@
       size="small"
       (click)="save()"
     >
+      <nb-icon icon="plus"></nb-icon>
       Create feature
     </button>
   </nb-card-footer>

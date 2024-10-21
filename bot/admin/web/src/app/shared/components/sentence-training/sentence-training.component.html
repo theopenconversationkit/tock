@@ -62,7 +62,7 @@
                 (click)="handleBatchAction(Action.VALIDATE)"
                 data-testid="batch-action-validate"
               >
-                <nb-icon icon="checkmark-circle-2"></nb-icon>
+                <nb-icon icon="check-circle-fill"></nb-icon>
               </button>
               <button
                 *ngIf="sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN"
@@ -74,7 +74,7 @@
                 (click)="handleBatchAction(Action.UNKNOWN)"
                 data-testid="batch-action-unknown"
               >
-                <nb-icon icon="question-mark-circle-outline"></nb-icon>
+                <nb-icon icon="question-circle"></nb-icon>
               </button>
               <button
                 *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
@@ -86,10 +86,7 @@
                 (click)="handleBatchAction(Action.RAGEXCLUDED)"
                 data-testid="batch-action-ragexcluded"
               >
-                <nb-icon
-                  icon="ragexclude"
-                  pack="tock-custom"
-                ></nb-icon>
+                <nb-icon icon="lightbulb-off"></nb-icon>
               </button>
               <button
                 nbButton
@@ -100,7 +97,7 @@
                 (click)="handleBatchAction(Action.DELETE)"
                 data-testid="batch-action-delete"
               >
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash"></nb-icon>
               </button>
             </div>
           </div>
@@ -114,13 +111,15 @@
               Sort by creation date
               <nb-icon
                 *ngIf="!isSorted"
+                class="align-middle"
                 icon="chevron-down-outline"
-                class="valign-middle"
+                pack="nebular-essentials"
               ></nb-icon>
               <nb-icon
                 *ngIf="isSorted"
+                class="align-middle"
                 icon="chevron-up-outline"
-                class="valign-middle"
+                pack="nebular-essentials"
               ></nb-icon>
             </span>
 

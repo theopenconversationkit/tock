@@ -24,6 +24,7 @@ class LLMProvider(str, Enum):
     OPEN_AI = 'OpenAI'
     AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
     FAKE_LLM = 'FakeLLM'
+    OLLAMA = 'Ollama'
 
     @classmethod
     def has_value(cls, value):

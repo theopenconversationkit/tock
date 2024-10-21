@@ -20,26 +20,33 @@
   <nb-card-body class="d-flex gap-1 align-items-end">
     <div class="flex-grow-1">
       <label class="label mr-2">Filter by intent</label>
-      <nb-select
-        placeholder="Intent"
-        [(ngModel)]="intent"
-        (selectedChange)="search()"
-        fullWidth=""
-      >
-        <nb-option value="">All intents</nb-option>
-        <nb-option-group
-          *ngFor="let category of state.currentNamespaceIntentsCategories | async"
-          [title]="category.category"
+
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="compass"
+        ></nb-icon>
+        <nb-select
+          placeholder="Intent"
+          [(ngModel)]="intent"
+          (selectedChange)="search()"
+          fullWidth=""
         >
-          <nb-option
-            *ngFor="let intent of category.intents"
-            [value]="intent.name"
+          <nb-option value="">All intents</nb-option>
+          <nb-option-group
+            *ngFor="let category of state.currentNamespaceIntentsCategories | async"
+            [title]="category.category"
           >
-            {{ intent.intentLabel() }}
-          </nb-option>
-        </nb-option-group>
-        <nb-option value="tock:unknown">Unknown</nb-option>
-      </nb-select>
+            <nb-option
+              *ngFor="let intent of category.intents"
+              [value]="intent.name"
+            >
+              {{ intent.intentLabel() }}
+            </nb-option>
+          </nb-option-group>
+          <nb-option value="tock:unknown">Unknown</nb-option>
+        </nb-select>
+      </nb-form-field>
     </div>
 
     <nb-toggle
@@ -97,3 +104,5 @@
     ></div>
   </nb-card-body>
 </nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

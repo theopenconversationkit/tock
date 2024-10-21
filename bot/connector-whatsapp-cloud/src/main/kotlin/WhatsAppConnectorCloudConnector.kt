@@ -26,11 +26,19 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMes
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudMessage
 import ai.tock.bot.connector.whatsapp.cloud.services.SendActionConverter
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.StoryHandlerDefinition
+import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionNotificationType
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType
+import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.RequestFilter
@@ -177,5 +185,30 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     }
                 }
         }
+    }
+
+    override fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>,
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit
+    ) {
+        controller.handle(
+
+            SendChoice(
+                recipientId,
+                connectorId,
+                PlayerId(connectorId, bot),
+                intent.wrappedIntent().name,
+                step,
+                parameters
+            ),
+            ConnectorData(
+                WhatsAppConnectorCloudCallback(connectorId)
+            )
+        )
     }
 }

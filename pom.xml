@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>24.3.5-SNAPSHOT</version>
+    <version>24.9.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -31,64 +31,64 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>2.0.0</kotlin>
-        <coroutine>1.8.1</coroutine>
+        <kotlin>2.0.20</kotlin>
+        <coroutine>1.9.0</coroutine>
 
-        <slf4j>2.0.13</slf4j>
-        <logback>1.5.6</logback>
+        <slf4j>2.0.16</slf4j>
+        <logback>1.5.8</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>5.1.0</kmongo>
-        <jackson>2.17.1</jackson>
-        <jackson-databind>2.17.1</jackson-databind>
-        <jackson-module>2.17.1</jackson-module>
+        <jackson>2.17.2</jackson>
+        <jackson-databind>2.17.2</jackson-databind>
+        <jackson-module>2.17.2</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>4.5.8</vertx>
+        <vertx>4.5.10</vertx>
         <retrofit>2.11.0</retrofit>
         <okhttp>4.12.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>33.2.0-jre</guava>
+        <guava>33.3.1-jre</guava>
         <google-auth>1.36.0</google-auth>
-        <google-http-client>1.44.2</google-http-client>
+        <google-http-client>1.45.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.11.0</commons-csv>
         <commons-text>1.12.0</commons-text>
         <emoji>5.1.1</emoji>
-        <commons-codec>1.17.0</commons-codec>
-        <commons-lang>3.14.0</commons-lang>
-        <commonmark>0.22.0</commonmark>
+        <commons-codec>1.17.1</commons-codec>
+        <commons-lang>3.17.0</commons-lang>
+        <commonmark>0.23.0</commonmark>
         <json>20240303</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.39.0</google>
-        <aws-sdk>1.12.730</aws-sdk>
+        <google>26.47.0</google>
+        <aws-sdk>1.12.772</aws-sdk>
         <pac4j>5.7.3</pac4j>
         <vertx-pac4j>6.0.2</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
-        <junit-jupiter>5.10.2</junit-jupiter>
-        <testcontainer>1.19.8</testcontainer>
+        <junit-jupiter>5.11.0</junit-jupiter>
+        <testcontainer>1.20.1</testcontainer>
 
-        <mockk>1.13.11</mockk>
+        <mockk>1.13.12</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.16</byte-buddy>
+        <byte-buddy>1.15.1</byte-buddy>
         <atrium>0.15.0</atrium>
         <serialization>1.6.2</serialization>
 
-        <plugin.surefire>3.0.0-M7</plugin.surefire>
-        <plugin.source>3.2.1</plugin.source>
-        <plugin.release>3.0.0-M6</plugin.release>
-        <plugin.gpg>3.0.1</plugin.gpg>
+        <plugin.surefire>3.2.5</plugin.surefire>
+        <plugin.source>3.3.1</plugin.source>
+        <plugin.release>3.0.1</plugin.release>
+        <plugin.gpg>3.2.4</plugin.gpg>
         <plugin.nexus-staging>1.6.13</plugin.nexus-staging>
-        <plugin.dokka>1.8.20</plugin.dokka>
+        <plugin.dokka>1.9.20</plugin.dokka>
         <plugin.assembly>3.4.2</plugin.assembly>
         <plugin.frontend>1.12.1</plugin.frontend>
         <plugin.clean>3.2.0</plugin.clean>

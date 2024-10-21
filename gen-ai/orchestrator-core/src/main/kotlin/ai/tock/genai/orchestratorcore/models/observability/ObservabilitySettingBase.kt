@@ -17,8 +17,9 @@
 package ai.tock.genai.orchestratorcore.models.observability
 
 
+import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.security.SecretKey
+import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -36,3 +37,6 @@ abstract class ObservabilitySettingBase<T>(
 
 typealias ObservabilitySettingDTO = ObservabilitySettingBase<String>
 typealias ObservabilitySetting = ObservabilitySettingBase<SecretKey>
+
+// Extension functions for DTO conversion
+fun ObservabilitySetting.toDTO(): ObservabilitySettingDTO = ObservabilitySettingMapper.toDTO(this)

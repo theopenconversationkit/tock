@@ -23,12 +23,10 @@ import time
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from fastapi import HTTPException
 from langchain.chains.conversational_retrieval.base import (
     ConversationalRetrievalChain,
 )
 from langchain.memory import ChatMessageHistory
-from langchain.retrievers import ContextualCompressionRetriever
 from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores import VectorStoreRetriever
 
@@ -155,8 +153,8 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                     lambda doc: Footnote(
                         identifier=f'{doc.metadata["id"]}',
                         title=doc.metadata['title'],
-                        url=doc.metadata['url'],
-                        content=doc.page_content,
+                        url=doc.metadata['source'],
+                        content=get_source_content(doc),
                     ),
                     response['source_documents'],
                 )
@@ -168,6 +166,22 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         if debug
         else None,
     )
+
+
+def get_source_content(doc: Document) -> str:
+    """
+    Find and delete the title followed by two line breaks
+
+    The concatenation model used  is {title}\n\n{content_page}.
+    It is also used in chain_rag.py on the orchestrator server, when fetching sources.
+    The aim is to remove the ‘title’ prefix from the document content when sending the sources.
+
+    """
+    title_prefix = f"{doc.metadata['title']}\n\n"
+    if doc.page_content.startswith(title_prefix):
+        return doc.page_content[len(title_prefix) :]
+    else:
+        return doc.page_content
 
 
 def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
@@ -182,16 +196,18 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
     em_factory = get_em_factory(setting=query.embedding_question_em_setting)
     vector_store_factory = get_vector_store_factory(
-        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
+        vector_store_provider=query.vector_store_setting,
         embedding_function=em_factory.get_embedding_model(),
         index_name=query.document_index_name,
     )
+
     retriever = vector_store_factory.get_vector_store().as_retriever(
         search_kwargs=query.document_search_params.to_dict()
     )
     if query.compressor_setting:
         retriever = add_compressor(retriever, query.compressor_setting)
 
+    logger.debug('RAG chain - Document index name: %s', query.document_index_name)
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
 
     return ConversationalRetrievalChain.from_llm(
@@ -288,7 +304,8 @@ def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0:100] + '...',
+            content=doc['page_content'][0 : len(doc['metadata']['title']) + 100]
+            + '...',
             metadata=RagDocumentMetadata(**doc['metadata']),
         )
         for doc in on_chain_start_records[0]['inputs']['input_documents']

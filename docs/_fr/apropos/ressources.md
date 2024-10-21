@@ -10,6 +10,14 @@ en complément des [guides](../../guide/studio)
 
 ## Conférences / Video
 
+* _Gen AI with TOCK_ @ _[WAX](https://www.waxconf.fr/)_
+  **2024** (RAG et LLM Open Source ? Vers des IA Génératives plus responsables.)
+  [ℹ️ info](https://www.waxconf.fr/#:~:text=RAG%20et%20LLM%20Open%20Source%20%3F%20Vers%20des%20IA%20G%C3%A9n%C3%A9ratives%20plus%20responsables.)
+  [📽️ 45 min](https://youtu.be/lYmUeYoVkwc)
+
+[![RAG et LLM Open Source ? Vers des IA Génératives plus responsables](https://img.youtube.com/vi/lYmUeYoVkwc/0.jpg)](https://youtu.be/lYmUeYoVkwc)
+
+
 * _[20 minutes from zero to live chatbot with Tock](https://www.youtube.com/watch?v=UsKkpYL7Hto)_  
   @ _Open Source Experience_ **2021** (démonstration, en Anglais)
   [ℹ️ info](https://www.opensource-experience.com/event/20-minutes-from-zero-to-live-chatbot-with-tock/) /

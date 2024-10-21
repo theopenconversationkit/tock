@@ -14,16 +14,12 @@
 #
 """Model for creating OpenSearchParams."""
 
-from typing import List, Literal
+from typing import List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import (
-    OpenSearchTermParams,
-)
-from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
-    BaseVectorStoreSearchParams,
-)
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import OpenSearchTermParams
+from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import BaseVectorStoreSearchParams
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
@@ -38,24 +34,18 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
         examples=[VectorStoreProvider.OPEN_SEARCH],
         default=VectorStoreProvider.OPEN_SEARCH,
     )
-    k: int = Field(
-        description='The number of documents (neighbors) to return for each query_embedding.',
-        examples=[3],
-        default=4,
-    )
-    filter: List[OpenSearchTermParams] = Field(
+    filter: Optional[List[OpenSearchTermParams]] = Field(
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
         'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
         examples=[[{'term': {'key_1': 'value_1'}}, {'term': {'key_2': 'value_2'}}]],
+        default=None
     )
 
     def to_dict(self):
-        return {
-            'k': self.k,
-            'filter': list(
-                map(
-                    lambda term_param: {'term': term_param.term},
-                    self.filter,
-                )
-            ),
-        }
+        result = {'k': self.k}
+
+        if self.filter:
+            result['filter'] = [{'term': term_param.term} for term_param in self.filter]
+
+        return result
+

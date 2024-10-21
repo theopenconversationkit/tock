@@ -92,6 +92,22 @@ fun BotBus.whatsAppCloudText(
         userId = userId.id,
     )
 
+fun BotBus.whatsAppCloudImage(
+    id: String,
+    link: String? = null,
+    caption: CharSequence? = null,
+    ): WhatsAppCloudBotImageMessage =
+    WhatsAppCloudBotImageMessage(
+        messagingProduct = "whatsapp",
+        image = WhatsAppCloudBotImage(
+            id = id,
+            link = link,
+            caption = translate(caption).toString()
+        ),
+        recipientType = WhatsAppCloudBotRecipientType.individual,
+        userId = userId.id,
+    )
+
 fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     text: CharSequence,
     vararg replies: QuickReply,
@@ -148,6 +164,7 @@ fun I18nTranslator.whatsAppCloudListMessage(
 ): WhatsAppCloudBotInteractiveMessage =
     whatsAppCloudListMessage(text, button, replies.toList())
 
+
 fun I18nTranslator.whatsAppCloudListMessage(
     text: CharSequence,
     button: CharSequence,
@@ -158,6 +175,7 @@ fun I18nTranslator.whatsAppCloudListMessage(
             WhatsAppBotRow(
                 id = it.payload,
                 title = it.title,
+                description = it.description
             )
         })
     )
@@ -247,6 +265,17 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
 
+fun <T : Bus<T>> T.whatsAppCloudQuickReply(
+    title: CharSequence,
+    subTitle: CharSequence? = null,
+    targetIntent: IntentAware,
+    step: String? = null,
+    parameters: Map<String, String> = mapOf()
+): QuickReply =
+    whatsAppCloudQuickReply(title,subTitle, targetIntent, step, parameters) { intent, s, params ->
+        SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
+    }
+
 private fun I18nTranslator.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
@@ -256,6 +285,19 @@ private fun I18nTranslator.whatsAppCloudQuickReply(
 ): QuickReply = QuickReply(
     translate(title).toString(),
     payloadEncoder.invoke(targetIntent, step, parameters)
+)
+
+private fun I18nTranslator.whatsAppCloudQuickReply(
+    title: CharSequence,
+    subTitle: CharSequence? = null,
+    targetIntent: IntentAware,
+    step: String? = null,
+    parameters: Map<String, String>,
+    payloadEncoder: (IntentAware, String?, Map<String, String>) -> String
+): QuickReply = QuickReply(
+    translate(title).toString(),
+    payloadEncoder.invoke(targetIntent, step, parameters),
+    translate(subTitle).toString()
 )
 
 fun I18nTranslator.whatsAppCloudNlpQuickReply(
@@ -324,11 +366,20 @@ fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
     parameters = parameters
 )
 
+@Deprecated("use whatsAppCloudTextParameterTemplate(typeParameter: ParameterType,textButton: CharSequence?) instead")
 fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
     typeParameter: CharSequence?,
     textButton: CharSequence?
 ): TextParameter = TextParameter(
-    type = ParameterType.valueOf(translate(typeParameter).toString()),
+    type = ParameterType.valueOf((typeParameter).toString()),
+    text = translate(textButton).toString(),
+)
+
+fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
+    typeParameter: ParameterType,
+    textButton: CharSequence?
+): TextParameter = TextParameter(
+    type = typeParameter,
     text = translate(textButton).toString(),
 )
 

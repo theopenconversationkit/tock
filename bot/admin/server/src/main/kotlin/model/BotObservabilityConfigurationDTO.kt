@@ -21,6 +21,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySettingDTO
+import ai.tock.genai.orchestratorcore.models.observability.toDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -33,24 +34,24 @@ data class BotObservabilityConfigurationDTO(
     val setting: ObservabilitySettingDTO,
 ) {
     constructor(configuration: BotObservabilityConfiguration) : this(
-        configuration._id.toString(),
-        configuration.namespace,
-        configuration.botId,
-        configuration.enabled,
-        ObservabilitySettingMapper.toDTO(configuration.setting),
+        id = configuration._id.toString(),
+        namespace = configuration.namespace,
+        botId = configuration.botId,
+        enabled = configuration.enabled,
+        setting = configuration.setting.toDTO(),
     )
 
     fun toBotObservabilityConfiguration(): BotObservabilityConfiguration =
         BotObservabilityConfiguration(
-            id?.toId() ?: newId(),
-            namespace,
-            botId,
-            enabled,
-            ObservabilitySettingMapper.toEntity(
-                setting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_OBSERVABILITY
-                )
+            _id = id?.toId() ?: newId(),
+            namespace = namespace,
+            botId = botId,
+            enabled = enabled,
+            setting = ObservabilitySettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_OBSERVABILITY,
+                dto = setting
             ),
         )
 }

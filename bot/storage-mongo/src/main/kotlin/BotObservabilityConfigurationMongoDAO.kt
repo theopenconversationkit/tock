@@ -16,8 +16,6 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
-import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
@@ -26,8 +24,6 @@ import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollectionOfName
-import org.litote.kmongo.save
-import kotlin.reflect.jvm.internal.impl.types.checker.TypeRefinementSupport.Enabled
 
 internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigurationDAO {
 

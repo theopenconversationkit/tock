@@ -27,5 +27,5 @@ class Credentials(BaseModel):
     password: str = Field(
         description='The password.',
         examples=['a12G-3@p!'],
-        min_length=8
+        min_length=4
     )

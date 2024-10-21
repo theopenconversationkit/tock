@@ -10,7 +10,7 @@
       (click)="refresh()"
       class="ml-2"
     >
-      <nb-icon icon="refresh-outline"></nb-icon>
+      <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
   </section>
 </div>
@@ -33,7 +33,7 @@
       <nb-form-field class="flex-grow-1">
         <nb-icon
           nbPrefix
-          icon="search-outline"
+          icon="search"
         ></nb-icon>
         <input
           nbInput
@@ -52,42 +52,55 @@
           (click)="resetSearch()"
           *ngIf="searchString.value?.trim().length"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </nb-form-field>
 
       <div>
-        <nb-select
-          placeholder="File types"
-          fullWidth
-          optionsListClass="option-list--break-word"
-          formControlName="fileType"
-        >
-          <nb-option [value]="null">All</nb-option>
-          <nb-option
-            *ngFor="let type of fileTypes"
-            [value]="type.type"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="files"
+          ></nb-icon>
+
+          <nb-select
+            placeholder="File types"
+            fullWidth
+            optionsListClass="option-list--break-word"
+            formControlName="fileType"
           >
-            <span class="initial-capitalize">{{ type.label }}</span>
-          </nb-option>
-        </nb-select>
+            <nb-option [value]="null">All</nb-option>
+            <nb-option
+              *ngFor="let type of fileTypes"
+              [value]="type.type"
+            >
+              <span class="initial-capitalize">{{ type.label }}</span>
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
 
       <div *ngIf="getFilesSuffixes().length > 1">
-        <nb-select
-          placeholder="File extensions"
-          fullWidth
-          optionsListClass="option-list--break-word"
-          formControlName="fileSuffix"
-        >
-          <nb-option [value]="null">All</nb-option>
-          <nb-option
-            *ngFor="let suffix of getFilesSuffixes()"
-            [value]="suffix"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="file"
+          ></nb-icon>
+          <nb-select
+            placeholder="File extensions"
+            fullWidth
+            optionsListClass="option-list--break-word"
+            formControlName="fileSuffix"
           >
-            <span class="initial-capitalize">{{ suffix }}</span>
-          </nb-option>
-        </nb-select>
+            <nb-option [value]="null">All</nb-option>
+            <nb-option
+              *ngFor="let suffix of getFilesSuffixes()"
+              [value]="suffix"
+            >
+              <span class="initial-capitalize">{{ suffix }}</span>
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
     </form>
   </nb-card-body>
@@ -122,7 +135,7 @@
       <div class="table-list-entry">
         <div class="font-weight-bold">
           <nb-icon
-            class="valign-middle"
+            class="align-middle"
             nbTooltip="{{ getStoryType(getStoryWithThisMediaFile(file)) }} Story"
             [icon]="getStoryIcon(getStoryWithThisMediaFile(file))"
           ></nb-icon>
@@ -173,12 +186,39 @@
         <ng-container *ngIf="file.externalUrl"> Link </ng-container>
 
         <ng-container *ngIf="!file.externalUrl">
-          <container-element [ngSwitch]="file.type">
+          <container-element [ngSwitch]="file.suffix">
+            <nb-icon
+              *ngSwitchCase="'pdf'"
+              icon="filetype-pdf"
+            ></nb-icon>
+            <nb-icon
+              *ngSwitchCase="'bmp'"
+              icon="filetype-bmp"
+            ></nb-icon>
+            <nb-icon
+              *ngSwitchCase="'png'"
+              icon="filetype-png"
+            ></nb-icon>
+            <nb-icon
+              *ngSwitchCase="'jpg'"
+              icon="filetype-jpg"
+            ></nb-icon>
+            <nb-icon
+              *ngSwitchCase="'jpeg'"
+              icon="filetype-jpg"
+            ></nb-icon>
+            <nb-icon
+              *ngSwitchCase="'gif'"
+              icon="filetype-gif"
+            ></nb-icon>
+          </container-element>
+
+          <ng-container [ngSwitch]="file.type">
             <span *ngSwitchCase="attachmentType.image">Image</span>
             <span *ngSwitchCase="attachmentType.audio">Audio file</span>
             <span *ngSwitchCase="attachmentType.video">Video file</span>
             <span *ngSwitchDefault>Other</span>
-          </container-element>
+          </ng-container>
           ({{ file.suffix }})
         </ng-container>
       </div>
@@ -188,12 +228,15 @@
           nbButton
           ghost
           shape="round"
-          nbTooltip="Update File"
+          status="info"
+          nbTooltip="Edit"
           (click)="displayMediaMessage(file)"
         >
-          <nb-icon icon="edit-outline"></nb-icon>
+          <nb-icon icon="pencil"></nb-icon>
         </button>
       </div>
     </div>
   </nb-card-body>
 </nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

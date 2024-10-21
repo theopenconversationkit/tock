@@ -20,6 +20,8 @@ from pydantic import Field, HttpUrl
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
 class AzureOpenAILLMSetting(BaseLLMSetting):
@@ -31,6 +33,10 @@ class AzureOpenAILLMSetting(BaseLLMSetting):
     provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE] = Field(
         description='The Large Language Model Provider.',
         examples=[LLMProvider.AZURE_OPEN_AI_SERVICE],
+    )
+    api_key: SecretKey = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',

@@ -17,8 +17,10 @@
 package ai.tock.genai.orchestratorcore.models.llm
 
 
+import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.security.SecretKey
+import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -29,11 +31,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OpenAILLMSetting::class, name = Constants.OPEN_AI),
+    JsonSubTypes.Type(value = OllamaLLMSetting::class, name = Constants.OLLAMA),
     JsonSubTypes.Type(value = AzureOpenAILLMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE)
 )
 abstract class LLMSettingBase<T>(
     val provider: LLMProvider,
-    open val apiKey: T,
+    open val apiKey: T? = null,
     open val temperature: String,
     open val prompt: String
 ) {
@@ -42,3 +45,6 @@ abstract class LLMSettingBase<T>(
 
 typealias LLMSettingDTO = LLMSettingBase<String>
 typealias LLMSetting = LLMSettingBase<SecretKey>
+
+// Extension functions for DTO conversion
+fun LLMSetting.toDTO(): LLMSettingDTO = LLMSettingMapper.toDTO(this)

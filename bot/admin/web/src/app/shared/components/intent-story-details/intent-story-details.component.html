@@ -8,7 +8,7 @@
       nbTooltip="Cancel"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
 
@@ -41,24 +41,31 @@
               <nb-icon
                 *ngIf="story.isBuiltIn()"
                 nbTooltip="Built-in Story"
-                icon="cube"
+                class="align-middle"
+                icon="box"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="story.isSimpleNonFaqAnswer()"
+                nbTooltip="Message Story"
+                icon="chat-left"
                 class="align-middle"
               ></nb-icon>
               <nb-icon
-                *ngIf="story.isSimpleAnswer()"
-                nbTooltip="Message Story"
-                icon="message-square-outline"
+                *ngIf="story.isSimpleFaqAnswer()"
                 class="align-middle"
+                nbTooltip="Message Faq Story"
+                icon="chat-left-text"
               ></nb-icon>
               <nb-icon
                 *ngIf="story.isScriptAnswer()"
                 nbTooltip="Script Story"
-                icon="code"
                 class="align-middle"
+                icon="code"
               ></nb-icon>
 
               <span *ngIf="story.isBuiltIn()"> BuiltIn</span>
-              <span *ngIf="story.isSimpleAnswer()"> Simple</span>
+              <span *ngIf="story.isSimpleNonFaqAnswer()"> Simple</span>
+              <span *ngIf="story.isSimpleFaqAnswer()"> Simple (Faq)</span>
               <span *ngIf="story.isScriptAnswer()"> Scripted</span>
             </div>
 
@@ -95,13 +102,13 @@
               >
                 <nb-icon
                   *ngIf="!sentencesReveal"
-                  icon="arrow-ios-forward-outline"
                   class="align-middle"
+                  icon="chevron-right"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="sentencesReveal"
-                  icon="arrow-ios-downward-outline"
                   class="align-middle"
+                  icon="chevron-down"
                 ></nb-icon>
                 Show all intent sentences
               </button>
