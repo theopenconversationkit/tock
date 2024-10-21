@@ -25,8 +25,8 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain import rag_chain
-from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
-    RetrieverJsonCallbackHandler,
+from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
+    RAGCallbackHandler,
 )
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     execute_qa_chain,
@@ -232,7 +232,7 @@ def test_rag_guard_removes_docs_if_no_answer(mocked_log):
 
 
 def test_get_llm_prompts_one_record():
-    handler = RetrieverJsonCallbackHandler()
+    handler = RAGCallbackHandler()
     handler.on_text(text='LLM 1')
     llm_1, llm_2 = get_llm_prompts(handler)
     assert llm_1 is None
@@ -240,7 +240,7 @@ def test_get_llm_prompts_one_record():
 
 
 def test_get_llm_prompts_one_record():
-    handler = RetrieverJsonCallbackHandler()
+    handler = RAGCallbackHandler()
     handler.on_text(text='LLM 1')
     handler.on_text(text='LLM 2')
     llm_1, llm_2 = get_llm_prompts(handler)
@@ -249,7 +249,7 @@ def test_get_llm_prompts_one_record():
 
 
 def test_get_condense_question_none():
-    handler = RetrieverJsonCallbackHandler()
+    handler = RAGCallbackHandler()
     handler.on_text(text='LLM 1')
     handler.on_chain_start(
         serialized={},
@@ -264,7 +264,7 @@ def test_get_condense_question_none():
 
 
 def test_get_condense_question():
-    handler = RetrieverJsonCallbackHandler()
+    handler = RAGCallbackHandler()
     handler.on_text(text='LLM 1')
     handler.on_text(text='LLM 2')
     handler.on_chain_start(

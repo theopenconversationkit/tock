@@ -13,112 +13,58 @@
 #   limitations under the License.
 #
 from langchain_core.documents import Document
+from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
+from langchain_core.prompt_values import StringPromptValue, ChatPromptValue
 
-from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
-    RetrieverJsonCallbackHandler,
+from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
+    RAGCallbackHandler,
 )
 
 
-def test_retriever_json_callback_handler_on_chain_start():
+def test_rag_callback_handler_qa_documents():
     """Check records are added (in the correct entries)"""
-    handler = RetrieverJsonCallbackHandler()
-    _inputs = {
-        'input_documents': [
-            Document(
-                page_content='some page content',
-                metadata={'some meta': 'some meta value'},
-            )
-        ],
-        'question': 'What is happening?',
-        'chat_history': [],
-    }
-    handler.on_chain_start(serialized={}, inputs=_inputs)
-    expected_json_data = {
-        'event_name': 'on_chain_start',
-        'inputs': {
-            'input_documents': [
-                {
-                    'page_content': 'some page content',
-                    'metadata': {'some meta': 'some meta value'},
-                }
-            ],
-            'question': _inputs['question'],
-            'chat_history': _inputs['chat_history'],
-        },
-    }
-    assert handler.records['on_chain_start_records'][0] == expected_json_data
-    assert handler.records['action_records'][0] == expected_json_data
+    handler = RAGCallbackHandler()
+    docs = [Document(
+        page_content='some page content',
+        metadata={'some meta': 'some meta value'},
+    )]
+    handler.on_chain_start(serialized={},
+                           inputs={'documents': docs},
+                           **{'name': 'RunnableAssign<answer>'})
+    assert handler.records['documents'] == docs
 
-
-def test_retriever_json_callback_handler_on_chain_start_no_double_entries():
-    """Check records are added only once in history."""
-    handler = RetrieverJsonCallbackHandler()
-    _inputs = {
-        'input_documents': [
-            Document(
-                page_content='some page content',
-                metadata={'some meta': 'some meta value'},
-            )
-        ],
-        'question': 'What is happening?',
-        'chat_history': [],
-    }
-    handler.on_chain_start(serialized={}, inputs=_inputs)
-    expected_json_data = {
-        'event_name': 'on_chain_start',
-        'inputs': {
-            'input_documents': [
-                {
-                    'page_content': 'some page content',
-                    'metadata': {'some meta': 'some meta value'},
-                }
-            ],
-            'question': _inputs['question'],
-            'chat_history': _inputs['chat_history'],
-        },
-    }
-    assert expected_json_data in handler.records['on_chain_start_records']
-    assert expected_json_data in handler.records['action_records']
-    assert len(handler.records['on_chain_start_records']) == 1
-    assert len(handler.records['action_records']) == 1
-    handler.on_chain_start(serialized={}, inputs=_inputs)
-    assert expected_json_data in handler.records['on_chain_start_records']
-    assert expected_json_data in handler.records['action_records']
-    assert len(handler.records['on_chain_start_records']) == 1
-    assert len(handler.records['action_records']) == 1
-
-
-def test_retriever_json_callback_handler_on_chain_start_no_inputs():
-    """Check no records are added if none are present in chain inputs."""
-    handler = RetrieverJsonCallbackHandler()
-    _inputs = {'question': 'What is happening?', 'chat_history': []}
-    handler.on_chain_start(serialized={}, inputs=_inputs)
-    assert len(handler.records['on_chain_start_records']) == 0
-    assert len(handler.records['action_records']) == 0
-
-
-def test_retriever_json_callback_handler_on_chain_end():
+def test_rag_callback_handler_chat_prompt_output():
     """Check records are added (in the correct entries)"""
-    handler = RetrieverJsonCallbackHandler()
-    _outputs = {
-        'text': 'This is what is happening',
-    }
-    handler.on_chain_end(outputs=_outputs)
-    expected_json_data = {
-        'event_name': 'on_chain_end',
-        'output': 'This is what is happening',
-    }
-    assert handler.records['on_chain_end_records'][0] == expected_json_data
-    assert handler.records['action_records'][0] == expected_json_data
+    handler = RAGCallbackHandler()
+    llm_output = 'llm result !'
+    handler.on_chain_start(serialized={},
+                           inputs=AIMessage(content=llm_output),
+                           **{'name': 'chat_chain_output'})
+    assert handler.records['chat_chain_output'] == llm_output
 
-
-def test_retriever_json_callback_handler_on_text():
+def test_rag_callback_handler_qa_prompt_output():
     """Check records are added (in the correct entries)"""
-    handler = RetrieverJsonCallbackHandler()
-    handler.on_text(text='Some text arrives')
-    expected_json_data = {
-        'event_name': 'on_text',
-        'text': 'Some text arrives',
-    }
-    assert handler.records['on_text_records'][0] == expected_json_data
-    assert handler.records['action_records'][0] == expected_json_data
+    handler = RAGCallbackHandler()
+    llm_output = 'llm result !'
+    handler.on_chain_start(serialized={},
+                           inputs=AIMessage(content=llm_output),
+                           **{'name': 'rag_chain_output'})
+    assert handler.records['rag_chain_output'] == llm_output
+
+def test_rag_callback_handler_chat_prompt():
+    """Check records are added (in the correct entries)"""
+    handler = RAGCallbackHandler()
+    prompt = 'A custom prompt !'
+    outputs = ChatPromptValue(messages=[
+        SystemMessage(content=prompt),
+        HumanMessage(content='hi !')
+    ])
+    handler.on_chain_end(serialized={}, outputs=outputs)
+    assert handler.records['chat_prompt'] == prompt
+
+def test_rag_callback_handler_qa_prompt():
+    """Check records are added (in the correct entries)"""
+    handler = RAGCallbackHandler()
+    prompt = 'A custom prompt !'
+    handler.on_chain_end(serialized={}, outputs=StringPromptValue(text=prompt))
+    assert handler.records['rag_prompt'] == prompt
