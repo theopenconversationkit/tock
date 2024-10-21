@@ -18,7 +18,6 @@ It uses LangChain to perform a Conversational Retrieval Chain
 """
 
 import logging
-import re
 import time
 from logging import ERROR, WARNING
 from typing import List, Optional
@@ -26,7 +25,7 @@ from typing import List, Optional
 from langchain.chains import ConversationalRetrievalChain
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.documents import Document
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -47,9 +46,6 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     RagDocumentMetadata,
     TextWithFootnotes,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.routers.responses.responses import RagResponse
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
@@ -60,6 +56,7 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
     get_vector_store_factory, create_observability_callback_handler,
 )
+from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +90,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             message_history.add_ai_message(msg.text)
 
     inputs = {
-        **query.question_answering_prompt_inputs,
+        **query.question_answering_prompt.inputs,
         'chat_history': message_history.messages,
     }
 
@@ -180,6 +177,11 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
                                                     index_name=query.document_index_name,
                                                     embedding_function=em_factory.get_embedding_model())
 
+    logger.info('RAG chain - LLM template validation')
+    validate_prompt_template(query.question_answering_prompt)
+
+
+
     logger.debug('RAG chain - Document index name: %s', query.document_index_name)
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
     return ConversationalRetrievalChain.from_llm(
@@ -188,26 +190,12 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
-            'prompt': PromptTemplate(
-                template=llm_factory.setting.prompt,
-                input_variables=__find_input_variables(llm_factory.setting.prompt),
+            'prompt': LangChainPromptTemplate.from_template(
+                template=query.question_answering_prompt.template,
+                template_format=query.question_answering_prompt.formatter.value,
             )
         },
     )
-
-
-def __find_input_variables(template):
-    """
-    Search for input variables on a given template
-
-    Args:
-        template: the template to search on
-    """
-
-    motif = r'\{([^}]+)\}'
-    variables = re.findall(motif, template)
-    return variables
-
 
 def __rag_guard(inputs, response):
     """
@@ -315,7 +303,7 @@ def get_rag_debug_data(
     """RAG debug data assembly"""
 
     return RagDebugData(
-        user_question=query.question_answering_prompt_inputs['question'],
+        user_question=query.question_answering_prompt.inputs['question'],
         condense_question_prompt=get_llm_prompts(records_callback_handler)[0],
         condense_question=get_condense_question(records_callback_handler),
         question_answering_prompt=get_llm_prompts(records_callback_handler)[1],

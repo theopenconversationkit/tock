@@ -16,23 +16,14 @@
 
 import logging
 import time
-from typing import Optional
 
-from jinja2 import Template, TemplateError
 from langchain_core.output_parsers import NumberedListOutputParser
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
-from langchain_core.runnables import RunnableConfig
 
-from gen_ai_orchestrator.errors.exceptions.exceptions import (
-    GenAIPromptTemplateException,
-)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
-from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
-from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.routers.requests.requests import (
     SentenceGenerationQuery,
 )
@@ -42,6 +33,7 @@ from gen_ai_orchestrator.routers.responses.responses import (
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory, create_observability_callback_handler,
 )
+from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
 
 logger = logging.getLogger(__name__)
 
@@ -90,29 +82,3 @@ async def generate_and_split_sentences(
         )
 
     return SentenceGenerationResponse(sentences=sentences)
-
-
-def validate_prompt_template(prompt: PromptTemplate):
-    """
-    Prompt template validation
-
-    Args:
-        prompt: The prompt template
-
-    Returns:
-        Nothing.
-    Raises:
-        GenAIPromptTemplateException: if template is incorrect
-    """
-    if PromptFormatter.JINJA2 == prompt.formatter:
-        try:
-            Template(prompt.template).render(prompt.inputs)
-        except TemplateError as exc:
-            logger.error('Prompt completion - template validation failed!')
-            logger.error(exc)
-            raise GenAIPromptTemplateException(
-                ErrorInfo(
-                    error=exc.__class__.__name__,
-                    cause=str(exc),
-                )
-            )

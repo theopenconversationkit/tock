@@ -47,8 +47,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.PromptTemplate')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__find_input_variables')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.LangChainPromptTemplate')
 @patch(
     'gen_ai_orchestrator.services.langchain.rag_chain.ConversationalRetrievalChain.from_llm'
 )
@@ -65,7 +64,6 @@ async def test_rag_chain(
     mocked_rag_guard,
     mocked_callback_init,
     mocked_chain_builder,
-    mocked_find_input_variables,
     mocked_prompt_template,
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
@@ -86,7 +84,11 @@ async def test_rag_chain(
             'provider': 'OpenAI',
             'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
             'temperature': 1.2,
-            'prompt': """Use the following context to answer the question at the end.
+            'model': 'gpt-3.5-turbo',
+        },
+        'question_answering_prompt': {
+            'formatter': 'f-string',
+            'template': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
 
 Context:
@@ -96,12 +98,11 @@ Question:
 {question}
 
 Answer in {locale}:""",
-            'model': 'gpt-3.5-turbo',
-        },
-        'question_answering_prompt_inputs': {
-            'question': 'How to get started playing guitar ?',
-            'no_answer': 'Sorry, I don t know.',
-            'locale': 'French',
+            'inputs' : {
+                'question': 'How to get started playing guitar ?',
+                'no_answer': 'Sorry, I don t know.',
+                'locale': 'French',
+            }
         },
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
@@ -179,16 +180,16 @@ Answer in {locale}:""",
         return_generated_question=True,
         combine_docs_chain_kwargs={
             # PromptTemplate must be mocked or searching for params in it will fail
-            'prompt': mocked_prompt_template(
-                template=query.question_answering_llm_setting.prompt,
-                input_variables=['no_answer', 'context', 'question', 'locale'],
+            'prompt': mocked_prompt_template.from_template(
+                template=query.question_answering_prompt.template,
+                template_format=query.question_answering_prompt.formatter.value,
             )
         },
     )
     # Assert qa chain is ainvoke()d with the expected settings from query
     mocked_chain.ainvoke.assert_called_once_with(
         input={
-            **query.question_answering_prompt_inputs,
+            **query.question_answering_prompt.inputs,
             'chat_history': [
                 HumanMessage(content='Hello, how can I do this?'),
                 AIMessage(content='you can do this with the following method ....'),
@@ -204,12 +205,6 @@ Answer in {locale}:""",
         ),
         debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
     )
-
-
-def test_find_input_variables():
-    template = 'This is a {sample} text with {multiple} curly brace sections'
-    input_vars = rag_chain.__find_input_variables(template)
-    assert input_vars == ['sample', 'multiple']
 
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')

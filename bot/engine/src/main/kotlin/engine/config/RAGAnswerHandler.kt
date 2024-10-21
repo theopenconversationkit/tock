@@ -181,10 +181,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     query = RAGQuery(
                         history = getDialogHistory(dialog),
                         questionAnsweringLlmSetting = ragConfiguration.llmSetting,
-                        questionAnsweringPromptInputs = mapOf(
-                            "question" to action.toString(),
-                            "locale" to userPreferences.locale.displayLanguage,
-                            "no_answer" to ragConfiguration.noAnswerSentence
+                        questionAnsweringPrompt = PromptTemplate(
+                            formatter = Formatter.F_STRING.id,
+                            template = ragConfiguration.llmSetting.prompt,
+                            inputs = mapOf(
+                                "question" to action.toString(),
+                                "locale" to userPreferences.locale.displayLanguage,
+                                "no_answer" to ragConfiguration.noAnswerSentence
+                            )
                         ),
                         embeddingQuestionEmSetting = ragConfiguration.emSetting,
                         documentIndexName = indexName,
