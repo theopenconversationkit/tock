@@ -37,6 +37,9 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
     GenAIUnknownObservabilityProviderSettingException,
 )
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
+    GenAIUnknownVectorStoreProviderSettingException,
+)
 from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
@@ -87,6 +90,18 @@ from gen_ai_orchestrator.models.observability.observability_trace import (
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
 )
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
+    OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
+    PGVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    VectorStoreSetting,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
@@ -95,6 +110,12 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.compressor_factory import (
+    CompressorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,

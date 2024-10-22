@@ -36,7 +36,7 @@ class BloomzGuardrailOutputParser(BaseCumulativeTransformOutputParser[dict]):
     """Maximum acceptable toxicity score."""
     endpoint: str
     """The model API endpoint to use."""
-    diff = True
+    diff: bool = True
 
     @classmethod
     def is_lc_serializable(cls) -> bool:

@@ -183,6 +183,7 @@ Answer in {locale}:""",
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
+    mocked_compressor = mocked_compressor_builder.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
     mocked_chain.ainvoke = AsyncMock(
         return_value={'answer': 'an answer from llm', 'source_documents': []}
@@ -217,9 +218,7 @@ Answer in {locale}:""",
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=vector_store_factory_instance.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
+        retriever=mocked_compressor,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={

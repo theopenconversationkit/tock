@@ -19,8 +19,10 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
-    GenAIUnknownObservabilityProviderException,
     GenAIUnknownObservabilityProviderSettingException,
+)
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
+    GenAIUnknownVectorStoreProviderSettingException,
 )
 from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
     ContextualCompressorProvider,

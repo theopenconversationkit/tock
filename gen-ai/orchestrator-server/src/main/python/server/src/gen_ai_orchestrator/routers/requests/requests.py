@@ -33,6 +33,7 @@ from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     DocumentSearchParams,
+    VectorStoreSetting,
 )
 
 

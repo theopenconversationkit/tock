@@ -26,7 +26,11 @@ from typing import List, Optional
 from langchain.chains.conversational_retrieval.base import (
     ConversationalRetrievalChain,
 )
-from langchain.memory import ChatMessageHistory
+from langchain.retrievers.contextual_compression import (
+    ContextualCompressionRetriever,
+)
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores import VectorStoreRetriever
 
@@ -53,9 +57,6 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     RagDocument,
     RagDocumentMetadata,
     TextWithFootnotes,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.routers.responses.responses import RagResponse
@@ -196,12 +197,12 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
     em_factory = get_em_factory(setting=query.embedding_question_em_setting)
     vector_store_factory = get_vector_store_factory(
-        vector_store_provider=query.vector_store_setting,
-        embedding_function=em_factory.get_embedding_model(),
+        setting=query.vector_store_setting,
         index_name=query.document_index_name,
+        embedding_function=em_factory.get_embedding_model(),
     )
 
-    retriever = vector_store_factory.get_vector_store().as_retriever(
+    retriever = vector_store_factory.get_vector_store_retriever(
         search_kwargs=query.document_search_params.to_dict()
     )
     if query.compressor_setting:
@@ -339,7 +340,7 @@ def get_llm_prompts(handler: RetrieverJsonCallbackHandler) -> (Optional[str], st
 
 
 def get_rag_debug_data(
-    query, response, records_callback_handler, rag_duration
+    query: RagQuery, response, records_callback_handler, rag_duration
 ) -> RagDebugData:
     """RAG debug data assembly"""
 
