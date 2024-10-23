@@ -329,10 +329,12 @@
           [controls]="answerExportFormat"
           [showError]="isSubmitted"
           [required]="true"
+          [hasMargin]="false"
+          class="mb-2"
         >
           <nb-radio-group
             formControlName="answerExportFormat"
-            class="d-flex"
+            class="d-flex mb-1"
           >
             <nb-radio
               *ngFor="let format of answerExportFormatsRadios"
@@ -351,112 +353,35 @@
           [required]="true"
           data-testid="answer"
         >
-          <ng-container *ngIf="answerExportFormat.value !== answerExportFormats.PLAINTEXT">
-            <div id="toolbar-container">
-              <span class="ql-formats">
-                <select class="ql-font"></select>
-                <select class="ql-size"></select>
-              </span>
-              <span class="ql-formats">
-                <button
-                  class="ql-header"
-                  value="1"
-                ></button>
-                <button
-                  class="ql-header"
-                  value="2"
-                ></button>
-
-                <span class="ql-formats">
-                  <button class="ql-bold"></button>
-                  <button class="ql-italic"></button>
-                  <button class="ql-underline"></button>
-                  <button class="ql-strike"></button>
-                </span>
-                <span
-                  class="ql-formats"
-                  [class.hidden]="!answerIsHtml"
-                >
-                  <select class="ql-color"></select>
-                  <select class="ql-background"></select>
-                </span>
-                <span class="ql-formats">
-                  <button
-                    class="ql-script"
-                    value="sub"
-                  ></button>
-                  <button
-                    class="ql-script"
-                    value="super"
-                  ></button>
-                </span>
-
-                <button class="ql-blockquote"></button>
-                <button class="ql-code-block"></button>
-              </span>
-              <span class="ql-formats">
-                <button
-                  class="ql-list"
-                  value="ordered"
-                ></button>
-                <button
-                  class="ql-list"
-                  value="bullet"
-                ></button>
-                <button
-                  class="ql-indent"
-                  value="-1"
-                ></button>
-                <button
-                  class="ql-indent"
-                  value="+1"
-                ></button>
-              </span>
-              <span class="ql-formats">
-                <button
-                  class="ql-direction"
-                  value="rtl"
-                ></button>
-                <select class="ql-align"></select>
-              </span>
-              <span class="ql-formats">
-                <button class="ql-table-better"></button>
-              </span>
-              <span class="ql-formats">
-                <button class="ql-link"></button>
-                <button class="ql-image"></button>
-                <button class="ql-video"></button>
-              </span>
-              <span class="ql-formats">
-                <button class="ql-clean"></button>
-              </span>
-            </div>
-
-            <div
-              #answerEditorTarget
-              nbInput
-            ></div>
+          <ng-container *ngIf="!answerIsPlaintext">
+            <div #answerEditorTarget></div>
           </ng-container>
 
           <textarea
-            *ngIf="answerExportFormat.value === answerExportFormats.PLAINTEXT"
+            *ngIf="answerIsPlaintext"
             nbInput
             formControlName="answer"
             fullWidth
             id="answer"
             type="text"
-            rows="6"
+            rows="16"
             placeholder="Enter faq answer..."
           ></textarea>
-          <small [ngClass]="getControlLengthIndicatorClass('answer')">
-            {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
-          </small>
         </tock-form-control>
       </div>
     </form>
   </nb-card-body>
 
   <nb-card-footer>
+    <div
+      *ngIf="currentTab === 'answer'"
+      class="mt-n2 mb-1"
+    >
+      <small [ngClass]="getControlLengthIndicatorClass('answer')">
+        {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
+      </small>
+    </div>
+
     <div class="grid-button">
       <button
         type="button"
