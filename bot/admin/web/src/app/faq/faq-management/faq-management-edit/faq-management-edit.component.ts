@@ -140,8 +140,6 @@ export class FaqManagementEditComponent implements OnInit, OnChanges {
   isSubmitted: boolean = false;
   currentTab = FaqTabs.INFO;
 
-  answerExportFormats = AnswerExportFormats;
-
   answerExportFormatsRadios = [
     { label: 'Plain text', value: AnswerExportFormats.PLAINTEXT },
     { label: 'Html', value: AnswerExportFormats.HTML },
