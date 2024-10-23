@@ -229,31 +229,17 @@ nb-menu {
   color: var(--input-basic-disabled-text-color);
 }
 
-.ql-editor {
-  min-height: 25em;
-  max-height: 30vh;
+.jodit_theme_default {
+  --jd-border-radius-default: var(--input-rectangle-border-radius);
+  --jd-color-background-default: var(--input-basic-background-color);
+  --jd-color-border: var(--input-basic-border-color);
 }
 
-.ql-toolbar.ql-snow:has(+ .ql-container.ql-snow) {
-  border-top-left-radius: var(--input-rectangle-border-radius);
-  border-top-right-radius: var(--input-rectangle-border-radius);
-}
-
-.ql-toolbar.ql-snow + .ql-container.ql-snow {
-  border-bottom-left-radius: var(--input-rectangle-border-radius);
-  border-bottom-right-radius: var(--input-rectangle-border-radius);
-
-  background-color: var(--input-basic-background-color);
-  border-color: var(--input-basic-border-color);
-  color: var(--input-basic-text-color);
-
-  //   &:hover {
-  //     background-color: var(--input-basic-hover-background-color);
-  //     border-color: var(--input-basic-hover-border-color);
-  //   }
-
-  //   &:focus {
-  //     background-color: var(--input-basic-focus-background-color);
-  //     border-color: var(--input-basic-focus-border-color);
-  //   }
+.nb-theme-dark {
+  --jd-dark-toolbar-color: var(--input-basic-background-color);
+  .jodit_theme_dark {
+    --jd-dark-background-color: var(--input-basic-background-color);
+    --jd-color-background-default: var(--input-basic-background-color);
+    --jd-color-border: var(--input-basic-border-color);
+  }
 }
