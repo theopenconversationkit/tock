@@ -20,18 +20,10 @@ from langchain_core.messages import AIMessage, HumanMessage
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain import rag_chain
-from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
-    RAGCallbackHandler,
-)
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     execute_qa_chain,
-    get_condense_question,
-    get_llm_prompts,
 )
 
 
@@ -51,8 +43,8 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch(
     'gen_ai_orchestrator.services.langchain.rag_chain.ConversationalRetrievalChain.from_llm'
 )
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RetrieverJsonCallbackHandler')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_guard')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGCallbackHandler')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_guard')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
@@ -151,7 +143,7 @@ Answer in {locale}:""",
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
-    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'documents': []})
     mocked_rag_answer = mocked_chain.ainvoke.return_value
 
     # Call function
@@ -207,73 +199,26 @@ Answer in {locale}:""",
     )
 
 
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_fails_if_no_docs_in_valid_answer(mocked_log):
     inputs = {'no_answer': "Sorry, I don't know."}
     response = {
         'answer': 'a valid answer',
-        'source_documents': [],
+        'documents': [],
     }
     try:
-        rag_chain.__rag_guard(inputs, response)
+        rag_chain.rag_guard(inputs, response)
     except Exception as e:
         assert isinstance(e, GenAIGuardCheckException)
 
 
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_removes_docs_if_no_answer(mocked_log):
     inputs = {'no_answer': "Sorry, I don't know."}
     response = {
         'answer': "Sorry, I don't know.",
-        'source_documents': ['a doc as a string'],
+        'documents': ['a doc as a string'],
     }
-    rag_chain.__rag_guard(inputs, response)
-    assert response['source_documents'] == []
+    rag_chain.rag_guard(inputs, response)
+    assert response['documents'] == []
 
-
-def test_get_llm_prompts_one_record():
-    handler = RAGCallbackHandler()
-    handler.on_text(text='LLM 1')
-    llm_1, llm_2 = get_llm_prompts(handler)
-    assert llm_1 is None
-    assert llm_2 == 'LLM 1'
-
-
-def test_get_llm_prompts_one_record():
-    handler = RAGCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_text(text='LLM 2')
-    llm_1, llm_2 = get_llm_prompts(handler)
-    assert llm_1 == 'LLM 1'
-    assert llm_2 == 'LLM 2'
-
-
-def test_get_condense_question_none():
-    handler = RAGCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_chain_start(
-        serialized={},
-        inputs={
-            'input_documents': [],
-            'question': 'Is this a question ?',
-            'chat_history': 'chat_history',
-        },
-    )
-    question = get_condense_question(handler)
-    assert question is None
-
-
-def test_get_condense_question():
-    handler = RAGCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_text(text='LLM 2')
-    handler.on_chain_start(
-        serialized={},
-        inputs={
-            'input_documents': [],
-            'question': 'Is this a question ?',
-            'chat_history': 'chat_history',
-        },
-    )
-    question = get_condense_question(handler)
-    assert question == 'Is this a question ?'

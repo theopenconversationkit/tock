@@ -98,7 +98,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     }
 
     logger.debug(
-        'RAG chain - Use RetrieverJsonCallbackHandler for debugging : %s',
+        'RAG chain - Use RAGCallbackHandler for debugging : %s',
         debug,
     )
 
