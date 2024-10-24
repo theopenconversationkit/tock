@@ -1,0 +1,13 @@
+<ng-container *ngIf="!isPlaintext">
+  <div #editorTarget></div>
+</ng-container>
+
+<textarea
+  *ngIf="isPlaintext"
+  nbInput
+  fullWidth
+  type="text"
+  [rows]="rows"
+  [placeholder]="placeholder"
+  [(ngModel)]="value"
+></textarea>

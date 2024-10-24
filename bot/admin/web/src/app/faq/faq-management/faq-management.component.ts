@@ -173,7 +173,6 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
         this.updateTagsCache();
 
         this.loading.list = false;
-        // this.editFaq(this.faqs[1]);
       });
   }
 
