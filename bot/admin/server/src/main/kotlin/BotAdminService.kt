@@ -1023,7 +1023,7 @@ object BotAdminService {
         val labelKey =
             I18nKeyProvider
                 .simpleKeyProvider(namespace, request.category)
-                .i18n(request.label)
+                .i18n(safeHTML(request.label))
         return Translator.create(labelKey, request.locale)
     }
 
