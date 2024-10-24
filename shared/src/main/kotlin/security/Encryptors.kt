@@ -61,11 +61,17 @@ fun shaS256(s: String): String =
         )
     )
 
+private const val TOCK_UUID_NAMESPACE = "d47dd856-920a-11ef-955b-325096b39f47"
+private val tockUuidNamespaceBytes = TOCK_UUID_NAMESPACE.toByteArray()
+
 /**
  * Generates a UUID based on a sha256 hash of the given string.
  */
-fun sha256Uuid(s: String): UUID {
-    val digest = MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8))
+fun sha256Uuid(s: String, namespace: UUID? = null): UUID {
+    val digest = MessageDigest.getInstance("SHA-256").apply {
+        update(namespace?.toString()?.toByteArray() ?: tockUuidNamespaceBytes)
+        update(s.toByteArray())
+    }.digest()
     digest[6] = (digest[6].toInt() and 0x0f).toByte() /* clear version        */
     digest[6] = (digest[6].toInt() or  0x50).toByte() /* set to version 5     */
     digest[8] = (digest[8].toInt() and 0x3f).toByte() /* clear variant        */
