@@ -20,18 +20,10 @@ from langchain_core.messages import AIMessage, HumanMessage
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain import rag_chain
-from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
-    RetrieverJsonCallbackHandler,
-)
 from gen_ai_orchestrator.services.langchain.rag_chain import (
-    execute_qa_chain,
-    get_condense_question,
-    get_llm_prompts,
+    execute_rag_chain,
 )
 
 
@@ -47,13 +39,12 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.PromptTemplate')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__find_input_variables')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.LangChainPromptTemplate')
 @patch(
     'gen_ai_orchestrator.services.langchain.rag_chain.ConversationalRetrievalChain.from_llm'
 )
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RetrieverJsonCallbackHandler')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_guard')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGCallbackHandler')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_guard')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
@@ -65,7 +56,6 @@ async def test_rag_chain(
     mocked_rag_guard,
     mocked_callback_init,
     mocked_chain_builder,
-    mocked_find_input_variables,
     mocked_prompt_template,
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
@@ -86,7 +76,11 @@ async def test_rag_chain(
             'provider': 'OpenAI',
             'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
             'temperature': 1.2,
-            'prompt': """Use the following context to answer the question at the end.
+            'model': 'gpt-3.5-turbo',
+        },
+        'question_answering_prompt': {
+            'formatter': 'f-string',
+            'template': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
 
 Context:
@@ -96,12 +90,11 @@ Question:
 {question}
 
 Answer in {locale}:""",
-            'model': 'gpt-3.5-turbo',
-        },
-        'question_answering_prompt_inputs': {
-            'question': 'How to get started playing guitar ?',
-            'no_answer': 'Sorry, I don t know.',
-            'locale': 'French',
+            'inputs' : {
+                'question': 'How to get started playing guitar ?',
+                'no_answer': 'Sorry, I don t know.',
+                'locale': 'French',
+            }
         },
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
@@ -150,11 +143,11 @@ Answer in {locale}:""",
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
-    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'documents': []})
     mocked_rag_answer = mocked_chain.ainvoke.return_value
 
     # Call function
-    await execute_qa_chain(query, debug=True)
+    await execute_rag_chain(query, debug=True)
 
     # Assert factories are called with the expected settings from query
     mocked_get_llm_factory.assert_called_once_with(
@@ -179,16 +172,16 @@ Answer in {locale}:""",
         return_generated_question=True,
         combine_docs_chain_kwargs={
             # PromptTemplate must be mocked or searching for params in it will fail
-            'prompt': mocked_prompt_template(
-                template=query.question_answering_llm_setting.prompt,
-                input_variables=['no_answer', 'context', 'question', 'locale'],
+            'prompt': mocked_prompt_template.from_template(
+                template=query.question_answering_prompt.template,
+                template_format=query.question_answering_prompt.formatter.value,
             )
         },
     )
     # Assert qa chain is ainvoke()d with the expected settings from query
     mocked_chain.ainvoke.assert_called_once_with(
         input={
-            **query.question_answering_prompt_inputs,
+            **query.question_answering_prompt.inputs,
             'chat_history': [
                 HumanMessage(content='Hello, how can I do this?'),
                 AIMessage(content='you can do this with the following method ....'),
@@ -206,79 +199,26 @@ Answer in {locale}:""",
     )
 
 
-def test_find_input_variables():
-    template = 'This is a {sample} text with {multiple} curly brace sections'
-    input_vars = rag_chain.__find_input_variables(template)
-    assert input_vars == ['sample', 'multiple']
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_fails_if_no_docs_in_valid_answer(mocked_log):
     inputs = {'no_answer': "Sorry, I don't know."}
     response = {
         'answer': 'a valid answer',
-        'source_documents': [],
+        'documents': [],
     }
     try:
-        rag_chain.__rag_guard(inputs, response)
+        rag_chain.rag_guard(inputs, response)
     except Exception as e:
         assert isinstance(e, GenAIGuardCheckException)
 
 
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_removes_docs_if_no_answer(mocked_log):
     inputs = {'no_answer': "Sorry, I don't know."}
     response = {
         'answer': "Sorry, I don't know.",
-        'source_documents': ['a doc as a string'],
+        'documents': ['a doc as a string'],
     }
-    rag_chain.__rag_guard(inputs, response)
-    assert response['source_documents'] == []
+    rag_chain.rag_guard(inputs, response)
+    assert response['documents'] == []
 
-
-def test_get_llm_prompts_one_record():
-    handler = RetrieverJsonCallbackHandler()
-    handler.on_text(text='LLM 1')
-    llm_1, llm_2 = get_llm_prompts(handler)
-    assert llm_1 is None
-    assert llm_2 == 'LLM 1'
-
-
-def test_get_llm_prompts_one_record():
-    handler = RetrieverJsonCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_text(text='LLM 2')
-    llm_1, llm_2 = get_llm_prompts(handler)
-    assert llm_1 == 'LLM 1'
-    assert llm_2 == 'LLM 2'
-
-
-def test_get_condense_question_none():
-    handler = RetrieverJsonCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_chain_start(
-        serialized={},
-        inputs={
-            'input_documents': [],
-            'question': 'Is this a question ?',
-            'chat_history': 'chat_history',
-        },
-    )
-    question = get_condense_question(handler)
-    assert question is None
-
-
-def test_get_condense_question():
-    handler = RetrieverJsonCallbackHandler()
-    handler.on_text(text='LLM 1')
-    handler.on_text(text='LLM 2')
-    handler.on_chain_start(
-        serialized={},
-        inputs={
-            'input_documents': [],
-            'question': 'Is this a question ?',
-            'chat_history': 'chat_history',
-        },
-    )
-    question = get_condense_question(handler)
-    assert question == 'Is this a question ?'
