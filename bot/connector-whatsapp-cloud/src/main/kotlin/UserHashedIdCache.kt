@@ -16,7 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp.cloud
 
-import ai.tock.shared.security.shaS256
+import ai.tock.shared.security.sha256Uuid
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
@@ -28,7 +28,7 @@ object UserHashedIdCache {
             .expireAfterAccess(60, TimeUnit.MINUTES)
             .build()
 
-    fun createHashedId(id: String): String = shaS256(id).apply { idCache.put(this, id) }
+    fun createHashedId(id: String): String = sha256Uuid(id).toString().apply { idCache.put(this, id) }
 
     fun getRealId(hashedId: String): String = idCache.getIfPresent(hashedId)
         ?: throw CacheExpiredException("Cache expired or real ID not found for hashedId: $hashedId")

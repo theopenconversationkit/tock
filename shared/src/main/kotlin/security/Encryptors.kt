@@ -20,11 +20,12 @@ import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.property
 import ai.tock.shared.propertyExists
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.util.UUID
 import mu.KotlinLogging
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64
 import org.jasypt.util.text.BasicTextEncryptor
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
 
 private val logger = KotlinLogging.logger {}
 
@@ -51,7 +52,7 @@ private val textEncryptor: BasicTextEncryptor by lazy {
 val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
 
 /**
- * Encrypt with sha256.
+ * Hash with sha256.
  */
 fun shaS256(s: String): String =
     String(
@@ -59,6 +60,31 @@ fun shaS256(s: String): String =
             MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8))
         )
     )
+
+/**
+ * Generates a UUID based on a sha256 hash of the given string.
+ */
+fun sha256Uuid(s: String): UUID {
+    val digest = MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8))
+    digest[6] = (digest[6].toInt() and 0x0f).toByte() /* clear version        */
+    digest[6] = (digest[6].toInt() or  0x50).toByte() /* set to version 5     */
+    digest[8] = (digest[8].toInt() and 0x3f).toByte() /* clear variant        */
+    digest[8] = (digest[8].toInt() or  0x80).toByte() /* set to IETF variant  */
+    return uuidFromBytes(digest)
+}
+
+private fun uuidFromBytes(data: ByteArray): UUID {
+    require(data.size >= 16) {
+        "data must be at least 16 bytes in length, was ${data.size}"
+    }
+
+    // Based on the private UUID(bytes[]) constructor
+    var msb: Long = 0
+    var lsb: Long = 0
+    for (i in 0..7) msb = (msb shl 8) or (data[i].toInt() and 0xff).toLong()
+    for (i in 8..15) lsb = (lsb shl 8) or (data[i].toInt() and 0xff).toLong()
+    return UUID(msb, lsb)
+}
 
 /**
  * Encrypt a string and return the result.
