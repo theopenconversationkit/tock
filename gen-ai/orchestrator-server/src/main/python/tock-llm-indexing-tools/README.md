@@ -111,7 +111,7 @@ Options:
 -v          Verbose output for debugging (without this option, script will be silent but for errors)
 ```
 
-Recursively browse web URLs (follow links from these base URLs), then scrape links' contents based on a list of BeautifulSoup filters, then export these contents into a ready-to-index CSV file (one 'title'|'url'|'text' line per URL with scraped contents):
+Recursively browse web URLs (follow links from these base URLs), then scrape links' contents based on a list of BeautifulSoup filters, then export these contents into a ready-to-index CSV file (one 'title'|'source'|'text' line per URL with scraped contents):
 
 
 | Title      | URL                | Text                  |
@@ -123,7 +123,7 @@ Recursively browse web URLs (follow links from these base URLs), then scrape lin
 
 #### index_documents.py
 
-Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
+Index a ready-to-index CSV ('title'|'source'|'text' lines) file contents into a given vector database.
 
 ```
 Usage:
@@ -150,7 +150,7 @@ Options:
 
 Index a ready-to-index CSV file contents into an OpenSearch vector database.
 
-CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
+CSV columns are 'title'|'source'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
 
 Documents will be indexed in OpenSearch DB under index_name index (index_name shall follow OpenSearch naming restrictions) with the following metadata:
 
@@ -162,7 +162,6 @@ Documents will be indexed in OpenSearch DB under index_name index (index_name sh
 | id               | a uuid for each document (one per line in the input file)        |
 | chunk            | the nb of the chunk if the original document was splitted: 'n/N' |
 | title            | the 'title' column from original input CSV                       |
-| url              | the 'url' column from original input CSV                         |
 
 #### Sample result: 
 <pre>
