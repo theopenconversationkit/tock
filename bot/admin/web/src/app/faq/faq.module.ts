@@ -12,6 +12,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule,
@@ -60,7 +61,8 @@ import { FaqTabsComponent } from './faq-tabs.component';
     InfiniteScrollModule,
     BotAnalyticsModule,
     NbRouteTabsetModule,
-    NbToggleModule
+    NbToggleModule,
+    NbRadioModule
   ],
   declarations: [
     FaqManagementComponent,
