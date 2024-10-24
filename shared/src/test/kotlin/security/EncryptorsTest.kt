@@ -22,6 +22,14 @@ import org.junit.jupiter.api.Test
 
 class EncryptorsTest {
     @Test
+    fun `sha256Uuid should produce valid UUIDs`() {
+        val result = sha256Uuid("+33601234567")
+        assertEquals(2, result.variant())
+        assertEquals(5, result.version())
+        assertEquals("a6db4f9b-e00f-5328-9e91-5b8d560cc4b9", result.toString(), "result should not change between versions")
+    }
+
+    @Test
     fun `sha256Uuid should preserve hash properties`() {
         val values = listOf("+33611111111", "+33611111112", "abcdef", "x", "y", "1", "11")
         val uuids = values.map { sha256Uuid(it) }
