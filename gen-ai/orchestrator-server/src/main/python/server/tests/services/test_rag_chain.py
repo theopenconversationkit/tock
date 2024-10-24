@@ -23,7 +23,7 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.rag_chain import (
-    execute_qa_chain,
+    execute_rag_chain,
 )
 
 
@@ -147,7 +147,7 @@ Answer in {locale}:""",
     mocked_rag_answer = mocked_chain.ainvoke.return_value
 
     # Call function
-    await execute_qa_chain(query, debug=True)
+    await execute_rag_chain(query, debug=True)
 
     # Assert factories are called with the expected settings from query
     mocked_get_llm_factory.assert_called_once_with(
