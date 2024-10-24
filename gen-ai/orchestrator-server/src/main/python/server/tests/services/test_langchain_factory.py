@@ -18,16 +18,27 @@ import pytest
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderSettingException
-from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import \
-    GenAIUnknownVectorStoreProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderSettingException,
+)
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
+    GenAIUnknownVectorStoreProviderSettingException,
+)
+from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
+    ContextualCompressorProvider,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
+    BloomzEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
     OpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
+    GuardrailProvider,
 )
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
@@ -39,22 +50,51 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
-from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import PGVectorStoreSetting
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
-    LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
+    OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
+    PGVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
+    LangfuseCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+    BloomzCompressorSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
+    BloomzEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import (
     OpenAIEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.guardrail.bloomz_guardrail_factory import (
+    BloomzGuardrailFactory,
+    BloomzGuardrailSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_callback_handler_factory,
+    get_compressor_factory,
     get_em_factory,
+    get_guardrail_factory,
     get_llm_factory,
-    get_vector_store_factory, get_callback_handler_factory,
+    get_vector_store_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
@@ -68,7 +108,9 @@ from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory imp
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import (
     OpenSearchFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import PGVectorFactory
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
+    PGVectorFactory,
+)
 
 
 def test_get_unknown_llm_factory():
@@ -178,6 +220,20 @@ def test_get_azure_open_ai_em_factory():
     assert isinstance(azure_open_ai, AzureOpenAIEMFactory)
 
 
+def test_get_bloomz_em_factory():
+    bloomz = get_em_factory(
+        setting=BloomzEMSetting(
+            **{
+                'provider': 'Bloomz',
+                'api_base': 'https://exemple.apibase',
+                'pooling': 'last',
+            }
+        )
+    )
+    assert bloomz.setting.provider == EMProvider.BLOOMZ
+    assert isinstance(bloomz, BloomzEMFactory)
+
+
 def test_get_open_search_vector_store_factory():
     em_factory = get_em_factory(
         setting=OpenAIEMSetting(
@@ -202,11 +258,11 @@ def test_get_open_search_vector_store_factory():
                     'type': 'Raw',
                     'value': 'ab7***************************A1IV4B',
                 },
-                'username': 'admin'
+                'username': 'admin',
             }
         ),
         index_name='my-index-name',
-        embedding_function=em_factory.get_embedding_model()
+        embedding_function=em_factory.get_embedding_model(),
     )
     pgvector = get_vector_store_factory(
         setting=PGVectorStoreSetting(
@@ -219,11 +275,11 @@ def test_get_open_search_vector_store_factory():
                     'value': 'ab7***************************A1IV4B',
                 },
                 'username': 'postgres',
-                'database': 'postgres'
+                'database': 'postgres',
             }
         ),
         index_name='my-index-name',
-        embedding_function=em_factory.get_embedding_model()
+        embedding_function=em_factory.get_embedding_model(),
     )
     assert isinstance(open_search, OpenSearchFactory)
     assert isinstance(pgvector, PGVectorFactory)
@@ -234,7 +290,7 @@ def test_get_unknown_vector_store_factory():
         get_vector_store_factory(
             setting='an incorrect vector store provider',
             index_name=None,
-            embedding_function=None
+            embedding_function=None,
         )
 
 
@@ -253,9 +309,35 @@ def test_get_langfuse_observability_factory():
                     'value': 'ab7***************************A1IV4B',
                 },
                 'public_key': 'df41*********f',
-                'url': 'https://myServer:3000'
+                'url': 'https://myServer:3000',
             }
         )
     )
     assert langfuse_factory.setting.provider == ObservabilityProvider.LANGFUSE
     assert isinstance(langfuse_factory, LangfuseCallbackHandlerFactory)
+
+
+def test_get_bloomz_guardrail_factory():
+    guardrail = get_guardrail_factory(
+        setting=BloomzGuardrailSetting(
+            provider='BloomzGuardrail', api_base='http://guardrail.com', max_score=0.6
+        )
+    )
+
+    assert guardrail.setting.provider == GuardrailProvider.BLOOMZ
+    assert isinstance(guardrail, BloomzGuardrailFactory)
+
+
+def test_get_bloomz_compressor_factory():
+    compressor = get_compressor_factory(
+        setting=BloomzCompressorSetting(
+            provider='BloomzRerank',
+            min_score=0.5,
+            endpoint='http://compressor.com',
+            max_documents=25,
+            label='label',
+        )
+    )
+
+    assert compressor.setting.provider == ContextualCompressorProvider.BLOOMZ
+    assert isinstance(compressor, BloomzCompressorFactory)

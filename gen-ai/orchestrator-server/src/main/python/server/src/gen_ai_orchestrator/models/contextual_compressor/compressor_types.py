@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,26 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Module defining generic type alias"""
-
 from typing import Annotated, Union
 
 from fastapi import Body
 
-from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
-from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
-    BloomzEMSetting,
-)
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import (
-    OllamaEMSetting,
-)
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
-    OpenAIEMSetting,
+from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
 )
 
-EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting, BloomzEMSetting],
-    Body(discriminator='provider'),
+CompressorSetting = Annotated[
+    Union[BloomzCompressorSetting], Body(discriminator='provider')
 ]
