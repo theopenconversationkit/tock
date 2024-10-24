@@ -353,20 +353,11 @@
           [required]="true"
           data-testid="answer"
         >
-          <ng-container *ngIf="!answerIsPlaintext">
-            <div #answerEditorTarget></div>
-          </ng-container>
-
-          <textarea
-            *ngIf="answerIsPlaintext"
-            nbInput
+          <tock-wysiwyg-editor
+            [editionFormat]="answerExportFormat.value"
             formControlName="answer"
-            fullWidth
-            id="answer"
-            type="text"
-            rows="16"
-            placeholder="Enter faq answer..."
-          ></textarea>
+            placeholder="Enter faq answer content..."
+          ></tock-wysiwyg-editor>
         </tock-form-control>
       </div>
     </form>
@@ -378,7 +369,7 @@
       class="mt-n2 mb-1"
     >
       <small [ngClass]="getControlLengthIndicatorClass('answer')">
-        {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
+        {{ answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
       </small>
     </div>
 

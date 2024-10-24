@@ -37,3 +37,4 @@ export * from './info-button/info-button.component';
 export * from './select-bot/select-bot.component';
 export * from './date-range/date-range-calendar.component';
 export * from './data-export/data-export.component';
+export * from './wysiwyg-editor/wysiwyg-editor.component';
