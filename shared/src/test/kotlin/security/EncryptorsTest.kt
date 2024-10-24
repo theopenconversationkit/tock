@@ -25,8 +25,8 @@ class EncryptorsTest {
     fun `sha256Uuid should produce valid UUIDs`() {
         val result = sha256Uuid("+33601234567")
         assertEquals(2, result.variant())
-        assertEquals(5, result.version())
-        assertEquals("a6db4f9b-e00f-5328-9e91-5b8d560cc4b9", result.toString(), "result should not change between versions")
+        assertEquals(8, result.version())
+        assertEquals("d58d7b07-94f8-8d6a-bcbe-c9745ec6e6da", result.toString(), "result should not change between versions")
     }
 
     @Test
