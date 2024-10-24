@@ -38,13 +38,16 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.time.Duration
+import mu.KotlinLogging
 
 class WhatsAppConnectorCloudConnector internal constructor(
     val connectorId: String,
@@ -196,28 +199,18 @@ class WhatsAppConnectorCloudConnector internal constructor(
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit
     ) {
-        val copyRecipientId = recipientId.copy(
-            id = encodeRecipientId(recipientId.id),
-        )
         controller.handle(
-
             SendChoice(
-                copyRecipientId,
+                recipientId,
                 connectorId,
                 PlayerId(connectorId, bot),
                 intent.wrappedIntent().name,
                 step,
-                parameters
+                parameters,
             ),
             ConnectorData(
                 WhatsAppConnectorCloudCallback(connectorId)
             )
         )
-    }
-
-    private fun encodeRecipientId(input: String): String {
-        return input.replace(" ", "+").let {
-            if (it.endsWith("\r\n")) it else "$it\r\n"
-        }
     }
 }
