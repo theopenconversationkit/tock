@@ -1,0 +1,105 @@
+// Color customization in light and dark modes
+.jodit_theme_default {
+  --jd-border-radius-default: var(--input-rectangle-border-radius);
+  --jd-color-background-default: var(--input-basic-background-color);
+  --jd-color-border: var(--input-basic-border-color);
+}
+
+.nb-theme-dark {
+  --jd-dark-toolbar-color: var(--input-basic-background-color);
+  .jodit_theme_dark {
+    --jd-dark-background-color: var(--input-basic-background-color);
+    --jd-color-background-default: var(--input-basic-background-color);
+    --jd-color-border: var(--input-basic-border-color);
+  }
+}
+
+// Rich messages styling
+@mixin blockquotes-styling() {
+  background: var(--background-basic-color-1);
+  border-left: 0.5em solid var(--border-basic-color-5);
+  margin: 1.5em 0;
+  padding: 0.5em;
+  p {
+    quotes: '\201C''\201D''\2018''\2019';
+    display: inline;
+  }
+}
+
+@mixin code-blocks-styling() {
+  background-color: var(--background-basic-color-1);
+  border: 1px solid var(--border-basic-color-5);
+  margin: 0 2px;
+  padding: 3px 5px 1px 5px;
+  border-radius: 0.2em;
+}
+
+@mixin tables-styling() {
+  thead {
+    font-weight: var(--text-subtitle-font-weight);
+    th {
+      border: none !important;
+      border-bottom: 2px solid var(--border-basic-color-5) !important;
+      padding: 0.4em !important;
+    }
+  }
+
+  tbody {
+    td {
+      border: none !important;
+      border-bottom: 1px solid var(--border-basic-color-5) !important;
+      padding: 0.4em !important;
+    }
+  }
+}
+
+// Rich messages styling in editor
+.jodit-wysiwyg {
+  // To reflect what's happening in web clients (Tvk, Trk)
+  white-space: nowrap;
+
+  // blockquote styling
+  blockquote {
+    @include blockquotes-styling();
+  }
+
+  // code block styling
+  code {
+    @include code-blocks-styling();
+  }
+
+  pre code {
+    display: block;
+  }
+
+  // table styling
+  table {
+    @include tables-styling();
+  }
+}
+
+// Rich messages styling in chat-ui component
+.chat-ui-message-content-styling {
+  // To reflect what's happening in web clients (Tvk, Trk)
+  white-space: nowrap;
+
+  // blockquote styling
+  blockquote {
+    @include blockquotes-styling();
+  }
+
+  // code block styling
+  code {
+    @include code-blocks-styling();
+  }
+
+  pre code {
+    @include code-blocks-styling();
+    display: block;
+  }
+
+  // table styling
+  table {
+    @include tables-styling();
+  }
+}

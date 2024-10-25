@@ -55,8 +55,8 @@ export class FaqManagementEditComponent implements OnChanges {
 
   answerExportFormatsRadios = [
     { label: 'Plain text', value: MarkupFormats.PLAINTEXT },
-    { label: 'Html', value: MarkupFormats.HTML },
-    { label: 'Markdown', value: MarkupFormats.MARKDOWN }
+    { label: 'Html', value: MarkupFormats.HTML }
+    // { label: 'Markdown', value: MarkupFormats.MARKDOWN }
   ];
 
   controlsMaxLength = {
@@ -175,7 +175,7 @@ export class FaqManagementEditComponent implements OnChanges {
 
   detectAnswerFormat() {
     let rawData = this.answer.value;
-    const guessedFormat = detectMarkupFormat(rawData);
+    const guessedFormat = detectMarkupFormat(rawData, { checkForHtml: true, checkForMarkdown: false });
     this.answerExportFormat.setValue(guessedFormat);
   }
 
