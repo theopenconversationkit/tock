@@ -79,6 +79,7 @@ fun concat(s1: String?, s2: String?): String {
 
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
 private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
+private val urlRegex = "(https?://\\S+)".toRegex()
 
 private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
 
@@ -88,11 +89,18 @@ fun String.stripAccents(): String =
 fun String.normalize(locale: Locale): String =
     this.lowercase(locale).removeTrailingPunctuation().stripAccents()
 
-fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", ignoreCase = true)
-        .replace("a", "[aàáâãä]", ignoreCase = true)
-        .replace("i", "[iìíîï]", ignoreCase = true)
-        .replace("o", "[oòóôõöø]", ignoreCase = true)
-        .replace("u", "[uùúûü]", ignoreCase = true)
-        .replace("n", "[nñ]", ignoreCase = true)
-        .replace(" ", "['-_ ]")
-        .replace("c", "[cç]", ignoreCase = true)
+fun allowDiacriticsInRegexp(s: String): String = s.replace("e", "[eéèêë]", ignoreCase = true)
+    .replace("a", "[aàáâãä]", ignoreCase = true)
+    .replace("i", "[iìíîï]", ignoreCase = true)
+    .replace("o", "[oòóôõöø]", ignoreCase = true)
+    .replace("u", "[uùúûü]", ignoreCase = true)
+    .replace("n", "[nñ]", ignoreCase = true)
+    .replace(" ", "['-_ ]")
+    .replace("c", "[cç]", ignoreCase = true)
+
+fun detectAndWrapLinks(text: String): String {
+    return text.replace(urlRegex) { matchResult ->
+        val url = matchResult.value
+        "<a href=\"$url\" target=\"_blank\">$url</a>"
+    }
+}

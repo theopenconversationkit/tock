@@ -20,8 +20,9 @@ import ai.tock.bot.connector.web.send.Footnote
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
+import ai.tock.shared.detectAndWrapLinks
 
-internal class WebMessageProcessor(private val processMarkdown: Boolean) {
+internal class WebMessageProcessor(private val processMarkdown: Boolean, private val interpretLink: Boolean) {
 
     fun process(action: Action): WebMessage? {
         return when(action){
@@ -62,6 +63,9 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
     private fun postProcess(text: String): String {
         if (processMarkdown) {
             return WebMarkdown.markdown(text)
+        }
+        else if (interpretLink) {
+            return detectAndWrapLinks(text)
         }
 
         return text

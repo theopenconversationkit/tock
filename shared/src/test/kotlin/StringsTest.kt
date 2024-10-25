@@ -35,4 +35,10 @@ class StringsTest {
         assertEquals(allowDiacriticsInRegexp("demo"), "d[eéèêë]m[oòóôõöø]")
         assertEquals(allowDiacriticsInRegexp("c est une mise a jour"), "[cç]['-_ ][eéèêë]st['-_ ][uùúûü][nñ][eéèêë]['-_ ]m[iìíîï]s[eéèêë]['-_ ][aàáâãä]['-_ ]j[oòóôõöø][uùúûü]r")
     }
+
+    @Test
+    fun `Test Regex for interpret links`() {
+        val rawText = "Visitez https://doc.tock.ai/ pour plus d'informations. Vous pouvez aussi aller sur http://doc.tock.ai/"
+        assertEquals(detectAndWrapLinks(rawText), "Visitez <a href=\"https://doc.tock.ai/\" target=\"_blank\">https://doc.tock.ai/</a> pour plus d'informations. Vous pouvez aussi aller sur <a href=\"http://doc.tock.ai/\" target=\"_blank\">http://doc.tock.ai/</a>")
+    }
 }

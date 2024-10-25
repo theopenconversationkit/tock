@@ -119,7 +119,8 @@ class WebConnector internal constructor(
         private val messageProcessor = WebMessageProcessor(
             processMarkdown = propertyOrNull("tock_web_enable_markdown")?.toBoolean()
             // Fallback to previous property name for backward compatibility
-            ?: propertyOrNull("allow_markdown").toBoolean()
+                ?: propertyOrNull("allow_markdown").toBoolean(),
+            interpretLink = booleanProperty ("tock_web_enable_interpret_link", true)
         )
         private val channels by lazy { Channels() }
     }
