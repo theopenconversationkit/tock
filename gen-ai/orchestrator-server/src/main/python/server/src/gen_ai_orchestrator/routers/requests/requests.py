@@ -131,19 +131,16 @@ class RagQuery(BaseQuery):
     history: list[ChatMessage] = Field(
         description="Conversation history, used to reformulate the user's question."
     )
-    question_answering_prompt_inputs: Any = Field(
-        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the history field',
-    )
     # condense_question_llm_setting: LLMSetting =
     #   Field(description="LLM setting, used to condense the user's question.")
-    # condense_question_prompt_inputs: Any = (
-    #         Field(
-    #             description='Key-value inputs for the condense question llm prompt, when used as a template.',
-    #         ),
+    # condense_question_prompt: PromptTemplate = Field(
+    #         description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     #     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
+    )
+    question_answering_prompt : PromptTemplate = Field(
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
 
     model_config = {
@@ -164,7 +161,11 @@ class RagQuery(BaseQuery):
                             'value': 'ab7***************************A1IV4B',
                         },
                         'temperature': 1.2,
-                        'prompt': """Use the following context to answer the question at the end.
+                        'model': 'gpt-3.5-turbo',
+                    },
+                    'question_answering_prompt': {
+                        'formatter': 'f-string',
+                        'template': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
 
 Context:
@@ -174,12 +175,11 @@ Question:
 {question}
 
 Answer in {locale}:""",
-                        'model': 'gpt-3.5-turbo',
-                    },
-                    'question_answering_prompt_inputs': {
-                        'question': 'How to get started playing guitar ?',
-                        'no_answer': "Sorry, I don't know.",
-                        'locale': 'French',
+                        'inputs': {
+                            'question': 'How to get started playing guitar ?',
+                            'no_answer': 'Sorry, I don t know.',
+                            'locale': 'French',
+                        }
                     },
                     'embedding_question_em_setting': {
                         'provider': 'OpenAI',

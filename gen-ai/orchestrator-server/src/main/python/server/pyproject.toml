@@ -8,23 +8,23 @@ packages = [{include = "gen_ai_orchestrator", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-uvicorn = "^0.31.1"
-pydantic-settings="^2.5.2"
-fastapi = "^0.115.0"
-langchain = "^0.3.3"
-langchain-community = "^0.3.2"
-langchain-openai = "^0.2.2"
+uvicorn = "^0.32.0"
+pydantic-settings="^2.6.0"
+fastapi = "^0.115.3"
+langchain = "^0.3.4"
+langchain-community = "^0.3.3"
+langchain-openai = "^0.2.3"
 tiktoken = "^0.8.0"
 opensearch-py = "^2.7.1"
 path = "^17.0.0"
 colorlog = "^6.8.2"
-boto3 = "^1.35.37"
+boto3 = "^1.35.48"
 urllib3 = "^2.2.3"
 jinja2 = "^3.1.4"
-langfuse = "^2.52.0"
+langfuse = "^2.52.2"
 httpx-auth-awssigv4 = "^0.1.4"
 langchain-postgres = "^0.0.12"
-google-cloud-secret-manager = "^2.20.2"
+google-cloud-secret-manager = "^2.21.0"
 psycopg = {extras = ["binary"], version = "^3.2.3"}
 
 
@@ -35,8 +35,8 @@ bandit = {version = "^1.7.7", extras = ["json"]}
 cyclonedx-bom = "^4.1.4"
 
 [tool.poetry.group.test.dependencies]
-tox = "^4.11.4"
-coverage = "^7.4.0"
+tox = "^4.23.2"
+coverage = "^7.6.4"
 pytest = "^7.4.4"
 pytest-asyncio = "^0.23.6"
 

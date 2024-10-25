@@ -51,28 +51,3 @@ async def check_llm_setting(query: LLMProviderSettingStatusQuery) -> bool:
             trace_name=ObservabilityTrace.CHECK_LLM_SETTINGS.value)
 
     return await get_llm_factory(query.setting).check_llm_setting(langfuse_callback_handler)
-
-
-def llm_inference_with_parser(
-    llm_factory: LangChainLLMFactory, parser: BaseOutputParser
-) -> AIMessage:
-    """
-    Perform LLM inference and format the output content based on the given parser.
-
-    :param llm_factory: LangChain LLM Factory.
-    :param parser: Parser to format the output.
-
-    :return: Result of the language model inference with the content formatted.
-    """
-
-    # Change the prompt with added format instructions
-    format_instructions = parser.get_format_instructions()
-    formatted_prompt = llm_factory.setting.prompt + '\n' + format_instructions
-
-    # Inference of the LLM with the formatted prompt
-    llm_output = llm_factory.invoke(formatted_prompt)
-
-    # Apply the parsing on the LLM output
-    llm_output.content = parser.parse(llm_output.content)
-
-    return llm_output
