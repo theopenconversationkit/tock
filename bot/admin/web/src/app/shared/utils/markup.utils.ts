@@ -66,10 +66,10 @@ export function containsMARKDOWN(str: string): boolean {
   return containsNonTextOrHtmlTokens(lexer(str));
 }
 
-export function detectMarkupFormat(data: string) {
-  if (containsHTML(data)) return MarkupFormats.HTML;
+export function detectMarkupFormat(data: string, options = { checkForHtml: true, checkForMarkdown: true }) {
+  if (options.checkForHtml && containsHTML(data)) return MarkupFormats.HTML;
 
-  if (containsMARKDOWN(data)) return MarkupFormats.MARKDOWN;
+  if (options.checkForMarkdown && containsMARKDOWN(data)) return MarkupFormats.MARKDOWN;
 
   return MarkupFormats.PLAINTEXT;
 }
