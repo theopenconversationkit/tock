@@ -7,7 +7,7 @@
   />
   <span
     *ngIf="reply"
-    [innerHTML]="sentence.text"
+    [innerHTML]="linkifyHtml(sentence.text)"
     class="chat-ui-message-content-styling"
   ></span>
   <span *ngIf="!reply">{{ sentence.text }}</span>
