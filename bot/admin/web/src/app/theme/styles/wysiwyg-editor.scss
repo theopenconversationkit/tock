@@ -57,6 +57,7 @@
 .jodit-wysiwyg {
   // To reflect what's happening in web clients (Tvk, Trk)
   white-space: nowrap;
+  text-wrap: auto;
 
   // blockquote styling
   blockquote {
@@ -82,6 +83,7 @@
 .chat-ui-message-content-styling {
   // To reflect what's happening in web clients (Tvk, Trk)
   white-space: nowrap;
+  text-wrap: auto;
 
   // blockquote styling
   blockquote {
