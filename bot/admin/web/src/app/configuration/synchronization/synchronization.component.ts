@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application, UserNamespace } from '../../model/application';
-import { AuthService } from '../../core-nlp/auth/auth.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { DialogService } from '../../core-nlp/dialog.service';
@@ -16,7 +15,6 @@ import { ChoiceDialogComponent } from '../../shared/components';
   styleUrls: ['./synchronization.component.css']
 })
 export class SynchronizationComponent implements OnInit {
-  namespaces: UserNamespace[];
   sourceNamespace: UserNamespace;
   targetNamespace: UserNamespace;
   sourceApplications: Application[];
@@ -27,7 +25,6 @@ export class SynchronizationComponent implements OnInit {
 
   constructor(
     private applicationService: ApplicationService,
-    private authService: AuthService,
     public state: StateService,
     private botConfigurationService: BotConfigurationService,
     private dialog: DialogService,
@@ -36,7 +33,6 @@ export class SynchronizationComponent implements OnInit {
     private router: Router
   ) {}
   ngOnInit(): void {
-    this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
     this.sourceApplications = this.state.applications;
   }
 
@@ -67,7 +63,7 @@ export class SynchronizationComponent implements OnInit {
       context: {
         title: 'Overwrite configuration?',
         subtitle: `During synchronization, configuration will be copied from the source application to the target application (answers, stories, training).
-  
+
 Please note : ${inboxMessagesCopySubtitle}
 
 The synchronization of both applications will be permanent, and there will be no way to reverse it. Do you want to continue?

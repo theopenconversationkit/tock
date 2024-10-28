@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { NamespaceConfiguration, NamespaceSharingConfiguration, UserNamespace } from '../../model/application';
@@ -30,9 +30,8 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: 'namespaces.component.html',
   styleUrls: ['namespaces.component.scss']
 })
-export class NamespacesComponent implements OnInit, OnDestroy {
+export class NamespacesComponent implements OnDestroy {
   destroy = new Subject();
-  namespaces: UserNamespace[];
 
   managedNamespace: string;
   managedUsers: UserNamespace[];
@@ -53,22 +52,10 @@ export class NamespacesComponent implements OnInit, OnDestroy {
     private nbDialogService: NbDialogService
   ) {}
 
-  ngOnInit(): void {
-    this.state.currentApplicationEmitter.pipe(takeUntil(this.destroy)).subscribe((arg) => {
-      this.grabNamespaces();
-    });
-    this.grabNamespaces();
-  }
-
-  grabNamespaces(): void {
-    this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
-  }
-
   selectNamespace(namespace: string): void {
     this.applicationService.selectNamespace(namespace).subscribe((_) =>
       this.authService.loadUser().subscribe((_) => {
-        this.applicationService.resetConfiguration;
-        this.grabNamespaces();
+        this.applicationService.resetConfiguration();
       })
     );
   }
@@ -85,7 +72,7 @@ export class NamespacesComponent implements OnInit, OnDestroy {
     const modal = this.nbDialogService.open(CreateNamespaceComponent);
     const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
       this.applicationService.createNamespace(result.name.trim()).subscribe((b) => {
-        this.ngOnInit();
+        this.applicationService.resetConfiguration();
       });
       this.closeEdition();
       modal.close();
