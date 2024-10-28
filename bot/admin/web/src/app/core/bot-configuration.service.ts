@@ -17,10 +17,10 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
-import { BehaviorSubject, Observable, Subscription, forkJoin } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, forkJoin, share } from 'rxjs';
 import { ApplicationScopedQuery } from '../model/commons';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType } from './model/configuration';
-import { SynchronizationConfiguration } from "./model/synchronizationConfiguration";
+import { SynchronizationConfiguration } from './model/synchronizationConfiguration';
 
 @Injectable()
 export class BotConfigurationService implements OnDestroy {
@@ -38,8 +38,9 @@ export class BotConfigurationService implements OnDestroy {
   readonly bots: BehaviorSubject<BotConfiguration[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService, private state: StateService) {
-    this.subscription = this.state.configurationChange.subscribe((_) => this.updateConfigurations());
-    this.updateConfigurations();
+    this.subscription = this.state.configurationChange.subscribe((_) => {
+      this.updateConfigurations();
+    });
   }
 
   ngOnDestroy(): void {
@@ -86,8 +87,12 @@ export class BotConfigurationService implements OnDestroy {
     return this.rest.post('/configuration/synchronization', conf);
   }
 
+  getBotsPending: Observable<BotConfiguration[]>;
   private getBots(botId: string): Observable<BotConfiguration[]> {
-    return this.rest.get(`/bots/${botId}`, BotConfiguration.fromJSONArray);
+    if (!this.getBotsPending) {
+      this.getBotsPending = this.rest.get(`/bots/${botId}`, BotConfiguration.fromJSONArray).pipe(share());
+    }
+    return this.getBotsPending;
   }
 
   findApplicationConfigurationById(id: string): BotApplicationConfiguration {
@@ -114,9 +119,9 @@ export class BotConfigurationService implements OnDestroy {
 
   findValidPath(connectorType: ConnectorType): string {
     const bots = this.bots.getValue();
-    const baseTargetPath = `/io/${this.state.user.organization.toLowerCase().replace(/\s/g, '')}/${this.state.currentApplication.name.replace(/\s/g, '_')}/${
-      connectorType.id
-    }`;
+    const baseTargetPath = `/io/${this.state.user.organization
+      .toLowerCase()
+      .replace(/\s/g, '')}/${this.state.currentApplication.name.replace(/\s/g, '_')}/${connectorType.id}`;
     let targetPath = baseTargetPath;
     let index = 1;
     while (bots.findIndex((b) => b.configurations && b.configurations.findIndex((c) => c.path === targetPath) !== -1) !== -1) {
