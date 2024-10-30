@@ -137,17 +137,18 @@
   </nb-card-body>
 </nb-card>
 
+<nb-card
+  [nbSpinner]="loading"
+  *ngIf="loading"
+>
+  <nb-card-body class="loader"></nb-card-body>
+</nb-card>
+
 <div *ngIf="total !== -1">
-  <h1 *ngIf="total === 0">
-    No dialogs found!
-    <button
-      nbButton
-      ghost
-      (click)="refresh()"
-    >
-      <nb-icon icon="arrow-clockwise"></nb-icon>
-    </button>
-  </h1>
+  <tock-no-data-found
+    *ngIf="total === 0"
+    title="No dialogs found"
+  ></tock-no-data-found>
 
   <div
     infinite-scroll
@@ -191,11 +192,3 @@
     </div>
   </div>
 </div>
-
-<nb-card
-  [nbSpinner]="loading"
-  nbSpinnerStatus="primary"
-  *ngIf="loading"
->
-  <nb-card-body></nb-card-body>
-</nb-card>

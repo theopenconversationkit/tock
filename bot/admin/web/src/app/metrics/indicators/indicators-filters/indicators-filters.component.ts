@@ -42,7 +42,7 @@ export class IndicatorsFiltersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.form.valueChanges.pipe(takeUntil(this.destroy), debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy)).subscribe(() => {
       this.onFilter.emit(this.form.value as IndicatorsFilter);
     });
   }

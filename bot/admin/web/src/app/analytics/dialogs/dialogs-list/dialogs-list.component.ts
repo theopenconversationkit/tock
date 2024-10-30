@@ -69,32 +69,27 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     private route: ActivatedRoute,
     public botSharedService: BotSharedService,
     private router: Router
-  ) {
-    this.state = state;
+  ) {}
 
-    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((configs) => {
-      this.isSatisfactionRoute().subscribe((res) => {
-        this.botSharedService.getIntentsByApplication(this.state.currentApplication._id).subscribe((intents) => (this.intents = intents));
-
-        this.configurationNameList = configs.filter((item) => item.targetConfigurationId == null).map((item) => item.applicationId);
-
-        if (res) {
-          this.ratingFilter = [1, 2, 3, 4, 5];
-        }
-        this.refresh();
-      });
-    });
-
+  ngOnInit() {
     this.botSharedService
       .getConnectorTypes()
       .pipe(take(1))
       .subscribe((confConf) => {
         this.connectorTypes = confConf.map((it) => it.connectorType);
       });
-  }
 
-  ngOnInit() {
-    this.load();
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((configs) => {
+      this.botSharedService.getIntentsByApplication(this.state.currentApplication._id).subscribe((intents) => (this.intents = intents));
+
+      this.configurationNameList = configs
+        .filter((item) => item.targetConfigurationId == null)
+        .map((item) => {
+          return item.applicationId;
+        });
+
+      this.refresh();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {

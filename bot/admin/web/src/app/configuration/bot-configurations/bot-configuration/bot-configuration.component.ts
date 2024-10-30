@@ -19,6 +19,7 @@ import { BotApplicationConfiguration, ConnectorType } from '../../../core/model/
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'tock-bot-configuration',
@@ -26,6 +27,8 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
   styleUrls: ['./bot-configuration.component.scss']
 })
 export class BotConfigurationComponent implements OnInit {
+  public loading: boolean = true;
+
   @Input()
   configuration: BotApplicationConfiguration;
 
@@ -41,17 +44,21 @@ export class BotConfigurationComponent implements OnInit {
   constructor(public botSharedService: BotSharedService, private state: StateService, private botConfiguration: BotConfigurationService) {}
 
   ngOnInit(): void {
-    this.botSharedService.getConnectorTypes().subscribe((confConf) => {
-      const c = confConf.map((it) => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
-      this.connectorTypes = c.filter((conn) => !conn.isRest());
-      const rest = c.find((conn) => conn.isRest());
-      this.connectorTypesAndRestType = c.filter((conn) => !conn.isRest());
-      this.connectorTypesAndRestType.push(rest);
-      if (!this.configuration._id && c.length > 0) {
-        this.configuration.connectorType = c[0];
-        this.changeConnectorType();
-      }
-    });
+    this.botSharedService
+      .getConnectorTypes()
+      .pipe(take(1))
+      .subscribe((confConf) => {
+        const c = confConf.map((it) => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
+        this.connectorTypes = c.filter((conn) => !conn.isRest());
+        const rest = c.find((conn) => conn.isRest());
+        this.connectorTypesAndRestType = c.filter((conn) => !conn.isRest());
+        this.connectorTypesAndRestType.push(rest);
+        if (!this.configuration._id && c.length > 0) {
+          this.configuration.connectorType = c[0];
+          this.changeConnectorType();
+        }
+        this.loading = false;
+      });
   }
 
   remove(): void {

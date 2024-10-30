@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 // import * as html2pdf from 'html2pdf.js';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
@@ -28,13 +28,15 @@ import { UserAnalyticsQueryResult } from '../users/users';
 import { UserFilter } from '../users/users.component';
 import { toISOStringWithoutOffset } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.css']
 })
-export class ActivityComponent implements OnInit {
+export class ActivityComponent implements OnInit, OnDestroy {
+  destroy$ = new Subject();
   startDate: Date;
   endDate: Date;
   selectedConnectorId: string;
@@ -78,7 +80,7 @@ export class ActivityComponent implements OnInit {
   variationUsersPercentage: number;
 
   constructor(private state: StateService, private analytics: AnalyticsService, private botConfiguration: BotConfigurationService) {
-    this.botConfiguration.configurations.subscribe((configs) => {
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((configs) => {
       this.configurations = configs;
     });
     this.userPreferences = this.analytics.getUserPreferences();
@@ -374,5 +376,10 @@ export class ActivityComponent implements OnInit {
 
   waitAndRefresh() {
     setTimeout((_) => this.reload());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

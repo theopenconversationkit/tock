@@ -1,11 +1,19 @@
-<div *ngIf="loaded">
+<ng-container *ngIf="!loading && configurations?.length === 0">
+  <div class="d-flex flex-wrap align-items-center">
+    <h1 class="flex-grow-1">Satisfaction</h1>
+  </div>
+
+  <tock-no-data-found title="No bot configuration detected"></tock-no-data-found>
+</ng-container>
+
+<div *ngIf="configurations?.length">
   <div *ngIf="isStatisfactionActivated">
     <tock-satisfaction-details></tock-satisfaction-details>
   </div>
+
   <div *ngIf="!isStatisfactionActivated && !errorMsg">
     <tock-activate-satisfaction (enableSatisfaction)="isStatisfactionActivated = $event"></tock-activate-satisfaction>
   </div>
+
+  <h2 *ngIf="errorMsg">{{ errorMsg }}</h2>
 </div>
-
-
-<h2 *ngIf="errorMsg">{{errorMsg}}</h2>
