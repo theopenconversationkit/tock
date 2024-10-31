@@ -17,7 +17,7 @@ langchain = "^0.3.3"
 langsmith = "^0.1.132"
 python-dotenv = "^1.0.0"
 opensearch-py = "^2.4.2"
-gen_ai_orchestrator = {path = "../server"}
+gen_ai_orchestrator = {path = "../server", develop=true}
 langchain-community = "^0.3.2"
 pre-commit = "^3.7.1"
 aiometer = "^0.5.0"

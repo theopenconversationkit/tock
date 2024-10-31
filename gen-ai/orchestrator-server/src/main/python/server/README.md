@@ -49,8 +49,8 @@ Basic usage to create a venv with a specific version of Python for this project 
 
 ```sh
 # In gen-ai/orchestrator-server/src/main/python/server
-pyenv install 3.9.18
-pyenv local 3.9.18  # Activate Python 3.9 for the current
+pyenv install 3.10.6
+pyenv local 3.10.6  # Activate Python 3.9 for the current
 which python # Check that you use the python version installed by pyenv
 python --version # Check your python version
 python -m venv .venv # Create a virtual env based on this python version
@@ -65,7 +65,7 @@ poetry install # Install dependencies for this project in the virtual env
 Install python3.9 and poetry :
 
 ```sh
-apt install python3.9 poetry
+apt install python3.10 poetry
 ```
 
 Create a virtual env then install dependencies :
@@ -170,6 +170,81 @@ print(f"Nb of tokens: {num_tokens}")
 ```
 
 If your prompt contents can be made public, you can also use [OpenAI's tokenizer](https://platform.openai.com/tokenizer) as a more convenient method.
+
+## RAG - Reranking (Compressor), Guardrail and embedding - Bloomz based models
+
+The Gen AI Orchestrator server RAG chain supports embedding, reranking and guardrails for Bloomz based models.
+Curently this implementation is based on a **custom inference server also Open Sourced at https://github.com/creditMutuelArkea/llm-inference/** 
+
+### Embedding configuration
+
+See [embeddings_bloomz_settings.json](./../tock-llm-indexing-tools/examples/embeddings_bloomz_settings.json) for an exemple of configuration.
+
+### Reranking / Compressor settings
+
+Compressor (aka reranker) will compute a similarity score between the user query and a document (context),
+usually this score is linked to an output of the reranking model associated to a specific label. We may find the name of 
+the label in the model card, for instance LABEL_1 contains this similarity score for *cmarkea/bloomz-3b-reranking* model [mentioned in the model
+card here](https://huggingface.co/cmarkea/bloomz-3b-reranking#:~:text=lambda%20x%3A%20x%5B0%5D%5B%27label%27%5D%20%3D%3D%20%22LABEL_1%22%2C).
+
+You can also specify a `min_score`, used to filter non relevant / similar documents.
+
+Here is an exemple of compressor_settings that uses our llm-inference with *cmarkea/bloomz-3b-reranking* model :
+```json
+{
+    "compressor_setting": {
+      "endpoint": "http://localhost:8082",
+      "min_score": 0.7,
+      "label": "LABEL_1",
+      "provider": "BloomzRerank"
+  }
+}
+``` 
+
+### Guardrail settings
+
+Our guardrail models for instance [cmarkea/bloomz-560m-guardrail](https://huggingface.co/cmarkea/bloomz-560m-guardrail)
+(see our organisation for other variants), returns the following scores thought llm-inference serveur :
+```json
+{
+    "response": [
+        [
+            {
+                "label": "insult",
+                "score": 0.7866228222846985
+            },
+            {
+                "label": "obscene",
+                "score": 0.4258439540863037
+            },
+            {
+                "label": "sexual_explicit",
+                "score": 0.1550784707069397
+            },
+            {
+                "label": "identity_attack",
+                "score": 0.05749328061938286
+            },
+            {
+                "label": "threat",
+                "score": 0.022629201412200928
+            }
+        ]
+    ]
+}
+```
+
+When adding the guardrail setting to the RAG chain if any of the following evaluated toxicity score is higher that the
+setting `max_score` the response will be rejected. Here is an exemple of guardrail setting :
+```json
+{
+  "guardrail_setting": {
+    "api_base": "http://localhost:8083",
+    "provider": "BloomzGuardrail",
+    "max_score": 0.5
+  }
+}
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

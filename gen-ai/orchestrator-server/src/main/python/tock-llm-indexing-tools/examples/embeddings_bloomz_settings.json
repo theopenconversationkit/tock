@@ -1,0 +1,7 @@
+{
+    "provider": "Bloomz",
+    "api_key": null,
+    "api_base": "http://localhost:8081",
+    "pooling": "last",
+    "space_type": "l2"
+}

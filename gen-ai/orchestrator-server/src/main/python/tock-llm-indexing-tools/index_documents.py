@@ -59,6 +59,7 @@ import humanize
 import pandas as pd
 from docopt import docopt
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
+from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import BloomzEMSetting
 from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
@@ -135,6 +136,7 @@ async def index_documents(args):
             EMProvider.OPEN_AI: OpenAIEMSetting,
             EMProvider.AZURE_OPEN_AI_SERVICE: AzureOpenAIEMSetting,
             EMProvider.OLLAMA: OllamaEMSetting,
+            EMProvider.BLOOMZ: BloomzEMSetting,
         },
         base_class=BaseEMSetting
     )
