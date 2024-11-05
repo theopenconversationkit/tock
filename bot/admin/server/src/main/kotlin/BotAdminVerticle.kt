@@ -1023,7 +1023,7 @@ open class BotAdminVerticle : AdminVerticle() {
             val applicationDefinition = front.getApplicationById(applicationId.toId())
             if (context.organization == applicationDefinition?.namespace) {
                 try {
-                    FaqAdminService.searchTags(applicationDefinition._id.toString())
+                    FaqAdminService.searchTags(applicationDefinition.name, context.organization)
                 } catch (t: Exception) {
                     logger.error(t)
                     badRequest("Error searching faq tags: ${t.message}")

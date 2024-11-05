@@ -104,7 +104,7 @@ object FaqAdminService {
         createOrUpdateUtterances(query, application, intent._id, userLogin)
 
         val existingFaqInCurrentApplication =
-            faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(intent._id, query.applicationName)
+            faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(intent._id, application.name, application.namespace)
 
         val i18nLabel: I18nLabel = manageI18nLabelUpdate(query, application.namespace, existingFaqInCurrentApplication)
 
@@ -242,7 +242,10 @@ object FaqAdminService {
         applicationDefinition: ApplicationDefinition, faqSettings: FaqSettings
     ) {
 
-        val listFaq = faqDefinitionDAO.getFaqDefinitionByBotId(applicationDefinition.name)
+        val listFaq = faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(
+            applicationDefinition.name,
+            applicationDefinition.namespace
+        )
 
         listFaq.forEach {
             val currentIntent = it.intentId.let {
@@ -438,8 +441,8 @@ object FaqAdminService {
         return Pair(notYetPresentSentences.toList(), noMorePresentSentences.toList())
     }
 
-    fun searchTags(applicationId: String): List<String> {
-        return faqDefinitionDAO.getTags(applicationId)
+    fun searchTags(botId: String, namespace: String): List<String> {
+        return faqDefinitionDAO.getTags(botId, namespace)
     }
 
     /**

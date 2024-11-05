@@ -116,8 +116,13 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         return col.findOneById(id)
     }
 
-    override fun getFaqDefinitionByBotId(id: String): List<FaqDefinition> {
-        return col.find(FaqDefinition::botId eq id).into(ArrayList())
+    override fun getFaqDefinitionByBotIdAndNamespace(botId: String, namespace: String): List<FaqDefinition> {
+        return col.find(
+            and(
+                FaqDefinition::botId eq botId,
+                FaqDefinition::namespace eq namespace
+            )
+        ).into(ArrayList())
     }
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? {
@@ -140,8 +145,12 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         return col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
     }
 
-    override fun getFaqDefinitionByIntentIdAndBotId(intentId: Id<IntentDefinition>, botId: String): FaqDefinition? {
-        return col.findOne(FaqDefinition::intentId eq intentId, FaqDefinition::botId eq botId)
+    override fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId: Id<IntentDefinition>, botId: String, namespace: String): FaqDefinition? {
+        return col.findOne(
+            FaqDefinition::intentId eq intentId,
+            FaqDefinition::namespace eq namespace,
+            FaqDefinition::botId eq botId
+        )
     }
 
     override fun save(faqDefinition: FaqDefinition) {
@@ -194,14 +203,15 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * Retrieve tags according to the applicationId present in IntentDefinition with aggregation
      * @param botId : the botId
+     * @param namespace: the namespace
      * @return a string list of tags
      */
-    override fun getTags(botId: String): List<String> {
+    override fun getTags(botId: String, namespace: String): List<String> {
         return col.aggregate<FaqDefinitionTag>(
             joinOnIntentDefinition(),
             match(
                 andNotNull(
-                    filterOnBotId(botId)
+                    filterOnNamespaceAndBotId(botId, namespace)
                 )
             ),
             // unwind : to flat tags array into an object
@@ -300,7 +310,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                             filterI18nIds(i18nIds)
                         ),
                         andNotNull(
-                            filterOnBotId(applicationDefinition.name),
+                            filterOnNamespaceAndBotId(applicationDefinition.name, applicationDefinition.namespace),
                             filterTags(),
                             filterEnabled(),
                         )
@@ -336,7 +346,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 match(
                     andNotNull(
                         andNotNull(
-                            filterOnBotId(applicationDefinition.name),
+                            filterOnNamespaceAndBotId(applicationDefinition.name, applicationDefinition.namespace),
                             filterTags(),
                             filterEnabled(),
                             filterCurrentApplicationClassifiedSentence(applicationDefinition._id),
@@ -402,10 +412,10 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     private fun FaqQuery.filterEnabled(): Bson? = if (enabled == null) null else FaqQueryResult::enabled eq enabled
 
     /**
-     * Filter on the botId
+     * Filter on the botId and the namespace
      */
-    private fun filterOnBotId(botId: String): Bson =
-        FaqDefinition::botId eq botId
+    private fun filterOnNamespaceAndBotId(botId: String, namespace: String): Bson =
+        and(FaqDefinition::botId eq botId, FaqDefinition::namespace eq namespace)
 
     /**
      * Group aggregation pipeline to recompose and group data after multiple unwind especially due to utterances unwind
