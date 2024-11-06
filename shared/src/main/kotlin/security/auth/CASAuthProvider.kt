@@ -176,6 +176,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
                             rc.clearUser()
                             rc.session().destroy()
                             // note: below method has ability to redirect to custom error pages
+                            logger.error("Upgrade to TockUser failed", it.cause)
                             handleUpgradeFailure(rc, it.code, it.cause)
                         }
                     }
@@ -183,10 +184,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
             } else {
                 rc.next()
             }
-        }).failureHandler { rc ->
-            logger.error("Authentication failure", rc.failure())
-            handleUpgradeFailure(rc, 500, null)
-        }
+        })
 
         with(verticle) {
             router.get("$basePath/user").handler {
