@@ -33,13 +33,20 @@ export async function markdownToHtml(rawData: string): Promise<VFile> {
   return await processor.process(rawData);
 }
 
-export async function htmlToMarkdown(rawData: string) {
+export async function htmlToMarkdown(rawData: string): Promise<VFile> {
   const processor = unified().use(rehypeParse).use(rehypeSanitize).use(rehypeRemark).use(remarkGfm).use(remarkStringify);
   return await processor.process(rawData);
 }
 
-export function containsHTML(str: string) {
-  var a = document.createElement('div');
+export function htmlToPlainText(rawData: string): string {
+  const a = document.createElement('div');
+  a.innerHTML = rawData;
+
+  return a.textContent || a.innerText || '';
+}
+
+export function containsHTML(str: string): boolean {
+  const a = document.createElement('div');
   a.innerHTML = str;
 
   for (var c = a.childNodes, i = c.length; i--; ) {

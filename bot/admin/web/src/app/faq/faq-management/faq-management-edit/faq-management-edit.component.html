@@ -51,7 +51,7 @@
           tabTitle="info"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!(title.errors || description.errors || intentNameExistInApp)"
+          [badgeDot]="isSubmitted && !!(title.invalid || description.invalid || intentNameExistInApp)"
           [active]="currentTab === faqTabs.INFO"
           class="pb-0"
         >
@@ -60,7 +60,7 @@
           tabTitle="question"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!utterances.errors"
+          [badgeDot]="isSubmitted && !!utterances.invalid"
           [active]="currentTab === faqTabs.QUESTION"
           class="pb-0"
         >
@@ -69,7 +69,7 @@
           tabTitle="answer"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!answer.errors"
+          [badgeDot]="isSubmitted && !!answers.invalid"
           [active]="currentTab === faqTabs.ANSWER"
           class="pb-0"
         >
@@ -324,17 +324,194 @@
 
       <div *ngIf="currentTab === 'answer'">
         <tock-form-control
+          label="Locale"
+          class="mb-3"
+          [required]="true"
+        >
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="flex-grow-1">
+              <nb-select
+                [(ngModel)]="selectedAnswerI18nValue"
+                [ngModelOptions]="{ standalone: true }"
+                [compareWith]="compareSelectedAnswerByOptions"
+                placeholder="Select a locale"
+                size="small"
+                fullWidth
+              >
+                <nb-select-label
+                  *ngIf="selectedAnswerI18nValue"
+                  class="ellipsis answer-selected-label"
+                >
+                  {{ longLocaleName(selectedAnswerI18nValue.locale) }} :
+                  <img
+                    src="{{ getConnectorTypeIconById(selectedAnswerI18nValue.connectorId) }}"
+                    class="select-icon align-text-top"
+                  />
+                  {{ getAnswerConnectorLabel(selectedAnswerI18nValue) }}
+                </nb-select-label>
+
+                <nb-option-group
+                  *ngFor="let locale of getAnswersLocales()"
+                  [title]="locale.second"
+                >
+                  <nb-option
+                    *ngFor="let i18nValue of getAnswerI18nValueByLocale(locale.first)"
+                    [value]="i18nValue"
+                    [class.selected]="compareSelectedAnswerByOptions(i18nValue, selectedAnswerI18nValue)"
+                    class="align-items-center justify-content-between"
+                  >
+                    <span>
+                      <img
+                        src="{{ getConnectorTypeIconById(i18nValue.connectorId) }}"
+                        class="select-icon mr-2"
+                        [nbTooltip]="getConnectorLabel(i18nValue.connectorId)"
+                      />
+
+                      <span
+                        [nbTooltip]="getAnswerConnectorLabelTooltip(i18nValue)"
+                        [ngClass]="{ 'font-italic': !i18nValue.label.trim().length }"
+                        >{{ getAnswerConnectorLabel(i18nValue) }}</span
+                      >
+
+                      <nb-icon
+                        *ngIf="getAnswerI18nLocalizedLabel(i18nValue)?.validated"
+                        icon="check"
+                        class="ml-2 text-success align-text-top"
+                        nbTooltip="Validated"
+                      >
+                      </nb-icon>
+                    </span>
+
+                    <nb-icon
+                      *ngIf="i18nValue.label.trim().length"
+                      icon="info-square"
+                      class="ml-3 opacity-50"
+                      [nbTooltip]="i18nValue.label"
+                      nbTooltipPlacement="bottom"
+                    >
+                    </nb-icon>
+                    <nb-icon
+                      *ngIf="!i18nValue.label.trim().length"
+                      icon="exclamation-triangle"
+                      class="ml-3 text-danger"
+                      nbTooltip="Label not provided"
+                    >
+                    </nb-icon>
+                  </nb-option>
+                </nb-option-group>
+              </nb-select>
+            </div>
+
+            <div
+              nbTooltip="Add a locale / connector"
+              *ngIf="hasUnassignedAnswerCombinations()"
+            >
+              <button
+                nbButton
+                size="tiny"
+                shape="round"
+                status="primary"
+                class="ml-2"
+                (click)="resetAnswerCombinationSelector()"
+                [nbPopover]="answerCombinationSelectorPopover"
+                nbPopoverPlacement="left"
+              >
+                <nb-icon icon="plus-lg"></nb-icon>
+              </button>
+            </div>
+          </div>
+
+          <div
+            *ngIf="isSubmitted && answers.invalid"
+            class="text-danger mt-1"
+          >
+            Some answers are missing
+          </div>
+        </tock-form-control>
+
+        <ng-template #answerCombinationSelectorPopover>
+          <div
+            class="p-3 text-center answer-combination-selector"
+            (click)="stopPropagation($event)"
+          >
+            <div *ngIf="!answerCombinationSelector.locale">
+              <div class="font-weight-bold mb-2">Select a locale :</div>
+
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="let locale of getSupportedLocalesWithUnassignedAnswerCombinations()"
+                (click)="setAnswerCombinationSelector('locale', locale.first)"
+              >
+                {{ locale.second }}
+              </button>
+            </div>
+
+            <div *ngIf="answerCombinationSelector.locale && !answerCombinationSelector.connector">
+              <div class="font-weight-bold mb-2">Select a connector :</div>
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="let connector of getUnassignedConnectorsForLocale(answerCombinationSelector.locale) | keyvalue: originalOrder"
+                (click)="setAnswerCombinationSelector('connector', connector.key)"
+              >
+                <img
+                  src="{{ getConnectorTypeIconById(connector.key) }}"
+                  class="select-icon align-text-top mr-2"
+                />
+                {{ connector.value }}
+              </button>
+            </div>
+
+            <div *ngIf="answerCombinationSelector.locale && answerCombinationSelector.connector && !answerCombinationSelector.interface">
+              <div class="font-weight-bold mb-2">Select an interface :</div>
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="
+                  let interface of getUnassignedInterfacesForLocaleAndConnector(
+                    answerCombinationSelector.locale,
+                    answerCombinationSelector.connector
+                  ) | keyvalue;
+                  trackBy: trackByInterface
+                "
+                (click)="setAnswerCombinationSelector('interface', interface.value.value)"
+              >
+                <nb-icon
+                  *ngIf="interface.value.value === userInterfaceType.textChat"
+                  icon="chat-right-text-fill"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="interface.value.value === userInterfaceType.voiceAssistant"
+                  icon="telephone-fill"
+                ></nb-icon>
+                {{ interface.value.label }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
+        <tock-form-control
+          *ngIf="selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()"
           label="Answer format"
           name="answerExportFormat"
-          [controls]="answerExportFormat"
+          [controls]="getSelectedAnswerI18nControl().controls.answerExportFormat"
           [showError]="isSubmitted"
-          [required]="true"
           [hasMargin]="false"
-          class="mb-2"
+          class="mb-3"
         >
           <nb-radio-group
-            formControlName="answerExportFormat"
-            class="d-flex mb-1"
+            [formControl]="getSelectedAnswerI18nControl().controls.answerExportFormat"
+            class="d-flex mt-n1 mb-1"
           >
             <nb-radio
               *ngFor="let format of answerExportFormatsRadios"
@@ -346,16 +523,16 @@
         </tock-form-control>
 
         <tock-form-control
+          *ngIf="selectedAnswerI18nValue"
           label="Answer content"
           name="answer"
-          [controls]="answer"
+          [controls]="getSelectedAnswerI18nControl().controls.label"
           [showError]="isSubmitted"
           [required]="true"
-          data-testid="answer"
         >
           <tock-wysiwyg-editor
-            [editionFormat]="answerExportFormat.value"
-            formControlName="answer"
+            [editionFormat]="getSelectedAnswerI18nControl().controls.answerExportFormat.value"
+            [formControl]="getSelectedAnswerI18nControl().controls.label"
             placeholder="Enter faq answer content..."
           ></tock-wysiwyg-editor>
         </tock-form-control>
@@ -368,9 +545,9 @@
       *ngIf="currentTab === 'answer'"
       class="mt-n2 mb-1"
     >
-      <small [ngClass]="getControlLengthIndicatorClass('answer')">
+      <!-- <small [ngClass]="getControlLengthIndicatorClass('answer')">
         {{ answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
-      </small>
+      </small> -->
     </div>
 
     <div class="grid-button">

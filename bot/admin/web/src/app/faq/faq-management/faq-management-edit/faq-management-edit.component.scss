@@ -4,6 +4,10 @@
 
 .maincard {
   max-height: calc(100vh - 12rem);
+  .answer-selected-label {
+    max-width: 15em;
+    display: block;
+  }
 }
 
 .grid-button {
@@ -52,4 +56,13 @@
 .add-utterances {
   display: grid;
   grid-template-columns: 1fr auto auto;
+}
+
+.select-icon {
+  height: var(--button-medium-icon-size);
+  width: var(--button-medium-icon-size);
+}
+
+.answer-combination-selector {
+  max-width: 15em;
 }

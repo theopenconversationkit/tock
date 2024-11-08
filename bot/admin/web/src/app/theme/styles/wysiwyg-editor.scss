@@ -82,7 +82,7 @@
 // Rich messages styling in chat-ui component
 .chat-ui-message-content-styling {
   // To reflect what's happening in web clients (Tvk, Trk)
-  white-space: nowrap;
+  white-space: pre-wrap;
   text-wrap: auto;
 
   // blockquote styling

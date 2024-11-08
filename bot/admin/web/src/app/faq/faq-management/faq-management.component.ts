@@ -15,8 +15,9 @@ import { FaqManagementSettingsComponent } from './faq-management-settings/faq-ma
 import { Pagination } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
 import { saveAs } from 'file-saver-es';
+import { I18nLabel } from '../../bot/model/i18n';
 
-export type FaqDefinitionExtended = FaqDefinition & { _initQuestion?: string };
+export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: string };
 
 @Component({
   selector: 'tock-faq-management',
@@ -165,9 +166,16 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
         }
 
         if (add) {
-          this.faqs = [...this.faqs, ...faqs.rows];
+          this.faqs = [
+            ...this.faqs,
+            ...faqs.rows.map((row) => {
+              return { ...row, answer: I18nLabel.fromJSON(row.answer) };
+            })
+          ];
         } else {
-          this.faqs = faqs.rows;
+          this.faqs = faqs.rows.map((row) => {
+            return { ...row, answer: I18nLabel.fromJSON(row.answer) };
+          });
           this.pagination.start = faqs.start;
         }
 
@@ -220,7 +228,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       description: '',
       utterances: [],
       tags: [],
-      answer: initAnswer || '',
+      _initAnswer: initAnswer || '',
       enabled: true,
       applicationName: this.stateService.currentApplication.name,
       language: this.stateService.currentLocale

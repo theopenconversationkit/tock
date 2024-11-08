@@ -8,14 +8,21 @@ export function normalize(str: string): string {
 }
 
 /**
+ * Remove special chars from a string
+ * @param {string} str string to normalize
+ * @returns {string} the cleaned string
+ */
+export function removeSpecialChars(str: string): string {
+  return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`'~()?]/g, '');
+}
+
+/**
  * Normalize a string, remove special chars and spaces
  * @param {string} str string to normalize
  * @returns {string} the cleaned string
  */
 export function normalizeString(str: string): string {
-  return normalize(str)
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`'~()?]/g, '')
-    .replace(/\s+/g, '');
+  return removeSpecialChars(normalize(str)).replace(/\s+/g, '');
 }
 
 /**
@@ -109,5 +116,4 @@ export function truncateString(str, maxlen, useWordBoundary, htmlEllipsis = true
   const ellipsis = htmlEllipsis ? '&hellip;' : '...';
   const subString = str.slice(0, maxlen - 1); // the original check
   return (useWordBoundary ? subString.slice(0, subString.lastIndexOf(' ')) : subString) + ellipsis;
-
 }

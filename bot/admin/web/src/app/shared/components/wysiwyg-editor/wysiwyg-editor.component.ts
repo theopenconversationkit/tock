@@ -35,7 +35,7 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
 
   @Input() editionFormat!: MarkupFormats;
   @Input() placeholder: string = 'Enter text...';
-  @Input() rows: number = 16;
+  @Input() rows: number = 12;
 
   @ViewChild('editorTarget') editorTarget: ElementRef;
 
@@ -62,13 +62,16 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
 
   set value(val) {
     this.val = val;
-
     this.onChange(val);
     this.onTouch(val);
   }
 
   writeValue(value: any) {
     this.val = value;
+
+    setTimeout(() => {
+      this.initEditor();
+    });
   }
 
   registerOnChange(fn: any) {
@@ -86,10 +89,10 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
       .subscribe((theme: any) => {
         if (theme.name === 'dark') {
           this.isDarkTheme = true;
-          if (this.joditInstance) this.joditInstance.container.classList.add('jodit_theme_dark');
+          if (this.joditInstance) this.joditInstance.container?.classList.add('jodit_theme_dark');
         } else {
           this.isDarkTheme = false;
-          if (this.joditInstance) this.joditInstance.container.classList.remove('jodit_theme_dark');
+          if (this.joditInstance) this.joditInstance.container?.classList.remove('jodit_theme_dark');
         }
       });
   }
@@ -212,7 +215,7 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
     });
   }
 
-  isInitingEditor;
+  isInitingEditor: boolean;
 
   async updateValueFromEditor(newHtml: string) {
     if (this.isHtml) {
@@ -226,6 +229,8 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   async setEditorContent() {
+    if (!this.joditInstance) return;
+
     const rawData = this.value;
 
     if (this.isMarkdown) {
@@ -260,6 +265,7 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   observeResize() {
+    this.unobserveResize();
     if (!this.joditInstance?.container) return;
 
     this.resizeObserver = new ResizeObserver((entries) => {
