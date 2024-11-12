@@ -84,114 +84,96 @@ private val trailingRegexp = "[.,:;?!]+$".toRegex()
 private val accentsRegexp = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
 private const val HTML_TAG_PLACEHOLDER = "CHANGE_IT"
-private var regexToDetectHTMLAllowedBalise = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)"
+private val htmlTagPattern = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)".toRegex()
 
-private val regexToDetectNotAllowedValue = property("tock_safehtml_block_tag", "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror|href)[^>]")
-private val allowedList =  listProperty("tock_safehtml_allowed_tag", listOf("ul", "li", "⭐"))
+private val notAllowedPattern = property("tock_safehtml_block_tag",
+    "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror|href)[^>]").toRegex()
 
-val htmlToFrenchLettre = mapOf(
+private val allowedTags = listProperty("tock_safehtml_allowed_tag", listOf("ul", "li", "⭐")).toSet()
+
+private val htmlToFrenchLetter = mapOf(
     "&agrave;" to "à", "&acirc;" to "â", "&auml;" to "ä", "&ccedil;" to "ç",
     "&egrave;" to "è", "&eacute;" to "é", "&ecirc;" to "ê", "&euml;" to "ë",
     "&icirc;" to "î", "&iuml;" to "ï", "&ocirc;" to "ô", "&ouml;" to "ö",
     "&ugrave;" to "ù", "&ucirc;" to "û", "&uuml;" to "ü", "&ntilde;" to "ñ"
 )
 
-private fun String.removeTrailingPunctuation() = replace(trailingRegexp, "").trim()
+private val diacriticReplacements = mapOf(
+    'e' to "[eéèêë]",
+    'a' to "[aàáâãä]",
+    'i' to "[iìíîï]",
+    'o' to "[oòóôõöø]",
+    'u' to "[uùúûü]",
+    'n' to "[nñ]",
+    'c' to "[cç]"
+)
+
+fun String.removeTrailingPunctuation(): String =
+    replace(trailingRegexp, "").trim()
 
 fun String.stripAccents(): String =
-    Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
+    Normalizer.normalize(this, Normalizer.Form.NFD)
+        .replace(accentsRegexp, "")
 
 fun String.normalize(locale: Locale): String =
-    lowercase(locale).removeTrailingPunctuation().stripAccents()
+    lowercase(locale)
+        .removeTrailingPunctuation()
+        .stripAccents()
 
-fun allowDiacriticsInRegexp(s: String): String {
-    val replacements = mapOf(
-        'e' to "[eéèêë]",
-        'a' to "[aàáâãä]",
-        'i' to "[iìíîï]",
-        'o' to "[oòóôõöø]",
-        'u' to "[uùúûü]",
-        'n' to "[nñ]",
-        'c' to "[cç]"
-    )
-
-    return s.fold("") { acc, c ->
-        acc + (replacements[c.lowercaseChar()] ?: c)
-    }.replace(" ", "['-_ ]")
-}
+fun allowDiacriticsInRegexp(input: String): String =
+    input.map { char ->
+        diacriticReplacements[char.lowercaseChar()] ?: char
+    }.joinToString("")
+        .replace(" ", "['-_ ]")
 
 fun safeHTML(value: String): String {
-
-    var simpelValue = escapeHtml4(value)
-
-     // Replace html tag to real tag
-    for (allowed in allowedList) {
-        var tmp = detectIfHTMLBaliseIsAllowed(simpelValue, allowed)
-        if ( tmp != null){
-            simpelValue = simpelValue.replace(tmp, tmp.replace("&lt;$allowed", "<$allowed"))
-            tmp = tmp.replace("&lt;$allowed", "<$allowed")
-            simpelValue = simpelValue.replace(tmp, tmp.replace("&gt;", ">"))
-        }
-    }
-
-     for (allowed in allowedList) {
-         simpelValue = simpelValue.replace("&lt;$allowed&gt;", "<$allowed>")
-         simpelValue = simpelValue.replace("&lt;/$allowed&gt;", "</$allowed>")
-         simpelValue = simpelValue.replace("&lt;$allowed", "<$allowed")
-     }
-
-     simpelValue = simpelValue.replace("&quot;", "\"")
-
-     // Replace html letter to real letter
-    for (entry in htmlToFrenchLettre) {
-        simpelValue = simpelValue.replace(entry.key, entry.value)
-    }
-
-    // Remove bad value
-     simpelValue = extractAndRemoveBadValue(regexToDetectNotAllowedValue, simpelValue)
-
-    return filterAllowedAndStandardCharacters(simpelValue)
- }
-
-private fun detectIfHTMLBaliseIsAllowed(text: String, allowed: String): String? {
-    val value = extractFullMatcherWithRegex(regexToDetectHTMLAllowedBalise.replace("CHANGE_IT", "$allowed"), text)
     return value
+        .let(::escapeHtml4)
+        .let(::replaceAllowedTags)
+        .let(::replaceHtmlEntities)
+        .let(::removeMaliciousContent)
+        .let(::filterAllowedCharacters)
 }
 
-private fun extractAndRemoveBadValue(regexValue: String, value: String): String {
-    val pattern = Pattern.compile(regexValue, Pattern.MULTILINE)
-    val matcher = pattern.matcher(value)
-
-    var tmp = value
-    while (matcher.find()) {
-        for (i in 1..matcher.groupCount()) {
-            matcher.group(i)?.let {
-                tmp = tmp.replace(it, "")
-            }
+private fun replaceAllowedTags(value: String): String {
+    var result = value
+    allowedTags.forEach { tag ->
+        detectHtmlTag(result, tag)?.let { match ->
+            result = result.replace(match, match
+                .replace("&lt;$tag", "<$tag")
+                .replace("&gt;", ">"))
         }
+        result = result
+            .replace("&lt;$tag&gt;", "<$tag>")
+            .replace("&lt;/$tag&gt;", "</$tag>")
+            .replace("&lt;$tag", "<$tag")
     }
-    return tmp
+    return result.replace("&quot;", "\"")
 }
 
-fun extractFullMatcherWithRegex(regexPattern: String?, value: String?): String? {
-    if (regexPattern == null || value == null) return null
-
-    val pattern = Pattern.compile(regexPattern, Pattern.MULTILINE)
-    val matcher = pattern.matcher(value)
-
-    return if (matcher.find()) matcher.group(0) else null
-}
-
-fun filterAllowedAndStandardCharacters(value: String): String {
-    val result = StringBuilder()
-
-    for (char in value) {
-        when {
-            allowedList.contains(char.toString()) -> result.append(char)
-            htmlToFrenchLettre.values.contains(char.toString()) -> result.append(char)
-            char.code < 192 -> result.append(char)
-        }
+private fun replaceHtmlEntities(value: String): String =
+    htmlToFrenchLetter.entries.fold(value) { acc, (entity, letter) ->
+        acc.replace(entity, letter)
     }
 
-    return result.toString()
-}
+private fun removeMaliciousContent(value: String): String =
+    notAllowedPattern.findAll(value)
+        .flatMap { it.groups.drop(1) }
+        .mapNotNull { it?.value }
+        .fold(value) { acc, match ->
+            acc.replace(match, "")
+        }
+
+private fun filterAllowedCharacters(value: String): String =
+    value.filter { char ->
+        allowedTags.contains(char.toString()) ||
+                htmlToFrenchLetter.values.contains(char.toString()) ||
+                char.code < 192
+    }
+
+private fun detectHtmlTag(text: String, tag: String): String? =
+    htmlTagPattern
+        .replace(HTML_TAG_PLACEHOLDER, tag)
+        .toRegex()
+        .find(text)
+        ?.value
