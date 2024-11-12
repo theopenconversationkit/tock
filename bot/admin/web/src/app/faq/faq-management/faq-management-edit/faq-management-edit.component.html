@@ -369,7 +369,7 @@
 
                       <span
                         [nbTooltip]="getAnswerConnectorLabelTooltip(i18nValue)"
-                        [ngClass]="{ 'font-italic': !i18nValue.label.trim().length }"
+                        [ngClass]="{ 'font-italic': !getAnswerLabelTrimedLength(i18nValue) }"
                         >{{ getAnswerConnectorLabel(i18nValue) }}</span
                       >
 
@@ -383,7 +383,7 @@
                     </span>
 
                     <nb-icon
-                      *ngIf="i18nValue.label.trim().length"
+                      *ngIf="getAnswerLabelTrimedLength(i18nValue)"
                       icon="info-square"
                       class="ml-3 opacity-50"
                       [nbTooltip]="i18nValue.label"
@@ -391,7 +391,7 @@
                     >
                     </nb-icon>
                     <nb-icon
-                      *ngIf="!i18nValue.label.trim().length"
+                      *ngIf="!getAnswerLabelTrimedLength(i18nValue)"
                       icon="exclamation-triangle"
                       class="ml-3 text-danger"
                       nbTooltip="Label not provided"
@@ -546,9 +546,9 @@
       *ngIf="currentTab === 'answer'"
       class="mt-n2 mb-1"
     >
-      <!-- <small [ngClass]="getControlLengthIndicatorClass('answer')">
-        {{ answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
-      </small> -->
+      <small [ngClass]="getAnswerLengthIndicatorClass()">
+        {{ getSelectedAnswerI18nControl().controls.label.value.length }} characters out of {{ controlsMaxLength.answer }} max
+      </small>
     </div>
 
     <div class="grid-button">

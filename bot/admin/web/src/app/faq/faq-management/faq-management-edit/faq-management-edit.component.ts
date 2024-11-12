@@ -258,6 +258,10 @@ export class FaqManagementEditComponent implements OnChanges {
     return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
   }
 
+  getAnswerLengthIndicatorClass() {
+    return this.getSelectedAnswerI18nControl().controls.label.value.length > this.controlsMaxLength.answer ? 'text-danger' : 'text-muted';
+  }
+
   validateAnswerMarkupContent(control: FormControl): ValidationErrors | null {
     if (!this.form?.value) return null;
 
@@ -326,7 +330,18 @@ export class FaqManagementEditComponent implements OnChanges {
     return label;
   }
 
+  getAnswerLabelTrimedLength(i18nValue: i18nValue): number {
+    // workaround for ClipboardEvent paste event
+    if (typeof i18nValue.label !== 'string') {
+      return 0;
+    }
+
+    return i18nValue.label?.trim().length;
+  }
+
   getAnswerConnectorLabelTooltip(i18nValue: i18nValue): string {
+    if (typeof i18nValue.label !== 'string') return;
+
     let tooltip = `Edit answer in ${this.state.localeName(i18nValue.locale)} for connector ${getConnectorLabel(i18nValue.connectorId)}`;
 
     const connector = this.getConnectorTypeById(i18nValue.connectorId);
