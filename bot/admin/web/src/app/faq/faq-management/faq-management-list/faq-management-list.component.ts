@@ -28,6 +28,28 @@ export class FaqManagementListComponent {
     private nbDialogService: NbDialogService
   ) {}
 
+  getCurrentLocaleAnswerLabel(faq: FaqDefinitionExtended) {
+    let localeAnswer = faq.answer.defaultLabel;
+
+    let localeI18n = faq.answer.i18n.find((i18n) => {
+      return i18n.locale === this.state.currentLocale;
+    });
+
+    if (localeI18n?.label.length) localeAnswer = localeI18n.label;
+
+    return localeAnswer;
+  }
+
+  isCurrentLocaleAnswerLabelProvided(faq: FaqDefinitionExtended): boolean {
+    let localeI18n = faq.answer.i18n.find((i18n) => {
+      return i18n.locale === this.state.currentLocale;
+    });
+
+    if (localeI18n?.label?.trim().length) return true;
+
+    return false;
+  }
+
   toggleEnabled(faq: FaqDefinitionExtended) {
     let action = 'Enable';
     if (faq.enabled) {

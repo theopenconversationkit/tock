@@ -283,7 +283,7 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   getAnswerLengthIndicatorClass() {
-    return this.getSelectedAnswerI18nControl().controls.label.value.length > this.controlsMaxLength.answer ? 'text-danger' : 'text-muted';
+    return this.getSelectedAnswerI18nControl()?.controls.label.value.length > this.controlsMaxLength.answer ? 'text-danger' : 'text-muted';
   }
 
   validateAnswerMarkupContent(control: FormControl): ValidationErrors | null {
@@ -402,6 +402,8 @@ export class FaqManagementEditComponent implements OnChanges {
   selectedAnswerI18nValue: i18nValue;
 
   getSelectedAnswerI18nControl(): FormGroup<I18nEditForm> {
+    if (!this.selectedAnswerI18nValue) return;
+
     return this.form.controls.answers.controls.find(
       (ctrl) =>
         ctrl.value.locale === this.selectedAnswerI18nValue.locale &&

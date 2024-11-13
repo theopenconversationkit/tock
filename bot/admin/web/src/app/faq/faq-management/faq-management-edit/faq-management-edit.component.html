@@ -327,6 +327,8 @@
           label="Locale"
           class="mb-3"
           [required]="true"
+          [controls]="getSelectedAnswerI18nControl()"
+          [showError]="true"
           information="Allows you to define the faq response according to the locale and/or connector/interfaceType used by the final user."
         >
           <div class="d-flex align-items-center justify-content-between">
@@ -666,7 +668,7 @@
 
   <nb-card-footer>
     <div
-      *ngIf="currentTab === 'answer'"
+      *ngIf="currentTab === 'answer' && getSelectedAnswerI18nControl()"
       class="mt-n2 mb-1"
     >
       <small [ngClass]="getAnswerLengthIndicatorClass()">
