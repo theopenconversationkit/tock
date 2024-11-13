@@ -187,6 +187,8 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
 
       disablePlugins: disabledPlugins,
 
+      enter: 'BR',
+
       createAttributes: {
         table: {
           style: tableCreateAttributesStyle
