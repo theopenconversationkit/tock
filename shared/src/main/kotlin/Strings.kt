@@ -84,12 +84,13 @@ private val trailingRegexp = "[.,:;?!]+$".toRegex()
 private val accentsRegexp = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
 private const val HTML_TAG_PLACEHOLDER = "CHANGE_IT"
-private val htmlTagPattern = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)".toRegex()
+private val htmlTagPattern = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)"
 
 private val notAllowedPattern = property("tock_safehtml_block_tag",
-    "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror|href)[^>]").toRegex()
+    "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror)[^>]").toRegex()
 
-private val allowedTags = listProperty("tock_safehtml_allowed_tag", listOf("ul", "li", "⭐")).toSet()
+private val allowedTags = listProperty("tock_safehtml_allowed_tag",
+    listOf("em", "strong","ul", "li","h1","h2","h3","blockquote","code","a","s","p", "⭐")).toSet()
 
 private val htmlToFrenchLetter = mapOf(
     "&agrave;" to "à", "&acirc;" to "â", "&auml;" to "ä", "&ccedil;" to "ç",
