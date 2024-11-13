@@ -35,7 +35,7 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
 
   @Input() editionFormat!: MarkupFormats;
   @Input() placeholder: string = 'Enter text...';
-  @Input() rows: number = 12;
+  @Input() rows: number = 8;
   @Input() locale?: string;
 
   @ViewChild('editorTarget') editorTarget: ElementRef;

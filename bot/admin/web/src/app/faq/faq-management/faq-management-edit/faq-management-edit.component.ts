@@ -42,12 +42,19 @@ interface I18nEditForm {
 
 type i18nValue = ExtractFormControlTyping<I18nEditForm>;
 
+interface FootnoteEditForm {
+  identifier: FormControl<string>;
+  title: FormControl<string>;
+  url: FormControl<string>;
+  content?: FormControl<string>;
+}
 interface FaqEditForm {
   title: FormControl<string>;
   description: FormControl<string>;
   tags: FormArray<FormControl<string>>;
   utterances: FormArray<FormControl<string>>;
   answers: FormArray<FormGroup<I18nEditForm>>;
+  footnotes?: FormArray<FormGroup<FootnoteEditForm>>;
 }
 
 @Component({
@@ -131,11 +138,23 @@ export class FaqManagementEditComponent implements OnChanges {
 
       this.tags.clear();
       this.utterances.clear();
+      this.footnotes.clear();
       this.resetAlerts();
       this.isSubmitted = false;
 
       if (faq) {
         this.form.patchValue(faq);
+
+        faq.footnotes?.forEach((note) => {
+          this.footnotes.push(
+            new FormGroup({
+              title: new FormControl(note.title, [Validators.required]),
+              identifier: new FormControl(note.identifier),
+              url: new FormControl(note.url),
+              content: new FormControl(note.content)
+            })
+          );
+        });
 
         this.initFormAnswers(faq);
 
@@ -183,7 +202,8 @@ export class FaqManagementEditComponent implements OnChanges {
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),
     utterances: new FormArray([], Validators.required),
-    answers: new FormArray([], Validators.required)
+    answers: new FormArray([], Validators.required),
+    footnotes: new FormArray([])
   });
 
   get answers(): FormArray {
@@ -204,6 +224,10 @@ export class FaqManagementEditComponent implements OnChanges {
 
   get utterances(): FormArray {
     return this.form.get('utterances') as FormArray;
+  }
+
+  get footnotes(): FormArray {
+    return this.form.get('footnotes') as FormArray;
   }
 
   get canSave(): boolean {
@@ -562,11 +586,46 @@ export class FaqManagementEditComponent implements OnChanges {
     event.stopPropagation();
   }
 
-  updateTagsAutocompleteValues(event: any) {
+  addFootnote(): void {
+    this.footnotes.push(
+      new FormGroup({
+        title: new FormControl('', [Validators.required]),
+        identifier: new FormControl(this.footnotes.controls.length + 1),
+        url: new FormControl(''),
+        content: new FormControl('')
+      })
+    );
+    this.computeFootnotesIdentifiers();
+  }
+
+  removeFootnote(index: number): void {
+    this.footnotes.removeAt(index);
+    this.form.markAsDirty();
+  }
+
+  canIncreaseFootnoteIndex(index: number): boolean {
+    return index < this.footnotes.length - 1;
+  }
+
+  changeFootnoteIndex(shift: -1 | 1, index: number): void {
+    const footnote = this.footnotes.at(index);
+    this.footnotes.removeAt(index);
+    this.footnotes.insert(index + shift, footnote);
+    this.computeFootnotesIdentifiers();
+  }
+
+  computeFootnotesIdentifiers() {
+    this.footnotes.controls.forEach((footnote, index) => {
+      footnote.get('identifier').setValue(index + 1);
+    });
+    this.form.markAsDirty();
+  }
+
+  updateTagsAutocompleteValues(event: any): void {
     this.tagsAutocompleteValues = of(this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase())));
   }
 
-  tagSelected(value: string) {
+  tagSelected(value: string): void {
     this.onTagAdd({ value, input: this.tagInput });
   }
 
@@ -751,9 +810,9 @@ export class FaqManagementEditComponent implements OnChanges {
     this.resetAlerts();
 
     if (this.canSave) {
-      let faqData: FaqDefinitionExtended & Partial<i18nValue> = deepCopy({
+      let faqData: FaqDefinitionExtended = deepCopy({
         ...this.faq,
-        ...this.form.value
+        ...(this.form.value as FaqDefinitionExtended)
       });
 
       if (!this.faq.id) {

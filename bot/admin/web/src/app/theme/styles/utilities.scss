@@ -27,6 +27,10 @@
   font-size: 12px;
 }
 
+.nb-theme-dark .border {
+  border-color: var(--input-basic-border-color) !important;
+}
+
 .nb-theme-default .text-mitigated {
   color: #6c757d;
 }

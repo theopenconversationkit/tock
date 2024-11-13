@@ -69,7 +69,7 @@
           tabTitle="answer"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!answers.invalid"
+          [badgeDot]="isSubmitted && !!(answers.invalid || footnotes.invalid)"
           [active]="currentTab === faqTabs.ANSWER"
           class="pb-0"
         >
@@ -165,7 +165,7 @@
         </tock-form-control>
       </div>
 
-      <div *ngIf="currentTab === 'question'">
+      <div *ngIf="currentTab === faqTabs.QUESTION">
         <tock-form-control
           label="Question"
           name="question"
@@ -322,11 +322,12 @@
         </div>
       </div>
 
-      <div *ngIf="currentTab === 'answer'">
+      <div *ngIf="currentTab === faqTabs.ANSWER">
         <tock-form-control
           label="Locale"
           class="mb-3"
           [required]="true"
+          information="Allows you to define the faq response according to the locale and/or connector/interfaceType used by the final user."
         >
           <div class="d-flex align-items-center justify-content-between">
             <div class="flex-grow-1">
@@ -403,7 +404,7 @@
             </div>
 
             <div
-              nbTooltip="Add a locale / connector"
+              nbTooltip="Add a locale / connector combination"
               *ngIf="hasUnassignedAnswerCombinations()"
             >
               <button
@@ -504,6 +505,7 @@
           *ngIf="selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()"
           label="Answer format"
           name="answerExportFormat"
+          information="Markdown format in which the response is formulated."
           [controls]="getSelectedAnswerI18nControl().controls.answerExportFormat"
           [showError]="isSubmitted"
           [hasMargin]="false"
@@ -526,6 +528,7 @@
           *ngIf="selectedAnswerI18nValue"
           label="Answer content"
           name="answer"
+          information="Response content for the locale/connector combination selected above"
           [controls]="getSelectedAnswerI18nControl().controls.label"
           [showError]="isSubmitted"
           [required]="true"
@@ -536,6 +539,126 @@
             [locale]="getSelectedAnswerI18nControl().controls.locale.value"
             placeholder="Enter faq answer content..."
           ></tock-wysiwyg-editor>
+        </tock-form-control>
+
+        <!-- footNotes -->
+
+        <tock-form-control
+          label="Footnotes"
+          name="footnotes"
+          information="Optional footnotes for the answer"
+          [controls]="footnotes"
+          [showError]="isSubmitted"
+        >
+          <div formArrayName="footnotes">
+            <div
+              *ngFor="let footnote of footnotes.controls; let i = index"
+              [formGroupName]="i"
+              class="mb-2 font-size-small border rounded p-2 d-flex gap-1"
+            >
+              <div class="flex-grow-1">
+                <div class="d-flex gap-1 text-right text-muted mb-1">
+                  <label
+                    class="min-width-5 font-weight-bold"
+                    [ngClass]="{ 'text-danger': isSubmitted && !footnote.value.title.length }"
+                    ><abbr
+                      title="Required"
+                      class="text-danger text-decoration-none"
+                    >
+                      *
+                    </abbr>
+                    Title</label
+                  >
+                  <input
+                    formControlName="title"
+                    id="name"
+                    placeholder="Footnote title"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                    type="text"
+                    required
+                  />
+                </div>
+
+                <div class="d-flex gap-1 text-right text-muted mb-1">
+                  <label class="min-width-5">Url</label>
+                  <input
+                    formControlName="url"
+                    id="url"
+                    placeholder="Footnote url"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                    type="url"
+                  />
+                </div>
+
+                <div class="d-flex gap-1 text-right text-muted">
+                  <label class="min-width-5">Content</label>
+                  <textarea
+                    formControlName="content"
+                    id="content"
+                    placeholder="Footnote content"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column">
+                <button
+                  *ngIf="i > 0"
+                  nbButton
+                  size="tiny"
+                  status="basic"
+                  nbTooltip="Reduce footnote index"
+                  (click)="changeFootnoteIndex(-1, i)"
+                  class="mb-1"
+                >
+                  <nb-icon
+                    icon="chevron-up-outline"
+                    pack="nebular-essentials"
+                  ></nb-icon>
+                </button>
+
+                <button
+                  *ngIf="canIncreaseFootnoteIndex(i)"
+                  nbButton
+                  size="tiny"
+                  status="basic"
+                  nbTooltip="Increase footnote index"
+                  (click)="changeFootnoteIndex(1, i)"
+                  class="mb-1"
+                >
+                  <nb-icon
+                    icon="chevron-down-outline"
+                    pack="nebular-essentials"
+                  ></nb-icon>
+                </button>
+
+                <button
+                  nbButton
+                  size="tiny"
+                  status="danger"
+                  nbTooltip="Delete footnote"
+                  (click)="removeFootnote(i)"
+                >
+                  <nb-icon icon="trash"></nb-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            nbButton
+            size="tiny"
+            (click)="addFootnote()"
+          >
+            <nb-icon icon="plus"></nb-icon>
+            Add a footnote
+          </button>
         </tock-form-control>
       </div>
     </form>
