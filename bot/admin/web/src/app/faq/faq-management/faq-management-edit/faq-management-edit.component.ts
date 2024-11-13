@@ -70,6 +70,7 @@ export class FaqManagementEditComponent implements OnChanges {
   isSubmitted: boolean = false;
 
   controlsMaxLength = {
+    title: 100,
     description: 500,
     answer: 5000
   };
@@ -198,7 +199,7 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   form = new FormGroup<FaqEditForm>({
-    title: new FormControl(undefined, [Validators.required, Validators.minLength(5), Validators.maxLength(40)]),
+    title: new FormControl(undefined, [Validators.required, Validators.minLength(2), Validators.maxLength(this.controlsMaxLength.title)]),
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),
     utterances: new FormArray([], Validators.required),
@@ -240,7 +241,17 @@ export class FaqManagementEditComponent implements OnChanges {
     if (!faq.answer) {
       // we're creating a new Faq; we should create a default answer for the current locale and its label is required
 
-      // TODO : check if we have a web connector in the supportedConnectors, otherwise we should pick one supportedConnector and define an interfaceType accordingly
+      // by default we choose the web connector (undefined) and the textChat interfaceType
+      let connectorId = undefined;
+      let interfaceType = UserInterfaceType.textChat;
+
+      // we check if we have a web connector in the list of supported connectors
+      const hasWebConnector = this.supportedConnectors?.find((sc) => sc.id === 'web');
+      // if not, we take the first connector in the list
+      if (!hasWebConnector) {
+        connectorId = this.supportedConnectors[0].id;
+        interfaceType = this.supportedConnectors[0].userInterfaceType;
+      }
 
       const label = faq._initAnswer ? faq._initAnswer : '';
 
@@ -249,8 +260,8 @@ export class FaqManagementEditComponent implements OnChanges {
       this.answers.push(
         new FormGroup({
           locale: new FormControl(this.state.currentLocale),
-          interfaceType: new FormControl(UserInterfaceType.textChat),
-          connectorId: new FormControl(),
+          connectorId: new FormControl(connectorId),
+          interfaceType: new FormControl(interfaceType),
           label: new FormControl(label, [Validators.required, this.validateAnswerMarkupContent.bind(this)]),
           answerExportFormat: new FormControl(MarkupFormats.PLAINTEXT)
         })
@@ -919,14 +930,15 @@ export class FaqManagementEditComponent implements OnChanges {
           // We associate the newly created I18nLabel to the Faq
           faqData.answer = i18n;
 
-          // As the answer I18nLabel now exists, we can add the other I18nLocalizedLabels if any
-          if (faqData.answers.length > 1) {
+          // As the answer I18nLabel now exists, we can add the I18nLocalizedLabels
+          if (faqData.answers.length) {
+            // As the backend systematically create a web connector I18nLocalizedLabel we clear it as the bot may not have a web connector defined
+            faqData.answer.i18n = [];
+
             faqData.answers.forEach((answer) => {
-              if (answer !== currentLocaleAnswerLabel) {
-                faqData.answer.i18n.push(
-                  new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [], [])
-                );
-              }
+              faqData.answer.i18n.push(
+                new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [], [])
+              );
             });
 
             // createI18nLabel returns an I18nLabel whose “namespace” attribute has been changed to lowercase; we need to correct this.
