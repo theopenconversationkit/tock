@@ -225,7 +225,7 @@ open class BotDefinitionBase(
 
         fun handleWithKeywordListeners(bus: BotBus, keyword: String?): Boolean {
             if (keyword != null) {
-                keywordServices.asSequence().map { it.keywordHandler(keyword) }.firstOrNull()?.let { handler ->
+                keywordServices.firstNotNullOfOrNull { it.keywordHandler(keyword) }?.let { handler ->
                     handler(bus)
                     return true
                 }
