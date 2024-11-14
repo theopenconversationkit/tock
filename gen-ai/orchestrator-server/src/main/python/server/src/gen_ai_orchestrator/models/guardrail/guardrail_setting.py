@@ -31,5 +31,7 @@ class BaseGuardrailSetting(BaseModel):
         examples=[GuardrailProvider.BLOOMZ],
     )
     max_score: Optional[float] = Field(
-        description='The maximum acceptable toxicity score.', default=0.3
+        description='The maximum acceptable toxicity score, applied to each output labels (evaluated scores) of the '
+                    'guardrail. If at least one of those score (evaluated label) is higher the generated answer will '
+                    'be rejected.', default=0.3
     )

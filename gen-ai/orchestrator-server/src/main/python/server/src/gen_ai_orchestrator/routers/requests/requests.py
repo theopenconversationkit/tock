@@ -237,10 +237,12 @@ Answer in {locale}:""",
                     'guardrail_setting': {
                         'provider': 'BloomzGuardrail',
                         'api_base': 'https://*********',
+                        'max_score': 0.3,
                     },
                     'compressor_setting': {
                         'provider': 'BloomzRerank',
                         'min_score': 0.7,
+                        'label': 'entailment',
                         'endpoint': 'https://*********',
                     },
                 }

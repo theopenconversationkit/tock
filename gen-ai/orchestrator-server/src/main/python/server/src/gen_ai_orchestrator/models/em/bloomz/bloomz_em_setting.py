@@ -34,9 +34,5 @@ class BloomzEMSetting(BaseEMSetting):
     pooling: Optional[str] = Field(
         description='Pooling method.',
         default='last',
-        examples=['first', 'mean', 'last'],
-    )
-    space_type: Optional[str] = Field(
-        description='The space type used to search vector (eg. `l2` for Bloomz, `cosin` for Ada',
-        default='l2',
+        examples=['mean', 'last'],
     )
