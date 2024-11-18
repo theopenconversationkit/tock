@@ -242,6 +242,7 @@ Answer in {locale}:""",
                     'compressor_setting': {
                         'provider': 'BloomzRerank',
                         'min_score': 0.7,
+                        'max_documents': 10,
                         'label': 'entailment',
                         'endpoint': 'https://*********',
                     },
