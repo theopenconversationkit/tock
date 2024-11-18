@@ -30,9 +30,11 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
-
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
+    BloomzEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_types import EMSetting
@@ -125,6 +127,12 @@ async def get_em_provider_setting_by_id(
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
+        )
+    elif provider_id == EMProvider.BLOOMZ:
+        return BloomzEMSetting(
+            provider=EMProvider.BLOOMZ,
+            api_base='https://doc.tock.ai/tock',
+            pooling='last',
         )
 
 

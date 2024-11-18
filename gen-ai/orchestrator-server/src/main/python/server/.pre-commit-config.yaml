@@ -33,6 +33,6 @@ repos:
       hooks:
         - id: pycln
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.0
+    rev: v2.7.3
     hooks:
       -   id: pip-audit

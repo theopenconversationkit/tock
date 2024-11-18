@@ -12,19 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+"""GuardrailProvider Enumeration."""
 
 from enum import Enum, unique
 
 
 @unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
+class GuardrailProvider(str, Enum):
+    """Enumeration to list Guardrail Provider type"""
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    OLLAMA = 'Ollama'
-    BLOOMZ = 'Bloomz'
+    BLOOMZ = 'BloomzGuardrail'
 
     @classmethod
     def has_value(cls, value) -> bool:

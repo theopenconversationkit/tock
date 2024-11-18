@@ -12,20 +12,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+"""Module for the Guardrail Factory"""
 
-from enum import Enum, unique
+from abc import ABC, abstractmethod
+
+from langchain_core.output_parsers import BaseOutputParser
+from pydantic import BaseModel
+
+from gen_ai_orchestrator.models.guardrail.guardrail_setting import (
+    BaseGuardrailSetting,
+)
 
 
-@unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
+class GuardrailFactory(ABC, BaseModel):
+    """A base class for Guardrail Factory"""
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    OLLAMA = 'Ollama'
-    BLOOMZ = 'Bloomz'
+    setting: BaseGuardrailSetting
 
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_
+    @abstractmethod
+    def get_parser(self) -> BaseOutputParser:
+        pass

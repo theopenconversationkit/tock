@@ -12,26 +12,25 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Module defining generic type alias"""
+"""Model for creating BloomzEMFactory"""
 
-from typing import Annotated, Union
+from langchain.embeddings.base import Embeddings
 
-from fastapi import Body
-
-from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
 )
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import (
-    OllamaEMSetting,
-)
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
-    OpenAIEMSetting,
+from gen_ai_orchestrator.services.em.bloomz_embedding import BloomzEmbeddings
+from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
+    LangChainEMFactory,
 )
 
-EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting, BloomzEMSetting],
-    Body(discriminator='provider'),
-]
+
+class BloomzEMFactory(LangChainEMFactory):
+    """A class for Bloomz Embedding Factory"""
+
+    setting: BloomzEMSetting
+
+    def get_embedding_model(self) -> Embeddings:
+        return BloomzEmbeddings(
+            pooling=self.setting.pooling, api_base=self.setting.api_base
+        )

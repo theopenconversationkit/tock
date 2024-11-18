@@ -12,28 +12,42 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch, AsyncMock
+import os
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
+from requests.exceptions import HTTPError
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
+    GenAIUnknownLabelException,
+)
+from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
+    BloomzGuardrailSetting,
 )
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
+from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
+    BloomzRerank,
+)
 from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
 )
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_guardrail_factory,
+)
 from gen_ai_orchestrator.services.langchain.rag_chain import (
+    check_guardrail_output,
     execute_qa_chain,
     get_condense_question,
     get_llm_prompts,
 )
-
 
 # 'Mock an item where it is used, not where it came from.'
 # (https://www.toptal.com/python/an-introduction-to-mocking-in-python)
@@ -43,7 +57,15 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 # @patch('llm_orchestrator.services.langchain.factories.langchain_factory.get_llm_factory')
 # --> But where it is used (in the execute_qa_chain method of the llm_orchestrator.services.langchain.rag_chain
 # module that imports get_llm_factory):
-@patch('gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory')
+
+
+@patch(
+    'gen_ai_orchestrator.services.langchain.rag_chain.ContextualCompressionRetriever'
+)
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+@patch(
+    'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory'
+)
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
@@ -70,7 +92,9 @@ async def test_rag_chain(
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
     mocked_get_llm_factory,
-    mocked_get_callback_handler_factory
+    mocked_get_callback_handler_factory,
+    mocked_guardrail_parse,
+    mocked_compressor_builder,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
@@ -128,17 +152,27 @@ Answer in {locale}:""",
             'password': {
                 'type': 'Raw',
                 'value': 'admin',
-            }
+            },
         },
         'observability_setting': {
             'provider': 'Langfuse',
             'url': 'http://localhost:3000',
             'secret_key': {
-              'type': 'Raw',
-              'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f'
+                'type': 'Raw',
+                'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f',
             },
-            'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c'
-        }
+            'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
+        },
+        'guardrail_setting': {
+            'provider': 'BloomzGuardrail',
+            'api_base': 'http://test-guard.com',
+            'max_score': 0.5,
+        },
+        'compressor_setting': {
+            'provider': 'BloomzRerank',
+            'min_score': 0.7,
+            'endpoint': 'http://test-rerank.com',
+        },
     }
     query = RagQuery(**query_dict)
 
@@ -149,9 +183,18 @@ Answer in {locale}:""",
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
+    mocked_compressor = mocked_compressor_builder.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
-    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_chain.ainvoke = AsyncMock(
+        return_value={'answer': 'an answer from llm', 'source_documents': []}
+    )
     mocked_rag_answer = mocked_chain.ainvoke.return_value
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.content = {'response': []}
+
+    mocked_guardrail_parse.return_value = mocked_response
 
     # Call function
     await execute_qa_chain(query, debug=True)
@@ -166,15 +209,16 @@ Answer in {locale}:""",
     mocked_get_vector_store_factory.assert_called_once_with(
         setting=query.vector_store_setting,
         index_name=query.document_index_name,
-        embedding_function=em_factory_instance.get_embedding_model()
+        embedding_function=em_factory_instance.get_embedding_model(),
     )
     mocked_get_callback_handler_factory.assert_called_once_with(
         setting=query.observability_setting
     )
+
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=vector_store_factory_instance.get_vector_store_retriever(),
+        retriever=mocked_compressor,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
@@ -204,6 +248,213 @@ Answer in {locale}:""",
         ),
         debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
     )
+
+    mocked_guardrail_parse.assert_called_once_with(
+        os.path.join(query.guardrail_setting.api_base, 'guardrail'),
+        json={'text': [mocked_rag_answer['answer']]},
+    )
+    mocked_compressor_builder.assert_called_once()
+
+
+@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+def test_guardrail_parse_succeed_with_toxicities_encountered(
+    mocked_guardrail_response,
+):
+    guardrail = get_guardrail_factory(
+        BloomzGuardrailSetting(
+            provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
+        )
+    ).get_parser()
+    rag_response = {'answer': 'This is a sample text.'}
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'racism', 'score': 0.1},
+                {'label': 'insult', 'score': 0.2},
+                {'label': 'threat', 'score': 0.7},
+                {'label': 'hate speech', 'score': 0.95},
+            ]
+        ]
+    }
+
+    mocked_guardrail_response.return_value = mocked_response
+    guardrail_output = guardrail.parse(rag_response['answer'])
+
+    mocked_guardrail_response.assert_called_once_with(
+        os.path.join(guardrail.endpoint, 'guardrail'),
+        json={'text': [rag_response['answer']]},
+    )
+    assert guardrail_output == {
+        'content': 'This is a sample text.',
+        'output_toxicity': True,
+        'output_toxicity_reason': ['threat', 'hate speech'],
+    }
+
+
+@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+def test_guardrail_parse_fail(mocked_guardrail_response):
+    guardrail = get_guardrail_factory(
+        BloomzGuardrailSetting(
+            provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
+        )
+    ).get_parser()
+    rag_response = {'answer': 'This is a sample text.'}
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 500
+    mocked_guardrail_response.return_value = mocked_response
+
+    with pytest.raises(
+        HTTPError,
+        match=f"Error {mocked_response.status_code}. Bloomz guardrail didn't respond as expected.",
+    ):
+        guardrail.parse(rag_response['answer'])
+
+    mocked_guardrail_response.assert_called_once_with(
+        os.path.join(guardrail.endpoint, 'guardrail'),
+        json={'text': [rag_response['answer']]},
+    )
+
+
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+def test_compress_documents_should_succeed(mocked_rerank):
+    bloomz_reranker = BloomzRerank(label='entailement', endpoint='http://example.com')
+    documents = [
+        Document(
+            page_content='Page content 1',
+            metadata={
+                'source': 'doc1.pdf',
+                'file_path': 'doc1.pdf',
+                'page': 57,
+                'total_pages': 104,
+                'Producer': 'GPL Ghostscript 9.05',
+                'CreationDate': "D:20230828165103+02'00'",
+                'ModDate': "D:20230828165103+02'00'",
+                'Title': 'DGRC 2023 - ABEI',
+                'Creator': 'PDFCreator Version 1.6.2',
+                'Author': 'F9261',
+                'Keywords': '',
+                'Subject': '',
+            },
+        ),
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+                'file_path': 'incident - v5.pdf',
+                'page': 19,
+                'total_pages': 23,
+                'Author': 'F0421',
+                'CreationDate': "D:20231212161411+01'00'",
+                'ModDate': "D:20231212161411+01'00'",
+                'Producer': 'Microsoft: Print To PDF',
+                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+            },
+        ),
+    ]
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'entailement', 'score': 0.1},
+                {'label': 'neutral', 'score': 0.2},
+                {'label': 'contradiction', 'score': 0.7},
+            ],
+            [
+                {'label': 'entailement', 'score': 0.8},
+                {'label': 'neutral', 'score': 0.2},
+                {'label': 'contradiction', 'score': 0.7},
+            ],
+        ]
+    }
+    mocked_rerank.return_value = mocked_response
+
+    result = bloomz_reranker.compress_documents(documents=documents, query='Some query')
+
+    mocked_rerank.assert_called_once()
+    assert result == [
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+                'file_path': 'incident - v5.pdf',
+                'page': 19,
+                'total_pages': 23,
+                'Author': 'F0421',
+                'CreationDate': "D:20231212161411+01'00'",
+                'ModDate': "D:20231212161411+01'00'",
+                'Producer': 'Microsoft: Print To PDF',
+                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+                'retriever_score': 0.8,
+            },
+        )
+    ]
+
+
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+def test_compress_documents_with_unknown_label(mocked_rerank):
+    bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com')
+    documents = [
+        Document(
+            page_content='Page content 1',
+            metadata={
+                'source': 'doc1.pdf',
+            },
+        ),
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+            },
+        ),
+    ]
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'entailement', 'score': 0.1},
+            ]
+        ]
+    }
+    mocked_rerank.return_value = mocked_response
+
+    with pytest.raises(GenAIUnknownLabelException) as exc:
+        bloomz_reranker.compress_documents(documents=documents, query='Some query')
+
+    assert exc.value.error_code.value == 1006
+    assert exc.value.message == 'Unknown label.'
+    assert exc.value.detail == 'Check the label you sent.'
+
+
+def test_check_guardrail_output_find_toxicities():
+    guardrail_output = {
+        'content': 'This is a sample text.',
+        'output_toxicity': True,
+        'output_toxicity_reason': ['threat', 'hate speech'],
+    }
+
+    with pytest.raises(GenAIGuardCheckException) as exc_found:
+        check_guardrail_output(guardrail_output)
+
+    assert exc_found.value.error_code.value == 1004
+    assert 'Guard check failed.' in exc_found.value.message
+
+
+def test_check_guardrail_output_is_ok():
+    guardrail_output = {
+        'content': 'This is a sample text.',
+        'output_toxicity': False,
+        'output_toxicity_reason': [],
+    }
+
+    assert check_guardrail_output(guardrail_output) is True
 
 
 def test_find_input_variables():
