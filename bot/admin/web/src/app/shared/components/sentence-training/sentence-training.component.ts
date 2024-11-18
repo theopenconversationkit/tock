@@ -57,6 +57,7 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
   @ViewChild('sentenceTrainingFilter') sentenceTrainingFilter: SentenceTrainingFiltersComponent;
 
   loading: boolean = false;
+  unloading: boolean = false;
 
   sentences: SentenceExtended[] = [];
 
@@ -187,7 +188,7 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
   ): Observable<PaginatedResult<SentenceExtended>> {
     if (showLoadingSpinner) this.loading = true;
 
-    let search = this.search(this.state.createPaginatedQuery(start, size)).pipe(takeUntil(this.destroy$), share());
+    let search = this.search(this.state.createPaginatedQuery(start, size)).pipe(share(), takeUntil(this.destroy$));
 
     search.subscribe({
       next: (data: PaginatedResult<SentenceExtended>) => {
@@ -372,6 +373,8 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
   }
 
   retrieveSentence(sentence: SentenceExtended, tryCount = 0): Subscription | void {
+    if (this.unloading) return;
+
     let exists = this.sentences.find((stnce) => {
       return stnce.text == sentence.text;
     });
@@ -574,6 +577,7 @@ Would you like to translate all the sentences matching the search criteria above
   }
 
   ngOnDestroy(): void {
+    this.unloading = true;
     this.destroy$.next(true);
     this.destroy$.complete();
   }

@@ -14,42 +14,50 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {AnalyticsService} from "../analytics.service";
-import {StateService} from 'src/app/core-nlp/state.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AnalyticsService } from '../analytics.service';
+import { StateService } from 'src/app/core-nlp/state.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { Subject, take, takeUntil } from 'rxjs';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
 
 @Component({
   selector: 'tock-satisfaction',
   templateUrl: './satisfaction.component.html',
   styleUrls: ['./satisfaction.component.css']
 })
-export class SatisfactionComponent implements OnInit {
+export class SatisfactionComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
+  configurations: BotApplicationConfiguration[];
   isStatisfactionActivated: boolean = false;
   errorMsg: string;
-  public loaded: boolean = false;
+  public loading: boolean = true;
 
-  constructor(
-    private analytics: AnalyticsService,
-    private state: StateService
-  ) {
-  }
+  constructor(private analytics: AnalyticsService, private state: StateService, private botConfiguration: BotConfigurationService) {}
 
   ngOnInit(): void {
-    this.state.currentIntents.subscribe(() => {
-      this.isActiveSatisfaction()
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
+      this.configurations = confs;
+
+      if (this.configurations.length) this.isActiveSatisfaction();
+
+      this.loading = false;
     });
   }
 
   isActiveSatisfaction() {
     this.errorMsg = null;
-    this.loaded = false;
-    this.analytics.isActiveSatisfactionByBot()
-      .subscribe((res: boolean) =>
-          this.isStatisfactionActivated = res,
-        err => this.errorMsg = err,
-        () => this.loaded = true);
+    this.analytics
+      .isActiveSatisfactionByBot()
+      .pipe(take(1))
+      .subscribe({
+        next: (res: boolean) => (this.isStatisfactionActivated = res),
+        error: (err) => (this.errorMsg = err)
+      });
   }
 
-
+  ngOnDestroy() {
+    this.destroy.next(true);
+    this.destroy.complete();
+  }
 }
-

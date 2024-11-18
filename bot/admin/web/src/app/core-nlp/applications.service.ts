@@ -62,8 +62,9 @@ export class ApplicationService implements OnDestroy {
   }
 
   resetConfiguration() {
-    this.locales().subscribe((locales) => (this.state.locales = locales));
-    this.nlpEngineTypes().subscribe((engines) => (this.state.supportedNlpEngines = engines));
+    this.getLocales().subscribe((locales) => (this.state.locales = locales));
+    this.getNlpEngineTypes().subscribe((engines) => (this.state.supportedNlpEngines = engines));
+    this.getNamespaces().subscribe((namespaces) => (this.state.namespaces = namespaces));
     this.getApplications().subscribe((applications) => {
       this.state.applications = applications;
       this.state.currentApplication = null;
@@ -79,8 +80,28 @@ export class ApplicationService implements OnDestroy {
     return this.getApplicationsPending;
   }
 
-  nlpEngineTypes(): Observable<NlpEngineType[]> {
-    return this.rest.getArray('/nlp-engines', NlpEngineType.fromJSONArray);
+  getNamespacesPending: Observable<UserNamespace[]>;
+  getNamespaces(): Observable<UserNamespace[]> {
+    if (!this.getNamespacesPending) {
+      this.getNamespacesPending = this.rest.get(`/namespaces`, UserNamespace.fromJSONArray).pipe(share());
+    }
+    return this.getNamespacesPending;
+  }
+
+  getLocalesPending: Observable<Entry<string, string>[]>;
+  getLocales(): Observable<Entry<string, string>[]> {
+    if (!this.getLocalesPending) {
+      this.getLocalesPending = this.rest.get(`/locales`, (m) => Entry.fromJSONArray<string, string>(m)).pipe(share());
+    }
+    return this.getLocalesPending;
+  }
+
+  getNlpEngineTypesPending: Observable<NlpEngineType[]>;
+  getNlpEngineTypes(): Observable<NlpEngineType[]> {
+    if (!this.getNlpEngineTypesPending) {
+      this.getNlpEngineTypesPending = this.rest.getArray('/nlp-engines', NlpEngineType.fromJSONArray).pipe(share());
+    }
+    return this.getNlpEngineTypesPending;
   }
 
   triggerBuild(application: Application) {
@@ -135,10 +156,6 @@ export class ApplicationService implements OnDestroy {
     }
   }
 
-  locales(): Observable<Entry<string, string>[]> {
-    return this.rest.get(`/locales`, (m) => Entry.fromJSONArray<string, string>(m));
-  }
-
   getApplicationDump(application: Application): Observable<Blob> {
     return this.rest.get(`/application/dump/${application._id}`, (r) => new Blob([JSON.stringify(r)], { type: 'application/json' }));
   }
@@ -165,10 +182,6 @@ export class ApplicationService implements OnDestroy {
       url = `/dump/application`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
-  }
-
-  getNamespaces(): Observable<UserNamespace[]> {
-    return this.rest.get(`/namespaces`, UserNamespace.fromJSONArray);
   }
 
   getUsersForNamespace(namespace: string): Observable<UserNamespace[]> {

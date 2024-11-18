@@ -15,7 +15,15 @@
   -->
 
 <nb-card *ngIf="configuration">
-  <nb-card-body [ngClass]="{ 'pt-5': configuration._id }">
+  <nb-card-body
+    *ngIf="loading"
+    [nbSpinner]="loading"
+  ></nb-card-body>
+
+  <nb-card-body
+    *ngIf="!loading"
+    [ngClass]="{ 'pt-5': configuration._id }"
+  >
     <div
       *ngIf="configuration._id"
       class="connector-title-box"
@@ -255,7 +263,10 @@
     </nb-accordion>
   </nb-card-body>
 
-  <nb-card-footer style="text-align: right">
+  <nb-card-footer
+    *ngIf="!loading"
+    style="text-align: right"
+  >
     <button
       nbButton
       ghost

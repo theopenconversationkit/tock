@@ -65,7 +65,7 @@
       </nb-select>
     </nb-form-field>
 
-    <nb-form-field *ngIf="namespaces">
+    <nb-form-field *ngIf="state.namespaces">
       <nb-icon
         nbPrefix
         icon="folder"
@@ -77,7 +77,7 @@
         class="mb-0 min-width-5 max-width-15em"
       >
         <nb-option
-          *ngFor="let namespace of namespaces"
+          *ngFor="let namespace of state.namespaces"
           [value]="namespace.namespace"
           >{{ namespace.namespace }}
         </nb-option>

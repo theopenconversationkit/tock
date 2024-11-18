@@ -38,7 +38,7 @@ export class I18nFiltersComponent implements OnInit {
   constructor(public state: StateService) {}
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(250)).subscribe(() => this.submitFiltersChange());
+    this.form.valueChanges.pipe(debounceTime(250), takeUntil(this.destroy$)).subscribe(() => this.submitFiltersChange());
   }
 
   form = new FormGroup<I18nFiltersForm>({

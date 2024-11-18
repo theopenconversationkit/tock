@@ -23,7 +23,6 @@ import { SettingsService } from '../../../core-nlp/settings.service';
 import { Subject, take, takeUntil } from 'rxjs';
 import { APP_BASE_HREF } from '@angular/common';
 import { ApplicationService } from '../../../core-nlp/applications.service';
-import { UserNamespace } from '../../../model/application';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { CoreConfig } from '../../../core-nlp/core.config';
 import { Router } from '@angular/router';
@@ -39,8 +38,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() position = 'normal';
 
   currentTheme = 'default';
-
-  namespaces: UserNamespace[];
 
   currentApplicationName: string;
 
@@ -69,8 +66,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
-      this.grabNamespaces();
-
       this.currentApplicationName = '';
       setTimeout(() => {
         this.currentApplicationName = this.state?.currentApplication?.name;
@@ -78,12 +73,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  grabNamespaces(): void {
-    this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
-  }
-
   get currentNamespaceName() {
-    return this.namespaces?.find((n) => n.current).namespace;
+    return this.state.namespaces?.find((n) => n.current).namespace;
   }
 
   changeNamespace(namespace: string) {
@@ -93,7 +84,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe((_) =>
         this.auth.loadUser().subscribe((_) => {
           this.applicationService.resetConfiguration();
-          this.grabNamespaces();
 
           this.applicationService
             .getApplications()

@@ -24,7 +24,7 @@ export class IntentQualityComponent implements OnInit, OnDestroy {
   constructor(private state: StateService, private quality: QualityService) {}
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(takeUntil(this.destroy), debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy)).subscribe(() => {
       if (isNaN(parseInt(this.minOccurrences.value))) {
         this.minOccurrences.patchValue(1);
       }

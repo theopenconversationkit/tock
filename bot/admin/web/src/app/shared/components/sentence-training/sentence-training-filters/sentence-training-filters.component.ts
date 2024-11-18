@@ -149,7 +149,7 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
 
     this.updateEntitiesFilters();
 
-    this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(500)).subscribe(() => this.submitFiltersChange());
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(() => this.submitFiltersChange());
   }
 
   submitFiltersChange(): void {
