@@ -167,11 +167,19 @@ export class FlowComponent implements OnInit, OnDestroy {
           this.loading = true;
 
           this.lastFlowRequest = request;
-          this.analytics.getApplicationFlow(request).subscribe((f) => {
-            this.loading = false;
-            this.userFlow = f;
-            console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
-            this.reset();
+          this.analytics.getApplicationFlow(request).subscribe({
+            next: (f) => {
+              this.loading = false;
+              this.userFlow = f;
+              console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
+              this.reset();
+            },
+            error: (error) => {
+              this.userFlow = undefined;
+              this.allStories = undefined;
+              this.reset();
+              this.loading = false;
+            }
           });
         }
       } else {
@@ -189,13 +197,21 @@ export class FlowComponent implements OnInit, OnDestroy {
               10000
             )
           )
-          .subscribe((s) => {
-            this.loading = false;
-            this.allStories = s;
-            this.configuredStories = s.filter((story) => !story.isBuiltIn());
-            console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
-            this.buildStaticFlowFromStories();
-            this.reset();
+          .subscribe({
+            next: (s) => {
+              this.loading = false;
+              this.allStories = s;
+              this.configuredStories = s.filter((story) => !story.isBuiltIn());
+              console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
+              this.buildStaticFlowFromStories();
+              this.reset();
+            },
+            error: (error) => {
+              this.userFlow = undefined;
+              this.allStories = undefined;
+              this.reset();
+              this.loading = false;
+            }
           });
       }
     }
