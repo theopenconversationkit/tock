@@ -616,7 +616,7 @@ object BotAdminService {
             else -> error("unsupported type $this")
         }
 
-    private fun BotAnswerConfiguration.toStoryConfiguration(
+    private fun BotAnswerConfiguration.toAnswerConfiguration(
         botId: String,
         oldStory: StoryDefinitionConfiguration?
     ): AnswerConfiguration? =
@@ -744,7 +744,7 @@ object BotAdminService {
             category = story.category,
             currentType = story.currentType,
             intent = story.intent,
-            answers = story.answers.mapNotNull { it.toStoryConfiguration(botId, oldStory) },
+            answers = story.answers.mapNotNull { it.toAnswerConfiguration(botId, oldStory) },
             mandatoryEntities = story.mandatoryEntities.map {
                 it.toEntityConfiguration(
                     application,
@@ -860,7 +860,7 @@ object BotAdminService {
                         botId = story.botId,
                         intent = story.intent,
                         currentType = story.currentType,
-                        answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, null) },
+                        answers = story.answers.mapNotNull { it.toAnswerConfiguration(botConf.botId, null) },
                         version = 0,
                         namespace = namespace,
                         mandatoryEntities = story.mandatoryEntities.map {

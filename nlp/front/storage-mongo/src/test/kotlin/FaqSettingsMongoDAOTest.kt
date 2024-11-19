@@ -15,7 +15,6 @@
  */
 
 package ai.tock.nlp.front.storage.mongo
-
 import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettings
