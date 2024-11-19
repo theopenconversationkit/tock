@@ -52,7 +52,8 @@ export class ActionReport {
     public message: BotMessage,
     public id: String,
     public test: boolean,
-    public connectorType?: ConnectorType
+    public connectorType?: ConnectorType,
+    public applicationId?: string
   ) {}
 
   isBot(): boolean {

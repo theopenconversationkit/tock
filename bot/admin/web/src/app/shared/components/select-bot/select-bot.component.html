@@ -53,7 +53,8 @@
   </span>
   <span
     *ngIf="displayConnectorChoice && currentBotName !== 'None'"
-    class="select-configuration w-50 lineHeight-1"
+    class="select-configuration lineHeight-1"
+    [class.w-50]="botNames && (allowNoSelection || botNames.length > 1)"
   >
     <nb-form-field nbTooltip="Select connector">
       <nb-icon

@@ -253,3 +253,31 @@ nb-menu {
 .opacity-0 {
   opacity: 0 !important;
 }
+
+.test-dialog-window {
+  margin: 0 1rem !important;
+
+  nb-card {
+    box-shadow: 0px 2px 10px #00000025;
+    background-color: var(--background-basic-color-2);
+  }
+
+  &.maximized {
+    nb-card {
+      max-width: 55vw;
+    }
+  }
+  &.full-screen {
+    nb-card {
+      width: 90vw;
+    }
+  }
+}
+
+// may disappear with the switch to bootstrap 5
+.border-top {
+  border-color: var(--border-basic-color-4) !important;
+}
+.border-bottom {
+  border-color: var(--border-basic-color-4) !important;
+}

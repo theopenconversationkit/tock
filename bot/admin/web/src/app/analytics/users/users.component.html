@@ -166,8 +166,9 @@
     >
       <nb-card-header class="position-relative p-0">
         <tock-chat-ui
-          height="calc(100vh - 350px)"
           *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
+          height="calc(100vh - 350px)"
+          padding="1em 0.5em 1em 1em"
         >
           <tock-chat-ui-message
             *ngFor="let action of selectedUser.userDialog.actions"

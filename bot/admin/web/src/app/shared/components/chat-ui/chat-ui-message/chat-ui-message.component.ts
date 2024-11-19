@@ -1,6 +1,8 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { BotMessage } from '../../../model/dialog-data';
+import { TestDialogService } from '../../test-dialog/test-dialog.service';
+import { ConnectorType } from '../../../../core/model/configuration';
 
 @Component({
   selector: 'tock-chat-ui-message',
@@ -10,8 +12,10 @@ import { BotMessage } from '../../../model/dialog-data';
 export class ChatUiMessageComponent {
   @Input() message: BotMessage;
   @Input() replay: boolean = false;
-  @Input() sender: string;
-  @Input() date: Date;
+  @Input() sender?: string;
+  @Input() date?: Date;
+  @Input() applicationId?: string;
+  @Input() connectorType?: ConnectorType;
 
   @Input()
   set avatar(value: string) {
@@ -42,9 +46,19 @@ export class ChatUiMessageComponent {
 
   @Output() sendMessage: EventEmitter<BotMessage> = new EventEmitter();
 
-  constructor(protected domSanitizer: DomSanitizer) {}
+  constructor(protected domSanitizer: DomSanitizer, private testDialogService: TestDialogService) {}
 
   replyMessage(message: BotMessage) {
     this.sendMessage.emit(message);
+  }
+
+  testDialogSentence(message, connectorType, applicationId, event) {
+    event?.stopPropagation();
+
+    this.testDialogService.testSentenceDialog({
+      sentenceText: message.text,
+      connectorType,
+      applicationId
+    });
   }
 }

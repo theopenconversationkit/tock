@@ -1,0 +1,19 @@
+<div>
+  <nb-form-field nbTooltip="Select configuration">
+    <nb-icon
+      nbPrefix
+      icon="link-45deg"
+    ></nb-icon>
+    <nb-select
+      size="small"
+      [(ngModel)]="currentBotName"
+      fullWidth
+    >
+      <nb-option
+        *ngFor="let n of botNames"
+        [value]="n"
+        >{{ n }}</nb-option
+      >
+    </nb-select>
+  </nb-form-field>
+</div>

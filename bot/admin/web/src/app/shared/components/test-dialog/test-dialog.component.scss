@@ -1,0 +1,38 @@
+.stats {
+  font-size: xx-small;
+  float: left;
+  margin-right: 20px;
+  margin-top: -2px;
+}
+
+.options-wrapper {
+  margin-top: -1em;
+  margin-right: -2em;
+  margin-left: -2em;
+
+  background-color: var(--background-basic-color-3);
+  padding: 0.5em 2em;
+}
+
+.shaders-wrapper {
+  position: relative;
+
+  .shader-top,
+  .shader-bottom {
+    pointer-events: none;
+    padding: 0.5em;
+    position: absolute;
+
+    left: 0;
+    right: 0.7em;
+  }
+
+  .shader-top {
+    top: 0;
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0) 10%, var(--background-basic-color-2) 100%);
+  }
+  .shader-bottom {
+    bottom: 0;
+    background: linear-gradient(0deg, var(--background-basic-color-2) 10%, rgba(255, 255, 255, 0) 100%);
+  }
+}

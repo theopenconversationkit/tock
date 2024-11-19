@@ -26,6 +26,7 @@ import { ApplicationService } from '../../../core-nlp/applications.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { CoreConfig } from '../../../core-nlp/core.config';
 import { Router } from '@angular/router';
+import { TestDialogService } from '../../../shared/components/test-dialog/test-dialog.service';
 
 @Component({
   selector: 'tock-header',
@@ -52,7 +53,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private applicationService: ApplicationService,
     private botConfiguration: BotConfigurationService,
     private config: CoreConfig,
-    private router: Router
+    private router: Router,
+    private testDialogService: TestDialogService
   ) {}
 
   ngOnInit() {
@@ -134,6 +136,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   changeLocale(locale) {
     setTimeout((_) => this.state.changeLocale(locale));
+  }
+
+  openDialogTest() {
+    this.testDialogService.openTestDialog();
   }
 
   ngOnDestroy(): void {

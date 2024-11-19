@@ -88,6 +88,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { ScrollComponent } from '../scroll/scroll.component';
+import { TestDialogComponent } from './components/test-dialog/test-dialog.component';
+import { BotConfigurationSelectorComponent } from './components/bot-configuration-selector/bot-configuration-selector.component';
 
 @NgModule({
   imports: [
@@ -158,7 +160,9 @@ import { ScrollComponent } from '../scroll/scroll.component';
     SentencesGenerationComponent,
     ScrollComponent,
     DataExportComponent,
-    WysiwygEditorComponent
+    WysiwygEditorComponent,
+    TestDialogComponent,
+    BotConfigurationSelectorComponent
   ],
   exports: [
     SelectBotComponent,

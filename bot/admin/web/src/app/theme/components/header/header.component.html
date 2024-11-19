@@ -107,6 +107,16 @@
       nbButton
       ghost
       size="medium"
+      (click)="openDialogTest()"
+      nbTooltip="Open a test dialog"
+    >
+      <nb-icon icon="terminal-plus"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      ghost
+      size="medium"
       *ngIf="auth.isLoggedIn() && !auth.isSSO()"
       (click)="auth.logout()"
       nbTooltip="Logout"

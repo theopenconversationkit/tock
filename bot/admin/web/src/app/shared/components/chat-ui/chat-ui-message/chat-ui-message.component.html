@@ -14,6 +14,18 @@
         *ngIf="sender || date"
       >
         {{ sender }} <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
+
+        <button
+          *ngIf="!reply"
+          nbButton
+          ghost
+          size="tiny"
+          class="ml-2"
+          nbTooltip="Test this sentence in a dialog"
+          (click)="testDialogSentence(message, connectorType, applicationId, $event)"
+        >
+          <nb-icon icon="terminal-plus"></nb-icon>
+        </button>
       </p>
 
       <div class="text">
