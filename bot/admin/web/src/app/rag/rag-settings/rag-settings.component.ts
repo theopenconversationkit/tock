@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
@@ -9,11 +9,13 @@ import { DefaultPrompt, EnginesConfigurations } from './models/engines-configura
 import { RagSettings } from './models';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { deepCopy } from '../../shared/utils';
+import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
-import { EnginesConfiguration, LLMProvider } from '../../shared/model/ai-settings';
+import { AiEngineSettingKeyName, EnginesConfiguration, EnginesConfigurationParam, AiEngineProvider } from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { saveAs } from 'file-saver-es';
+import { FileValidators } from '../../shared/validators';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -25,9 +27,9 @@ interface RagSettingsForm {
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
 
-  llmEngine: FormControl<LLMProvider>;
+  llmEngine: FormControl<AiEngineProvider>;
   llmSetting: FormGroup<any>;
-  emEngine: FormControl<LLMProvider>;
+  emEngine: FormControl<AiEngineProvider>;
   emSetting: FormGroup<any>;
 }
 
@@ -43,6 +45,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   enginesConfigurations = EnginesConfigurations;
 
+  engineSettingKeyName = AiEngineSettingKeyName;
+
   defaultPrompt = DefaultPrompt;
 
   availableStories: StoryDefinitionConfiguration[];
@@ -54,6 +58,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   isSubmitted: boolean = false;
 
   loading: boolean = false;
+
+  @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
+  @ViewChild('importModal') importModal: TemplateRef<any>;
 
   constructor(
     private botService: BotService,
@@ -73,22 +80,29 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.form
       .get('llmEngine')
       .valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((engine: LLMProvider) => {
-        this.initFormSettings('llmSetting', engine);
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.llmSetting, engine);
       });
 
     this.form
       .get('emEngine')
       .valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((engine: LLMProvider) => {
-        this.initFormSettings('emSetting', engine);
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.emSetting, engine);
       });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
       delete this.settingsBackup;
+
+      // Reset form on configuration change
+      this.form.reset();
+      // Reset formGroup controls too, if any
+      this.resetFormGroupControls(AiEngineSettingKeyName.llmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.emSetting);
+
       this.loading = true;
       this.configurations = confs;
-      this.form.reset();
+
       if (confs.length) {
         forkJoin([this.getStoriesLoader(), this.getRagSettingsLoader()]).subscribe((res) => {
           this.availableStories = res[0];
@@ -202,15 +216,12 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  initFormSettings(group: 'llmSetting' | 'emSetting', provider: LLMProvider): void {
+  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
     let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
-      const existingGroupKeys = Object.keys(this.form.controls[group].controls);
-      existingGroupKeys.forEach((key) => {
-        this.form.controls[group].removeControl(key);
-      });
+      this.resetFormGroupControls(group);
 
       requiredConfiguration.params.forEach((param) => {
         this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
@@ -220,17 +231,24 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
+  resetFormGroupControls(group: AiEngineSettingKeyName) {
+    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
+    existingGroupKeys.forEach((key) => {
+      this.form.controls[group].removeControl(key);
+    });
+  }
+
   private getRagSettingsLoader(): Observable<RagSettings> {
     const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
     return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
   }
 
   initForm(settings: RagSettings) {
-    this.initFormSettings('llmSetting', settings.llmSetting.provider);
-    this.initFormSettings('emSetting', settings.emSetting.provider);
+    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
     this.form.patchValue({
-      llmEngine: settings.llmSetting.provider,
-      emEngine: settings.emSetting.provider
+      llmEngine: settings.llmSetting?.provider,
+      emEngine: settings.emSetting?.provider
     });
     this.form.patchValue(settings);
     this.form.markAsPristine();
@@ -249,11 +267,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   get currentLlmEngine(): EnginesConfiguration {
-    return EnginesConfigurations['llmSetting'].find((e) => e.key === this.llmEngine.value);
+    return EnginesConfigurations[AiEngineSettingKeyName.llmSetting].find((e) => e.key === this.llmEngine.value);
   }
 
   get currentEmEngine(): EnginesConfiguration {
-    return EnginesConfigurations['emSetting'].find((e) => e.key === this.emEngine.value);
+    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
   }
 
   private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
@@ -282,11 +300,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     if (this.canSave && this.form.dirty) {
       this.loading = true;
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+      delete formValue['llmEngine'];
+      delete formValue['emEngine'];
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
       formValue.noAnswerStoryId = this.noAnswerStoryId.value === 'null' ? null : this.noAnswerStoryId.value;
-      delete formValue['llmEngine'];
-      delete formValue['emEngine'];
 
       const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
       this.rest.post(url, formValue, null, null, true).subscribe({
@@ -324,6 +342,150 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
           }
           this.loading = false;
         }
+      });
+    }
+  }
+
+  get hasExportableData(): boolean {
+    if (this.llmEngine.value || this.emEngine.value) return true;
+
+    const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+
+    return Object.values(formValue).some((entry) => {
+      return entry && (typeof entry !== 'object' || Object.keys(entry).length !== 0);
+    });
+  }
+
+  sensitiveParams: { label: string; key: string; include: boolean; param: EnginesConfigurationParam }[];
+
+  exportSettings() {
+    this.sensitiveParams = [];
+
+    const shouldConfirm =
+      (this.llmEngine.value || this.emEngine.value) &&
+      [(this.currentLlmEngine.params, this.currentEmEngine.params)].some((engine) => {
+        return engine.some((entry) => {
+          return entry.confirmExport;
+        });
+      });
+
+    if (shouldConfirm) {
+      [
+        { label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params },
+        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmEngine.params }
+      ].forEach((engine) => {
+        engine.params.forEach((entry) => {
+          if (entry.confirmExport) {
+            this.sensitiveParams.push({ label: engine.label, key: engine.key, include: false, param: entry });
+          }
+        });
+      });
+
+      this.exportConfirmationModalRef = this.nbDialogService.open(this.exportConfirmationModal);
+    } else {
+      this.downloadSettings();
+    }
+  }
+
+  exportConfirmationModalRef;
+
+  closeExportConfirmationModal() {
+    this.exportConfirmationModalRef.close();
+  }
+
+  confirmExportSettings() {
+    this.downloadSettings();
+    this.closeExportConfirmationModal();
+  }
+
+  downloadSettings() {
+    const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+    delete formValue['llmEngine'];
+    delete formValue['emEngine'];
+    delete formValue['id'];
+    delete formValue['enabled'];
+
+    if (this.sensitiveParams?.length) {
+      this.sensitiveParams.forEach((sensitiveParam) => {
+        if (!sensitiveParam.include) {
+          delete formValue[sensitiveParam.key][sensitiveParam.param.key];
+        }
+      });
+    }
+
+    const jsonBlob = new Blob([JSON.stringify(formValue)], {
+      type: 'application/json'
+    });
+
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'Rag settings',
+      'json'
+    );
+
+    saveAs(jsonBlob, exportFileName);
+
+    this.toastrService.show(`Rag settings dump provided`, 'Rag settings dump', { duration: 3000, status: 'success' });
+  }
+
+  importModalRef;
+
+  importSettings() {
+    this.isImportSubmitted = false;
+    this.importForm.reset();
+    this.importModalRef = this.nbDialogService.open(this.importModal);
+  }
+
+  closeImportModal() {
+    this.importModalRef.close();
+  }
+
+  isImportSubmitted: boolean = false;
+
+  importForm: FormGroup = new FormGroup({
+    fileSource: new FormControl<File[]>([], {
+      nonNullable: true,
+      validators: [Validators.required, FileValidators.mimeTypeSupported(['application/json'])]
+    })
+  });
+
+  get fileSource(): FormControl {
+    return this.importForm.get('fileSource') as FormControl;
+  }
+
+  get canSaveImport(): boolean {
+    return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
+  }
+
+  submitImportSettings() {
+    this.isImportSubmitted = true;
+    if (this.canSaveImport) {
+      const file = this.fileSource.value[0];
+
+      readFileAsText(file).then((fileContent) => {
+        const settings = JSON.parse(fileContent.data);
+
+        const hasCompatibleProvider = Object.values(AiEngineSettingKeyName).some((ekn) => {
+          return settings[ekn]?.provider && Object.values(AiEngineProvider).includes(settings[ekn].provider);
+        });
+
+        if (!hasCompatibleProvider) {
+          this.toastrService.show(
+            `The file supplied does not reference a compatible provider. Please check the file.`,
+            'Rag settings import fails',
+            {
+              duration: 6000,
+              status: 'danger'
+            }
+          );
+          return;
+        }
+
+        this.initForm(settings);
+        this.form.markAsDirty();
+
+        this.closeImportModal();
       });
     }
   }
