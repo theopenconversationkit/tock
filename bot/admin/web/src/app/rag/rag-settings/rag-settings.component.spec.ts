@@ -41,6 +41,7 @@ const settings = {
   params: {
     modelName: 'gpt-4-32k',
     deploymentName: 'azure deployment name',
+    model: 'model name',
     privateEndpointBaseUrl: 'azure endpoint url',
     apiVersion: '2023-03-15-preview',
     embeddingDeploymentName: 'Embedding deployment name',

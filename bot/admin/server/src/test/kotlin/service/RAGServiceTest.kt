@@ -80,6 +80,7 @@ class RAGServiceTest : AbstractTest() {
                 apiKey = "apiKey",
                 apiVersion = "apiVersion",
                 deploymentName = "deployment",
+                model = "model",
                 apiBase = "url"
             ),
             noAnswerSentence = "No answer sentence"

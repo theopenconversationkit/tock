@@ -48,6 +48,7 @@ object LLMSettingMapper {
                         prompt = prompt,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
+                        model = model,
                         apiVersion = apiVersion
                     )
                 is OllamaLLMSetting ->
@@ -84,11 +85,12 @@ object LLMSettingMapper {
                 is AzureOpenAILLMSetting ->
                     AzureOpenAILLMSetting(
                         SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
-                        temperature,
-                        prompt,
-                        apiBase,
-                        deploymentName,
-                        apiVersion
+                        temperature = temperature,
+                        prompt = prompt,
+                        apiBase = apiBase,
+                        deploymentName = deploymentName,
+                        apiVersion = apiVersion,
+                        model = model
                     )
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(temperature, prompt, model, baseUrl)

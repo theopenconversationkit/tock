@@ -64,6 +64,7 @@ AzureOpenAIService <br />
   "prompt": "Customized prompt for the use case",
   "api_base": "https://custom-api-name.azure-api.net",
   "deployment_name": "custom-deployment-name",
+  "model": "gpt-4o",
   "api_version": "2024-03-01-preview"
 }
 </pre>
@@ -78,6 +79,7 @@ AzureOpenAIService <br />
   },
   "api_base": "https://custom-api-name.azure-api.net",
   "deployment_name": "custom-deployment-name",
+  "model": "text-embedding-ada-002",
   "api_version": "2024-03-01-preview"
 }
 </pre>

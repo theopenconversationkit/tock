@@ -44,7 +44,8 @@ object EMSettingMapper {
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         apiBase = apiBase,
                         deploymentName = deploymentName,
-                        apiVersion = apiVersion
+                        apiVersion = apiVersion,
+                        model = model
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
@@ -75,7 +76,8 @@ object EMSettingMapper {
                         SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
                         apiBase = apiBase,
                         deploymentName = deploymentName,
-                        apiVersion = apiVersion
+                        apiVersion = apiVersion,
+                        model = model
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
