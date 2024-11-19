@@ -327,7 +327,7 @@ object ApplicationConfigurationService :
         ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
 
     override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition> =
-        getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotId(it.name) } ?: arrayListOf()
+        getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(it.name, it.namespace) } ?: arrayListOf()
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? =
         faqDefinitionDAO.getFaqDefinitionByIntentId(id)

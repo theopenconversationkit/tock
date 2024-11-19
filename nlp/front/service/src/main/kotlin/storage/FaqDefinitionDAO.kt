@@ -40,9 +40,10 @@ interface FaqDefinitionDAO {
 
     /**
      * Retrieve faqDefinition by filtering on the application name [id][ApplicationDefinition]
-     * @param id the application name
+     * @param botId the application name
+     * @param namespace the namespace
      */
-    fun getFaqDefinitionByBotId(id: String): List<FaqDefinition>
+    fun getFaqDefinitionByBotIdAndNamespace(botId: String, namespace: String): List<FaqDefinition>
 
     fun listenFaqDefinitionChanges(listener: () -> Unit)
 
@@ -60,8 +61,9 @@ interface FaqDefinitionDAO {
      * Retrieve faqDefinition by filtering on intent id [intentId][IntentDefinition] and the application name[botId][ApplicationDefinition]
      * @param intentId intent id
      * @param botId the application name
+     * @param namespace the namespace
      */
-    fun getFaqDefinitionByIntentIdAndBotId(intentId: Id<IntentDefinition>, botId: String): FaqDefinition?
+    fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId: Id<IntentDefinition>, botId: String, namespace: String): FaqDefinition?
 
     /**
      * Retrieve faq details with total count numbers according to the filter present un [FaqQuery]
@@ -75,7 +77,7 @@ interface FaqDefinitionDAO {
         i18nIds: List<Id<I18nLabel>>? = null
     ): Pair<List<FaqQueryResult>, Long>
 
-    fun getTags(botId: String): List<String>
+    fun getTags(botId: String, namespace: String): List<String>
 
     /**
      * Make migration
