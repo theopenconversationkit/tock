@@ -42,6 +42,30 @@ content:
             url: 'fr/user/studio/faq-management'
           - title: 'Le menu FAQ Training'
             url: 'fr/user/studio/faq-training'
+          - title: 'Le menu Gen AI'
+            url: 'fr/user/studio/gen-ai/gen-ai'
+            children:
+              - title: 'Fonctionnalités'
+                children:
+                  - title: 'Gen AI - Observability Settings'
+                    url: 'fr/user/studio/gen-ai/features/gen-ai-feature-observability'
+                  - title: 'Le menu _Gen AI / RAG Exclusions'
+                    url: 'fr/user/studio/gen-ai/features/gen-ai-feature-rag-exclusion'
+                  - title: 'Gen AI / RAG Settings'
+                    url: 'fr/user/studio/gen-ai/features/gen-ai-feature-rag'
+                  - title: 'Gen AI - Sentence generation'
+                    url: 'fr/user/studio/gen-ai/features/gen-ai-feature-sentence-generation'
+                  - title: 'Le menu Gen AI - Vector Store Settings'
+                    url: 'fr/user/studio/gen-ai/features/gen-ai-feature-vector-store'
+              - title: 'Fournisseurs IA Gen'
+                children:
+                  - title: Fournisseurs des modèles LLM et d'Embedding
+                    url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding'
+                  - title: Fournisseurs d'observabilité
+                    url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-observability'
+                  - title: Fournisseurs de base vectorielle
+                    url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-observability'
+
       - title: 'Guides'
         url: 'fr/user/guides'
         children:

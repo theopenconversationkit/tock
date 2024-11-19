@@ -61,7 +61,8 @@ fun BotDefinition.newBusMockContext(
     locale: Locale = testContext.defaultLocale(),
     userId: PlayerId = testContext.defaultPlayerId(),
     botId: PlayerId = PlayerId("bot", PlayerType.bot),
-    action: Action = SendSentence(userId, this.botId, botId, ""),
+    applicationId: String = this.botId,
+    action: Action = SendSentence(userId, applicationId, botId, ""),
     userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
     userPreferences: UserPreferences = UserPreferences(locale = locale),
     secondaryConnectorTypes: List<ConnectorType> = listOf(),
@@ -69,7 +70,7 @@ fun BotDefinition.newBusMockContext(
     BotBusMockContext(
         this,
         story,
-        this.botId,
+        applicationId,
         userId,
         botId,
         action,

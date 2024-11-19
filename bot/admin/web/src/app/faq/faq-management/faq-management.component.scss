@@ -22,24 +22,6 @@ section {
   height: fit-content;
 }
 
-section {
-  &.grid-actions {
-    display: grid;
-    grid-gap: 0.5rem;
-    grid-auto-flow: column;
-    align-items: center;
-    justify-content: end;
-  }
-
-  & nb-card {
-    height: min-content;
-  }
-
-  & .alert-config {
-    height: fit-content;
-  }
-}
-
 .loading {
   min-height: 50px;
 }

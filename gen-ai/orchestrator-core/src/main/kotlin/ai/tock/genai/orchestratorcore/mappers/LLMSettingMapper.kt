@@ -34,18 +34,29 @@ object LLMSettingMapper {
 
             when (this) {
                 is OpenAILLMSetting ->
-                    OpenAILLMSetting(SecurityUtils.fetchSecretKeyValue(apiKey), temperature, prompt, model)
+                    OpenAILLMSetting(
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 is AzureOpenAILLMSetting ->
                     AzureOpenAILLMSetting(
-                        SecurityUtils.fetchSecretKeyValue(apiKey),
-                        temperature,
-                        prompt,
-                        apiBase,
-                        deploymentName,
-                        apiVersion
+                        apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        apiBase = apiBase,
+                        deploymentName = deploymentName,
+                        apiVersion = apiVersion
                     )
                 is OllamaLLMSetting ->
-                    OllamaLLMSetting(temperature, prompt, model, baseUrl)
+                    OllamaLLMSetting(
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
@@ -64,10 +75,11 @@ object LLMSettingMapper {
             when (this) {
                 is OpenAILLMSetting ->
                     OpenAILLMSetting(
-                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
-                        temperature,
-                        prompt,
-                        model
+                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        temperature = temperature,
+                        prompt = prompt,
+                        model = model,
+                        baseUrl = baseUrl
                     )
                 is AzureOpenAILLMSetting ->
                     AzureOpenAILLMSetting(

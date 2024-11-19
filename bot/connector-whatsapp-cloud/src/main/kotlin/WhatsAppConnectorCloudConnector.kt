@@ -37,15 +37,17 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.PlayerType.bot
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.time.Duration
+import mu.KotlinLogging
 
 class WhatsAppConnectorCloudConnector internal constructor(
     val connectorId: String,
@@ -67,7 +69,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
 
-    private val restrictedPhoneNumbers = listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
+    private val restrictedPhoneNumbers =
+        listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -197,14 +200,13 @@ class WhatsAppConnectorCloudConnector internal constructor(
         errorListener: (Throwable) -> Unit
     ) {
         controller.handle(
-
             SendChoice(
                 recipientId,
                 connectorId,
                 PlayerId(connectorId, bot),
                 intent.wrappedIntent().name,
                 step,
-                parameters
+                parameters,
             ),
             ConnectorData(
                 WhatsAppConnectorCloudCallback(connectorId)

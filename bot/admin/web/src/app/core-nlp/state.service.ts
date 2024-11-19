@@ -16,7 +16,7 @@
 
 import { map } from 'rxjs/operators';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Application } from '../model/application';
+import { Application, UserNamespace } from '../model/application';
 import { AuthService } from './auth/auth.service';
 import { AuthListener } from './auth/auth.listener';
 import { User, UserRole } from '../model/auth';
@@ -44,6 +44,7 @@ export class StateService implements AuthListener {
   supportedNlpEngines: NlpEngineType[];
 
   user: User;
+  namespaces: UserNamespace[];
   applications: Application[];
 
   dateRange = { start: null, end: null, rangeInDays: null };
@@ -265,6 +266,7 @@ export class StateService implements AuthListener {
   logout() {
     this.user = null;
     this.currentApplication = null;
+    this.namespaces = null;
     this.applications = null;
   }
 

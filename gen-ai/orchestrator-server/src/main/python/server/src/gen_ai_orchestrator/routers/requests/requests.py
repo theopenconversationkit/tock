@@ -18,12 +18,23 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.contextual_compressor.compressor_types import (
+    CompressorSetting,
+)
 from gen_ai_orchestrator.models.em.em_types import EMSetting
+from gen_ai_orchestrator.models.guardrail.guardrail_types import (
+    GuardrailSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting, DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    DocumentSearchParams,
+    VectorStoreSetting,
+)
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
@@ -64,8 +75,7 @@ class BaseQuery(BaseModel):
         description='The document search parameters. Ex: number of documents, metadata filter',
     )
     vector_store_setting: Optional[VectorStoreSetting] = Field(
-        description='The vector store settings.',
-        default=None
+        description='The vector store settings.', default=None
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
         description='The observability settings.', default=None
@@ -112,16 +122,15 @@ class VectorStoreProviderSettingStatusQuery(BaseModel):
     """The query for the Vector Store Provider Setting Status"""
 
     vector_store_setting: Optional[VectorStoreSetting] = Field(
-        description='The Vector Store Provider setting to be checked.',
-        default=None
+        description='The Vector Store Provider setting to be checked.', default=None
     )
     em_setting: Optional[EMSetting] = Field(
         description="Embedding model setting, used to calculate the user's question vector.",
-        default=None
+        default=None,
     )
     document_index_name: Optional[str] = Field(
         description='Index name corresponding to a document collection in the vector database.',
-        default=None
+        default=None,
     )
 
 
@@ -144,6 +153,29 @@ class RagQuery(BaseQuery):
     #     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
+    )
+    question_answering_prompt_inputs: Any = Field(
+        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
+        'chat_history field must not be specified here, it will be override by the history field',
+    )
+    embedding_question_em_setting: EMSetting = Field(
+        description="Embedding model setting, used to calculate the user's question vector."
+    )
+    document_index_name: str = Field(
+        description='Index name corresponding to a document collection in the vector database.',
+    )
+    document_search_params: DocumentSearchParams = Field(
+        description='The document search parameters. Ex: number of documents, metadata filter',
+    )
+    observability_setting: Optional[ObservabilitySetting] = Field(
+        description='The observability settings.', default=None
+    )
+    guardrail_setting: Optional[GuardrailSetting] = Field(
+        description='Guardrail settings, to classify LLM output toxicity.', default=None
+    )
+    compressor_setting: Optional[CompressorSetting] = Field(
+        description='Compressor settings, to rerank relevant documents returned by retriever.',
+        default=None,
     )
 
     model_config = {
@@ -202,7 +234,18 @@ Answer in {locale}:""",
                         'k': 4,
                     },
                     'observability_setting': None,
-                    'vector_store_setting': None,
+                    'guardrail_setting': {
+                        'provider': 'BloomzGuardrail',
+                        'api_base': 'https://*********',
+                        'max_score': 0.3,
+                    },
+                    'compressor_setting': {
+                        'provider': 'BloomzRerank',
+                        'min_score': 0.7,
+                        'max_documents': 10,
+                        'label': 'entailment',
+                        'endpoint': 'https://*********',
+                    },
                 }
             ]
         }

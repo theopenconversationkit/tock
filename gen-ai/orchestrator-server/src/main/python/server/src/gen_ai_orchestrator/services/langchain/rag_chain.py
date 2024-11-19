@@ -23,10 +23,16 @@ import time
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ChatMessageHistory
+from langchain.chains.conversational_retrieval.base import (
+    ConversationalRetrievalChain,
+)
+from langchain.retrievers.contextual_compression import (
+    ContextualCompressionRetriever,
+)
+from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
+from langchain_core.vectorstores import VectorStoreRetriever
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -37,8 +43,13 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
+    BaseCompressorSetting,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
@@ -47,18 +58,18 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     RagDocumentMetadata,
     TextWithFootnotes,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.routers.responses.responses import RagResponse
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    create_observability_callback_handler,
+    get_compressor_factory,
     get_em_factory,
+    get_guardrail_factory,
     get_llm_factory,
-    get_vector_store_factory, create_observability_callback_handler,
+    get_vector_store_factory,
 )
 
 logger = logging.getLogger(__name__)
@@ -112,7 +123,9 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         callback_handlers.append(
             create_observability_callback_handler(
                 observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.RAG))
+                trace_name=ObservabilityTrace.RAG,
+            )
+        )
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -121,6 +134,12 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     # RAG Guard
     __rag_guard(inputs, response)
+
+    # Guardrail
+    if query.guardrail_setting:
+        guardrail = get_guardrail_factory(setting=query.guardrail_setting).get_parser()
+        guardrail_output = guardrail.parse(response['answer'])
+        check_guardrail_output(guardrail_output)
 
     # Calculation of RAG processing time
     rag_duration = '{:.2f}'.format(time.time() - start_time)
@@ -146,8 +165,9 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             query, response, records_callback_handler, rag_duration
         )
         if debug
-        else None
+        else None,
     )
+
 
 def get_source_content(doc: Document) -> str:
     """
@@ -160,7 +180,7 @@ def get_source_content(doc: Document) -> str:
     """
     title_prefix = f"{doc.metadata['title']}\n\n"
     if doc.page_content.startswith(title_prefix):
-        return doc.page_content[len(title_prefix):]
+        return doc.page_content[len(title_prefix) :]
     else:
         return doc.page_content
 
@@ -176,15 +196,24 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     """
     llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
     em_factory = get_em_factory(setting=query.embedding_question_em_setting)
-    vector_store_factory = get_vector_store_factory(setting=query.vector_store_setting,
-                                                    index_name=query.document_index_name,
-                                                    embedding_function=em_factory.get_embedding_model())
+    vector_store_factory = get_vector_store_factory(
+        setting=query.vector_store_setting,
+        index_name=query.document_index_name,
+        embedding_function=em_factory.get_embedding_model(),
+    )
+
+    retriever = vector_store_factory.get_vector_store_retriever(
+        search_kwargs=query.document_search_params.to_dict()
+    )
+    if query.compressor_setting:
+        retriever = add_compressor(retriever, query.compressor_setting)
 
     logger.debug('RAG chain - Document index name: %s', query.document_index_name)
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
+
     return ConversationalRetrievalChain.from_llm(
         llm=llm_factory.get_language_model(),
-        retriever=vector_store_factory.get_vector_store_retriever(query.document_search_params.to_dict()),
+        retriever=retriever,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
@@ -223,16 +252,16 @@ def __rag_guard(inputs, response):
 
     if 'no_answer' in inputs:
         if (
-                response['answer'] != inputs['no_answer']
-                and response['source_documents'] == []
+            response['answer'] != inputs['no_answer']
+            and response['source_documents'] == []
         ):
             message = 'The RAG gives an answer when no document has been found!'
             __rag_log(level=ERROR, message=message, inputs=inputs, response=response)
             raise GenAIGuardCheckException(ErrorInfo(cause=message))
 
         if (
-                response['answer'] == inputs['no_answer']
-                and response['source_documents'] != []
+            response['answer'] == inputs['no_answer']
+            and response['source_documents'] != []
         ):
             message = 'The RAG gives no answer for user question, but some documents has been found!'
             __rag_log(level=WARNING, message=message, inputs=inputs, response=response)
@@ -276,7 +305,8 @@ def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0:len(doc['metadata']['title'])+100] + '...',
+            content=doc['page_content'][0 : len(doc['metadata']['title']) + 100]
+            + '...',
             metadata=RagDocumentMetadata(**doc['metadata']),
         )
         for doc in on_chain_start_records[0]['inputs']['input_documents']
@@ -310,7 +340,7 @@ def get_llm_prompts(handler: RetrieverJsonCallbackHandler) -> (Optional[str], st
 
 
 def get_rag_debug_data(
-        query, response, records_callback_handler, rag_duration
+    query: RagQuery, response, records_callback_handler, rag_duration
 ) -> RagDebugData:
     """RAG debug data assembly"""
 
@@ -324,4 +354,36 @@ def get_rag_debug_data(
         document_search_params=query.document_search_params,
         answer=response['answer'],
         duration=rag_duration,
+    )
+
+
+def check_guardrail_output(guardrail_output: dict) -> bool:
+    """Checks if the guardrail detected toxicities.
+    Args:
+        guardrail_output: The guardrail output dictionnary
+    Returns:
+        Returns True if nothing is detected, raises an exception otherwise.
+    """
+    if guardrail_output['output_toxicity']:
+        message = f"Toxicity detected in LLM output ({','.join(guardrail_output['output_toxicity_reason'])})"
+        raise GenAIGuardCheckException(ErrorInfo(cause=message))
+    return True
+
+
+def add_compressor(
+    retriever: VectorStoreRetriever, compressor_settings: BaseCompressorSetting
+) -> ContextualCompressionRetriever:
+    """
+    Adds a compressor to the retriever.
+    Args:
+        retriever : the Base retriever
+        compressor_settings : the compressor settings
+    Returns:
+        New retriever with compressing feature.
+    """
+    compressor = get_compressor_factory(setting=compressor_settings).get_compressor()
+
+    return ContextualCompressionRetriever(
+        base_retriever=retriever,
+        base_compressor=compressor,
     )

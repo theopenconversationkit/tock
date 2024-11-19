@@ -17,7 +17,14 @@
 import ai.tock.bot.connector.web.HrefTargetType
 import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.connector.web.WebMediaFile
-import ai.tock.bot.connector.web.send.*
+import ai.tock.bot.connector.web.send.Footnote
+import ai.tock.bot.connector.web.send.PostbackButton
+import ai.tock.bot.connector.web.send.QuickReply
+import ai.tock.bot.connector.web.send.UrlButton
+import ai.tock.bot.connector.web.send.WebCard
+import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebDeepLink
+import ai.tock.bot.connector.web.send.WebMessageContent
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resourceAsStream
@@ -112,6 +119,27 @@ internal class WebConnectorResponseTest {
         )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_url_button_opened_same_window.json"))
+        Assertions.assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
+    fun `text with url button opened in a popup window`() {
+        val expected = WebConnectorResponseContent(
+            responses = listOf(
+                WebMessageContent(
+                    text = "Text with UrlButton",
+                    buttons = listOf(
+                        UrlButton(
+                            title = "title",
+                            url = "http://www.sncf.com",
+                            windowFeatures = "width=400,height=500",
+                        )
+                    )
+                )
+            )
+        )
+        val deserializedEvent =
+            mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_url_button_opened_popup_window.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 

@@ -45,10 +45,10 @@ Options:
 -v          Verbose output for debugging (without this option, script will be silent but for errors)
 ```
 
-Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title'|'url'|'text' line per filtered entry):
+Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title'|'source'|'text' line per filtered entry):
 
 
-| Title      | URL                | Text                  |
+| title      | source                | text                  |
 |------------|--------------------|-----------------------|
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
@@ -76,14 +76,14 @@ Options:
                 be silent but for errors)
 
 Import and Format a Smart Tribune data by API  into a ready-to-index CSV file
-(one 'title'|'url'|'text' line per filtered entry).
+(one 'title'|'source'|'text' line per filtered entry).
 ```
 Set in a .env your APIKEY and your APISECRET
 
-Import data from smart tribune API and return a ready-to-index CSV file (one 'title'|'url'|'text' line per filtered entry):
+Import data from smart tribune API and return a ready-to-index CSV file (one 'title'|'source'|'text' line per filtered entry):
 
 
-| Title      | URL                | Text                  |
+| title      | source                | text                  |
 |------------|--------------------|-----------------------|
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |

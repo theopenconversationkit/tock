@@ -48,11 +48,13 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
-                prompt = "prompt1"
+                prompt = "prompt1",
+                baseUrl = "https://api.openai.com/v1"
             ),
             emSetting = OpenAIEMSetting(
                 apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1"
+                model = "modelName1",
+                baseUrl = "https://api.openai.com/v1"
             ),
             noAnswerSentence = "no answer sentence"
         )
@@ -73,11 +75,13 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             llmSetting = OpenAILLMSetting(
                 apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
+                baseUrl = "https://api.openai.com/v1",
                 temperature = "1F",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
                 apiKey = RawSecretKey("apiKey1"),
+                baseUrl = "https://api.openai.com/v1",
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence1"
@@ -92,10 +96,12 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
+                baseUrl = "https://api.openai.com/v1",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
                 apiKey = RawSecretKey("apiKey1"),
+                baseUrl = "https://api.openai.com/v1",
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence1"
@@ -124,10 +130,12 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
+                baseUrl = "https://api.openai.com/v1",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
                 apiKey = RawSecretKey("apiKey1"),
+                baseUrl = "https://api.openai.com/v1",
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence"

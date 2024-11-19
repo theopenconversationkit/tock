@@ -55,7 +55,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(200)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(200), takeUntil(this.destroy$)).subscribe(() => {
       this.setActivationDisabledState();
     });
 

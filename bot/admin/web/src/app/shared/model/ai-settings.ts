@@ -60,12 +60,16 @@ export const AzureOpenAiApiVersionsList: string[] = [
 ];
 
 export const OpenAIModelsList: string[] = [
+  'gpt-4o',
+  'gpt-4o-mini',
+
   'gpt-4',
   'gpt-4-0314',
   'gpt-4-0613',
   'gpt-4-32k',
   'gpt-4-32k-0314',
   'gpt-4-32k-0613',
+  'gpt-4-turbo',
 
   'gpt-3.5-turbo',
   'gpt-3.5-turbo-0613',
@@ -77,7 +81,7 @@ export const OpenAIModelsList: string[] = [
   'davinci-002'
 ];
 
-export const OpenAIEmbeddingModel: string[] = ['text-embedding-ada-002'];
+export const OpenAIEmbeddingModel: string[] = ['text-embedding-3-small', 'text-embedding-3-large', 'text-embedding-ada-002'];
 
 export const OllamaLlmModelsList: string[] = ['llama2', 'llama3', 'llama3.1', 'llama3.1:8b', 'llama3.2'];
 

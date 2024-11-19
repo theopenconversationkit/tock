@@ -40,23 +40,24 @@ Answer in {locale}.
 
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {
-    label: 'OpenAi',
+    label: 'OpenAI',
     key: AiEngineProvider.OpenAI,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
+      { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
-    label: 'Azure OpenAi',
+    label: 'Azure OpenAI',
     key: AiEngineProvider.AzureOpenAIService,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
-      { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' },
+      { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
@@ -75,21 +76,22 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
 
 const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   {
-    label: 'OpenAi',
+    label: 'OpenAI',
     key: AiEngineProvider.OpenAI,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
+      { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIEmbeddingModel }
     ]
   },
   {
-    label: 'Azure OpenAi',
+    label: 'Azure OpenAI',
     key: AiEngineProvider.AzureOpenAIService,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
-      { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' }
+      { key: 'apiBase', label: 'Base url', type: 'obfuscated' }
     ]
   },
   {

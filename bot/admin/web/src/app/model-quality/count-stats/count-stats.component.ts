@@ -33,7 +33,7 @@ export class CountStatsComponent implements OnInit, OnDestroy {
   constructor(public state: StateService, private qualityService: QualityService) {}
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(takeUntil(this.destroy), debounceTime(500)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy)).subscribe(() => {
       if (isNaN(parseInt(this.minCount.value))) {
         this.minCount.patchValue(1);
       }

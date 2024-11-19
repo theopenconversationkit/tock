@@ -63,7 +63,7 @@
 </div>
 
 <tock-no-data-found
-  *ngIf="!configurations.length"
+  *ngIf="!configurations.length && !newApplicationConfiguration"
   title="No bot configuration detected"
   message="Use the NEW CONFIGURATION button to create one"
 ></tock-no-data-found>

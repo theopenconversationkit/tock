@@ -1,0 +1,186 @@
+<form [formGroup]="form">
+  <nb-card
+    class="mb-0"
+    [nbSpinner]="loading"
+  >
+    <nb-card-header>
+      <div class="d-flex gap-1 justify-content-between align-items-start">
+        <h4>{{ exportFileNameType }} export</h4>
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="close()"
+          data-testid="close-button"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
+    </nb-card-header>
+
+    <nb-card-body>
+      <tock-form-control
+        label="Export format"
+        name="format"
+        [controls]="format"
+        [showError]="isSubmitted"
+        [required]="true"
+        [hasMargin]="false"
+        class="d-block mb-2"
+      >
+        <nb-radio-group
+          class="d-flex"
+          formControlName="format"
+          name="format"
+        >
+          <nb-radio [value]="formats.json"> JSON </nb-radio>
+          <nb-radio [value]="formats.csv"> CSV </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <ng-container *ngIf="format.value === formats.csv">
+        <div class="row">
+          <div class="col-sm-6 col-12">
+            <tock-form-control
+              label="Delimiter"
+              name="delimiter"
+              [controls]="delimiter"
+              [showError]="isSubmitted"
+              [required]="true"
+              [hasMargin]="false"
+              class="d-block mb-2"
+            >
+              <nb-select
+                formControlName="delimiter"
+                name="delimiter"
+                size="small"
+                fullWidth
+              >
+                <nb-option
+                  *ngFor="let separator of delimiters | keyvalue"
+                  [value]="separator.value"
+                  >{{ separator.key }}</nb-option
+                >
+              </nb-select>
+            </tock-form-control>
+          </div>
+          <div class="col-sm-6 col-12">
+            <tock-form-control
+              label="Lists delimiter"
+              name="listDelimiter"
+              [controls]="listDelimiter"
+              [showError]="isSubmitted"
+              [required]="true"
+              [hasMargin]="false"
+              class="d-block mb-2"
+            >
+              <nb-select
+                formControlName="listDelimiter"
+                name="listDelimiter"
+                size="small"
+                fullWidth
+              >
+                <nb-option
+                  *ngFor="let separator of listDelimiters | keyvalue"
+                  [value]="separator.value"
+                  >{{ separator.key }}</nb-option
+                >
+              </nb-select>
+            </tock-form-control>
+          </div>
+        </div>
+
+        <tock-form-control
+          label="Columns to export"
+          name="columns"
+          [controls]="columns"
+          [showError]="isSubmitted"
+          [required]="true"
+          [hasMargin]="false"
+        >
+          <div formArrayName="columns">
+            <div *ngFor="let control of columns.controls; index as i; trackBy: trackByFn">
+              <div
+                [formGroupName]="i"
+                class="d-flex gap-1 align-items-center justify-content-between"
+              >
+                <nb-checkbox formControlName="selected"> {{ columns.controls[i].get('name').value }} </nb-checkbox>
+
+                <div
+                  *ngIf="columns.controls[i].get('selected').value"
+                  class="index-change-buttons d-flex align-items-center justify-content-between"
+                >
+                  <div class="w-50 text-center">
+                    <button
+                      *ngIf="i > 0"
+                      type="button"
+                      nbButton
+                      ghost
+                      size="tiny"
+                      nbTooltip="Reduce column index"
+                      class="index-change-button"
+                      (click)="changeColumnIndex(-1, i)"
+                    >
+                      <nb-icon
+                        icon="chevron-up-outline"
+                        pack="nebular-essentials"
+                        class="pointer"
+                      ></nb-icon>
+                    </button>
+                  </div>
+
+                  <div class="w-50 text-center">
+                    <button
+                      *ngIf="canIncreaseColumnIndex(i)"
+                      type="button"
+                      nbButton
+                      ghost
+                      size="tiny"
+                      nbTooltip="Increase column index"
+                      class="index-change-button"
+                      (click)="changeColumnIndex(1, i)"
+                    >
+                      <nb-icon
+                        icon="chevron-down-outline"
+                        pack="nebular-essentials"
+                        class="pointer"
+                      ></nb-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tock-form-control>
+      </ng-container>
+    </nb-card-body>
+
+    <nb-card-footer>
+      <div class="grid-button">
+        <button
+          type="button"
+          nbButton
+          outline
+          status="primary"
+          size="small"
+          (click)="close()"
+          data-testid="cancel-button"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          nbButton
+          status="primary"
+          size="small"
+          [disabled]="!canSave"
+          (click)="export()"
+        >
+          Export
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</form>

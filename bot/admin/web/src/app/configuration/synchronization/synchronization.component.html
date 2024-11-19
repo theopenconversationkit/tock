@@ -25,7 +25,7 @@
                 (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
               >
                 <nb-option
-                  *ngFor="let namespace of namespaces"
+                  *ngFor="let namespace of state.namespaces"
                   [value]="namespace"
                   >{{ namespace.namespace }}</nb-option
                 >
@@ -51,7 +51,7 @@
                 (selectedChange)="selectTargetNamespace(this.targetNamespace)"
               >
                 <nb-option
-                  *ngFor="let namespace of namespaces"
+                  *ngFor="let namespace of state.namespaces"
                   [value]="namespace"
                   >{{ namespace.namespace }}</nb-option
                 >

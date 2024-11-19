@@ -49,7 +49,7 @@ export class StoriesFilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(300)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.onFilter.emit(this.form.value as StoriesFilters);
     });
   }

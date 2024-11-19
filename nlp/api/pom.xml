@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp</artifactId>
-        <version>24.9.2-SNAPSHOT</version>
+        <version>24.9.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-api</artifactId>
@@ -39,6 +39,21 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-entity-value</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-aws-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-gcp-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-env-tools</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

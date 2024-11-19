@@ -1,0 +1,20 @@
+{
+  "responses": [
+    {
+      "text": "Text with UrlButton",
+      "buttons": [
+        {
+          "title": "title",
+          "url": "http://www.sncf.com",
+          "target": "_blank",
+          "windowFeatures": "width=400,height=500",
+          "type": "web_url",
+          "style": "primary",
+          "clazz": "url_button"
+        }
+      ],
+      "version": "1",
+      "type": "WebMessage"
+    }
+  ]
+}

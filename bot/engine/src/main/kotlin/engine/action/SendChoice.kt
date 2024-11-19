@@ -26,15 +26,17 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.mapNotNullValues
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
 import java.net.URLEncoder.encode
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  * A user choice (click on a button or direct action).
+ *
+ * @param applicationId the TOCK application id (matches the id of the connector)
  */
 class SendChoice(
     playerId: PlayerId,

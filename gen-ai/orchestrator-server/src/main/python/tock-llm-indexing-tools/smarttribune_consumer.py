@@ -33,7 +33,7 @@ Options:
                 be silent but for errors)
 
 Import and Format a Smart Tribune data by API  into a ready-to-index CSV file
-(one 'title'|'url'|'text' line per filtered entry).
+(one 'title'|'source'|'text' line per filtered entry).
 """
 import asyncio
 import logging
@@ -288,7 +288,7 @@ async def _main(args, body_credentials):
     logging.info(
         f'finished {len(df_all_questions)} questions in {time() - _start:.2f} seconds'
     )
-    df_all_questions.get(['Title', 'URL', 'Text']).to_csv(
+    df_all_questions.get(['title', 'source', 'text']).to_csv(
         args.get('<output_csv>'), sep='|', index=False
     )
 

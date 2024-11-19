@@ -35,6 +35,7 @@ class ErrorCode(Enum):
     GEN_AI_UNKNOWN_PROVIDER_SETTING = 1003
     GEN_AI_GUARD_CHECK_ERROR = 1004
     GEN_AI_PROMPT_TEMPLATE_ERROR = 1005
+    GEN_AI_UNKNOWN_LABEL_ERROR = 1006
 
     # AI Provider Errors
     AI_PROVIDER_UNKNOWN = 2000
@@ -142,6 +143,9 @@ class ErrorMessages:
             message='Prompt Template Error.',
             detail='Check the template syntax.',
         ),
+        ErrorCode.GEN_AI_UNKNOWN_LABEL_ERROR: ErrorMessage(
+            message='Unknown label.', detail='Check the label you sent.'
+        ),
         # AI Provider Errors
         ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),
         ErrorCode.AI_PROVIDER_BAD_QUERY: ErrorMessage(
@@ -168,9 +172,15 @@ class ErrorMessages:
             detail='Reduce the length of the prompt message.',
         ),
         # Vector Store Errors
-        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown vector store provider.'),
-        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER_SETTING: ErrorMessage(message='Unknown vector store setting.'),
-        ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED: ErrorMessage(message='No documents were retrieved from the vector store.'),
+        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(
+            message='Unknown vector store provider.'
+        ),
+        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
+            message='Unknown vector store setting.'
+        ),
+        ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED: ErrorMessage(
+            message='No documents were retrieved from the vector store.'
+        ),
         # OpenSearch Errors
         ErrorCode.OPEN_SEARCH_SETTINGS_ERROR: ErrorMessage(
             message='The OpenSearch is improperly configured.',
@@ -187,9 +197,12 @@ class ErrorMessages:
             detail='Ensure that the index exists and create it if it does not.',
         ),
         # Observability Errors
-        ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown Observability Provider.'),
+        ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER: ErrorMessage(
+            message='Unknown Observability Provider.'
+        ),
         ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message='Unknown Observability Provider Settings.'),
+            message='Unknown Observability Provider Settings.'
+        ),
         ErrorCode.OBSERVABILITY_API_ERROR: ErrorMessage(
             message='API error.',
         ),
