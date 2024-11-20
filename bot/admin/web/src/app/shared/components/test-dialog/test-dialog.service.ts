@@ -3,12 +3,10 @@ import { NbWindowRef, NbWindowService, NbWindowState } from '@nebular/theme';
 import { TestDialogComponent } from './test-dialog.component';
 import { TestMessage } from '../../../test/model/test';
 import { Subject } from 'rxjs';
-import { ConnectorType } from '../../../core/model/configuration';
 
 export interface openTestDialogOptions {
   sentenceText?: string;
   sentenceLocale?: string;
-  connectorType?: ConnectorType;
   applicationId?: string;
 }
 
@@ -42,9 +40,6 @@ export class TestDialogService {
   private defineLocaleSubject = new Subject<string>();
   defineLocaleObservable = this.defineLocaleSubject.asObservable();
 
-  private defineConnectorTypeSubject = new Subject<ConnectorType>();
-  defineConnectorTypeObservable = this.defineConnectorTypeSubject.asObservable();
-
   private defineApplicationIdSubject = new Subject<string>();
   defineApplicationIdObservable = this.defineApplicationIdSubject.asObservable();
 
@@ -70,12 +65,24 @@ export class TestDialogService {
       this.defineApplicationIdSubject.next(options.applicationId);
     }
 
-    if (options.connectorType) {
-      this.defineConnectorTypeSubject.next(options.connectorType);
-    }
-
     if (options.sentenceText?.trim().length) {
       this.testSentenceSubject.next(options.sentenceText);
+    }
+
+    this.bringToFront();
+  }
+
+  bringToFront() {
+    const hasManyOverlays = document.getElementsByClassName('cdk-global-overlay-wrapper');
+    if (hasManyOverlays?.length > 1) {
+      const currentOverlay = this.windowRef.componentRef.location.nativeElement.closest('.cdk-global-overlay-wrapper');
+      const otherOverlays = Array.from(hasManyOverlays).filter((ovl) => ovl !== currentOverlay);
+      let maxZIndex = 0;
+      otherOverlays.forEach((ovl) => {
+        const zIndex = window.getComputedStyle(ovl).zIndex;
+        if (zIndex && +zIndex > maxZIndex) maxZIndex = +zIndex;
+      });
+      currentOverlay.style.zIndex = maxZIndex + 1;
     }
   }
 

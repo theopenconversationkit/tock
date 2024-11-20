@@ -1,4 +1,19 @@
-<nb-card class="min-width-90vw">
+<nb-card
+  class="min-width-90vw"
+  *ngIf="!loading && !intent"
+>
+  <nb-card-body class="p-0 pb-2">
+    <tock-no-data-found
+      title="Intent not found"
+      message="There is no intention of the name '{{ this.intentName || this.intentId }}'. Perhaps it has been deleted."
+    ></tock-no-data-found>
+  </nb-card-body>
+</nb-card>
+
+<nb-card
+  class="min-width-90vw"
+  *ngIf="intent"
+>
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     <div>Intent &laquo;{{ this.intent.label || this.intent.name }}&raquo; story details</div>
     <button
@@ -85,10 +100,26 @@
           </label>
 
           <div>
-            <span *ngIf="story.storyId"
-              ><span class="text-mitigated-light">&laquo;</span>{{ story.userSentence
-              }}<span class="text-mitigated-light">&raquo;</span></span
-            >
+            <span *ngIf="story.storyId">
+              <span class="text-mitigated-light">&laquo;</span>{{ story.userSentence }}<span class="text-mitigated-light">&raquo;</span>
+              <span
+                nbTooltip="Locale"
+                class="ml-2"
+              >
+                [{{ story.userSentenceLocale }}]
+              </span>
+
+              <button
+                nbButton
+                ghost
+                size="tiny"
+                class="ml-2"
+                nbTooltip="Test this sentence in a dialog"
+                (click)="testDialogSentence(story.userSentence, story.userSentenceLocale)"
+              >
+                <nb-icon icon="terminal-plus"></nb-icon>
+              </button>
+            </span>
 
             <div
               class="mt-1"
@@ -124,12 +155,28 @@
                   <small>
                     <span class="text-mitigated-light">&laquo;</span>{{ $any(sentence).text
                     }}<span class="text-mitigated-light">&raquo;</span>
-
+                    <span
+                      nbTooltip="Locale"
+                      class="ml-2"
+                    >
+                      [{{ $any(sentence).language }}]
+                    </span>
                     <span
                       nbTooltip="Usage count"
                       class="ml-2"
                       >({{ $any(sentence).classification?.usageCount }})</span
                     >
+
+                    <button
+                      nbButton
+                      ghost
+                      size="tiny"
+                      class="ml-2"
+                      nbTooltip="Test this sentence in a dialog"
+                      (click)="testDialogSentence($any(sentence).text, $any(sentence).language)"
+                    >
+                      <nb-icon icon="terminal-plus"></nb-icon>
+                    </button>
                   </small>
                 </li>
               </ul>

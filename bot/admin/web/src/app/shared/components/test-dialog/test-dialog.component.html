@@ -48,16 +48,11 @@
             >
           </nb-select>
         </nb-form-field>
-        {{ currentConfigurationId }}
 
-        <tock-bot-configuration-selector [configurationId]="currentConfigurationId"></tock-bot-configuration-selector>
-
-        <tock-select-bot
-          [(configurationId)]="currentConfigurationId"
-          [returnsRestConfiguration]="true"
-          (selectionChange)="changeConfiguration($event)"
-        >
-        </tock-select-bot>
+        <tock-bot-configuration-selector
+          [currentConfigurationId]="currentConfigurationId"
+          (currentConfigurationChange)="changeCurrentConfiguration($event)"
+        ></tock-bot-configuration-selector>
 
         <div class="d-flex gap-1">
           <nb-checkbox

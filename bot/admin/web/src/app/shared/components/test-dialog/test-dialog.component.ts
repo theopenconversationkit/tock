@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable, Subject, of, take, takeUntil } from 'rxjs';
 import { PaginatedQuery, randomString } from '../../../model/commons';
 import { StateService } from '../../../core-nlp/state.service';
@@ -16,7 +16,8 @@ import { RestService } from '../../../core-nlp/rest/rest.service';
 import { SelectBotEvent } from '../select-bot/select-bot.component';
 import { TestDialogService } from './test-dialog.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
-import { BotApplicationConfiguration, ConnectorType } from '../../../core/model/configuration';
+import { BotApplicationConfiguration } from '../../../core/model/configuration';
+import { currentConfigurationSelection } from '../bot-configuration-selector/bot-configuration-selector.component';
 
 @Component({
   selector: 'tock-test-dialog',
@@ -129,31 +130,9 @@ export class TestDialogComponent implements OnInit, OnDestroy {
       this.setCurrentConfigurationByApplicationId(applicationId);
     });
 
-    this.testDialogService.defineConnectorTypeObservable.pipe(takeUntil(this.destroy)).subscribe((connectorType) => {
-      this.setCurrentConfigurationByConnectorType(connectorType);
-    });
-
     this.testDialogService.testSentenceObservable.pipe(takeUntil(this.destroy)).subscribe((sentenceText) => {
-      // this.talk(new Sentence(0, [], sentenceText));
+      this.talk(new Sentence(0, [], sentenceText));
     });
-  }
-
-  setCurrentConfigurationByApplicationId(applicationId: string): void {
-    let requiredApplication = this.configurations.find((a) => a.applicationId === applicationId);
-    if (requiredApplication) {
-      console.log(this.configurations);
-      console.log(requiredApplication);
-
-      if (requiredApplication.targetConfigurationId) {
-        requiredApplication = this.configurations.find((a) => a._id === requiredApplication.targetConfigurationId);
-      }
-
-      this.currentConfigurationId = requiredApplication._id;
-    }
-  }
-
-  setCurrentConfigurationByConnectorType(connectorType: ConnectorType): void {
-    // console.log(connectorType);
   }
 
   initCurrentConfiguration(): void {
@@ -173,6 +152,21 @@ export class TestDialogComponent implements OnInit, OnDestroy {
         this.clear();
       }
     }
+  }
+
+  setCurrentConfigurationByApplicationId(applicationId: string): void {
+    let requiredApplication = this.configurations.find((a) => a.applicationId === applicationId);
+    if (requiredApplication) {
+      if (!requiredApplication.targetConfigurationId) {
+        requiredApplication = this.configurations.find((a) => a.targetConfigurationId === requiredApplication._id);
+      }
+
+      this.currentConfigurationId = requiredApplication._id;
+    }
+  }
+
+  changeCurrentConfiguration(newConfiguration: currentConfigurationSelection): void {
+    this.currentConfigurationId = newConfiguration.restConfiguration._id;
   }
 
   swapOptions(): void {
@@ -277,15 +271,6 @@ export class TestDialogComponent implements OnInit, OnDestroy {
   clear(): void {
     this.messages = [];
     this.userModifierId = randomString();
-  }
-
-  changeConfiguration(selectBotEvent: SelectBotEvent): void {
-    if (selectBotEvent?.configurationId !== this.currentConfigurationId) {
-      this.messages = [];
-      this.currentConfigurationId = selectBotEvent.configurationId;
-    }
-
-    this.loading = false;
   }
 
   displayNlpStats(m: TestMessage): void {

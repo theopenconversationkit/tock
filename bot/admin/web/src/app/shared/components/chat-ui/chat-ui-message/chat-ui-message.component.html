@@ -13,7 +13,16 @@
         class="sender"
         *ngIf="sender || date"
       >
-        {{ sender }} <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
+        {{ sender }}
+
+        <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
+
+        <span
+          *ngIf="applicationId"
+          nbTooltip="Configuration"
+        >
+          [{{ getApplicationConfigurationName(applicationId) }}]</span
+        >
 
         <button
           *ngIf="!reply"
@@ -22,7 +31,7 @@
           size="tiny"
           class="ml-2"
           nbTooltip="Test this sentence in a dialog"
-          (click)="testDialogSentence(message, connectorType, applicationId, $event)"
+          (click)="testDialogSentence(message, applicationId, $event)"
         >
           <nb-icon icon="terminal-plus"></nb-icon>
         </button>

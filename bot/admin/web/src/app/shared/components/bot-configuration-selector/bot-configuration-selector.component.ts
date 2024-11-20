@@ -1,8 +1,12 @@
-import { Component, Input, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subject, take, takeUntil } from 'rxjs';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 
+export interface currentConfigurationSelection {
+  configuration: BotApplicationConfiguration;
+  restConfiguration: BotApplicationConfiguration | undefined;
+}
 @Component({
   selector: 'tock-bot-configuration-selector',
   templateUrl: './bot-configuration-selector.component.html',
@@ -13,6 +17,8 @@ export class BotConfigurationSelectorComponent implements OnDestroy {
 
   allConfigurations: BotApplicationConfiguration[];
 
+  configurations: BotApplicationConfiguration[];
+
   currentRestConfiguration: BotApplicationConfiguration;
   currentConfiguration: BotApplicationConfiguration;
 
@@ -20,7 +26,9 @@ export class BotConfigurationSelectorComponent implements OnDestroy {
 
   currentBotName: string;
 
-  @Input() configurationId: string;
+  @Input() currentConfigurationId: string;
+
+  @Output() currentConfigurationChange = new EventEmitter<currentConfigurationSelection>();
 
   constructor(private botConfiguration: BotConfigurationService) {}
 
@@ -34,15 +42,14 @@ export class BotConfigurationSelectorComponent implements OnDestroy {
       return;
     }
 
-    if (changes.configurationId && changes.configurationId.previousValue! == changes.configurationId.currentValue) {
-      console.log(changes.configurationId);
+    if (changes.currentConfigurationId && changes.currentConfigurationId.previousValue !== changes.currentConfigurationId.currentValue) {
       this.initConfigurations();
     }
   }
 
   initConfigurations(): void {
     const initConfiguration = this.allConfigurations.find((conf) => {
-      return conf._id === this.configurationId;
+      return conf._id === this.currentConfigurationId;
     });
 
     if (initConfiguration) {
@@ -61,11 +68,33 @@ export class BotConfigurationSelectorComponent implements OnDestroy {
       this.currentBotName = this.currentConfiguration.name;
     }
 
-    const retainedConfs = this.allConfigurations
-      .filter((c) => c.targetConfigurationId == null)
-      .sort((c1, c2) => c1.applicationId.localeCompare(c2.applicationId));
+    this.listConfigurations(this.currentConfiguration.name);
 
-    this.botNames = Array.from(new Set(retainedConfs.map((c) => c.name))).sort();
+    this.botNames = Array.from(new Set(this.allConfigurations.map((c) => c.name))).sort();
+  }
+
+  listConfigurations(botName: string) {
+    this.configurations = this.allConfigurations
+      .filter((c) => c.targetConfigurationId == null)
+      .filter((c) => c.name === botName)
+      .sort((c1, c2) => c1.applicationId.localeCompare(c2.applicationId));
+  }
+
+  changeBotName() {
+    this.listConfigurations(this.currentBotName);
+    this.currentConfiguration = undefined;
+    this.currentRestConfiguration = undefined;
+  }
+
+  changeCurrentConfiguration() {
+    this.currentRestConfiguration = this.allConfigurations.find((conf) => {
+      return conf.targetConfigurationId === this.currentConfiguration._id;
+    });
+
+    this.currentConfigurationChange.emit({
+      configuration: this.currentConfiguration,
+      restConfiguration: this.currentRestConfiguration
+    });
   }
 
   ngOnDestroy(): void {
