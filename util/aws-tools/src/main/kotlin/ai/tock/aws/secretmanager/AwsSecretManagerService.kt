@@ -193,4 +193,17 @@ class AwsSecretManagerService : SecretManagerService {
     override fun createSecretKeyInstance(secretName: String) = AwsSecretKey(secretName)
 
     override fun isSecretTypeSupported(secret: SecretKey): Boolean = secret is AwsSecretKey
+
+    override fun deleteSecret(secretName: String) {
+        try {
+            val deleteRequest = DeleteSecretRequest()
+                .withSecretId(secretName)
+                .withForceDeleteWithoutRecovery(true)
+            secretsManagerClient.deleteSecret(deleteRequest)
+            logger.info { "The secret '$secretName' has been successfully deleted." }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to delete the secret '$secretName'." }
+            throw e
+        }
+    }
 }

@@ -17,9 +17,10 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.BotAdminService
-import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.model.BotSentenceGenerationConfigurationDTO
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -52,8 +53,12 @@ object SentenceGenerationService {
     fun deleteConfig(namespace: String, botId: String) {
         val sentenceGenerationConfiguration = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No LLM Sentence Generation configuration is defined yet [namespace: $namespace, botId: $botId]")
-        logger.info { "Deleting the LLM Sentence Generation Configuration [namespace: $namespace, botId: $botId]" }
-        return sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
+
+        logger.info { "Deleting the LLM Sentence Generation Configuration [namespace: $namespace, botId: $botId] ..." }
+        sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
+
+        logger.info { "Deleting the LLM secret ..." }
+        sentenceGenerationConfiguration.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
     }
 
     /**

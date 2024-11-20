@@ -20,6 +20,8 @@ import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.model.BotObservabilityConfigurationDTO
+import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -62,8 +64,15 @@ object ObservabilityService {
     fun deleteConfig(namespace: String, botId: String) {
         val observabilityConfig = observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
+
         logger.info { "Deleting the Observability Configuration [namespace: $namespace, botId: $botId]" }
-        return observabilityConfigurationDAO.delete(observabilityConfig._id)
+        observabilityConfigurationDAO.delete(observabilityConfig._id)
+
+        val setting = observabilityConfig.setting
+        setting.takeIf { it is LangfuseObservabilitySetting }?.let {
+            logger.info { "Deleting the Observability secret ..." }
+            SecurityUtils.deleteSecret((setting as LangfuseObservabilitySetting).secretKey)
+        } ?: logger.info { "No secret to delete for the current setting." }
     }
 
     /**

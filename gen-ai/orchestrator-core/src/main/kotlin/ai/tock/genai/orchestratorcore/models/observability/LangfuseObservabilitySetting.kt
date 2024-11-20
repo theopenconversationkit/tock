@@ -16,8 +16,10 @@
 
 package ai.tock.genai.orchestratorcore.models.observability
 
+import ai.tock.shared.security.key.HasSecretKey
+
 data class LangfuseObservabilitySetting<T>(
-    val secretKey: T,
+    override val secretKey: T,
     val publicKey: String,
     val url: String
-) : ObservabilitySettingBase<T>(ObservabilityProvider.Langfuse)
+) : ObservabilitySettingBase<T>(ObservabilityProvider.Langfuse), HasSecretKey<T>

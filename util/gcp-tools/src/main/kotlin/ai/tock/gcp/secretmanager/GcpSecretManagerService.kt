@@ -134,4 +134,14 @@ class GcpSecretManagerService: SecretManagerService {
     override fun createSecretKeyInstance(secretName: String) = GcpSecretKey(secretName)
 
     override fun isSecretTypeSupported(secret: SecretKey): Boolean = secret is GcpSecretKey
+
+    override fun deleteSecret(secretName: String) {
+        try {
+            client.deleteSecret(SecretName.of(EnvConfig.gcpProjectId, secretName))
+            logger.info { "The secret '$secretName' has been successfully deleted." }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to delete the secret '$secretName'." }
+            throw e
+        }
+    }
 }

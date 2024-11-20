@@ -21,8 +21,6 @@ import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
-import ai.tock.shared.security.genAISecretPrefix
-import ai.tock.shared.security.key.AwsSecretKey
 import ai.tock.shared.security.key.SecretKey
 import kotlinx.serialization.json.Json
 
@@ -56,4 +54,6 @@ class EnvSecretManagerService: SecretManagerService {
     override fun createSecretKeyInstance(secretName: String) = error("Not supported")
 
     override fun isSecretTypeSupported(secret: SecretKey) = error("Not supported")
+
+    override fun deleteSecret(secretName: String) = error("Not supported")
 }
