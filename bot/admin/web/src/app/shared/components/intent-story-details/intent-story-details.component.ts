@@ -73,7 +73,6 @@ export class IntentStoryDetailsComponent implements OnInit {
       this.sentences = res.sentences.sort((a, b) => {
         return b.classification?.usageCount - a.classification?.usageCount;
       });
-      console.log(this.sentences);
     });
   }
 
