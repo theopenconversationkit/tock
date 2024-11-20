@@ -36,7 +36,10 @@
   </section>
 </div>
 
-<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings || isSidePanelOpen.export">
+<section
+  [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings || isSidePanelOpen.export"
+  [class.sidePanelExpanded]="sidePanelExpanded"
+>
   <tock-no-data-found
     *ngIf="configurations?.length === 0"
     title="No bot configuration detected"
@@ -94,8 +97,10 @@
     [loading]="loading.edit"
     [faq]="faqEdit"
     [tagsCache]="tagsCache"
+    [expanded]="sidePanelExpanded"
     (onClose)="closeSidePanel()"
     (onSave)="saveFaq($event)"
+    (onExpandSidePanel)="onExpandSidePanel()"
   ></tock-faq-management-edit>
 
   <tock-faq-management-settings

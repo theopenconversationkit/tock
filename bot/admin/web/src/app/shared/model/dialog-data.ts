@@ -245,6 +245,7 @@ export interface Footnote {
   title: string;
   url: string;
   identifier: string;
+  content?: string;
 }
 
 export class SentenceWithFootnotes extends BotMessage {

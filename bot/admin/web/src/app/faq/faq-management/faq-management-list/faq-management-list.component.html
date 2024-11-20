@@ -49,7 +49,13 @@
         <div class="col-md-6">
           <div class="truncate text-muted answer-col">
             <small class="d-block">Answer</small>
-            {{ faq.answer }}
+            <nb-icon
+              *ngIf="!isCurrentLocaleAnswerLabelProvided(faq)"
+              icon="exclamation-triangle"
+              class="mr-1 text-danger align-text-middle"
+              nbTooltip="Answer content not provided for the current locale"
+            ></nb-icon>
+            {{ getCurrentLocaleAnswerLabel(faq) }}
           </div>
         </div>
       </div>

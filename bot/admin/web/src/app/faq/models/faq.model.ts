@@ -1,3 +1,6 @@
+import { I18nLabel } from '../../bot/model/i18n';
+import { Footnote } from '../../shared/model/dialog-data';
+
 export type Utterance = string;
 
 export interface FaqDefinition {
@@ -12,6 +15,7 @@ export interface FaqDefinition {
   description?: string;
   utterances: Utterance[];
   tags: string[];
-  answer: string;
+  answer: I18nLabel;
   enabled: boolean;
+  footnotes?: Footnote[];
 }

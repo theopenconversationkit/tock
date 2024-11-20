@@ -64,4 +64,5 @@ $table-color: inherit;
   // @include nb-overrides();
 }
 
+@import './wysiwyg-editor.scss';
 @import './utilities';

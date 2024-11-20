@@ -15,8 +15,9 @@ import { FaqManagementSettingsComponent } from './faq-management-settings/faq-ma
 import { Pagination } from '../../shared/components';
 import { getExportFileName } from '../../shared/utils';
 import { saveAs } from 'file-saver-es';
+import { I18nLabel } from '../../bot/model/i18n';
 
-export type FaqDefinitionExtended = FaqDefinition & { _initQuestion?: string };
+export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: string };
 
 @Component({
   selector: 'tock-faq-management',
@@ -165,9 +166,16 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
         }
 
         if (add) {
-          this.faqs = [...this.faqs, ...faqs.rows];
+          this.faqs = [
+            ...this.faqs,
+            ...faqs.rows.map((row) => {
+              return { ...row, answer: I18nLabel.fromJSON(row.answer) };
+            })
+          ];
         } else {
-          this.faqs = faqs.rows;
+          this.faqs = faqs.rows.map((row) => {
+            return { ...row, answer: I18nLabel.fromJSON(row.answer) };
+          });
           this.pagination.start = faqs.start;
         }
 
@@ -201,7 +209,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
         .close()
         .pipe(take(1))
         .subscribe((res) => {
-          if (res != 'cancel') {
+          if (res != 'no') {
             if (faq) this.editFaq(faq);
             else this.addFaq();
           }
@@ -220,7 +228,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       description: '',
       utterances: [],
       tags: [],
-      answer: initAnswer || '',
+      _initAnswer: initAnswer || '',
       enabled: true,
       applicationName: this.stateService.currentApplication.name,
       language: this.stateService.currentLocale
@@ -351,6 +359,12 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     const request = this.toSearchQuery(query);
 
     return this.rest.post('/faq/search', request);
+  }
+
+  sidePanelExpanded: boolean = false;
+
+  onExpandSidePanel() {
+    this.sidePanelExpanded = !this.sidePanelExpanded;
   }
 
   ngOnDestroy() {

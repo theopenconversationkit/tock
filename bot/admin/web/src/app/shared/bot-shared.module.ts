@@ -78,7 +78,8 @@ import {
   InfoButtonComponent,
   SelectBotComponent,
   DateRangeCalendarComponent,
-  DataExportComponent
+  DataExportComponent,
+  WysiwygEditorComponent
 } from './components';
 
 import { AutofocusDirective } from './directives';
@@ -156,7 +157,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     SentencesGenerationListComponent,
     SentencesGenerationComponent,
     ScrollComponent,
-    DataExportComponent
+    DataExportComponent,
+    WysiwygEditorComponent
   ],
   exports: [
     SelectBotComponent,
@@ -184,7 +186,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     StickyMenuComponent,
     AiSettingsEngineConfigParamInputComponent,
     SentencesGenerationComponent,
-    DataExportComponent
+    DataExportComponent,
+    WysiwygEditorComponent
   ],
   providers: [BotSharedService, AnalyticsService]
 })

@@ -1,15 +1,24 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NbDialogService, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
-import { Observable, of } from 'rxjs';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { NbDialogService, NbPopoverDirective, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { take } from 'rxjs/operators';
-
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
+import { MarkupFormats, detectMarkupFormat, htmlToMarkdown, htmlToPlainText } from '../../../shared/utils/markup.utils';
+import { CreateI18nLabelRequest, I18nLocalizedLabel } from '../../../bot/model/i18n';
+import { ConnectorType, ConnectorTypeConfiguration, UserInterfaceType } from '../../../core/model/configuration';
+import { BotSharedService } from '../../../shared/bot-shared.service';
+import { Connectors, deepCopy, getConnectorLabel, normalize } from '../../../shared/utils';
+import { RestService } from '../../../core-nlp/rest/rest.service';
+import { BotService } from '../../../bot/bot-service';
+import { KeyValue } from '@angular/common';
+import { ExtractFormControlTyping, GenericObject } from '../../../shared/utils/typescript.utils';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
 
 export enum FaqTabs {
   INFO = 'info',
@@ -17,12 +26,35 @@ export enum FaqTabs {
   ANSWER = 'answer'
 }
 
+interface AnswerCombinationSelector {
+  locale: string;
+  connector: string;
+  interface: UserInterfaceType;
+}
+
+interface I18nEditForm {
+  locale: FormControl<string>;
+  interfaceType: FormControl<UserInterfaceType>;
+  connectorId: FormControl<string>;
+  label: FormControl<string>;
+  answerExportFormat: FormControl<MarkupFormats>;
+}
+
+type i18nValue = ExtractFormControlTyping<I18nEditForm>;
+
+interface FootnoteEditForm {
+  identifier: FormControl<string>;
+  title: FormControl<string>;
+  url: FormControl<string>;
+  content?: FormControl<string>;
+}
 interface FaqEditForm {
   title: FormControl<string>;
   description: FormControl<string>;
   tags: FormArray<FormControl<string>>;
   utterances: FormArray<FormControl<string>>;
-  answer: FormControl<string>;
+  answers: FormArray<FormGroup<I18nEditForm>>;
+  footnotes?: FormArray<FormGroup<FootnoteEditForm>>;
 }
 
 @Component({
@@ -31,46 +63,152 @@ interface FaqEditForm {
   styleUrls: ['./faq-management-edit.component.scss']
 })
 export class FaqManagementEditComponent implements OnChanges {
+  destroy$: Subject<unknown> = new Subject();
+
+  faqTabs: typeof FaqTabs = FaqTabs;
+  currentTab = FaqTabs.INFO;
+  isSubmitted: boolean = false;
+
+  controlsMaxLength = {
+    title: 100,
+    description: 500,
+    answer: 5000
+  };
+
+  getConnectorLabel = getConnectorLabel;
+  connectorsList = Connectors;
+
+  connectorTypes: ConnectorTypeConfiguration[] = [];
+
+  supportedConnectors: ConnectorType[];
+
+  userInterfaceType = UserInterfaceType;
+
+  answerExportFormatsRadios = [
+    { label: 'Plain text', value: MarkupFormats.PLAINTEXT },
+    { label: 'Html', value: MarkupFormats.HTML }
+    // { label: 'Markdown', value: MarkupFormats.MARKDOWN }
+  ];
+
   @Input() loading: boolean;
   @Input() faq?: FaqDefinitionExtended;
   @Input() tagsCache?: string[];
+  @Input() expanded?: boolean;
 
   @Output() onClose = new EventEmitter<boolean>();
+  @Output() onExpandSidePanel = new EventEmitter<boolean>();
   @Output() onSave = new EventEmitter();
 
   @ViewChild('tagInput') tagInput: ElementRef;
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
+  @ViewChild(NbPopoverDirective) answerCombinationSelectorPopoverRef: NbPopoverDirective;
 
-  constructor(private nbDialogService: NbDialogService, private nlp: NlpService, private readonly state: StateService) {}
+  constructor(
+    private nbDialogService: NbDialogService,
+    private nlp: NlpService,
+    private state: StateService,
+    public botSharedService: BotSharedService,
+    private botService: BotService,
+    private botConfiguration: BotConfigurationService
+  ) {}
 
-  faqTabs: typeof FaqTabs = FaqTabs;
-  isSubmitted: boolean = false;
-  currentTab = FaqTabs.INFO;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.connectorTypes.length || !this.supportedConnectors) {
+      const loaders = [this.botSharedService.getConnectorTypes().pipe(take(1)), this.botConfiguration.supportedConnectors.pipe(take(1))];
 
-  controlsMaxLength = {
-    description: 500,
-    answer: 960
-  };
+      forkJoin(loaders).subscribe(([connectorTypes, supportedConnectors]: [ConnectorTypeConfiguration[], ConnectorType[]]) => {
+        // We don't want the Test connector in our list
+        this.connectorTypes = connectorTypes.filter((conn) => !conn.connectorType.isRest());
+
+        this.supportedConnectors = supportedConnectors;
+
+        this.ngOnChanges(changes);
+      });
+
+      // we need the connectorTypes and supportedConnectors list before going further
+      return;
+    }
+
+    if (changes.faq?.currentValue) {
+      const faq: FaqDefinitionExtended = changes.faq.currentValue;
+
+      this.form.reset();
+      this.answers.clear();
+      this.selectedAnswerI18nValue = undefined;
+
+      this.tags.clear();
+      this.utterances.clear();
+      this.footnotes.clear();
+      this.resetAlerts();
+      this.isSubmitted = false;
+
+      if (faq) {
+        this.form.patchValue(faq);
+
+        faq.footnotes?.forEach((note) => {
+          this.footnotes.push(
+            new FormGroup({
+              title: new FormControl(note.title, [Validators.required]),
+              identifier: new FormControl(note.identifier),
+              url: new FormControl(note.url),
+              content: new FormControl(note.content)
+            })
+          );
+        });
+
+        this.initFormAnswers(faq);
+
+        if (faq.tags?.length) {
+          faq.tags.forEach((tag) => {
+            this.tags.push(new FormControl(tag));
+          });
+        }
+
+        faq.utterances.forEach((utterance) => {
+          this.utterances.push(new FormControl(utterance));
+        });
+
+        if (faq._initQuestion) {
+          this.form.markAsDirty();
+          this.form.markAsTouched();
+
+          this.setCurrentTab({ tabTitle: FaqTabs.QUESTION } as NbTabComponent);
+
+          this.addUtterance(faq._initQuestion);
+          delete faq._initQuestion;
+        }
+      }
+
+      if (!faq.id) {
+        if (!faq._initQuestion) {
+          this.setCurrentTab({ tabTitle: FaqTabs.INFO } as NbTabComponent);
+        }
+      }
+    }
+
+    if (changes.faq) {
+      this.tagsAutocompleteValues = of(this.tagsCache);
+
+      this.initSelectedAnswerI18nValue();
+    }
+  }
 
   setCurrentTab(tab: NbTabComponent): void {
     this.currentTab = tab.tabTitle as FaqTabs;
   }
 
   form = new FormGroup<FaqEditForm>({
-    title: new FormControl(undefined, [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
+    title: new FormControl(undefined, [Validators.required, Validators.minLength(2), Validators.maxLength(this.controlsMaxLength.title)]),
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),
     utterances: new FormArray([], Validators.required),
-    answer: new FormControl('', [Validators.required, Validators.maxLength(this.controlsMaxLength.answer)])
+    answers: new FormArray([], Validators.required),
+    footnotes: new FormArray([])
   });
 
-  getControlLengthIndicatorClass(controlName: string): string {
-    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
-  }
-
-  get answer(): FormControl {
-    return this.form.get('answer') as FormControl;
+  get answers(): FormArray {
+    return this.form.get('answers') as FormArray;
   }
 
   get description(): FormControl {
@@ -89,61 +227,418 @@ export class FaqManagementEditComponent implements OnChanges {
     return this.form.get('utterances') as FormArray;
   }
 
+  get footnotes(): FormArray {
+    return this.form.get('footnotes') as FormArray;
+  }
+
   get canSave(): boolean {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
   tagsAutocompleteValues: Observable<any[]>;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.faq?.currentValue) {
-      const faq: FaqDefinitionExtended = changes.faq.currentValue;
+  initFormAnswers(faq: FaqDefinitionExtended): void {
+    if (!faq.answer) {
+      // we're creating a new Faq; we should create a default answer for the current locale and its label is required
 
-      this.form.reset();
-      this.tags.clear();
-      this.utterances.clear();
-      this.resetAlerts();
-      this.isSubmitted = false;
+      // by default we choose the web connector (undefined) and the textChat interfaceType
+      let connectorId = undefined;
+      let interfaceType = UserInterfaceType.textChat;
 
-      if (faq) {
-        this.form.patchValue(faq);
-
-        if (faq.tags?.length) {
-          faq.tags.forEach((tag) => {
-            this.tags.push(new FormControl(tag));
-          });
-        }
-
-        faq.utterances.forEach((utterance) => {
-          this.utterances.push(new FormControl(utterance));
-        });
-
-        if (faq._initQuestion) {
-          this.form.markAsDirty();
-          this.form.markAsTouched();
-
-          this.setCurrentTab({ tabTitle: FaqTabs.QUESTION } as NbTabComponent);
-
-          setTimeout(() => {
-            this.addUtterance(faq._initQuestion);
-            delete faq._initQuestion;
-          });
-        }
+      // we check if we have a web connector in the list of supported connectors
+      const hasWebConnector = this.supportedConnectors?.find((sc) => sc.id === 'web');
+      // if not, we take the first connector in the list
+      if (!hasWebConnector) {
+        connectorId = this.supportedConnectors[0].id;
+        interfaceType = this.supportedConnectors[0].userInterfaceType;
       }
 
-      if (!faq.id && !faq._initQuestion) {
-        this.setCurrentTab({ tabTitle: FaqTabs.INFO } as NbTabComponent);
+      const label = faq._initAnswer ? faq._initAnswer : '';
+
+      delete faq._initAnswer;
+
+      this.answers.push(
+        new FormGroup({
+          locale: new FormControl(this.state.currentLocale),
+          connectorId: new FormControl(connectorId),
+          interfaceType: new FormControl(interfaceType),
+          label: new FormControl(label, [Validators.required, this.validateAnswerMarkupContent.bind(this)]),
+          answerExportFormat: new FormControl(MarkupFormats.PLAINTEXT)
+        })
+      );
+    } else {
+      faq.answer?.i18n.forEach((i18nLabel: I18nLocalizedLabel) => {
+        const guessedFormat = !i18nLabel.connectorId
+          ? detectMarkupFormat(i18nLabel.label, { checkForHtml: true, checkForMarkdown: false })
+          : MarkupFormats.PLAINTEXT;
+
+        this.answers.push(
+          new FormGroup({
+            locale: new FormControl(i18nLabel.locale),
+            interfaceType: new FormControl(i18nLabel.interfaceType),
+            connectorId: new FormControl(i18nLabel.connectorId),
+            // We make the label mandatory if a string is already defined. We don't do this systematically, as we know that the database contains a large number of empty and unwanted I18nLocalizedLabels.
+            label: new FormControl(
+              i18nLabel.label,
+              i18nLabel.label?.trim().length ? [Validators.required, this.validateAnswerMarkupContent.bind(this)] : []
+            ),
+            answerExportFormat: new FormControl(guessedFormat)
+          })
+        );
+      });
+    }
+  }
+
+  getControlLengthIndicatorClass(controlName: string): string {
+    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
+  }
+
+  getAnswerLengthIndicatorClass() {
+    return this.getSelectedAnswerI18nControl()?.controls.label.value.length > this.controlsMaxLength.answer ? 'text-danger' : 'text-muted';
+  }
+
+  validateAnswerMarkupContent(control: FormControl): ValidationErrors | null {
+    if (!this.form?.value) return null;
+
+    const exportFormat = control.parent?.get('answerExportFormat');
+
+    if (exportFormat?.value === MarkupFormats.HTML) {
+      const plain = htmlToPlainText(control.value);
+      if (!plain.trim().length) return { minlength: { requiredLength: 1 } };
+    }
+
+    return null;
+  }
+
+  getAnswersLocales(): { first: string; second: string }[] {
+    const locales = new Set<{ first: string; second: string }>();
+    this.form.controls.answers.controls.forEach((ctrl) => {
+      locales.add(this.state.locales.find((l) => l.first === ctrl.value.locale));
+    });
+
+    return [...locales];
+  }
+
+  getConnectorTypeById(connectorId: string): ConnectorTypeConfiguration {
+    if (!connectorId) connectorId = 'web';
+    return this.connectorTypes.find((ct) => ct.connectorType.id === connectorId);
+  }
+
+  isInterfaceTypeAllowedForConnector(connectorId: string, interfaceType): boolean {
+    const connector = this.getConnectorTypeById(connectorId);
+
+    if (
+      connector.connectorType.userInterfaceType !== UserInterfaceType.textAndVoiceAssistant &&
+      connector.connectorType.userInterfaceType !== interfaceType
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  getAnswerI18nValueByLocale(locale: string): i18nValue[] {
+    return this.form.controls.answers.controls
+      .filter(
+        (ctrl) => ctrl.value.locale === locale && this.isInterfaceTypeAllowedForConnector(ctrl.value.connectorId, ctrl.value.interfaceType)
+      )
+      .map((ctrl) => ctrl.value as i18nValue);
+  }
+
+  longLocaleName(locale: string): string {
+    return this.state.localeName(locale);
+  }
+
+  getAnswerConnectorLabel(i18nValue: i18nValue) {
+    let label = getConnectorLabel(i18nValue.connectorId);
+
+    const connector = this.getConnectorTypeById(i18nValue.connectorId);
+    if (connector.connectorType.userInterfaceType === UserInterfaceType.textAndVoiceAssistant) {
+      if (i18nValue.interfaceType === UserInterfaceType.textChat) {
+        label += ' (Text channel)';
+      }
+      if (i18nValue.interfaceType === UserInterfaceType.voiceAssistant) {
+        label += ' (Voice channel)';
       }
     }
 
-    this.tagsAutocompleteValues = of(this.tagsCache);
+    return label;
   }
 
-  updateTagsAutocompleteValues(event: any) {
+  getAnswerLabelTrimedLength(i18nValue: i18nValue): number {
+    // workaround for ClipboardEvent paste event
+    if (typeof i18nValue.label !== 'string') {
+      return 0;
+    }
+
+    return i18nValue.label?.trim().length;
+  }
+
+  getAnswerConnectorLabelTooltip(i18nValue: i18nValue): string {
+    if (typeof i18nValue.label !== 'string') return;
+
+    let tooltip = `Edit answer in ${this.state.localeName(i18nValue.locale)} for connector ${getConnectorLabel(i18nValue.connectorId)}`;
+
+    const connector = this.getConnectorTypeById(i18nValue.connectorId);
+    if (connector.connectorType.userInterfaceType === UserInterfaceType.textAndVoiceAssistant) {
+      if (i18nValue.interfaceType === UserInterfaceType.textChat) {
+        tooltip += ' and text channel';
+      }
+      if (i18nValue.interfaceType === UserInterfaceType.voiceAssistant) {
+        tooltip += ' and voice channel';
+      }
+    }
+
+    return tooltip;
+  }
+
+  getAnswerI18nLocalizedLabel(i18nValue: i18nValue): I18nLocalizedLabel {
+    return this.faq.answer?.i18n.find(
+      (i18n) =>
+        i18n.locale === i18nValue.locale &&
+        i18n.interfaceType === i18nValue.interfaceType &&
+        (i18nValue.connectorId ? i18n.connectorId === i18nValue.connectorId : true)
+    );
+  }
+
+  getConnectorTypeIconById(connectorId: string): string {
+    if (connectorId === null) connectorId = 'web';
+    return RestService.connectorIconUrl(connectorId);
+  }
+
+  initSelectedAnswerI18nValue(): void {
+    this.selectedAnswerI18nValue = this.getAnswerI18nValueByLocale(this.state.currentLocale)[0] as i18nValue;
+  }
+
+  selectedAnswerI18nValue: i18nValue;
+
+  getSelectedAnswerI18nControl(): FormGroup<I18nEditForm> {
+    if (!this.selectedAnswerI18nValue) return;
+
+    return this.form.controls.answers.controls.find(
+      (ctrl) =>
+        ctrl.value.locale === this.selectedAnswerI18nValue.locale &&
+        ctrl.value.connectorId === this.selectedAnswerI18nValue.connectorId &&
+        ctrl.value.interfaceType === this.selectedAnswerI18nValue.interfaceType
+    );
+  }
+
+  doesSelectedAnswerSupportsRichText(): boolean {
+    return this.selectedAnswerI18nValue.connectorId === null;
+  }
+
+  compareSelectedAnswerByOptions(a, b): boolean {
+    return a?.locale === b?.locale && a?.connectorId === b?.connectorId && a?.interfaceType === b?.interfaceType;
+  }
+
+  getSupportedLocalesWithUnassignedAnswerCombinations(): { first: string; second: string }[] {
+    const locales = new Set<{ first: string; second: string }>();
+    this.state.currentApplication.supportedLocales.forEach((loc) => {
+      if (this.hasUnassignedAnswerCombinationsForLocales([loc])) locales.add(this.state.locales.find((l) => l.first === loc));
+    });
+
+    return [...locales];
+  }
+
+  hasUnassignedAnswerCombinationsForLocales(locales: string[]): boolean {
+    return locales.some((locale) => {
+      return this.supportedConnectors.some((connector) => {
+        let interfaceTypes =
+          connector.userInterfaceType === UserInterfaceType.textAndVoiceAssistant
+            ? [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant]
+            : [connector.userInterfaceType];
+
+        return interfaceTypes.some((interfaceType) => {
+          return !this.answers.value.find((ctrl) => {
+            return (
+              ctrl.locale === locale &&
+              (connector.id === 'web' ? !ctrl.connectorId : ctrl.connectorId === connector.id) &&
+              ctrl.interfaceType === interfaceType
+            );
+          });
+        });
+      });
+    });
+  }
+
+  hasUnassignedAnswerCombinations(): boolean {
+    return this.hasUnassignedAnswerCombinationsForLocales(this.state.currentApplication.supportedLocales);
+  }
+
+  getUnassignedConnectorsForLocale(locale: string): GenericObject<string> {
+    const connectors = deepCopy(this.connectorsList);
+    const supportedConnectorsIds = this.supportedConnectors.map((c) => c.id);
+
+    // We only keep supported connectors
+    Object.entries(this.connectorsList).forEach((c) => {
+      if (!supportedConnectorsIds.includes(c[0])) {
+        delete connectors[c[0]];
+      }
+    });
+
+    this.answers.controls
+      .filter((ctrl) => ctrl.value.locale === locale)
+      .forEach((ctrl) => {
+        const connector = this.getConnectorTypeById(ctrl.value.connectorId);
+        if (connector.connectorType.userInterfaceType !== UserInterfaceType.textAndVoiceAssistant) {
+          delete connectors[connector.connectorType.id];
+        } else {
+          if (
+            this.answers.controls.filter((ctrl) => ctrl.value.locale === locale && ctrl.value.connectorId === connector.connectorType.id)
+              .length > 1
+          ) {
+            delete connectors[ctrl.value.connectorId];
+          }
+        }
+      });
+
+    return connectors;
+  }
+
+  originalOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
+    return 0;
+  };
+
+  getUnassignedInterfacesForLocaleAndConnector(
+    locale: string,
+    connector: string
+  ): GenericObject<{ label: string; value: UserInterfaceType }> {
+    let interfaces = {
+      textChat: {
+        label: 'Text Chat channel',
+        value: UserInterfaceType.textChat
+      },
+      voiceAssistant: {
+        label: 'Voice Assistant channel',
+        value: UserInterfaceType.voiceAssistant
+      }
+    };
+
+    this.answers.controls
+      .filter((ctrl) => ctrl.value.locale === locale && ctrl.value.connectorId === connector)
+      .forEach((ctrl) => {
+        if (ctrl.value.interfaceType === UserInterfaceType.textChat) {
+          delete interfaces['textChat'];
+        }
+        if (ctrl.value.interfaceType === UserInterfaceType.voiceAssistant) {
+          delete interfaces['voiceAssistant'];
+        }
+      });
+
+    return interfaces;
+  }
+
+  trackByInterface(index: number, item: KeyValue<string, { label: string; value: UserInterfaceType }>) {
+    return item.key;
+  }
+
+  answerCombinationSelector: AnswerCombinationSelector;
+
+  resetAnswerCombinationSelector(): void {
+    this.answerCombinationSelector = {
+      locale: undefined,
+      connector: undefined,
+      interface: undefined
+    };
+  }
+
+  setAnswerCombinationSelector<S extends keyof AnswerCombinationSelector>(stage: S, value: AnswerCombinationSelector[S]) {
+    this.answerCombinationSelector[stage] = value;
+
+    if (stage === 'connector') {
+      const connector = this.getConnectorTypeById(value as string);
+      if (connector.connectorType.userInterfaceType !== UserInterfaceType.textAndVoiceAssistant) {
+        this.answerCombinationSelectorPopoverRef.hide();
+
+        // if we add a Web connector, we should not give its id but a falsy value
+        const connectorId = this.answerCombinationSelector.connector === 'web' ? null : this.answerCombinationSelector.connector;
+
+        this.answers.push(
+          new FormGroup({
+            locale: new FormControl(this.answerCombinationSelector.locale),
+            connectorId: new FormControl(connectorId),
+            interfaceType: new FormControl(connector.connectorType.userInterfaceType),
+            // It is assumed that if the user adds a response combination, the label of that combination is required.
+            label: new FormControl('', [Validators.required, this.validateAnswerMarkupContent.bind(this)]),
+            answerExportFormat: new FormControl(MarkupFormats.PLAINTEXT)
+          })
+        );
+
+        this.selectedAnswerI18nValue = this.answers.controls.find(
+          (ctrl) =>
+            ctrl.value.locale === this.answerCombinationSelector.locale &&
+            ctrl.value.connectorId === connectorId &&
+            ctrl.value.interfaceType === connector.connectorType.userInterfaceType
+        ).value;
+      }
+    }
+
+    if (stage === 'interface') {
+      this.answerCombinationSelectorPopoverRef.hide();
+      this.answers.push(
+        new FormGroup({
+          locale: new FormControl(this.answerCombinationSelector.locale),
+          connectorId: new FormControl(this.answerCombinationSelector.connector),
+          interfaceType: new FormControl(this.answerCombinationSelector.interface),
+          // It is assumed that if the user adds a response combination, the label of that combination is required.
+          label: new FormControl('', [Validators.required, this.validateAnswerMarkupContent.bind(this)]),
+          answerExportFormat: new FormControl(MarkupFormats.PLAINTEXT)
+        })
+      );
+
+      this.selectedAnswerI18nValue = this.answers.controls.find(
+        (ctrl) =>
+          ctrl.value.locale === this.answerCombinationSelector.locale &&
+          ctrl.value.connectorId === this.answerCombinationSelector.connector &&
+          ctrl.value.interfaceType === this.answerCombinationSelector.interface
+      ).value;
+    }
+  }
+
+  stopPropagation(event: MouseEvent): void {
+    event.stopPropagation();
+  }
+
+  addFootnote(): void {
+    this.footnotes.push(
+      new FormGroup({
+        title: new FormControl('', [Validators.required]),
+        identifier: new FormControl(this.footnotes.controls.length + 1),
+        url: new FormControl(''),
+        content: new FormControl('')
+      })
+    );
+    this.computeFootnotesIdentifiers();
+  }
+
+  removeFootnote(index: number): void {
+    this.footnotes.removeAt(index);
+    this.form.markAsDirty();
+  }
+
+  canIncreaseFootnoteIndex(index: number): boolean {
+    return index < this.footnotes.length - 1;
+  }
+
+  changeFootnoteIndex(shift: -1 | 1, index: number): void {
+    const footnote = this.footnotes.at(index);
+    this.footnotes.removeAt(index);
+    this.footnotes.insert(index + shift, footnote);
+    this.computeFootnotesIdentifiers();
+  }
+
+  computeFootnotesIdentifiers() {
+    this.footnotes.controls.forEach((footnote, index) => {
+      footnote.get('identifier').setValue(index + 1);
+    });
+    this.form.markAsDirty();
+  }
+
+  updateTagsAutocompleteValues(event: any): void {
     this.tagsAutocompleteValues = of(this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase())));
   }
 
-  tagSelected(value: string) {
+  tagSelected(value: string): void {
     this.onTagAdd({ value, input: this.tagInput });
   }
 
@@ -175,9 +670,7 @@ export class FaqManagementEditComponent implements OnChanges {
       Remove western punctuations
       Deduplicate spaces
     */
-    return str
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+    return normalize(str)
       .trim()
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, '')
       .replace(/\s\s+/g, ' ');
@@ -233,7 +726,9 @@ export class FaqManagementEditComponent implements OnChanges {
                 this.form.markAsDirty();
                 setTimeout(() => {
                   this.addUtteranceInput?.nativeElement.focus();
-                  this.utterancesListWrapper.nativeElement.scrollTop = this.utterancesListWrapper.nativeElement.scrollHeight;
+                  if (this.utterancesListWrapper) {
+                    this.utterancesListWrapper.nativeElement.scrollTop = this.utterancesListWrapper.nativeElement.scrollHeight;
+                  }
                 });
               }
               this.lookingForSameUterranceInOtherInent = false;
@@ -243,7 +738,8 @@ export class FaqManagementEditComponent implements OnChanges {
             }
           });
       }
-      this.addUtteranceInput.nativeElement.value = '';
+
+      if (this.addUtteranceInput?.nativeElement) this.addUtteranceInput.nativeElement.value = '';
     }
   }
 
@@ -327,10 +823,10 @@ export class FaqManagementEditComponent implements OnChanges {
     this.resetAlerts();
 
     if (this.canSave) {
-      let faqData = {
+      let faqData: FaqDefinitionExtended = deepCopy({
         ...this.faq,
-        ...this.form.value
-      };
+        ...(this.form.value as FaqDefinitionExtended)
+      });
 
       if (!this.faq.id) {
         faqData.intentName = this.getFormatedIntentName(this.title.value);
@@ -358,14 +854,14 @@ export class FaqManagementEditComponent implements OnChanges {
               if (result === createNewAction.toLocaleLowerCase()) {
                 faqData.intentName = this.generateIntentName(faqData);
               }
-              this.save(faqData);
+              this.saveAnswers(faqData);
             }
           });
           return;
         }
       }
 
-      this.save(faqData);
+      this.saveAnswers(faqData);
     }
   }
 
@@ -379,8 +875,98 @@ export class FaqManagementEditComponent implements OnChanges {
     return candidate;
   }
 
-  save(faqDFata): void {
-    this.onSave.emit(faqDFata);
+  saveAnswers(faqData: FaqDefinitionExtended & Partial<ExtractFormControlTyping<FaqEditForm>>) {
+    const shouldSaveAnswers =
+      !faqData.id ||
+      this.form.controls.answers.controls.some((ctrl) => {
+        return ctrl.dirty;
+      });
+
+    if (shouldSaveAnswers) {
+      // Existing answer, we should update
+      if (faqData.answer?.i18n) {
+        // Exclude I18nLocalizedLabels whose interface type is incompatible with their connector type
+        faqData.answer.i18n = faqData.answer.i18n.filter((i18n) =>
+          this.isInterfaceTypeAllowedForConnector(i18n.connectorId, i18n.interfaceType)
+        );
+
+        faqData.answers.forEach((answer) => {
+          const targetI18n = faqData.answer.i18n.find(
+            (i18n) =>
+              i18n.locale === answer.locale &&
+              i18n.interfaceType === answer.interfaceType &&
+              (answer.connectorId ? i18n.connectorId === answer.connectorId : !i18n.connectorId)
+          );
+
+          if (targetI18n) {
+            // I18nLocalizedLabel exists, we should update
+            targetI18n.label = answer.label;
+            targetI18n.interfaceType = UserInterfaceType[targetI18n.interfaceType] as any;
+          } else {
+            // new I18nLocalizedLabel, we should create
+            faqData.answer.i18n.push(
+              new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [])
+            );
+          }
+        });
+
+        // createI18nLabel returns an I18nLabel whose “namespace” attribute has been changed to lowercase; we need to correct this if this faq was previously created.
+        // TODO : Fix back behavior
+        faqData.answer.namespace = this.state.currentApplication.namespace;
+
+        // Save the I18nLabel
+        this.botService.saveI18nLabel(faqData.answer).subscribe((_) => {
+          delete faqData.answers;
+          // We can now save the Faq
+          this.save(faqData);
+        });
+      } else {
+        // We are creating a new Faq, we should create the answer I18nLabel
+        const currentLocaleAnswerLabel = faqData.answers.find((answer) => answer.locale === this.state.currentLocale);
+
+        const i18nLabelCreationRequest = new CreateI18nLabelRequest('faq', currentLocaleAnswerLabel.label, this.state.currentLocale);
+
+        this.botService.createI18nLabel(i18nLabelCreationRequest).subscribe((i18n) => {
+          // We associate the newly created I18nLabel to the Faq
+          faqData.answer = i18n;
+
+          // As the answer I18nLabel now exists, we can add the I18nLocalizedLabels
+          if (faqData.answers.length) {
+            // As the backend systematically create a web connector I18nLocalizedLabel we clear it as the bot may not have a web connector defined
+            faqData.answer.i18n = [];
+
+            faqData.answers.forEach((answer) => {
+              faqData.answer.i18n.push(
+                new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [], [])
+              );
+            });
+
+            // createI18nLabel returns an I18nLabel whose “namespace” attribute has been changed to lowercase; we need to correct this.
+            // TODO : Fix back behavior
+            faqData.answer.namespace = this.state.currentApplication.namespace;
+
+            // Save the I18nLabel with its new I18nLocalizedLabel
+            this.botService.saveI18nLabel(faqData.answer).subscribe((_) => {
+              // We can now save the Faq
+              delete faqData.answers;
+              this.save(faqData);
+            });
+          } else {
+            // There was only 1 I18nLocalizedLabel, we can save the Faq
+            delete faqData.answers;
+            this.save(faqData);
+          }
+        });
+      }
+    } else {
+      // The answers haven't been touched, we just save the faq.
+      delete faqData.answers;
+      this.save(faqData);
+    }
+  }
+
+  save(faqData): void {
+    this.onSave.emit(faqData);
     if (!this.faq.id) this.onClose.emit(true);
   }
 
@@ -395,5 +981,14 @@ export class FaqManagementEditComponent implements OnChanges {
       generatedSentences.forEach((generatedSentence: string) => this.addUtterance(generatedSentence));
       dialogRef.close();
     });
+  }
+
+  expandSidePanel() {
+    this.onExpandSidePanel.emit(true);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

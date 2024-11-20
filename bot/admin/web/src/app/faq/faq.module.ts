@@ -5,6 +5,7 @@ import {
   NbAlertModule,
   NbAutocompleteModule,
   NbBadgeModule,
+  NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
   NbChatModule,
@@ -12,6 +13,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbPopoverModule,
   NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
@@ -46,6 +48,7 @@ import { FaqTabsComponent } from './faq-tabs.component';
     NbAutocompleteModule,
     NbBadgeModule,
     NbButtonModule,
+    NbButtonGroupModule,
     NbCardModule,
     NbCheckboxModule,
     NbFormFieldModule,
@@ -62,7 +65,8 @@ import { FaqTabsComponent } from './faq-tabs.component';
     BotAnalyticsModule,
     NbRouteTabsetModule,
     NbToggleModule,
-    NbRadioModule
+    NbRadioModule,
+    NbPopoverModule
   ],
   declarations: [
     FaqManagementComponent,

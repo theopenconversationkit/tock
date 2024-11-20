@@ -27,6 +27,10 @@
   font-size: 12px;
 }
 
+.nb-theme-dark .border {
+  border-color: var(--input-basic-border-color) !important;
+}
+
 .nb-theme-default .text-mitigated {
   color: #6c757d;
 }
@@ -232,4 +236,20 @@ nb-menu {
 .nb-spinner-container {
   // prevent spinners from being displayed over the application header
   z-index: 1020;
+}
+
+.opacity-100 {
+  opacity: 1 !important;
+}
+.opacity-75 {
+  opacity: 0.75 !important;
+}
+.opacity-50 {
+  opacity: 0.5 !important;
+}
+.opacity-25 {
+  opacity: 0.25 !important;
+}
+.opacity-0 {
+  opacity: 0 !important;
 }

@@ -1,24 +1,47 @@
 <nb-card
-  class="mb-0"
+  class="mb-0 main-card"
+  [class.maincard]="!expanded"
   [nbSpinner]="loading"
 >
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      {{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}
-      <button
-        type="button"
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Close"
-        (click)="close()"
-      >
-        <nb-icon icon="x-lg"></nb-icon>
-      </button>
+      <div class="ellipsis initial-capitalize">
+        {{ faq?.id ? faq.title : 'New faq' }}
+      </div>
+
+      <div class="d-flex">
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          [nbTooltip]="expanded ? 'Reduce' : 'Expand'"
+          (click)="expandSidePanel()"
+        >
+          <nb-icon
+            *ngIf="!expanded"
+            icon="arrows-angle-expand"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="expanded"
+            icon="arrows-angle-contract"
+          ></nb-icon>
+        </button>
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="close()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
     </div>
   </nb-card-header>
 
-  <nb-card-body>
+  <nb-card-body class="pt-0">
     <form [formGroup]="form">
       <nb-tabset
         fullWidth
@@ -28,24 +51,27 @@
           tabTitle="info"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!(title.errors || description.errors || intentNameExistInApp)"
+          [badgeDot]="isSubmitted && !!(title.invalid || description.invalid || intentNameExistInApp)"
           [active]="currentTab === faqTabs.INFO"
+          class="pb-0"
         >
         </nb-tab>
         <nb-tab
           tabTitle="question"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!utterances.errors"
+          [badgeDot]="isSubmitted && !!utterances.invalid"
           [active]="currentTab === faqTabs.QUESTION"
+          class="pb-0"
         >
         </nb-tab>
         <nb-tab
           tabTitle="answer"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && !!answer.errors"
+          [badgeDot]="isSubmitted && !!(answers.invalid || footnotes.invalid)"
           [active]="currentTab === faqTabs.ANSWER"
+          class="pb-0"
         >
         </nb-tab>
       </nb-tabset>
@@ -139,7 +165,7 @@
         </tock-form-control>
       </div>
 
-      <div *ngIf="currentTab === 'question'">
+      <div *ngIf="currentTab === faqTabs.QUESTION">
         <tock-form-control
           label="Question"
           name="question"
@@ -296,34 +322,360 @@
         </div>
       </div>
 
-      <div *ngIf="currentTab === 'answer'">
+      <div *ngIf="currentTab === faqTabs.ANSWER">
         <tock-form-control
-          label="Answer"
+          label="Locale"
+          class="mb-3"
+          [required]="true"
+          [controls]="getSelectedAnswerI18nControl()"
+          [showError]="true"
+          information="Allows you to define the faq response according to the locale and/or connector/interfaceType used by the final user."
+        >
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="flex-grow-1">
+              <nb-select
+                [(ngModel)]="selectedAnswerI18nValue"
+                [ngModelOptions]="{ standalone: true }"
+                [compareWith]="compareSelectedAnswerByOptions"
+                placeholder="Select a locale"
+                size="small"
+                fullWidth
+              >
+                <nb-select-label
+                  *ngIf="selectedAnswerI18nValue"
+                  class="ellipsis answer-selected-label"
+                >
+                  {{ longLocaleName(selectedAnswerI18nValue.locale) }} :
+                  <img
+                    src="{{ getConnectorTypeIconById(selectedAnswerI18nValue.connectorId) }}"
+                    class="select-icon align-text-top"
+                  />
+                  {{ getAnswerConnectorLabel(selectedAnswerI18nValue) }}
+                </nb-select-label>
+
+                <nb-option-group
+                  *ngFor="let locale of getAnswersLocales()"
+                  [title]="locale.second"
+                >
+                  <nb-option
+                    *ngFor="let i18nValue of getAnswerI18nValueByLocale(locale.first)"
+                    [value]="i18nValue"
+                    [class.selected]="compareSelectedAnswerByOptions(i18nValue, selectedAnswerI18nValue)"
+                    class="align-items-center justify-content-between"
+                  >
+                    <span>
+                      <img
+                        src="{{ getConnectorTypeIconById(i18nValue.connectorId) }}"
+                        class="select-icon mr-2"
+                        [nbTooltip]="getConnectorLabel(i18nValue.connectorId)"
+                      />
+
+                      <span
+                        [nbTooltip]="getAnswerConnectorLabelTooltip(i18nValue)"
+                        [ngClass]="{ 'font-italic': !getAnswerLabelTrimedLength(i18nValue) }"
+                        >{{ getAnswerConnectorLabel(i18nValue) }}</span
+                      >
+
+                      <nb-icon
+                        *ngIf="getAnswerI18nLocalizedLabel(i18nValue)?.validated"
+                        icon="check"
+                        class="ml-2 text-success align-text-top"
+                        nbTooltip="Validated"
+                      >
+                      </nb-icon>
+                    </span>
+
+                    <nb-icon
+                      *ngIf="getAnswerLabelTrimedLength(i18nValue)"
+                      icon="info-square"
+                      class="ml-3 opacity-50"
+                      [nbTooltip]="i18nValue.label"
+                      nbTooltipPlacement="bottom"
+                    >
+                    </nb-icon>
+                    <nb-icon
+                      *ngIf="!getAnswerLabelTrimedLength(i18nValue)"
+                      icon="exclamation-triangle"
+                      class="ml-3 text-danger"
+                      nbTooltip="Label not provided"
+                    >
+                    </nb-icon>
+                  </nb-option>
+                </nb-option-group>
+              </nb-select>
+            </div>
+
+            <div
+              nbTooltip="Add a locale / connector combination"
+              *ngIf="hasUnassignedAnswerCombinations()"
+            >
+              <button
+                nbButton
+                size="tiny"
+                shape="round"
+                status="primary"
+                class="ml-2"
+                (click)="resetAnswerCombinationSelector()"
+                [nbPopover]="answerCombinationSelectorPopover"
+                nbPopoverPlacement="left"
+              >
+                <nb-icon icon="plus-lg"></nb-icon>
+              </button>
+            </div>
+          </div>
+
+          <div
+            *ngIf="isSubmitted && answers.invalid"
+            class="text-danger mt-1"
+          >
+            Some answers are missing
+          </div>
+        </tock-form-control>
+
+        <ng-template #answerCombinationSelectorPopover>
+          <div
+            class="p-3 text-center answer-combination-selector"
+            (click)="stopPropagation($event)"
+          >
+            <div *ngIf="!answerCombinationSelector.locale">
+              <div class="font-weight-bold mb-2">Select a locale :</div>
+
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="let locale of getSupportedLocalesWithUnassignedAnswerCombinations()"
+                (click)="setAnswerCombinationSelector('locale', locale.first)"
+              >
+                {{ locale.second }}
+              </button>
+            </div>
+
+            <div *ngIf="answerCombinationSelector.locale && !answerCombinationSelector.connector">
+              <div class="font-weight-bold mb-2">Select a connector :</div>
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="let connector of getUnassignedConnectorsForLocale(answerCombinationSelector.locale) | keyvalue: originalOrder"
+                (click)="setAnswerCombinationSelector('connector', connector.key)"
+              >
+                <img
+                  src="{{ getConnectorTypeIconById(connector.key) }}"
+                  class="select-icon align-text-top mr-2"
+                />
+                {{ connector.value }}
+              </button>
+            </div>
+
+            <div *ngIf="answerCombinationSelector.locale && answerCombinationSelector.connector && !answerCombinationSelector.interface">
+              <div class="font-weight-bold mb-2">Select an interface :</div>
+              <button
+                nbButton
+                status="control"
+                size="tiny"
+                fullWidth
+                class="my-1"
+                *ngFor="
+                  let interface of getUnassignedInterfacesForLocaleAndConnector(
+                    answerCombinationSelector.locale,
+                    answerCombinationSelector.connector
+                  ) | keyvalue;
+                  trackBy: trackByInterface
+                "
+                (click)="setAnswerCombinationSelector('interface', interface.value.value)"
+              >
+                <nb-icon
+                  *ngIf="interface.value.value === userInterfaceType.textChat"
+                  icon="chat-right-text-fill"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="interface.value.value === userInterfaceType.voiceAssistant"
+                  icon="telephone-fill"
+                ></nb-icon>
+                {{ interface.value.label }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
+        <tock-form-control
+          *ngIf="selectedAnswerI18nValue && doesSelectedAnswerSupportsRichText()"
+          label="Answer format"
+          name="answerExportFormat"
+          information="Markdown format in which the response is formulated."
+          [controls]="getSelectedAnswerI18nControl().controls.answerExportFormat"
+          [showError]="isSubmitted"
+          [hasMargin]="false"
+          class="mb-3"
+        >
+          <nb-radio-group
+            [formControl]="getSelectedAnswerI18nControl().controls.answerExportFormat"
+            class="d-flex mt-n1 mb-1"
+          >
+            <nb-radio
+              *ngFor="let format of answerExportFormatsRadios"
+              [value]="format.value"
+              class="text-nowrap"
+              >{{ format.label }}</nb-radio
+            >
+          </nb-radio-group>
+        </tock-form-control>
+
+        <tock-form-control
+          *ngIf="selectedAnswerI18nValue"
+          label="Answer content"
           name="answer"
-          [controls]="answer"
+          information="Response content for the locale/connector combination selected above"
+          [controls]="getSelectedAnswerI18nControl().controls.label"
           [showError]="isSubmitted"
           [required]="true"
-          data-testid="answer"
         >
-          <textarea
-            tockAutofocusElement
-            nbInput
-            formControlName="answer"
-            fullWidth
-            id="answer"
-            type="text"
-            rows="15"
-            placeholder="Enter answer"
-          ></textarea>
-          <small [ngClass]="getControlLengthIndicatorClass('answer')">
-            {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
-          </small>
+          <tock-wysiwyg-editor
+            [editionFormat]="getSelectedAnswerI18nControl().controls.answerExportFormat.value"
+            [formControl]="getSelectedAnswerI18nControl().controls.label"
+            [locale]="getSelectedAnswerI18nControl().controls.locale.value"
+            placeholder="Enter faq answer content..."
+          ></tock-wysiwyg-editor>
+        </tock-form-control>
+
+        <!-- footNotes -->
+
+        <tock-form-control
+          label="Footnotes"
+          name="footnotes"
+          information="Optional footnotes for the answer"
+          [controls]="footnotes"
+          [showError]="isSubmitted"
+        >
+          <div formArrayName="footnotes">
+            <div
+              *ngFor="let footnote of footnotes.controls; let i = index"
+              [formGroupName]="i"
+              class="mb-2 font-size-small border rounded p-2 d-flex gap-1"
+            >
+              <div class="flex-grow-1">
+                <div class="d-flex gap-1 text-right text-muted mb-1">
+                  <label
+                    class="min-width-5 font-weight-bold"
+                    [ngClass]="{ 'text-danger': isSubmitted && !footnote.value.title.length }"
+                    ><abbr
+                      title="Required"
+                      class="text-danger text-decoration-none"
+                    >
+                      *
+                    </abbr>
+                    Title</label
+                  >
+                  <input
+                    formControlName="title"
+                    id="name"
+                    placeholder="Footnote title"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                    type="text"
+                    required
+                  />
+                </div>
+
+                <div class="d-flex gap-1 text-right text-muted mb-1">
+                  <label class="min-width-5">Url</label>
+                  <input
+                    formControlName="url"
+                    id="url"
+                    placeholder="Footnote url"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                    type="url"
+                  />
+                </div>
+
+                <div class="d-flex gap-1 text-right text-muted">
+                  <label class="min-width-5">Content</label>
+                  <textarea
+                    formControlName="content"
+                    id="content"
+                    placeholder="Footnote content"
+                    nbInput
+                    fullWidth
+                    fieldSize="tiny"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column">
+                <button
+                  *ngIf="i > 0"
+                  nbButton
+                  size="tiny"
+                  status="basic"
+                  nbTooltip="Reduce footnote index"
+                  (click)="changeFootnoteIndex(-1, i)"
+                  class="mb-1"
+                >
+                  <nb-icon
+                    icon="chevron-up-outline"
+                    pack="nebular-essentials"
+                  ></nb-icon>
+                </button>
+
+                <button
+                  *ngIf="canIncreaseFootnoteIndex(i)"
+                  nbButton
+                  size="tiny"
+                  status="basic"
+                  nbTooltip="Increase footnote index"
+                  (click)="changeFootnoteIndex(1, i)"
+                  class="mb-1"
+                >
+                  <nb-icon
+                    icon="chevron-down-outline"
+                    pack="nebular-essentials"
+                  ></nb-icon>
+                </button>
+
+                <button
+                  nbButton
+                  size="tiny"
+                  status="danger"
+                  nbTooltip="Delete footnote"
+                  (click)="removeFootnote(i)"
+                >
+                  <nb-icon icon="trash"></nb-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            nbButton
+            size="tiny"
+            (click)="addFootnote()"
+          >
+            <nb-icon icon="plus"></nb-icon>
+            Add a footnote
+          </button>
         </tock-form-control>
       </div>
     </form>
   </nb-card-body>
 
   <nb-card-footer>
+    <div
+      *ngIf="currentTab === 'answer' && getSelectedAnswerI18nControl()"
+      class="mt-n2 mb-1"
+    >
+      <small [ngClass]="getAnswerLengthIndicatorClass()">
+        {{ getSelectedAnswerI18nControl().controls.label.value.length }} characters out of {{ controlsMaxLength.answer }} max
+      </small>
+    </div>
+
     <div class="grid-button">
       <button
         type="button"
