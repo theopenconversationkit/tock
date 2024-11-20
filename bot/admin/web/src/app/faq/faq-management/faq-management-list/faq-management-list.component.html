@@ -21,28 +21,31 @@
       <div class="row">
         <div class="col-md-6">
           <div class="truncate text-muted">
-            <small
-              class="d-block"
-              *ngIf="faq.utterances.length === 1"
-            >
-              Question
-            </small>
-            <small
-              class="d-block"
-              *ngIf="faq.utterances.length > 1"
-            >
-              First question (out of {{ faq.utterances.length }})
-            </small>
+            <div class="text-nowrap">
+              <small *ngIf="faq.utterances.length === 1"> Question </small>
+              <small *ngIf="faq.utterances.length > 1"> First question (out of {{ faq.utterances.length }}) </small>
+              <button
+                nbButton
+                ghost
+                size="tiny"
+                nbTooltip="Copy question"
+                (click)="copyString(faq.utterances[0])"
+              >
+                <nb-icon icon="copy"></nb-icon>
+              </button>
+
+              <button
+                nbButton
+                ghost
+                size="tiny"
+                nbTooltip="Test this question in a dialog"
+                (click)="testDialogSentence(faq.utterances[0], faq.language)"
+              >
+                <nb-icon icon="terminal-plus"></nb-icon>
+              </button>
+            </div>
+
             {{ faq.utterances[0] }}
-            <button
-              nbButton
-              ghost
-              size="tiny"
-              nbTooltip="Copy question"
-              (click)="copyString(faq.utterances[0])"
-            >
-              <nb-icon icon="copy"></nb-icon>
-            </button>
           </div>
         </div>
 

@@ -113,15 +113,19 @@
       <nb-icon icon="terminal-plus"></nb-icon>
     </button>
 
-    <button
-      nbButton
-      ghost
-      size="medium"
+    <div
       *ngIf="auth.isLoggedIn() && !auth.isSSO()"
-      (click)="auth.logout()"
-      nbTooltip="Logout"
+      class="border-left pl-3"
     >
-      <nb-icon icon="box-arrow-right"></nb-icon>
-    </button>
+      <button
+        nbButton
+        ghost
+        size="medium"
+        (click)="auth.logout()"
+        nbTooltip="Logout"
+      >
+        <nb-icon icon="box-arrow-right"></nb-icon>
+      </button>
+    </div>
   </div>
 </div>

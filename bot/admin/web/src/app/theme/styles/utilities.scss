@@ -9,10 +9,25 @@
   text-overflow: ellipsis;
 }
 
+// Should disappear with bootstrap update to v5. The erroneous unit will be corrected (1 = 0.5, 2 = 0.5, 3 = 1, etc...).
 @for $i from 1 through 4 {
   .gap-#{$i} {
     gap: #{$i}rem;
   }
+}
+
+// Should disappear with bootstrap update to v5.
+.row-gap-1 {
+  row-gap: 0.25rem;
+}
+.row-gap-2 {
+  row-gap: 0.5rem;
+}
+.row-gap-3 {
+  row-gap: 1rem;
+}
+.row-gap-4 {
+  row-gap: 1.5rem;
 }
 
 .lineHeight-0 {
@@ -27,8 +42,21 @@
   font-size: 12px;
 }
 
-.nb-theme-dark .border {
-  border-color: var(--input-basic-border-color) !important;
+// may disappear with the switch to bootstrap 5
+.border {
+  border-color: var(--border-basic-color-4) !important;
+}
+.border-top {
+  border-color: var(--border-basic-color-4) !important;
+}
+.border-bottom {
+  border-color: var(--border-basic-color-4) !important;
+}
+.border-left {
+  border-color: var(--border-basic-color-4) !important;
+}
+.border-right {
+  border-color: var(--border-basic-color-4) !important;
 }
 
 .nb-theme-default .text-mitigated {
@@ -131,6 +159,10 @@ nb-card.selected {
   user-select: none;
 }
 
+.unClickable {
+  pointer-events: none;
+}
+
 .card-footer-actions {
   display: flex;
   flex-direction: column;
@@ -156,10 +188,6 @@ nb-card.selected {
   LABEL {
     margin-bottom: 0;
   }
-}
-
-.unClickable {
-  pointer-events: none;
 }
 
 .shader {
@@ -272,12 +300,4 @@ nb-menu {
       width: 90vw;
     }
   }
-}
-
-// may disappear with the switch to bootstrap 5
-.border-top {
-  border-color: var(--border-basic-color-4) !important;
-}
-.border-bottom {
-  border-color: var(--border-basic-color-4) !important;
 }
