@@ -1,24 +1,16 @@
+import { ProvidersConfigurationParam } from '../../../shared/model/ai-settings';
+
 export enum ObservabilityProvider {
   Langfuse = 'Langfuse'
 }
 
-export interface ProvidersConfigurationParam {
-  label: string;
-  key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
-  source?: string[];
-  inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string;
-  confirmExport?: boolean;
-}
-
-export interface ProvidersConfiguration {
+export interface ObservabilityProvidersConfiguration {
   label: string;
   key: ObservabilityProvider;
   params: ProvidersConfigurationParam[];
 }
 
-export const ProvidersConfigurations: ProvidersConfiguration[] = [
+export const ProvidersConfigurations: ObservabilityProvidersConfiguration[] = [
   {
     label: 'Langfuse',
     key: ObservabilityProvider.Langfuse,

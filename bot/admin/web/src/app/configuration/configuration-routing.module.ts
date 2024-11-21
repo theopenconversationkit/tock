@@ -29,6 +29,7 @@ import { SynchronizationComponent } from './synchronization/synchronization.comp
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
 import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
 import { VectorDbSettingsComponent } from './vector-db-settings/vector-db-settings.component';
+import { CompressorSettingsComponent } from './compressor-settings/compressor-settings.component';
 
 const routes: Routes = [
   {
@@ -107,6 +108,10 @@ const routes: Routes = [
       {
         path: 'vector-db-settings',
         component: VectorDbSettingsComponent
+      },
+      {
+        path: 'compressor-settings',
+        component: CompressorSettingsComponent
       }
     ]
   }

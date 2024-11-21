@@ -1,44 +1,30 @@
+import { ProvidersConfigurationParam } from '../../../shared/model/ai-settings';
+
 export enum VectorDbProvider {
   OpenSearch = 'OpenSearch',
   PGVector = 'PGVector'
 }
 
-export interface ProvidersConfigurationParam {
-  label: string;
-  key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
-  source?: string[];
-  inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string | number;
-  computedDefaultValue?: (parametres: any) => string;
-  information?: string;
-  min?: number;
-  max?: number;
-  step?: number;
-  readonly?: boolean;
-  disabled?: boolean;
-  confirmExport?: boolean;
-}
-
-export interface ProvidersConfiguration {
+export interface VectorDbProvidersConfiguration {
   label: string;
   key: VectorDbProvider;
   params: ProvidersConfigurationParam[];
 }
 
-export const ProvidersConfigurations: ProvidersConfiguration[] = [
+export const ProvidersConfigurations: VectorDbProvidersConfiguration[] = [
   {
     label: 'OpenSearch',
     key: VectorDbProvider.OpenSearch,
     params: [
       { key: 'host', label: 'Host', type: 'text', defaultValue: 'localhost' },
-      { key: 'port', label: 'Port', type: 'number', min: 1, max: 65535, step: 1, defaultValue: '9200' },
+      { key: 'port', label: 'Port', type: 'number', numberControlType: 'input', min: 1, max: 65535, step: 1, defaultValue: '9200' },
       { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'admin' },
       { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'admin', confirmExport: true },
       {
         key: 'k',
         label: 'k-nearest neighbors',
         type: 'number',
+        numberControlType: 'input',
         min: 1,
         max: 100,
         step: 1,
@@ -52,13 +38,14 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
     key: VectorDbProvider.PGVector,
     params: [
       { key: 'host', label: 'Host', type: 'text', defaultValue: 'localhost' },
-      { key: 'port', label: 'Port', type: 'number', min: 1, max: 65535, step: 1, defaultValue: '5432' },
+      { key: 'port', label: 'Port', type: 'number', numberControlType: 'input', min: 1, max: 65535, step: 1, defaultValue: '5432' },
       { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'postgres' },
       { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'ChangeMe', confirmExport: true },
       {
         key: 'k',
         label: 'k-nearest neighbors',
         type: 'number',
+        numberControlType: 'input',
         min: 1,
         max: 100,
         step: 1,
