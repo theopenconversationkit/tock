@@ -281,9 +281,10 @@ class FaqAdminServiceTest : AbstractTest() {
                 every { faqDefinitionDAO.getFaqDefinitionById(any()) } answers { existingFaq }
                 every { faqDefinitionDAO.save(any()) } just Runs
                 every {
-                    faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                    faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                         eq(intentId),
-                        eq(botId)
+                        eq(botId),
+                        eq(namespace)
                     )
                 } answers { existingFaq }
             }
@@ -531,7 +532,7 @@ class FaqAdminServiceTest : AbstractTest() {
          */
         private fun initMocksForSharedIntentFaq(existingFaq: FaqDefinition) {
             every { faqDefinitionDAO.getFaqDefinitionByIntentId(any()) } answers { existingFaq }
-            every { faqDefinitionDAO.getFaqDefinitionByBotId(eq(OTHER_APP_NAME)) } answers { emptyList() }
+            every { faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(eq(OTHER_APP_NAME), eq(defaultNamespace)) } answers { emptyList() }
             every { faqDefinitionDAO.save(any()) } just Runs
         }
 
@@ -620,9 +621,10 @@ class FaqAdminServiceTest : AbstractTest() {
             //GIVEN
             // new faq is created there was none before
             every {
-                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
-                    eq(OTHER_APP_NAME)
+                    eq(OTHER_APP_NAME),
+                    eq(namespace)
                 )
             } answers { null }
 
@@ -710,9 +712,10 @@ class FaqAdminServiceTest : AbstractTest() {
             )
 
             every {
-                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
-                    eq(OTHER_APP_NAME)
+                    eq(OTHER_APP_NAME),
+                    eq(namespace)
                 )
             } answers { existingFaqSharedIntentDefinition }
 
@@ -791,9 +794,10 @@ class FaqAdminServiceTest : AbstractTest() {
             )
 
             every {
-                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
-                    eq(OTHER_APP_NAME)
+                    eq(OTHER_APP_NAME),
+                    eq(namespace)
                 )
             } answers { existingFaqSharedIntentDefinition }
 

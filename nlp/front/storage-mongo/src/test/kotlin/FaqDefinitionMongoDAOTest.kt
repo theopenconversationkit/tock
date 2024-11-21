@@ -108,7 +108,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         faqDefinitionDao.save(faqDefinition)
         assertEquals(
             expected = faqDefinition,
-            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId).first(),
+            actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId, namespace).first(),
             message = "There should be something returned with an applicationId"
         )
         assertEquals(
@@ -144,12 +144,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(
             expected = 2,
-            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId).size,
+            actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId, namespace).size,
             message = "There should be something returned with an applicationId"
         )
         assertEquals(
             expected = 1,
-            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId2).size,
+            actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId2, namespace).size,
             message = "There should be something returned with an applicationId"
         )
     }
@@ -241,12 +241,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(3, col.countDocuments())
 
-        assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
+        assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId1, namespace).size)
 
         faqDefinitionDao.deleteFaqDefinitionByBotIdAndNamespace(botId1,namespace)
 
-        assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
-        assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotId(botId2).size)
+        assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId1, namespace).size)
+        assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId2, namespace).size)
     }
 
     @Test
@@ -295,7 +295,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         intentDefinitionDao.save(secondIntentWithIntentId3)
         faqDefinitionDao.save(secondFaqDefinition)
 
-        val tags = faqDefinitionDao.getTags(botId)
+        val tags = faqDefinitionDao.getTags(botId, namespace)
         assertEquals(tags, otherTagList + faqDefinition.tags)
     }
 
