@@ -408,6 +408,14 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonGet("/bots/:botId/dialogs/:dialogId", botUser) { context ->
+            if (front.getApplicationByNamespaceAndName(context.organization, context.path("botId")) != null) {
+                BotAdminService.getDialog(context.pathId("dialogId"))
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet(
             "/dialogs/intents/:applicationId",
             setOf(botUser)
@@ -453,9 +461,14 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context  ->
-            RAGService.getRAGConfiguration(context.organization, context.path("botId"))
-                ?.let { BotRAGConfigurationDTO(it) }
+        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context ->
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                RAGService.getRAGConfiguration(context.organization, botId)
+                    ?.let { BotRAGConfigurationDTO(it) }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
@@ -471,10 +484,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration/bots/:botId/observability", admin) { context  ->
-            ObservabilityService.getObservabilityConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotObservabilityConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                ObservabilityService.getObservabilityConfiguration(context.organization, botId)
+                    ?.let {
+                        BotObservabilityConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
@@ -490,10 +508,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration/bots/:botId/vector-store", admin) { context  ->
-            VectorStoreService.getVectorStoreConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotVectorStoreConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                VectorStoreService.getVectorStoreConfiguration(context.organization, botId)
+                    ?.let {
+                        BotVectorStoreConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
@@ -1110,11 +1133,18 @@ open class BotAdminVerticle : AdminVerticle() {
             "/configuration/bots/:botId/sentence-generation/configuration",
             admin
         ) { context ->
-            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization,
-                context.path("botId"))
-                ?.let {
-                    BotSentenceGenerationConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                SentenceGenerationService.getSentenceGenerationConfiguration(
+                    context.organization,
+                    botId
+                )
+                    ?.let {
+                        BotSentenceGenerationConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingJsonGet(

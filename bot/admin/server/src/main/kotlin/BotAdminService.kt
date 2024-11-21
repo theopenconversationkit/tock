@@ -212,6 +212,8 @@ object BotAdminService {
             }
     }
 
+    fun getDialog(dialogId: Id<Dialog>): DialogReport? = dialogReportDAO.getDialog(dialogId)
+
     fun getIntentsInDialogs(namespace: String,nlpModel : String) : Set<String>{
         return dialogReportDAO.intents(namespace,nlpModel)
     }
