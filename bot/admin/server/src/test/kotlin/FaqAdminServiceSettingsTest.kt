@@ -72,7 +72,7 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         faqs: List<FaqDefinition>,
         stories: List<StoryDefinitionConfiguration>
     ) {
-        every { faqDefinitionDAO.getFaqDefinitionByBotId(any()) } answers { faqs }
+        every { faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(any(), any()) } answers { faqs }
 
         every { AdminService.front.getIntentById(any()) } answers { intent }
 
