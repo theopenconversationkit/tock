@@ -24,7 +24,7 @@ import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 data class RAGQuery(
     // val condenseQuestionLlmSetting: LLMSetting,
     // val condenseQuestionPromptInputs: Map<String, String>,
-    val history: List<ChatMessage> = emptyList(),
+    val dialog: DialogDetails?,
     val questionAnsweringLlmSetting: LLMSetting,
     val questionAnsweringPromptInputs: Map<String, String>,
     val embeddingQuestionEmSetting: EMSetting,
@@ -32,6 +32,13 @@ data class RAGQuery(
     val documentSearchParams: DocumentSearchParamsBase,
     val vectorStoreSetting: VectorStoreSetting?,
     val observabilitySetting: ObservabilitySetting?
+)
+
+data class DialogDetails(
+    val dialogId: String? = null,
+    val userId: String? = null,
+    val history: List<ChatMessage> = emptyList(),
+    val tags: List<String> = emptyList(),
 )
 
 data class ChatMessage(

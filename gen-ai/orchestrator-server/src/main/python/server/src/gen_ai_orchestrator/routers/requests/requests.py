@@ -133,16 +133,30 @@ class VectorStoreProviderSettingStatusQuery(BaseModel):
         default=None,
     )
 
+class DialogDetails(BaseModel):
+    """The dialog details model"""
+
+    dialog_id: Optional[str] = Field(
+        description="The dialog/session ID, attached to the observability traces if "
+                    "the observability provider support it.",
+        default=None, examples=["uuid-0123"])
+    user_id: Optional[str] = Field(
+        description="The user ID, attached to the observability traces if the observability provider support it",
+        default=None, examples=["address@mail.com"])
+    history: list[ChatMessage] = Field(
+        description="Conversation history, used to reformulate the user's question.")
+    tags: list[str] = Field(
+        description='List of tags, attached to the observability trace, if the observability provider support it.',
+        examples=[["my-Tag"]])
+
 
 class RagQuery(BaseQuery):
     """The RAG query model"""
 
-    history: list[ChatMessage] = Field(
-        description="Conversation history, used to reformulate the user's question."
-    )
+    dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
     question_answering_prompt_inputs: Any = Field(
         description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the history field',
+        'chat_history field must not be specified here, it will be override by the dialog.history field',
     )
     # condense_question_llm_setting: LLMSetting =
     #   Field(description="LLM setting, used to condense the user's question.")
@@ -156,7 +170,7 @@ class RagQuery(BaseQuery):
     )
     question_answering_prompt_inputs: Any = Field(
         description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the history field',
+        'chat_history field must not be specified here, it will be override by the dialog.history field',
     )
     embedding_question_em_setting: EMSetting = Field(
         description="Embedding model setting, used to calculate the user's question vector."
@@ -182,13 +196,15 @@ class RagQuery(BaseQuery):
         'json_schema_extra': {
             'examples': [
                 {
-                    'history': [
-                        {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
-                        {
-                            'text': 'you can do this with the following method ....',
-                            'type': 'AI',
-                        },
-                    ],
+                    'dialog' : {
+                        'history': [
+                            {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
+                            {
+                                'text': 'you can do this with the following method ....',
+                                'type': 'AI',
+                            },
+                        ]
+                    },
                     'question_answering_llm_setting': {
                         'provider': 'OpenAI',
                         'api_key': {

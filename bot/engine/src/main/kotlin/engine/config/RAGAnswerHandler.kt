@@ -17,7 +17,6 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
-import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.admin.indicators.IndicatorValues
 import ai.tock.bot.admin.indicators.Indicators
 import ai.tock.bot.admin.indicators.metric.MetricType
@@ -31,15 +30,16 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.genai.orchestratorclient.requests.*
+import ai.tock.genai.orchestratorclient.requests.ChatMessage
+import ai.tock.genai.orchestratorclient.requests.ChatMessageType
+import ai.tock.genai.orchestratorclient.requests.DialogDetails
+import ai.tock.genai.orchestratorclient.requests.RAGQuery
+import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
-import ai.tock.genai.orchestratorcore.models.vectorstore.*
-import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
-import ai.tock.genai.orchestratorcore.utils.PGVectorUtils
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
@@ -68,7 +68,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
 
             // Call RAG Api - Gen AI Orchestrator
-            val (answer, debug, noAnswerStory) = rag(this)
+            val (answer, debug, noAnswerStory, observabilityInfo) = rag(this)
 
             // Add debug data if available and if debugging is enabled
             if (debug != null && (action.metadata.debugEnabled || ragDebugEnabled)) {
@@ -87,7 +87,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 if(action.metadata.sourceWithContent) it.content else null
                             )
                         }.toMutableList(),
-                        metadata = ActionMetadata(isGenAiRagAnswer = true)
+                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = observabilityInfo)
                     )
                 )
             } else {
@@ -179,7 +179,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             try {
                 val response = ragService.rag(
                     query = RAGQuery(
-                        history = getDialogHistory(dialog),
+                        dialog = DialogDetails(
+                            dialogId = dialog.id.toString(),
+                            userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
+                            history = getDialogHistory(dialog),
+                            tags = listOf(
+                                "connector:${underlyingConnector.connectorType.id}"
+                            )
+                        ),
                         questionAnsweringLlmSetting = ragConfiguration.llmSetting,
                         questionAnsweringPromptInputs = mapOf(
                             "question" to action.toString(),
@@ -195,7 +202,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
 
                 // Handle RAG response
-                return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response))
+                return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response), response?.observabilityInfo)
             } catch (exc: Exception) {
                 logger.error { exc }
                 // Save failure metric
@@ -259,6 +266,7 @@ data class RAGResult(
     val answer: TextWithFootnotes? = null,
     val debug: Any? = null,
     val noAnswerStory: StoryDefinition? = null,
+    val observabilityInfo: ObservabilityInfo? = null,
 )
 
 /**
