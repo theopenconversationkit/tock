@@ -20,9 +20,12 @@ export class TestDialogService {
 
   openTestDialog() {
     if (this.windowRef) {
-      this.windowRef.close();
+      if (this.windowRef.state === NbWindowState.MINIMIZED) {
+        this.windowRef.maximize();
+      } else {
+        this.windowRef.close();
+      }
     } else {
-      this.windowRef?.close();
       this.windowRef = this.nbWindowService.open(TestDialogComponent, {
         title: 'Test dialog',
         windowClass: 'test-dialog-window',

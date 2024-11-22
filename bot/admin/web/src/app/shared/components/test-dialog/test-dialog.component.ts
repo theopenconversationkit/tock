@@ -13,11 +13,11 @@ import { BotSharedService } from '../../bot-shared.service';
 import { ChatUiComponent } from '../chat-ui/chat-ui.component';
 import { NlpStatsDisplayComponent } from '../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
 import { RestService } from '../../../core-nlp/rest/rest.service';
-import { SelectBotEvent } from '../select-bot/select-bot.component';
 import { TestDialogService } from './test-dialog.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { currentConfigurationSelection } from '../bot-configuration-selector/bot-configuration-selector.component';
+import { TextareaAutocompleteDirective } from '../../directives';
 
 @Component({
   selector: 'tock-test-dialog',
@@ -68,6 +68,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
+
+  @ViewChild(TextareaAutocompleteDirective) textareaAutocompleteDirectiveRef: TextareaAutocompleteDirective<HTMLTextAreaElement>;
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -206,17 +208,35 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     }
 
     this.userMessageAutocompleteValues = of(results);
+
+    if (event && event.key !== 'Escape') this.textareaAutocompleteDirectiveRef.updatePosition();
   }
 
   getUserAvatar(isBot: boolean): string {
     return getDialogMessageUserAvatar(isBot);
   }
 
+  getUserMessageInputHeight(): string {
+    const lineHeight = 1.5;
+    const padding = 2 * 0.5;
+    return lineHeight * this.userMessage.split(/\n/).length + padding + 'rem';
+  }
+
+  onUserMessageChange(value: string): void {
+    this.userMessage = value ?? '';
+  }
+
+  insertCarriage(): void {
+    this.onUserMessageChange(this.userMessage + '\n');
+  }
+
   onNewMessage(message: BotMessage): void {
     this.talk(message);
   }
 
-  submit(): void {
+  submit(event?: Event): void {
+    if (event) event.preventDefault();
+
     if (!this.currentConfigurationId) {
       this.toastrService.show(`Please select a Bot first`, 'Error', { duration: 3000 });
       return;

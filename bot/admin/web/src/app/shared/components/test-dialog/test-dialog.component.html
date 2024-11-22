@@ -110,32 +110,26 @@
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mt-3">
       <div class="d-flex gap-1 flex-grow-1">
-        <div class="w-100">
-          <input
-            nbInput
-            fullWidth
-            fieldSize="medium"
-            placeholder="Type some text"
-            [(ngModel)]="userMessage"
-            (keyup.enter)="submit()"
-            autocomplete="off"
-            [nbAutocomplete]="userMessageAutocomplete"
-            (click)="updateUserMessageAutocompleteValues()"
-            (keyup)="updateUserMessageAutocompleteValues($event)"
-            tockAutofocusElement
-          />
-          <nb-autocomplete
-            #userMessageAutocomplete
-            size="tiny"
-          >
-            <nb-option
-              *ngFor="let option of userMessageAutocompleteValues | async"
-              [value]="option"
-            >
-              {{ option }}
-            </nb-option>
-          </nb-autocomplete>
-        </div>
+        <textarea
+          #textareaAutocompleteDirectiveRef
+          [ngStyle]="{ height: getUserMessageInputHeight() }"
+          rows="1"
+          class="w-100 nb-autocomplete-position-top"
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          status="primary"
+          placeholder="Type some text"
+          [(ngModel)]="userMessage"
+          (onInputValueChange)="onUserMessageChange($event)"
+          (keyup.shift.enter)="insertCarriage()"
+          (keyup.enter)="submit($event)"
+          autocomplete="off"
+          [nbAutocomplete]="userMessageAutocomplete"
+          position="top"
+          (click)="updateUserMessageAutocompleteValues()"
+          (keyup)="updateUserMessageAutocompleteValues($event)"
+        ></textarea>
 
         <button
           nbButton
@@ -157,5 +151,16 @@
         <nb-icon icon="trash"></nb-icon>
       </button>
     </div>
+    <nb-autocomplete
+      #userMessageAutocomplete
+      size="tiny"
+    >
+      <nb-option
+        *ngFor="let option of userMessageAutocompleteValues | async"
+        [value]="option"
+      >
+        {{ option }}
+      </nb-option>
+    </nb-autocomplete>
   </ng-container>
 </div>
