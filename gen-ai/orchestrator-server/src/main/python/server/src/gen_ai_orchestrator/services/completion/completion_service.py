@@ -79,7 +79,7 @@ async def generate_and_split_sentences(
         config = {"callbacks": [
             create_observability_callback_handler(
                 observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.SENTENCE_GENERATION
+                trace_name=ObservabilityTrace.SENTENCE_GENERATION.value
             )]}
 
     sentences = await chain.ainvoke(query.prompt.inputs, config=config)

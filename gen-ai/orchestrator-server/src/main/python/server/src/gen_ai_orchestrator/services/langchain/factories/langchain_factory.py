@@ -23,7 +23,7 @@ It manages the creation of :
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from langchain_core.embeddings import Embeddings
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
@@ -338,22 +338,21 @@ def get_callback_handler_factory(
 
 def create_observability_callback_handler(
     observability_setting: Optional[ObservabilitySetting],
-    trace_name: ObservabilityTrace,
+    **kwargs: Any
 ) -> Optional[LangfuseCallbackHandler]:
     """
     Create the Observability Callback Handler
 
     Args:
         observability_setting: The Observability Settings
-        trace_name: The trace name
 
     Returns:
         The Observability Callback Handler
     """
     if observability_setting is not None:
         return get_callback_handler_factory(
-            setting=observability_setting
-        ).get_callback_handler(trace_name=trace_name.value)
+            setting=observability_setting,
+        ).get_callback_handler(**kwargs)
 
     return None
 
