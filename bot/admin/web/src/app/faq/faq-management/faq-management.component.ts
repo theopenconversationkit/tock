@@ -221,6 +221,8 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   }
 
   addFaq(initQuestion?: string, initAnswer?: string) {
+    this.closeSidePanel();
+
     this.faqEdit = {
       id: undefined,
       intentId: undefined,
@@ -238,7 +240,6 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       this.faqEdit._initQuestion = initQuestion;
     }
 
-    this.closeSidePanel();
     this.isSidePanelOpen.edit = true;
   }
 
