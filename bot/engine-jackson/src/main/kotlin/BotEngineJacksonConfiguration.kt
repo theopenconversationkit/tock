@@ -40,9 +40,11 @@ import ai.tock.bot.connector.media.MediaMessageType
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
+import ai.tock.bot.engine.message.SentenceWithFootnotes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
@@ -106,7 +108,8 @@ private object BotEngineJacksonConfiguration {
                 setMixInAnnotation(Message::class.java, MixinMessage::class.java)
                 registerSubtypes(NamedType(Attachment::class.java, EventType.attachment.name))
                 registerSubtypes(NamedType(Sentence::class.java, EventType.sentence.name))
-                registerSubtypes(NamedType(Sentence::class.java, EventType.sentenceWithFootnotes.name))
+                registerSubtypes(NamedType(SentenceWithFootnotes::class.java, EventType.sentenceWithFootnotes.name))
+                registerSubtypes(NamedType(DebugMessage::class.java, EventType.debug.name))
                 registerSubtypes(NamedType(Choice::class.java, EventType.choice.name))
                 registerSubtypes(NamedType(Location::class.java, EventType.location.name))
 
@@ -161,9 +164,6 @@ private object BotEngineJacksonConfiguration {
                 registerSubtypes(NamedType(MediaCardDescriptorDump::class.java, MediaMessageType.card.name))
                 registerSubtypes(NamedType(MediaActionDescriptorDump::class.java, MediaMessageType.action.name))
                 registerSubtypes(NamedType(MediaCarouselDescriptorDump::class.java, MediaMessageType.carousel.name))
-
-//                registerSubtypes(NamedType(OpenAIParams::class.java, LLMProvider.OPEN_AI.provider))
-//                registerSubtypes(NamedType(AzureOpenAIParams::class.java, LLMProvider.ASURE_OPEN_AI_SERVICE.provider))
 
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(
