@@ -180,6 +180,20 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     this.talk(message);
   }
 
+  getUserMessageInputHeight() {
+    const linHeight = 1.5;
+    const padding = 2 * 0.5;
+    return linHeight * this.userMessage.split(/\n/).length + padding + 'rem';
+  }
+
+  onUserMessageChange(value: string) {
+    this.userMessage = value ?? '';
+  }
+
+  insertCarriage() {
+    this.onUserMessageChange(this.userMessage + '\n');
+  }
+
   submit(): void {
     if (!this.currentConfigurationId) {
       this.toastrService.show(`Please select a Bot first`, 'Error', { duration: 3000 });

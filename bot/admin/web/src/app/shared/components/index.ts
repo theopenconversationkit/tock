@@ -38,3 +38,5 @@ export * from './select-bot/select-bot.component';
 export * from './date-range/date-range-calendar.component';
 export * from './data-export/data-export.component';
 export * from './wysiwyg-editor/wysiwyg-editor.component';
+export * from './test-dialog/test-dialog.component';
+export * from './bot-configuration-selector/bot-configuration-selector.component';

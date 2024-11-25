@@ -6,6 +6,7 @@ import { StoryDefinitionConfiguration } from '../../../bot/model/story';
 import { Intent, SearchQuery } from '../../../model/nlp';
 import { PaginatedQuery } from '../../../model/commons';
 import { NlpService } from '../../../core-nlp/nlp.service';
+import { TestDialogService } from '../test-dialog/test-dialog.service';
 
 @Component({
   selector: 'tock-intent-story-details',
@@ -26,7 +27,8 @@ export class IntentStoryDetailsComponent implements OnInit {
     private dialogRef: NbDialogRef<IntentStoryDetailsComponent>,
     private stateService: StateService,
     private botService: BotService,
-    private nlpService: NlpService
+    private nlpService: NlpService,
+    private testDialogService: TestDialogService
   ) {}
 
   ngOnInit(): void {
@@ -38,13 +40,16 @@ export class IntentStoryDetailsComponent implements OnInit {
       this.intent = this.stateService.findIntentByName(this.intentName);
     }
 
-    this.botService.findStoryByBotIdAndIntent(this.stateService.currentApplication.name, this.intent.name).subscribe((s) => {
-      this.story = s;
+    if (this.intent) {
+      this.botService.findStoryByBotIdAndIntent(this.stateService.currentApplication.name, this.intent.name).subscribe((s) => {
+        this.story = s;
 
-      this.searchIntentSentences();
-
+        this.searchIntentSentences();
+        this.loading = false;
+      });
+    } else {
       this.loading = false;
-    });
+    }
   }
 
   searchIntentSentences(): void {
@@ -56,7 +61,7 @@ export class IntentStoryDetailsComponent implements OnInit {
     const searchQuery = new SearchQuery(
       paginatedQuery.namespace,
       paginatedQuery.applicationName,
-      paginatedQuery.language,
+      null,
       paginatedQuery.start,
       paginatedQuery.size,
       paginatedQuery.searchMark,
@@ -70,6 +75,14 @@ export class IntentStoryDetailsComponent implements OnInit {
       });
     });
   }
+
+  testDialogSentence(message, locale) {
+    this.testDialogService.testSentenceDialog({
+      sentenceText: message,
+      sentenceLocale: locale
+    });
+  }
+
   cancel(): void {
     this.dialogRef.close();
   }

@@ -79,10 +79,12 @@ import {
   SelectBotComponent,
   DateRangeCalendarComponent,
   DataExportComponent,
-  WysiwygEditorComponent
+  WysiwygEditorComponent,
+  TestDialogComponent,
+  BotConfigurationSelectorComponent
 } from './components';
 
-import { AutofocusDirective } from './directives';
+import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
@@ -158,7 +160,10 @@ import { ScrollComponent } from '../scroll/scroll.component';
     SentencesGenerationComponent,
     ScrollComponent,
     DataExportComponent,
-    WysiwygEditorComponent
+    WysiwygEditorComponent,
+    TestDialogComponent,
+    BotConfigurationSelectorComponent,
+    TextareaAutocompleteDirective
   ],
   exports: [
     SelectBotComponent,
@@ -187,7 +192,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     AiSettingsEngineConfigParamInputComponent,
     SentencesGenerationComponent,
     DataExportComponent,
-    WysiwygEditorComponent
+    WysiwygEditorComponent,
+    TextareaAutocompleteDirective
   ],
   providers: [BotSharedService, AnalyticsService]
 })

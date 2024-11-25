@@ -28,6 +28,7 @@ import { getSentenceId } from '../commons/utils';
 import { copyToClipboard } from '../../../utils';
 import { IntentStoryDetailsComponent } from '../../intent-story-details/intent-story-details.component';
 import { ChoiceDialogComponent } from '../../choice-dialog/choice-dialog.component';
+import { TestDialogService } from '../../test-dialog/test-dialog.service';
 
 @Component({
   selector: 'tock-sentence-training-entry',
@@ -66,7 +67,8 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     private router: Router,
     private nbDialogService: NbDialogService,
     private toastrService: NbToastrService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private testDialogService: TestDialogService
   ) {}
 
   ngOnInit(): void {
@@ -261,6 +263,13 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   async copySentence(sentence) {
     copyToClipboard(sentence.getText());
     this.toastrService.success(`Sentence copied to clipboard`, 'Clipboard');
+  }
+
+  testDialogSentence(sentence) {
+    this.testDialogService.testSentenceDialog({
+      sentenceText: sentence.text,
+      sentenceLocale: sentence.language
+    });
   }
 
   redirectToFaqManagement(sentence: SentenceExtended): void {

@@ -7,6 +7,7 @@ import { DialogService } from '../../../core-nlp/dialog.service';
 import { copyToClipboard, getExportFileName } from '../../../shared/utils';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ChoiceDialogComponent, IntentStoryDetailsComponent } from '../../../shared/components';
+import { TestDialogService } from '../../../shared/components/test-dialog/test-dialog.service';
 
 @Component({
   selector: 'tock-faq-management-list',
@@ -25,7 +26,8 @@ export class FaqManagementListComponent {
     public state: StateService,
     private dialogService: DialogService,
     private toastrService: NbToastrService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private testDialogService: TestDialogService
   ) {}
 
   getCurrentLocaleAnswerLabel(faq: FaqDefinitionExtended) {
@@ -122,6 +124,13 @@ export class FaqManagementListComponent {
       context: {
         intentId: faq.intentId
       }
+    });
+  }
+
+  testDialogSentence(message: string, locale: string) {
+    this.testDialogService.testSentenceDialog({
+      sentenceText: message,
+      sentenceLocale: locale
     });
   }
 }

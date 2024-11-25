@@ -1,7 +1,10 @@
 <div
   #scrollable
   class="scrollable"
+  [class.mayScroll]="height || maxHeight"
   [style.height]="height"
+  [style.max-height]="maxHeight"
+  [style.padding]="padding"
 >
   <div class="messages">
     <ng-content></ng-content>

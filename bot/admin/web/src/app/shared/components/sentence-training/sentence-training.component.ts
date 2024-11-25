@@ -482,7 +482,6 @@ Would you like to change the intent of all the sentences matching the search cri
   }
 
   changeSentencesEntity(entities: { old: EntityDefinition; new: EntityDefinition }, changeAll?: boolean): void {
-    //console.log(entities);
     if (!this.selection.selected.length && !changeAll) {
       const action = 'Change intent of all results';
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {

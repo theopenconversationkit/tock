@@ -6,7 +6,9 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
   styleUrls: ['./chat-ui.component.scss']
 })
 export class ChatUiComponent {
-  @Input() height: string;
+  @Input() height?: string;
+  @Input() maxHeight?: string;
+  @Input() padding?: string;
 
   @ViewChild('scrollable') private scrollable: ElementRef;
 

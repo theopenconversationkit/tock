@@ -1,0 +1,166 @@
+<div
+  class="mr-n1"
+  [nbSpinner]="loading"
+>
+  <tock-no-data-found
+    *ngIf="configurations?.length === 0"
+    title="No bot configuration detected"
+    message="Go to Settings > Configurations to define one"
+  ></tock-no-data-found>
+
+  <ng-container *ngIf="configurations?.length">
+    <div class="options-wrapper border-top border-bottom">
+      <div
+        (click)="swapOptions()"
+        class="d-flex align-items-center font-weight-bold mb-1 pointer"
+      >
+        <nb-icon
+          *ngIf="!showOptions"
+          icon="chevron-down-outline"
+          pack="nebular-essentials"
+        ></nb-icon>
+        <nb-icon
+          *ngIf="showOptions"
+          icon="chevron-up-outline"
+          pack="nebular-essentials"
+        ></nb-icon>
+        Options
+      </div>
+
+      <div
+        *ngIf="showOptions"
+        class="d-flex flex-wrap gap-1 row-gap-1 align-items-center mt-2 pb-1"
+      >
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="globe2"
+          ></nb-icon>
+          <nb-select
+            [(ngModel)]="locale"
+            size="small"
+            nbTooltip="Select the dialog locale"
+          >
+            <nb-option
+              *ngFor="let loc of state.currentApplication.supportedLocales"
+              [value]="loc"
+              >{{ state.localeName(loc) }}</nb-option
+            >
+          </nb-select>
+        </nb-form-field>
+
+        <tock-bot-configuration-selector
+          [currentConfigurationId]="currentConfigurationId"
+          (currentConfigurationChange)="changeCurrentConfiguration($event)"
+        ></tock-bot-configuration-selector>
+
+        <div class="d-flex gap-1">
+          <nb-checkbox
+            [(ngModel)]="debug"
+            nbTooltip="Get debug infos of RAG responses"
+            >Debug</nb-checkbox
+          >
+
+          <nb-checkbox
+            [(ngModel)]="sourceWithContent"
+            nbTooltip="Get text content of RAG sources"
+            >Sources content</nb-checkbox
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="shaders-wrapper mt-2">
+      <div class="shader-top"></div>
+      <tock-chat-ui
+        maxHeight="calc(100vh - 450px)"
+        padding="0.2em 0 0 0"
+        #chatUi
+      >
+        <tock-chat-ui-message
+          *ngFor="let m of messages"
+          [message]="m.message"
+          [reply]="m.bot"
+          [avatar]="getUserAvatar(m.bot)"
+          (sendMessage)="onNewMessage($event)"
+        >
+          <span
+            *ngIf="m.locale"
+            class="stats"
+          >
+            [{{ m.locale }}]
+            <button
+              *ngIf="m.hasNlpStats"
+              (click)="displayNlpStats(m)"
+              nbTooltip="View Nlp Stats"
+              nbButton
+              ghost
+              shape="round"
+              size="tiny"
+              status="primary"
+            >
+              <nb-icon icon="clipboard-data"></nb-icon>
+            </button>
+          </span>
+        </tock-chat-ui-message>
+      </tock-chat-ui>
+
+      <div class="shader-bottom"></div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mt-3">
+      <div class="d-flex gap-1 flex-grow-1">
+        <textarea
+          #textareaAutocompleteDirectiveRef
+          [ngStyle]="{ height: getUserMessageInputHeight() }"
+          rows="1"
+          class="w-100 nb-autocomplete-position-top"
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          status="primary"
+          placeholder="Type some text"
+          [(ngModel)]="userMessage"
+          (onInputValueChange)="onUserMessageChange($event)"
+          (keyup.shift.enter)="insertCarriage()"
+          (keyup.enter)="submit($event)"
+          autocomplete="off"
+          [nbAutocomplete]="userMessageAutocomplete"
+          position="top"
+          (click)="updateUserMessageAutocompleteValues()"
+          (keyup)="updateUserMessageAutocompleteValues($event)"
+        ></textarea>
+
+        <button
+          nbButton
+          size="medium"
+          (click)="submit()"
+        >
+          GO
+        </button>
+      </div>
+
+      <button
+        *ngIf="messages.length !== 0"
+        nbTooltip="Clear conversation"
+        nbButton
+        status="warning"
+        size="medium"
+        (click)="clear()"
+      >
+        <nb-icon icon="trash"></nb-icon>
+      </button>
+    </div>
+    <nb-autocomplete
+      #userMessageAutocomplete
+      size="tiny"
+    >
+      <nb-option
+        *ngFor="let option of userMessageAutocompleteValues | async"
+        [value]="option"
+      >
+        {{ option }}
+      </nb-option>
+    </nb-autocomplete>
+  </ng-container>
+</div>

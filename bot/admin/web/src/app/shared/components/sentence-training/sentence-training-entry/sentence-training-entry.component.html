@@ -35,11 +35,22 @@
           nbButton
           ghost
           size="tiny"
-          class="mr-2 lineFirstSmallButtonRetract"
+          class="lineFirstSmallButtonRetract"
           nbTooltip="Copy sentence"
           (click)="copySentence(sentence)"
         >
           <nb-icon icon="copy"></nb-icon>
+        </button>
+
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          class="mr-2"
+          nbTooltip="Test this sentence in a dialog"
+          (click)="testDialogSentence(sentence)"
+        >
+          <nb-icon icon="terminal-plus"></nb-icon>
         </button>
 
         <time>{{ sentence.creationDate | date: 'yy/MM/dd HH:mm:ss' }}</time>

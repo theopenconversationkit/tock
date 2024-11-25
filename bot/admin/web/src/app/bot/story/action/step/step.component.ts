@@ -19,7 +19,7 @@ import { NbDialogService } from '@nebular/theme';
 import { Observable, of, take } from 'rxjs';
 
 import { EntityStepSelection, IntentName, StoryStepMetric, StoryStep } from '../../../model/story';
-import {EntityType, Intent, IntentsCategory, ParseQuery} from '../../../../model/nlp';
+import { EntityType, Intent, IntentsCategory, ParseQuery } from '../../../../model/nlp';
 import { StateService } from '../../../../core-nlp/state.service';
 import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
 import { NlpService } from '../../../../core-nlp/nlp.service';
@@ -221,7 +221,6 @@ export class StepComponent implements OnInit {
 
   setEntity() {
     const e = this.step.entity;
-    //console.log(e);
     let dialogRef = this.nbDialogService.open(SelectEntityDialogComponent, {
       context: {
         //@ts-ignore todo fix this
@@ -237,7 +236,6 @@ export class StepComponent implements OnInit {
           this.step.entity = null;
         } else {
           this.step.entity = new EntityStepSelection(result.value, result.role, result.entity.name);
-          //console.log(this.step);
         }
       }
     });

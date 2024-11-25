@@ -107,11 +107,25 @@
       nbButton
       ghost
       size="medium"
-      *ngIf="auth.isLoggedIn() && !auth.isSSO()"
-      (click)="auth.logout()"
-      nbTooltip="Logout"
+      (click)="openDialogTest()"
+      nbTooltip="Open a test dialog"
     >
-      <nb-icon icon="box-arrow-right"></nb-icon>
+      <nb-icon icon="terminal-plus"></nb-icon>
     </button>
+
+    <div
+      *ngIf="auth.isLoggedIn() && !auth.isSSO()"
+      class="border-left pl-3"
+    >
+      <button
+        nbButton
+        ghost
+        size="medium"
+        (click)="auth.logout()"
+        nbTooltip="Logout"
+      >
+        <nb-icon icon="box-arrow-right"></nb-icon>
+      </button>
+    </div>
   </div>
 </div>

@@ -1,0 +1,45 @@
+<div class="d-flex gap-1">
+  <nb-form-field nbTooltip="Select a configuration">
+    <nb-icon
+      nbPrefix
+      icon="link-45deg"
+    ></nb-icon>
+    <nb-select
+      size="small"
+      fullWidth
+      [(ngModel)]="currentBotName"
+      (selectedChange)="changeBotName()"
+    >
+      <nb-option
+        *ngFor="let n of botNames"
+        [value]="n"
+        >{{ n }}</nb-option
+      >
+    </nb-select>
+  </nb-form-field>
+
+  <nb-form-field nbTooltip="Select a connector">
+    <nb-icon
+      nbPrefix
+      icon="plug"
+    ></nb-icon>
+    <nb-select
+      size="small"
+      fullWidth
+      placeholder="Select a connector"
+      [(ngModel)]="currentConfiguration"
+      (selectedChange)="changeCurrentConfiguration()"
+    >
+      <nb-option
+        *ngFor="let c of configurations"
+        [value]="c"
+      >
+        <img
+          src="{{ c.connectorType.iconUrl() }}"
+          class="connector-icon"
+        />
+        {{ c.connectorType.label() }} ({{ c.applicationId }})</nb-option
+      >
+    </nb-select>
+  </nb-form-field>
+</div>
