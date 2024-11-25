@@ -1,3 +1,5 @@
+@import '../../../../../theme/styles/utilities.scss';
+
 .userInterface {
   float: left;
   padding-right: 5px;
@@ -9,5 +11,9 @@
   font-size: x-small;
   .title {
     font-size: xx-small;
+  }
+
+  .truncate {
+    @include truncate(1);
   }
 }

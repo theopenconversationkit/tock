@@ -15,25 +15,51 @@
   *ngIf="sentence.footnotes?.length"
 >
   <strong class="title mr-1">SOURCES : </strong>
-  <span *ngFor="let footNote of sentence.footnotes; let last = last">
+  <span *ngFor="let footNote of sentence.footnotes; let i = index; let last = last">
     <a
       [href]="footNote.url"
       target="_blank"
       *ngIf="footNote.url?.trim().length"
+      [class.d-block]="$any(footNote).content"
     >
       {{ footNote.title }}
     </a>
-    <span *ngIf="!footNote.url?.trim().length">
+    <span
+      *ngIf="!footNote.url?.trim().length"
+      [class.d-block]="$any(footNote).content"
+    >
       {{ footNote.title }}
     </span>
-    <span
-      *ngIf="$any(footNote).content"
-      class="d-block"
+
+    <div
+      *ngIf="footNote.content"
+      [class.truncate]="!footNote._showFullContent"
+      #footnoteContentWrapper
     >
-      {{ $any(footNote).content }}
-    </span>
+      <span
+        *ngIf="footNote.content"
+        (click)="footNote._showFullContent = !footNote._showFullContent"
+      >
+        <nb-icon
+          *ngIf="footNote._showFullContent"
+          icon="chevron-down-outline"
+          pack="nebular-essentials"
+          class="align-bottom pointer"
+          nbTooltip="Hide"
+        ></nb-icon>
+        <nb-icon
+          *ngIf="!footNote._showFullContent && isClamped(footnoteContentWrapper)"
+          icon="chevron-right-outline"
+          pack="nebular-essentials"
+          class="align-bottom pointer ml-n2"
+          nbTooltip="Show more"
+        ></nb-icon>
+      </span>
+      {{ footNote.content }}
+    </div>
+
     <span
-      *ngIf="!$any(footNote).content && !last"
+      *ngIf="!footNote.content"
       class="mx-1"
       >|</span
     >

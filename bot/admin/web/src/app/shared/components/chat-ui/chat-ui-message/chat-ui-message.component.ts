@@ -63,7 +63,10 @@ export class ChatUiMessageComponent {
 
   getApplicationConfigurationName(applicationId: string) {
     if (!this.allConfigurations) return;
+
     const configuration = this.allConfigurations.find((conf) => conf.applicationId === applicationId);
+    if (!configuration) return;
+
     return `${configuration.name} : ${configuration.connectorType.label()} (${configuration.applicationId})`;
   }
 
