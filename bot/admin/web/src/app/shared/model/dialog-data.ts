@@ -247,6 +247,7 @@ export interface Footnote {
   url: string;
   identifier: string;
   content?: string;
+  score?: number;
   _showFullContent?: boolean;
 }
 

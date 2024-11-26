@@ -16,19 +16,27 @@
 >
   <strong class="title mr-1">SOURCES : </strong>
   <span *ngFor="let footNote of sentence.footnotes; let i = index; let last = last">
-    <a
-      [href]="footNote.url"
-      target="_blank"
-      *ngIf="footNote.url?.trim().length"
-      [class.d-block]="$any(footNote).content"
-    >
-      {{ footNote.title }}
-    </a>
-    <span
-      *ngIf="!footNote.url?.trim().length"
-      [class.d-block]="$any(footNote).content"
-    >
-      {{ footNote.title }}
+    <span [class.d-block]="footNote.content">
+      <a
+        [href]="footNote.url"
+        target="_blank"
+        *ngIf="footNote.url?.trim().length"
+      >
+        {{ footNote.title }}
+      </a>
+      <span
+        *ngIf="!footNote.url?.trim().length"
+        class="font-weight-bold"
+      >
+        {{ footNote.title }}
+      </span>
+
+      <nb-icon
+        *ngIf="footNote.score"
+        icon="trophy"
+        class="font-size-xsmall align-center ml-2"
+        nbTooltip="Compressor score : {{ footNote.score.toFixed(2) }}"
+      ></nb-icon>
     </span>
 
     <div
@@ -55,11 +63,12 @@
           nbTooltip="Show more"
         ></nb-icon>
       </span>
+
       {{ footNote.content }}
     </div>
 
     <span
-      *ngIf="!footNote.content"
+      *ngIf="!footNote.content && !last"
       class="mx-1"
       >|</span
     >

@@ -69,7 +69,10 @@ export class TestDialogService {
     }
 
     if (options.sentenceText?.trim().length) {
-      this.testSentenceSubject.next(options.sentenceText);
+      // small timeout to avoid reponse of getRecentSentences to hide the load spinner
+      setTimeout(() => {
+        this.testSentenceSubject.next(options.sentenceText);
+      }, 200);
     }
 
     this.bringToFront();

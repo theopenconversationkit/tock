@@ -137,10 +137,9 @@ export class CompressorSettingsComponent implements OnInit, OnDestroy {
     this.form.patchValue({
       compressorProvider: settings.setting.provider
     });
-    console.log(settings);
+
     this.form.patchValue(settings);
     this.form.markAsPristine();
-    console.log(this.form.value);
   }
 
   initFormSettings(provider: CompressorProvider): void {

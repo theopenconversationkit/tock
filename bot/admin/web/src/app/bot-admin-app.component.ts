@@ -228,7 +228,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           {
             title: 'Compressor settings',
             link: '/configuration/compressor-settings',
-            icon: 'funnel',
+            icon: 'trophy',
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
