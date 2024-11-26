@@ -15,7 +15,12 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
     label: 'BloomzRerank',
     key: CompressorProvider.BloomzRerank,
     params: [
-      { key: 'label', label: 'Label', type: 'text', information: 'Name of the positive scoring output label' },
+      {
+        key: 'label',
+        label: 'Label',
+        type: 'text',
+        information: 'Name of the positive scoring output label (see models card for more info)'
+      },
       { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
       {
         key: 'minScore',
