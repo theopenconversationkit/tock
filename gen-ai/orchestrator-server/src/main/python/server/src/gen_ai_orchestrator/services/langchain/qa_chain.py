@@ -71,7 +71,7 @@ async def execute_qa_chain(query: QAQuery) -> QAResponse:
             map(
                 lambda doc: Source(
                     title=doc.metadata['title'],
-                    url=doc.metadata['url'],
+                    url=doc.metadata['source'],
                     content=doc.page_content,
                 ),
                 response,

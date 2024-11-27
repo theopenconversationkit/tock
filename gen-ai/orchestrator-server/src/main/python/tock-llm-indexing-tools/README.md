@@ -111,7 +111,7 @@ Options:
 -v          Verbose output for debugging (without this option, script will be silent but for errors)
 ```
 
-Recursively browse web URLs (follow links from these base URLs), then scrape links' contents based on a list of BeautifulSoup filters, then export these contents into a ready-to-index CSV file (one 'title'|'url'|'text' line per URL with scraped contents):
+Recursively browse web URLs (follow links from these base URLs), then scrape links' contents based on a list of BeautifulSoup filters, then export these contents into a ready-to-index CSV file (one 'title'|'source'|'text' line per URL with scraped contents):
 
 
 | Title      | URL                | Text                  |
@@ -123,62 +123,97 @@ Recursively browse web URLs (follow links from these base URLs), then scrape lin
 
 #### index_documents.py
 
-Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
-
 ```
-Usage:
-    index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
-    index_documents.py -h | --help
-    index_documents.py --version
+Index a CSV file (line format: 'title'|'source'|'text') into a vector database.
 
-Arguments:
-    input_csv       path to the ready-to-index file
-    namespace       the namespace
-    bot_id          the bot ID
-    embeddings_json_config  path to an embeddings configuration file (JSON format)
-                    (shall describe settings for one of OpenAI or AzureOpenAI
-                    embeddings model)
-    vector_store_json_config  path to a vector store configuration file (JSON format)
-                    (shall describe settings for one of OpenSearch or PGVector store)
-    chunks_size     size of the embedded chunks of documents
+Usage:
+  index_documents.py --input-csv=<path> --namespace=<ns> --bot-id=<id> \
+                     --embeddings-json-config=<emb_cfg> --vector-store-json-config=<vs_cfg> \
+                     --chunks-size=<size> [--ignore-source=<is>] [--embedding-bulk-size=<em_bs>] \
+                     [--env-file=<env>] [-v]
+  index_documents.py (-h | --help)
+  index_documents.py --version
 
 Options:
-    -h --help   Show this screen
-    --version   Show version
-    -v          Verbose output for debugging
+  -h --help                           Show this help message.
+  --version                           Show the version.
+  --input-csv=<path>                  Path to the CSV file to be indexed.
+  --namespace=<ns>                    TOCK bot namespace to which the index belongs.
+  --bot-id=<id>                       TOCK bot ID to which the index belongs.
+  --embeddings-json-config=<emb_cfg>  Path to embeddings configuration JSON file.
+                                       (Describes settings for embeddings models supported by TOCK.)
+  --vector-store-json-config=<vs_cfg> Path to vector store configuration JSON file.
+                                       (Describes settings for vector stores supported by TOCK.)
+  --chunks-size=<size>                Size of the embedded document chunks.
+  --ignore-source=<is>                Ignore source validation. Useful if sources aren't valid URLs.
+                                       [default: false]
+  --embedding-bulk-size=<em_bs>       Number of chunks sent in each embedding request.
+                                       [default: 100]
+  --env-file=<env>                    Path to an optional environment configuration file.
+  -v                                  Verbose output for debugging.
+
+Description:
+  This script indexes the contents of a CSV file into a vector database.
+  The CSV must contain 'title', 'source', and 'text' columns. The 'text' will be chunked
+  according to the specified chunk size and embedded using settings described in the
+  embeddings JSON configuration file. Documents will then be indexed into a vector store
+  using the vector store JSON configuration.
+
+  The index name is automatically generated based on the namespace, bot ID, and a unique identifier
+  (UUID). For example, in OpenSearch: ns-{namespace}-bot-{bot_id}-session-{uuid4}.
+  Indexing details will be displayed on the console at the end of the operation,
+  and saved in a specific log file in ./logs
 ```
+CSV columns are 'title'|'source'|'text'. 
 
-Index a ready-to-index CSV file contents into an OpenSearch vector database.
-
-CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
+'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
 
 Documents will be indexed in OpenSearch DB under index_name index (index_name shall follow OpenSearch naming restrictions) with the following metadata:
 
 
-| Metadata tag     | Description                                                      |
-|------------------|------------------------------------------------------------------|
-| index_session_id | a uuid for the indexing session (running this script)            |
-| index_datetime   | the date of the indexing session                                 |
-| id               | a uuid for each document (one per line in the input file)        |
-| chunk            | the nb of the chunk if the original document was splitted: 'n/N' |
-| title            | the 'title' column from original input CSV                       |
-| url              | the 'url' column from original input CSV                         |
+| Metadata tag     | Description                                                                                   |
+|------------------|-----------------------------------------------------------------------------------------------|
+| index_session_id | a uuid for the indexing session (running this script)                                         |
+| index_datetime   | the date of the indexing session                                                              |
+| id               | a uuid for each document (one per line in the input file)                                     |
+| chunk            | the nb of the chunk if the original document was splitted: 'n/N'                              |
+| title            | the 'title' column from original input CSV                                                    |
+| source           | the 'source' column from original input CSV. This can be ignored using --ignore-source option |
+| reference        | the document 'reference' that save the 'source' column whether the source is ignored or not   |
+
+#### Minimal invocation
+  index_documents.py --input-csv=data.csv --namespace=my_namespace \
+    --bot-id=1234 --embeddings-json-config=embeddings.json \
+    --vector-store-json-config=vector_store.json --chunks-size=50
+
+#### Include optional parameters
+  index_documents.py --input-csv=data.csv --namespace=my_namespace \
+    --bot-id=1234 --embeddings-json-config=embeddings.json \
+    --vector-store-json-config=vector_store.json --chunks-size=50 \
+    --ignore-source=true --embedding-bulk-size=200 --env-file=.env -v
 
 #### Sample result: 
 <pre>
-------------------- Indexing details ----------------------------------------------------------
-                 Index name : ns-03-bot-cmso-session-b2bbb74a-1439-499d-a621-0f4b6bff0491
-           Index session ID : b2bbb74a-1439-499d-a621-0f4b6bff0491
-        Documents extracted : 391 (Docs)
-          Documents chunked : 391 (Chunks)
-                 Chunk size : 20000 (Characters)
-                  Input csv : cmso_full_06062024.csv
-   Embeddings configuration : embeddings_azure_openai_settings.json
- Vector Store configuration : vector_store_opensearch_settings.json
-                   Duration : 39.34 seconds
-                       Date : 2024-09-10 16:29:54
+--------------------------------------- Indexing details --------------------------------------
+
+Index name          : ns-mystore-bot-istore-session-2cd0cdeb-bb02-4c4e-90cd-76b42371b1c2
+Index session ID    : 2cd0cdeb-bb02-4c4e-90cd-76b42371b1c2
+Documents extracted : 4094 (Docs)
+Documents chunked   : 12158 (Chunks)
+Chunk size          : 1000 (Characters)
+Input csv           : 0-bot-istore/full-extract-istore.csv
+Embeddings          : AzureOpenAIService
+Vector Store        : OpenSearch
+Ignoring sources    : False
+Duration            : 11 minutes and 45.52 seconds
+Date                : 2024-11-21 14:14:42
+
 -----------------------------------------------------------------------------------------------
 </pre>
+
+#### Logs
+Each time a script is executed, one or more log files are generated and time-stamped in this format: 
+`logs/index_documents_%Y%m%d_%H%M%S.log`
 
 ## Default Vector Store Configuration
 
