@@ -157,8 +157,18 @@
     (scrolled)="onScroll()"
   >
     <div *ngFor="let dialog of data">
-      <nb-card>
-        <nb-card-body class="px-3">
+      <nb-card id="dialog-wrapper-{{ dialog.id }}">
+        <nb-card-body class="px-3 position-relative">
+          <button
+            nbButton
+            class="dialog-detail-link"
+            size="small"
+            nbTooltip="Display this dialog alone"
+            (click)="jumpToDialog(dialog.id)"
+          >
+            <nb-icon icon="link"></nb-icon>
+          </button>
+
           <tock-chat-ui>
             <ng-container *ngFor="let action of dialog.actions">
               <tock-chat-ui-message

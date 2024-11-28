@@ -1,1 +1,54 @@
-<p>dialog works!</p>
+<div class="d-flex align-items-center">
+  <h1 class="flex-grow-1">Dialog</h1>
+
+  <button
+    nbButton
+    ghost
+    status="primary"
+    nbTooltip="Back to dialog monitoring"
+    (click)="jumpToDialogs(true)"
+  >
+    <nb-icon icon="chevron-left"></nb-icon>
+    BACK
+  </button>
+</div>
+
+<tock-no-data-found
+  *ngIf="accessDenied"
+  title="Access denied or resource deleted"
+  message="Your access rights do not allow you to view this resource, or the resource has been deleted."
+></tock-no-data-found>
+
+<nb-card *ngIf="dialog">
+  <nb-card-body class="px-3 position-relative">
+    <tock-chat-ui>
+      <ng-container *ngFor="let action of dialog.actions">
+        <tock-chat-ui-message
+          [message]="action.message"
+          [date]="action.date"
+          [reply]="action.isBot()"
+          [replay]="true"
+          [sender]="getUserName(action)"
+          [avatar]="getUserAvatar(action)"
+          [applicationId]="action.applicationId"
+        >
+          <div
+            *ngIf="$any(action).metadata.isGenAiRagAnswer"
+            class="mt-3 text-right"
+          >
+            <button
+              nbButton
+              size="tiny"
+              status="warning"
+              type="button"
+              (click)="createFaq(action, dialog.actions)"
+            >
+              <nb-icon icon="chat-left-text"></nb-icon>
+              Create a FAQ with this question/answer pair
+            </button>
+          </div>
+        </tock-chat-ui-message>
+      </ng-container>
+    </tock-chat-ui>
+  </nb-card-body>
+</nb-card>

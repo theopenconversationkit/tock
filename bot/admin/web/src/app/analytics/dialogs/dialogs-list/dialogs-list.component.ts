@@ -12,6 +12,7 @@ import { BehaviorSubject, Observable, Subject, filter, mergeMap, take, takeUntil
 import { PaginatedResult, Sentence } from '../../../model/nlp';
 import { saveAs } from 'file-saver-es';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier, getExportFileName } from '../../../shared/utils';
+import { Location } from '@angular/common';
 
 export class DialogFilter {
   constructor(
@@ -62,14 +63,19 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
   dialogReportQuery: DialogReportQuery;
 
+  dialogAnchorRef: string;
+
   constructor(
     public state: StateService,
     private analytics: AnalyticsService,
     private botConfiguration: BotConfigurationService,
     private route: ActivatedRoute,
     public botSharedService: BotSharedService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private location: Location
+  ) {
+    this.dialogAnchorRef = (this.location.getState() as any)?.dialogId;
+  }
 
   ngOnInit() {
     this.botSharedService
@@ -171,6 +177,16 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     this.totalDialogsCount.next(this.formattedTotal());
     this.loading = false;
 
+    if (this.dialogAnchorRef) {
+      setTimeout(() => {
+        const target = document.querySelector(`#dialog-wrapper-${this.dialogAnchorRef}`);
+        this.dialogAnchorRef = undefined;
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
     return true;
   }
 
@@ -250,6 +266,12 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
         this.router.navigate(['faq/management'], { state: { question, answer } });
       }
     }
+  }
+
+  jumpToDialog(dialogId: string) {
+    this.router.navigateByUrl(
+      `analytics/dialog/${this.state.currentApplication.namespace}/${this.state.currentApplication._id}/${dialogId}`
+    );
   }
 
   ngOnDestroy(): void {
