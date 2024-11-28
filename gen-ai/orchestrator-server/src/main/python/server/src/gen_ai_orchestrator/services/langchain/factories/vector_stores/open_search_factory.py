@@ -14,6 +14,7 @@
 #
 """Model for creating OpenSearchFactory"""
 import logging
+from typing import Optional
 
 from langchain_community.vectorstores.opensearch_vector_search import OpenSearchVectorSearch
 from langchain_core.vectorstores import VectorStoreRetriever
@@ -41,7 +42,7 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
 
     setting: OpenSearchVectorStoreSetting
 
-    def get_vector_store(self) -> OpenSearchVectorSearch:
+    def get_vector_store(self, async_mode: Optional[bool] = True) -> OpenSearchVectorSearch:
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
             'OpenSearch user credentials: %s:%s',
