@@ -178,7 +178,7 @@ def index_documents() -> IndexingDetails:
         embedding_function=embeddings
     )
     vector_store_factory.check_vector_store_connection()
-    vector_store = vector_store_factory.get_vector_store()
+    vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
     embedding_and_indexing(splitted_docs, vector_store)
 
