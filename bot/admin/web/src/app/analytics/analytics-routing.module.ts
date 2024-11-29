@@ -42,7 +42,7 @@ const routes: Routes = [
         component: DialogsComponent
       },
       {
-        path: 'dialog/:namespace/:applicationId/:dialogId',
+        path: 'dialogs/:namespace/:applicationId/:dialogId',
         component: DialogComponent
       },
       {

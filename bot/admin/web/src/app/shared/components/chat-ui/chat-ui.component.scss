@@ -7,7 +7,7 @@
   line-height: 1.25rem;
 
   .scrollable {
-    min-height: 12rem;
+    min-height: 6rem;
 
     overflow: auto;
     flex: 1;
@@ -40,7 +40,7 @@
 
 // ScrollBars
 :host .scrollable::-webkit-scrollbar {
-  width: 0.625rem;
+  width: 0.425rem;
   height: 0.3125rem;
 }
 

@@ -44,7 +44,8 @@ import {
   NbRadioModule,
   NbToggleModule,
   NbIconModule,
-  NbFormFieldModule
+  NbFormFieldModule,
+  NbPopoverModule
 } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from './chart/chart.component';
@@ -96,7 +97,8 @@ import { DialogComponent } from './dialog/dialog.component';
     NbIconModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
-    })
+    }),
+    NbPopoverModule
   ],
   declarations: [
     AnalyticsTabsComponent,

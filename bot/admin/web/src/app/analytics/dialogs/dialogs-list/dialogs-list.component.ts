@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActionReport, Debug, DialogReport, SentenceWithFootnotes } from '../../../shared/model/dialog-data';
+import { DialogReport } from '../../../shared/model/dialog-data';
 import { ConnectorType } from '../../../core/model/configuration';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
@@ -9,9 +9,9 @@ import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { PaginatedQuery, SearchMark } from '../../../model/commons';
 import { BehaviorSubject, Observable, Subject, filter, mergeMap, take, takeUntil } from 'rxjs';
-import { PaginatedResult, Sentence } from '../../../model/nlp';
+import { PaginatedResult } from '../../../model/nlp';
 import { saveAs } from 'file-saver-es';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier, getExportFileName } from '../../../shared/utils';
+import { getExportFileName } from '../../../shared/utils';
 import { Location } from '@angular/common';
 
 export class DialogFilter {
@@ -71,7 +71,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private route: ActivatedRoute,
     public botSharedService: BotSharedService,
-    private router: Router,
     private location: Location
   ) {
     this.dialogAnchorRef = (this.location.getState() as any)?.dialogId;
@@ -184,7 +183,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-      }, 100);
+      }, 300);
     }
 
     return true;
@@ -235,43 +234,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     this.analytics.downloadDialogsWithIntentsCsv(this.dialogReportQuery).subscribe((blob) => {
       saveAs(blob, exportFileName2);
     });
-  }
-
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
-  }
-
-  getUserAvatar(action: ActionReport): string {
-    return getDialogMessageUserAvatar(action.isBot());
-  }
-
-  createFaq(action: ActionReport, actionsStack: ActionReport[]) {
-    const actionIndex = actionsStack.findIndex((act) => act === action);
-    if (actionIndex > 0) {
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer = answerSentence.text;
-
-      let question;
-      const questionAction = actionsStack[actionIndex - 1];
-
-      if (questionAction.message.isDebug()) {
-        const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condense_question || actionDebug.data.user_question;
-      } else if (!questionAction.isBot()) {
-        const questionSentence = questionAction.message as unknown as Sentence;
-        question = questionSentence.text;
-      }
-
-      if (question && answer) {
-        this.router.navigate(['faq/management'], { state: { question, answer } });
-      }
-    }
-  }
-
-  jumpToDialog(dialogId: string) {
-    this.router.navigateByUrl(
-      `analytics/dialog/${this.state.currentApplication.namespace}/${this.state.currentApplication._id}/${dialogId}`
-    );
   }
 
   ngOnDestroy(): void {

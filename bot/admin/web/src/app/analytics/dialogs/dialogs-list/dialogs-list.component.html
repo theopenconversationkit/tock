@@ -158,45 +158,9 @@
   >
     <div *ngFor="let dialog of data">
       <nb-card id="dialog-wrapper-{{ dialog.id }}">
-        <nb-card-body class="px-3 position-relative">
-          <button
-            nbButton
-            class="dialog-detail-link"
-            size="small"
-            nbTooltip="Display this dialog alone"
-            (click)="jumpToDialog(dialog.id)"
-          >
-            <nb-icon icon="link"></nb-icon>
-          </button>
-
+        <nb-card-body class="pl-3 pr-0">
           <tock-chat-ui>
-            <ng-container *ngFor="let action of dialog.actions">
-              <tock-chat-ui-message
-                [message]="action.message"
-                [date]="action.date"
-                [reply]="action.isBot()"
-                [replay]="true"
-                [sender]="getUserName(action)"
-                [avatar]="getUserAvatar(action)"
-                [applicationId]="action.applicationId"
-              >
-                <div
-                  *ngIf="$any(action).metadata.isGenAiRagAnswer"
-                  class="mt-3 text-right"
-                >
-                  <button
-                    nbButton
-                    size="tiny"
-                    status="warning"
-                    type="button"
-                    (click)="createFaq(action, dialog.actions)"
-                  >
-                    <nb-icon icon="chat-left-text"></nb-icon>
-                    Create a FAQ with this question/answer pair
-                  </button>
-                </div>
-              </tock-chat-ui-message>
-            </ng-container>
+            <tock-chat-ui-dialog-logger [dialog]="dialog"></tock-chat-ui-dialog-logger>
           </tock-chat-ui>
         </nb-card-body>
       </nb-card>

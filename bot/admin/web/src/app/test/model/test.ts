@@ -202,7 +202,7 @@ export class TestActionReport {
     public playerId: PlayerId,
     public date: Date,
     public messages: BotMessage[],
-    public id: String,
+    public id: string,
     public userInterfaceType: UserInterfaceType,
     public connectorType?: ConnectorType
   ) {}

@@ -3,13 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, take, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../analytics.service';
 import { StateService } from '../../core-nlp/state.service';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } from '../../shared/model/dialog-data';
+import { ActionReport, DialogReport } from '../../shared/model/dialog-data';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { AuthService } from '../../core-nlp/auth/auth.service';
 import { SettingsService } from '../../core-nlp/settings.service';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
+import { copyToClipboard } from '../../shared/utils';
 
 @Component({
   selector: 'tock-dialog',
@@ -22,6 +20,8 @@ export class DialogComponent implements OnInit, OnDestroy {
   dialog: DialogReport;
 
   accessDenied: boolean = false;
+
+  targetFragment: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,6 +38,12 @@ export class DialogComponent implements OnInit, OnDestroy {
   }
 
   initialize(): void {
+    this.route.fragment.subscribe((fragment: string) => {
+      if (fragment) {
+        this.targetFragment = fragment;
+      }
+    });
+
     this.route.params.pipe(take(1)).subscribe((routeParams) => {
       // User does not have rights to access this namespace
       if (!this.state.namespaces.find((ns) => ns.namespace === routeParams.namespace)) {
@@ -84,6 +90,15 @@ export class DialogComponent implements OnInit, OnDestroy {
         .subscribe((dialog) => {
           if (dialog?.actions?.length) {
             this.dialog = dialog;
+
+            if (this.targetFragment) {
+              setTimeout(() => {
+                const target = document.querySelector(`#action-anchor-${this.targetFragment}`);
+                if (target) {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 300);
+            }
           } else {
             this.accessDenied = true;
           }
@@ -101,40 +116,20 @@ export class DialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
-  }
-
-  getUserAvatar(action: ActionReport): string {
-    return getDialogMessageUserAvatar(action.isBot());
-  }
-
-  createFaq(action: ActionReport, actionsStack: ActionReport[]): void {
-    const actionIndex = actionsStack.findIndex((act) => act === action);
-    if (actionIndex > 0) {
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer = answerSentence.text;
-
-      let question;
-      const questionAction = actionsStack[actionIndex - 1];
-
-      if (questionAction.message.isDebug()) {
-        const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condense_question || actionDebug.data.user_question;
-      } else if (!questionAction.isBot()) {
-        const questionSentence = questionAction.message as unknown as Sentence;
-        question = questionSentence.text;
-      }
-
-      if (question && answer) {
-        this.router.navigate(['faq/management'], { state: { question, answer } });
-      }
-    }
+  getTargetedAction(): ActionReport {
+    if (!this.targetFragment || !this.dialog) return;
+    return this.dialog.actions.find((action) => {
+      return action.id === this.targetFragment;
+    });
   }
 
   jumpToDialogs(addAnchorRef: boolean = false): void {
     const extras = addAnchorRef && this.dialog?.id ? { state: { dialogId: this.dialog.id } } : undefined;
     this.router.navigateByUrl('/analytics/dialogs', extras);
+  }
+
+  copyUrl(): void {
+    copyToClipboard(window.location.href);
   }
 
   ngOnDestroy(): void {
