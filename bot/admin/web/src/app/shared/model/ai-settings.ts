@@ -1,3 +1,18 @@
+export interface ProvidersConfigurationParam {
+  label: string;
+  key: string;
+  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
+  numberControlType?: 'slider' | 'input';
+  source?: string[];
+  inputScale?: 'default' | 'fullwidth';
+  defaultValue?: string | number;
+  information?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  confirmExport?: boolean;
+}
+
 export enum AiEngineProvider {
   OpenAI = 'OpenAI',
   AzureOpenAIService = 'AzureOpenAIService',
@@ -37,17 +52,7 @@ export interface emSetting {
 export interface EnginesConfiguration {
   label: string;
   key: AiEngineProvider;
-  params: EnginesConfigurationParam[];
-}
-
-export interface EnginesConfigurationParam {
-  label: string;
-  key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
-  source?: string[];
-  inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string | number;
-  confirmExport?: boolean;
+  params: ProvidersConfigurationParam[];
 }
 
 export const AzureOpenAiApiVersionsList: string[] = [

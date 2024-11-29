@@ -12,7 +12,12 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
-import { AiEngineSettingKeyName, EnginesConfiguration, EnginesConfigurationParam, AiEngineProvider } from '../../shared/model/ai-settings';
+import {
+  AiEngineSettingKeyName,
+  EnginesConfiguration,
+  AiEngineProvider,
+  ProvidersConfigurationParam
+} from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
@@ -356,7 +361,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  sensitiveParams: { label: string; key: string; include: boolean; param: EnginesConfigurationParam }[];
+  sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
   exportSettings() {
     this.sensitiveParams = [];

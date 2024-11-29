@@ -1,6 +1,6 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { EnginesConfigurationParam } from '../../model/ai-settings';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ProvidersConfigurationParam } from '../../model/ai-settings';
 
 @Component({
   selector: 'tock-ai-settings-engine-config-param-input',
@@ -8,7 +8,7 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./ai-settings-engine-config-param-input.component.scss']
 })
 export class AiSettingsEngineConfigParamInputComponent {
-  @Input() configurationParam: EnginesConfigurationParam;
+  @Input() configurationParam: ProvidersConfigurationParam;
   @Input() parentGroup: string;
   @Input() form: FormGroup;
   @Input() isSubmitted: boolean;

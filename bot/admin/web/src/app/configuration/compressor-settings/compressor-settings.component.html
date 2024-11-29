@@ -1,6 +1,6 @@
 <tock-sticky-menu [offset]="50">
-  <div class="d-flex">
-    <h1 class="flex-grow-1 mb-0">Application vector database settings</h1>
+  <div class="d-flex flex-wrap">
+    <h1 class="flex-grow-1">Documents compressor settings</h1>
 
     <section class="grid-actions">
       <button
@@ -8,7 +8,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Export Vector DB settings dump"
+        nbTooltip="Export compressor settings dump"
         (click)="exportSettings()"
       >
         <nb-icon icon="download"></nb-icon>
@@ -17,7 +17,7 @@
         nbButton
         ghost
         shape="round"
-        nbTooltip="Import Vector DB settings dump"
+        nbTooltip="Import compressor settings dump"
         (click)="importSettings()"
       >
         <nb-icon icon="upload"></nb-icon>
@@ -46,15 +46,6 @@
       </button>
     </section>
   </div>
-
-  <small>
-    Optional vector database provider. By default, the vector database used to index the Rag documents is defined in environment variables,
-    but if you need a specific vector database for this application, you can provide its configuration here. This configuration will
-    override the environment configuration for the application
-    <b
-      ><i>{{ state.currentApplication.name }}</i></b
-    >.
-  </small>
 </tock-sticky-menu>
 
 <tock-no-data-found
@@ -66,9 +57,9 @@
   [formGroup]="form"
   *ngIf="configurations?.length > 0"
 >
-  <nb-card class="mt-2">
+  <nb-card class="mt-1">
     <nb-card-body [nbSpinner]="loading">
-      <h5 class="section-title">Vector DB activation</h5>
+      <h5 class="section-title">Compressor activation</h5>
 
       <tock-form-control
         name="enabled"
@@ -80,24 +71,22 @@
           formControlName="enabled"
           class="mt-1"
         >
-          <span *ngIf="enabled.value">Vector DB activated</span>
-          <span *ngIf="!enabled.value">Vector DB deactivated</span>
+          <span *ngIf="enabled.value">Compressor activated</span>
+          <span *ngIf="!enabled.value">Compressor deactivated</span>
         </nb-toggle>
       </tock-form-control>
 
-      <h5 class="section-title">
-        Vector DB provider for application <i>{{ state.currentApplication.name }}</i>
-      </h5>
+      <h5 class="section-title">Compressor provider</h5>
 
       <tock-form-control
-        name="vectorDbProvider"
-        [controls]="vectorDbProvider"
+        name="compressorProvider"
+        [controls]="compressorProvider"
         [required]="true"
         [showError]="isSubmitted"
       >
         <nb-radio-group
-          formControlName="vectorDbProvider"
-          name="vectorDbProvider"
+          formControlName="compressorProvider"
+          name="compressorProvider"
           class="d-flex"
         >
           <nb-radio
@@ -110,11 +99,11 @@
       </tock-form-control>
 
       <div
-        *ngIf="currentVectorDbProvider"
+        *ngIf="currentCompressorProvider"
         class="mt-2 mb-2"
       >
         <div class="row mb-1">
-          <ng-container *ngFor="let param of currentVectorDbProvider.params">
+          <ng-container *ngFor="let param of currentCompressorProvider.params">
             <div
               class="col-6 px-3"
               [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
@@ -200,7 +189,7 @@
 <ng-template #importModal>
   <nb-card class="help-modal">
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Import Vector DB settings dump
+      Import compressor settings dump
       <button
         nbButton
         ghost
@@ -218,7 +207,7 @@
         (submit)="submitImportSettings()"
       >
         <tock-form-control
-          label="Vector DB settings dump file"
+          label="Compressor settings dump file"
           name="importFile"
           [required]="true"
           [controls]="fileSource"

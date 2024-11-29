@@ -25,8 +25,8 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor {
   ngAfterViewInit() {
     if (this.value === null) {
       setTimeout(() => {
-        this.value = 0;
-        this.onChange(0);
+        this.value = this.min || 0;
+        this.onChange(this.value);
       });
     }
   }
