@@ -6,11 +6,13 @@
   <div class="d-flex align-items-center justify-content-between">
     <label
       *ngIf="label"
+      class="mb-0"
       [ngClass]="{
         'font-weight-bold': boldLabel,
         'text-mitigated': true,
         required: required,
-        hasError: showError && (!controls || !!controls.invalid)
+        hasError: showError && (!controls || !!controls.invalid),
+        'mb-0': noLabelMargin
       }"
       [for]="name"
       data-testid="label"

@@ -50,7 +50,7 @@ export class ActionReport {
     public playerId: PlayerId,
     public date: Date,
     public message: BotMessage,
-    public id: String,
+    public id: string,
     public test: boolean,
     public connectorType?: ConnectorType,
     public applicationId?: string

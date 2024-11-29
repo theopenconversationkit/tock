@@ -167,20 +167,10 @@
       <nb-card-header class="position-relative p-0">
         <tock-chat-ui
           *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
+          padding="1em 0em 1em 1em"
           height="calc(100vh - 350px)"
-          padding="1em 0.5em 1em 1em"
         >
-          <tock-chat-ui-message
-            *ngFor="let action of selectedUser.userDialog.actions"
-            [message]="action.message"
-            [date]="action.date"
-            [reply]="action.isBot()"
-            [replay]="true"
-            [sender]="getUserName(action)"
-            [avatar]="getUserAvatar(action)"
-            [applicationId]="action.applicationId"
-          >
-          </tock-chat-ui-message>
+          <tock-chat-ui-dialog-logger [dialog]="selectedUser.userDialog"></tock-chat-ui-dialog-logger>
         </tock-chat-ui>
 
         <div class="shader"></div>

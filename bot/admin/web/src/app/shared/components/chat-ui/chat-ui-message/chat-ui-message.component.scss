@@ -2,6 +2,7 @@
 @import '@nebular/theme/styles/themes';
 
 :host {
+  display: block;
   margin-bottom: 0.5rem;
 
   .wrapper {
@@ -47,11 +48,6 @@
     }
   }
 
-  &.currentsentence .text {
-    background-color: nb-theme(color-success-500) !important;
-    color: white !important;
-  }
-
   &.not-reply {
     .wrapper {
       .message {
@@ -65,6 +61,11 @@
         background: nb-theme(chat-message-background);
         color: nb-theme(chat-message-text-color);
       }
+    }
+
+    &.highlightedAction .text {
+      background-color: nb-theme(color-success-500) !important;
+      color: white !important;
     }
   }
 
@@ -88,11 +89,16 @@
 
         .text {
           border-top-right-radius: 0;
-          // background: nb-theme(chat-message-reply-background-color);
           background-color: var(--background-basic-color-3);
           color: nb-theme(chat-message-reply-text-color);
         }
       }
+    }
+
+    &.highlightedAction .text {
+      border-width: 0.2em;
+      border-style: solid;
+      border-color: nb-theme(color-primary-400) !important;
     }
   }
 }

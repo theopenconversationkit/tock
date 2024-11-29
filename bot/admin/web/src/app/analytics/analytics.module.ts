@@ -44,7 +44,8 @@ import {
   NbRadioModule,
   NbToggleModule,
   NbIconModule,
-  NbFormFieldModule
+  NbFormFieldModule,
+  NbPopoverModule
 } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from './chart/chart.component';
@@ -59,6 +60,7 @@ import { ActivateSatisfactionComponent } from './satisfaction/activate-satisfact
 import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-details/satisfaction-details.component';
 import { AnalyticsRoutingModule } from './analytics-routing.module';
 import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
+import { DialogComponent } from './dialog/dialog.component';
 
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
@@ -95,7 +97,8 @@ import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.compon
     NbIconModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
-    })
+    }),
+    NbPopoverModule
   ],
   declarations: [
     AnalyticsTabsComponent,
@@ -110,7 +113,8 @@ import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.compon
     SatisfactionComponent,
     ActivateSatisfactionComponent,
     SatisfactionDetailsComponent,
-    DialogsListComponent
+    DialogsListComponent,
+    DialogComponent
   ],
   exports: [],
   providers: [AnalyticsService]
