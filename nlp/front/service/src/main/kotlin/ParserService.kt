@@ -262,8 +262,18 @@ object ParserService : Parser {
             val intentSelector = IntentSelectorService.selector(data)
             val result = core.parse(callContext, q, intentSelector)
                 .run {
-                    val realIntent =
-                        if (intentsQualifiers.isEmpty() && intentProbability < application.unknownIntentThreshold) UNKNOWN_INTENT_NAME else intent
+                    var realIntent = intent
+                    var realIntentProbability = intentProbability
+                    val realOtherIntents = intentSelector.otherIntents
+                    if(intentsQualifiers.isEmpty() && intentProbability < application.unknownIntentThreshold) {
+                        // Force the real intent to UNKNOWN
+                        realIntent = UNKNOWN_INTENT_NAME
+                        // Set the probability of the real intent at 100%
+                        realIntentProbability = 1.0
+                        // Add to otherIntents, the real intention and its probability, so as not to lose this statistic
+                        intentSelector.otherIntents[intent] = intentProbability
+                    }
+
                     ParseResult(
                         realIntent.withoutNamespace(),
                         realIntent.namespace(),
@@ -282,10 +292,11 @@ object ParserService : Parser {
                                 core.supportValuesMerge(it.entityType)
                             )
                         },
-                        intentProbability,
+                        realIntentProbability,
                         entitiesProbability,
                         q,
-                        intentSelector.otherIntents
+                        // Sort the other real intentions in descending order of probability.
+                        realOtherIntents.toList().sortedByDescending { it.second }.toMap()
                     )
                 }
 

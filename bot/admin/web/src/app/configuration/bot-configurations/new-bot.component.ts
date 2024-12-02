@@ -80,7 +80,8 @@ export class NewBotComponent implements OnInit, OnDestroy {
       true,
       true,
       false,
-      0.0,
+      0.7,
+      0.1,
       false,
       []
     );

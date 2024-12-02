@@ -111,7 +111,7 @@
     </div>
 
     <div class="row mb-4">
-      <div class="col-6 col-lg-3">
+      <div class="col-6 col-lg-6">
         <label
           for="treshold"
           class="label d-block"
@@ -131,8 +131,29 @@
           nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned"
         />
       </div>
+      <div class="col-6 col-lg-6">
+        <label
+          for="knownIntentThreshold"
+          class="label d-block"
+        >
+          Known intent threshold
+        </label>
 
-      <div class="col-6 col-lg-9 d-flex gap-1 align-items-center flex-wrap">
+        <input
+          nbInput
+          fullWidth
+          type="number"
+          id="knownIntentThreshold"
+          placeholder="Known intent threshold"
+          [(ngModel)]="application.knownIntentThreshold"
+          min="0"
+          max="1"
+          nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, the intent is returned as other intent"
+        />
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-6 col d-flex gap-1 align-items-center flex-wrap">
         <nb-checkbox
           class="separator"
           [(ngModel)]="application.normalizeText"

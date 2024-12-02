@@ -68,6 +68,10 @@ data class ApplicationWithIntents(
      */
     val unknownIntentThreshold: Double = 0.0,
     /**
+     * Known intent threshold level.
+     */
+    val knownIntentThreshold: Double = 0.0,
+    /**
      * Normalized text model - sentences are persisted with normalizedText.
      */
     val normalizeText: Boolean = false,
@@ -93,6 +97,7 @@ data class ApplicationWithIntents(
             application.useEntityModels,
             application.supportSubEntities,
             application.unknownIntentThreshold,
+            application.knownIntentThreshold,
             application.normalizeText,
             namespacesIntents.sortedWith(compareBy({ it.label }, { it.name })),
             application._id
@@ -111,6 +116,7 @@ data class ApplicationWithIntents(
             useEntityModels,
             supportSubEntities,
             unknownIntentThreshold,
+            knownIntentThreshold,
             normalizeText,
             _id ?: newId()
         )

@@ -67,7 +67,8 @@ export class ApplicationComponent implements OnInit {
           true,
           true,
           false,
-          0.0,
+          0.7,
+          0.1,
           false,
           []
         );
