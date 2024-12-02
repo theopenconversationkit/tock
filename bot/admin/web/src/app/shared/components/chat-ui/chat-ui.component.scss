@@ -26,6 +26,42 @@
       }
     }
   }
+
+  --spinner-size: 8px;
+  --spinner-color-a: var(--color-primary-default);
+  --spinner-color-b: var(--color-basic-500);
+
+  .query-spinner {
+    position: relative;
+
+    margin: 0 0 0 calc(var(--spinner-size) * 2);
+
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+
+    border-radius: 50%;
+
+    background: var(--spinner-color-a);
+
+    box-shadow: calc(var(--spinner-size) * 2) 0 var(--spinner-color-a), calc(var(--spinner-size) * 2 * -1) 0 var(--spinner-color-a);
+
+    animation: query-spinner-animation 0.5s ease-out infinite alternate;
+  }
+}
+
+@keyframes query-spinner-animation {
+  0% {
+    background: var(--spinner-color-b);
+    box-shadow: calc(var(--spinner-size) * 2) 0 var(--spinner-color-b), calc(var(--spinner-size) * 2 * -1) 0 var(--spinner-color-a);
+  }
+  50% {
+    background: var(--spinner-color-a);
+    box-shadow: calc(var(--spinner-size) * 2) 0 var(--spinner-color-b), calc(var(--spinner-size) * 2 * -1) 0 var(--spinner-color-b);
+  }
+  100% {
+    background: var(--spinner-color-b);
+    box-shadow: calc(var(--spinner-size) * 2) 0 var(--spinner-color-a), calc(var(--spinner-size) * 2 * -1) 0 var(--spinner-color-b);
+  }
 }
 
 .nb-theme-default :host {

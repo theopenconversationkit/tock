@@ -82,6 +82,10 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     });
   }
 
+  replayDialog() {
+    this.testDialogService.replayDialog(this.dialog);
+  }
+
   // containsReport(action: ActionReport): boolean {
   //   return (parseInt(action.id) % 10) % 2 === 0;
   // }

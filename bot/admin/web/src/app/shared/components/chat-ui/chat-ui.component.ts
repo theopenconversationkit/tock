@@ -10,6 +10,7 @@ export class ChatUiComponent {
   @Input() maxHeight?: string;
   @Input() padding?: string;
   @Input() mayScroll?: boolean;
+  @Input() queryInProgress?: boolean;
 
   @ViewChild('scrollable') private scrollable: ElementRef;
 

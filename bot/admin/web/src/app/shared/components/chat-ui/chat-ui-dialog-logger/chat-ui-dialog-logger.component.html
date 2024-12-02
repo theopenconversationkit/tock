@@ -35,22 +35,21 @@
         class="pl-1"
         *ngIf="!action.isBot()"
       >
-        <!-- <button
+        <button
           *ngIf="first"
           nbButton
           ghost
           size="small"
           nbTooltip="Replay the whole dialog"
+          (click)="replayDialog()"
         >
           <nb-icon icon="terminal-fill"></nb-icon>
         </button>
 
         <div
           *ngIf="!first"
-          class="button-vertical-spacer mt-1"
-        ></div> -->
-
-        <div class="button-vertical-spacer mb-1"></div>
+          class="button-vertical-spacer"
+        ></div>
 
         <button
           nbButton
