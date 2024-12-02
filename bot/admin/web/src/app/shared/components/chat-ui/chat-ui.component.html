@@ -8,5 +8,10 @@
 >
   <div class="messages">
     <ng-content></ng-content>
+
+    <div
+      *ngIf="queryInProgress"
+      class="query-spinner my-2"
+    ></div>
   </div>
 </div>
