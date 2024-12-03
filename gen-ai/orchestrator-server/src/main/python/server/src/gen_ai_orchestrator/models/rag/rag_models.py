@@ -17,7 +17,6 @@
 from enum import Enum, unique
 from typing import List, Optional
 
-
 from pydantic import AnyUrl, BaseModel, Field, HttpUrl
 
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import DocumentSearchParams
@@ -27,12 +26,9 @@ class Source(BaseModel):
     """A source model, used to associate document sources with the QA response"""
 
     title: str = Field(description='Source title', examples=['Tock Documentation'])
-    url: Optional[AnyUrl] = Field(
-        description='Source url', examples=['https://doc.tock.ai/tock/'], default=None
-    )
-    content: str = Field(
-        description='Source content', examples=['Tock: The Open Conversation Kit']
-    )
+    url: Optional[AnyUrl] = Field(description='Source url', examples=['https://doc.tock.ai/tock/'], default=None)
+    content: str = Field(description='Source content', examples=['Tock: The Open Conversation Kit'])
+    score: Optional[float] = Field(description='The compressor score', examples=[0.9149009585380554], default=None)
 
     def __eq__(self, other):
         """
@@ -98,6 +94,9 @@ class RagDocumentMetadata(BaseModel):
         default=None,
     )
     chunk: str = Field(description='The document chunk.', examples=['1/3'])
+    retriever_score: Optional[float] = Field(
+        description='The compressor score', examples=[0.9149009585380554], default=None
+    )
 
 
 class RagDocument(BaseModel):

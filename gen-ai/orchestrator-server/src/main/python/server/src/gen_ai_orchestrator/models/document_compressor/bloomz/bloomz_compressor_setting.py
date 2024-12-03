@@ -16,31 +16,27 @@ from typing import Literal, Optional
 
 from pydantic import Field
 
-from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
-    ContextualCompressorProvider,
-)
-from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
-    BaseCompressorSetting,
-)
-from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
-    BloomzRerank,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
 
 
-class BloomzCompressorSetting(BaseCompressorSetting):
-    provider: Literal[ContextualCompressorProvider.BLOOMZ] = Field(
-        description='The contextual compressor provider.',
-        examples=[ContextualCompressorProvider.BLOOMZ],
-        default=ContextualCompressorProvider.BLOOMZ.value,
+class BloomzCompressorSetting(BaseDocumentCompressorSetting):
+    provider: Literal[DocumentCompressorProvider.BLOOMZ] = Field(
+        description='The document compressor provider.',
+        examples=[DocumentCompressorProvider.BLOOMZ],
+        default=DocumentCompressorProvider.BLOOMZ.value,
     )
     min_score: Optional[float] = Field(
         description='Minimum retailment score.',
-        default=BloomzRerank.__fields__['min_score'].default,
+        default=0.5,
     )
-    endpoint: str = Field(description='Bloomz scoring endpoint.')
+    endpoint: str = Field(
+        description='Bloomz scoring endpoint.',
+        default='http://localhost:8082'
+    )
     max_documents: Optional[int] = Field(
         description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
-        default=BloomzRerank.__fields__['max_documents'].default,
+        default=50,
     )
     label: Optional[str] = Field(
         description='Label to use for reranking. The output label is usually documented on the huggingface model card '

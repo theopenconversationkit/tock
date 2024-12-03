@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
@@ -62,7 +63,8 @@ open class BotDefinitionBase(
     override val ragStory: StoryDefinition = defaultRagStory,
     override var ragConfiguration: BotRAGConfiguration? = null,
     override var vectorStoreConfiguration: BotVectorStoreConfiguration? = null,
-    override var observabilityConfiguration: BotObservabilityConfiguration? = null
+    override var observabilityConfiguration: BotObservabilityConfiguration? = null,
+    override var documentCompressorConfiguration: BotDocumentCompressorConfiguration? = null
 ) : BotDefinition {
 
     companion object {
