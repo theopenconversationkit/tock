@@ -110,7 +110,7 @@ export class TestDialogService {
           _replayState: 'pending',
           sentenceText: (action.message as unknown as Sentence).text,
           applicationId: action.applicationId
-          // sentenceLocale: action.locale // TO DO when locale will be added to message logs
+          // sentenceLocale: action.message.locale // TO DO when locale will be added to message logs
         });
       }
     });

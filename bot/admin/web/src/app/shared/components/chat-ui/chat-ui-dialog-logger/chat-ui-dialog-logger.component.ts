@@ -78,7 +78,7 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     this.testDialogService.testSentenceDialog({
       sentenceText: (action.message as unknown as Sentence).text,
       applicationId: action.applicationId
-      // sentenceLocale: locale
+      // sentenceLocale: action.message.locale
     });
   }
 
