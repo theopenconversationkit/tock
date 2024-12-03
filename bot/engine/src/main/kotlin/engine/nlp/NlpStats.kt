@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.dialog
+package ai.tock.bot.engine.nlp
 
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.nlp.NlpCallStats
-import ai.tock.bot.engine.nlp.NlpStats
 import org.litote.kmongo.Id
+import java.time.Instant
 
 /**
- *
+ * Stats about nlp call.
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-    fun intents(namespace: String,nlpModel : String): Set<String>
-
-    fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
-
-    fun getDialog(id: Id<Dialog>): DialogReport?
-
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
-
-    fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
-}
+data class NlpStats(
+    val dialogId: Id<Dialog>,
+    val actionId: Id<Action>,
+    val stats: NlpCallStats,
+    val appNamespace: String,
+    val date: Instant
+)

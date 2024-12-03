@@ -16,6 +16,8 @@
 
 package ai.tock.bot.admin.dialog
 
+import ai.tock.bot.engine.nlp.NlpStats
+
 /**
  *
  */
@@ -23,5 +25,6 @@ data class DialogReportQueryResult(
     val total: Long,
     val start: Long = 0,
     val end: Long = 0,
-    val dialogs: List<DialogReport> = emptyList()
+    val dialogs: List<DialogReport> = emptyList(),
+    val nlpStats: List<NlpStats> = emptyList()
 )
