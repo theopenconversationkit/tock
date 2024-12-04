@@ -66,11 +66,11 @@ data class ApplicationWithIntents(
     /**
      * Unknown intent threshold level.
      */
-    val unknownIntentThreshold: Double = 0.0,
+    val unknownIntentThreshold: Double = 0.7,
     /**
      * Known intent threshold level.
      */
-    val knownIntentThreshold: Double = 0.0,
+    val knownIntentThreshold: Double = 0.1,
     /**
      * Normalized text model - sentences are persisted with normalizedText.
      */
