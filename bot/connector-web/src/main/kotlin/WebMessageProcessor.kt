@@ -20,8 +20,9 @@ import ai.tock.bot.connector.web.send.Footnote
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
+import ai.tock.shared.safeHTML
 
-internal class WebMessageProcessor(private val processMarkdown: Boolean) {
+internal class WebMessageProcessor(private val processMarkdown: Boolean, private val processSafeHtml: Boolean) {
 
     fun process(action: Action): WebMessage? {
         return when(action){
@@ -60,8 +61,13 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
     }
 
     private fun postProcess(text: String): String {
-        if (processMarkdown) {
+
+        if (processMarkdown && processSafeHtml) {
+            return WebMarkdown.markdown(safeHTML(text))
+        } else if (processMarkdown) {
             return WebMarkdown.markdown(text)
+        } else if (processSafeHtml) {
+            return safeHTML(text)
         }
 
         return text
