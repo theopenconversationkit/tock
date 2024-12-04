@@ -1,5 +1,6 @@
 package ai.tock.bot.engine.action
 
+import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import kotlin.Boolean
 import kotlin.String
 import kotlin.Suppress
@@ -34,6 +35,8 @@ private val __SourceWithContent: KProperty1<ActionMetadata, Boolean?>
     get() = ActionMetadata::sourceWithContent
 private val __IsGenAiRagAnswer: KProperty1<ActionMetadata, Boolean?>
     get() = org.litote.kreflect.findProperty<ActionMetadata,Boolean?>("isGenAiRagAnswer")
+private val __ObservabilityInfo: KProperty1<ActionMetadata, ObservabilityInfo?>
+    get() = ActionMetadata::observabilityInfo
 class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ActionMetadata?>) :
         KPropertyPath<T, ActionMetadata?>(previous,property) {
     val lastAnswer: KPropertyPath<T, Boolean?>
@@ -72,6 +75,9 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
     val isGenAiRagAnswer: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__IsGenAiRagAnswer)
 
+    val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
+        get() = KPropertyPath(this,__ObservabilityInfo)
+
     companion object {
         val LastAnswer: KProperty1<ActionMetadata, Boolean?>
             get() = __LastAnswer
@@ -96,7 +102,9 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         val SourceWithContent: KProperty1<ActionMetadata, Boolean?>
             get() = __SourceWithContent
         val IsGenAiRagAnswer: KProperty1<ActionMetadata, Boolean?>
-            get() = __IsGenAiRagAnswer}
+            get() = __IsGenAiRagAnswer
+        val ObservabilityInfo: KProperty1<ActionMetadata, ObservabilityInfo?>
+            get() = __ObservabilityInfo}
 }
 
 class ActionMetadata_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -137,6 +145,9 @@ class ActionMetadata_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1
 
     val isGenAiRagAnswer: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__IsGenAiRagAnswer)
+
+    val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
+        get() = KPropertyPath(this,__ObservabilityInfo)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMetadata_<T> =
@@ -180,6 +191,9 @@ class ActionMetadata_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProper
 
     val isGenAiRagAnswer: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__IsGenAiRagAnswer)
+
+    val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
+        get() = KPropertyPath(this,__ObservabilityInfo)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMetadata_<T> =
