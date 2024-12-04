@@ -37,7 +37,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                         val modifier = data.getModifierForIntent(intent)
 
                         if (modifier != null) {
-                            if (prob > 0.1) {
+                            if (prob >= data.application.knownIntentThreshold) {
                                 otherIntents[intent.name] = prob
                             }
                             qualifiedIntents[intent] = prob + modifier

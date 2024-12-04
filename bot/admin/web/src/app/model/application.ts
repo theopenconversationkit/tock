@@ -29,6 +29,7 @@ export class Application {
     public useEntityModels: boolean,
     public supportSubEntities: boolean,
     public unknownIntentThreshold: number,
+    public knownIntentThreshold: number,
     public normalizeText: boolean,
     public namespaceIntents: Intent[],
     public _id?: string
@@ -46,6 +47,7 @@ export class Application {
       this.useEntityModels,
       this.supportSubEntities,
       this.unknownIntentThreshold,
+      this.knownIntentThreshold,
       this.normalizeText,
       this.namespaceIntents,
       this._id

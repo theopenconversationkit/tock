@@ -37,12 +37,12 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
                 }
             }
 
-            // and take all other intents where probability is greater than 0.1
+            // and take all other intents where probability is greater than the application knownIntentThreshold
             while (hasNext()) {
                 next().run {
                     if (data.isStateSupportedByIntent(this)) {
                         (this to probability())
-                            .takeIf { (_, prob) -> prob > 0.1 }
+                            .takeIf { (_, prob) -> prob >= data.application.knownIntentThreshold }
                             ?.also { (intent, prob) -> otherIntents.put(intent.name, prob) }
                     } else {
                         // continue
