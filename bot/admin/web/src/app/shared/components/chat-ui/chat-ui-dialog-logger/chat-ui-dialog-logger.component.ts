@@ -98,6 +98,10 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   //   });
   // }
 
+  openObservabilityDetails(action: ActionReport) {
+    window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
+  }
+
   messageClicked(action: ActionReport): void {
     this.onMessageClicked.emit(action);
   }

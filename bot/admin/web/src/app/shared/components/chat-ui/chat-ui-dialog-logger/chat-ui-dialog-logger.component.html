@@ -95,7 +95,7 @@
         </ng-template> -->
 
         <button
-          *ngIf="$any(action).metadata.isGenAiRagAnswer"
+          *ngIf="action.metadata?.isGenAiRagAnswer"
           nbButton
           size="small"
           status="primary"
@@ -114,6 +114,17 @@
           (click)="jumpToDialog(dialog.id, action.id)"
         >
           <nb-icon icon="link"></nb-icon>
+        </button>
+
+        <button
+          *ngIf="action.metadata?.observabilityInfo?.traceUrl"
+          nbButton
+          ghost
+          size="small"
+          nbTooltip="View observability details"
+          (click)="openObservabilityDetails(action)"
+        >
+          <nb-icon icon="display"></nb-icon>
         </button>
       </div>
     </div>
