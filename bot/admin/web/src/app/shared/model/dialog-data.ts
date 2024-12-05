@@ -45,6 +45,15 @@ export class DialogReport {
   }
 }
 
+export interface ActionReportMetadata {
+  isGenAiRagAnswer: boolean;
+  observabilityInfo?: {
+    traceId: string;
+    traceName: string;
+    traceUrl: string;
+  };
+}
+
 export class ActionReport {
   constructor(
     public playerId: PlayerId,
@@ -55,6 +64,8 @@ export class ActionReport {
     public connectorType?: ConnectorType,
     public applicationId?: string
   ) {}
+
+  metadata?: ActionReportMetadata;
 
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
