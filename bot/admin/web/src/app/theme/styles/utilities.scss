@@ -17,6 +17,20 @@
 }
 
 // Should disappear with bootstrap update to v5.
+.column-gap-1 {
+  column-gap: 0.25rem;
+}
+.column-gap-2 {
+  column-gap: 0.5rem;
+}
+.column-gap-3 {
+  column-gap: 1rem;
+}
+.column-gap-4 {
+  column-gap: 1.5rem;
+}
+
+// Should disappear with bootstrap update to v5.
 .row-gap-1 {
   row-gap: 0.25rem;
 }
@@ -313,4 +327,8 @@ nb-menu {
 // Force tooltips to always appear on top of modals (specialy test dialog window...)
 .cdk-overlay-connected-position-bounding-box {
   z-index: 1200;
+}
+
+.nb-form-field-suffix-medium {
+  justify-content: end;
 }

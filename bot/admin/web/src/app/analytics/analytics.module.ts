@@ -61,6 +61,7 @@ import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-detail
 import { AnalyticsRoutingModule } from './analytics-routing.module';
 import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
 import { DialogComponent } from './dialog/dialog.component';
+import { DialogsListFiltersComponent } from './dialogs/dialogs-list/dialogs-list-filters/dialogs-list-filters.component';
 
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
@@ -114,6 +115,7 @@ import { DialogComponent } from './dialog/dialog.component';
     ActivateSatisfactionComponent,
     SatisfactionDetailsComponent,
     DialogsListComponent,
+    DialogsListFiltersComponent,
     DialogComponent
   ],
   exports: [],
