@@ -54,8 +54,8 @@ class PGVectorFactory(LangChainVectorStoreFactory):
             async_mode=async_mode
         )
 
-    def get_vector_store_retriever(self, search_kwargs: dict) -> VectorStoreRetriever:
-        return self.get_vector_store().as_retriever(
+    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
+        return self.get_vector_store(async_mode).as_retriever(
             search_kwargs=search_kwargs
         )
 

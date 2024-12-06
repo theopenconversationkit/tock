@@ -185,12 +185,13 @@ def get_source_content(doc: Document) -> str:
         return doc.page_content
 
 
-def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
+def create_rag_chain(query: RagQuery, vector_db_async_mode: Optional[bool] = True) -> ConversationalRetrievalChain:
     """
     Create the RAG chain from RagQuery, using the LLM and Embedding settings specified in the query
 
     Args:
         query: The RAG query
+        vector_db_async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
     Returns:
         The RAG chain.
     """
@@ -203,7 +204,8 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     )
 
     retriever = vector_store_factory.get_vector_store_retriever(
-        search_kwargs=query.document_search_params.to_dict()
+        search_kwargs=query.document_search_params.to_dict(),
+        async_mode=vector_db_async_mode
     )
     if query.compressor_setting:
         retriever = add_compressor(retriever, query.compressor_setting)
