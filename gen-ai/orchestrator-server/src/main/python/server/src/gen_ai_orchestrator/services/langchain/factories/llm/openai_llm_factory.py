@@ -29,11 +29,8 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
-    RawSecretKey,
-)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
+    LangChainLLMFactory, rate_limiter,
 )
 from gen_ai_orchestrator.services.security.security_service import (
     fetch_secret_key_value,
@@ -53,6 +50,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
             request_timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
+            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None
         )
 
     @openai_exception_handler(provider='OpenAI')
