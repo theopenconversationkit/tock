@@ -1,16 +1,20 @@
 <div
-  class="wrapper"
   *ngIf="!message.isDebug() && !isMessageEmpty()"
+  class="wrapper"
 >
-  <div
-    class="avatar"
-    [style.background-image]="avatarStyle"
-  ></div>
+  <div>
+    <div
+      class="avatar"
+      [style.background-image]="avatarStyle"
+      [class.mt-1]="sender || date"
+    ></div>
+    <ng-content></ng-content>
+  </div>
 
-  <div class="message">
+  <div class="message mb-2">
     <div class="message-text">
       <p
-        class="sender"
+        class="sender font-size-small mb-1"
         *ngIf="sender || date"
       >
         {{ sender }}
@@ -65,5 +69,3 @@
   *ngIf="message.isDebug()"
   [message]="$any(message)"
 ></tock-chat-ui-message-debug>
-
-<ng-content></ng-content>

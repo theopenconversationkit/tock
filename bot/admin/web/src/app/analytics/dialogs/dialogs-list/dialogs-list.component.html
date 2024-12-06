@@ -47,8 +47,11 @@
     (scrolled)="onScroll()"
   >
     <div *ngFor="let dialog of data">
-      <nb-card id="dialog-wrapper-{{ dialog.id }}">
-        <nb-card-body class="pl-3 pr-0">
+      <nb-card
+        id="dialog-wrapper-{{ dialog.id }}"
+        status="basic"
+      >
+        <nb-card-body class="p-0">
           <tock-chat-ui>
             <tock-chat-ui-dialog-logger [dialog]="dialog"></tock-chat-ui-dialog-logger>
           </tock-chat-ui>

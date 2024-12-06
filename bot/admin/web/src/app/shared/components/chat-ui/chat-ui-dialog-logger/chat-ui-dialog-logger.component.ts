@@ -3,10 +3,11 @@ import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } fr
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 import { NbDialogService } from '@nebular/theme';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
-import { ReportComponent } from '../../report/report.component';
 import { Router } from '@angular/router';
 import { StateService } from '../../../../core-nlp/state.service';
 import { Subject } from 'rxjs';
+import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
+import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-viewer-dialog.component';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -50,6 +51,21 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     );
   }
 
+  nbUserQuestions(): number {
+    return this.dialog.actions.filter((action) => !action.isBot()).length;
+  }
+
+  nbBotAnswers(): number {
+    return this.dialog.actions.filter(
+      (action) =>
+        action.isBot() && !action.message?.isDebug() && ((action.message as Sentence).text || (action.message as Sentence).messages?.length)
+    ).length;
+  }
+
+  nbRagAnswers(): number {
+    return this.dialog.actions.filter((action) => action.isBot() && action.metadata?.isGenAiRagAnswer).length;
+  }
+
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
@@ -74,16 +90,32 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   }
 
   testDialogSentence(action: ActionReport) {
-    // TO DO : pass locale when it will be present in the message
     this.testDialogService.testSentenceDialog({
       sentenceText: (action.message as unknown as Sentence).text,
-      applicationId: action.applicationId
-      // sentenceLocale: action.message.locale
+      applicationId: action.applicationId,
+      sentenceLocale: action._nlpStats?.locale
     });
   }
 
   replayDialog() {
     this.testDialogService.replayDialog(this.dialog);
+  }
+
+  displayNlpStats(action: ActionReport) {
+    if (action._nlpStats) {
+      this.nbDialogService.open(NlpStatsDisplayComponent, {
+        context: {
+          data: {
+            request: JSON.stringify(action._nlpStats.nlpQuery, null, 2),
+            response: JSON.stringify(action._nlpStats.nlpResult, null, 2)
+          }
+        }
+      });
+    }
+  }
+
+  openObservabilityTrace(action: ActionReport) {
+    window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
   }
 
   // containsReport(action: ActionReport): boolean {
@@ -98,8 +130,12 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   //   });
   // }
 
-  openObservabilityDetails(action: ActionReport) {
-    window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
+  showDebug(action: ActionReport) {
+    this.nbDialogService.open(DebugViewerDialogComponent, {
+      context: {
+        debug: (action.message as Debug).data
+      }
+    });
   }
 
   messageClicked(action: ActionReport): void {
