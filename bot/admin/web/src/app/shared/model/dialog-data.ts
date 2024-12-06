@@ -67,6 +67,8 @@ export class ActionReport {
 
   metadata?: ActionReportMetadata;
 
+  _nlpStats?: NlpCallStats; // expando to store nlpStats of the action when getting a DialogReport
+
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
   }
@@ -416,4 +418,12 @@ export class NlpCallStats {
 
     return result;
   }
+}
+
+export interface ActionNlpStats {
+  dialogId: string;
+  actionId: string;
+  appNamespace: string;
+  date: string;
+  stats: NlpCallStats;
 }

@@ -1,11 +1,8 @@
 import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { DialogReport } from '../../../shared/model/dialog-data';
-import { ConnectorType } from '../../../core/model/configuration';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
 import { AnalyticsService } from '../../analytics.service';
-import { BotConfigurationService } from '../../../core/bot-configuration.service';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { saveAs } from 'file-saver-es';
@@ -13,21 +10,6 @@ import { getExportFileName } from '../../../shared/utils';
 import { DOCUMENT, Location } from '@angular/common';
 import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
-
-export class DialogFilter {
-  constructor(
-    public exactMatch: boolean,
-    public displayTests: boolean,
-    public dialogId?: string,
-    public text?: string,
-    public intentName?: string,
-    public connectorType?: ConnectorType,
-    public ratings?: number[],
-    public configuration?: string,
-    public intentsToHide?: string[],
-    public isGenAiRagDialog?: boolean
-  ) {}
-}
 
 @Component({
   selector: 'tock-dialogs-list',
@@ -42,7 +24,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean = false;
 
   data: DialogReport[] = [];
-  nlpStats: DialogReport[] = [];
 
   filters: Partial<DialogListFilters> = {
     exactMatch: false
@@ -64,8 +45,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     public state: StateService,
     private analytics: AnalyticsService,
-    private botConfiguration: BotConfigurationService,
-    private route: ActivatedRoute,
     public botSharedService: BotSharedService,
     private location: Location,
     @Inject(DOCUMENT) private document: Document
@@ -143,6 +122,15 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.analytics.dialogs(this.dialogReportQuery).subscribe((result) => {
       this.pagination.total = result.total;
+      this.pagination.end = result.end;
+
+      // we store nlpStats related to the action as an expando of the action itself
+      result.rows.forEach((report) => {
+        report.actions.forEach((action) => {
+          let actionNlpStats = result.nlpStats.find((ns) => ns.actionId === action.id);
+          if (actionNlpStats) action._nlpStats = actionNlpStats.stats;
+        });
+      });
 
       if (add) {
         this.data = [...this.data, ...result.rows];
@@ -150,8 +138,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
         this.data = result.rows;
         this.pagination.start = result.start;
       }
-
-      this.pagination.end = result.end;
 
       this.totalDialogsCount.next(this.formattedTotal());
       this.loading = false;

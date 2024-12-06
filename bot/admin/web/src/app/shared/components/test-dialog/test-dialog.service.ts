@@ -104,13 +104,14 @@ export class TestDialogService {
 
   replayDialog(dialog: DialogReport): void {
     this.replayDialogStack = [];
+
     dialog.actions.forEach((action) => {
       if (!action.isBot() && !action.message.isDebug()) {
         this.replayDialogStack.push({
           _replayState: 'pending',
           sentenceText: (action.message as unknown as Sentence).text,
-          applicationId: action.applicationId
-          // sentenceLocale: action.message.locale // TO DO when locale will be added to message logs
+          applicationId: action.applicationId,
+          sentenceLocale: action._nlpStats?.locale
         });
       }
     });
@@ -123,13 +124,14 @@ export class TestDialogService {
   replayDialogNext(actionType: ReplayDialogActionType): void {
     if (!this.replayDialogStack) return;
 
-    const next = this.replayDialogStack.find((entry) => entry._replayState === 'pending');
-    if (next) {
-      if (actionType !== ReplayDialogActionType.NEXT) {
-        next._replayState = 'done';
-        this.replayDialogNext(ReplayDialogActionType.NEXT);
+    const nextOrPrev = this.replayDialogStack.find((entry) => entry._replayState === 'pending');
+
+    if (nextOrPrev) {
+      if (actionType === ReplayDialogActionType.NEXT) {
+        this.testSentenceDialog(nextOrPrev);
       } else {
-        this.testSentenceDialog(next);
+        nextOrPrev._replayState = 'done';
+        this.replayDialogNext(ReplayDialogActionType.NEXT);
       }
     } else {
       delete this.replayDialogStack;
