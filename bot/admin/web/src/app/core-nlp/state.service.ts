@@ -205,7 +205,7 @@ export class StateService implements AuthListener {
   }
 
   localeName(code: string): string {
-    return this.locales ? this.locales.find((l) => l.first === code).second : code;
+    return this.locales ? this.locales.find((l) => l.first === code)?.second : code;
   }
 
   sortApplications() {

@@ -1,0 +1,231 @@
+<nb-card class="mb-2">
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex gap-1 align-items-center w-100">
+          <nb-form-field class="flex-grow-1">
+            <nb-icon
+              nbPrefix
+              icon="search"
+            ></nb-icon>
+            <input
+              nbInput
+              fullWidth
+              fieldSize="medium"
+              placeholder="Search user text"
+              type="text"
+              formControlName="text"
+              spellcheck="false"
+              autocomplete="off"
+            />
+            <button
+              *ngIf="!!getFormControl('text').value"
+              nbButton
+              nbSuffix
+              ghost
+              nbTooltip="Clear text search"
+              type="button"
+              (click)="resetControl(getFormControl('text'))"
+            >
+              <nb-icon icon="x-lg"></nb-icon>
+            </button>
+
+            <button
+              *ngIf="!!getFormControl('exactMatch').value"
+              nbButton
+              nbSuffix
+              ghost
+              nbTooltip="Exact text match : Search dialogs containing a user question corresponding exactly to the text indicated. Click to launch a partial search."
+              type="button"
+              (click)="patchControl(getFormControl('exactMatch'), false)"
+            >
+              <nb-icon icon="braces"></nb-icon>
+            </button>
+            <button
+              *ngIf="!getFormControl('exactMatch').value"
+              nbButton
+              nbSuffix
+              ghost
+              nbTooltip="Partial text match : Search dialogs containing a user question containing the text indicated. Click to search exactly the given text."
+              type="button"
+              (click)="patchControl(getFormControl('exactMatch'), true)"
+            >
+              <nb-icon icon="braces-asterisk"></nb-icon>
+            </button>
+          </nb-form-field>
+        </div>
+
+        <div class="ml-3">
+          <nb-icon
+            *ngIf="!advanced"
+            (click)="swapAdvanced()"
+            class="pointer"
+            nbTooltip="Display advanced search options"
+            icon="chevron-down-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="advanced"
+            (click)="swapAdvanced()"
+            class="pointer"
+            nbTooltip="Hide advanced search options"
+            icon="chevron-up-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </div>
+      </div>
+    </form>
+
+    <div
+      class="mt-2"
+      *ngIf="advanced"
+    >
+      <form [formGroup]="form">
+        <div class="row">
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="link-45deg"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                nbTooltip="Search for dialogs using this configuration."
+                placeholder="Configuration"
+                formControlName="configuration"
+              >
+                <nb-option value="">All</nb-option>
+                <nb-option
+                  *ngFor="let config of configurationNameList"
+                  [value]="config"
+                >
+                  {{ config }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="plug"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                nbTooltip="Search for dialogs using this connector."
+                placeholder="Connector"
+                formControlName="connectorType"
+              >
+                <nb-option
+                  *ngFor="let c of connectorTypes"
+                  [value]="c"
+                  >{{ c.id }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="compass"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                nbTooltip="Search dialogs containing exchanges corresponding to the selected intent."
+                placeholder="Intent"
+                formControlName="intentName"
+              >
+                <nb-option value="">All</nb-option>
+                <nb-option
+                  *ngFor="let intent of state.currentApplication.intents"
+                  [value]="intent.name"
+                >
+                  {{ intent.name }}
+                </nb-option>
+                <nb-option value="unknown">Unknown</nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="compass"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                multiple
+                nbTooltip="Hide exchanges corresponding to selected intents."
+                placeholder="Hide intents"
+                formControlName="intentsToHide"
+              >
+                <nb-option>Clear selection</nb-option>
+                <nb-option
+                  *ngFor="let intent of state.currentApplication.intents"
+                  [value]="intent.name"
+                >
+                  {{ intent.name }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6 col-lg-3">
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="wechat"
+              ></nb-icon>
+              <input
+                nbInput
+                fullWidth
+                fieldSize="medium"
+                nbTooltip="Search a dialog by id"
+                placeholder="Dialog id"
+                type="text"
+                formControlName="dialogId"
+                spellcheck="false"
+                autocomplete="off"
+              />
+              <button
+                *ngIf="!!getFormControl('dialogId').value"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Clear"
+                type="button"
+                (click)="resetControl(getFormControl('dialogId'))"
+              >
+                <nb-icon icon="x-lg"></nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
+
+          <div class="col-6 col-lg-3 pt-2">
+            <nb-checkbox
+              nbTooltip="Display only dialogs containing Rag responses"
+              class="text-nowrap"
+              formControlName="isGenAiRagDialog"
+              >Rag responses only
+            </nb-checkbox>
+          </div>
+
+          <div class="col-6 col-lg-3 pt-2">
+            <nb-checkbox
+              nbTooltip="Display dialogues held from the studio test view"
+              class="text-nowrap"
+              formControlName="displayTests"
+              >Display tests
+            </nb-checkbox>
+          </div>
+        </div>
+      </form>
+    </div>
+  </nb-card-body>
+</nb-card>

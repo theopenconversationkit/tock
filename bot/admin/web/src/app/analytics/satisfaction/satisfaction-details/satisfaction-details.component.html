@@ -34,45 +34,47 @@
 </div>
 
 <ng-container *ngIf="satisfactionStat">
-  <nb-card class="stats">
-    <div class="space space-component3">
-      <h5 class="heading1 text-basic">
-        <nb-icon
-          *ngFor="let _ of getStarArray()"
-          icon="star"
-        ></nb-icon>
-      </h5>
-      <span class="text text-hint caption">{{ satisfactionStat.nbUsersRated }} users</span>
-    </div>
-    <div class="space">
+  <nb-card class="mb-0">
+    <nb-card-body class="d-flex gap-1 justify-content-between align-items-center">
+      <div>
+        <div class="d-flex mb-1">
+          <nb-icon
+            *ngFor="let _ of getStarArray()"
+            icon="star-fill"
+          ></nb-icon>
+        </div>
+        <span class="text text-hint caption">{{ satisfactionStat.nbUsersRated }} users</span>
+      </div>
+
       <div
         class="rating-circle"
         [ngStyle]="getStyles()"
+        nbTooltip="Average rating"
       >
         <span>{{ satisfactionStat.ratingBot.toFixed(1) }}</span>
       </div>
-    </div>
+    </nb-card-body>
   </nb-card>
 
-  <div style="display: flex">
+  <div class="d-flex flex-wrap">
     <nb-card
-      class="stats"
+      class="flex-grow-1 p-2 p-lg-3 px-xl-4 mb-0"
       *ngFor="let index of [1, 2, 3, 4, 5]"
     >
-      <div class="space space-component3">
-        <h5 class="heading1 text-basic">
-          <nb-icon
-            *ngFor="let _ of [].constructor(index)"
-            icon="star"
-          ></nb-icon>
-        </h5>
-        <span class="text text-hint caption">{{ getNbUsersByNote(index) }} users</span>
-      </div>
-      <div class="space icon-space">
+      <div class="d-flex column-gap-1 justify-content-between align-items-center">
+        <div class="text-nowrap">
+          <div class="d-flex">
+            <nb-icon
+              *ngFor="let _ of [].constructor(index)"
+              icon="star"
+            ></nb-icon>
+          </div>
+          <span class="text-hint caption">{{ getNbUsersByNote(index) }} users</span>
+        </div>
         <nb-toggle
           [value]="index"
           (change)="updateRatingFilter($event)"
-          status="basic"
+          class="nb-toggle-reset-label-margin"
         ></nb-toggle>
       </div>
     </nb-card>
