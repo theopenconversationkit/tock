@@ -5,9 +5,11 @@ import { NbDialogService } from '@nebular/theme';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
 import { Router } from '@angular/router';
 import { StateService } from '../../../../core-nlp/state.service';
-import { Subject } from 'rxjs';
+import { Subject, take } from 'rxjs';
 import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
 import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-viewer-dialog.component';
+import { BotApplicationConfiguration } from '../../../../core/model/configuration';
+import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -27,12 +29,21 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
 
   @Input() highlightedAction?: ActionReport;
 
+  allConfigurations: BotApplicationConfiguration[];
+
   constructor(
     private testDialogService: TestDialogService,
     private nbDialogService: NbDialogService,
     private router: Router,
-    public state: StateService
+    public state: StateService,
+    private botConfiguration: BotConfigurationService
   ) {}
+
+  ngOnInit() {
+    this.botConfiguration.configurations.pipe(take(1)).subscribe((conf) => {
+      this.allConfigurations = conf;
+    });
+  }
 
   getUserName(action: ActionReport): string {
     return getDialogMessageUserQualifier(action.isBot());
@@ -49,6 +60,45 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
         fragment: actionId
       }
     );
+  }
+
+  dialogConnector() {
+    if (!this.allConfigurations) return;
+    const firstAction = this.dialog.actions.find((action) => action.applicationId);
+    if (firstAction) {
+      const applicationId = firstAction.applicationId;
+      if (applicationId) {
+        const configuration = this.allConfigurations.find((conf) => conf.applicationId === applicationId);
+        if (configuration) {
+          return configuration;
+        }
+      }
+    }
+  }
+
+  getDialogConnectorLabel() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return configuration.connectorType.label();
+    }
+  }
+
+  getDialogConnectorIconUrl() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return configuration.connectorType.iconUrl();
+    }
+  }
+
+  getDialogConfigurationDetail() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return `${configuration.name} > ${configuration.connectorType.label()} (${configuration.applicationId})`;
+    }
+  }
+
+  normalizeLocaleCode(code: string): string {
+    return StateService.normalizeLocaleCode(code);
   }
 
   nbUserQuestions(): number {

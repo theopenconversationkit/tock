@@ -1,6 +1,17 @@
 <div class="dialog-summary shadow-sm py-1 pl-3 pr-1 d-flex align-items-center justify-content-between">
   <div class="d-flex gap-1 text-muted font-size-small">
     <div
+      class="d-flex align-items-center pr-3 border-right"
+      [nbTooltip]="getDialogConfigurationDetail()"
+    >
+      <img
+        src="{{ getDialogConnectorIconUrl() }}"
+        class="connector-icon align-text-top mr-2"
+      />
+      {{ getDialogConnectorLabel() }}
+    </div>
+
+    <div
       class="d-flex align-items-center"
       nbTooltip="Number of user inputs"
     >
@@ -74,7 +85,7 @@
               class="locale-display"
               [nbTooltip]="state.localeName(action._nlpStats.locale)"
             >
-              {{ action._nlpStats.locale }}
+              {{ normalizeLocaleCode(action._nlpStats.locale) }}
             </div>
           </div>
         </tock-chat-ui-message>
