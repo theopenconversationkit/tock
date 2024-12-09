@@ -240,37 +240,52 @@ To configure the default vector store, you can use the following environment var
 
 ### generate_dataset.py
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Dataset Generator: Generate CSV, Langfuse or Langfuse datasets from an Excel file.
 
 ```
 Usage:
-    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
-    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] --input-excel=<ie> [--csv-output=<co>] [--langsmith-dataset-name=<lsdn>] [--langfuse-dataset-name=<lfdn>] [--locale=<l>] [--no-answer=<na>]
+
+Description:
+    This script processes an input Excel file to generate a testing dataset. The output can be saved as a CSV file,
+    uploaded to Langsmith, or uploaded to Langfuse. The input Excel file must follow the specified format
+    (see examples/generate_dataset_input.example.xlsx).
 
 Arguments:
-    input_excel path to the input excel file
+    --input-excel=<ie>              Path to the input Excel file. This is a required argument.
 
 Options:
-    --range=<s>                     Range of sheet to be parsed. The expected format is X,Y where X is the first sheet to be included, and Y is the last. Indices are 0-indexed.
-    --sheet=<n>                     Sheet numbers to be parsed. Indices are 0-indexed.
-    --csv-output=<path>             Output path of csv file to be generated.
-    --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
-    --locale=<locale>               Locale to be included in de dataset. [default: French]
-    --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
-    -h --help                       Show this screen
-    --version                       Show version
-    -v                              Verbose output for debugging (without this option, script will be silent but for errors)
+    --csv-output=<co>               Path to save the generated dataset as a CSV file. Optional.
+    --langsmith-dataset-name=<lsdn> Name of the dataset to be uploaded to Langsmith. Optional.
+    --langfuse-dataset-name=<lfdn>  Name of the dataset to be uploaded to Langfuse. Optional.
+    --locale=<l>                    Locale information to include in the dataset. Defaults to "French". Optional.
+    --no-answer=<na>                Label of no-answer to include in the dataset. Defaults to "NO_RAG_SENTENCE". Optional.
+    -v                              Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                      Display this help message and exit.
+    --version                       Display the version of the script.
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Examples:
+    1. Generate a CSV dataset:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv
+
+    2. Generate and upload a dataset to Langfuse:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --langfuse-dataset-name=my_dataset
+
+    3. Generate a CSV dataset with a specified locale and verbose mode:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv --locale=English -v
+
+Notes:
+    - The input Excel file must adhere to the required format. Check examples/generate_dataset_input.example.xlsx for reference.
+    - You can simultaneously save the dataset locally (as a CSV) and upload it to Langsmith or Langfuse by providing the respective options.
 ```
 
 ### rag_testing_tool.py
 
-Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's SDK: runs a specific RAG Settings configuration against a reference dataset.
+Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's or LangFuse's SDK: runs a specific RAG Settings configuration against a reference dataset.
 
 ```
 Usage:
-    rag_testing_tool.py [-v] <rag_query> <dataset_name> <test_name> [<delay>]
+    rag_testing_tool.py [-v] <rag_query> <dataset_provider> <dataset_name> <test_name>
     rag_testing_tool.py -h | --help
     rag_testing_tool.py --version
 
@@ -280,18 +295,19 @@ Arguments:
                     provider, indexation session's unique id, and 'k', i.e. nb
                     of retrieved docs (question and chat history are ignored,
                     as they will come from the dataset)
+    dataset_provider the dataset provider (langsmith or langfuse)
     dataset_name    the reference dataset name
     test_name       name of the test run
 
 Options:
-    delay       Delay between two calls to the inference method in ms
     -h --help   Show this screen
     --version   Show version
     -v          Verbose output for debugging (without this option, script will
                 be silent but for errors)
 ```
 
-Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
+Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith or LangSmith dataset.
+
 ### export_run_results.py
 
 Export a LangSmith dataset run results, in csv format.
@@ -314,4 +330,38 @@ Options:
 The exported CSV file will have these columns :
 'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
 NB: There will be as many responses as run sessions
+
+```
+
+### export_run_results.py
+
+Export a LangFuse dataset run results, in csv format.
+
+```
+Export a LangSmith or LangFuse dataset run results.
+Usage:
+        export_run_results_both.py [-v] <dataset_provider> <dataset_id_or_name> <session_or_run_ids>...
+        export_run_results_both.py -h | --help
+        export_run_results_both.py --version
+
+Arguments:
+    dataset_provider       specify either 'langfuse' or 'langsmith'
+    dataset_id_or_name     dataset id if langsmith or name if langfuse
+    session_or_run_ids     list of session or run ids
+
+Options:
+    -v          Verbose output
+    -h --help   Show this screen
+    --version   Show version
+
+
+The exported CSV file will have these columns :
+'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
+The CSV file will be saved in the same location as the script.
+NB: There will be as many responses as run sessions
+
+Note that you need to set the LANGFUSE_SECRET_KEY and LANGFUSE_PUBLIC_KEY environment variables in order to use Langfuse.
+The LANGFUSE_SECRET_KEY and LANGFUSE_PUBLIC_KEY are the secret and public keys provided by Langfuse
+
+And you need to set the LANGCHAIN_API_KEY to use Langsmith.
 ```

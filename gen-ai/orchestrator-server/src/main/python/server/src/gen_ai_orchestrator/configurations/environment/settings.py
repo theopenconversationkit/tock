@@ -55,6 +55,8 @@ class _Settings(BaseSettings):
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30
     llm_provider_max_retries: int = 0
+    """ Enable or not the rate limit for the LLM call"""
+    llm_rate_limits: bool = True
     em_provider_timeout: int = 4
 
     vector_store_provider: Optional[VectorStoreProvider] = VectorStoreProvider.OPEN_SEARCH
@@ -87,7 +89,8 @@ class _Settings(BaseSettings):
     observability_proxy_server_authorization_header_name: Optional[str] = None
 
     """GCP"""
-    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None) # GCP project ID used for GCP Secrets
+    # GCP project ID used for GCP Secrets
+    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None)
 
 
 application_settings = _Settings()

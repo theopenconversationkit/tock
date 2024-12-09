@@ -47,3 +47,4 @@ scripts/connector-messenger/ngrok.exe
 **/requirements.txt
 **/.venv/
 **/.python-version
+gen-ai/orchestrator-server/src/main/python/tock-llm-indexing-tools/**/*.json
