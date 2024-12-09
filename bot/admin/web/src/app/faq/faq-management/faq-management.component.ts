@@ -13,8 +13,6 @@ import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '..
 import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
 import { Pagination } from '../../shared/components';
-import { getExportFileName } from '../../shared/utils';
-import { saveAs } from 'file-saver-es';
 import { I18nLabel } from '../../bot/model/i18n';
 
 export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: string };

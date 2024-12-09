@@ -6,13 +6,17 @@ import { Component, HostListener, Inject, Input, OnInit } from '@angular/core';
   templateUrl: './sticky-menu.component.html',
   styleUrls: ['./sticky-menu.component.scss']
 })
-export class StickyMenuComponent {
+export class StickyMenuComponent implements OnInit {
   @Input() offset: number = 230;
 
   scrolled: boolean = false;
   prevScrollVal: number;
 
   constructor(@Inject(DOCUMENT) private document: Document) {}
+
+  ngOnInit() {
+    this.onPageScroll();
+  }
 
   @HostListener('window:scroll')
   onPageScroll(): void {

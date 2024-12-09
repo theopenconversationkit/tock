@@ -147,6 +147,12 @@ export class UsersComponent extends ScrollComponent<UserReport> {
     this.loadingDialog = true;
     this.analytics.dialogs(this.buildDialogQuery(user)).subscribe((r) => {
       if (r.rows.length != 0) {
+        // we store nlpStats related to the action as an expando of the action itself
+        r.rows[0].actions?.forEach((action) => {
+          let actionNlpStats = r.nlpStats.find((ns) => ns.actionId === action.id);
+          if (actionNlpStats) action._nlpStats = actionNlpStats.stats;
+        });
+
         user.userDialog = r.rows[0];
         this.analytics.getTestPlansByNamespaceAndNlpModel().subscribe((r) => (user.testPlans = r));
       }
