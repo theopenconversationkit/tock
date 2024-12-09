@@ -2,6 +2,11 @@
   border-bottom: var(--card-border-width) var(--card-border-style) var(--card-border-color);
   border-top-left-radius: var(--card-border-radius);
   border-top-right-radius: var(--card-border-radius);
+
+  .connector-icon {
+    height: var(--button-small-icon-size);
+    width: var(--button-small-icon-size);
+  }
 }
 
 .dialogs-messages-grid {
