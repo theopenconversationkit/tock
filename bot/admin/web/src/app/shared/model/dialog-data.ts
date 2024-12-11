@@ -258,8 +258,8 @@ export class Sentence extends BotMessage {
 export interface Footnote {
   title: string;
   url: string;
-  identifier: string;
   content?: string;
+  identifier: string;
 }
 
 export class SentenceWithFootnotes extends BotMessage {

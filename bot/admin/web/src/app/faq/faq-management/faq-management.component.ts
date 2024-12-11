@@ -14,8 +14,15 @@ import { FaqManagementEditComponent } from './faq-management-edit/faq-management
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
 import { Pagination } from '../../shared/components';
 import { I18nLabel } from '../../bot/model/i18n';
+import { Footnote } from '../../shared/model/dialog-data';
 
-export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: string };
+export type FaqDefinitionExtended = Partial<FaqDefinition> & { _initQuestion?: string; _initAnswer?: RagAnswerToFaqAnswerInfos };
+
+export interface RagAnswerToFaqAnswerInfos {
+  text: string;
+  footnotes?: Footnote[];
+  applicationId?: string;
+}
 
 @Component({
   selector: 'tock-faq-management',
@@ -46,7 +53,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   };
 
   initQuestion: string;
-  initAnswer: string;
+  initAnswer: RagAnswerToFaqAnswerInfos;
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -218,7 +225,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  addFaq(initQuestion?: string, initAnswer?: string) {
+  addFaq(initQuestion?: string, initAnswer?: RagAnswerToFaqAnswerInfos) {
     this.closeSidePanel();
 
     this.faqEdit = {
@@ -228,7 +235,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
       description: '',
       utterances: [],
       tags: [],
-      _initAnswer: initAnswer || '',
+      _initAnswer: initAnswer,
       enabled: true,
       applicationName: this.stateService.currentApplication.name,
       language: this.stateService.currentLocale

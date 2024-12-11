@@ -97,9 +97,9 @@
                 <nb-option value="">All</nb-option>
                 <nb-option
                   *ngFor="let config of configurationNameList"
-                  [value]="config"
+                  [value]="config.applicationId"
                 >
-                  {{ config }}
+                  {{ config.label }}
                 </nb-option>
               </nb-select>
             </nb-form-field>
@@ -117,10 +117,16 @@
                 placeholder="Connector"
                 formControlName="connectorType"
               >
+                <nb-option [value]="null">All</nb-option>
                 <nb-option
                   *ngFor="let c of connectorTypes"
                   [value]="c"
-                  >{{ c.id }}</nb-option
+                >
+                  <img
+                    src="{{ getConnectorTypeIconById(c.id) }}"
+                    class="select-icon align-self-center mr-2"
+                  />
+                  {{ c.id }}</nb-option
                 >
               </nb-select>
             </nb-form-field>
@@ -138,12 +144,12 @@
                 placeholder="Intent"
                 formControlName="intentName"
               >
-                <nb-option value="">All</nb-option>
+                <nb-option [value]="null">All</nb-option>
                 <nb-option
                   *ngFor="let intent of state.currentApplication.intents"
                   [value]="intent.name"
                 >
-                  {{ intent.name }}
+                  {{ intent.label || intent.name }}
                 </nb-option>
                 <nb-option value="unknown">Unknown</nb-option>
               </nb-select>
@@ -168,7 +174,7 @@
                   *ngFor="let intent of state.currentApplication.intents"
                   [value]="intent.name"
                 >
-                  {{ intent.name }}
+                  {{ intent.label || intent.name }}
                 </nb-option>
               </nb-select>
             </nb-form-field>
