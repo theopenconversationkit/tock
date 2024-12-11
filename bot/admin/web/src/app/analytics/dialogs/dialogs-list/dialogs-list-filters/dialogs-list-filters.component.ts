@@ -6,6 +6,7 @@ import { ExtractFormControlTyping } from '../../../../shared/utils/typescript.ut
 import { BotSharedService } from '../../../../shared/bot-shared.service';
 import { StateService } from '../../../../core-nlp/state.service';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { RestService } from '../../../../core-nlp/rest/rest.service';
 
 interface DialogListFiltersForm {
   exactMatch: FormControl<boolean>;
@@ -32,7 +33,7 @@ export class DialogsListFiltersComponent implements OnInit {
 
   advanced: boolean = false;
   connectorTypes: ConnectorType[] = [];
-  configurationNameList: string[];
+  configurationNameList: { label: string; applicationId: string }[];
 
   @Input() initialFilters: Partial<DialogListFilters>;
   @Output() onFilter = new EventEmitter<Partial<DialogListFilters>>();
@@ -51,7 +52,8 @@ export class DialogsListFiltersComponent implements OnInit {
       this.configurationNameList = configs
         .filter((item) => item.targetConfigurationId == null)
         .map((item) => {
-          return item.applicationId;
+          const label = `${item.name} > ${item.connectorType.label()} (${item.applicationId})`;
+          return { label: label, applicationId: item.applicationId };
         });
     });
 
@@ -98,6 +100,11 @@ export class DialogsListFiltersComponent implements OnInit {
 
   swapAdvanced(): void {
     this.advanced = !this.advanced;
+  }
+
+  getConnectorTypeIconById(connectorId: string): string {
+    if (connectorId === null) connectorId = 'web';
+    return RestService.connectorIconUrl(connectorId);
   }
 
   ngOnDestroy(): void {

@@ -10,6 +10,7 @@ import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-disp
 import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-viewer-dialog.component';
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -119,9 +120,6 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer = answerSentence.text;
-
       let question;
       const questionAction = actionsStack[actionIndex - 1];
 
@@ -131,6 +129,16 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
       } else if (!questionAction.isBot()) {
         const questionSentence = questionAction.message as unknown as Sentence;
         question = questionSentence.text;
+      }
+
+      const answerSentence = action.message as unknown as SentenceWithFootnotes;
+      const answer: RagAnswerToFaqAnswerInfos = {
+        text: answerSentence.text,
+        applicationId: action.applicationId
+      };
+
+      if (answerSentence.footnotes) {
+        answer.footnotes = answerSentence.footnotes;
       }
 
       if (question && answer) {

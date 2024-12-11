@@ -258,10 +258,10 @@ export class Sentence extends BotMessage {
 export interface Footnote {
   title: string;
   url: string;
-  identifier: string;
   content?: string;
   score?: number;
   _showFullContent?: boolean;
+  identifier: string;
 }
 
 export class SentenceWithFootnotes extends BotMessage {
