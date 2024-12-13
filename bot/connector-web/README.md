@@ -156,6 +156,17 @@ and attempts to send them if and when the SSE connection is re-established.
 The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
 two SSE pings (default: 10).
 
+The `tock_web_sse_messages_ttl_hours` optional property can be used to configure the number of hours after which
+enqueued messages get deleted (default: 72). Note: this expiration only works on MongoDB v7.1.0 and up. Set to a
+negative value to disable.
+
+The `tock_web_sse_message_queue_max_count` optional property can be used to configure the maximum number of enqueued
+messages in the database. When a new message is enqueued past this limit, the oldest message gets deleted (default: 50000).
+
+The `tock_web_sse_message_queue_max_size_kb` optional property can be used to configure the maximum size in kilobytes
+of the message queue in the database. When a new message is enqueued past this limit, the oldest messages get deleted
+(default: `2 * tock_web_sse_message_queue_max_count`).
+
 #### Push messages
 
 When SSE is enabled, the web connector allows sending push messages through the

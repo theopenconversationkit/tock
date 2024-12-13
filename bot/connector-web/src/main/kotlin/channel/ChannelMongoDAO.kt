@@ -20,11 +20,14 @@ import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.longProperty
 import ai.tock.shared.watch
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
+import com.mongodb.client.model.IndexOptions
+import java.util.concurrent.TimeUnit
 import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -49,6 +52,10 @@ internal object ChannelMongoDAO : ChannelDAO {
     private fun MongoDatabase.collectionExists(collectionName: String): Boolean =
         listCollectionNames().contains(collectionName)
 
+    private val messageQueueTtl = longProperty("tock_web_sse_message_queue_ttl_hours", 72)
+    private val messageQueueMaxCount = longProperty("tock_web_sse_message_queue_max_count", 50000)
+    private val messageQueueMaxSize = longProperty("tock_web_sse_message_queue_max_size_kb", 2 * messageQueueMaxCount)
+
     init {
         if (!database.collectionExists(COLLECTION_NAME)) {
             try {
@@ -57,8 +64,8 @@ internal object ChannelMongoDAO : ChannelDAO {
                         COLLECTION_NAME,
                         CreateCollectionOptions()
                             .capped(true)
-                            .sizeInBytes(100000000)
-                            .maxDocuments(50000)
+                            .sizeInBytes(messageQueueMaxSize * 1000)
+                            .maxDocuments(messageQueueMaxCount)
                     )
             } catch (e: Exception) {
                 logger.error(e)
@@ -68,7 +75,13 @@ internal object ChannelMongoDAO : ChannelDAO {
         webChannelResponseCol = database.getCollection<ChannelEvent>(COLLECTION_NAME)
         try {
             webChannelResponseCol.ensureIndex(ChannelEvent::appId, ChannelEvent::recipientId, ChannelEvent::status)
-            // TODO add an index with TTL on ChannelEvent::enqueuedAt once MongoDB supports it (cf. https://jira.mongodb.org/browse/SERVER-77586)
+            val messageTtl = messageQueueTtl
+            if (messageTtl > 0) {
+                webChannelResponseCol.ensureIndex(ChannelEvent::enqueuedAt, indexOptions = IndexOptions().expireAfter(
+                    messageTtl,
+                    TimeUnit.MINUTES
+                ))
+            }
         } catch (e: Exception) {
             logger.error(e)
         }
@@ -101,11 +114,19 @@ internal object ChannelMongoDAO : ChannelDAO {
 
     private fun process(event: ChannelEvent, handler: ChannelEvent.Handler) {
         try {
-            if (handler(event)) {
-                webChannelResponseCol.updateOneById(event._id, ChannelEvent::status setTo ChannelEvent.Status.PROCESSED)
-            }
+            handler(event).onComplete({ processed ->
+                if (processed) {
+                    webChannelResponseCol.updateOneById(event._id, ChannelEvent::status setTo ChannelEvent.Status.PROCESSED)
+                }
+            }, { e ->
+                logger.error(e) {
+                    "Failed to send SSE message"
+                }
+            })
         } catch (e: Exception) {
-            logger.error(e)
+            logger.error(e) {
+                "Failed to send SSE message"
+            }
         }
     }
 
