@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup, ValidationErrors, Validators } from 
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
-import { deepCopy, getExportFileName } from '../../../shared/utils';
+import { deepCopy, getExportFileName, getPropertyByNameSpace, isObject } from '../../../shared/utils';
 import { saveAs } from 'file-saver-es';
 import Papa from 'papaparse';
 
@@ -36,6 +36,8 @@ interface ExportForm {
 interface ExportFormColumnsGroup {
   name: FormControl<string>;
   selected: FormControl<boolean>;
+  deepeningPathKey?: FormControl<string>;
+  deepeningPathDirimantValue?: FormControl<string>;
 }
 
 type ExtractFormControlType<T> = {
@@ -51,6 +53,15 @@ type ExtractFormControlType<T> = {
 };
 
 type GenericObject = { [key: string]: any };
+
+interface DeepeningPropStrategy {
+  [key: string]: {
+    path: string;
+    dirimantKey: string;
+    possibleDirimantKeyValues?: string[];
+    valueKey: string;
+  };
+}
 
 @Component({
   selector: 'tock-data-export',
@@ -72,6 +83,8 @@ export class DataExportComponent implements OnInit, OnDestroy {
   @Input() exportFileNameType!: string;
   @Input() searchQuery?: Observable<any>;
 
+  @Input() deepeningPropertiesStrategies: DeepeningPropStrategy;
+
   @Output() onClose = new EventEmitter<boolean>();
 
   constructor(
@@ -81,15 +94,41 @@ export class DataExportComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.columnNames = Object.keys(this.data[0]);
+    const referenceLine = this.data[0];
+    this.columnNames = Object.keys(referenceLine);
 
     this.columnNames.forEach((key) => {
-      this.form.controls['columns'].push(
-        new FormGroup({
-          name: new FormControl(key),
-          selected: new FormControl(false)
-        })
-      );
+      if (this.deepeningPropertiesStrategies?.hasOwnProperty(key)) {
+        const deepeningStrategy = this.deepeningPropertiesStrategies[key];
+
+        let dirimants;
+        if (deepeningStrategy.possibleDirimantKeyValues?.length) {
+          dirimants = deepeningStrategy.possibleDirimantKeyValues;
+        } else {
+          const targetedObj = referenceLine[key];
+          const targetedProp = getPropertyByNameSpace(deepeningStrategy.path, targetedObj);
+          dirimants = targetedProp.map((p) => p[deepeningStrategy.dirimantKey]);
+        }
+
+        dirimants.forEach((dirimant) => {
+          const name = [key, deepeningStrategy.path, dirimant].join('.');
+          this.form.controls['columns'].push(
+            new FormGroup({
+              name: new FormControl(name),
+              selected: new FormControl(false),
+              deepeningPathKey: new FormControl(key),
+              deepeningPathDirimantValue: new FormControl(dirimant)
+            }) as FormGroup<ExportFormColumnsGroup>
+          );
+        });
+      } else {
+        this.form.controls['columns'].push(
+          new FormGroup({
+            name: new FormControl(key),
+            selected: new FormControl(false)
+          })
+        );
+      }
     });
 
     this.format.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((format: Formats) => {
@@ -212,8 +251,48 @@ export class DataExportComponent implements OnInit, OnDestroy {
     }
 
     if (this.format.value === Formats.csv) {
-      const columns = this.columns.value.filter((col) => col.selected).map((col) => col.name);
+      const selectedColumns = this.columns.value.filter((col) => col.selected);
+      const columns = selectedColumns.map((col) => col.name);
 
+      selectedColumns.forEach((selectedColumn) => {
+        // we apply deepeningStrategy serialization if any
+        if (selectedColumn.deepeningPathKey) {
+          const deepeningStrategy = this.deepeningPropertiesStrategies[selectedColumn.deepeningPathKey];
+
+          data = data.map((line) => {
+            const targetedObj = line[selectedColumn.deepeningPathKey];
+            const targetedProp = getPropertyByNameSpace(deepeningStrategy.path, targetedObj);
+
+            const targetedPropEntry = targetedProp.find((entry) => {
+              return entry[deepeningStrategy.dirimantKey] === selectedColumn.deepeningPathDirimantValue;
+            });
+
+            if (targetedPropEntry) {
+              const targetedPropEntryValue = targetedPropEntry[deepeningStrategy.valueKey];
+              if (targetedPropEntryValue) {
+                line[selectedColumn.name] = targetedPropEntryValue;
+              }
+            }
+
+            return line;
+          });
+        }
+
+        // We serialize any remaining object or array of objects as JSON
+        data = data.map((line) => {
+          if (isObject(line[selectedColumn.name])) {
+            line[selectedColumn.name] = JSON.stringify(line[selectedColumn.name]);
+          } else if (Array.isArray(line[selectedColumn.name])) {
+            line[selectedColumn.name] = line[selectedColumn.name].map((entry) => {
+              if (isObject(entry)) entry = JSON.stringify(entry);
+              return entry;
+            });
+          }
+          return line;
+        });
+      });
+
+      // If the required list delimiter is not a comma, we modify it.
       if (this.listDelimiter.value !== ListDelimiters.Comma) {
         data = data.map((line) => {
           Object.entries(line).forEach(([key, value]) => {

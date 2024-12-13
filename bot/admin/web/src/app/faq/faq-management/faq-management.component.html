@@ -114,6 +114,14 @@
     *ngIf="isSidePanelOpen.export"
     class="aside"
     [data]="faqs"
+    [deepeningPropertiesStrategies]="{
+      answer: {
+        path: 'i18n',
+        dirimantKey: 'locale',
+        possibleDirimantKeyValues: stateService.currentApplication.supportedLocales,
+        valueKey: 'label'
+      }
+    }"
     exportFileNameType="Faqs"
     [searchQuery]="getExportSearchQuery()"
     (onClose)="closeSidePanel()"
