@@ -53,7 +53,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   constructor(
     private botConfiguration: BotConfigurationService,
     private rest: RestService,
-    private stateService: StateService,
+    public stateService: StateService,
     private toastrService: NbToastrService,
     private location: Location
   ) {
