@@ -9,8 +9,8 @@
   >
     <nb-checkbox
       *ngIf="selection"
-      [checked]="isSentenceSelected(sentence)"
-      (checkedChange)="toggle(sentence)"
+      [checked]="isSentenceSelected()"
+      (checkedChange)="toggle()"
       class="mt-1"
     ></nb-checkbox>
 
@@ -37,7 +37,7 @@
           size="tiny"
           class="lineFirstSmallButtonRetract"
           nbTooltip="Copy sentence"
-          (click)="copySentence(sentence)"
+          (click)="copySentence()"
         >
           <nb-icon icon="copy"></nb-icon>
         </button>
@@ -48,7 +48,7 @@
           size="tiny"
           class="mr-2"
           nbTooltip="Test this sentence in a dialog"
-          (click)="testDialogSentence(sentence)"
+          (click)="testDialogSentence()"
         >
           <nb-icon icon="terminal-plus"></nb-icon>
         </button>
@@ -66,14 +66,13 @@
         <span nbTooltip="Sentence configuration">
           {{ sentence.configuration }}
         </span>
-      </div>
 
-      <div
-        class="font-size-small text-muted mb-2"
-        *ngIf="sentence.qualifier"
-        nbTooltip="Qualifier"
-      >
-        {{ sentence.qualifier }}
+        <span
+          *ngIf="sentence.qualifier"
+          nbTooltip="Qualifier"
+        >
+          {{ sentence.qualifier }}
+        </span>
       </div>
 
       <div class="d-flex mb-1">
@@ -90,7 +89,7 @@
             nbInput
             fullWidth
             type="text"
-            placeholder="{{ getSentenceAttribut(sentence, 'intentLabel') }}"
+            placeholder="{{ getSentenceAttribut('intentLabel') }}"
             (focus)="onFocus()"
             (blur)="onBlur($event)"
             (keyup.escape)="onBlur($event)"
@@ -112,10 +111,14 @@
           nbButton
           ghost
           nbTooltip="Intent detection probability. Click for details"
-          class="stats-button font-weight-normal pl-3 pr-1"
-          (click)="swapStatsDetails(sentence)"
+          class="stats-button font-weight-normal"
+          [class.pl-3]="!intentHasChanged()"
+          [class.pr-1]="!intentHasChanged()"
+          (click)="swapStatsDetails()"
         >
-          {{ getSentenceAttribut(sentence, 'probability') | percent: '1.0-1' }}
+          <span *ngIf="!intentHasChanged()">
+            {{ getSentenceAttribut('probability') | percent: '1.0-1' }}
+          </span>
           <nb-icon
             [icon]="sentence._showStatsDetails ? 'chevron-up-outline' : 'chevron-down-outline'"
             pack="nebular-essentials"
@@ -159,7 +162,18 @@
             class="d-flex gap-1 justify-content-between"
             *ngFor="let i of sentence.classification.otherIntentsProbabilities | keyvalue"
           >
-            <span>{{ state.intentLabelByName(i.key) }}</span>
+            <span>
+              {{ state.intentLabelByName(i.key) }}
+              <button
+                nbButton
+                size="tiny"
+                ghost
+                (click)="setSentenceIntentByName(i.key)"
+                nbTooltip="Associate this intent with the sentence"
+              >
+                <nb-icon icon="arrow-right-circle-fill"></nb-icon>
+              </button>
+            </span>
             <span>{{ i.value | percent: '1.0-2' }}</span>
           </div>
         </div>
@@ -194,11 +208,12 @@
           nbButton
           nbTooltip="Validate"
           status="success"
-          ghost
+          [class.lineFirstLargeButtonRetract]="!isActionButtonHighlighted(Action.VALIDATE) && !isActionButtonSuggested(Action.VALIDATE)"
+          [ghost]="!isActionButtonHighlighted(Action.VALIDATE)"
+          [outline]="isActionButtonSuggested(Action.VALIDATE)"
           shape="round"
           size="large"
-          class="lineFirstLargeButtonRetract"
-          (click)="handleAction(Action.VALIDATE, sentence)"
+          (click)="handleAction(Action.VALIDATE)"
         >
           <nb-icon icon="check-circle-fill"></nb-icon>
         </button>
@@ -207,10 +222,10 @@
           nbButton
           nbTooltip="Ask for review"
           status="info"
-          ghost
+          [ghost]="!isActionButtonHighlighted('review')"
           shape="round"
           size="large"
-          (click)="askForReview(sentence)"
+          (click)="askForReview()"
         >
           <nb-icon icon="search"></nb-icon>
         </button>
@@ -220,10 +235,11 @@
           nbButton
           nbTooltip="Set as unknown"
           status="warning"
-          ghost
+          [ghost]="!isActionButtonHighlighted(Action.UNKNOWN)"
+          [outline]="isActionButtonSuggested(Action.UNKNOWN)"
           shape="round"
           size="large"
-          (click)="handleAction(Action.UNKNOWN, sentence)"
+          (click)="handleAction(Action.UNKNOWN)"
         >
           <nb-icon icon="question-circle"></nb-icon>
         </button>
@@ -233,10 +249,11 @@
           nbButton
           nbTooltip="Exclude from Rag handling"
           status="warning"
-          ghost
+          [ghost]="!isActionButtonHighlighted(Action.RAGEXCLUDED)"
+          [outline]="isActionButtonSuggested(Action.RAGEXCLUDED)"
           shape="round"
           size="large"
-          (click)="handleAction(Action.RAGEXCLUDED, sentence)"
+          (click)="handleAction(Action.RAGEXCLUDED)"
         >
           <nb-icon icon="lightbulb-off"></nb-icon>
         </button>
@@ -248,7 +265,7 @@
           ghost
           shape="round"
           size="large"
-          (click)="handleAction(Action.DELETE, sentence)"
+          (click)="handleAction(Action.DELETE)"
         >
           <nb-icon icon="trash"></nb-icon>
         </button>
@@ -284,7 +301,7 @@
             ghost
             shape="round"
             class="lineFirstButtonRetract"
-            (click)="createNewIntent(sentence)"
+            (click)="createNewIntent()"
           >
             <nb-icon icon="compass"></nb-icon>
           </button>
@@ -295,7 +312,7 @@
             nbTooltip="Create new FAQ based on this sentence"
             ghost
             shape="round"
-            (click)="redirectToFaqManagement(sentence)"
+            (click)="redirectToFaqManagement()"
             class="ml-2"
           >
             <nb-icon icon="chat-left-text"></nb-icon>
@@ -309,7 +326,7 @@
           ghost
           shape="round"
           status="info"
-          (click)="showDetails(sentence)"
+          (click)="showDetails()"
         >
           <nb-icon icon="wechat"></nb-icon>
         </button>

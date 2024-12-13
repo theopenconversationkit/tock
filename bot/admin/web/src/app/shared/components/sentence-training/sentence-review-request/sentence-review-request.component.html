@@ -20,11 +20,20 @@
       Cancel
     </button>
     <button
+      *ngIf="reviewComment"
+      nbButton
+      status="warning"
+      (click)="delete()"
+    >
+      Delete review
+    </button>
+    <button
       nbButton
       status="primary"
       (click)="save()"
     >
-      Add
+      <span *ngIf="!reviewComment"> Add </span>
+      <span *ngIf="reviewComment"> Update </span>
     </button>
   </nb-card-footer>
 </nb-card>
