@@ -75,12 +75,13 @@ internal object ChannelMongoDAO : ChannelDAO {
         webChannelResponseCol = database.getCollection<ChannelEvent>(COLLECTION_NAME)
         try {
             webChannelResponseCol.ensureIndex(ChannelEvent::appId, ChannelEvent::recipientId, ChannelEvent::status)
-            val messageTtl = messageQueueTtl
-            if (messageTtl > 0) {
-                webChannelResponseCol.ensureIndex(ChannelEvent::enqueuedAt, indexOptions = IndexOptions().expireAfter(
-                    messageTtl,
-                    TimeUnit.MINUTES
-                ))
+            if (messageQueueTtl > 0) {
+                webChannelResponseCol.ensureIndex(
+                    ChannelEvent::enqueuedAt, indexOptions = IndexOptions().expireAfter(
+                        messageQueueTtl,
+                        TimeUnit.MINUTES
+                    )
+                )
             }
         } catch (e: Exception) {
             logger.error(e)
