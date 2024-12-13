@@ -52,7 +52,7 @@ internal object ChannelMongoDAO : ChannelDAO {
     private fun MongoDatabase.collectionExists(collectionName: String): Boolean =
         listCollectionNames().contains(collectionName)
 
-    private val messageQueueTtl = longProperty("tock_web_sse_message_queue_ttl_hours", 72)
+    private val messageQueueTtl = longProperty("tock_web_sse_message_queue_ttl_days", -1)
     private val messageQueueMaxCount = longProperty("tock_web_sse_message_queue_max_count", 50000)
     private val messageQueueMaxSize = longProperty("tock_web_sse_message_queue_max_size_kb", 2 * messageQueueMaxCount)
 
@@ -79,7 +79,7 @@ internal object ChannelMongoDAO : ChannelDAO {
                 webChannelResponseCol.ensureIndex(
                     ChannelEvent::enqueuedAt, indexOptions = IndexOptions().expireAfter(
                         messageQueueTtl,
-                        TimeUnit.MINUTES
+                        TimeUnit.DAYS
                     )
                 )
             }
