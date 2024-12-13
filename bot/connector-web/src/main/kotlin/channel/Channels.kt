@@ -19,6 +19,7 @@ import ai.tock.bot.connector.web.WebConnectorResponse
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import io.vertx.core.Future
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -30,9 +31,9 @@ internal class Channels {
 
     init {
         channelDAO.listenChanges { (appId, recipientId, response) ->
-            channelsByUser[recipientId]?.filter { it.appId == appId }?.onEach { channel ->
+            Future.all((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
                 channel.onAction(response)
-            }?.isNotEmpty() ?: false
+            }).map { it.list<Unit?>().isNotEmpty() }
         }
     }
 
@@ -43,8 +44,7 @@ internal class Channels {
         val channel = Channel(appId, UUID.randomUUID(), userId, onAction)
         channels.add(channel)
         channelDAO.handleMissedEvents(appId, userId) { (_, _, response) ->
-            channel.onAction(response)
-            true
+            channel.onAction(response).map { true }
         }
         return channel
     }

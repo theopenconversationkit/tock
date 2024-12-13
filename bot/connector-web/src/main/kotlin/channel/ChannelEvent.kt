@@ -17,6 +17,7 @@ package ai.tock.bot.connector.web.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponse
 import com.fasterxml.jackson.annotation.JsonValue
+import io.vertx.core.Future
 import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -42,6 +43,6 @@ internal data class ChannelEvent(
         /**
          * @return `true` if the event has been handled successfully
          */
-        operator fun invoke(event: ChannelEvent): Boolean
+        operator fun invoke(event: ChannelEvent): Future<Boolean>
     }
 }
