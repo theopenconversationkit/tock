@@ -22,6 +22,11 @@ import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudConnectorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.*
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
+import ai.tock.bot.engine.message.Choice
+import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -57,4 +62,38 @@ abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @
 
     @get:JsonIgnore
     val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
+
+
+
+    override fun toGenericMessage(): GenericMessage? {
+
+        return when(this) {
+            is WhatsAppCloudBotInteractiveMessage -> GenericMessage(
+                connectorType = whatsAppCloudConnectorType,
+                choices = interactive.action?.buttons?.mapNotNull { actionButton ->
+                    actionButton.reply.let {
+
+                        SendChoice.decodeChoiceId(it.id)
+                            .let { (intent, params) ->
+                                Choice(
+                                    intent,
+                                    params + (TITLE_PARAMETER to it.title)
+                                )
+                            }
+
+
+                    }
+                }!!
+
+
+            )
+
+            else -> GenericMessage(
+                connectorType = whatsAppCloudConnectorType,
+                texts = mapOf(GenericMessage.TEXT_PARAM to "Unsupported message type")
+            )
+        }
+    }
+
+
 }

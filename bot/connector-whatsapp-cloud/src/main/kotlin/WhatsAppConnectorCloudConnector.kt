@@ -19,7 +19,13 @@ package ai.tock.bot.connector.whatsapp.cloud
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButtonReply
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractive
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMessage
@@ -29,6 +35,7 @@ import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
@@ -213,4 +220,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
             )
         )
     }
+
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
+        { whatsAppCloudReplyButtonMessage(text.toString(), suggestions.map { whatsAppCloudNlpQuickReply(it) }) }
 }
