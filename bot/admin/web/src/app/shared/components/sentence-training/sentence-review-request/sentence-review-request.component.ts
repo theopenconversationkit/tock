@@ -30,4 +30,8 @@ export class SentenceReviewRequestComponent implements OnInit {
   save() {
     this.dialogRef.close({ status: 'confirm', description: this.description });
   }
+
+  delete() {
+    this.dialogRef.close({ status: 'delete' });
+  }
 }
