@@ -133,7 +133,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     )
 
     # RAG Guard
-    __rag_guard(inputs, response)
+    __rag_guard(inputs, response, query.documents_required)
 
     # Guardrail
     if query.guardrail_setting:
@@ -238,7 +238,7 @@ def __find_input_variables(template):
     return variables
 
 
-def __rag_guard(inputs, response):
+def __rag_guard(inputs, response, documents_required):
     """
     If a 'no_answer' input was given as a rag setting,
     then the RAG system should give no further response when no source document has been found.
@@ -254,6 +254,7 @@ def __rag_guard(inputs, response):
         if (
             response['answer'] != inputs['no_answer']
             and response['source_documents'] == []
+            and documents_required
         ):
             message = 'The RAG gives an answer when no document has been found!'
             __rag_log(level=ERROR, message=message, inputs=inputs, response=response)

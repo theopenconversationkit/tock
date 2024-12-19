@@ -31,7 +31,8 @@ data class RAGQuery(
     val documentIndexName: String,
     val documentSearchParams: DocumentSearchParamsBase,
     val vectorStoreSetting: VectorStoreSetting?,
-    val observabilitySetting: ObservabilitySetting?
+    val observabilitySetting: ObservabilitySetting?,
+    val documentsRequired: Boolean? = true
 )
 
 data class ChatMessage(
