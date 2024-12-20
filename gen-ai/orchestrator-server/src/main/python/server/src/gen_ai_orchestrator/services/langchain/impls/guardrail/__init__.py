@@ -12,13 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from enum import Enum, unique
-
-
-@unique
-class ContextualCompressorProvider(str, Enum):
-    BLOOMZ = 'BloomzRerank'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_

@@ -12,14 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Annotated, Union
-
-from fastapi import Body
-
-from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
-    BloomzCompressorSetting,
-)
-
-CompressorSetting = Annotated[
-    Union[BloomzCompressorSetting], Body(discriminator='provider')
-]

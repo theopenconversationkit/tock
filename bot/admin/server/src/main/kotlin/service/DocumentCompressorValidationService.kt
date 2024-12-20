@@ -16,25 +16,29 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
-import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusQuery
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
+import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
-import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
+import ai.tock.genai.orchestratorclient.services.DocumentCompressorProviderService
 import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 
 
-object ObservabilityValidationService {
+object DocumentCompressorValidationService {
 
-    private val observabilityProviderService: ObservabilityProviderService get() = injector.provide()
+    private val documentCompressorProviderService: DocumentCompressorProviderService get() = injector.provide()
 
-    fun validate(config: BotObservabilityConfiguration): Set<ErrorMessage> {
+    fun validate(config: BotDocumentCompressorConfiguration): Set<ErrorMessage> {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
-                observabilityProviderService
-                    .checkSetting(ObservabilityProviderSettingStatusQuery(config.setting))
-                    .getErrors("Observability setting check failed")
+                documentCompressorProviderService
+                    .checkSetting(
+                        DocumentCompressorProviderSettingStatusQuery(
+                            setting = config.setting
+                        )
+                    )
+                    .getErrors("Document Compressor setting check failed")
             )
         }
     }

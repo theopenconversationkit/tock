@@ -12,21 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from abc import ABC, abstractmethod
+from pydantic import BaseModel, Field
 
-from langchain.retrievers.document_compressors.base import (
-    BaseDocumentCompressor,
-)
-from pydantic import BaseModel
-
-from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
-    BaseCompressorSetting,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
 
 
-class CompressorFactory(ABC, BaseModel):
-    setting: BaseCompressorSetting
-
-    @abstractmethod
-    def get_compressor(self) -> BaseDocumentCompressor:
-        pass
+class BaseDocumentCompressorSetting(BaseModel):
+    provider: DocumentCompressorProvider = Field(
+        description='The document compressor provider.',
+        examples=[DocumentCompressorProvider.BLOOMZ],
+    )

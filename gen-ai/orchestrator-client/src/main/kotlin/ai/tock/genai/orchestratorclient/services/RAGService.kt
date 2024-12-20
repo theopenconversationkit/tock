@@ -16,9 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.requests.RAGQuery
-import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 
 interface RAGService {

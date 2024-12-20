@@ -23,9 +23,8 @@ from langchain.retrievers.document_compressors.base import (
 )
 from langchain_core.documents import Document
 
-from gen_ai_orchestrator.errors.exceptions.exceptions import (
-    GenAIUnknownLabelException,
-)
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
+    GenAIDocumentCompressorUnknownLabelException, GenAIDocumentCompressorErrorException
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ class BloomzRerank(BaseDocumentCompressor):
 
     min_score: float = 0.5
     """Minimum score to use for reranking."""
-    endpoint: str
+    endpoint: str = 'http://localhost:8082'
     """Model to use for reranking."""
     max_documents: int = 50
     """Maximum number of documents to return to avoid exceeding max tokens for text generation."""
@@ -66,22 +65,37 @@ class BloomzRerank(BaseDocumentCompressor):
         if len(documents) == 0:  # to avoid empty api call
             return []
 
-        response = requests.post(
-            urljoin(self.endpoint, '/score'),
-            json={
-                'contexts': [
-                    {'query': query, 'context': document.page_content}
-                    for document in documents
-                ]
-            },
-        )
+        url = urljoin(self.endpoint, '/score')
+        try:
+            response = requests.post(
+                url=url,
+                json={
+                    'contexts': [
+                        {'query': query, 'context': document.page_content}
+                        for document in documents
+                    ]
+                },
+            )
 
-        if response.status_code != 200:
-            logger.error(f'{response.status_code} {response.reason} - {response.text}')
-            raise RuntimeError("The scoring server didn't respond as expected.")
+            if response.status_code != 200:
+                logger.error("The scoring server didn't respond as expected.")
+                logger.error(f'{response.status_code} {response.reason} - {response.text}')
+                raise GenAIDocumentCompressorErrorException(ErrorInfo(
+                    error=str(response.status_code),
+                    cause=f'Response: {response.text}, Reason: {response.reason}',
+                    request=f'[POST] {url}',
+                ))
+        except Exception as exc:
+            logger.error(f'Unknown error ! {exc}')
+            raise GenAIDocumentCompressorErrorException(ErrorInfo(
+                error=exc.__class__.__name__,
+                cause=str(exc),
+                request=f'[POST] {url}',
+            ))
 
         final_results = []
         for i, doc_results in enumerate(response.json()['response']):
+            labels=list(map(lambda doc: doc['label'], doc_results))
             try:
                 doc_entailment = next(
                     filter(lambda cls: cls['label'] == self.label, doc_results)
@@ -91,8 +105,8 @@ class BloomzRerank(BaseDocumentCompressor):
                     final_results.append(documents[i])
 
             except StopIteration:
-                message = "The label doesn't match any known labels."
-                raise GenAIUnknownLabelException(ErrorInfo(cause=message))
+                message = f"The label {self.label} doesn't match any known labels {labels}."
+                raise GenAIDocumentCompressorUnknownLabelException(ErrorInfo(cause=message))
 
         return sorted(
             final_results, key=lambda d: d.metadata['retriever_score'], reverse=True
