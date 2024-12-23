@@ -82,7 +82,7 @@ export function isPrimitive(arg: any): boolean {
  * @returns {boolean} return true if arg is an object
  */
 export function isObject(arg: any): boolean {
-  return arg && typeof arg === 'object' && !Array.isArray(arg);
+  return !!arg && typeof arg === 'object' && !Array.isArray(arg);
 }
 
 /**
@@ -176,4 +176,18 @@ export async function copyToClipboard(text: string): Promise<void> {
     }
     document.body.removeChild(textarea);
   }
+}
+
+export function getPropertyByNameSpace(namespace: string, obj: Object): any {
+  const path = namespace.split('.');
+
+  if (path.length === 1) {
+    if (path[0].trim().length === 0) return obj;
+    return obj[path[0]];
+  }
+
+  return path.reduce((acc, current) => {
+    if (acc) return acc[current];
+    else return obj[current];
+  }, undefined);
 }
