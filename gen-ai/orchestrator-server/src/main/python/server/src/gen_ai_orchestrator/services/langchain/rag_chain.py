@@ -33,6 +33,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores import VectorStoreRetriever
+from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -59,7 +60,7 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     TextWithFootnotes,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from gen_ai_orchestrator.routers.responses.responses import RagResponse
+from gen_ai_orchestrator.routers.responses.responses import RagResponse, ObservabilityInfo
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
 )
@@ -93,15 +94,23 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     conversational_retrieval_chain = create_rag_chain(query=query)
 
-    logger.debug(
-        'RAG chain - Use chat history: %s', 'Yes' if len(query.history) > 0 else 'No'
-    )
     message_history = ChatMessageHistory()
-    for msg in query.history:
-        if ChatMessageType.HUMAN == msg.type:
-            message_history.add_user_message(msg.text)
-        else:
-            message_history.add_ai_message(msg.text)
+    session_id = None
+    user_id = None
+    tags = []
+    if query.dialog:
+        for msg in query.dialog.history:
+            if ChatMessageType.HUMAN == msg.type:
+                message_history.add_user_message(msg.text)
+            else:
+                message_history.add_ai_message(msg.text)
+        session_id = query.dialog.dialog_id,
+        user_id = query.dialog.user_id,
+        tags = query.dialog.tags,
+
+    logger.debug(
+        'RAG chain - Use chat history: %s', 'Yes' if len(message_history.messages) > 0 else 'No'
+    )
 
     inputs = {
         **query.question_answering_prompt_inputs,
@@ -115,17 +124,20 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     callback_handlers = []
     records_callback_handler = RetrieverJsonCallbackHandler()
+    observability_handler = None
     if debug:
         # Debug callback handler
         callback_handlers.append(records_callback_handler)
     if query.observability_setting is not None:
         # Langfuse callback handler
-        callback_handlers.append(
-            create_observability_callback_handler(
-                observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.RAG,
-            )
+        observability_handler = create_observability_callback_handler(
+            observability_setting=query.observability_setting,
+            trace_name=ObservabilityTrace.RAG.value,
+            session_id=session_id,
+            user_id=user_id,
+            tags=tags,
         )
+        callback_handlers.append(observability_handler)
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -161,6 +173,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                 )
             ),
         ),
+        observability_info=get_observability_info(observability_handler),
         debug=get_rag_debug_data(
             query, response, records_callback_handler, rag_duration
         )
@@ -168,6 +181,17 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         else None,
     )
 
+
+def get_observability_info(observability_handler) -> Optional[ObservabilityInfo]:
+    """Get the observability Information"""
+    if isinstance(observability_handler, LangfuseCallbackHandler):
+        return ObservabilityInfo(
+            trace_id=observability_handler.trace.id,
+            trace_name=observability_handler.trace_name,
+            trace_url=observability_handler.get_trace_url()
+        )
+    else:
+        return None
 
 def get_source_content(doc: Document) -> str:
     """
