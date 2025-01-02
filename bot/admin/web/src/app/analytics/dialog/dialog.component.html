@@ -1,0 +1,48 @@
+<tock-sticky-menu [offset]="50">
+  <div class="d-flex align-items-center">
+    <h1 class="flex-grow-1">Dialog</h1>
+
+    <section class="grid-actions">
+      <div nbPopover="Url copied">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Copy url"
+          (click)="copyUrl()"
+        >
+          <nb-icon icon="share"></nb-icon>
+        </button>
+      </div>
+
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Go to dialogs monitoring"
+        (click)="jumpToDialogs(true)"
+      >
+        <nb-icon icon="wechat"></nb-icon>
+      </button>
+    </section>
+  </div>
+</tock-sticky-menu>
+
+<tock-no-data-found
+  *ngIf="accessDenied"
+  title="Access denied or resource deleted"
+  message="Your access rights do not allow you to view this resource, or the resource has been deleted."
+></tock-no-data-found>
+
+<nb-card *ngIf="dialog">
+  <nb-card-body class="pl-3 pr-0">
+    <tock-chat-ui>
+      <tock-chat-ui-dialog-logger
+        [dialog]="dialog"
+        [highlightedAction]="getTargetedAction()"
+      ></tock-chat-ui-dialog-logger>
+    </tock-chat-ui>
+  </nb-card-body>
+</nb-card>
+
+<tock-scroll-top-button></tock-scroll-top-button>

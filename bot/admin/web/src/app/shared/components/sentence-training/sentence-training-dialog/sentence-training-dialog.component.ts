@@ -72,7 +72,7 @@ export class SentenceTrainingDialogComponent implements OnChanges, OnDestroy {
   scrollToCurrent(): void {
     window.setTimeout(() => {
       const nativeElement: HTMLElement = this.elementRef.nativeElement;
-      const found: Element | null = nativeElement.querySelector('.currentsentence');
+      const found: Element | null = nativeElement.querySelector('.highlightedAction');
       if (found) {
         found.scrollIntoView({
           behavior: 'smooth',
@@ -99,41 +99,16 @@ export class SentenceTrainingDialogComponent implements OnChanges, OnDestroy {
     return false;
   }
 
-  getUserName(action: ActionReport): string {
-    return getDialogMessageUserQualifier(action.isBot());
-  }
-
-  getUserAvatar(action: ActionReport): string {
-    return getDialogMessageUserAvatar(action.isBot());
+  getCurrentSentenceAction(): ActionReport {
+    return this.displayedDialog?.actions.find((action) => {
+      return this.isCurrentSentence(action);
+    });
   }
 
   searchSentence(action: ActionReport): void {
     if (action.isBot()) return;
     if (action.message.isSentence()) {
       this.onSearchSentence.emit(action.message);
-    }
-  }
-
-  createFaq(action: ActionReport, actionsStack: ActionReport[]) {
-    const actionIndex = actionsStack.findIndex((act) => act === action);
-    if (actionIndex > 0) {
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer = answerSentence.text;
-
-      let question;
-      const questionAction = actionsStack[actionIndex - 1];
-
-      if (questionAction.message.isDebug()) {
-        const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condense_question || actionDebug.data.user_question;
-      } else if (!questionAction.isBot()) {
-        const questionSentence = questionAction.message as unknown as Sentence;
-        question = questionSentence.text;
-      }
-
-      if (question && answer) {
-        this.router.navigate(['faq/management'], { state: { question, answer } });
-      }
     }
   }
 

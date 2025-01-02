@@ -10,6 +10,7 @@ import { DialogsComponent } from './dialogs/dialogs.component';
 import { UsersComponent } from './users/users.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { SatisfactionComponent } from './satisfaction/satisfaction.component';
+import { DialogComponent } from './dialog/dialog.component';
 
 const routes: Routes = [
   {
@@ -39,6 +40,10 @@ const routes: Routes = [
       {
         path: 'dialogs',
         component: DialogsComponent
+      },
+      {
+        path: 'dialogs/:namespace/:applicationId/:dialogId',
+        component: DialogComponent
       },
       {
         path: 'users',

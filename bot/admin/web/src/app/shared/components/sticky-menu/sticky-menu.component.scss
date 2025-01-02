@@ -6,9 +6,23 @@
 
   &.scrolled {
     margin: -1em;
-    padding: 1em 0.5em 0.5em 1em;
+    padding: 0.5em 0.5em 0.5em 1em;
 
     box-shadow: 0px 8px 11px -13px #000000a6;
     transition: all 0.1s ease-in;
+  }
+
+  ::ng-deep {
+    .sticky-menu-scrolled-info {
+      display: none;
+    }
+  }
+
+  &.scrolled {
+    ::ng-deep {
+      .sticky-menu-scrolled-info {
+        display: block;
+      }
+    }
   }
 }

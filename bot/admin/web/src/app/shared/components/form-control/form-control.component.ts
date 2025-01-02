@@ -14,5 +14,6 @@ export class FormControlComponent {
   @Input() showError: boolean = false;
   @Input() required: boolean = false;
   @Input() hasMargin: boolean = true;
+  @Input() noLabelMargin: boolean = false;
   @Input() information?: string;
 }
