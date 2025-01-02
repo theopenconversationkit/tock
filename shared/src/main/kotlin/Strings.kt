@@ -16,8 +16,11 @@
 
 package ai.tock.shared
 
+import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.text.Normalizer
 import java.util.Locale
+import java.util.regex.Pattern
+
 
 /**
  * This is the maximum text size allowed.
@@ -78,21 +81,100 @@ fun concat(s1: String?, s2: String?): String {
 }
 
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
-private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
+private val accentsRegexp = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
-private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
+private const val HTML_TAG_PLACEHOLDER = "CHANGE_IT"
+private val htmlTagPattern = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)"
+
+private val notAllowedPattern = property("tock_safehtml_block_tag",
+    "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror)[^>]").toRegex()
+
+private val allowedTags = listProperty("tock_safehtml_allowed_tag",
+    listOf("em", "strong","ul", "li","h1","h2","h3","blockquote","code","a","s","p", "⭐")).toSet()
+
+private val htmlToFrenchLetter = mapOf(
+    "&agrave;" to "à", "&acirc;" to "â", "&auml;" to "ä", "&ccedil;" to "ç",
+    "&egrave;" to "è", "&eacute;" to "é", "&ecirc;" to "ê", "&euml;" to "ë",
+    "&icirc;" to "î", "&iuml;" to "ï", "&ocirc;" to "ô", "&ouml;" to "ö",
+    "&ugrave;" to "ù", "&ucirc;" to "û", "&uuml;" to "ü", "&ntilde;" to "ñ"
+)
+
+private val diacriticReplacements = mapOf(
+    'e' to "[eéèêë]",
+    'a' to "[aàáâãä]",
+    'i' to "[iìíîï]",
+    'o' to "[oòóôõöø]",
+    'u' to "[uùúûü]",
+    'n' to "[nñ]",
+    'c' to "[cç]"
+)
+
+fun String.removeTrailingPunctuation(): String =
+    replace(trailingRegexp, "").trim()
 
 fun String.stripAccents(): String =
-    Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
+    Normalizer.normalize(this, Normalizer.Form.NFD)
+        .replace(accentsRegexp, "")
 
 fun String.normalize(locale: Locale): String =
-    this.lowercase(locale).removeTrailingPunctuation().stripAccents()
+    lowercase(locale)
+        .removeTrailingPunctuation()
+        .stripAccents()
 
-fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", ignoreCase = true)
-        .replace("a", "[aàáâãä]", ignoreCase = true)
-        .replace("i", "[iìíîï]", ignoreCase = true)
-        .replace("o", "[oòóôõöø]", ignoreCase = true)
-        .replace("u", "[uùúûü]", ignoreCase = true)
-        .replace("n", "[nñ]", ignoreCase = true)
+fun allowDiacriticsInRegexp(input: String): String =
+    input.map { char ->
+        diacriticReplacements[char.lowercaseChar()] ?: char
+    }.joinToString("")
         .replace(" ", "['-_ ]")
-        .replace("c", "[cç]", ignoreCase = true)
+
+fun safeHTML(value: String): String {
+    return value
+        .let(::escapeHtml4)
+        .let(::replaceAllowedTags)
+        .let(::replaceHtmlEntities)
+        .let(::removeMaliciousContent)
+        .let(::filterAllowedCharacters)
+}
+
+private fun replaceAllowedTags(value: String): String {
+    var result = value
+    allowedTags.forEach { tag ->
+        detectHtmlTag(result, tag)?.let { match ->
+            result = result.replace(match, match
+                .replace("&lt;$tag", "<$tag")
+                .replace("&gt;", ">"))
+        }
+        result = result
+            .replace("&lt;$tag&gt;", "<$tag>")
+            .replace("&lt;/$tag&gt;", "</$tag>")
+            .replace("&lt;$tag", "<$tag")
+    }
+    return result.replace("&quot;", "\"")
+}
+
+private fun replaceHtmlEntities(value: String): String =
+    htmlToFrenchLetter.entries.fold(value) { acc, (entity, letter) ->
+        acc.replace(entity, letter)
+    }
+
+private fun removeMaliciousContent(value: String): String =
+    notAllowedPattern.findAll(value)
+        .flatMap { it.groups.drop(1) }
+        .mapNotNull { it?.value }
+        .fold(value) { acc, match ->
+            acc.replace(match, "")
+        }
+
+private fun filterAllowedCharacters(value: String): String =
+    value.filter { char ->
+        allowedTags.contains(char.toString()) ||
+                htmlToFrenchLetter.values.contains(char.toString()) ||
+                char.code < 192
+    }
+
+private fun detectHtmlTag(text: String, tag: String): String? =
+    htmlTagPattern
+        .replace(HTML_TAG_PLACEHOLDER, tag)
+        .toRegex()
+        .find(text)
+        ?.value
