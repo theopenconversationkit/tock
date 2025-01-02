@@ -1,0 +1,43 @@
+site_name: My Docs
+
+strict: true
+
+theme:
+  name: material
+  palette:
+    primary: blue
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.path
+
+nav:
+  # Ajoutez votre navigation ici
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+          site_name: "Tock Documentation"
+        - locale: fr
+          name: Français
+          build: true
+          site_name: "Tock Documentation"
+          theme:
+            palette:
+              primary: blue
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
