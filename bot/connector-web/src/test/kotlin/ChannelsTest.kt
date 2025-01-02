@@ -28,6 +28,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
+import io.vertx.core.Future
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -66,6 +67,7 @@ internal class ChannelsTest {
         val responses = mutableListOf<WebConnectorResponse>()
         channels.register(appId, recipientId) {
             responses.add(it)
+            Future.succeededFuture()
         }
         assertEquals(expectedMissedResponses, responses)
         expectedNewResponses.forEach {
