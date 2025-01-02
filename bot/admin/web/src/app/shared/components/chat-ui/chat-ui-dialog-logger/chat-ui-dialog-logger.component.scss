@@ -1,0 +1,28 @@
+.dialogs-messages-grid {
+  display: grid;
+  grid-template-columns: auto 1rem 2.5rem;
+  // grid-gap: 0.5rem;
+
+  .dialog-vertical-separator {
+    border-right: 1px dashed var(--border-basic-color-5);
+
+    &.horizontal-separation-start {
+      border-top: 1px dashed var(--border-basic-color-5);
+    }
+
+    &.horizontal-separation-end {
+      border-bottom: 1px dashed var(--border-basic-color-5);
+    }
+  }
+}
+
+.button-vertical-spacer {
+  height: 2rem;
+}
+
+.button-horizontal-separator {
+  border-top: 1px dashed var(--border-basic-color-5);
+  height: 1px;
+  // margin-left: -0.5em;
+  margin-right: 0.5em;
+}

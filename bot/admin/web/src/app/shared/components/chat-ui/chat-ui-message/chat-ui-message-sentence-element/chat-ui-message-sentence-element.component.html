@@ -46,6 +46,7 @@
       <span
         *ngIf="reply"
         [innerHTML]="linkifyHtml(entry.value)"
+        class="chat-ui-message-content-styling"
       ></span>
       <span *ngIf="!reply">{{ entry.value }}</span>
       <span class="text-category">({{ entry.key }})</span>
