@@ -30,4 +30,5 @@ data class BotRAGConfiguration(
     val indexSessionId: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
+    val documentsRequired: Boolean = true,
 )
