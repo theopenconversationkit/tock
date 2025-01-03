@@ -104,10 +104,6 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
     this.sentenceTrainingService.documentClick(event);
   }
 
-  trackBySentence(index, item) {
-    return item.text;
-  }
-
   handleToggleSelectAll(value: boolean): void {
     if (!value) {
       this.selection.clear();
