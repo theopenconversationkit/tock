@@ -209,6 +209,20 @@
         />
       </tock-form-control>
 
+      <tock-form-control
+        label="Documents required"
+        name="documentsRequired"
+        [controls]="documentsRequired"
+        [required]="false"
+        [boldLabel]="false"
+        information="Allowing the LLM to answer even if no documents have been found allows to make small talk and answer more general questions."
+      >
+        <nb-checkbox formControlName="documentsRequired">
+          <span *ngIf="documentsRequired.value">Don't allow undocumented answers.</span>
+          <span *ngIf="!documentsRequired.value">Allow undocumented answers.</span>
+        </nb-checkbox>
+      </tock-form-control>
+
       <h5 class="section-title mt-2">Conversation flow</h5>
 
       <tock-form-control
