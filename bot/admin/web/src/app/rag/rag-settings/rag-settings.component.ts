@@ -27,6 +27,8 @@ interface RagSettingsForm {
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
 
+  documentsRequired: FormControl<boolean>;
+
   llmEngine: FormControl<AiEngineProvider>;
   llmSetting: FormGroup<any>;
   emEngine: FormControl<AiEngineProvider>;
@@ -133,6 +135,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     noAnswerStoryId: new FormControl(undefined),
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
+    documentsRequired: new FormControl(undefined),
     llmEngine: new FormControl(undefined, [Validators.required]),
     llmSetting: new FormGroup<any>({}),
     emEngine: new FormControl(undefined, [Validators.required]),
@@ -158,6 +161,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   get indexSessionId(): FormControl {
     return this.form.get('indexSessionId') as FormControl;
+  }
+
+  get documentsRequired(): FormControl {
+    return this.form.get('documentsRequired') as FormControl;
   }
 
   get indexName(): FormControl {

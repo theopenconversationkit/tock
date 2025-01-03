@@ -14,4 +14,6 @@ export interface RagSettings {
 
   indexSessionId: string;
   indexName: string;
+
+  documentsRequired: boolean;
 }
