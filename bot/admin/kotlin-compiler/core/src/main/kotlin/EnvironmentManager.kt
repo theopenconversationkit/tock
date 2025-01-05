@@ -104,8 +104,6 @@ internal object EnvironmentManager {
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "tockScript")
 
-        configuration.put(JSConfigurationKeys.TYPED_ARRAYS_ENABLED, true)
-
         val environment =
             KotlinCoreEnvironment.createForProduction(
                 disposable,

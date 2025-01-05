@@ -13,7 +13,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <gcp-secretmanager>2.49.0</gcp-secretmanager>
+        <gcp-secretmanager>2.55.0</gcp-secretmanager>
     </properties>
 
     <build>
