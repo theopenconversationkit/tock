@@ -16,6 +16,7 @@
 package ai.tock.bot.connector.web.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponse
+import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
 
-internal typealias ChannelCallback = (webConnectorResponse: WebConnectorResponse) -> Future<Void>
+internal typealias ChannelCallback = (webConnectorResponse: WebConnectorResponse) -> Future<CompositeFuture>

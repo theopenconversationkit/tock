@@ -77,6 +77,14 @@
             <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.launchdarkly</groupId>
+            <artifactId>okhttp-eventsource</artifactId>
+            <scope>test</scope>
+            <version>4.1.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>

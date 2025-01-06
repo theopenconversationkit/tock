@@ -41,5 +41,7 @@ data class ActionMetadata(
     var sourceWithContent: Boolean = false,
     /** is Gen AI RAG's answer? **/
     var isGenAiRagAnswer: Boolean = false,
+    /** is response streamed ? **/
+    var streamedResponse: Boolean = false,
 )
 
