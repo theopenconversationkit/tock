@@ -20,7 +20,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.5</version>
     </parent>
 
     <artifactId>tock-bot-connector-whatsapp-cloud</artifactId>
