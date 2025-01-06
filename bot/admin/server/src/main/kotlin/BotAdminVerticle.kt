@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin
 
+
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
@@ -30,6 +31,7 @@ import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.GenAIVerticle
 import ai.tock.bot.admin.verticle.IndicatorVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
@@ -40,9 +42,7 @@ import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
 import ai.tock.bot.engine.dialog.DialogFlowDAO
-import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
-import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
@@ -75,6 +75,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val botAdminConfiguration = BotAdminConfiguration()
 
     private val indicatorVerticle = IndicatorVerticle()
+    private val dialogVerticle = DialogVerticle()
     private val aiVerticle = GenAIVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
@@ -122,6 +123,7 @@ open class BotAdminVerticle : AdminVerticle() {
         configureServices()
 
         indicatorVerticle.configure(this)
+        dialogVerticle.configure(this)
         aiVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->

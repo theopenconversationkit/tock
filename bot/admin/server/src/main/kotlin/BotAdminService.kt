@@ -17,6 +17,7 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
@@ -46,6 +47,7 @@ import ai.tock.bot.admin.story.dump.*
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.config.SatisfactionIntent
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
@@ -62,6 +64,7 @@ import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.shared.*
+import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.security.key.HasSecretKey
 import ai.tock.shared.security.key.SecretKey
@@ -70,6 +73,7 @@ import ai.tock.translator.*
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.*
@@ -149,6 +153,208 @@ object BotAdminService {
         }
     }
 
+    fun saveAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        return if (dialogReportDAO.annotationExists(dialogId, actionId)) {
+            updateAnnotation(dialogId, actionId, annotationDTO, user)
+        } else {
+            createAnnotation(dialogId, actionId, annotationDTO, user)
+        }
+    }
+
+    private fun createAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        val annotation = BotAnnotation(
+            state = annotationDTO.state,
+            reason = annotationDTO.reason,
+            description = annotationDTO.description,
+            groundTruth = annotationDTO.groundTruth,
+            events = mutableListOf(
+                BotAnnotationEventState(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = null,
+                    after = annotationDTO.state.name
+                )
+            ),
+            lastUpdateDate = Instant.now()
+        )
+
+        dialogReportDAO.insertAnnotation(dialogId, actionId, annotation)
+        return annotation
+    }
+
+    fun addCommentToAnnotation(
+        dialogId: String,
+        actionId: String,
+        eventDTO: BotAnnotationEventDTO,
+        user: String
+    ): BotAnnotationEvent {
+        if (eventDTO.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only COMMENT events are allowed")
+        }
+
+        require(!eventDTO.comment.isNullOrBlank()) { "Comment is required and cannot be blank for COMMENT event type" }
+
+        val annotation = dialogReportDAO.findAnnotation(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
+        val event = BotAnnotationEventComment(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            comment = eventDTO.comment ?: throw IllegalArgumentException("Comment required")
+        )
+
+        dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
+
+        return event.copy(canEdit = true)
+    }
+
+    fun updateAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+        eventDTO: BotAnnotationEventDTO,
+        user: String
+    ): BotAnnotationEvent {
+        val existingEvent = dialogReportDAO.getAnnotationEvent(dialogId, actionId, eventId)
+            ?: throw IllegalArgumentException("Event not found")
+
+        if (existingEvent.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only comment events can be updated")
+        }
+
+        if (eventDTO.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Event type must be COMMENT")
+        }
+
+        require(eventDTO.comment != null) { "Comment must be provided" }
+
+        val annotation = dialogReportDAO.findAnnotation(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
+        val existingCommentEvent = existingEvent as BotAnnotationEventComment
+        val updatedEvent = existingCommentEvent.copy(
+            comment = eventDTO.comment!!,
+            lastUpdateDate = Instant.now()
+        )
+
+        dialogReportDAO.updateAnnotationEvent(dialogId, actionId, eventId, updatedEvent)
+
+        return updatedEvent.copy(canEdit = updatedEvent.user == user)
+    }
+
+    fun deleteAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+        user: String
+    ) {
+        val existingEvent = dialogReportDAO.getAnnotationEvent(dialogId, actionId, eventId)
+            ?: throw IllegalArgumentException("Event not found")
+
+        if (existingEvent.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only comment events can be deleted")
+        }
+
+        dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
+    }
+
+    fun updateAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        val existingAnnotation = dialogReportDAO.findAnnotation(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
+        val events = mutableListOf<BotAnnotationEvent>()
+
+        if (existingAnnotation.state != annotationDTO.state) {
+            events.add(
+                BotAnnotationEventState(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.state.name,
+                    after = annotationDTO.state.name
+                )
+            )
+            existingAnnotation.state = annotationDTO.state
+        }
+
+        if (existingAnnotation.reason != annotationDTO.reason) {
+            events.add(
+                BotAnnotationEventReason(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.reason?.name,
+                    after = annotationDTO.reason?.name
+                )
+            )
+            existingAnnotation.reason = annotationDTO.reason
+        }
+
+        if (existingAnnotation.groundTruth != annotationDTO.groundTruth) {
+            events.add(
+                BotAnnotationEventGroundTruth(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.groundTruth,
+                    after = annotationDTO.groundTruth
+                )
+            )
+            existingAnnotation.groundTruth = annotationDTO.groundTruth
+        }
+
+        if (existingAnnotation.description != annotationDTO.description) {
+            events.add(
+                BotAnnotationEventDescription(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.description,
+                    after = annotationDTO.description
+                )
+            )
+            existingAnnotation.description = annotationDTO.description
+        }
+
+        existingAnnotation.lastUpdateDate = Instant.now()
+        existingAnnotation.events.addAll(events)
+
+        dialogReportDAO.insertAnnotation(dialogId, actionId, existingAnnotation)
+
+        return existingAnnotation.copy(
+            events = existingAnnotation.events.map { event ->
+                if (event is BotAnnotationEventComment) {
+                    event.copy(canEdit = event.user == user)
+                } else {
+                    event
+                }
+            }.toMutableList()
+        )
+    }
+
     fun createOrGetIntent(
         namespace: String,
         intentName: String,
@@ -214,6 +420,41 @@ object BotAdminService {
                     nlpStats = dialogReportDAO.getNlpStats(searchResult.dialogs.map { it.id }, query.namespace)
                 )
             }
+    }
+
+    fun searchWithCommentRights(query: DialogsSearchQuery, userLogin: String): DialogReportQueryResult {
+        val result = search(query)
+        return result.copy(
+            dialogs = result.dialogs.map { dialog ->
+                processAnnotationsForUser(dialog, userLogin)
+            }
+        )
+    }
+
+    fun getDialogWithCommentRights(id: Id<Dialog>, userLogin: String): DialogReport? {
+        return dialogReportDAO.getDialog(id)?.let { dialog ->
+            processAnnotationsForUser(dialog, userLogin)
+        }
+    }
+
+    private fun processAnnotationsForUser(dialog: DialogReport, userLogin: String): DialogReport {
+        return dialog.copy(
+            actions = dialog.actions.map { action ->
+                action.copy(
+                    annotation = action.annotation?.let { annotation ->
+                        annotation.copy(
+                            events = annotation.events.map { event ->
+                                if (event is BotAnnotationEventComment) {
+                                    event.copy(canEdit = event.user == userLogin)
+                                } else {
+                                    event
+                                }
+                            }.toMutableList()
+                        )
+                    }
+                )
+            }
+        )
     }
 
     fun getIntentsInDialogs(namespace: String,nlpModel : String) : Set<String>{

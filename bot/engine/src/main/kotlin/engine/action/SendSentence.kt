@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.dialog.EventState
@@ -43,6 +44,7 @@ open class SendSentence(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
     open var nlpStats: NlpCallStats? = null,
+    override var annotation: BotAnnotation? = null,
     /**
      * Used by analysed nlp (ie Alexa).
      */
@@ -61,6 +63,7 @@ open class SendSentence(
             "state, " +
             "metadata, " +
             "nlpStats, " +
+            "annotation, " +
             "precomputedNlp)"))
     constructor(
         playerId: PlayerId,
@@ -73,9 +76,10 @@ open class SendSentence(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
         nlpStats: NlpCallStats? = null,
+        annotation: BotAnnotation? = null,
         precomputedNlp: NlpResult? = null,
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, applicationId, recipientId, text, messages, id, date, state, metadata, nlpStats, precomputedNlp)
+    ): this(playerId, applicationId, recipientId, text, messages, id, date, state, metadata, nlpStats, annotation, precomputedNlp)
 
     @Transient
     val stringText: String? = text?.toString()
