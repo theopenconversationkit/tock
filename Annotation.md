@@ -1,42 +1,32 @@
-# Gestion des Annotations et Événements - DERCBOT-1309
+# Gestion des Annotations et events - DERCBOT-1309
 
 **Epic Jira** : [*DERCBOT-1309*](http://go/j/DERCBOT-1309)
 
 
 ## Contexte et objectif de la feature
 
-Ce document de design définit la gestion des annotations et des événements liés aux réponses du bot. L'objectif est d'offrir aux administrateurs et développeurs les outils nécessaires pour évaluer, annoter, et tracer les anomalies ainsi que leurs résolutions.
+Ce document de design définit la gestion des annotations et des events liés aux réponses du bot. L'objectif est d'offrir aux administrateurs et développeurs les outils nécessaires pour évaluer, annoter, et tracer les anomalies ainsi que leurs résolutions.
 
 ### Périmètre de la fonctionnalité
 Les annotations permettent :
-- Aux **administrateurs** de marquer une anomalie, de l’analyser et d’y associer des états et raisons spécifiques.
-- Aux **développeurs** de filtrer et de suivre les résolutions des anomalies.
+- Aux **botUser** de marquer une anomalie, de l’analyser et d’y associer des états et raisons spécifiques.
+- Aux **botUser** de filtrer et de suivre les résolutions des anomalies.
 
 ## Cas d'usages
 
 ### Rôle Administrateur de bot
 * *UC1* - En tant qu' **administrateur de bot** je souhaite pouvoir **ajouter une annotation** sur une réponse du bot afin d’indiquer un problème.
 * *UC2* - En tant qu' **administrateur de bot** je souhaite pouvoir **modifier les annotations existantes** pour refléter les changements d’état, les raisons, ou ajouter des commentaires.
-* *UC3* - En tant qu' **administrateur de bot** je souhaite **suivre l'historique des événements liés à une annotation** comme les changements d'état et les commentaires, pour garder une trace complète des décisions.
-
-### Rôle Développeur
-* *UC1* - En tant que **développeur** je souhaite pouvoir **filtrer les réponses** en fonction des états et des raisons des anomalies pour identifier les cas nécessitant une attention immédiate.
-* *UC2* - En tant que **développeur** je souhaite pouvoir **annoter les réponses avec un état précis** (e.g., "RESOLVED", "NOT_FIXABLE") pour suivre les problèmes identifiés et les décisions prises.
+* *UC3* - En tant qu' **administrateur de bot** je souhaite **suivre l'historique des events liés à une annotation** comme les changements d'état et les commentaires, pour garder une trace complète des décisions.
+* *UC4* - En tant que **administrateur de bot** je souhaite pouvoir **filtrer les réponses** en fonction des états et des raisons des anomalies pour identifier les cas nécessitant une attention immédiate.
 ---
 
 ## Modèle de données
 
-Pairage Label - Code :
-ANOMALY = 1
-REVIEW_NEEDED = 2
-RESOLVED = 3
-NOT_FIXABLE = 4
-
 ```mermaid
 classDiagram
     class Annotation {
-        +code: Int
-        +state: "ANOMALY" | "REVIEW_NEEDED" | "RESOLVED" | "NOT_FIXABLE"
+        +state: AnnotationState
         +reason: ReasonType
         +ground_truth: String
         +actionId: ObjectID
@@ -45,37 +35,39 @@ classDiagram
         +expiresAt: DateTime
     }
 
-    class Event {
+    class AnnotationEvent {
         +eventId: ObjectID
         +date: DateTime
         +author: String
         +type: EventType
     }
 
-    class EventComment {
+    class AnnotationEventComment {
         +comment: String
     }
 
-    class EventChange {
-        +before: AnnotationReason | AnnotationState | AnnotationGroundTruth
-        +after: AnnotationReason | AnnotationState | AnnotationGroundTruth
+    class AnnotationEventChange {
+        +before: AnnotationState | AnnotationReasonType | String
+        +after: AnnotationState | AnnotationReasonType | String
     }
 
-    class EventType {
+    class AnnotationEventType {
         <<enumeration>>
         COMMENT
-        CHANGE
+        STATE
+        REASON
+        GROUND_TRUTH
     }
 
     class AnnotationState {
         <<enumeration>>
-        ANOMALY = 1
-        REVIEW_NEEDED = 2
-        RESOLVED = 3
-        NOT_FIXABLE = 4
+        ANOMALY 
+        REVIEW_NEEDED 
+        RESOLVED 
+        WONT_FIX 
     }
 
-    class ReasonType {
+    class AnnotationReasonType {
         <<enumeration>>
         INACCURATE_ANSWER
         INCOMPLETE_ANSWER
@@ -89,32 +81,33 @@ classDiagram
     }
 
 
-    Annotation "1" *-- "many" Event : contains
-    Event <|-- EventComment : extends
-    Event <|-- EventChange : extends
-    EventType <-- Event : type
-    ReasonType <-- Annotation : reason
+    Annotation "1" *-- "many" AnnotationEvent : contains
+    AnnotationEvent <|-- AnnotationEventComment : extends
+    AnnotationEvent <|-- AnnotationEventChange : extends
+    AnnotationEventType <-- AnnotationEvent : type
+    AnnotationReasonType <-- Annotation : reason
     AnnotationState <-- Annotation : state
 ```
 
 ### Exemple de document stocké dans la collection :
 
-Les événements (`events`) sont toujours retournés dans l'ordre chronologique, triés par date (`date`).
+Les events (`events`) sont toujours retournés dans l'ordre chronologique, triés par date (`date`).
+
+Une purge sera mise sur les annotations, alignée sur la logique de purge des dialogs.
 
 ```json
 {
   "_id": ObjectId("65a1b2c3d4e5f6a7b8c9d0e1"),
   "actionId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e2"),
-  "code": 1,
   "state": "ANOMALY",
   "reason": "INACCURATE_ANSWER",
   "ground_truth": "La date butoire de souscription au contrat est le 1er Janvier 2025",
   "events": [
     {
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e3"),
-      "type": "CHANGE",
+      "type": "STATE",
       "date": ISODate("2023-10-01T10:00:00Z"),
-      "author": "USER",
+      "author": "USER192",
       "before": {
         "state": null
       },
@@ -126,14 +119,14 @@ Les événements (`events`) sont toujours retournés dans l'ordre chronologique,
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e4"),
       "type": "COMMENT",
       "date": ISODate("2023-10-01T10:05:00Z"),
-      "author": "USER",
+      "author": "USER192",
       "comment": "La date donnée est incorrecte."
     },
     {
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e5"),
-      "type": "CHANGE",
+      "type": "STATE",
       "date": ISODate("2023-10-01T11:00:00Z"),
-      "author": "ADMIN",
+      "author": "ADMIN1",
       "before": {
         "state": "ANOMALY"
       },
@@ -151,38 +144,38 @@ Les événements (`events`) sont toujours retournés dans l'ordre chronologique,
 
 ## Liste des Routes
 
-#### POST /rest/admin/annotations
-Crée une nouvelle annotation. Un événement de changement d'état est automatiquement créé pour passer de `null` à l'état initial `ANOMALY`.
+#### [POST] /rest/admin/bots/:botId/annotations
+Crée une nouvelle annotation. 
+
+Un event de changement d'état est automatiquement créé pour passer de `null` à l'état initial `ANOMALY`.
+
+**Path Parameter**
+`botId`: Identifiant unique du bot.
 
 **Request Body:**
-```json
-{
-  "actionId": "65a1b2c3d4e5f6a7b8c9d0e2",
-  "code": 1,
-  "state": "ANOMALY",
-  "reason": "INACCURATE_ANSWER",
-  "ground_truth": null
-}
-```
+
+- `actionId`: Obligatoire
+- `state`: Obligatoire 
+- `user`: Obligatoire
+- `reason`: Facultatif
+- `ground_truth`: Facultatif
 
 **Response:**
 ```json
 {
   "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
   "actionId": "65a1b2c3d4e5f6a7b8c9d0e2",
-  "code": 1,
   "state": "ANOMALY",
+  "user": "USER192",
   "reason": "INACCURATE_ANSWER",
   "ground_truth": null,
   "events": [
     {
       "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
-      "type": "CHANGE",
+      "type": "STATE",
       "date": "2023-10-01T10:00:00Z",
-      "author": "USER",
-      "before": {
-        "state": null
-      },
+      "author": "USER192",
+      "before": null,
       "after": {
         "state": "ANOMALY"
       }
@@ -193,73 +186,93 @@ Crée une nouvelle annotation. Un événement de changement d'état est automati
 }
 ```
 
-#### POST /rest/admin/annotations/{annotationId}/comment/create
-Ajoute un commentaire à une annotation.
+#### [POST] /rest/admin/bots/:botId/annotations/:annotationId/events**
+Crée un nouvel event associé à une annotation spécifique.
+
+**Path Parameter**
+- `botId`: Identifiant unique du bot.
+- `annotationId`: Identifiant unique de l'annotation.
 
 **Request Body:**
-```json
-{
-  "comment": "Le problème vient de la source de données X",
-}
-```
+- `type`: Type de l'event (par exemple, COMMENT, STATE, REASON, GROUND_TRUTH).
+- `author`: Utilisateur ayant créé l'event.
+- `comment`: (Facultatif) Commentaire associé à l'event.
+- `before`: (Facultatif) État précédent pour les events de modification.
+- `after`: (Facultatif) Nouvel état pour les events de modification.
 
-**Response Example:**
+**Response Example (COMMENT):**
 ```json
 {
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
   "type": "COMMENT",
   "date": "2025-01-01T12:00:00Z",
-  "author": "USER",
+  "author": "USER192",
   "comment": "Le problème vient de la source de données Z"
 }
 ```
 
-#### POST /rest/admin/annotations/{annotationId}/comment/update
-Modifie un commentaire.
-
-**Request Body:**
-```json
-{
-  "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
-  "comment": "Le problème vient de la source de données X",
-}
-```
-
-**Response Example:**
-```json
-{
-  "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
-  "type": "COMMENT",
-  "date": "2025-01-01T12:00:00Z",
-  "author": "USER",
-  "comment": "Le problème vient de la source de données X"
-}
-```
-
-#### POST /rest/admin/annotations/{annotationId}/state/update
-#### POST /rest/admin/annotations/{annotationId}/reason/update
-#### POST /rest/admin/annotations/{annotationId}/ground_truth/update
-Met à jour le state, la raison ou la ground_truth d'une annotation.
-
-**Request Body:**
-```json
-{
-  "ground_truth": "La nouvelle date butoire est le 15 Février 2025."
-}
-```
-
-**Response Example:**
+**Response Example (STATE):**
 ```json
 {
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e5",
-  "type": "CHANGE",
-  "date": "2025-01-02T12:20:00Z",
-  "author": "USER",
+  "type": "STATE",
+  "date": "2023-10-01T11:00:00Z",
+  "author": "ADMIN1",
+  "before": {
+    "state": "ANOMALY"
+  },
+  "after": {
+    "state": "REVIEW_NEEDED"
+  }
+}
+```
+
+**Response Example (GROUND_TRUTH):**
+```json
+{
+  "eventId": "65a1b2c3d4e5f6a7b8c9d0e7",
+  "type": "GROUND_TRUTH",
+  "date": "2023-10-01T13:00:00Z",
+  "author": "ADMIN1",
   "before": {
     "ground_truth": "La date butoire de souscription au contrat est le 1er Janvier 2025"
   },
   "after": {
     "ground_truth": "La date butoire de souscription est le 15 Février 2025."
   }
+}
+```
+
+#### [PUT] /rest/admin/bots/:botId/annotations/:annotationId/events/:eventId
+Met à jour un event existant de type comment.
+
+**Request Body:**
+- `botId`: Identifiant unique du bot.
+- `annotationId`: Identifiant unique de l'annotation.
+- `eventId`: Identifiant unique de l'event.
+
+**Response Example:**
+```json
+{
+  "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
+  "type": "COMMENT",
+  "date": "2025-01-01T12:00:00Z",
+  "author": "USER192",
+  "comment": "Le problème vient de la source de données X"
+}
+```
+
+#### [DELETE] /rest/admin/bots/:botId/annotations/:annotationId/events/:eventId
+Supprime un event existant de type comment.
+
+**Request Body:**
+- `botId`: Identifiant unique du bot.
+- `annotationId`: Identifiant unique de l'annotation.
+- `eventId`: Identifiant unique de l'event.
+
+**Response Example:**
+```json
+{
+  "message": "Event deleted successfully"
 }
 ```
