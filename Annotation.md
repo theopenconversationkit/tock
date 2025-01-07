@@ -38,7 +38,7 @@ classDiagram
     class AnnotationEvent {
         +eventId: ObjectID
         +date: DateTime
-        +author: String
+        +user: String
         +type: EventType
     }
 
@@ -107,7 +107,7 @@ Une purge sera mise sur les annotations, alignée sur la logique de purge des di
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e3"),
       "type": "STATE",
       "date": ISODate("2023-10-01T10:00:00Z"),
-      "author": "USER192",
+      "user": "USER192",
       "before": {
         "state": null
       },
@@ -119,14 +119,14 @@ Une purge sera mise sur les annotations, alignée sur la logique de purge des di
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e4"),
       "type": "COMMENT",
       "date": ISODate("2023-10-01T10:05:00Z"),
-      "author": "USER192",
+      "user": "USER192",
       "comment": "La date donnée est incorrecte."
     },
     {
       "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e5"),
       "type": "STATE",
       "date": ISODate("2023-10-01T11:00:00Z"),
-      "author": "ADMIN1",
+      "user": "ADMIN1",
       "before": {
         "state": "ANOMALY"
       },
@@ -174,7 +174,7 @@ Un event de changement d'état est automatiquement créé pour passer de `null` 
       "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
       "type": "STATE",
       "date": "2023-10-01T10:00:00Z",
-      "author": "USER192",
+      "user": "USER192",
       "before": null,
       "after": {
         "state": "ANOMALY"
@@ -195,7 +195,7 @@ Crée un nouvel event associé à une annotation spécifique.
 
 **Request Body:**
 - `type`: Type de l'event (par exemple, COMMENT, STATE, REASON, GROUND_TRUTH).
-- `author`: Utilisateur ayant créé l'event.
+- `user`: Utilisateur ayant créé l'event.
 - `comment`: (Facultatif) Commentaire associé à l'event.
 - `before`: (Facultatif) État précédent pour les events de modification.
 - `after`: (Facultatif) Nouvel état pour les events de modification.
@@ -206,7 +206,7 @@ Crée un nouvel event associé à une annotation spécifique.
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
   "type": "COMMENT",
   "date": "2025-01-01T12:00:00Z",
-  "author": "USER192",
+  "user": "USER192",
   "comment": "Le problème vient de la source de données Z"
 }
 ```
@@ -217,7 +217,7 @@ Crée un nouvel event associé à une annotation spécifique.
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e5",
   "type": "STATE",
   "date": "2023-10-01T11:00:00Z",
-  "author": "ADMIN1",
+  "user": "ADMIN1",
   "before": {
     "state": "ANOMALY"
   },
@@ -233,7 +233,7 @@ Crée un nouvel event associé à une annotation spécifique.
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e7",
   "type": "GROUND_TRUTH",
   "date": "2023-10-01T13:00:00Z",
-  "author": "ADMIN1",
+  "user": "ADMIN1",
   "before": {
     "ground_truth": "La date butoire de souscription au contrat est le 1er Janvier 2025"
   },
@@ -257,7 +257,7 @@ Met à jour un event existant de type comment.
   "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
   "type": "COMMENT",
   "date": "2025-01-01T12:00:00Z",
-  "author": "USER192",
+  "user": "USER192",
   "comment": "Le problème vient de la source de données X"
 }
 ```
