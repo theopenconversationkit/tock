@@ -4,11 +4,17 @@ title: Ressources
 
 # Ressources Tock
 
-Les différents supports et présentations ci-dessous donnent un aperçu de la solution Tock, 
+Les différents supports et présentations ci-dessous donnent un aperçu de la solution Tock,
 en complément des [guides](../../guide/studio)
  pour tester soi-même la plateforme.
 
 ## Conférences / Video
+
+* _REX - Hybride Gen AI with TOCK_ @ _[Open Source Experience 2024](https://www.opensource-experience.com/)_ (REX l’Open Source pour industrialiser l’IA Générative [TOSIT])
+  [ℹ️ info](https://www.opensource-experience.com/event/#conf-15915)
+  [📽️ 21 min](https://youtu.be/9ilX731vN64?si=g2RD2bij8i9O4uO1)
+
+[![REX l’Open Source pour industrialiser l’IA Générative [TOSIT]](https://img.youtube.com/vi/9ilX731vN64/0.jpg)](https://youtu.be/9ilX731vN64?si=g2RD2bij8i9O4uO1)
 
 * _Gen AI with TOCK_ @ _[WAX](https://www.waxconf.fr/)_
   **2024** (RAG et LLM Open Source ? Vers des IA Génératives plus responsables.)
@@ -18,7 +24,7 @@ en complément des [guides](../../guide/studio)
 [![RAG et LLM Open Source ? Vers des IA Génératives plus responsables](https://img.youtube.com/vi/lYmUeYoVkwc/0.jpg)](https://youtu.be/lYmUeYoVkwc)
 
 
-* _[20 minutes from zero to live chatbot with Tock](https://www.youtube.com/watch?v=UsKkpYL7Hto)_  
+* _[20 minutes from zero to live chatbot with Tock](https://www.youtube.com/watch?v=UsKkpYL7Hto)_
   @ _Open Source Experience_ **2021** (démonstration, en Anglais)
   [ℹ️ info](https://www.opensource-experience.com/event/20-minutes-from-zero-to-live-chatbot-with-tock/) /
   [📽️ 20 min](https://www.youtube.com/watch?v=UsKkpYL7Hto)
@@ -41,38 +47,38 @@ src="https://doc.tock.ai/fr/images/voicetechparis2020.jpeg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
-* _[Tock & Mélusine](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)_ @ _AI Paris_ 
+* _[Tock & Mélusine](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)_ @ _AI Paris_
 **2020** (REX SNCF & MAIF)
 [ℹ️ info](https://aiparis.fr/2020/les-conferences/) /
 [🔳 slides](https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020)
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-mlusine-rex-ia-open-source-aiparis-2020"
 target="tock_aiparis">
-<img alt="Tock & Mélusine @ AI Paris 2020" 
-src="https://doc.tock.ai/fr/images/aiparis2020rex.jpg" 
+<img alt="Tock & Mélusine @ AI Paris 2020"
+src="https://doc.tock.ai/fr/images/aiparis2020rex.jpg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
-* _[Conversationnel & Open Source](https://www.youtube.com/watch?v=fTy6uit7Ejg)_ @ _Paris Open Source Summit_ **2019**  
+* _[Conversationnel & Open Source](https://www.youtube.com/watch?v=fTy6uit7Ejg)_ @ _Paris Open Source Summit_ **2019**
 (REX SNCF & invités EDF, Enedis, Orange, SogetiLabs, TOSIT)
-[📽️ 30 min](https://www.youtube.com/watch?v=fTy6uit7Ejg) / 
+[📽️ 30 min](https://www.youtube.com/watch?v=fTy6uit7Ejg) /
 [🔳 slides](https://fr.slideshare.net/FrancoisN0/conversational-ai-open-source-ossparis19)
 
 <a href="https://www.youtube.com/watch?v=fTy6uit7Ejg"
 target="tock_poss">
-<img alt="Conversationnel & Open Source @ POSS 2019" 
-src="https://doc.tock.ai/fr/images/POSS2019.jpeg" 
+<img alt="Conversationnel & Open Source @ POSS 2019"
+src="https://doc.tock.ai/fr/images/POSS2019.jpeg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
-* _[Développer un bot sur Messenger et Google Assistant en 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_  
+* _[Développer un bot sur Messenger et Google Assistant en 30 minutes](https://www.youtube.com/watch?v=K4q8ZHw9TuI)_
 @ _Devoxx France_ **2018** (live coding _"tools in action"_)
 [📽️ 30 min](https://www.youtube.com/watch?v=K4q8ZHw9TuI)
 
 <a href="https://www.youtube.com/watch?v=K4q8ZHw9TuI"
 target="tock_devoxx">
-<img alt="Tock @ Devoxx 2018" 
-src="https://i.ytimg.com/vi/K4q8ZHw9TuI/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLD97LkaqwfskeOy5mz18axLrQPmCw" 
+<img alt="Tock @ Devoxx 2018"
+src="https://i.ytimg.com/vi/K4q8ZHw9TuI/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLD97LkaqwfskeOy5mz18axLrQPmCw"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
@@ -96,8 +102,8 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-meetup-open-transport-161569957"
 target="tock_opentransport">
-<img alt="Tock @ Meetup Open Transport" 
-src="https://image.slidesharecdn.com/tockmeetupopentransport20-03-2019-190806151139/95/tock-the-open-conversation-kit-meetup-open-transport-1-638.jpg" 
+<img alt="Tock @ Meetup Open Transport"
+src="https://image.slidesharecdn.com/tockmeetupopentransport20-03-2019-190806151139/95/tock-the-open-conversation-kit-meetup-open-transport-1-638.jpg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
@@ -107,8 +113,8 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 <a href="https://fr.slideshare.net/FrancoisN0/tock-the-open-conversation-kit-crip-open-source"
 target="tock_crip">
-<img alt="Tock @ CRiP" 
-src="https://image.slidesharecdn.com/tockcripopensource24-10-2017-190806143703/95/tock-the-open-conversation-kit-crip-open-source-1-638.jpg?cb=1565103334" 
+<img alt="Tock @ CRiP"
+src="https://image.slidesharecdn.com/tockcripopensource24-10-2017-190806143703/95/tock-the-open-conversation-kit-crip-open-source-1-638.jpg?cb=1565103334"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
