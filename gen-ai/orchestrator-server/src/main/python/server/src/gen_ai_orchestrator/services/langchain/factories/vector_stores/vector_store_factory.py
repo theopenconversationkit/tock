@@ -52,11 +52,12 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         pass
 
     @abstractmethod
-    def get_vector_store_retriever(self, search_kwargs: dict) -> VectorStoreRetriever:
+    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
         """
         Fabric the Vector Store and return it as retriever
         Args:
             search_kwargs: the search filter
+            async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
         :return: A VectorStoreRetriever.
         """
         pass
