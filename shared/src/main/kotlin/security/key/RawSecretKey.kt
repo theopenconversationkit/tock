@@ -20,5 +20,5 @@ package ai.tock.shared.security.key
  * The Raw Secret Key
  */
 data class RawSecretKey(
-    val value: String,
+    val secret: String,
 ) : SecretKey(SecretKeyType.Raw)

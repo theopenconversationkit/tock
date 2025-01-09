@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
@@ -28,7 +30,7 @@ class BaseLLMSetting(BaseModel):
     provider: LLMProvider = Field(description='The Large Language Model Provider.')
     api_key: Optional[SecretKey] = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
         default=None
     )
     temperature: float = Field(

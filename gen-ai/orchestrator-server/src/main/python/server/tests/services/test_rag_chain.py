@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ async def test_rag_chain(
         },
         'question_answering_llm_setting': {
             'provider': 'OpenAI',
-            'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
+            'api_key': {'type': 'Raw', 'secret': 'ab7***************************A1IV4B'},
             'temperature': 1.2,
             'prompt': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
@@ -126,7 +126,7 @@ Answer in {locale}:""",
         },
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
-            'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
+            'api_key': {'type': 'Raw', 'secret': 'ab7***************************A1IV4B'},
             'model': 'text-embedding-ada-002',
         },
         'document_index_name': 'my-index-name',
@@ -148,7 +148,7 @@ Answer in {locale}:""",
             'username': 'admin',
             'password': {
                 'type': 'Raw',
-                'value': 'admin',
+                'secret': 'admin',
             },
         },
         'observability_setting': {
@@ -156,7 +156,7 @@ Answer in {locale}:""",
             'url': 'http://localhost:3000',
             'secret_key': {
                 'type': 'Raw',
-                'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f',
+                'secret': 'sk-********************be8f',
             },
             'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
         },

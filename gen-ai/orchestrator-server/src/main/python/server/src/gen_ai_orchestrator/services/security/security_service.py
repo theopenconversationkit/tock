@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,13 +19,19 @@ from typing import Optional
 from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import (
     AwsSecretKey,
 )
-from gen_ai_orchestrator.models.security.gcp_secret_key.gcp_secret_key import GcpSecretKey
+from gen_ai_orchestrator.models.security.gcp_secret_key.gcp_secret_key import (
+    GcpSecretKey,
+)
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.models.security.security_types import SecretKey
-from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
-from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import GCPSecretManagerClient
+from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
+    AWSSecretsManagerClient,
+)
+from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import (
+    GCPSecretManagerClient,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +45,7 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
     """
     secret_value = None
     if isinstance(secret_key, RawSecretKey):
-        secret_value = secret_key.value
+        secret_value = secret_key.secret
     elif isinstance(secret_key, AwsSecretKey):
         # Get secret from AWS Secrets Manager
         aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_key.secret_name)

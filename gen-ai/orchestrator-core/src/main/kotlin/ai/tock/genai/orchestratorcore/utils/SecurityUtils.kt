@@ -48,7 +48,7 @@ object SecurityUtils {
     fun fetchSecretKeyValue(secret: SecretKey): String {
         try {
             // If the secret is a raw value, it is recovered as is.
-            if(secret is RawSecretKey) return  secret.value
+            if(secret is RawSecretKey) return  secret.secret
 
             // Check SecretManagerProvider if it is defined
             if (genAISecretManagerProvider == null) {

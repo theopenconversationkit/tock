@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ def test_get_open_ai_llm_factory():
                 'provider': 'OpenAI',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'model': 'model',
                 'temperature': '0',
@@ -144,7 +144,7 @@ def test_get_azure_open_ai_llm_factory():
                 'provider': 'AzureOpenAIService',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'deployment_name': 'deployment_name',
                 'model': 'gpt-4o',
@@ -166,7 +166,7 @@ def test_get_fake_llm_factory():
                 'provider': 'FakeLLM',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'temperature': '0',
                 'prompt': 'List 3 ice cream flavors.',
@@ -190,7 +190,7 @@ def test_get_open_ai_em_factory():
                 'provider': 'OpenAI',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'model': 'model',
                 'prompt': 'List 3 ice cream flavors.',
@@ -208,7 +208,7 @@ def test_get_azure_open_ai_em_factory():
                 'provider': 'AzureOpenAIService',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'deployment_name': 'deployment_name',
                 'model': 'text-embedding-ada-002',
@@ -243,7 +243,7 @@ def test_get_open_search_vector_store_factory():
                 'provider': 'OpenAI',
                 'api_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'model': 'model',
                 'prompt': 'List 3 ice cream flavors.',
@@ -258,7 +258,7 @@ def test_get_open_search_vector_store_factory():
                 'port': 9200,
                 'password': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'username': 'admin',
             }
@@ -274,7 +274,7 @@ def test_get_open_search_vector_store_factory():
                 'port': 5432,
                 'password': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'username': 'postgres',
                 'database': 'postgres',
@@ -308,7 +308,7 @@ def test_get_langfuse_observability_factory():
                 'provider': 'Langfuse',
                 'secret_key': {
                     'type': 'Raw',
-                    'value': 'ab7***************************A1IV4B',
+                    'secret': 'ab7***************************A1IV4B',
                 },
                 'public_key': 'df41*********f',
                 'url': 'https://myServer:3000',

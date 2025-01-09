@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ from pydantic import Field, HttpUrl
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
@@ -36,7 +38,7 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     )
     api_key: SecretKey = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')]
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',

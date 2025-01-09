@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,8 +18,12 @@ from typing import Literal
 
 from pydantic import AnyUrl, Field
 
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.observability.observability_setting import BaseObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
+from gen_ai_orchestrator.models.observability.observability_setting import (
+    BaseObservabilitySetting,
+)
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
@@ -40,7 +44,7 @@ class LangfuseObservabilitySetting(BaseObservabilitySetting):
     )
     secret_key: SecretKey = Field(
         description='Stores the secret key used to authenticate requests to the Observability Provider API.',
-        examples=[RawSecretKey(value='sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f')],
+        examples=[RawSecretKey(secret='sk-********************be8f')],
     )
     public_key: str = Field(
         description='Stores the public key used to authenticate requests to the Observability Provider API.',

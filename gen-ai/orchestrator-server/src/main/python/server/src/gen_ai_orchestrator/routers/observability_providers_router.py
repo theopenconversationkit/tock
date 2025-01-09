@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,15 +25,20 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
     GenAIUnknownProviderException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderException,
+)
 from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_bad_request,
     create_error_info_not_found,
     create_error_response,
 )
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
@@ -44,7 +49,9 @@ from gen_ai_orchestrator.routers.responses.responses import (
     ObservabilityProviderResponse,
     ProviderSettingStatusResponse,
 )
-from gen_ai_orchestrator.services.observability.observabilty_service import check_observability_setting
+from gen_ai_orchestrator.services.observability.observabilty_service import (
+    check_observability_setting,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -110,9 +117,9 @@ async def get_observability_provider_setting_by_id(
     if provider_id == ObservabilityProvider.LANGFUSE:
         return ObservabilitySetting(
             provider=ObservabilityProvider.LANGFUSE,
-            secret_key=RawSecretKey(value='sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f'),
+            secret_key=RawSecretKey(secret='sk-********************be8f'),
             public_key='pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
-            url="https://cloud.langfuse.com"
+            url='https://cloud.langfuse.com'
         )
 
 

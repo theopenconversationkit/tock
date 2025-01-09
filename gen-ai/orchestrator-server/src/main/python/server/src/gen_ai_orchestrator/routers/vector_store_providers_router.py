@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions im
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
 )
-from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import \
-    GenAIUnknownVectorStoreProviderException
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
+    GenAIUnknownVectorStoreProviderException,
+)
 from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_bad_request,
     create_error_info_not_found,
@@ -34,17 +35,25 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
+    OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    VectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.routers.requests.requests import (
     VectorStoreProviderSettingStatusQuery,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
-    VectorStoreProviderResponse,
     ProviderSettingStatusResponse,
+    VectorStoreProviderResponse,
 )
-from gen_ai_orchestrator.services.vector_store.vector_store_service import check_vector_store_setting
+from gen_ai_orchestrator.services.vector_store.vector_store_service import (
+    check_vector_store_setting,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +122,7 @@ async def get_vector_store_provider_setting_by_id(
             host='localhost',
             port=9200,
             username='admin',
-            password=RawSecretKey(value='admin'),
+            password=RawSecretKey(secret='admin'),
         )
 
 

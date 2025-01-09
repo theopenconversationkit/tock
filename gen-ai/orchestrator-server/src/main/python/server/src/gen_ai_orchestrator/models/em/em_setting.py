@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,6 +32,6 @@ class BaseEMSetting(BaseModel):
     )
     api_key: Optional[SecretKey] = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
         default=None,
     )
