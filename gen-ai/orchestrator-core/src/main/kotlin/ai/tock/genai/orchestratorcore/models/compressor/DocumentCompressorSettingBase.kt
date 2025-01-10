@@ -27,10 +27,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     property = "provider"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = BloomzDocumentCompressorSetting::class, name = Constants.BLOOMZ)
+    JsonSubTypes.Type(value = BloomzDocumentCompressorSetting::class, name = Constants.BLOOMZ_COMPRESSOR)
 )
 abstract class DocumentCompressorSettingBase(
-    val provider: DocumentCompressorProvider
+    val provider: DocumentCompressorProvider,
+    open val maxDocuments: Int,
+    open val minScore: Float,
 )
 
 typealias DocumentCompressorSetting = DocumentCompressorSettingBase

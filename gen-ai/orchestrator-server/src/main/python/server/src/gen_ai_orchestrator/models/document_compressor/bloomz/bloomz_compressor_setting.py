@@ -21,22 +21,19 @@ from gen_ai_orchestrator.models.document_compressor.document_compressor_setting 
 
 
 class BloomzCompressorSetting(BaseDocumentCompressorSetting):
+    """
+    A class for Bloomz Compressor Model Setting.
+    Usage docs: https://huggingface.co/cmarkea/bloomz-3b-reranking
+    """
+
     provider: Literal[DocumentCompressorProvider.BLOOMZ] = Field(
         description='The document compressor provider.',
         examples=[DocumentCompressorProvider.BLOOMZ],
         default=DocumentCompressorProvider.BLOOMZ.value,
     )
-    min_score: Optional[float] = Field(
-        description='Minimum retailment score.',
-        default=0.5,
-    )
     endpoint: str = Field(
         description='Bloomz scoring endpoint.',
         default='http://localhost:8082'
-    )
-    max_documents: Optional[int] = Field(
-        description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
-        default=50,
     )
     label: Optional[str] = Field(
         description='Label to use for reranking. The output label is usually documented on the huggingface model card '

@@ -85,6 +85,9 @@ class BloomzRerank(BaseDocumentCompressor):
                     cause=f'Response: {response.text}, Reason: {response.reason}',
                     request=f'[POST] {url}',
                 ))
+        except GenAIDocumentCompressorErrorException:
+            # Re-raise GenAIDocumentCompressorErrorException without modification
+            raise
         except Exception as exc:
             logger.error(f'Unknown error ! {exc}')
             raise GenAIDocumentCompressorErrorException(ErrorInfo(

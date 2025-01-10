@@ -26,7 +26,7 @@ object Constants {
     const val OPEN_SEARCH = "OpenSearch"
     const val PG_VECTOR = "PGVector"
 
-    const val BLOOMZ = "BloomzRerank"
+    const val BLOOMZ_COMPRESSOR = "BloomzRerank"
 
     private const val GEN_AI="GenAI"
     private const val GEN_AI_RAG="$GEN_AI/RAG"
@@ -37,7 +37,6 @@ object Constants {
 
     const val GEN_AI_COMPLETION_SENTENCE_GENERATION="$GEN_AI_COMPLETION/sentenceGeneration"
 
-    const val GEN_AI_COMPRESSION="$GEN_AI/COMPRESSION"
     const val GEN_AI_VECTOR_STORE="$GEN_AI/VECTOR_STORE"
     const val GEN_AI_OBSERVABILITY="$GEN_AI/OBSERVABILITY"
 }
