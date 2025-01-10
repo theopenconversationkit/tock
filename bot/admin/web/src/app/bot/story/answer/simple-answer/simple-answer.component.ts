@@ -53,6 +53,10 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   updateLabel(answer: SimpleAnswer) {
+    // back returns an I18nLabel whose “namespace” attribute may have been turned to lowercase; we need to fix this.
+    // TODO : Fix back behavior
+    answer.label.namespace = this.state.currentApplication.namespace;
+
     this.bot.saveI18nLabel(answer.label).subscribe((_) =>
       this.dialog.notify(`Story label has been updated successfully.`, 'Label Updated', {
         duration: 3000,
