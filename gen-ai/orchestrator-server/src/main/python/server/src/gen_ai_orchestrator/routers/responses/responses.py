@@ -97,6 +97,19 @@ class EMProviderResponse(BaseModel):
     )
 
 
+class ObservabilityInfo(BaseModel):
+    """The Observability Info model"""
+
+    trace_id: str = Field(
+        description='The observability trace id.'
+    )
+    trace_name: str = Field(
+        description='The observability trace name.'
+    )
+    trace_url: str = Field(
+        description='The observability trace url.'
+    )
+
 class RagResponse(BaseModel):
     """The RAG response model"""
 
@@ -108,7 +121,10 @@ class RagResponse(BaseModel):
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
         default=None,
     )
-
+    observability_info: Optional[ObservabilityInfo] = Field(
+        description='The observability info.',
+        default=None
+    )
 
 class QAResponse(BaseModel):
     """The QA response model"""

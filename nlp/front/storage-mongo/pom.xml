@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-front</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-front-storage-mongo</artifactId>
@@ -64,6 +64,8 @@
         </dependency>
     </dependencies>
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -77,11 +79,6 @@
                             <goal>kapt</goal>
                         </goals>
                         <configuration>
-                            <sourceDirs>
-                                <sourceDir>src/main/kotlin</sourceDir>
-                                <sourceDir>../shared/src/main/kotlin</sourceDir>
-                                <sourceDir>../../core/shared/src/main/kotlin</sourceDir>
-                            </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>

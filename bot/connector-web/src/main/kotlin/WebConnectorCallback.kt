@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.web.WebConnector.Companion.sendSseResponse
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.MetadataEvent
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -34,6 +35,7 @@ internal class WebConnectorCallback(
     private val webMapper: ObjectMapper,
     private val eventId: String,
     private val messageProcessor: WebMessageProcessor,
+    internal val streamedResponse:Boolean,
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     fun addAction(action: Action) {
@@ -54,5 +56,10 @@ internal class WebConnectorCallback(
         context?.response()
             ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             ?.end(webMapper.writeValueAsString(createResponse(actions)))
+    }
+
+    fun sendStreamedResponse(action: Action) {
+        context?.response()
+            ?.sendSseResponse(createResponse(listOf(action)))
     }
 }

@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot-api</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-api-websocket-base</artifactId>
@@ -38,5 +38,9 @@
             <artifactId>vertx-web</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

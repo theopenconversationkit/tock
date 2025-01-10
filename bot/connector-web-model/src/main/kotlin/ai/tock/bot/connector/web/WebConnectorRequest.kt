@@ -27,6 +27,7 @@ interface WebConnectorRequestContract {
     val connectorId: String?
     val returnsHistory: Boolean get() = false
     val sourceWithContent: Boolean get() = false
+    val streamedResponse: Boolean get() = false
 }
 
 data class WebConnectorRequestContent(
@@ -38,4 +39,5 @@ data class WebConnectorRequestContent(
     override val connectorId: String? = null,
     override val returnsHistory: Boolean = false,
     override val sourceWithContent: Boolean = false,
+    override val streamedResponse: Boolean = false,
 ) : WebConnectorRequestContract

@@ -19,6 +19,7 @@ package ai.tock.bot.mongo
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.NlpCallStats
+import ai.tock.bot.engine.nlp.NlpStats
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -38,4 +39,6 @@ internal data class NlpStatsCol(
     val stats: NlpCallStats,
     val appNamespace: String,
     val date: Instant = Instant.now()
-)
+) {
+    fun toNlpStats(): NlpStats = NlpStats(_id.dialogId, _id.actionId, stats, appNamespace, date)
+}

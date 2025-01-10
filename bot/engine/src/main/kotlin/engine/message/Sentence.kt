@@ -36,7 +36,7 @@ data class Sentence(
     val messages: MutableList<GenericMessage> = mutableListOf(),
     val userInterface: UserInterfaceType? = null,
     override val delay: Long = 0,
-    @Transient private val nlpStatsProvider: (() -> NlpCallStats?)? = null
+    @Transient private val nlpStatsProvider: NlpStatsProvider? = null
 ) : Message {
 
     companion object {
@@ -44,22 +44,22 @@ data class Sentence(
 
         private fun toGenericMessage(message: ConnectorMessage): GenericMessage =
             (
-                try {
-                    message.toGenericMessage() ?: GenericMessage(message)
-                } catch (t: Throwable) {
-                    logger.error(t)
-                    GenericMessage(message)
-                }
-                ).copy(connectorType = message.connectorType, connectorMessage = message)
+                    try {
+                        message.toGenericMessage() ?: GenericMessage(message)
+                    } catch (t: Throwable) {
+                        logger.error(t)
+                        GenericMessage(message)
+                    }
+                    ).copy(connectorType = message.connectorType, connectorMessage = message)
     }
 
     constructor(
         text: String?,
         messages: MutableList<ConnectorMessage> = mutableListOf(),
         userInterface: UserInterfaceType? = null,
-        nlpStatsProvider: (() -> NlpCallStats?)? = null
+        nlpStatsProvider: NlpStatsProvider? = null
     ) :
-        this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
+            this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
 
     override val eventType: EventType = EventType.sentence
 
@@ -120,3 +120,8 @@ data class Sentence(
         return result
     }
 }
+
+fun interface NlpStatsProvider {
+    operator fun invoke(): NlpCallStats?
+}
+

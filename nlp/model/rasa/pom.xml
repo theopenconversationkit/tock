@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-model</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-model-rasa</artifactId>
@@ -50,5 +50,9 @@
             <artifactId>converter-jackson</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

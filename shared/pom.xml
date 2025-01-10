@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-shared</artifactId>
@@ -29,6 +29,8 @@
     <description>Tock shared classes</description>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>

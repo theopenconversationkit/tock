@@ -31,7 +31,6 @@ import ai.tock.shared.loadProperties
 import mu.KotlinLogging
 import opennlp.tools.ml.maxent.GISModel
 import opennlp.tools.ml.maxent.GISTrainer
-import opennlp.tools.ml.model.AbstractDataIndexer.CUTOFF_PARAM
 import opennlp.tools.ml.model.Event
 import opennlp.tools.ml.model.OnePassRealValueDataIndexer
 import opennlp.tools.ml.model.TwoPassDataIndexer
@@ -42,6 +41,7 @@ import opennlp.tools.namefind.TokenNameFinderFactory
 import opennlp.tools.util.ObjectStreamUtils
 import opennlp.tools.util.Span
 import opennlp.tools.util.TrainingParameters
+import opennlp.tools.util.TrainingParameters.CUTOFF_PARAM
 import java.time.Instant
 
 /**

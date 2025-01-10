@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-storage-mongo</artifactId>
@@ -85,6 +85,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -98,11 +100,9 @@
                             <goal>kapt</goal>
                         </goals>
                         <configuration>
-                            <sourceDirs>
-                                <sourceDir>src/main/kotlin</sourceDir>
-                                <sourceDir>../engine/src/main/kotlin</sourceDir>
-                                <sourceDir>../../translator/core/src/main/kotlin</sourceDir>
-                            </sourceDirs>
+<!--                            <sourceDirs>-->
+<!--                                <sourceDir>${project.build.directory}/generated-source/kapt</sourceDir>-->
+<!--                            </sourceDirs>-->
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>

@@ -56,16 +56,17 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
     @Test
     fun `Save a FaqSettings`() {
         faqSettingsDao.save(faqSettings)
+        val settings = faqSettingsDao.getFaqSettingsByApplicationId(applicationId)
 
         assertEquals(
-            expected = faqSettings,
-            actual = faqSettingsDao.getFaqSettingsById(faqSettingsId),
-            message = "There should be something returned with an faqSettingsId"
+            expected = faqSettings.copy(_id = settings!!._id),
+            actual = settings,
+            message = "There should be something returned with an applicationId"
         )
         assertEquals(
-            expected = faqSettings,
-            actual = faqSettingsDao.getFaqSettingsByApplicationId(applicationId),
-            message = "There should be something returned with an applicationId"
+            expected = faqSettings.copy(_id = settings._id),
+            actual = faqSettingsDao.getFaqSettingsById(settings._id),
+            message = "There should be something returned with an faqSettingsId"
         )
         assertEquals(1, col.countDocuments())
     }
@@ -73,10 +74,11 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
     @Test
     fun `Update a FaqSettings`() {
         faqSettingsDao.save(faqSettings)
-        val faqSettingsSaved = faqSettingsDao.getFaqSettingsById(faqSettingsId)
+        val faqSettingsSaved = faqSettingsDao.getFaqSettingsByApplicationId(applicationId)
+        val faqSettingsId = faqSettingsSaved!!._id
 
-        assertEquals(expected = faqSettings.satisfactionEnabled, actual = faqSettingsSaved?.satisfactionEnabled)
-        assertEquals(expected = faqSettings.satisfactionStoryId, actual = faqSettingsSaved?.satisfactionStoryId)
+        assertEquals(expected = faqSettings.satisfactionEnabled, actual = faqSettingsSaved.satisfactionEnabled)
+        assertEquals(expected = faqSettings.satisfactionStoryId, actual = faqSettingsSaved.satisfactionStoryId)
 
         val faqSettings2 = faqSettings.copy(satisfactionEnabled = true, satisfactionStoryId = storyId)
         faqSettingsDao.save(faqSettings2)
@@ -91,7 +93,8 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
     @Test
     fun `Remove a FaqSettings`() {
         faqSettingsDao.save(faqSettings)
-
+        val faqSettingsSaved = faqSettingsDao.getFaqSettingsByApplicationId(applicationId)
+        val faqSettingsId = faqSettingsSaved!!._id
         faqSettingsDao.deleteFaqSettingsById(faqSettingsId)
 
         assertEquals(

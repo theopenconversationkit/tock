@@ -20,7 +20,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-build-model-worker-on-demand</artifactId>
@@ -37,5 +37,9 @@
             <artifactId>vertx-web</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

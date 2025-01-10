@@ -29,6 +29,7 @@ import { copyToClipboard } from '../../../utils';
 import { IntentStoryDetailsComponent } from '../../intent-story-details/intent-story-details.component';
 import { ChoiceDialogComponent } from '../../choice-dialog/choice-dialog.component';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'tock-sentence-training-entry',
@@ -261,6 +262,10 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   isIntentStorySearchable() {
     return this.sentence.classification.intentId !== Intent.unknown && this.sentence.classification.intentId !== Intent.ragExcluded;
   }
+
+  originalOrder = (a: KeyValue<string, number>, b: KeyValue<string, number>): number => {
+    return 0;
+  };
 
   displayIntentStoryDetails() {
     const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
