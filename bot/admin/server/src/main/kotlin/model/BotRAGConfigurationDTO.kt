@@ -25,6 +25,7 @@ import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
 import ai.tock.genai.orchestratorcore.models.em.toDTO
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.toDTO
+import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -79,9 +80,13 @@ data class BotRAGConfigurationDTO(
 
 private fun BotRAGConfiguration.generateIndexName(): String? {
     return indexSessionId?.takeIf { it.isNotBlank() }?.let {
-        VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
-            ?.setting
-            ?.normalizeDocumentIndexName(namespace, botId, it)
+        VectorStoreUtils.getVectorStoreElements(
+            namespace,
+            botId,
+            it,
+            VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
+                ?.setting
+        ).second
     }
 }
 
