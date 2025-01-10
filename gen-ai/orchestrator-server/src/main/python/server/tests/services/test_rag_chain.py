@@ -16,7 +16,6 @@ import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from requests.exceptions import HTTPError
@@ -27,9 +26,6 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 )
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
@@ -48,6 +44,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
     get_condense_question,
     get_llm_prompts,
 )
+
 
 # 'Mock an item where it is used, not where it came from.'
 # (https://www.toptal.com/python/an-introduction-to-mocking-in-python)
@@ -99,13 +96,13 @@ async def test_rag_chain(
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
     query_dict = {
-        'history': [
-            {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
-            {
-                'text': 'you can do this with the following method ....',
-                'type': 'AI',
-            },
-        ],
+        'dialog': {
+            'history': [
+                {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
+                {'text': 'you can do this with the following method ....', 'type': 'AI'}
+            ],
+            'tags': []
+        },
         'question_answering_llm_setting': {
             'provider': 'OpenAI',
             'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
@@ -180,7 +177,6 @@ Answer in {locale}:""",
     em_factory_instance = mocked_get_em_factory.return_value
     llm_factory_instance = mocked_get_llm_factory.return_value
     observability_factory_instance = mocked_get_callback_handler_factory.return_value
-    vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
     mocked_compressor = mocked_compressor_builder.return_value
@@ -247,6 +243,7 @@ Answer in {locale}:""",
             text=mocked_rag_answer['answer'], footnotes=[]
         ),
         debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
+        observability_info=None
     )
 
     mocked_guardrail_parse.assert_called_once_with(

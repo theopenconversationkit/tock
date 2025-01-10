@@ -48,7 +48,7 @@ class Source(BaseModel):
         )
 
     def __hash__(self):
-        return hash((self.title, self.url, self.content))
+        return hash((self.title, str(self.url or ''), self.content))
 
 
 class Footnote(Source):

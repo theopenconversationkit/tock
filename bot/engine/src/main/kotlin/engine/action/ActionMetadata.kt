@@ -16,6 +16,8 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
+
 data class ActionMetadata(
     /** Is it the last answer of the bot. */
     var lastAnswer: Boolean = false,
@@ -43,5 +45,7 @@ data class ActionMetadata(
     var isGenAiRagAnswer: Boolean = false,
     /** is response streamed ? **/
     var streamedResponse: Boolean = false,
+    /** ObservabilityInfo **/
+    val observabilityInfo: ObservabilityInfo? = null,
 )
 
