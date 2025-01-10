@@ -28,6 +28,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.nlp.NlpCallStats
+import ai.tock.bot.engine.nlp.NlpStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
@@ -364,6 +365,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.error(e)
             null
         }
+    }
+
+    override fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats> {
+        return nlpStatsCol.find(
+            and(
+                NlpStatsCol::appNamespace eq namespace,
+                NlpStatsCol::_id / NlpStatsColId::dialogId `in` dialogIds
+            )
+        ).map { it.toNlpStats() }.toList()
     }
 
     override fun loadWithLastValidDialog(
