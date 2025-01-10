@@ -77,6 +77,9 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
     val isGenAiRagAnswer: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__IsGenAiRagAnswer)
 
+    val streamedResponse: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__StreamedResponse)
+
     val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
         get() = KPropertyPath(this,__ObservabilityInfo)
 
@@ -104,7 +107,11 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         val SourceWithContent: KProperty1<ActionMetadata, Boolean?>
             get() = __SourceWithContent
         val IsGenAiRagAnswer: KProperty1<ActionMetadata, Boolean?>
-            get() = __IsGenAiRagAnswer}
+            get() = __IsGenAiRagAnswer
+        val StreamedResponse: KProperty1<ActionMetadata, Boolean?>
+            get() = __StreamedResponse
+        val ObservabilityInfo: KProperty1<ActionMetadata, ObservabilityInfo?>
+            get() = __ObservabilityInfo}
 }
 
 class ActionMetadata_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
