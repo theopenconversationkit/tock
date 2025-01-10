@@ -19,22 +19,10 @@
 
         <span
           *ngIf="applicationId"
-          nbTooltip="Configuration"
+          nbTooltip="Configuration : {{ getApplicationConfigurationName(applicationId, false) }}"
         >
-          [{{ getApplicationConfigurationName(applicationId) }}]</span
+          | {{ getApplicationConfigurationName(applicationId) }}</span
         >
-
-        <button
-          *ngIf="!reply"
-          nbButton
-          ghost
-          size="tiny"
-          class="ml-2"
-          nbTooltip="Test this sentence in a dialog"
-          (click)="testDialogSentence(message, applicationId, $event)"
-        >
-          <nb-icon icon="terminal-plus"></nb-icon>
-        </button>
       </p>
 
       <div class="text">

@@ -24,9 +24,8 @@ import { TestPlan } from '../test/model/test';
 import { DialogReport } from '../shared/model/dialog-data';
 import { ApplicationDialogFlow, DialogFlowRequest } from './flow/flow';
 import { UserAnalyticsPreferences } from './preferences/UserAnalyticsPreferences';
-import { StorySearchQuery } from "../bot/model/story";
-import {RatingReportQueryResult} from "./satisfaction/satisfaction-details/RatingReportQueryResult";
-
+import { StorySearchQuery } from '../bot/model/story';
+import { RatingReportQueryResult } from './satisfaction/satisfaction-details/RatingReportQueryResult';
 
 @Injectable()
 export class AnalyticsService {
@@ -104,8 +103,8 @@ export class AnalyticsService {
     return this.rest.get(`/dialog/${applicationId}/${dialogId}`, DialogReport.fromJSON);
   }
 
-  dialogWithIntentFilter(applicationId: string, dialogId: string, intentsToHide: string[]) : Observable<DialogReport> {
-    return this.rest.post(`/dialog/${applicationId}/${dialogId}/satisfaction`,intentsToHide, DialogReport.fromJSON);
+  dialogWithIntentFilter(applicationId: string, dialogId: string, intentsToHide: string[]): Observable<DialogReport> {
+    return this.rest.post(`/dialog/${applicationId}/${dialogId}/satisfaction`, intentsToHide, DialogReport.fromJSON);
   }
 
   getTestPlansByNamespaceAndNlpModel(): Observable<TestPlan[]> {
@@ -134,30 +133,38 @@ export class AnalyticsService {
   }
 
   isActiveSatisfactionByBot(): Observable<Boolean> {
-    let request = new StorySearchQuery(this.state.currentApplication.namespace, this.state.currentApplication.name, this.state.currentLocale, 0, 1000, "Builtin Satisfaction", "builtin_satisfaction", true);
-    return this.rest.post(
-      '/analytics/satisfaction/active', request, (res: string) => BooleanResponse.fromJSON(res || {}).success);
+    let request = new StorySearchQuery(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      this.state.currentLocale,
+      0,
+      1000,
+      'Builtin Satisfaction',
+      'builtin_satisfaction',
+      true
+    );
+    return this.rest.post('/analytics/satisfaction/active', request, (res: string) => BooleanResponse.fromJSON(res || {}).success);
   }
 
   createSatisfactionModule(): Observable<Boolean> {
     return this.rest.post(
-      '/analytics/satisfaction/init', this.state.createApplicationScopedQuery(), (res: string) => BooleanResponse.fromJSON(res || {}).success);
+      '/analytics/satisfaction/init',
+      this.state.createApplicationScopedQuery(),
+      (res: string) => BooleanResponse.fromJSON(res || {}).success
+    );
   }
 
   getSatisfactionStat(): Observable<RatingReportQueryResult> {
-    return this.rest.post(
-      '/analytics/satisfaction', this.state.createApplicationScopedQuery());
+    return this.rest.post('/analytics/satisfaction', this.state.createApplicationScopedQuery());
   }
 
   downloadDialogsCsv(dialogReportQuery: DialogReportQuery): Observable<Blob> {
-    return this.rest.post('/dialogs/ratings/export',dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
+    return this.rest.post('/dialogs/ratings/export', dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
   }
 
   downloadDialogsWithIntentsCsv(dialogReportQuery: DialogReportQuery): Observable<Blob> {
-    return this.rest.post('/dialogs/ratings/intents/export',dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
+    return this.rest.post('/dialogs/ratings/intents/export', dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
   }
-
-
 }
 
 export class BooleanResponse {

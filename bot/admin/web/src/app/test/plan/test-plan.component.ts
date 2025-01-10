@@ -25,6 +25,7 @@ import { NbToastrService } from '@nebular/theme';
 import { APP_BASE_HREF } from '@angular/common';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -203,12 +204,15 @@ export class TestPlanComponent implements OnInit {
   }
 
   showExecutions(plan: TestPlan) {
-    this.test.getTestPlanExecutions(plan._id).subscribe((e) => {
-      plan.testPlanExecutions = e;
-      //fill errors
-      e.forEach((e) => e.dialogs.forEach((d) => plan.fillDialogExecutionReport(d)));
-      plan.displayExecutions = true;
-    });
+    this.test
+      .getTestPlanExecutions(plan._id)
+      .pipe(take(1))
+      .subscribe((e) => {
+        plan.testPlanExecutions = e;
+        //fill errors
+        e.forEach((e) => e.dialogs.forEach((d) => plan.fillDialogExecutionReport(d)));
+        plan.displayExecutions = true;
+      });
   }
 
   /**
@@ -219,7 +223,10 @@ export class TestPlanComponent implements OnInit {
    * @param testExecutionId - Identifier of the test plan execution
    */
   getExecutionStatus(testPlanId: string, testExecutionId: string) {
-    this.test.getTestPlanExecutionStatus(testPlanId, testExecutionId).subscribe((e) => (this.testExecutionStatus = e.status));
+    this.test
+      .getTestPlanExecutionStatus(testPlanId, testExecutionId)
+      .pipe(take(1))
+      .subscribe((e) => (this.testExecutionStatus = e.status));
   }
 
   hideExecutions(plan: TestPlan) {
