@@ -31,8 +31,8 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>2.1.0</kotlin>
-        <coroutine>1.10.1</coroutine>
+        <kotlin>2.0.21</kotlin>
+        <coroutine>1.9.0</coroutine>
 
         <slf4j>2.0.16</slf4j>
         <logback>1.5.15</logback>
@@ -40,7 +40,7 @@
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>5.2.0</kmongo>
+        <kmongo>5.2.1</kmongo>
         <jackson>2.18.2</jackson>
         <jackson-databind>2.18.2</jackson-databind>
         <jackson-module>2.18.2</jackson-module>
