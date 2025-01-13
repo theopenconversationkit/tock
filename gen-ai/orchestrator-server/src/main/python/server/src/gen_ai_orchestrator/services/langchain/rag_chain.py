@@ -33,6 +33,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_core.vectorstores import VectorStoreRetriever
+from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -43,9 +44,7 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
-from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
-    BaseCompressorSetting,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
@@ -59,7 +58,7 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     TextWithFootnotes,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from gen_ai_orchestrator.routers.responses.responses import RagResponse
+from gen_ai_orchestrator.routers.responses.responses import RagResponse, ObservabilityInfo
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
 )
@@ -93,15 +92,23 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     conversational_retrieval_chain = create_rag_chain(query=query)
 
-    logger.debug(
-        'RAG chain - Use chat history: %s', 'Yes' if len(query.history) > 0 else 'No'
-    )
     message_history = ChatMessageHistory()
-    for msg in query.history:
-        if ChatMessageType.HUMAN == msg.type:
-            message_history.add_user_message(msg.text)
-        else:
-            message_history.add_ai_message(msg.text)
+    session_id = None
+    user_id = None
+    tags = []
+    if query.dialog:
+        for msg in query.dialog.history:
+            if ChatMessageType.HUMAN == msg.type:
+                message_history.add_user_message(msg.text)
+            else:
+                message_history.add_ai_message(msg.text)
+        session_id = query.dialog.dialog_id,
+        user_id = query.dialog.user_id,
+        tags = query.dialog.tags,
+
+    logger.debug(
+        'RAG chain - Use chat history: %s', 'Yes' if len(message_history.messages) > 0 else 'No'
+    )
 
     inputs = {
         **query.question_answering_prompt_inputs,
@@ -115,17 +122,20 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     callback_handlers = []
     records_callback_handler = RetrieverJsonCallbackHandler()
+    observability_handler = None
     if debug:
         # Debug callback handler
         callback_handlers.append(records_callback_handler)
     if query.observability_setting is not None:
         # Langfuse callback handler
-        callback_handlers.append(
-            create_observability_callback_handler(
-                observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.RAG,
-            )
+        observability_handler = create_observability_callback_handler(
+            observability_setting=query.observability_setting,
+            trace_name=ObservabilityTrace.RAG.value,
+            session_id=session_id,
+            user_id=user_id,
+            tags=tags,
         )
+        callback_handlers.append(observability_handler)
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -152,15 +162,17 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             footnotes=set(
                 map(
                     lambda doc: Footnote(
-                        identifier=f'{doc.metadata["id"]}',
+                        identifier=doc.metadata['id'],
                         title=doc.metadata['title'],
                         url=doc.metadata['source'],
                         content=get_source_content(doc),
+                        score=doc.metadata.get('retriever_score', None)
                     ),
                     response['source_documents'],
                 )
             ),
         ),
+        observability_info=get_observability_info(observability_handler),
         debug=get_rag_debug_data(
             query, response, records_callback_handler, rag_duration
         )
@@ -168,6 +180,17 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         else None,
     )
 
+
+def get_observability_info(observability_handler) -> Optional[ObservabilityInfo]:
+    """Get the observability Information"""
+    if isinstance(observability_handler, LangfuseCallbackHandler):
+        return ObservabilityInfo(
+            trace_id=observability_handler.trace.id,
+            trace_name=observability_handler.trace_name,
+            trace_url=observability_handler.get_trace_url()
+        )
+    else:
+        return None
 
 def get_source_content(doc: Document) -> str:
     """
@@ -185,12 +208,13 @@ def get_source_content(doc: Document) -> str:
         return doc.page_content
 
 
-def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
+def create_rag_chain(query: RagQuery, vector_db_async_mode: Optional[bool] = True) -> ConversationalRetrievalChain:
     """
     Create the RAG chain from RagQuery, using the LLM and Embedding settings specified in the query
 
     Args:
         query: The RAG query
+        vector_db_async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
     Returns:
         The RAG chain.
     """
@@ -203,10 +227,11 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     )
 
     retriever = vector_store_factory.get_vector_store_retriever(
-        search_kwargs=query.document_search_params.to_dict()
+        search_kwargs=query.document_search_params.to_dict(),
+        async_mode=vector_db_async_mode
     )
     if query.compressor_setting:
-        retriever = add_compressor(retriever, query.compressor_setting)
+        retriever = add_document_compressor(retriever, query.compressor_setting)
 
     logger.debug('RAG chain - Document index name: %s', query.document_index_name)
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
@@ -293,23 +318,20 @@ def __rag_log(level, message, inputs, response):
     )
 
 
-def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument]:
+def get_rag_documents(response) -> List[RagDocument]:
     """
     Get documents used on RAG context
 
     Args:
-        handler: the callback handler
+        response: the rag answer
     """
-
-    on_chain_start_records = handler.show_records('on_chain_start_records')
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0 : len(doc['metadata']['title']) + 100]
-            + '...',
-            metadata=RagDocumentMetadata(**doc['metadata']),
+            content=doc.page_content[0: len(doc.metadata['title']) + 100] + '...',
+            metadata=RagDocumentMetadata(**doc.metadata),
         )
-        for doc in on_chain_start_records[0]['inputs']['input_documents']
+        for doc in response['source_documents']
     ]
 
 
@@ -349,7 +371,7 @@ def get_rag_debug_data(
         condense_question_prompt=get_llm_prompts(records_callback_handler)[0],
         condense_question=get_condense_question(records_callback_handler),
         question_answering_prompt=get_llm_prompts(records_callback_handler)[1],
-        documents=get_rag_documents(records_callback_handler),
+        documents=get_rag_documents(response),
         document_index_name=query.document_index_name,
         document_search_params=query.document_search_params,
         answer=response['answer'],
@@ -370,8 +392,8 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
     return True
 
 
-def add_compressor(
-    retriever: VectorStoreRetriever, compressor_settings: BaseCompressorSetting
+def add_document_compressor(
+    retriever: VectorStoreRetriever, compressor_settings: BaseDocumentCompressorSetting
 ) -> ContextualCompressionRetriever:
     """
     Adds a compressor to the retriever.

@@ -12,57 +12,68 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
+"""
+Index a CSV file (line format: 'title'|'source'|'text') into a vector database.
 
 Usage:
-    index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
-    index_documents.py -h | --help
-    index_documents.py --version
-
-Arguments:
-    input_csv       path to the ready-to-index file
-    namespace       the namespace
-    bot_id          the bot ID
-    embeddings_json_config  path to an embeddings configuration file (JSON format)
-                    (shall describe settings for one of OpenAI or AzureOpenAI
-                    embeddings model)
-    vector_store_json_config  path to a vector store configuration file (JSON format)
-                    (shall describe settings for one of OpenSearch or PGVector store)
-    chunks_size     size of the embedded chunks of documents
+  index_documents.py --input-csv=<path> --namespace=<ns> --bot-id=<id> \
+                     --embeddings-json-config=<emb_cfg> --vector-store-json-config=<vs_cfg> \
+                     --chunks-size=<size> [--ignore-source=<is>] [--embedding-bulk-size=<em_bs>] \
+                     [--env-file=<env>] [-v]
+  index_documents.py (-h | --help)
+  index_documents.py --version
 
 Options:
-    -h --help   Show this screen
-    --version   Show version
-    -v          Verbose output for debugging
+  -h --help                           Show this help message.
+  --version                           Show the version.
+  --input-csv=<path>                  Path to the CSV file to be indexed.
+  --namespace=<ns>                    TOCK bot namespace to which the index belongs.
+  --bot-id=<id>                       TOCK bot ID to which the index belongs.
+  --embeddings-json-config=<emb_cfg>  Path to embeddings configuration JSON file.
+                                       (Describes settings for embeddings models supported by TOCK.)
+  --vector-store-json-config=<vs_cfg> Path to vector store configuration JSON file.
+                                       (Describes settings for vector stores supported by TOCK.)
+  --chunks-size=<size>                Size of the embedded document chunks.
+  --ignore-source=<is>                Ignore source validation. Useful if sources aren't valid URLs.
+                                       [default: false]
+  --embedding-bulk-size=<em_bs>       Number of chunks sent in each embedding request.
+                                       [default: 100]
+  --env-file=<env>                    Path to an optional environment configuration file.
+  -v                                  Verbose output for debugging.
 
-Index a ready-to-index CSV file contents into an OpenSearch vector database.
-CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to
-chunks_size, and embedded using configuration described in embeddings_json_config (it
-uses the embeddings constructor from the orchestrator module, so JSON file
-shall follow corresponding format). Documents will be indexed in a vector store (vector_store_json_config)
-under index_name index (index_name is generated following the naming restrictions of the vector store,
-example for OpenSearch : ns-{namespace}-bot-{bot_id}-session-{uuid4})
-This The index_name is unique and will be printed to the console at the end of successful execution
+Description:
+  This script indexes the contents of a CSV file into a vector database.
+  The CSV must contain 'title', 'source', and 'text' columns. The 'text' will be chunked
+  according to the specified chunk size and embedded using settings described in the
+  embeddings JSON configuration file. Documents will then be indexed into a vector store
+  using the vector store JSON configuration.
+
+  The index name is automatically generated based on the namespace, bot ID, and a unique identifier
+  (UUID). For example, in OpenSearch: ns-{namespace}-bot-{bot_id}-session-{uuid4}.
+  Indexing details will be displayed on the console at the end of the operation,
+  and saved in a specific log file in ./logs
 """
-import asyncio
+import copy
 import csv
 import json
 import logging
 import re
 import sys
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import List
 from uuid import uuid4
 
-import humanize
 import pandas as pd
 from docopt import docopt
+from dotenv import load_dotenv
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import BloomzEMSetting
 from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import PGVectorStoreSetting
@@ -76,59 +87,59 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
 
+from indexing_details import IndexingDetails
+
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)
 
-
-async def index_documents(args):
+def index_documents() -> IndexingDetails:
     """
-    Read a ready-to-index CSV file, then index its contents to an OpenSearch DB.
-
-    Args:
-
-        args (dict):    A dictionary containing command-line arguments.
-                        Expecting keys: '<input_csv>'
-                                        '<namespace>'
-                                        '<bot_id>'
-                                        '<embeddings_json_config>'
-                                        '<vector_store_json_config>'
-                                        '<chunks_size>'
+    Read a CSV file, then index its contents to a Vector Store DB.
 
     Returns:
-        The indexing session unique id.
+        The indexing details.
     """
-    # unique date / uuid for each indexing session (stored as metadata)
-    session_uuid = str(uuid4())
-    logging.debug(
-        f"Beginning indexation session {session_uuid} at '{formatted_datetime}'"
-    )
 
-    logging.debug(f"Read input CSV file {args['<input_csv>']}")
-    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0) # names=['title', 'source', 'text']
-    # Prevent NaN value in the 'source' column with a default value 'UNKNOWN', then replace it with None
-    df['source'] = df['source'].fillna('UNKNOWN')
-    df['source'] = df['source'].replace('UNKNOWN', None)
-    loader = DataFrameLoader(df, page_content_column='text')
+    start_time = datetime.now()
+    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
+    session_uuid = str(uuid4())
+    logging.debug(f"Beginning indexation session {session_uuid} at '{formatted_datetime}'")
+
+    logging.debug(f"Read input CSV file {input_csv}")
+    df = pd.read_csv(input_csv, delimiter='|', quotechar='"', header=0, dtype=str)
+    # Replace NaN values with empty strings in all columns to avoid type issues
+    df = df.fillna('')
+    # Filter rows where 'text' is not empty or just whitespace
+    df_filtered = df[df['text'].str.strip().astype(bool)]
+    df_filtered_clone = copy.deepcopy(df_filtered)
+    # Set 'source' column to None based on the `ignore_source` option
+    if ignore_source:
+        df_filtered['source'] = None
+    else:
+        # Replace any empty strings in 'source' with None
+        df_filtered['source'] = df_filtered['source'].replace('', None)
+
+    loader = DataFrameLoader(df_filtered, page_content_column='text')
     docs = loader.load()
 
-    for doc in docs:
+    # Add metadata to each document
+    for doc, (_, row) in zip(docs, df_filtered_clone.iterrows()):
         doc.metadata['index_session_id'] = session_uuid
         doc.metadata['index_datetime'] = formatted_datetime
         doc.metadata['id'] = str(uuid4())  # An uuid for the doc (will be used by TOCK)
+        # Add source metadata regardless of ignore_source
+        doc.metadata['reference'] = row['source']
 
-    logging.debug(f"Split texts in {args['<chunks_size>']} characters-sized chunks")
-    # recursive splitter is used to preserve sentences & paragraphs
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=int(args['<chunks_size>'])
-    )
+    logging.debug(f"Split texts in {chunks_size} characters-sized chunks")
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunks_size)
     splitted_docs = text_splitter.split_documents(docs)
     # Add chunk id ('n/N') metadata to each chunk
-    splitted_docs = generate_ids_for_each_chunks(splitted_docs=splitted_docs)
+    splitted_docs = generate_ids_for_each_chunks(splitted_docs)
     # Add title to text (for better semantic search)
-    splitted_docs = add_title_to_text(splitted_docs=splitted_docs)
+    splitted_docs = add_title_to_text(splitted_docs)
 
-    logging.debug(f"Get embeddings model from {args['<embeddings_json_config>']} config file")
-    with open(Path(args['<embeddings_json_config>']), 'r') as json_file:
+    logging.debug(f"Get embeddings model from {embeddings_json_config} config file")
+    with open(Path(embeddings_json_config), 'r') as json_file:
         config_dict = json.load(json_file)
     em_settings = load_setting(
         data=config_dict,
@@ -141,8 +152,8 @@ async def index_documents(args):
         base_class=BaseEMSetting
     )
 
-    logging.debug(f"Get vector store from {args['<vector_store_json_config>']} config file")
-    with open(Path(args['<vector_store_json_config>']), 'r') as json_file:
+    logging.debug(f"Get vector store from {vector_store_json_config} config file")
+    with open(Path(vector_store_json_config), 'r') as json_file:
         config_dict = json.load(json_file)
     vector_store_settings = load_setting(
         data=config_dict,
@@ -155,35 +166,111 @@ async def index_documents(args):
 
     # Use embeddings factory from orchestrator
     em_factory = get_em_factory(em_settings)
-    await em_factory.check_embedding_model_setting()
+    em_factory.check_embedding_model_setting()
     embeddings = em_factory.get_embedding_model()
 
     # generating index name
-    index_name = normalize_index_name(vector_store_settings.provider, args['<namespace>'], args['<bot_id>'], session_uuid)
+    index_name = normalize_index_name(vector_store_settings.provider, namespace, bot_id, session_uuid)
 
     vector_store_factory = get_vector_store_factory(
         setting=vector_store_settings,
         index_name=index_name,
         embedding_function=embeddings
     )
-    await vector_store_factory.check_vector_store_connection()
-    vector_store = vector_store_factory.get_vector_store()
+    vector_store_factory.check_vector_store_connection()
+    vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
-    await embedding_and_indexing(splitted_docs, vector_store)
+    embedding_and_indexing(splitted_docs, vector_store)
 
-    # Return indexing details
-    return index_name, session_uuid, len(docs), len(splitted_docs)
+    return IndexingDetails(
+        index_name = index_name,
+        indexing_session_uuid = session_uuid,
+        documents_count = len(docs),
+        chunks_count = len(splitted_docs),
+        chunk_size = chunks_size,
+        em_settings = em_settings,
+        vector_store_settings = vector_store_settings,
+        ignore_source = ignore_source,
+        input_csv = input_csv,
+        duration = datetime.now() - start_time
+    )
 
+def validate_positive_integer(args, option_name) -> int:
+    """
+    Validate that a given value is a positive integer.
+    If invalid, log an error and exit the program.
 
-async def embedding_and_indexing(splitted_docs: List[Document], vector_store):
+    :param args: The script args.
+    :param option_name: The name of the option being validated (for error messages).
+    :return: The value as an integer if valid.
+    """
+    try:
+        int_value = int(args[option_name])
+        if int_value <= 0:
+            raise ValueError
+        return int_value
+    except ValueError:
+        logging.error(f"{option_name} must be a valid positive integer.")
+        sys.exit(1)
+
+def validate_boolean(args, option_name):
+    """
+    Validate that a given value can be interpreted as a boolean.
+    If invalid, log an error and exit the program.
+
+    :param args: The script args.
+    :param option_name: The name of the option being validated (for error messages).
+    :return: The value as a boolean if valid.
+    """
+    truthy_values = {"true", "1", "yes", "y"}
+    falsy_values = {"false", "0", "no", "n"}
+
+    if args[option_name].lower() in truthy_values:
+        return True
+    elif args[option_name].lower() in falsy_values:
+        return False
+    else:
+        logging.error(f"{option_name} must be a valid boolean (e.g., 'true' or 'false').")
+        sys.exit(1)
+
+def validate_file(file_path, allowed_extension):
+    """
+    Validate that a file exists, has a single allowed extension, and if it's a JSON file, is valid JSON.
+
+    :param file_path: Path to the file to validate.
+    :param allowed_extension: A single allowed file extension (e.g., "csv" or "json").
+    :return: The file path if valid, else exit.
+    """
+    # Check if file exists
+    if not Path(file_path).exists():
+        logging.error(f"Cannot proceed: the file '{file_path}' does not exist.")
+        sys.exit(1)
+
+    # Check if the file has the allowed extension
+    file_extension = Path(file_path).suffixes[-1],  # Only the last part of the suffix
+    file_extension = file_extension[0].lstrip(".").lower()
+    if file_extension != allowed_extension.lower():
+        logging.error(f"Cannot proceed: '{file_path}' must have the '{allowed_extension}' extension.")
+        sys.exit(1)
+
+    # If it's a JSON file, validate the JSON format
+    if file_extension == "json":
+        try:
+            with open(Path(file_path), "r") as file:
+                json.load(file)
+        except json.JSONDecodeError:
+            logging.error(f"Cannot proceed: '{file_path}' is not a valid JSON file.")
+            sys.exit(1)
+
+    return file_path
+
+def embedding_and_indexing(splitted_docs: List[Document], vector_store):
     # Index all chunks in vector DB
-    logging.debug('Index chunks in DB')
-    # Index respecting bulk_size (500 is from_documents current default: it is described for clarity only)
-    bulk_size = 500
-    for i in range(0, len(splitted_docs), bulk_size):
-        logging.debug(f'i={i}, splitted_docs={len(splitted_docs)}')
-        await vector_store.aadd_documents(documents=splitted_docs[i: i + bulk_size], bulk_size=bulk_size)
+    logging.debug('Index document chunks in DB')
 
+    for i in range(0, len(splitted_docs), embedding_bulk_size):
+        logging.info(f'i={i}, splitted_docs={len(splitted_docs)}')
+        vector_store.add_documents(documents=splitted_docs[i: i + embedding_bulk_size], bulk_size=embedding_bulk_size)
 
 def load_setting(data: dict, provider_mapping: dict, base_class):
     """Function to load and instantiate the right class according to the provider"""
@@ -277,64 +364,66 @@ def normalize_opensearch_index_name(namespace: str, bot_id: str, index_session_i
 
     return normalized
 
-if __name__ == '__main__':
-    start_time = datetime.now()
-    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
 
-    cli_args = docopt(__doc__, version='Webscraper 0.1.0')
-
-    # Set logging level
+# Configure logging
+def setup_logging():
     log_format = '%(levelname)s:%(module)s:%(message)s'
-    logging.basicConfig(
-        level=logging.DEBUG if cli_args['-v'] else logging.WARNING, format=log_format
-    )
+    # Create log directory if it doesn't exist
+    log_dir = Path('logs')
+    log_dir.mkdir(exist_ok=True)
 
-    # Check args:
-    for file_path in ['input_csv', 'embeddings_json_config', 'vector_store_json_config']:
-        if not Path(cli_args[f'<{file_path}>']).exists():
-            logging.error(f"Cannot proceed: this file {cli_args[f'<{file_path}>']} does not exist")
-            sys.exit(1)
+    log_file_name = log_dir / f"index_documents_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    file_handler = RotatingFileHandler(log_file_name, maxBytes=10 * 1024 * 1024, backupCount=5)
+    file_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
+    file_handler.setFormatter(logging.Formatter(log_format))
 
-    for json_file_path in ['embeddings_json_config', 'vector_store_json_config']:
-        try:
-            with open(Path(cli_args[f'<{json_file_path}>'])) as file:
-                json.load(file)
-        except json.JSONDecodeError:
-            logging.error(
-                f"Cannot proceed: this file '{cli_args[f'<{json_file_path}>']}' is not a valid JSON file"
-            )
-            sys.exit(1)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
+    console_handler.setFormatter(logging.Formatter(log_format))
 
-    try:
-        int(cli_args['<chunks_size>'])
-    except ValueError:
-        logging.error(
-            f"Cannot proceed: chunks size ({cli_args['<chunks_size>']}) is not a number"
-        )
-        sys.exit(1)
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set to DEBUG so that both handlers can capture everything
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+def str_to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ['true', '1', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'no']:
+        return False
+    else:
+        raise ValueError(f"Cannot proceed: {value} is not a valid boolean value")
+
+
+if __name__ == '__main__':
+    # Parse command-line arguments
+    args = docopt(__doc__, version='Index Documents 1.0')
+
+    # Access arguments, using defaults where applicable
+    verbose = args['-v']  # Boolean flag
+    input_csv = validate_file(args['--input-csv'], allowed_extension='csv')
+    namespace = args['--namespace']
+    bot_id = args['--bot-id']
+    embeddings_json_config = validate_file(args['--embeddings-json-config'], allowed_extension='json')
+    vector_store_json_config = validate_file(args['--vector-store-json-config'], allowed_extension='json')
+    chunks_size = validate_positive_integer(args, option_name='--chunks-size')
+    ignore_source = validate_boolean(args, option_name='--ignore-source') # Default: 'false'
+    embedding_bulk_size = validate_positive_integer(args, option_name='--embedding-bulk-size')
+
+    # Load .env file if provided
+    env_file = args['--env-file']
+    if env_file:
+        print(f"Loading environment variables from: {env_file}")
+        load_dotenv(env_file)
+
+    # Set up logging
+    setup_logging()
 
     # Main func
-    index_name, indexing_session_uuid, documents_count, chunks_count = asyncio.run(index_documents(cli_args))
-
-    # Print statistics
-    duration = datetime.now() - start_time
-    logging.debug(
-        f"Indexed {chunks_count} chunks in '{index_name}' from {documents_count} documents (csv line) in '{cli_args['<input_csv>']}' (duration: {duration})"
-    )
+    details = index_documents()
 
     # Print indexation session's unique id
-    logging.info(
-        f"""
-------------------- Indexing details ----------------------
-                 Index name : {index_name}
-           Index session ID : {indexing_session_uuid}
-        Documents extracted : {documents_count} (Docs)
-          Documents chunked : {chunks_count} (Chunks)
-                 Chunk size : {cli_args['<chunks_size>']} (Characters)
-                  Input csv : {cli_args['<input_csv>']}
-   Embeddings configuration : {cli_args['<embeddings_json_config>']}
- Vector Store configuration : {cli_args['<vector_store_json_config>']}
-                   Duration : {humanize.precisedelta(duration)}
-                       Date : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-------------------------------------------------------------
-        """)
+    logging.info(details.format_indexing_details())

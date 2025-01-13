@@ -36,7 +36,8 @@ import {
   NbWindowModule,
   NbListModule,
   NbToggleModule,
-  NbDatepickerModule
+  NbDatepickerModule,
+  NbTagModule
 } from '@nebular/theme';
 
 import {
@@ -81,7 +82,9 @@ import {
   DataExportComponent,
   WysiwygEditorComponent,
   TestDialogComponent,
-  BotConfigurationSelectorComponent
+  BotConfigurationSelectorComponent,
+  ReportComponent,
+  ChatUiDialogLoggerComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -116,7 +119,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     NgxSliderModule,
     NbWindowModule,
     NbListModule,
-    NbToggleModule
+    NbToggleModule,
+    NbTagModule
   ],
   declarations: [
     SelectBotComponent,
@@ -135,6 +139,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
     ChatUiMessageLocationComponent,
     ChatUiMessageDebugComponent,
     ChatUiMessageSentenceFootnotesComponent,
+    ChatUiDialogLoggerComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,
@@ -163,7 +168,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     WysiwygEditorComponent,
     TestDialogComponent,
     BotConfigurationSelectorComponent,
-    TextareaAutocompleteDirective
+    TextareaAutocompleteDirective,
+    ReportComponent
   ],
   exports: [
     SelectBotComponent,
@@ -175,6 +181,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
     FormControlComponent,
     ChatUiComponent,
     ChatUiMessageComponent,
+    ChatUiDialogLoggerComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,

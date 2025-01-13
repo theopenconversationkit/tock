@@ -10,21 +10,22 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.10"
 docopt-ng = "^0.9.0"
-pandas = "^2.2.1"
-openpyxl = "^3.1.2"
+pandas = "^2.2.3"
+openpyxl = "^3.1.5"
 beautifulsoup4 = "^4.12.2"
-langchain = "^0.3.3"
-langsmith = "^0.1.132"
-python-dotenv = "^1.0.0"
-opensearch-py = "^2.4.2"
+langchain = "^0.3.7"
+langsmith = "^0.1.143"
+python-dotenv = "^1.0.1"
+opensearch-py = "^2.7.1"
 gen_ai_orchestrator = {path = "../server", develop=true}
-langchain-community = "^0.3.2"
-pre-commit = "^3.7.1"
+langchain-community = "^0.3.7"
+pre-commit = "^4.0.1"
 aiometer = "^0.5.0"
-aiohttp = "^3.10.9"
+aiohttp = "^3.11.6"
 aiohttp-socks = "^0.9.0"
-pydantic = "^2.9.0"
+pydantic = "^2.9.2"
 humanize = "^4.11.0"
+langfuse = "^2.54.0"
 
 [build-system]
 requires = ["poetry-core"]

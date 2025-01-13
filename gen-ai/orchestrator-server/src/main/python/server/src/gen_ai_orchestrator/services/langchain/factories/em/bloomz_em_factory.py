@@ -19,10 +19,10 @@ from langchain.embeddings.base import Embeddings
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
 )
-from gen_ai_orchestrator.services.em.bloomz_embedding import BloomzEmbeddings
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.impls.em.bloomz_embedding import BloomzEmbeddings
 
 
 class BloomzEMFactory(LangChainEMFactory):

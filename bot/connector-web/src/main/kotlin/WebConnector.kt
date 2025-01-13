@@ -69,6 +69,7 @@ import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.vertx.core.Future
 import io.vertx.core.http.Cookie
 import io.vertx.core.http.CookieSameSite
 import io.vertx.core.http.HttpMethod
@@ -92,6 +93,7 @@ val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 
 private val corsPattern = property("tock_web_cors_pattern", ".*")
 private val sseEnabled = booleanProperty("tock_web_sse", false)
+private val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
 private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
@@ -119,9 +121,31 @@ class WebConnector internal constructor(
         private val messageProcessor = WebMessageProcessor(
             processMarkdown = propertyOrNull("tock_web_enable_markdown")?.toBoolean()
             // Fallback to previous property name for backward compatibility
-            ?: propertyOrNull("allow_markdown").toBoolean()
+                ?: propertyOrNull("allow_markdown").toBoolean()
         )
         private val channels by lazy { Channels() }
+
+        private fun HttpServerResponse.setupSSE() {
+            isChunked = true
+            headers().apply {
+                add("Content-Type", "text/event-stream;charset=UTF-8")
+                add("Connection", "keep-alive")
+                add("Cache-Control", "no-cache")
+            }
+            sendSsePing()
+        }
+
+        private fun HttpServerResponse.sendSsePing() =
+            Future.all(listOf(write("event: ping\n"), write("data: 1\n\n")))
+
+        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponse) =
+            Future.all(
+                listOf(
+                    write("event: message\n"),
+                    write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
+                )
+            )
+
     }
 
     private val executor: Executor get() = injector.provide()
@@ -137,7 +161,7 @@ class WebConnector internal constructor(
                         .addRelativeOrigin(corsPattern)
                         .allowedMethod(HttpMethod.POST)
                         .run {
-                            if (sseEnabled) allowedMethod(HttpMethod.GET) else this
+                            if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
                         }
                         .allowedHeader("Access-Control-Allow-Origin")
                         .allowedHeader("Content-Type")
@@ -158,22 +182,31 @@ class WebConnector internal constructor(
                                 context.queryParams()["userId"]
                             }
                             val response = context.response()
-                            response.isChunked = true
-                            response.headers().add("Content-Type", "text/event-stream;charset=UTF-8")
-                            response.headers().add("Connection", "keep-alive")
-                            response.headers().add("Cache-Control", "no-cache")
-                            response.sendSsePing()
+                            response.setupSSE()
                             val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
                                 response.sendSsePing()
                             }
                             val channelId = channels.register(applicationId, userId) { webConnectorResponse ->
-                                response.write("event: message\n")
-                                response.write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
+                                response.sendSseResponse(webConnectorResponse)
                             }
                             response.closeHandler {
                                 vertx.cancelTimer(timerId)
                                 channels.unregister(channelId)
                             }
+                        } catch (t: Throwable) {
+                            context.fail(t)
+                        }
+                    }
+            }
+            if (directSseEnabled) {
+                router.route("$path/sse/direct")
+                    .handler { context ->
+                        try {
+                            val body = context.request().getHeader("message")
+                                ?: error("message header is mandatory and is missing")
+                            context.response().setupSSE()
+
+                            handleRequest(controller, context, body)
                         } catch (t: Throwable) {
                             context.fail(t)
                         }
@@ -236,11 +269,6 @@ class WebConnector internal constructor(
         }
     }
 
-    private fun HttpServerResponse.sendSsePing() {
-        write("event: ping\n")
-        write("data: 1\n\n")
-    }
-
     override fun getOrchestrationHandlers(): OrchestrationHandlers =
         OrchestrationHandlers(
             eligibilityHandler = this::handleEligibility,
@@ -293,6 +321,7 @@ class WebConnector internal constructor(
             webMapper = webMapper,
             eventId = event.id.toString(),
             messageProcessor = messageProcessor,
+            streamedResponse = (event as? Action)?.metadata?.streamedResponse == true
         )
         if (sseEnabled) {
             // Uniquely identify each response, so they can be reconciliated between SSE and POST
@@ -427,12 +456,19 @@ class WebConnector internal constructor(
     }
 
     private fun handleWebConnectorCallback(callback: WebConnectorCallback, event: Action) {
-        callback.addAction(event)
-        if (sseEnabled) {
-            channels.send(event.applicationId, event.recipientId, callback.createResponse(listOf(event)))
-        }
-        if (event.metadata.lastAnswer) {
-            callback.sendResponse()
+        if (callback.streamedResponse) {
+            if (event.metadata.lastAnswer) {
+                callback.addMetadata(MetadataEvent.lastAnswer(event.applicationId))
+            }
+            callback.sendStreamedResponse(event)
+        } else {
+            callback.addAction(event)
+            if (sseEnabled) {
+                channels.send(event.applicationId, event.recipientId, callback.createResponse(listOf(event)))
+            }
+            if (event.metadata.lastAnswer) {
+                callback.sendResponse()
+            }
         }
     }
 

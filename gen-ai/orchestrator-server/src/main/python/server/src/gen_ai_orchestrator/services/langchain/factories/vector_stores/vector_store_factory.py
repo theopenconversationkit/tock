@@ -16,7 +16,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
@@ -42,19 +42,22 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
-    def get_vector_store(self) -> VectorStore:
+    def get_vector_store(self, async_mode: Optional[bool] = True) -> VectorStore:
         """
         Fabric the Vector Store.
+        Args:
+            async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
         :return: VectorStore the interface for Vector Database.
         """
         pass
 
     @abstractmethod
-    def get_vector_store_retriever(self, search_kwargs: dict) -> VectorStoreRetriever:
+    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
         """
         Fabric the Vector Store and return it as retriever
         Args:
             search_kwargs: the search filter
+            async_mode: enable/disable the async_mode for vector DB client (if supported). Default to True.
         :return: A VectorStoreRetriever.
         """
         pass

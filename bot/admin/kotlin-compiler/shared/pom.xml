@@ -21,11 +21,15 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot-admin-kotlin-compiler</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-admin-kotlin-compiler-shared</artifactId>
     <name>Tock Kotlin Compiler Shared classes</name>
     <description>Core Kotlin Tock compiler shared classes</description>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

@@ -57,7 +57,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
-import ch.tutteli.kbox.isNotNullAndNotBlank
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -453,9 +452,14 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context  ->
-            RAGService.getRAGConfiguration(context.organization, context.path("botId"))
-                ?.let { BotRAGConfigurationDTO(it) }
+        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context ->
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                RAGService.getRAGConfiguration(context.organization, botId)
+                    ?.let { BotRAGConfigurationDTO(it) }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
@@ -471,14 +475,38 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration/bots/:botId/observability", admin) { context  ->
-            ObservabilityService.getObservabilityConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotObservabilityConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                ObservabilityService.getObservabilityConfiguration(context.organization, botId)
+                    ?.let {
+                        BotObservabilityConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
             ObservabilityService.deleteConfig(context.organization, context.path("botId"))
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/document-compressor", admin) { context, configuration: BotDocumentCompressorConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotDocumentCompressorConfigurationDTO(DocumentCompressorService.saveDocumentCompressor(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/document-compressor", admin) { context  ->
+            DocumentCompressorService.getDocumentCompressorConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotDocumentCompressorConfigurationDTO(it)
+                }
+        }
+
+        blockingDelete("/configuration/bots/:botId/document-compressor", admin) { context  ->
+            DocumentCompressorService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost("/configuration/bots/:botId/vector-store", admin) { context, configuration: BotVectorStoreConfigurationDTO  ->
@@ -490,10 +518,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration/bots/:botId/vector-store", admin) { context  ->
-            VectorStoreService.getVectorStoreConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotVectorStoreConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                VectorStoreService.getVectorStoreConfiguration(context.organization, botId)
+                    ?.let {
+                        BotVectorStoreConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
@@ -1110,11 +1143,18 @@ open class BotAdminVerticle : AdminVerticle() {
             "/configuration/bots/:botId/sentence-generation/configuration",
             admin
         ) { context ->
-            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization,
-                context.path("botId"))
-                ?.let {
-                    BotSentenceGenerationConfigurationDTO(it)
-                }
+            val botId = context.path("botId")
+            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
+                SentenceGenerationService.getSentenceGenerationConfiguration(
+                    context.organization,
+                    botId
+                )
+                    ?.let {
+                        BotSentenceGenerationConfigurationDTO(it)
+                    }
+            } else {
+                unauthorized()
+            }
         }
 
         blockingJsonGet(

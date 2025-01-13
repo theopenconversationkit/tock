@@ -14,6 +14,7 @@
 #
 """Model for creating PGVectorFactory"""
 import logging
+from typing import Optional
 
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_postgres import PGVector
@@ -37,7 +38,7 @@ class PGVectorFactory(LangChainVectorStoreFactory):
 
     setting: PGVectorStoreSetting
 
-    def get_vector_store(self) -> PGVector:
+    def get_vector_store(self, async_mode: Optional[bool] = True) -> PGVector:
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
             'PostgreSQL user credentials: %s:%s',
@@ -50,11 +51,11 @@ class PGVectorFactory(LangChainVectorStoreFactory):
             collection_name=self.index_name,
             connection=f'postgresql+psycopg://{self.setting.username}:{password}@{self.setting.host}:{self.setting.port}/{self.setting.database}',
             use_jsonb=True,
-            async_mode=True
+            async_mode=async_mode
         )
 
-    def get_vector_store_retriever(self, search_kwargs: dict) -> VectorStoreRetriever:
-        return self.get_vector_store().as_retriever(
+    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
+        return self.get_vector_store(async_mode).as_retriever(
             search_kwargs=search_kwargs
         )
 

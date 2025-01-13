@@ -22,8 +22,12 @@ import java.util.UUID
 class MetadataEvent(val type: String, val value: String, applicationId: String) : Event(applicationId) {
     companion object {
         fun intent(intent: Intent, applicationId: String) = MetadataEvent(INTENT_METADATA, intent.name, applicationId)
-        fun responseId(uuid: UUID, applicationId: String) = MetadataEvent(RESPONSE_ID_METADATA, uuid.toString(), applicationId)
+        fun responseId(uuid: UUID, applicationId: String) =
+            MetadataEvent(RESPONSE_ID_METADATA, uuid.toString(), applicationId)
+
+        fun lastAnswer(applicationId: String) = MetadataEvent(LAST_ANSWER_METADATA, "true", applicationId)
         const val INTENT_METADATA = "INTENT"
         const val RESPONSE_ID_METADATA = "RESPONSE_ID"
+        const val LAST_ANSWER_METADATA = "LAST_ANSWER"
     }
 }

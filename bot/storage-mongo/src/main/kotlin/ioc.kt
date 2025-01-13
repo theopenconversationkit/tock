@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
@@ -55,6 +56,7 @@ val botMongoModule = Kodein.Module {
     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
     bind<BotRAGConfigurationDAO>() with provider { BotRAGConfigurationMongoDAO }
     bind<BotObservabilityConfigurationDAO>() with provider { BotObservabilityConfigurationMongoDAO }
+    bind<BotDocumentCompressorConfigurationDAO>() with provider { BotDocumentCompressorConfigurationMongoDAO }
     bind<BotVectorStoreConfigurationDAO>() with provider { BotVectorStoreConfigurationMongoDAO }
     bind<BotSentenceGenerationConfigurationDAO>() with provider { BotSentenceGenerationConfigurationMongoDAO }
     bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }

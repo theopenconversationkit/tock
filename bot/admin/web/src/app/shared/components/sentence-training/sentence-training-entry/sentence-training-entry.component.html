@@ -157,10 +157,10 @@
           Probability for other intents:
           <div
             class="d-flex gap-1 justify-content-between"
-            *ngFor="let i of sentence.classification.otherIntentsProbabilities | keyvalue"
+            *ngFor="let i of sentence.classification.otherIntentsProbabilities | keyvalue: originalOrder"
           >
             <span>{{ state.intentLabelByName(i.key) }}</span>
-            <span>{{ i.value | percent: '1.0-2' }}</span>
+            <span>{{ i.value | percent: '2.2' }}</span>
           </div>
         </div>
 

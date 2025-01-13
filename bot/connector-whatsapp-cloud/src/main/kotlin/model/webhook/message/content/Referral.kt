@@ -36,7 +36,7 @@ enum class MediaType {
     IMAGE, VIDEO;
 
     companion object {
-        fun fromString(type: String): MediaType = when (type.toLowerCase()) {
+        fun fromString(type: String): MediaType = when (type.lowercase()) {
             "image" -> IMAGE
             "video" -> VIDEO
             else -> throw IllegalArgumentException("Unsupported media type: $type")

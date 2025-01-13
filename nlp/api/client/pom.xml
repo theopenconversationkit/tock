@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-api</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>nlp-api-client</artifactId>
@@ -100,5 +100,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

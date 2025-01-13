@@ -40,6 +40,8 @@ private val __SupportSubEntities: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::supportSubEntities
 private val __UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
     get() = ApplicationDefinition::unknownIntentThreshold
+private val __KnownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
+    get() = ApplicationDefinition::knownIntentThreshold
 private val __NormalizeText: KProperty1<ApplicationDefinition, Boolean?>
     get() = ApplicationDefinition::normalizeText
 private val ___id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
@@ -79,6 +81,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
 
+    val knownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__KnownIntentThreshold)
+
     val normalizeText: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__NormalizeText)
 
@@ -109,6 +114,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = __SupportSubEntities
         val UnknownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
             get() = __UnknownIntentThreshold
+        val KnownIntentThreshold: KProperty1<ApplicationDefinition, Double?>
+            get() = __KnownIntentThreshold
         val NormalizeText: KProperty1<ApplicationDefinition, Boolean?>
             get() = __NormalizeText
         val _id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
@@ -150,6 +157,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
+
+    val knownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__KnownIntentThreshold)
 
     val normalizeText: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__NormalizeText)
@@ -196,6 +206,9 @@ class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: 
 
     val unknownIntentThreshold: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__UnknownIntentThreshold)
+
+    val knownIntentThreshold: KPropertyPath<T, Double?>
+        get() = KPropertyPath(this,__KnownIntentThreshold)
 
     val normalizeText: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__NormalizeText)

@@ -18,6 +18,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorCode,
@@ -88,6 +89,14 @@ class ObservabilityProviderResponse(BaseModel):
     )
 
 
+class DocumentCompressorProviderResponse(BaseModel):
+    """The response model of the Document Compressor provider"""
+
+    provider: DocumentCompressorProvider = Field(
+        description='The Document Compressor Provider ID', default=[DocumentCompressorProvider.BLOOMZ]
+    )
+
+
 class EMProviderResponse(BaseModel):
     """The response model of the EM provider"""
 
@@ -96,6 +105,19 @@ class EMProviderResponse(BaseModel):
         default=[EMProvider.AZURE_OPEN_AI_SERVICE],
     )
 
+
+class ObservabilityInfo(BaseModel):
+    """The Observability Info model"""
+
+    trace_id: str = Field(
+        description='The observability trace id.'
+    )
+    trace_name: str = Field(
+        description='The observability trace name.'
+    )
+    trace_url: str = Field(
+        description='The observability trace url.'
+    )
 
 class RagResponse(BaseModel):
     """The RAG response model"""
@@ -108,7 +130,10 @@ class RagResponse(BaseModel):
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
         default=None,
     )
-
+    observability_info: Optional[ObservabilityInfo] = Field(
+        description='The observability info.',
+        default=None
+    )
 
 class QAResponse(BaseModel):
     """The QA response model"""

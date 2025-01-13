@@ -21,12 +21,16 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-core</artifactId>
-        <version>24.9.5-SNAPSHOT</version>
+        <version>24.9.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-core-shared</artifactId>
     <name>Tock NLP Core Shared</name>
     <description>Contains shared classes for Tock NLP Core</description>
 
+
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
 
 </project>

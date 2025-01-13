@@ -28,6 +28,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.nlp.NlpCallStats
+import ai.tock.bot.engine.nlp.NlpStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
@@ -366,6 +367,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
+    override fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats> {
+        return nlpStatsCol.find(
+            and(
+                NlpStatsCol::appNamespace eq namespace,
+                NlpStatsCol::_id / NlpStatsColId::dialogId `in` dialogIds
+            )
+        ).map { it.toNlpStats() }.toList()
+    }
+
     override fun loadWithLastValidDialog(
         namespace: String,
         userId: PlayerId,
@@ -540,54 +550,70 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun search(query: DialogReportQuery): DialogReportQueryResult {
         with(query) {
-            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
+            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel).filter { it.isNotEmpty() }
             if (applicationsIds.isEmpty()) {
                 return DialogReportQueryResult(0)
             }
-            val dialogIds = if (query.text.isNullOrBlank()) {
-                emptySet()
-            } else {
-                if (query.exactMatch) {
-                    dialogTextCol.find(Text eq textKey(query.text!!.trim())).map { it.dialogId }.toSet()
-                } else {
-                    dialogTextCol
-                        .find(Text.regex(textKey(query.text!!.trim()), "i"))
-                        .map { it.dialogId }
-                        .toSet()
+
+            if(dialogId != null){
+                // When a single dialog is requested, only the applicationId filter is applied
+                val dialog = dialogCol.findOne(
+                    and(
+                        DialogCol::_id eq dialogId!!.toId(),
+                        DialogCol::applicationIds `in` applicationsIds,
+                        DialogCol::namespace eq namespace,
+                    )
+                )?.toDialogReport()
+
+                return dialog?.let(::listOf).orEmpty().let {
+                    DialogReportQueryResult(1, 0, 1, it)
                 }
-            }
-            if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
-                return DialogReportQueryResult(0, 0, 0, emptyList())
-            }
-            val filter = and(
-                DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
-                Namespace eq query.namespace,
-                if (query.playerId != null || query.displayTests) null else Test eq false,
-                if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
-                if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
-                if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
-                if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
-                if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
-                if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
-                if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
-                if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null
-            )
-            logger.debug { "dialog search query: $filter" }
-            val c = dialogCol.withReadPreference(secondaryPreferred())
-            val count = c.countDocuments(filter, defaultCountOptions)
-            return if (count > start) {
-                val list = c.find(filter)
-                    .skip(start.toInt())
-                    .limit(size)
-                    .descendingSort(LastUpdateDate)
-                    .run {
-                        map { it.toDialogReport() }
-                            .toList()
+            }else{
+                val dialogIds = if (query.text.isNullOrBlank()) {
+                    emptySet()
+                } else {
+                    if (query.exactMatch) {
+                        dialogTextCol.find(Text eq textKey(query.text!!.trim())).map { it.dialogId }.toSet()
+                    } else {
+                        dialogTextCol
+                            .find(Text.regex(textKey(query.text!!.trim()), "i"))
+                            .map { it.dialogId }
+                            .toSet()
                     }
-                DialogReportQueryResult(count, start, start + list.size, list)
-            } else {
-                DialogReportQueryResult(0, 0, 0, emptyList())
+                }
+                if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
+                    return DialogReportQueryResult(0, 0, 0, emptyList())
+                }
+                val filter = and(
+                    DialogCol_.ApplicationIds `in` applicationsIds,
+                    Namespace eq query.namespace,
+                    if (query.playerId != null || query.displayTests) null else Test eq false,
+                    if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
+                    if (dialogIds.isEmpty()) null else _id `in` dialogIds,
+                    if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
+                    if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
+                    if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
+                    if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
+                    if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
+                    if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
+                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null
+                )
+                logger.debug { "dialog search query: $filter" }
+                val c = dialogCol.withReadPreference(secondaryPreferred())
+                val count = c.countDocuments(filter, defaultCountOptions)
+                return if (count > start) {
+                    val list = c.find(filter)
+                        .skip(start.toInt())
+                        .limit(size)
+                        .descendingSort(LastUpdateDate)
+                        .run {
+                            map { it.toDialogReport() }
+                                .toList()
+                        }
+                    DialogReportQueryResult(count, start, start + list.size, list)
+                } else {
+                    DialogReportQueryResult(0, 0, 0, emptyList())
+                }
             }
         }
     }

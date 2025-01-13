@@ -15,6 +15,7 @@
  */
 
 package ai.tock.genai.orchestratorclient.requests
+import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
@@ -24,14 +25,22 @@ import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 data class RAGQuery(
     // val condenseQuestionLlmSetting: LLMSetting,
     // val condenseQuestionPromptInputs: Map<String, String>,
-    val history: List<ChatMessage> = emptyList(),
+    val dialog: DialogDetails?,
     val questionAnsweringLlmSetting: LLMSetting,
     val questionAnsweringPromptInputs: Map<String, String>,
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
     val documentSearchParams: DocumentSearchParamsBase,
+    val compressorSetting: DocumentCompressorSetting?,
     val vectorStoreSetting: VectorStoreSetting?,
     val observabilitySetting: ObservabilitySetting?
+)
+
+data class DialogDetails(
+    val dialogId: String? = null,
+    val userId: String? = null,
+    val history: List<ChatMessage> = emptyList(),
+    val tags: List<String> = emptyList(),
 )
 
 data class ChatMessage(

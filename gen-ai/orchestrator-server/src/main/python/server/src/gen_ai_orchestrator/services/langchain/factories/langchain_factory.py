@@ -23,7 +23,7 @@ It manages the creation of :
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from langchain_core.embeddings import Embeddings
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
@@ -31,6 +31,8 @@ from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
+    GenAIUnknownDocumentCompressorProviderSettingException
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
 )
@@ -40,12 +42,10 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderSettingException,
 )
-from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
+from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
-from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
-    BaseCompressorSetting,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -111,12 +111,10 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
-    BloomzCompressorFactory,
-)
-from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.compressor_factory import (
-    CompressorFactory,
-)
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import \
+    BloomzCompressorFactory
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.document_compressor_factory import \
+    DocumentCompressorFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -338,22 +336,21 @@ def get_callback_handler_factory(
 
 def create_observability_callback_handler(
     observability_setting: Optional[ObservabilitySetting],
-    trace_name: ObservabilityTrace,
+    **kwargs: Any
 ) -> Optional[LangfuseCallbackHandler]:
     """
     Create the Observability Callback Handler
 
     Args:
         observability_setting: The Observability Settings
-        trace_name: The trace name
 
     Returns:
         The Observability Callback Handler
     """
     if observability_setting is not None:
         return get_callback_handler_factory(
-            setting=observability_setting
-        ).get_callback_handler(trace_name=trace_name.value)
+            setting=observability_setting,
+        ).get_callback_handler(**kwargs)
 
     return None
 
@@ -374,7 +371,7 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
         raise GenAIUnknownProviderSettingException()
 
 
-def get_compressor_factory(setting: BaseCompressorSetting) -> CompressorFactory:
+def get_compressor_factory(setting: BaseDocumentCompressorSetting) -> DocumentCompressorFactory:
     """
     Creates a  Compressor Factory according to the compressor provider
     Args:
@@ -382,9 +379,9 @@ def get_compressor_factory(setting: BaseCompressorSetting) -> CompressorFactory:
     Returns:
         The  Compressor Factory, or raise an exception otherwise
     """
-    logger.info('Get Contextual Compressor Factory for the given setting')
+    logger.info('Get Document Compressor Factory for the given setting')
     if isinstance(setting, BloomzCompressorSetting):
-        logger.debug('Contextual Compressor Factory - BloomzCompressorFactory')
+        logger.debug('Document Compressor Factory - BloomzCompressorFactory')
         return BloomzCompressorFactory(setting=setting)
     else:
-        raise GenAIUnknownProviderSettingException()
+        raise GenAIUnknownDocumentCompressorProviderSettingException()
