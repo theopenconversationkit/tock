@@ -1,122 +1,216 @@
-<ng-container *ngFor="let action of dialog.actions; let first = first">
-  <div
-    *ngIf="$any(action).message.text || $any(action).message.messages?.length"
-    class="dialogs-messages-grid"
-    [class.mt-3]="!first && !action.isBot()"
-  >
-    <div class="flex-grow-1">
-      <tock-chat-ui-message
-        [message]="action.message"
-        [date]="action.date"
-        [reply]="action.isBot()"
-        [replay]="true"
-        [sender]="getUserName(action)"
-        [avatar]="getUserAvatar(action)"
-        [applicationId]="action.applicationId"
-        id="action-anchor-{{ action.id }}"
-        (click)="
-          (userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot()) ? messageClicked(action) : undefined
-        "
-        [class.pointer]="(userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot())"
-        [class.highlightedAction]="highlightedAction === action"
-      ></tock-chat-ui-message>
+<div class="dialog-summary shadow-sm py-1 pl-3 pr-1 d-flex align-items-center justify-content-between">
+  <div class="d-flex gap-1 text-muted font-size-small">
+    <div
+      class="d-flex align-items-center pr-3 border-right"
+      [nbTooltip]="getDialogConfigurationDetail()"
+    >
+      <img
+        src="{{ getDialogConnectorIconUrl() }}"
+        class="connector-icon align-text-top mr-2"
+      />
+      {{ getDialogConnectorLabel() }}
     </div>
 
     <div
-      class="dialog-vertical-separator"
-      [class.horizontal-separation-start]="!action.isBot()"
-      [class.horizontal-separation-end]="
-        action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)
-      "
-    ></div>
+      class="d-flex align-items-center"
+      nbTooltip="Number of user inputs"
+    >
+      <nb-icon
+        icon="person"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbUserQuestions() }}
+    </div>
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of bot responses"
+    >
+      <nb-icon
+        icon="robot"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbBotAnswers() }}
+    </div>
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of Rag answers"
+    >
+      <nb-icon
+        icon="lightbulb"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbRagAnswers() }}
+    </div>
+  </div>
 
-    <div>
-      <div
-        class="pl-1"
-        *ngIf="!action.isBot()"
-      >
-        <!-- <button
-          *ngIf="first"
-          nbButton
-          ghost
-          size="small"
-          nbTooltip="Replay the whole dialog"
+  <button
+    nbButton
+    ghost
+    size="small"
+    nbTooltip="Replay the whole dialog"
+    (click)="replayDialog()"
+  >
+    <nb-icon icon="terminal-fill"></nb-icon>
+  </button>
+</div>
+
+<div class="pt-3 pl-3 pb-3">
+  <ng-container *ngFor="let action of dialog.actions; let first = first">
+    <div
+      *ngIf="$any(action).message.text || $any(action).message.messages?.length"
+      class="dialogs-messages-grid"
+      [class.mt-2]="!first && !action.isBot()"
+    >
+      <div class="flex-grow-1 align-self-center">
+        <tock-chat-ui-message
+          [message]="action.message"
+          [date]="action.date"
+          [reply]="action.isBot()"
+          [replay]="true"
+          [sender]="getUserName(action)"
+          [avatar]="getUserAvatar(action)"
+          [applicationId]="action.applicationId"
+          id="action-anchor-{{ action.id }}"
+          (click)="
+            (userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot()) ? messageClicked(action) : undefined
+          "
+          [class.pointer]="(userMessageIsClickable && !action.isBot()) || (botMessageIsClickable && action.isBot())"
+          [class.highlightedAction]="highlightedAction === action"
         >
-          <nb-icon icon="terminal-fill"></nb-icon>
-        </button>
-
-        <div
-          *ngIf="!first"
-          class="button-vertical-spacer mt-1"
-        ></div> -->
-
-        <div class="button-vertical-spacer mb-1"></div>
-
-        <button
-          nbButton
-          ghost
-          size="small"
-          nbTooltip="Replay this sentence"
-          (click)="testDialogSentence(action)"
-        >
-          <nb-icon icon="terminal-plus"></nb-icon>
-        </button>
+          <div
+            *ngIf="action._nlpStats"
+            class="d-flex align-items-center justify-content-between font-size-small mt-n2"
+          >
+            <div
+              class="locale-display"
+              [nbTooltip]="state.localeName(action._nlpStats.locale)"
+            >
+              {{ normalizeLocaleCode(action._nlpStats.locale) }}
+            </div>
+          </div>
+        </tock-chat-ui-message>
       </div>
 
       <div
-        class="pl-1"
-        *ngIf="action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)"
-      >
-        <div class="button-horizontal-separator mb-1"></div>
+        class="dialog-vertical-separator"
+        [class.horizontal-separation-start]="!action.isBot()"
+        [class.horizontal-separation-end]="
+          action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)
+        "
+      ></div>
 
-        <!-- <div *ngIf="containsReport(action); else does_not_contain_a_report">
+      <div>
+        <div
+          class="pl-1"
+          *ngIf="!action.isBot()"
+        >
           <button
             nbButton
-            size="small"
-            status="warning"
             ghost
-            nbTooltip="Display report"
-            (click)="openReport(action)"
+            size="small"
+            nbTooltip="Replay this sentence"
+            (click)="testDialogSentence(action)"
           >
-            <nb-icon icon="exclamation-triangle-fill"></nb-icon>
+            <nb-icon icon="terminal-plus"></nb-icon>
+          </button>
+
+          <button
+            *ngIf="action._nlpStats"
+            (click)="displayNlpStats(action)"
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="Show Nlp Stats"
+          >
+            <nb-icon icon="clipboard-data"></nb-icon>
           </button>
         </div>
 
-        <ng-template #does_not_contain_a_report>
+        <div
+          class="pl-1"
+          *ngIf="action.message?.isDebug()"
+        >
+          <div class="button-horizontal-separator mb-1"></div>
+
           <button
             nbButton
-            size="small"
-            status="warning"
             ghost
-            nbTooltip="Add a report"
-            (click)="openReport(action)"
+            status="warning"
+            size="small"
+            nbTooltip="Show debug infos"
+            (click)="showDebug(action)"
+            class="mb-1"
           >
-            <nb-icon icon="exclamation-triangle"></nb-icon>
+            <nb-icon icon="bug"></nb-icon>
           </button>
-        </ng-template> -->
+        </div>
 
-        <button
-          *ngIf="$any(action).metadata.isGenAiRagAnswer"
-          nbButton
-          size="small"
-          status="primary"
-          ghost
-          nbTooltip="Create a FAQ with this question/answer pair"
-          (click)="createFaq(action, dialog.actions)"
+        <div
+          class="pl-1"
+          *ngIf="action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)"
         >
-          <nb-icon icon="chat-left-text"></nb-icon>
-        </button>
+          <div class="button-horizontal-separator mb-1"></div>
 
-        <button
-          nbButton
-          ghost
-          size="small"
-          nbTooltip="Display this dialog alone"
-          (click)="jumpToDialog(dialog.id, action.id)"
-        >
-          <nb-icon icon="link"></nb-icon>
-        </button>
+          <button
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="Display this dialog alone"
+            (click)="jumpToDialog(dialog.id, action.id)"
+          >
+            <nb-icon icon="link"></nb-icon>
+          </button>
+
+          <!-- <div *ngIf="containsReport(action); else does_not_contain_a_report">
+            <button
+              nbButton
+              size="small"
+              status="warning"
+              ghost
+              nbTooltip="Display report"
+              (click)="openReport(action)"
+            >
+              <nb-icon icon="exclamation-triangle-fill"></nb-icon>
+            </button>
+          </div>
+
+          <ng-template #does_not_contain_a_report>
+            <button
+              nbButton
+              size="small"
+              status="warning"
+              ghost
+              nbTooltip="Add a report"
+              (click)="openReport(action)"
+            >
+              <nb-icon icon="exclamation-triangle"></nb-icon>
+            </button>
+          </ng-template> -->
+
+          <button
+            *ngIf="action.metadata?.isGenAiRagAnswer"
+            nbButton
+            size="small"
+            status="primary"
+            ghost
+            nbTooltip="Create a FAQ with this question/answer pair"
+            (click)="createFaq(action, dialog.actions)"
+          >
+            <nb-icon icon="chat-left-text"></nb-icon>
+          </button>
+
+          <button
+            *ngIf="action.metadata?.observabilityInfo?.traceUrl"
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="View observability details"
+            (click)="openObservabilityTrace(action)"
+          >
+            <nb-icon icon="display"></nb-icon>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</ng-container>
+  </ng-container>
+</div>

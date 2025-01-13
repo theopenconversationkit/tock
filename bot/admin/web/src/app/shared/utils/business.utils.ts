@@ -31,5 +31,5 @@ export const Connectors: GenericObject<string> = {
 
 export function getConnectorLabel(connectorId: string): string {
   if (!connectorId) connectorId = 'web';
-  return Connectors[connectorId];
+  return Connectors[connectorId] || connectorId;
 }

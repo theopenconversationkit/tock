@@ -3,10 +3,14 @@ import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } fr
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 import { NbDialogService } from '@nebular/theme';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
-import { ReportComponent } from '../../report/report.component';
 import { Router } from '@angular/router';
 import { StateService } from '../../../../core-nlp/state.service';
-import { Subject } from 'rxjs';
+import { Subject, take } from 'rxjs';
+import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
+import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-viewer-dialog.component';
+import { BotApplicationConfiguration } from '../../../../core/model/configuration';
+import { BotConfigurationService } from '../../../../core/bot-configuration.service';
+import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -26,12 +30,21 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
 
   @Input() highlightedAction?: ActionReport;
 
+  allConfigurations: BotApplicationConfiguration[];
+
   constructor(
     private testDialogService: TestDialogService,
     private nbDialogService: NbDialogService,
     private router: Router,
-    public state: StateService
+    public state: StateService,
+    private botConfiguration: BotConfigurationService
   ) {}
+
+  ngOnInit() {
+    this.botConfiguration.configurations.pipe(take(1)).subscribe((conf) => {
+      this.allConfigurations = conf;
+    });
+  }
 
   getUserName(action: ActionReport): string {
     return getDialogMessageUserQualifier(action.isBot());
@@ -50,12 +63,63 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     );
   }
 
+  dialogConnector() {
+    if (!this.allConfigurations) return;
+    const firstAction = this.dialog.actions.find((action) => action.applicationId);
+    if (firstAction) {
+      const applicationId = firstAction.applicationId;
+      if (applicationId) {
+        const configuration = this.allConfigurations.find((conf) => conf.applicationId === applicationId);
+        if (configuration) {
+          return configuration;
+        }
+      }
+    }
+  }
+
+  getDialogConnectorLabel() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return configuration.connectorType.label();
+    }
+  }
+
+  getDialogConnectorIconUrl() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return configuration.connectorType.iconUrl();
+    }
+  }
+
+  getDialogConfigurationDetail() {
+    const configuration = this.dialogConnector();
+    if (configuration) {
+      return `${configuration.name} > ${configuration.connectorType.label()} (${configuration.applicationId})`;
+    }
+  }
+
+  normalizeLocaleCode(code: string): string {
+    return StateService.normalizeLocaleCode(code);
+  }
+
+  nbUserQuestions(): number {
+    return this.dialog.actions.filter((action) => !action.isBot()).length;
+  }
+
+  nbBotAnswers(): number {
+    return this.dialog.actions.filter(
+      (action) =>
+        action.isBot() && !action.message?.isDebug() && ((action.message as Sentence).text || (action.message as Sentence).messages?.length)
+    ).length;
+  }
+
+  nbRagAnswers(): number {
+    return this.dialog.actions.filter((action) => action.isBot() && action.metadata?.isGenAiRagAnswer).length;
+  }
+
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer = answerSentence.text;
-
       let question;
       const questionAction = actionsStack[actionIndex - 1];
 
@@ -67,6 +131,16 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
         question = questionSentence.text;
       }
 
+      const answerSentence = action.message as unknown as SentenceWithFootnotes;
+      const answer: RagAnswerToFaqAnswerInfos = {
+        text: answerSentence.text,
+        applicationId: action.applicationId
+      };
+
+      if (answerSentence.footnotes) {
+        answer.footnotes = answerSentence.footnotes;
+      }
+
       if (question && answer) {
         this.router.navigate(['faq/management'], { state: { question, answer } });
       }
@@ -74,12 +148,32 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   }
 
   testDialogSentence(action: ActionReport) {
-    // TO DO : pass locale when it will be present in the message
     this.testDialogService.testSentenceDialog({
       sentenceText: (action.message as unknown as Sentence).text,
-      applicationId: action.applicationId
-      // sentenceLocale: locale
+      applicationId: action.applicationId,
+      sentenceLocale: action._nlpStats?.locale
     });
+  }
+
+  replayDialog() {
+    this.testDialogService.replayDialog(this.dialog);
+  }
+
+  displayNlpStats(action: ActionReport) {
+    if (action._nlpStats) {
+      this.nbDialogService.open(NlpStatsDisplayComponent, {
+        context: {
+          data: {
+            request: JSON.stringify(action._nlpStats.nlpQuery, null, 2),
+            response: JSON.stringify(action._nlpStats.nlpResult, null, 2)
+          }
+        }
+      });
+    }
+  }
+
+  openObservabilityTrace(action: ActionReport) {
+    window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
   }
 
   // containsReport(action: ActionReport): boolean {
@@ -93,6 +187,14 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   //     }
   //   });
   // }
+
+  showDebug(action: ActionReport) {
+    this.nbDialogService.open(DebugViewerDialogComponent, {
+      context: {
+        debug: (action.message as Debug).data
+      }
+    });
+  }
 
   messageClicked(action: ActionReport): void {
     this.onMessageClicked.emit(action);

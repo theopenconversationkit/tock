@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { PaginatedQuery } from '../../model/commons';
-import { DialogReport, PlayerId } from '../../shared/model/dialog-data';
+import { ActionNlpStats, DialogReport, PlayerId } from '../../shared/model/dialog-data';
 import { PaginatedResult } from '../../model/nlp';
 import { ConnectorType } from '../../core/model/configuration';
 
@@ -43,6 +43,8 @@ export class DialogReportQuery extends PaginatedQuery {
 
 export class DialogReportQueryResult implements PaginatedResult<DialogReport> {
   constructor(public total: number, public start: number, public end: number, public rows: DialogReport[]) {}
+
+  nlpStats?: ActionNlpStats[];
 
   static fromJSON(json?: any): DialogReportQueryResult {
     const value = Object.create(DialogReportQueryResult.prototype);

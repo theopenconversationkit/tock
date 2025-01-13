@@ -17,13 +17,16 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { AnalyticsService } from '../../analytics.service';
 import { RatingReportQueryResult } from './RatingReportQueryResult';
 import { DialogsListComponent } from '../../dialogs/dialogs-list/dialogs-list.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-satisfaction-details',
   templateUrl: './satisfaction-details.component.html',
-  styleUrls: ['./satisfaction-details.component.css']
+  styleUrls: ['./satisfaction-details.component.scss']
 })
 export class SatisfactionDetailsComponent implements OnInit, AfterViewInit {
+  private readonly destroy$: Subject<boolean> = new Subject();
+
   loading = false;
 
   count: string = '';
@@ -37,16 +40,19 @@ export class SatisfactionDetailsComponent implements OnInit, AfterViewInit {
   constructor(private analytics: AnalyticsService) {}
 
   ngOnInit(): void {
-    this.analytics.getSatisfactionStat().subscribe(
-      (data: RatingReportQueryResult) => {
-        this.satisfactionStat = data.ratingBot ? data : null;
-      },
-      (err) => console.error(err)
-    );
+    this.analytics
+      .getSatisfactionStat()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: RatingReportQueryResult) => {
+          this.satisfactionStat = data.ratingBot ? data : null;
+        },
+        error: (err) => console.error(err)
+      });
   }
 
   ngAfterViewInit() {
-    this.dialogsList.totalDialogsCount.subscribe((count) => {
+    this.dialogsList.totalDialogsCount.pipe(takeUntil(this.destroy$)).subscribe((count) => {
       this.count = count;
     });
   }
@@ -101,5 +107,10 @@ export class SatisfactionDetailsComponent implements OnInit, AfterViewInit {
 
     // Convert the hue to a CSS color
     return `hsl(${hue}, 70%, 50%)`;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

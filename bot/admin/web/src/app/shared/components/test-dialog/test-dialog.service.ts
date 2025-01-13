@@ -3,11 +3,18 @@ import { NbWindowRef, NbWindowService, NbWindowState } from '@nebular/theme';
 import { TestDialogComponent } from './test-dialog.component';
 import { TestMessage } from '../../../test/model/test';
 import { Subject } from 'rxjs';
+import { DialogReport, Sentence } from '../../model/dialog-data';
 
-export interface openTestDialogOptions {
+export enum ReplayDialogActionType {
+  NEXT,
+  RESULT_SUCCESS,
+  RESULT_ERROR
+}
+export interface TestDialogOptions {
   sentenceText?: string;
   sentenceLocale?: string;
   applicationId?: string;
+  _replayState?: 'pending' | 'done';
 }
 
 @Injectable({
@@ -36,6 +43,7 @@ export class TestDialogService {
       this.windowRef.onClose.subscribe(() => {
         this.messages = undefined;
         this.windowRef = undefined;
+        delete this.replayDialogStack;
       });
     }
   }
@@ -49,7 +57,7 @@ export class TestDialogService {
   private testSentenceSubject = new Subject<string>();
   testSentenceObservable = this.testSentenceSubject.asObservable();
 
-  testSentenceDialog(options: openTestDialogOptions) {
+  testSentenceDialog(options: TestDialogOptions) {
     if (!this.windowRef) this.openTestDialog();
 
     if (this.windowRef.state === NbWindowState.MINIMIZED) {
@@ -78,7 +86,7 @@ export class TestDialogService {
     this.bringToFront();
   }
 
-  bringToFront() {
+  bringToFront(): void {
     const hasManyOverlays = document.getElementsByClassName('cdk-global-overlay-wrapper');
     if (hasManyOverlays?.length > 1) {
       const currentOverlay = this.windowRef.componentRef.location.nativeElement.closest('.cdk-global-overlay-wrapper');
@@ -92,13 +100,51 @@ export class TestDialogService {
     }
   }
 
+  replayDialogStack: TestDialogOptions[];
+
+  replayDialog(dialog: DialogReport): void {
+    this.replayDialogStack = [];
+
+    dialog.actions.forEach((action) => {
+      if (!action.isBot() && !action.message.isDebug()) {
+        this.replayDialogStack.push({
+          _replayState: 'pending',
+          sentenceText: (action.message as unknown as Sentence).text,
+          applicationId: action.applicationId,
+          sentenceLocale: action._nlpStats?.locale
+        });
+      }
+    });
+
+    if (this.replayDialogStack.length) {
+      this.replayDialogNext(ReplayDialogActionType.NEXT);
+    }
+  }
+
+  replayDialogNext(actionType: ReplayDialogActionType): void {
+    if (!this.replayDialogStack) return;
+
+    const nextOrPrev = this.replayDialogStack.find((entry) => entry._replayState === 'pending');
+
+    if (nextOrPrev) {
+      if (actionType === ReplayDialogActionType.NEXT) {
+        this.testSentenceDialog(nextOrPrev);
+      } else {
+        nextOrPrev._replayState = 'done';
+        this.replayDialogNext(ReplayDialogActionType.NEXT);
+      }
+    } else {
+      delete this.replayDialogStack;
+    }
+  }
+
   messages: TestMessage[];
 
-  storeMessages(messages) {
+  storeMessages(messages): void {
     this.messages = messages;
   }
 
-  getStoredMessages() {
+  getStoredMessages(): TestMessage[] {
     return this.messages;
   }
 }

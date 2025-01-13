@@ -76,33 +76,37 @@
         maxHeight="calc(100vh - 450px)"
         padding="0.2em 0 0 0"
         [mayScroll]="true"
+        [queryInProgress]="testQueryInProgress"
         #chatUi
       >
         <tock-chat-ui-message
-          *ngFor="let m of messages"
-          [message]="m.message"
-          [reply]="m.bot"
-          [avatar]="getUserAvatar(m.bot)"
+          *ngFor="let message of messages"
+          [message]="message.message"
+          [reply]="message.bot"
+          [avatar]="getUserAvatar(message.bot)"
           (sendMessage)="onNewMessage($event)"
         >
-          <span
-            *ngIf="m.locale"
-            class="stats"
+          <div
+            *ngIf="message.locale"
+            class="d-flex align-items-center justify-content-between font-size-small mt-n2"
           >
-            [{{ m.locale }}]
+            <div
+              class="locale-display"
+              [nbTooltip]="state.localeName(message.locale)"
+            >
+              {{ message.locale }}
+            </div>
             <button
-              *ngIf="m.hasNlpStats"
-              (click)="displayNlpStats(m)"
+              *ngIf="message.hasNlpStats"
+              (click)="displayNlpStats(message)"
               nbTooltip="View Nlp Stats"
               nbButton
-              ghost
               shape="round"
               size="tiny"
-              status="primary"
             >
               <nb-icon icon="clipboard-data"></nb-icon>
             </button>
-          </span>
+          </div>
         </tock-chat-ui-message>
       </tock-chat-ui>
 
@@ -130,6 +134,7 @@
           position="top"
           (click)="updateUserMessageAutocompleteValues()"
           (keyup)="updateUserMessageAutocompleteValues($event)"
+          tockAutofocusElement
         ></textarea>
 
         <button

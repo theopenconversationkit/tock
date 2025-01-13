@@ -9,9 +9,14 @@ import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
-import { MarkupFormats, detectMarkupFormat, htmlToMarkdown, htmlToPlainText } from '../../../shared/utils/markup.utils';
+import { MarkupFormats, detectMarkupFormat, htmlToPlainText } from '../../../shared/utils/markup.utils';
 import { CreateI18nLabelRequest, I18nLocalizedLabel } from '../../../bot/model/i18n';
-import { ConnectorType, ConnectorTypeConfiguration, UserInterfaceType } from '../../../core/model/configuration';
+import {
+  BotApplicationConfiguration,
+  ConnectorType,
+  ConnectorTypeConfiguration,
+  UserInterfaceType
+} from '../../../core/model/configuration';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { Connectors, deepCopy, getConnectorLabel, normalize } from '../../../shared/utils';
 import { RestService } from '../../../core-nlp/rest/rest.service';
@@ -19,6 +24,7 @@ import { BotService } from '../../../bot/bot-service';
 import { KeyValue } from '@angular/common';
 import { ExtractFormControlTyping, GenericObject } from '../../../shared/utils/typescript.utils';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { Footnote } from '../../../shared/model/dialog-data';
 
 export enum FaqTabs {
   INFO = 'info',
@@ -84,6 +90,8 @@ export class FaqManagementEditComponent implements OnChanges {
 
   userInterfaceType = UserInterfaceType;
 
+  allConfigurations: BotApplicationConfiguration[];
+
   answerExportFormatsRadios = [
     { label: 'Plain text', value: MarkupFormats.PLAINTEXT },
     { label: 'Html', value: MarkupFormats.HTML }
@@ -115,18 +123,30 @@ export class FaqManagementEditComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!this.connectorTypes.length || !this.supportedConnectors) {
-      const loaders = [this.botSharedService.getConnectorTypes().pipe(take(1)), this.botConfiguration.supportedConnectors.pipe(take(1))];
+      const loaders = [
+        this.botSharedService.getConnectorTypes().pipe(take(1)),
+        this.botConfiguration.supportedConnectors.pipe(take(1)),
+        this.botConfiguration.configurations.pipe(take(1))
+      ];
 
-      forkJoin(loaders).subscribe(([connectorTypes, supportedConnectors]: [ConnectorTypeConfiguration[], ConnectorType[]]) => {
-        // We don't want the Test connector in our list
-        this.connectorTypes = connectorTypes.filter((conn) => !conn.connectorType.isRest());
+      forkJoin(loaders).subscribe(
+        ([connectorTypes, supportedConnectors, configurations]: [
+          ConnectorTypeConfiguration[],
+          ConnectorType[],
+          BotApplicationConfiguration[]
+        ]) => {
+          // We don't want the Test connector in our list
+          this.connectorTypes = connectorTypes.filter((conn) => !conn.connectorType.isRest());
 
-        this.supportedConnectors = supportedConnectors;
+          this.supportedConnectors = supportedConnectors;
 
-        this.ngOnChanges(changes);
-      });
+          this.allConfigurations = configurations;
 
-      // we need the connectorTypes and supportedConnectors list before going further
+          this.ngOnChanges(changes);
+        }
+      );
+
+      // we need the connectorTypes, the supportedConnectors and the configurations list before going further
       return;
     }
 
@@ -253,7 +273,43 @@ export class FaqManagementEditComponent implements OnChanges {
         interfaceType = this.supportedConnectors[0].userInterfaceType;
       }
 
-      const label = faq._initAnswer ? faq._initAnswer : '';
+      // we are converting a rag response into a faq. We try to use the provided configuration
+      if (faq._initAnswer?.applicationId) {
+        let targetedConfiguration = this.allConfigurations.find((conf) => conf.applicationId === faq._initAnswer.applicationId);
+
+        // if the provided configuration is a test one, we map to its real world equivalent
+        if (targetedConfiguration.connectorType.isRest()) {
+          const realWorldConf = this.allConfigurations.find((conf) => conf._id === targetedConfiguration.targetConfigurationId);
+          if (realWorldConf) {
+            targetedConfiguration = realWorldConf;
+          }
+        }
+
+        // we check if the provided configuration still belong to the supported connectors
+        if (targetedConfiguration && !targetedConfiguration.connectorType.isRest()) {
+          const isSupported = this.supportedConnectors?.find(
+            (sc) =>
+              sc.id === targetedConfiguration.connectorType.id &&
+              sc.userInterfaceType === targetedConfiguration.connectorType.userInterfaceType
+          );
+
+          if (isSupported) {
+            connectorId = isSupported.id !== 'web' ? isSupported.id : undefined;
+            interfaceType = isSupported.userInterfaceType;
+          }
+        }
+      }
+
+      // We are converting a rag response into a faq. We add the provided footnotes if any
+      if (faq._initAnswer?.footnotes?.length) {
+        // we deduplicate footnotes (with exactly the same 'title', 'url' and 'content' )
+        const deduplicatedFooteNotes = this.deduplicateFootnotes(faq._initAnswer.footnotes);
+        deduplicatedFooteNotes.forEach((footnote) => {
+          this.addFootnote(footnote.title, footnote.url, footnote.content);
+        });
+      }
+
+      const label = faq._initAnswer?.text ? faq._initAnswer.text : '';
 
       delete faq._initAnswer;
 
@@ -599,13 +655,19 @@ export class FaqManagementEditComponent implements OnChanges {
     event.stopPropagation();
   }
 
-  addFootnote(): void {
+  deduplicateFootnotes(footnotes: Footnote[]) {
+    return footnotes.filter(
+      (obj1, i, arr) => arr.findIndex((obj2) => ['title', 'url', 'content'].every((key) => obj2[key] === obj1[key])) === i
+    );
+  }
+
+  addFootnote(title: string = '', url: string = '', content: string = ''): void {
     this.footnotes.push(
       new FormGroup({
-        title: new FormControl('', [Validators.required]),
+        title: new FormControl(title, [Validators.required]),
         identifier: new FormControl(this.footnotes.controls.length + 1),
-        url: new FormControl(''),
-        content: new FormControl('')
+        url: new FormControl(url),
+        content: new FormControl(content)
       })
     );
     this.computeFootnotesIdentifiers();
@@ -966,6 +1028,9 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   save(faqData): void {
+    // we deduplicate footnotes (with exactly the same 'title', 'url' and 'content' )
+    faqData.footnotes = this.deduplicateFootnotes(faqData.footnotes);
+
     this.onSave.emit(faqData);
     if (!this.faq.id) this.onClose.emit(true);
   }

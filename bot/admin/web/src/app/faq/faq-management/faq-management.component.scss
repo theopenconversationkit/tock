@@ -43,7 +43,7 @@ section {
 
 @include media-breakpoint-up(lg) {
   .grid:not(.sidePanelExpanded) {
-    grid-template-columns: 6fr 4fr;
+    grid-template-columns: 3fr 1fr;
 
     .main {
       order: 1;

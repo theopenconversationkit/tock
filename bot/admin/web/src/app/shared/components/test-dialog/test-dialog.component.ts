@@ -13,7 +13,7 @@ import { BotSharedService } from '../../bot-shared.service';
 import { ChatUiComponent } from '../chat-ui/chat-ui.component';
 import { NlpStatsDisplayComponent } from '../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
 import { RestService } from '../../../core-nlp/rest/rest.service';
-import { TestDialogService } from './test-dialog.service';
+import { ReplayDialogActionType, TestDialogService } from './test-dialog.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { currentConfigurationSelection } from '../bot-configuration-selector/bot-configuration-selector.component';
@@ -28,6 +28,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   loading: boolean = true;
+
+  testQueryInProgress: boolean;
 
   configurations: BotApplicationConfiguration[];
   currentConfigurationId: string;
@@ -261,7 +263,7 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
     this.userMessage = '';
-    this.loading = true;
+    this.testQueryInProgress = true;
     this.talkRequest(
       new BotDialogRequest(
         this.currentConfigurationId,
@@ -275,16 +277,29 @@ export class TestDialogComponent implements OnInit, OnDestroy {
       this.sourceWithContent
     )
       .pipe(take(1))
-      .subscribe((r) => {
-        this.loading = false;
-        userAction.locale = r.userLocale;
-        userAction.hasNlpStats = r.hasNlpStats;
-        userAction.actionId = r.userActionId;
-        r.messages.forEach((m) => {
-          this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
+      .subscribe({
+        next: (r) => {
+          delete this.testQueryInProgress;
 
-          setTimeout(() => this.chatUi.scrollToBottom());
-        });
+          userAction.locale = r.userLocale;
+          userAction.hasNlpStats = r.hasNlpStats;
+          userAction.actionId = r.userActionId;
+          r.messages.forEach((m) => {
+            this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
+
+            setTimeout(() => this.chatUi.scrollToBottom());
+          });
+
+          this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_SUCCESS);
+        },
+        error: (error) => {
+          delete this.testQueryInProgress;
+
+          const errorMessage = new Sentence(0, undefined, 'An error occured');
+          this.messages.push(new TestMessage(true, errorMessage, undefined, undefined, undefined));
+
+          this.testDialogService.replayDialogNext(ReplayDialogActionType.RESULT_ERROR);
+        }
       });
   }
 

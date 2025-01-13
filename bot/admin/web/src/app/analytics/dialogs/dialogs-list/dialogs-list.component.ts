@@ -1,33 +1,15 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { DialogReport } from '../../../shared/model/dialog-data';
-import { ConnectorType } from '../../../core/model/configuration';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
 import { AnalyticsService } from '../../analytics.service';
-import { BotConfigurationService } from '../../../core/bot-configuration.service';
-import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { BotSharedService } from '../../../shared/bot-shared.service';
-import { PaginatedQuery, SearchMark } from '../../../model/commons';
-import { BehaviorSubject, Observable, Subject, filter, mergeMap, take, takeUntil } from 'rxjs';
-import { PaginatedResult } from '../../../model/nlp';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { saveAs } from 'file-saver-es';
 import { getExportFileName } from '../../../shared/utils';
-import { Location } from '@angular/common';
-
-export class DialogFilter {
-  constructor(
-    public exactMatch: boolean,
-    public displayTests: boolean,
-    public dialogId?: string,
-    public text?: string,
-    public intentName?: string,
-    public connectorType?: ConnectorType,
-    public ratings?: number[],
-    public configuration?: string,
-    public intentsToHide?: string[],
-    public isGenAiRagDialog?: boolean
-  ) {}
-}
+import { DOCUMENT, Location } from '@angular/common';
+import { Pagination } from '../../../shared/components';
+import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
 
 @Component({
   selector: 'tock-dialogs-list',
@@ -41,60 +23,40 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
   loading: boolean = false;
 
-  total: number = -1;
-  cursor: number = 0;
-  pageSize: number = 10;
-  mark: SearchMark;
-  add: boolean = true;
-
   data: DialogReport[] = [];
 
-  filter: DialogFilter = new DialogFilter(true, false);
-
-  connectorTypes: ConnectorType[] = [];
-
-  configurationNameList: string[];
-
-  private loaded = false;
-
-  @Input() ratingFilter: number[];
-
-  intents: string[];
+  filters: Partial<DialogListFilters> = {
+    exactMatch: false
+  };
 
   dialogReportQuery: DialogReportQuery;
 
   dialogAnchorRef: string;
 
+  pagination: Pagination = {
+    start: 0,
+    end: undefined,
+    size: 10,
+    total: undefined
+  };
+
+  @Input() ratingFilter: number[];
+
   constructor(
     public state: StateService,
     private analytics: AnalyticsService,
-    private botConfiguration: BotConfigurationService,
-    private route: ActivatedRoute,
     public botSharedService: BotSharedService,
-    private location: Location
+    private location: Location,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.dialogAnchorRef = (this.location.getState() as any)?.dialogId;
   }
 
   ngOnInit() {
-    this.botSharedService
-      .getConnectorTypes()
-      .pipe(take(1))
-      .subscribe((confConf) => {
-        this.connectorTypes = confConf.map((it) => it.connectorType);
-      });
-
-    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((configs) => {
-      this.botSharedService.getIntentsByApplication(this.state.currentApplication._id).subscribe((intents) => (this.intents = intents));
-
-      this.configurationNameList = configs
-        .filter((item) => item.targetConfigurationId == null)
-        .map((item) => {
-          return item.applicationId;
-        });
-
+    this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.refresh();
     });
+    this.refresh();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -103,94 +65,109 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  onFilterDialogs(filters) {
+    this.filters = {
+      ...this.filters,
+      ...filters
+    };
+
+    this.search();
+  }
+
+  paginationChange(pagination: Pagination): void {
+    this.search(this.pagination.start, this.pagination.size, false, true, true);
+  }
+
   refresh() {
-    this.cursor = 0;
-    this.loading = false;
-    this.total = -1;
-    this.mark = null;
     this.data = [];
-    this.load();
+    this.search();
   }
 
   onScroll() {
-    this.load();
+    if (this.loading || this.pagination.end >= this.pagination.total) return;
+    this.search(this.pagination.end, this.pagination.size, true, false);
   }
 
-  load() {
-    if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
-      this.loading = true;
-      const init = this.total === -1;
-      this.search(this.paginatedQuery()).subscribe((s) => this.loadResults(s, init));
-    }
-  }
+  search(
+    start: number = 0,
+    size: number = this.pagination.size,
+    add: boolean = false,
+    showLoadingSpinner: boolean = true,
+    scrollToTop: Boolean = false
+  ) {
+    if (this.loading) return;
 
-  protected paginatedQuery(): PaginatedQuery {
-    return this.state.createPaginatedQuery(this.cursor, this.pageSize, this.mark);
-  }
+    if (showLoadingSpinner) this.loading = true;
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
+    const query = this.state.createPaginatedQuery(start, size);
+
     this.dialogReportQuery = new DialogReportQuery(
       query.namespace,
       query.applicationName,
       query.language,
       query.start,
       query.size,
-      this.filter.exactMatch,
+      this.filters.exactMatch,
       null,
-      this.filter.dialogId,
-      this.filter.text,
-      this.filter.intentName,
-      this.filter.connectorType,
-      this.filter.displayTests,
+      this.filters.dialogId,
+      this.filters.text,
+      this.filters.intentName,
+      this.filters.connectorType,
+      this.filters.displayTests,
       this.ratingFilter,
-      this.filter.configuration,
-      this.filter.intentsToHide,
-      this.filter.isGenAiRagDialog
+      this.filters.configuration,
+      this.filters.intentsToHide,
+      this.filters.isGenAiRagDialog
     );
 
-    return this.route.queryParams.pipe(
-      mergeMap((params) => {
-        if (!this.loaded) {
-          if (params['dialogId']) this.filter.dialogId = params['dialogId'];
-          if (params['text']) this.filter.text = params['text'];
-          if (params['intentName']) this.filter.intentName = params['intentName'];
-          this.loaded = true;
-        }
-        return this.analytics.dialogs(this.dialogReportQuery);
-      })
-    );
+    this.analytics.dialogs(this.dialogReportQuery).subscribe((result) => {
+      this.pagination.total = result.total;
+      this.pagination.end = result.end;
+
+      // we store nlpStats related to the action as an expando of the action itself
+      result.rows.forEach((report) => {
+        report.actions.forEach((action) => {
+          let actionNlpStats = result.nlpStats.find((ns) => ns.actionId === action.id);
+          if (actionNlpStats) action._nlpStats = actionNlpStats.stats;
+        });
+      });
+
+      if (add) {
+        this.data = [...this.data, ...result.rows];
+      } else {
+        this.data = result.rows;
+        this.pagination.start = result.start;
+      }
+
+      this.totalDialogsCount.next(this.formattedTotal());
+      this.loading = false;
+
+      if (scrollToTop) {
+        this.scrollToTop();
+      }
+
+      if (this.dialogAnchorRef) {
+        setTimeout(() => {
+          const target = document.querySelector(`#dialog-wrapper-${this.dialogAnchorRef}`);
+          this.dialogAnchorRef = undefined;
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 300);
+      }
+    });
   }
 
-  protected loadResults(result: PaginatedResult<DialogReport>, init: boolean): boolean {
-    //skip parallel initialization
-    if (init && this.data.length !== 0) {
-      return false;
+  scrollToTop(): void {
+    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
+    if (currentScroll > 0) {
+      window.requestAnimationFrame(this.scrollToTop.bind(this));
+      window.scrollTo(0, currentScroll - currentScroll / 4);
     }
-    if (this.add) {
-      Array.prototype.push.apply(this.data, result.rows);
-    } else {
-      this.data = result.rows;
-    }
-    this.cursor = result.end;
-    this.total = result.total;
-    this.totalDialogsCount.next(this.formattedTotal());
-    this.loading = false;
-
-    if (this.dialogAnchorRef) {
-      setTimeout(() => {
-        const target = document.querySelector(`#dialog-wrapper-${this.dialogAnchorRef}`);
-        this.dialogAnchorRef = undefined;
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 300);
-    }
-
-    return true;
   }
 
   formattedTotal() {
-    return this.total !== 1000000 ? this.total.toString() : this.total + '+';
+    return this.pagination.total !== 1000000 ? this.pagination.total.toString() : this.pagination.total + '+';
   }
 
   waitAndRefresh() {
@@ -199,19 +176,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
   dataEquals(d1: DialogReport, d2: DialogReport): boolean {
     return d1.id === d2.id;
-  }
-
-  viewAllWithThisText() {
-    this.filter.dialogId = null;
-    this.refresh();
-  }
-
-  isSatisfactionRoute() {
-    return this.route.url.pipe(
-      filter((val: UrlSegment[]) => {
-        return val[0].path == 'satisfaction';
-      })
-    );
   }
 
   exportDialogs() {

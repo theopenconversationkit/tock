@@ -99,7 +99,7 @@ export class WysiwygEditorComponent implements OnInit, OnChanges, ControlValueAc
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.editionFormat.currentValue) {
+    if (changes.editionFormat?.currentValue) {
       this.convertMarkupFormat(changes.editionFormat.previousValue, changes.editionFormat.currentValue);
     }
   }

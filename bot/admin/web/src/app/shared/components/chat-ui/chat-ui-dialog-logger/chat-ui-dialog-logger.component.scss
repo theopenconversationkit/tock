@@ -1,7 +1,17 @@
+.dialog-summary {
+  border-bottom: var(--card-border-width) var(--card-border-style) var(--card-border-color);
+  border-top-left-radius: var(--card-border-radius);
+  border-top-right-radius: var(--card-border-radius);
+
+  .connector-icon {
+    height: var(--button-small-icon-size);
+    width: var(--button-small-icon-size);
+  }
+}
+
 .dialogs-messages-grid {
   display: grid;
   grid-template-columns: auto 1rem 2.5rem;
-  // grid-gap: 0.5rem;
 
   .dialog-vertical-separator {
     border-right: 1px dashed var(--border-basic-color-5);
@@ -23,6 +33,20 @@
 .button-horizontal-separator {
   border-top: 1px dashed var(--border-basic-color-5);
   height: 1px;
-  // margin-left: -0.5em;
   margin-right: 0.5em;
+  margin-top: -1px;
+}
+
+.locale-display {
+  border-radius: var(--button-round-border-radius);
+  color: var(--button-filled-primary-text-color);
+  background-color: var(--button-filled-primary-background-color);
+  font-size: var(--button-tiny-text-font-size);
+  margin-top: var(--button-tiny-icon-vertical-margin);
+  margin-bottom: var(--button-tiny-icon-vertical-margin);
+
+  display: flex;
+  padding: 0em 0.4em;
+  justify-content: center;
+  width: 2em;
 }

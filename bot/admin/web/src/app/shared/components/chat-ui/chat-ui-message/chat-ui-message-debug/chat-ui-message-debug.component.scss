@@ -3,27 +3,21 @@
 
 :host {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 
   .debug {
-    display: flex;
-
-    min-width: 95%;
     cursor: pointer;
 
-    border-radius: 0.3rem;
-    border: 1px solid nb-theme(color-basic-500);
+    color: var(--chat-message-sender-text-color);
+    border-bottom: 1px dashed var(--chat-message-sender-text-color);
 
-    background-color: nb-theme(color-basic-500);
-    color: nb-theme(color-basic-800);
+    height: 11px;
+    margin-bottom: 10px;
 
-    .head {
-      padding: 0.1rem 0.5rem;
-    }
-    .body {
-      padding: 0.1rem 0.5rem;
-      flex-grow: 1;
-      border-radius: 0.3rem;
+    span {
+      background: var(--card-background-color);
+      padding: 0 5px;
+      border-radius: 0.5rem;
     }
   }
 }

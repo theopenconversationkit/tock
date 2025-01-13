@@ -69,7 +69,6 @@ export class BotConfigurationSelectorComponent implements OnDestroy {
     }
 
     this.listConfigurations(this.currentConfiguration.name);
-
     this.botNames = Array.from(new Set(this.allConfigurations.map((c) => c.name))).sort();
   }
 

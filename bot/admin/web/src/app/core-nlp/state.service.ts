@@ -80,6 +80,10 @@ export class StateService implements AuthListener {
     return false;
   }
 
+  static normalizeLocaleCode(code: string): string {
+    return code.split('_')[0];
+  }
+
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
   }
@@ -205,7 +209,9 @@ export class StateService implements AuthListener {
   }
 
   localeName(code: string): string {
-    return this.locales ? this.locales.find((l) => l.first === code).second : code;
+    return this.locales
+      ? this.locales.find((l) => l.first === StateService.normalizeLocaleCode(code))?.second
+      : StateService.normalizeLocaleCode(code);
   }
 
   sortApplications() {

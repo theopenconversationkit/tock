@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Output} from '@angular/core';
-import {AnalyticsService} from "../../analytics.service";
-import {StateService} from '../../../core-nlp/state.service';
-import {DialogService} from '../../../core-nlp/dialog.service';
-
+import { Component, EventEmitter, Output } from '@angular/core';
+import { AnalyticsService } from '../../analytics.service';
+import { StateService } from '../../../core-nlp/state.service';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { Subject, take } from 'rxjs';
 
 @Component({
   selector: 'tock-activate-satisfaction',
@@ -26,29 +26,31 @@ import {DialogService} from '../../../core-nlp/dialog.service';
   styleUrls: ['./activate-satisfaction.component.css']
 })
 export class ActivateSatisfactionComponent {
+  private readonly destroy$: Subject<boolean> = new Subject();
 
   @Output() enableSatisfaction = new EventEmitter<boolean>();
   loading = false;
 
-  constructor(
-    private analytics: AnalyticsService,
-    private state: StateService,
-    private dialog: DialogService,) {
-  }
+  constructor(private analytics: AnalyticsService, private state: StateService, private dialog: DialogService) {}
 
   activate() {
     this.loading = true;
-    this.analytics.createSatisfactionModule().subscribe(() => {
-      this.enableSatisfaction.emit(true)
-      this.state.resetConfiguration()
-      this.loading = false;
-      this.dialog.notify(
-        "Satisfaction Module Activated",
-        "Module Activation",
-        {
+    this.analytics
+      .createSatisfactionModule()
+      .pipe(take(1))
+      .subscribe(() => {
+        this.enableSatisfaction.emit(true);
+        this.state.resetConfiguration();
+        this.loading = false;
+        this.dialog.notify('Satisfaction Module Activated', 'Module Activation', {
           duration: 2000,
           status: 'success'
-        })
-    })
+        });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }

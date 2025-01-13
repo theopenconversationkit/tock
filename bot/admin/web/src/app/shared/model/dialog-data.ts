@@ -45,6 +45,15 @@ export class DialogReport {
   }
 }
 
+export interface ActionReportMetadata {
+  isGenAiRagAnswer: boolean;
+  observabilityInfo?: {
+    traceId: string;
+    traceName: string;
+    traceUrl: string;
+  };
+}
+
 export class ActionReport {
   constructor(
     public playerId: PlayerId,
@@ -55,6 +64,10 @@ export class ActionReport {
     public connectorType?: ConnectorType,
     public applicationId?: string
   ) {}
+
+  metadata?: ActionReportMetadata;
+
+  _nlpStats?: NlpCallStats; // expando to store nlpStats of the action when getting a DialogReport
 
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
@@ -245,10 +258,10 @@ export class Sentence extends BotMessage {
 export interface Footnote {
   title: string;
   url: string;
-  identifier: string;
   content?: string;
   score?: number;
   _showFullContent?: boolean;
+  identifier: string;
 }
 
 export class SentenceWithFootnotes extends BotMessage {
@@ -405,4 +418,12 @@ export class NlpCallStats {
 
     return result;
   }
+}
+
+export interface ActionNlpStats {
+  dialogId: string;
+  actionId: string;
+  appNamespace: string;
+  date: string;
+  stats: NlpCallStats;
 }

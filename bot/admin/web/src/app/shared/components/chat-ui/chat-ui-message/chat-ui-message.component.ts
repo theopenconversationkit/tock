@@ -56,10 +56,9 @@ export class ChatUiMessageComponent {
     });
   }
 
-  getApplicationConfigurationName(applicationId: string, short: boolean = true) {
-    if (!this.allConfigurations) return;
-
-    const configuration = this.allConfigurations.find((conf) => conf.applicationId === applicationId);
+  getApplicationConfigurationName(short: boolean = true) {
+    if (!this.allConfigurations || !this.applicationId) return;
+    const configuration = this.allConfigurations.find((conf) => conf.applicationId === this.applicationId);
     if (configuration) {
       if (short) {
         return `${configuration.applicationId}`;
