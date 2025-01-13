@@ -39,7 +39,15 @@
 }
 
 .font-size-small {
-  font-size: 12px;
+  font-size: small;
+}
+
+.font-size-xsmall {
+  font-size: x-small;
+}
+
+.font-size-xxsmall {
+  font-size: xx-small;
 }
 
 // may disappear with the switch to bootstrap 5
@@ -302,6 +310,7 @@ nb-menu {
   }
 }
 
+// Force tooltips to always appear on top of modals (specialy test dialog window...)
 .cdk-overlay-connected-position-bounding-box {
   z-index: 1200;
 }

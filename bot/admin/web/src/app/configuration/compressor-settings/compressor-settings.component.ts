@@ -1,32 +1,32 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { StateService } from '../../core-nlp/state.service';
-import { RestService } from '../../core-nlp/rest/rest.service';
-import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ObservabilityProvider, ObservabilityProvidersConfiguration, ProvidersConfigurations } from './models/providers-configuration';
-import { ObservabilitySettings } from './models/observability-settings';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+import { RestService } from '../../core-nlp/rest/rest.service';
+import { StateService } from '../../core-nlp/state.service';
+import { CompressorSettings } from './models/compressor-settings';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
+import { CompressorProvider, CompressorProvidersConfiguration, ProvidersConfigurations } from './models/providers-configuration';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
+import { ProvidersConfigurationParam } from '../../shared/model/ai-settings';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
-import { ProvidersConfigurationParam } from '../../shared/model/ai-settings';
 
-interface ObservabilitySettingsForm {
+interface CompressorSettingsForm {
   id: FormControl<string>;
   enabled: FormControl<boolean>;
-  observabilityProvider: FormControl<ObservabilityProvider>;
+  compressorProvider: FormControl<CompressorProvider>;
   setting: FormGroup<any>;
 }
 
 @Component({
-  selector: 'tock-observability-settings',
-  templateUrl: './observability-settings.component.html',
-  styleUrls: ['./observability-settings.component.scss']
+  selector: 'tock-compressor-settings',
+  templateUrl: './compressor-settings.component.html',
+  styleUrl: './compressor-settings.component.scss'
 })
-export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
+export class CompressorSettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
 
   loading: boolean = false;
@@ -37,7 +37,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
 
   providersConfigurations = ProvidersConfigurations;
 
-  settingsBackup: ObservabilitySettings;
+  settingsBackup: CompressorSettings;
 
   @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
   @ViewChild('importModal') importModal: TemplateRef<any>;
@@ -57,9 +57,9 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     });
 
     this.form
-      .get('observabilityProvider')
+      .get('compressorProvider')
       .valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((provider: ObservabilityProvider) => {
+      .subscribe((provider: CompressorProvider) => {
         this.initFormSettings(provider);
       });
 
@@ -75,7 +75,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       this.configurations = confs;
 
       if (confs.length) {
-        this.getObservabilitySettingsLoader().subscribe((res) => {
+        this.getCompressorSettingsLoader().subscribe((res) => {
           const settings = res;
 
           if (settings?.id) {
@@ -84,7 +84,6 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
               this.initForm(settings);
             });
           }
-
           this.loading = false;
         });
       } else {
@@ -93,15 +92,15 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getObservabilitySettingsLoader(): Observable<ObservabilitySettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
-    return this.rest.get<ObservabilitySettings>(url, (settings: ObservabilitySettings) => settings);
+  private getCompressorSettingsLoader(): Observable<CompressorSettings> {
+    const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
+    return this.rest.get<CompressorSettings>(url, (settings: CompressorSettings) => settings);
   }
 
-  form = new FormGroup<ObservabilitySettingsForm>({
+  form = new FormGroup<CompressorSettingsForm>({
     id: new FormControl(null),
     enabled: new FormControl({ value: undefined, disabled: !this.canBeActivated() }),
-    observabilityProvider: new FormControl(undefined, [Validators.required]),
+    compressorProvider: new FormControl(undefined, [Validators.required]),
     setting: new FormGroup<any>({})
   });
 
@@ -109,12 +108,12 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     return this.form.get('enabled') as FormControl;
   }
 
-  get observabilityProvider(): FormControl {
-    return this.form.get('observabilityProvider') as FormControl;
+  get compressorProvider(): FormControl {
+    return this.form.get('compressorProvider') as FormControl;
   }
 
-  get currentObservabilityProvider(): ObservabilityProvidersConfiguration {
-    return ProvidersConfigurations.find((e) => e.key === this.observabilityProvider.value);
+  get currentCompressorProvider(): CompressorProvidersConfiguration {
+    return ProvidersConfigurations.find((e) => e.key === this.compressorProvider.value);
   }
 
   get canSave(): boolean {
@@ -133,17 +132,18 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  initForm(settings: ObservabilitySettings): void {
+  initForm(settings: CompressorSettings): void {
     this.initFormSettings(settings.setting.provider);
     this.form.patchValue({
-      observabilityProvider: settings.setting.provider
+      compressorProvider: settings.setting.provider
     });
+
     this.form.patchValue(settings);
     this.form.markAsPristine();
   }
 
-  initFormSettings(provider: ObservabilityProvider): void {
-    let requiredConfiguration: ObservabilityProvidersConfiguration = ProvidersConfigurations.find((c) => c.key === provider);
+  initFormSettings(provider: CompressorProvider): void {
+    let requiredConfiguration: CompressorProvidersConfiguration = ProvidersConfigurations.find((c) => c.key === provider);
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name if provider change
@@ -172,20 +172,20 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     this.isSubmitted = true;
     if (this.canSave && this.form.dirty) {
       this.loading = true;
-      const formValue: ObservabilitySettings = deepCopy(this.form.value) as unknown as ObservabilitySettings;
+      const formValue: CompressorSettings = deepCopy(this.form.value) as unknown as CompressorSettings;
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
 
-      delete formValue['observabilityProvider'];
+      delete formValue['compressorProvider'];
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+      const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
       this.rest.post(url, formValue, null, null, true).subscribe({
-        next: (observabilitySettings: ObservabilitySettings) => {
-          this.settingsBackup = observabilitySettings;
-          this.form.patchValue(observabilitySettings);
+        next: (compressorSettings: CompressorSettings) => {
+          this.settingsBackup = compressorSettings;
+          this.form.patchValue(compressorSettings);
           this.form.markAsPristine();
           this.isSubmitted = false;
-          this.toastrService.success(`Observability settings succesfully saved`, 'Success', {
+          this.toastrService.success(`Compressor settings succesfully saved`, 'Success', {
             duration: 5000,
             status: 'success'
           });
@@ -212,9 +212,9 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   }
 
   get hasExportableData(): boolean {
-    if (this.observabilityProvider.value) return true;
+    if (this.compressorProvider.value) return true;
 
-    const formValue: ObservabilitySettings = deepCopy(this.form.value) as unknown as ObservabilitySettings;
+    const formValue: CompressorSettings = deepCopy(this.form.value) as unknown as CompressorSettings;
 
     return Object.values(formValue).some((entry) => {
       return entry && (typeof entry !== 'object' || Object.keys(entry).length !== 0);
@@ -227,15 +227,15 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     this.sensitiveParams = [];
 
     const shouldConfirm =
-      this.observabilityProvider.value &&
-      this.currentObservabilityProvider.params.some((entry) => {
+      this.compressorProvider.value &&
+      this.currentCompressorProvider.params.some((entry) => {
         return entry.confirmExport;
       });
 
     if (shouldConfirm) {
-      this.currentObservabilityProvider.params.forEach((entry) => {
+      this.currentCompressorProvider.params.forEach((entry) => {
         if (entry.confirmExport) {
-          this.sensitiveParams.push({ label: 'Observability provider', key: 'setting', include: false, param: entry });
+          this.sensitiveParams.push({ label: 'Compressor provider', key: 'setting', include: false, param: entry });
         }
       });
 
@@ -257,8 +257,8 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   }
 
   downloadSettings() {
-    const formValue: ObservabilitySettings = deepCopy(this.form.value) as unknown as ObservabilitySettings;
-    delete formValue['observabilityProvider'];
+    const formValue: CompressorSettings = deepCopy(this.form.value) as unknown as CompressorSettings;
+    delete formValue['compressorProvider'];
     delete formValue['id'];
     delete formValue['enabled'];
 
@@ -277,13 +277,13 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
     const exportFileName = getExportFileName(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      'Observability settings',
+      'Compressor settings',
       'json'
     );
 
     saveAs(jsonBlob, exportFileName);
 
-    this.toastrService.show(`Observability settings dump provided`, 'Observability settings dump', {
+    this.toastrService.show(`Compressor settings dump provided`, 'Compressor settings dump', {
       duration: 3000,
       status: 'success'
     });
@@ -326,13 +326,12 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       readFileAsText(file).then((fileContent) => {
         const settings = JSON.parse(fileContent.data);
 
-        const hasCompatibleProvider =
-          settings.setting?.provider && Object.values(ObservabilityProvider).includes(settings.setting.provider);
+        const hasCompatibleProvider = settings.setting?.provider && Object.values(CompressorProvider).includes(settings.setting.provider);
 
         if (!hasCompatibleProvider) {
           this.toastrService.show(
             `The file supplied does not reference a compatible provider. Please check the file.`,
-            'Observability settings import fails',
+            'Compressor settings import fails',
             {
               duration: 6000,
               status: 'danger'
@@ -355,8 +354,8 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
-        title: `Delete observability settings`,
-        subtitle: `Are you sure you want to delete the currently saved observability settings?`,
+        title: `Delete compressor settings`,
+        subtitle: `Are you sure you want to delete the currently saved compressor settings?`,
         modalStatus: 'danger',
         actions: [
           { actionName: cancelAction, buttonStatus: 'basic' },
@@ -372,12 +371,12 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteSettings() {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+    const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();
       this.form.markAsPristine();
-      this.toastrService.success(`Observability settings succesfully deleted`, 'Success', {
+      this.toastrService.success(`Compressor settings succesfully deleted`, 'Success', {
         duration: 5000,
         status: 'success'
       });

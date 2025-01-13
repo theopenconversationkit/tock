@@ -7,6 +7,7 @@
       [required]="true"
       [boldLabel]="false"
       [showError]="isSubmitted"
+      [information]="configurationParam.information"
     >
       <ng-container *ngIf="configurationParam.type === 'text'">
         <input
@@ -82,12 +83,27 @@
       </ng-container>
 
       <ng-container *ngIf="configurationParam.type === 'number'">
-        <tock-slider
-          [min]="0"
-          [max]="1"
-          [step]="0.05"
-          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
-        ></tock-slider>
+        <ng-container *ngIf="!configurationParam.numberControlType || configurationParam.numberControlType === 'slider'">
+          <tock-slider
+            [min]="configurationParam.min"
+            [max]="configurationParam.max"
+            [step]="configurationParam.step"
+            [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+          ></tock-slider>
+        </ng-container>
+
+        <ng-container *ngIf="configurationParam.numberControlType === 'input'">
+          <input
+            type="number"
+            nbInput
+            fullWidth
+            fieldSize="small"
+            [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+            [min]="configurationParam.min"
+            [max]="configurationParam.max"
+            [step]="configurationParam.step"
+          />
+        </ng-container>
       </ng-container>
     </tock-form-control>
   </div>

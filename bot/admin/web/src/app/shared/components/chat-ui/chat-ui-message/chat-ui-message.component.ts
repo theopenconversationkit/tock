@@ -58,6 +58,7 @@ export class ChatUiMessageComponent {
 
   getApplicationConfigurationName(applicationId: string, short: boolean = true) {
     if (!this.allConfigurations) return;
+
     const configuration = this.allConfigurations.find((conf) => conf.applicationId === applicationId);
     if (configuration) {
       if (short) {

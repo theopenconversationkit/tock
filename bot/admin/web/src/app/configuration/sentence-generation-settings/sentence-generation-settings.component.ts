@@ -7,7 +7,12 @@ import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { AiEngineSettingKeyName, EnginesConfiguration, EnginesConfigurationParam, AiEngineProvider } from '../../shared/model/ai-settings';
+import {
+  AiEngineSettingKeyName,
+  EnginesConfiguration,
+  AiEngineProvider,
+  ProvidersConfigurationParam
+} from '../../shared/model/ai-settings';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
@@ -227,7 +232,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  sensitiveParams: { label: string; key: string; include: boolean; param: EnginesConfigurationParam }[];
+  sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
   exportSettings() {
     this.sensitiveParams = [];

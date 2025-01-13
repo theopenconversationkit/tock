@@ -6,17 +6,13 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  VectorDbProvider,
-  ProvidersConfiguration,
-  ProvidersConfigurations,
-  ProvidersConfigurationParam
-} from './models/providers-configuration';
+import { VectorDbProvider, VectorDbProvidersConfiguration, ProvidersConfigurations } from './models/providers-configuration';
 import { VectorDbSettings } from './models/vector-db-settings';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
+import { ProvidersConfigurationParam } from '../../shared/model/ai-settings';
 
 interface VectorDbSettingsForm {
   id: FormControl<string>;
@@ -117,7 +113,7 @@ export class VectorDbSettingsComponent implements OnInit {
     return this.form.get('vectorDbProvider') as FormControl;
   }
 
-  get currentVectorDbProvider(): ProvidersConfiguration {
+  get currentVectorDbProvider(): VectorDbProvidersConfiguration {
     return ProvidersConfigurations.find((e) => e.key === this.vectorDbProvider.value);
   }
 
@@ -147,25 +143,14 @@ export class VectorDbSettingsComponent implements OnInit {
   }
 
   initFormSettings(provider: VectorDbProvider): void {
-    let requiredConfiguration: ProvidersConfiguration = ProvidersConfigurations.find((c) => c.key === provider);
+    let requiredConfiguration: VectorDbProvidersConfiguration = ProvidersConfigurations.find((c) => c.key === provider);
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name if provider change
       this.resetFormGroupControls();
 
       requiredConfiguration.params.forEach((param) => {
-        let defaultValue = param.defaultValue;
-        if (param.computedDefaultValue) {
-          defaultValue = param.computedDefaultValue({
-            namespace: this.state.currentApplication.namespace,
-            botId: this.state.currentApplication.name
-          });
-        }
-
-        this.form.controls['setting'].addControl(
-          param.key,
-          new FormControl({ value: defaultValue, disabled: param.disabled }, Validators.required)
-        );
+        this.form.controls['setting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
       });
 
       this.form.controls['setting'].addControl('provider', new FormControl(provider));

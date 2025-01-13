@@ -15,4 +15,8 @@ export class ChatUiMessageSentenceFootnotesComponent {
   linkifyHtml(str) {
     return linkifyHtml(str, { target: '_blank' });
   }
+
+  isClamped(el): boolean {
+    return el.offsetHeight < el.scrollHeight;
+  }
 }

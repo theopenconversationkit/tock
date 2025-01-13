@@ -226,6 +226,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             icon: 'lightbulb-off'
           },
           {
+            title: 'Compressor settings',
+            link: '/configuration/compressor-settings',
+            icon: 'trophy',
+            hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
             title: 'Sentence generation settings',
             link: '/configuration/sentence-generation-settings',
             icon: 'list-columns',
