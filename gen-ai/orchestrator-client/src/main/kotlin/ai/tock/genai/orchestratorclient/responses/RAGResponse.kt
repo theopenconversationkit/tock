@@ -31,7 +31,8 @@ data class Footnote(
     val identifier: String,
     val title: String,
     val url: String? = null,
-    val content: String?,
+    val content: String? = null,
+    val score: Float? = null,
 )
 
 data class ObservabilityInfo(

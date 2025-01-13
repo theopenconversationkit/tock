@@ -24,9 +24,8 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderSettingException,
 )
-from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
-    ContextualCompressorProvider,
-)
+from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import BloomzCompressorSetting
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -71,10 +70,8 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
-    BloomzCompressorFactory,
-    BloomzCompressorSetting,
-)
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import \
+    BloomzCompressorFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -335,11 +332,11 @@ def test_get_bloomz_compressor_factory():
         setting=BloomzCompressorSetting(
             provider='BloomzRerank',
             min_score=0.5,
-            endpoint='http://compressor.com',
+            endpoint='http://localhost:8082',
             max_documents=25,
             label='label',
         )
     )
 
-    assert compressor.setting.provider == ContextualCompressorProvider.BLOOMZ
+    assert compressor.setting.provider == DocumentCompressorProvider.BLOOMZ
     assert isinstance(compressor, BloomzCompressorFactory)

@@ -26,6 +26,8 @@ object Constants {
     const val OPEN_SEARCH = "OpenSearch"
     const val PG_VECTOR = "PGVector"
 
+    const val BLOOMZ_COMPRESSOR = "BloomzRerank"
+
     private const val GEN_AI="GenAI"
     private const val GEN_AI_RAG="$GEN_AI/RAG"
     private const val GEN_AI_COMPLETION="$GEN_AI/COMPLETION"

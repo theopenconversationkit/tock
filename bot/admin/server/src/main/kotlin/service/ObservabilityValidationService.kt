@@ -29,11 +29,11 @@ object ObservabilityValidationService {
 
     private val observabilityProviderService: ObservabilityProviderService get() = injector.provide()
 
-    fun validate(ragConfig: BotObservabilityConfiguration): Set<ErrorMessage> {
+    fun validate(config: BotObservabilityConfiguration): Set<ErrorMessage> {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 observabilityProviderService
-                    .checkSetting(ObservabilityProviderSettingStatusQuery(ragConfig.setting))
+                    .checkSetting(ObservabilityProviderSettingStatusQuery(config.setting))
                     .getErrors("Observability setting check failed")
             )
         }

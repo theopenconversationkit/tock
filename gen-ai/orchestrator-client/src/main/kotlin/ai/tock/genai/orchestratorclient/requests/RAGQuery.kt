@@ -15,6 +15,7 @@
  */
 
 package ai.tock.genai.orchestratorclient.requests
+import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
@@ -30,6 +31,7 @@ data class RAGQuery(
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
     val documentSearchParams: DocumentSearchParamsBase,
+    val compressorSetting: DocumentCompressorSetting?,
     val vectorStoreSetting: VectorStoreSetting?,
     val observabilitySetting: ObservabilitySetting?
 )

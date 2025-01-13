@@ -41,4 +41,5 @@ val botModule = Kodein.Module {
     bind<RAGService>() with singleton { RAGServiceImpl() }
     bind<ObservabilityProviderService>() with singleton { ObservabilityProviderServiceImpl() }
     bind<VectorStoreProviderService>() with singleton { VectorStoreProviderServiceImpl() }
+    bind<DocumentCompressorProviderService>() with singleton { DocumentCompressorProviderServiceImpl() }
 }

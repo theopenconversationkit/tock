@@ -37,4 +37,8 @@ data class Footnote(
      * A footnote content
      */
     val content: String?,
+    /**
+     * A footnote score
+     */
+    val score: Float?,
 )

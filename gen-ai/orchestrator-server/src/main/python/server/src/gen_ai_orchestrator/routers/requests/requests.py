@@ -18,9 +18,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.contextual_compressor.compressor_types import (
-    CompressorSetting,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_types import DocumentCompressorSetting
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.guardrail.guardrail_types import (
     GuardrailSetting,
@@ -60,6 +58,12 @@ class ObservabilityProviderSettingStatusQuery(BaseModel):
     setting: ObservabilitySetting = Field(
         description='The Observability Provider setting to be checked.'
     )
+
+
+class DocumentCompressorProviderSettingStatusQuery(BaseModel):
+    """The query for the Document Compressor Provider Setting Status"""
+
+    setting: DocumentCompressorSetting = Field(description='The Document Compressor Provider setting to be checked.')
 
 
 class BaseQuery(BaseModel):
@@ -187,7 +191,7 @@ class RagQuery(BaseQuery):
     guardrail_setting: Optional[GuardrailSetting] = Field(
         description='Guardrail settings, to classify LLM output toxicity.', default=None
     )
-    compressor_setting: Optional[CompressorSetting] = Field(
+    compressor_setting: Optional[DocumentCompressorSetting] = Field(
         description='Compressor settings, to rerank relevant documents returned by retriever.',
         default=None,
     )

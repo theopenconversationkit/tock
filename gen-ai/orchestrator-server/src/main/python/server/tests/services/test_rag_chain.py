@@ -20,17 +20,15 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from requests.exceptions import HTTPError
 
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
+    GenAIDocumentCompressorUnknownLabelException
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
-    GenAIUnknownLabelException,
 )
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
-    BloomzRerank,
-)
 from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
@@ -38,6 +36,7 @@ from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_ha
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_guardrail_factory,
 )
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank import BloomzRerank
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     check_guardrail_output,
     execute_qa_chain,
@@ -59,7 +58,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch(
     'gen_ai_orchestrator.services.langchain.rag_chain.ContextualCompressionRetriever'
 )
-@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post')
 @patch(
     'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory'
 )
@@ -253,7 +252,7 @@ Answer in {locale}:""",
     mocked_compressor_builder.assert_called_once()
 
 
-@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+@patch('gen_ai_orchestrator.services.langchain.impls.guardrail.bloomz_guardrail.requests.post')
 def test_guardrail_parse_succeed_with_toxicities_encountered(
     mocked_guardrail_response,
 ):
@@ -291,7 +290,7 @@ def test_guardrail_parse_succeed_with_toxicities_encountered(
     }
 
 
-@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+@patch('gen_ai_orchestrator.services.langchain.impls.guardrail.bloomz_guardrail.requests.post')
 def test_guardrail_parse_fail(mocked_guardrail_response):
     guardrail = get_guardrail_factory(
         BloomzGuardrailSetting(
@@ -316,7 +315,7 @@ def test_guardrail_parse_fail(mocked_guardrail_response):
     )
 
 
-@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post')
 def test_compress_documents_should_succeed(mocked_rerank):
     bloomz_reranker = BloomzRerank(label='entailement', endpoint='http://example.com')
     documents = [
@@ -348,7 +347,7 @@ def test_compress_documents_should_succeed(mocked_rerank):
                 'CreationDate': "D:20231212161411+01'00'",
                 'ModDate': "D:20231212161411+01'00'",
                 'Producer': 'Microsoft: Print To PDF',
-                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+                'Title': "Microsoft Word - P1 - Département des Risques - Déclaration d'un incident - v5.doc",
             },
         ),
     ]
@@ -386,14 +385,14 @@ def test_compress_documents_should_succeed(mocked_rerank):
                 'CreationDate': "D:20231212161411+01'00'",
                 'ModDate': "D:20231212161411+01'00'",
                 'Producer': 'Microsoft: Print To PDF',
-                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+                'Title': "Microsoft Word - P1 - Département des Risques - Déclaration d'un incident - v5.doc",
                 'retriever_score': 0.8,
             },
         )
     ]
 
 
-@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+@patch('gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post')
 def test_compress_documents_with_unknown_label(mocked_rerank):
     bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com')
     documents = [
@@ -422,12 +421,12 @@ def test_compress_documents_with_unknown_label(mocked_rerank):
     }
     mocked_rerank.return_value = mocked_response
 
-    with pytest.raises(GenAIUnknownLabelException) as exc:
+    with pytest.raises(GenAIDocumentCompressorUnknownLabelException) as exc:
         bloomz_reranker.compress_documents(documents=documents, query='Some query')
 
-    assert exc.value.error_code.value == 1006
-    assert exc.value.message == 'Unknown label.'
-    assert exc.value.detail == 'Check the label you sent.'
+    assert exc.value.error_code.value == 6002
+    assert exc.value.message == 'Unknown Document Compressor label.'
+    assert exc.value.detail == 'Check the Document Compressor label you sent.'
 
 
 def test_check_guardrail_output_find_toxicities():
