@@ -78,6 +78,9 @@ internal class ApplicationDefinition_Serializer :
         gen.writeFieldName("unknownIntentThreshold")
         val _unknownIntentThreshold_ = value.unknownIntentThreshold
         gen.writeNumber(_unknownIntentThreshold_)
+        gen.writeFieldName("knownIntentThreshold")
+        val _knownIntentThreshold_ = value.knownIntentThreshold
+        gen.writeNumber(_knownIntentThreshold_)
         gen.writeFieldName("normalizeText")
         val _normalizeText_ = value.normalizeText
         gen.writeBoolean(_normalizeText_)
