@@ -83,46 +83,96 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     if (!this.sentence._showDialog) this.cd.markForCheck();
   }
 
-  askForReview(sentence: SentenceExtended) {
+  isActionButtonSuggested(action: Action) {
+    if (this.sentence.status !== SentenceStatus.inbox) return false;
+
+    if (action === Action.VALIDATE) {
+      return (
+        this.sentence.classification.intentId !== Intent.unknown &&
+        this.sentence.classification.intentId !== Intent.ragExcluded &&
+        !this.sentence.forReview
+      );
+    }
+
+    if (action === Action.UNKNOWN) {
+      return this.sentence.classification.intentId === Intent.unknown;
+    }
+
+    if (action === Action.RAGEXCLUDED) {
+      return this.sentence.classification.intentId === Intent.ragExcluded;
+    }
+  }
+
+  isActionButtonHighlighted(action: Action | 'review') {
+    if (this.sentence.status === SentenceStatus.inbox) return false;
+
+    if (action === 'review') {
+      return this.sentence.forReview;
+    }
+
+    if (action === Action.VALIDATE) {
+      return (
+        this.sentence.classification.intentId !== Intent.unknown &&
+        this.sentence.classification.intentId !== Intent.ragExcluded &&
+        !this.sentence.forReview &&
+        (this.sentence.status === SentenceStatus.model || this.sentence.status === SentenceStatus.validated)
+      );
+    }
+
+    if (action === Action.UNKNOWN) {
+      return this.sentence.classification.intentId === Intent.unknown;
+    }
+
+    if (action === Action.RAGEXCLUDED) {
+      return this.sentence.classification.intentId === Intent.ragExcluded;
+    }
+  }
+
+  askForReview() {
     const dialogRef = this.nbDialogService.open(SentenceReviewRequestComponent, {
       context: {
-        beforeClassification: sentence._intentBeforeClassification || sentence.classification.intentId,
-        reviewComment: sentence.reviewComment
+        beforeClassification: this.sentence._intentBeforeClassification || this.sentence.classification.intentId,
+        reviewComment: this.sentence.reviewComment
       }
     });
     dialogRef.onClose.subscribe((result) => {
       if (result && result.status === 'confirm') {
-        sentence.forReview = true;
-        sentence.reviewComment = result.description;
-        this.handleAction(Action.VALIDATE, sentence);
+        this.sentence.forReview = true;
+        this.sentence.reviewComment = result.description;
+        this.handleAction(Action.VALIDATE);
+      }
+      if (result && result.status === 'delete') {
+        this.sentence.forReview = false;
+        this.sentence.reviewComment = undefined;
+        this.handleAction(Action.VALIDATE, false);
       }
     });
   }
 
-  async handleAction(action: Action, sentence: SentenceExtended): Promise<void> {
+  async handleAction(action: Action, clearSentence = true): Promise<void> {
     const actionTitle = this.getActionTitle(action);
 
-    this.setSentenceAccordingToAction(action, sentence);
+    this.setSentenceAccordingToAction(action);
 
-    await lastValueFrom(this.nlp.updateSentence(sentence));
+    await lastValueFrom(this.nlp.updateSentence(this.sentence));
 
     // delete old sentence when language change
-    if (sentence.language !== this.state.currentLocale) {
-      const s = sentence.clone();
+    if (this.sentence.language !== this.state.currentLocale) {
+      const s = this.sentence.clone();
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s).subscribe((_) => {
-        this.toastrService.success(`Language change to ${this.state.localeName(sentence.language)}`, 'Language change');
+        this.toastrService.success(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
       });
     }
 
-    if (this.selection?.isSelected(sentence)) {
-      this.selection.deselect(sentence);
+    if (this.selection?.isSelected(this.sentence)) {
+      this.selection.deselect(this.sentence);
     }
 
-    this.onClearSentence.emit(sentence);
+    if (clearSentence) this.onClearSentence.emit(this.sentence);
 
-    this.toastrService.success(truncate(sentence.text), actionTitle, {
+    this.toastrService.success(truncate(this.sentence.text), actionTitle, {
       duration: 2000,
       status: 'basic'
     });
@@ -143,34 +193,50 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     }
   }
 
-  private setSentenceAccordingToAction(action: Action, sentence: SentenceExtended): void {
+  private setSentenceAccordingToAction(action: Action): void {
     switch (action) {
       case Action.DELETE:
-        sentence.status = SentenceStatus.deleted;
+        this.sentence.status = SentenceStatus.deleted;
         break;
       case Action.UNKNOWN:
-        sentence.classification.intentId = Intent.unknown;
-        sentence.classification.entities = [];
-        sentence.status = SentenceStatus.validated;
+        this.sentence.classification.intentId = Intent.unknown;
+        this.sentence.classification.entities = [];
+        this.sentence.status = SentenceStatus.validated;
         break;
       case Action.RAGEXCLUDED:
-        sentence.classification.intentId = Intent.ragExcluded;
-        sentence.classification.entities = [];
-        sentence.status = SentenceStatus.validated;
+        this.sentence.classification.intentId = Intent.ragExcluded;
+        this.sentence.classification.entities = [];
+        this.sentence.status = SentenceStatus.validated;
         break;
       case Action.VALIDATE:
-        const intentId = sentence.classification.intentId;
+        const intentId = this.sentence.classification.intentId;
 
         if (!intentId) {
           this.toastrService.show(`Please select an intent first`);
           break;
         }
         if (intentId === Intent.unknown) {
-          sentence.classification.intentId = Intent.unknown;
-          sentence.classification.entities = [];
+          this.sentence.classification.intentId = Intent.unknown;
+          this.sentence.classification.entities = [];
         }
-        sentence.status = SentenceStatus.validated;
+        this.sentence.status = SentenceStatus.validated;
         break;
+    }
+  }
+
+  intentHasChanged(): boolean {
+    return this.sentence._intentBeforeClassification && this.sentence._intentBeforeClassification !== this.sentence.classification.intentId;
+  }
+
+  setSentenceIntentByName(name: string) {
+    if (name === Intent.unknown) {
+      this.setSentenceAccordingToAction(Action.UNKNOWN);
+    } else {
+      const n = name.indexOf(':') == -1 ? name : nameFromQualifiedName(name);
+      const intent = this.state.findIntentByName(n);
+      if (intent) {
+        this.addIntentToSentence(intent._id);
+      }
     }
   }
 
@@ -240,58 +306,58 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     event.target.value = '';
   }
 
-  swapStatsDetails(sentence: SentenceExtended): void {
-    sentence._showStatsDetails = !sentence._showStatsDetails;
+  swapStatsDetails(): void {
+    this.sentence._showStatsDetails = !this.sentence._showStatsDetails;
   }
 
-  getSentenceAttribut(sentence: SentenceExtended, category: 'intentLabel' | 'probability'): string | number {
+  getSentenceAttribut(category: 'intentLabel' | 'probability'): string | number {
     switch (category) {
       case 'intentLabel':
-        return sentence.getIntentLabel(this.state);
+        return this.sentence.getIntentLabel(this.state);
       case 'probability':
-        return sentence.classification.intentProbability;
+        return this.sentence.classification.intentProbability;
     }
   }
 
-  isSentenceSelected(sentence: SentenceExtended): boolean {
-    return this.selection?.isSelected(sentence);
+  isSentenceSelected(): boolean {
+    return this.selection?.isSelected(this.sentence);
   }
 
-  toggle(sentence: SentenceExtended): void {
-    this.selection?.toggle(sentence);
+  toggle(): void {
+    this.selection?.toggle(this.sentence);
   }
 
-  showDetails(sentence: SentenceExtended): void {
-    this.onDetails.emit(sentence);
+  showDetails(): void {
+    this.onDetails.emit(this.sentence);
   }
 
-  async copySentence(sentence) {
-    copyToClipboard(sentence.getText());
+  async copySentence() {
+    copyToClipboard(this.sentence.getText());
     this.toastrService.success(`Sentence copied to clipboard`, 'Clipboard');
   }
 
-  testDialogSentence(sentence) {
+  testDialogSentence() {
     this.testDialogService.testSentenceDialog({
-      sentenceText: sentence.text,
-      sentenceLocale: sentence.language
+      sentenceText: this.sentence.text,
+      sentenceLocale: this.sentence.language
     });
   }
 
-  redirectToFaqManagement(sentence: SentenceExtended): void {
-    this.router.navigate(['faq/management'], { state: { question: sentence.text } });
+  redirectToFaqManagement(): void {
+    this.router.navigate(['faq/management'], { state: { question: this.sentence.text } });
   }
 
-  createNewIntent(sentence: SentenceExtended) {
+  createNewIntent() {
     const dialogRef = this.nbDialogService.open(IntentDialogComponent, { context: { create: true } });
 
     dialogRef.onClose.subscribe((result) => {
       if (result && result.name) {
-        this.createIntent(sentence, result.name, result.label, result.description, result.category);
+        this.createIntent(result.name, result.label, result.description, result.category);
       }
     });
   }
 
-  private createIntent(sentence: SentenceExtended, name: string, label: string, description: string, category: string): void {
+  private createIntent(name: string, label: string, description: string, category: string): void {
     if (
       StateService.intentExistsInApp(this.state.currentApplication, name) ||
       name === nameFromQualifiedName(Intent.unknown) ||
@@ -313,16 +379,16 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
         });
         dialogRef.onClose.subscribe((result) => {
           if (result === action) {
-            this.saveIntent(sentence, name, label, description, category);
+            this.saveIntent(name, label, description, category);
           }
         });
       } else {
-        this.saveIntent(sentence, name, label, description, category);
+        this.saveIntent(name, label, description, category);
       }
     }
   }
 
-  private saveIntent(sentence: SentenceExtended, name: string, label: string, description: string, category: string) {
+  private saveIntent(name: string, label: string, description: string, category: string) {
     this.nlp
       .saveIntent(
         new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], [], [], label, description, category)
@@ -331,9 +397,9 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
         next: (intent) => {
           this.state.addIntent(intent);
 
-          sentence.classification.intentId = intent._id;
-          const oldSentenceIndex = this.sentences.findIndex((s) => s === sentence);
-          const oldSentence = sentence;
+          this.sentence.classification.intentId = intent._id;
+          const oldSentenceIndex = this.sentences.findIndex((s) => s === this.sentence);
+          const oldSentence = this.sentence;
 
           const newSentence = oldSentence.clone();
           newSentence.classification.intentId = intent._id;
