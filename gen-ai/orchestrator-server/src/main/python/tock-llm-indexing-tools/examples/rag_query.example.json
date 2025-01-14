@@ -4,7 +4,7 @@
         "provider": "AzureOpenAIService",
          "api_key": {
              "type": "Raw",
-             "value": "*****************"
+             "secret": "*****************"
             },
         "model": "gpt-4o",
         "deployment_name": "*******************",
@@ -24,7 +24,7 @@
         "provider": "AzureOpenAIService",
          "api_key": {
              "type": "Raw",
-             "value": "*****************************"
+             "secret": "*****************************"
             },
         "deployment_name":  "********************",
         "api_base":         "***********************************",
@@ -48,7 +48,7 @@
         "url": "http://localhost:3000",
         "secret_key":{
             "type": "Raw",
-            "value": "************************"
+            "secret": "************************"
         },
         "public_key":"********************************"
     }
