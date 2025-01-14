@@ -114,7 +114,7 @@ async def get_llm_provider_setting_by_id(
     if provider_id == LLMProvider.OPEN_AI:
         return OpenAILLMSetting(
             provider=LLMProvider.OPEN_AI,
-            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             model='gpt-3.5-turbo',
             temperature=1.3,
             prompt='How to learn to ride a bike without wheels!',
@@ -122,7 +122,7 @@ async def get_llm_provider_setting_by_id(
     elif provider_id == LLMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAILLMSetting(
             provider=LLMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
             model='gpt-4o',
             api_base='https://doc.tock.ai/tock',

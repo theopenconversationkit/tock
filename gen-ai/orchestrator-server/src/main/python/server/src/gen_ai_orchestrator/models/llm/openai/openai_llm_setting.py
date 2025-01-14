@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ from pydantic import Field
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
@@ -35,13 +37,13 @@ class OpenAILLMSetting(BaseLLMSetting):
     )
     api_key: SecretKey = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
     )
     model: str = Field(
         description='The model id', examples=['gpt-3.5-turbo'], min_length=1
     )
     base_url: str = Field(
         description='The OpenAI endpoint base URL',
-        examples=["https://api.openai.com/v1"],
-        default="https://api.openai.com/v1"
+        examples=['https://api.openai.com/v1'],
+        default='https://api.openai.com/v1'
     )

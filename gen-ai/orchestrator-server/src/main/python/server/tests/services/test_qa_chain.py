@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ async def test_qa_chain(
         'user_query': 'How to get started playing guitar ?',
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
-            'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
+            'api_key': {'type': 'Raw', 'secret': 'ab7***************************A1IV4B'},
             'model': 'text-embedding-ada-002',
         },
         'document_index_name': 'my-index-name',

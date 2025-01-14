@@ -1,0 +1,44 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1
+    # the default gitleaks configuration file : https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/psf/black
+    rev: 23.11.0
+    hooks:
+      - id: black
+        files: ^/gen-ai/orchestrator-server/src/main/python/
+        language_version: python3.9
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - id: insert-license
+        files: \.py$
+        args:
+          - --license-filepath
+          - gen-ai/orchestrator-server/src/main/python/server/LICENSE.txt
+          - --use-current-year
+          - --no-extra-eol
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-ast
+      - id: double-quote-string-fixer
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        files: '\.md$'
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        files: "\\.(py)$"
+        args: [ --settings-path=gen-ai/orchestrator-server/src/main/python/server/pyproject.toml ]
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.3.0
+    hooks:
+      - id: pycln
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.7.3
+    hooks:
+      - id: pip-audit

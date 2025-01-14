@@ -34,3 +34,25 @@ Open Conversational AI platform to build Bots:
 ▶️ Live demo: [https://demo.tock.ai](https://demo.tock.ai)
   
 💬 Contact: [https://gitter.im/tockchat/Lobby](https://gitter.im/tockchat/Lobby)
+
+## Using Pre-commit
+
+This project uses **pre-commit** to automate code checks and formatting before each commit, ensuring consistent code quality and reducing errors.<br/>
+It is very important to always execute these hooks to maintain the quality of the code.
+
+### Installation
+1. Install `pre-commit`:
+   ```bash
+   pip install pre-commit
+   ```
+2. Set up the hooks in your repository:
+   ```bash
+    pre-commit install
+   ```
+### Usage
+
+Hooks will run automatically on each commit.<br/>
+To run them manually on all files, use:
+   ```bash
+   pre-commit run --all-files
+   ```

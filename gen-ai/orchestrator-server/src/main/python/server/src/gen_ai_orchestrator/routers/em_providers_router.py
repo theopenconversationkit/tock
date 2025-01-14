@@ -117,13 +117,13 @@ async def get_em_provider_setting_by_id(
     if provider_id == EMProvider.OPEN_AI:
         return OpenAIEMSetting(
             provider=EMProvider.OPEN_AI,
-            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             model='gpt-3.5-turbo',
         )
     elif provider_id == EMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAIEMSetting(
             provider=EMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
             model='text-embedding-ada-002',
             api_base='https://doc.tock.ai/tock',

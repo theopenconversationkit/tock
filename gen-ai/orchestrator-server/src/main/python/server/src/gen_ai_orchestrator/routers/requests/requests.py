@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class QAQuery(BaseQuery):
                         'provider': 'OpenAI',
                         'api_key': {
                             'type': 'Raw',
-                            'value': 'ab7***************************A1IV4B',
+                            'secret': 'ab7***************************A1IV4B',
                         },
                         'model': 'text-embedding-ada-002',
                     },
@@ -213,7 +213,7 @@ class RagQuery(BaseQuery):
                         'provider': 'OpenAI',
                         'api_key': {
                             'type': 'Raw',
-                            'value': 'ab7***************************A1IV4B',
+                            'secret': 'ab7***************************A1IV4B',
                         },
                         'temperature': 1.2,
                         'prompt': """Use the following context to answer the question at the end.
@@ -237,7 +237,7 @@ Answer in {locale}:""",
                         'provider': 'OpenAI',
                         'api_key': {
                             'type': 'Raw',
-                            'value': 'ab7***************************A1IV4B',
+                            'secret': 'ab7***************************A1IV4B',
                         },
                         'model': 'text-embedding-ada-002',
                     },

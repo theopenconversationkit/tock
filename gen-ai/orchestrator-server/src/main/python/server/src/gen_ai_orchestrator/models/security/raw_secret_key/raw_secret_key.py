@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -33,6 +33,6 @@ class RawSecretKey(BaseSecretKey):
         examples=[SecretKeyType.RAW],
         default=SecretKeyType.RAW,
     )
-    value: str = Field(
-        description='The secret value.', examples=['145d-ff455g-e4r5gf'], min_length=1
+    secret: str = Field(
+        description='The secret value.', examples=['145d-**********-e4f'], min_length=1
     )

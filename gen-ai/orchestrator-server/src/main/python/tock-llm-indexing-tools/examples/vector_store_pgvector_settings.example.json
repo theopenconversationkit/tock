@@ -5,7 +5,7 @@
   "username": "postgres",
   "password": {
     "type": "Raw",
-    "value": "ChangeMe"
+    "secret": "ChangeMe"
   },
   "database": "postgres"
 }

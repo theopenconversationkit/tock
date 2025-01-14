@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -22,8 +22,12 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.models.security.security_types import SecretKey
-from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
+    BaseVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
 
 
 class PGVectorStoreSetting(BaseVectorStoreSetting):
@@ -51,7 +55,7 @@ class PGVectorStoreSetting(BaseVectorStoreSetting):
     )
     password: SecretKey = Field(
         description='The vector store connection password.',
-        examples=[RawSecretKey(value='postgres')],
+        examples=[RawSecretKey(secret='postgres')],
     )
     database: str = Field(
         description='The postgres name', examples=['postgres'],
