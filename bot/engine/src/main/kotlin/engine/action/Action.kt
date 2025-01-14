@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.event.Event
@@ -38,7 +39,8 @@ abstract class Action(
     id: Id<Action>,
     date: Instant,
     state: EventState,
-    val metadata: ActionMetadata = ActionMetadata()
+    val metadata: ActionMetadata = ActionMetadata(),
+    val annotations: MutableList<BotAnnotation> = mutableListOf()
 ) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message

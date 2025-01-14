@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
 import org.litote.kmongo.Id
+import java.time.Instant
 
-interface AnnotationDAO {
-
-    fun save(annotation: Annotation): Annotation
-
+sealed class BotAnnotationEvent {
+    abstract val eventId: Id<BotAnnotationEvent>
+    abstract val type: BotAnnotationEventType
+    abstract val creationDate: Instant
+    abstract val lastUpdateDate: Instant
+    abstract val user: String
 }

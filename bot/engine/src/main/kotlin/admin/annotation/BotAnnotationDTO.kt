@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 
-/**
- * Data Transfer Object pour la création et modification d'annotation.
- */
-data class AnnotationDTO(
+data class BotAnnotationDTO(
     val id: String? = null,
     val dialogId: String,
     val actionId: String,
     val description: String,
-    val state: AnnotationState,
-    val reason: AnnotationReasonType? = null,
+    val state: BotAnnotationState,
+    val reason: BotAnnotationReasonType? = null,
     val groundTruth: String? = null,
-    val events: List<AnnotationEvent>
+    val events: List<BotAnnotationEvent>
 ) {
-    constructor(annotation: Annotation) : this(
+    constructor(annotation: BotAnnotation) : this(
         id = annotation._id.toString(),
         dialogId = annotation.dialogId,
         actionId = annotation.actionId,
@@ -44,7 +41,7 @@ data class AnnotationDTO(
         events = annotation.events
     )
 
-    fun toAnnotation(existing: Annotation? = null): Annotation = Annotation(
+    fun toAnnotation(existing: BotAnnotation? = null): BotAnnotation = BotAnnotation(
         _id = id?.toId() ?: newId(),
         dialogId = dialogId,
         actionId = actionId,

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.definition.Intent
@@ -260,6 +261,7 @@ internal data class DialogCol(
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
         lateinit var applicationId: String
+        var annotations: MutableList<BotAnnotation> = mutableListOf()
 
         fun assignFrom(action: Action) {
             id = action.toActionId()
@@ -269,6 +271,7 @@ internal data class DialogCol(
             playerId = action.playerId
             recipientId = action.recipientId
             applicationId = action.applicationId
+            annotations = action.annotations
         }
 
         abstract fun toAction(dialogId: Id<Dialog>): Action

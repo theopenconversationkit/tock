@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
-enum class AnnotationReasonType {
-    INACCURATE_ANSWER,
-    INCOMPLETE_ANSWER,
-    HALLUCINATION,
-    INCOMPLETE_SOURCES,
-    OBSOLETE_SOURCES,
-    WRONG_ANSWER_FORMAT,
-    BUSINESS_LEXICON_PROBLEM,
-    QUESTION_MISUNDERSTOOD,
-    OTHER
-}
+
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import java.time.Instant
+
+data class BotAnnotation(
+    val _id: Id<Annotation> = newId(),
+    val actionId: String,
+    val dialogId: String,
+    var state: BotAnnotationState,
+    var reason: BotAnnotationReasonType?,
+    var description: String,
+    var groundTruth: String?,
+    val events: MutableList<BotAnnotationEvent>,
+    val createdAt: Instant = Instant.now(),
+    var lastUpdateDate: Instant = Instant.now(),
+)

@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
-
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
-import java.time.Instant
-
-data class Annotation(
-    val _id: Id<Annotation> = newId(),
-    val actionId: String,
-    val dialogId: String,
-    var state: AnnotationState,
-    var reason: AnnotationReasonType?,
-    var description: String,
-    var groundTruth: String?,
-    val events: MutableList<AnnotationEvent>,
-    val createdAt: Instant = Instant.now(),
-    var lastUpdateDate: Instant = Instant.now(),
-)
+enum class BotAnnotationEventType {
+    COMMENT,
+    STATE,
+    REASON,
+    GROUND_TRUTH,
+    DESCRIPTION
+}

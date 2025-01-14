@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
-enum class AnnotationEventType {
-    COMMENT,
-    STATE,
-    REASON,
-    GROUND_TRUTH,
-    DESCRIPTION
-}
+import org.litote.kmongo.Id
+import java.time.Instant
+
+data class BotAnnotationEventChange(
+    override val eventId: Id<BotAnnotationEvent>,
+    override val type: BotAnnotationEventType,
+    override val creationDate: Instant,
+    override val lastUpdateDate: Instant,
+    override val user: String,
+    val before: String?,
+    val after: String?
+) : BotAnnotationEvent()

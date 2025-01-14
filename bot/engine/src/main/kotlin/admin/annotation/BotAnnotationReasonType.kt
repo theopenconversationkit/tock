@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.annotation
+package ai.tock.bot.admin.annotation
 
-enum class AnnotationState {
-    ANOMALY,
-    REVIEW_NEEDED,
-    RESOLVED,
-    WONT_FIX
+enum class BotAnnotationReasonType {
+    INACCURATE_ANSWER,
+    INCOMPLETE_ANSWER,
+    HALLUCINATION,
+    INCOMPLETE_SOURCES,
+    OBSOLETE_SOURCES,
+    WRONG_ANSWER_FORMAT,
+    BUSINESS_LEXICON_PROBLEM,
+    QUESTION_MISUNDERSTOOD,
+    OTHER
 }

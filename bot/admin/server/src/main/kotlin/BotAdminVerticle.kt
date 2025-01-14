@@ -21,6 +21,7 @@ import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
@@ -35,9 +36,11 @@ import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
 import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
+import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
@@ -210,6 +213,18 @@ open class BotAdminVerticle : AdminVerticle() {
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDateAndStory(request)
             }
+        }
+
+        // Annotation Endpoint
+        blockingJsonPost(
+            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation",
+            setOf(botUser)
+        ) { context, request: BotAnnotationRequest ->
+
+            val botId = context.path("botId")
+            val dialogId = context.path("dialogId")
+            val actionId = context.path("actionId")
+
         }
 
         blockingJsonPost(
