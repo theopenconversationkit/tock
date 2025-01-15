@@ -22,6 +22,7 @@ import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBo
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
@@ -189,6 +190,19 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
+            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation",
+            setOf(botUser)
+        ) { context, annotationDTO: BotAnnotationDTO ->
+            val botId = context.path("botId")
+            val dialogId = context.path("dialogId")
+            val actionId = context.path("actionId")
+            val user = context.userLogin
+
+            val annotation = BotAdminService.createAnnotation(dialogId, actionId, annotationDTO, user)
+            annotation
+        }
+
+        blockingJsonPost(
             "/analytics/messages/byIntent",
             setOf(botUser)
         ) { context, request: DialogFlowRequest ->
@@ -212,27 +226,6 @@ open class BotAdminVerticle : AdminVerticle() {
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDateAndStory(request)
-            }
-        }
-
-        // Annotation Endpoint
-        blockingJsonPost(
-            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation",
-            setOf(botUser)
-        ) { context, request: BotAnnotationRequest ->
-
-            val botId = context.path("botId")
-            val dialogId = context.path("dialogId")
-            val actionId = context.path("actionId")
-
-        }
-
-        blockingJsonPost(
-            "/analytics/messages/byStory",
-            setOf(botUser)
-        ) { context, request: DialogFlowRequest ->
-            checkAndMeasure(context, request) {
-                BotAdminAnalyticsService.reportMessagesByStory(request)
             }
         }
 

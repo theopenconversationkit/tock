@@ -17,6 +17,10 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationDTO
+import ai.tock.bot.admin.annotation.BotAnnotationEventChange
+import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
@@ -46,6 +50,7 @@ import ai.tock.bot.admin.story.dump.*
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.config.SatisfactionIntent
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
@@ -62,6 +67,7 @@ import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.shared.*
+import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.security.key.HasSecretKey
 import ai.tock.shared.security.key.SecretKey
@@ -70,6 +76,7 @@ import ai.tock.translator.*
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.*
@@ -147,6 +154,40 @@ object BotAdminService {
             }
             return null
         }
+    }
+
+    fun createAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        val annotation = BotAnnotation(
+            state = annotationDTO.state,
+            reason = annotationDTO.reason,
+            description = annotationDTO.description,
+            groundTruth = annotationDTO.groundTruth,
+            actionId = actionId,
+            dialogId = dialogId,
+            events = mutableListOf(),
+            lastUpdateDate = Instant.now()
+        )
+
+        val event = BotAnnotationEventChange(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            type = BotAnnotationEventType.STATE,
+            before = null,
+            after = annotationDTO.state.name
+        )
+
+        annotation.events.add(event)
+
+        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
+
+        return annotation
     }
 
     fun createOrGetIntent(
