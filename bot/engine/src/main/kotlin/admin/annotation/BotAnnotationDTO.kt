@@ -28,7 +28,7 @@ data class BotAnnotationDTO(
     val state: BotAnnotationState,
     val reason: BotAnnotationReasonType? = null,
     val groundTruth: String? = null,
-    val events: List<BotAnnotationEvent>
+    val events: List<BotAnnotationEvent> = emptyList()
 ) {
     constructor(annotation: BotAnnotation) : this(
         id = annotation._id.toString(),
