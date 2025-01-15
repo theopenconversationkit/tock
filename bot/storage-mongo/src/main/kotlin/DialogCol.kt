@@ -261,7 +261,7 @@ internal data class DialogCol(
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
         lateinit var applicationId: String
-        var annotations: MutableList<BotAnnotation> = mutableListOf()
+        var annotation: BotAnnotation? = null
 
         fun assignFrom(action: Action) {
             id = action.toActionId()
@@ -271,7 +271,7 @@ internal data class DialogCol(
             playerId = action.playerId
             recipientId = action.recipientId
             applicationId = action.applicationId
-            annotations = action.annotations
+            annotation = action.annotation
         }
 
         abstract fun toAction(dialogId: Id<Dialog>): Action

@@ -40,7 +40,7 @@ abstract class Action(
     date: Instant,
     state: EventState,
     val metadata: ActionMetadata = ActionMetadata(),
-    val annotations: MutableList<BotAnnotation> = mutableListOf()
+    var annotation: BotAnnotation? = null
 ) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message
