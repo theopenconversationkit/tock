@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.dialog
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.NlpCallStats
@@ -37,4 +38,6 @@ interface DialogReportDAO {
     fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
 
     fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
+
+    fun updateAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
 }
