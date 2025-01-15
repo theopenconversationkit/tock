@@ -23,9 +23,6 @@ import ai.tock.shared.property
 private val vectorStore = property(
     name = "tock_gen_ai_orchestrator_vector_store_provider",
     defaultValue = VectorStoreProvider.OpenSearch.name)
-private val kNeighborsDocuments = intProperty(
-    name = "tock_gen_ai_orchestrator_document_number_neighbors",
-    defaultValue = 1)
 
 typealias DocumentIndexName = String
 
@@ -35,11 +32,12 @@ object VectorStoreUtils {
         namespace: String,
         botId: String,
         indexSessionId: String,
+        kNeighborsDocuments: Int,
         vectorStoreSetting: VectorStoreSetting?,
     ): Pair<DocumentSearchParamsBase, DocumentIndexName> {
 
         vectorStoreSetting?.let {
-            val searchParams = it.getDocumentSearchParams()
+            val searchParams = it.getDocumentSearchParams(kNeighborsDocuments)
             val indexName = it.normalizeDocumentIndexName(namespace, botId, indexSessionId)
             return Pair(searchParams, indexName)
         }

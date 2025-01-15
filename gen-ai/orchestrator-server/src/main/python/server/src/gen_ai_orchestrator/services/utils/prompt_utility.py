@@ -11,12 +11,13 @@ from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 
 logger = logging.getLogger(__name__)
 
-def validate_prompt_template(prompt: PromptTemplate):
+def validate_prompt_template(prompt: PromptTemplate, name: str):
     """
     Prompt template validation
 
     Args:
         prompt: The prompt template
+        name: The prompt name
 
     Returns:
         Nothing.
@@ -27,7 +28,7 @@ def validate_prompt_template(prompt: PromptTemplate):
         try:
             Template(prompt.template).render(prompt.inputs)
         except TemplateError as exc:
-            logger.error('Prompt completion - template validation failed!')
+            logger.error(f'Validation of the prompt Template has failed! ({name})')
             logger.error(exc)
             raise GenAIPromptTemplateException(
                 ErrorInfo(

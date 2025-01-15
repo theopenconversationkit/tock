@@ -32,6 +32,7 @@ object Constants {
     private const val GEN_AI_RAG="$GEN_AI/RAG"
     private const val GEN_AI_COMPLETION="$GEN_AI/COMPLETION"
 
+    const val GEN_AI_RAG_QUESTION_CONDENSING="$GEN_AI_RAG/questionCondensing"
     const val GEN_AI_RAG_QUESTION_ANSWERING="$GEN_AI_RAG/questionAnswering"
     const val GEN_AI_RAG_EMBEDDING_QUESTION="$GEN_AI_RAG/embeddingQuestion"
 

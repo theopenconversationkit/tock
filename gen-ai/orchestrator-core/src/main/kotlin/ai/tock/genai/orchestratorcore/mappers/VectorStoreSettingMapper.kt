@@ -37,11 +37,11 @@ object VectorStoreSettingMapper {
             when(this){
                 is OpenSearchVectorStoreSetting -> {
                     val fetchedPassword = SecurityUtils.fetchSecretKeyValue(password)
-                    return OpenSearchVectorStoreSetting(host, port, username, fetchedPassword, k)
+                    return OpenSearchVectorStoreSetting(host, port, username, fetchedPassword)
                 }
                 is PGVectorStoreSetting -> {
                     val fetchedPassword = SecurityUtils.fetchSecretKeyValue(password)
-                    return PGVectorStoreSetting(host, port, username, fetchedPassword, k, database)
+                    return PGVectorStoreSetting(host, port, username, fetchedPassword, database)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported VectorStore Setting")
@@ -61,11 +61,11 @@ object VectorStoreSettingMapper {
             when(this){
                 is OpenSearchVectorStoreSetting -> {
                     val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
-                    return OpenSearchVectorStoreSetting(host, port, username, secretPassword, k)
+                    return OpenSearchVectorStoreSetting(host, port, username, secretPassword)
                 }
                 is PGVectorStoreSetting -> {
                     val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
-                    return PGVectorStoreSetting(host, port, username, secretPassword, k, database)
+                    return PGVectorStoreSetting(host, port, username, secretPassword, database)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported VectorStore Setting")
