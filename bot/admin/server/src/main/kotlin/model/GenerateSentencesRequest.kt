@@ -16,9 +16,11 @@
 
 package ai.tock.bot.admin.model
 
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import java.util.Locale
 
 data class SentenceGenerationRequest(
+    val prompt: PromptTemplate,
     val llmTemperature: String,
     val sentences: List<String>,
     val locale: Locale,

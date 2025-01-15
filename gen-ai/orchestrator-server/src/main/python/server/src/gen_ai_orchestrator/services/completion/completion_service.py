@@ -53,7 +53,7 @@ async def generate_and_split_sentences(
     start_time = time.time()
 
     logger.info('Prompt completion - template validation')
-    validate_prompt_template(query.prompt)
+    validate_prompt_template(query.prompt, 'Sentence generation prompt')
 
     parser = NumberedListOutputParser()
     prompt = LangChainPromptTemplate.from_template(

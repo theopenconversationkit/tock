@@ -18,6 +18,7 @@ package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.service.VectorStoreService
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
@@ -34,26 +35,39 @@ data class BotRAGConfigurationDTO(
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val llmSetting: LLMSettingDTO,
+    val questionCondensingLlmSetting: LLMSettingDTO? = null,
+    val questionCondensingPrompt: PromptTemplate? = null,
+    val questionAnsweringLlmSetting: LLMSettingDTO,
+    val questionAnsweringPrompt: PromptTemplate,
     val emSetting: EMSettingDTO,
     val indexSessionId: String? = null,
     val indexName: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
     val documentsRequired: Boolean = true,
+    val debugEnabled: Boolean,
+    val maxDocumentsRetrieved: Int,
+    val maxMessagesFromHistory: Int,
 ) {
     constructor(configuration: BotRAGConfiguration) : this(
         id = configuration._id.toString(),
         namespace = configuration.namespace,
         botId = configuration.botId,
         enabled = configuration.enabled,
-        llmSetting = configuration.llmSetting.toDTO(),
+        questionCondensingLlmSetting = configuration.questionCondensingLlmSetting?.toDTO(),
+        questionCondensingPrompt = configuration.questionCondensingPrompt,
+        questionAnsweringLlmSetting = configuration.getQuestionAnsweringLLMSetting().toDTO(),
+        questionAnsweringPrompt = configuration.questionAnsweringPrompt
+            ?: configuration.initQuestionAnsweringPrompt(),
         emSetting = configuration.emSetting.toDTO(),
         indexSessionId = configuration.indexSessionId,
         indexName = configuration.generateIndexName(),
         noAnswerSentence = configuration.noAnswerSentence,
         noAnswerStoryId = configuration.noAnswerStoryId,
         documentsRequired = configuration.documentsRequired,
+        debugEnabled = configuration.debugEnabled,
+        maxDocumentsRetrieved = configuration.maxDocumentsRetrieved,
+        maxMessagesFromHistory = configuration.maxMessagesFromHistory,
     )
 
     fun toBotRAGConfiguration(): BotRAGConfiguration =
@@ -62,12 +76,20 @@ data class BotRAGConfigurationDTO(
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            llmSetting = LLMSettingMapper.toEntity(
+            questionCondensingLlmSetting = LLMSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_RAG_QUESTION_CONDENSING,
+                dto = questionCondensingLlmSetting!!
+            ),
+            questionCondensingPrompt = questionCondensingPrompt,
+            questionAnsweringLlmSetting = LLMSettingMapper.toEntity(
                 namespace = namespace,
                 botId = botId,
                 feature = Constants.GEN_AI_RAG_QUESTION_ANSWERING,
-                dto = llmSetting
+                dto = questionAnsweringLlmSetting
             ),
+            questionAnsweringPrompt = questionAnsweringPrompt,
             emSetting = EMSettingMapper.toEntity(
                 namespace = namespace,
                 botId = botId,
@@ -78,6 +100,9 @@ data class BotRAGConfigurationDTO(
             noAnswerSentence = noAnswerSentence,
             noAnswerStoryId = noAnswerStoryId,
             documentsRequired = documentsRequired,
+            debugEnabled = debugEnabled,
+            maxDocumentsRetrieved = maxDocumentsRetrieved,
+            maxMessagesFromHistory = maxMessagesFromHistory,
         )
 }
 
@@ -87,6 +112,7 @@ private fun BotRAGConfiguration.generateIndexName(): String? {
             namespace,
             botId,
             it,
+            maxDocumentsRetrieved,
             VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
                 ?.setting
         ).second

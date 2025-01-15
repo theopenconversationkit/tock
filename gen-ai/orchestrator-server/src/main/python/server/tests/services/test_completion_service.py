@@ -28,4 +28,4 @@ def test_validate_prompt_template():
         },
     }
     template = PromptTemplate(**json)
-    validate_prompt_template(template)
+    validate_prompt_template(template, "prompt_name")

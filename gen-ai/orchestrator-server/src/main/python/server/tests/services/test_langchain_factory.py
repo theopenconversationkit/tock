@@ -126,7 +126,6 @@ def test_get_open_ai_llm_factory():
                 },
                 'model': 'model',
                 'temperature': '0',
-                'prompt': 'List 3 ice cream flavors.',
             }
         )
     )
@@ -148,7 +147,6 @@ def test_get_azure_open_ai_llm_factory():
                 'api_base': 'https://doc.tock.ai/tock',
                 'api_version': 'version',
                 'temperature': '0',
-                'prompt': 'List 3 ice cream flavors.',
             }
         )
     )
@@ -166,7 +164,6 @@ def test_get_fake_llm_factory():
                     'secret': 'ab7***************************A1IV4B',
                 },
                 'temperature': '0',
-                'prompt': 'List 3 ice cream flavors.',
                 'responses': ['1. vanilla\n2. chocolate\n3. strawberry'],
             }
         )
@@ -190,7 +187,6 @@ def test_get_open_ai_em_factory():
                     'secret': 'ab7***************************A1IV4B',
                 },
                 'model': 'model',
-                'prompt': 'List 3 ice cream flavors.',
             }
         )
     )
@@ -211,7 +207,6 @@ def test_get_azure_open_ai_em_factory():
                 'model': 'text-embedding-ada-002',
                 'api_base': 'https://doc.tock.ai/tock',
                 'api_version': 'version',
-                'prompt': 'List 3 ice cream flavors.',
             }
         )
     )
@@ -243,7 +238,6 @@ def test_get_open_search_vector_store_factory():
                     'secret': 'ab7***************************A1IV4B',
                 },
                 'model': 'model',
-                'prompt': 'List 3 ice cream flavors.',
             }
         )
     )

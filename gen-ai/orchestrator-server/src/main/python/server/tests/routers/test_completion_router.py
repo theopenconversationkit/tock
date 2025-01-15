@@ -32,7 +32,6 @@ def test_generate_sentences():
                 },
                 'model': 'dddddd',
                 'temperature': '0.0',
-                'prompt': 'List 3 ice cream flavors.',
                 'responses': ['1. vanilla\n2. chocolate\n3. strawberry'],
             },
             'prompt': {
@@ -64,7 +63,6 @@ def test_generate_sentences_template_error():
                 },
                 'model': 'dddddd',
                 'temperature': '0.0',
-                'prompt': 'List 3 ice cream flavors.',
                 'responses': ['1. vanilla\n2. chocolate\n3. strawberry'],
             },
             'prompt': {

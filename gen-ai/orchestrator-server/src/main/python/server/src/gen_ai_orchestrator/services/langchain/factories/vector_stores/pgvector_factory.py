@@ -66,5 +66,5 @@ class PGVectorFactory(LangChainVectorStoreFactory):
         VectorStore to check the connection independently.
         """
         await self.get_vector_store().asimilarity_search(
-            query=application_settings.vector_store_test_query, k=application_settings.vector_store_k)
+            query=application_settings.vector_store_test_query, k=application_settings.vector_store_test_max_docs_retrieved)
         return True

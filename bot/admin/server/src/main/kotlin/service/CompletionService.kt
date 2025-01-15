@@ -75,18 +75,11 @@ object CompletionService {
             )
         )
 
-        // Create a Jinja2 prompt template
-        val prompt = PromptTemplate(
-            formatter = Formatter.JINJA2.id,
-            template = llmSetting.prompt,
-            inputs = inputs
-        )
-
         // call the completion service to generate sentences
         return completionService
             .generateSentences(
                 SentenceGenerationQuery(
-                    llmSetting, prompt,
+                    llmSetting, request.prompt.copy(inputs = inputs),
                     ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
                 )
             )
