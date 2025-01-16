@@ -243,12 +243,16 @@ def __rag_guard(inputs, response, documents_required):
     Validates the RAG system's response based on the presence or absence of source documents
     and the `documentsRequired` setting.
 
-    - If `documentsRequired` is True, the RAG system must not provide an answer when no source
-      documents are found. If it does, an exception is raised.
-    - If `documentsRequired` is False, the RAG system can provide an answer even if no source
-      documents are found.
-    - If the RAG system responds with the `no_answer` phrase, any source documents in the
-      response are removed.
+    Validation rules:
+    1. When documents_required is True:
+       - The system must only provide answers when relevant documents are found
+       - If no documents are found, the system must either:
+         a) Return the 'no_answer' response if configured
+         b) Raise an exception if 'no_answer' is not configured
+
+    2. When a 'no_answer' response is given:
+       - If documents are present, they are removed and a warning is logged
+       - If no documents are found and documents_required is True, this is considered valid behavior
 
     Args:
         inputs: question answering prompt inputs
@@ -256,24 +260,25 @@ def __rag_guard(inputs, response, documents_required):
         documents_required (bool): Specifies whether documents are mandatory for the response.
     """
 
-    if 'no_answer' in inputs:
-        if (
-            response['answer'] != inputs['no_answer']
-            and response['source_documents'] == []
-            and documents_required
-        ):
-            message = 'The RAG gives an answer when no document has been found!'
-            __rag_log(level=ERROR, message=message, inputs=inputs, response=response)
-            raise GenAIGuardCheckException(ErrorInfo(cause=message))
+    no_docs_retrieved = response['source_documents'] == []
+    no_docs_but_required = no_docs_retrieved and documents_required
+    chain_can_give_no_answer_reply = 'no_answer' in inputs
+    chain_reply_no_answer = response.get('answer', '') == inputs.get('no_answer', '')
 
-        if (
-            response['answer'] == inputs['no_answer']
-            and response['source_documents'] != []
-        ):
-            message = 'The RAG gives no answer for user question, but some documents has been found!'
-            __rag_log(level=WARNING, message=message, inputs=inputs, response=response)
-            # Remove source documents
-            response['source_documents'] = []
+    if no_docs_but_required:
+        if chain_can_give_no_answer_reply and chain_reply_no_answer:
+            # Expected behavior: chain used 'no_answer' correctly
+            return
+        # Unexpected behavior: chain provided an answer without documents when required
+        message = 'The RAG provides an answer when no document has been found!'
+        __rag_log(level=ERROR, message=message, inputs=inputs, response=response)
+        raise GenAIGuardCheckException(ErrorInfo(cause=message))
+
+    if chain_reply_no_answer and not no_docs_retrieved:
+        # Unexpected behavior: chain replied with 'no_answer' but documents are present
+        message = 'The RAG gives no answer for user question, but some documents have been found!'
+        __rag_log(level=WARNING, message=message, inputs=inputs, response=response)
+        response['source_documents'] = []
 
 
 def __rag_log(level, message, inputs, response):
