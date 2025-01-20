@@ -16,7 +16,7 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.user.*
 import ai.tock.bot.connector.ConnectorMessage
@@ -741,6 +741,32 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 }
             }
             if (!annotationUpdated) {
+                logger.warn("Action with ID $actionId not found in dialog $dialogId")
+            }
+        } else {
+            logger.warn("Dialog with ID $dialogId not found")
+        }
+    }
+
+    override fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent) {
+        val dialog = dialogCol.findOneById(dialogId)
+        if (dialog != null) {
+            var eventAdded = false
+            dialog.stories.forEach { story ->
+                val actionIndex = story.actions.indexOfFirst { it.id.toString() == actionId }
+                if (actionIndex != -1) {
+                    val annotation = story.actions[actionIndex].annotation
+                    if (annotation != null) {
+                        annotation.events.add(event)
+                        eventAdded = true
+                        dialogCol.save(dialog)
+                        return
+                    } else {
+                        logger.warn("No annotation found for action $actionId in dialog $dialogId")
+                    }
+                }
+            }
+            if (!eventAdded) {
                 logger.warn("Action with ID $actionId not found in dialog $dialogId")
             }
         } else {

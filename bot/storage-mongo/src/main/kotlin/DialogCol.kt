@@ -16,7 +16,7 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.definition.Intent
@@ -351,7 +351,8 @@ internal data class DialogCol(
                     id,
                     date,
                     state,
-                    botMetadata
+                    botMetadata,
+                    annotation
                 )
         }
     }

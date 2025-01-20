@@ -16,14 +16,14 @@
 
 package ai.tock.bot.admin.annotation
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import org.litote.kmongo.Id
 import java.time.Instant
 
-data class BotAnnotationEventComment(
+data class BotAnnotationEventGroundTruth(
     override val eventId: Id<BotAnnotationEvent>,
     override val creationDate: Instant,
     override val lastUpdateDate: Instant,
     override val user: String,
-    val comment: String
-) : BotAnnotationEvent(eventId, BotAnnotationEventType.COMMENT, creationDate, lastUpdateDate, user)
+    override val before: String?,
+    override val after: String?
+) : BotAnnotationEventChange(eventId, BotAnnotationEventType.GROUND_TRUTH, creationDate, lastUpdateDate, user, after, before)

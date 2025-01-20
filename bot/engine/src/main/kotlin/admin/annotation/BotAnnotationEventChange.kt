@@ -16,15 +16,29 @@
 
 package ai.tock.bot.admin.annotation
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import org.litote.kmongo.Id
 import java.time.Instant
 
-data class BotAnnotationEventChange(
-    override val eventId: Id<BotAnnotationEvent>,
-    override val type: BotAnnotationEventType,
-    override val creationDate: Instant,
-    override val lastUpdateDate: Instant,
-    override val user: String,
-    val before: String?,
-    val after: String?
-) : BotAnnotationEvent()
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = BotAnnotationEventState::class, name = "STATE"),
+    JsonSubTypes.Type(value = BotAnnotationEventGroundTruth::class, name = "GROUND_TRUTH"),
+    JsonSubTypes.Type(value = BotAnnotationEventReason::class, name = "REASON"),
+    JsonSubTypes.Type(value = BotAnnotationEventDescription::class, name = "DESCRIPTION"),
+)
+abstract class BotAnnotationEventChange(
+    eventId: Id<BotAnnotationEvent>,
+    type: BotAnnotationEventType,
+    creationDate: Instant,
+    lastUpdateDate: Instant,
+    user: String,
+    open val before: String?,
+    open val after: String?
+) : BotAnnotationEvent(eventId, type, creationDate, lastUpdateDate, user)

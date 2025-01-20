@@ -17,10 +17,7 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
-import ai.tock.bot.admin.annotation.BotAnnotation
-import ai.tock.bot.admin.annotation.BotAnnotationDTO
-import ai.tock.bot.admin.annotation.BotAnnotationEventChange
-import ai.tock.bot.admin.annotation.BotAnnotationEventType
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
@@ -156,6 +153,72 @@ object BotAdminService {
         }
     }
 
+    fun addEventToAnnotation(
+        dialogId: String,
+        actionId: String,
+        eventDTO: BotAnnotationEventDTO,
+        user: String
+    ) : BotAnnotationEvent {
+        val event = when (eventDTO.type) {
+            BotAnnotationEventType.COMMENT -> {
+                require(eventDTO.comment != null) { "Comment is required for COMMENT event type" }
+                BotAnnotationEventComment(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    comment = eventDTO.comment!!
+                )
+            }
+            BotAnnotationEventType.STATE -> {
+                BotAnnotationEventState(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = eventDTO.before,
+                    after = eventDTO.after
+                )
+            }
+            BotAnnotationEventType.REASON -> {
+                BotAnnotationEventReason(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = eventDTO.before,
+                    after = eventDTO.after
+                )
+            }
+            BotAnnotationEventType.GROUND_TRUTH -> {
+                BotAnnotationEventGroundTruth(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = eventDTO.before,
+                    after = eventDTO.after
+                )
+            }
+            BotAnnotationEventType.DESCRIPTION -> {
+                BotAnnotationEventDescription(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = eventDTO.before,
+                    after = eventDTO.after
+                )
+            }
+        }
+
+        dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
+
+                return event
+
+        }
+
+
     fun createAnnotation(
         dialogId: String,
         actionId: String,
@@ -173,20 +236,17 @@ object BotAdminService {
             lastUpdateDate = Instant.now()
         )
 
-        val event = BotAnnotationEventChange(
+        val event = BotAnnotationEventState(
             eventId = newId(),
             creationDate = Instant.now(),
             lastUpdateDate = Instant.now(),
             user = user,
-            type = BotAnnotationEventType.STATE,
             before = null,
-            after = annotationDTO.state.name
+            after = BotAnnotationState.ANOMALY.name
         )
 
         annotation.events.add(event)
-
         dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
-
         return annotation
     }
 

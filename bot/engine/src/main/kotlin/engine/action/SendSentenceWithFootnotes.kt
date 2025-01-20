@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.SentenceWithFootnotes
@@ -34,9 +35,10 @@ open class SendSentenceWithFootnotes(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata()
+    metadata: ActionMetadata = ActionMetadata(),
+    annotation: BotAnnotation? = null
 ) :
-    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+    Action(playerId, recipientId, applicationId, id, date, state, metadata, annotation) {
     override fun toMessage(): Message = SentenceWithFootnotes(text.toString(), footnotes.toList())
 }
 
