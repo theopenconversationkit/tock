@@ -218,6 +218,53 @@ object BotAdminService {
 
         }
 
+    fun updateAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+        eventDTO: BotAnnotationEventDTO,
+        user: String
+    ): BotAnnotationEvent {
+        val existingEvent = dialogReportDAO.getAnnotationEvent(dialogId, actionId, eventId)
+            ?: throw IllegalArgumentException("Event not found")
+
+        if (existingEvent.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only comment events can be updated")
+        }
+
+        if (eventDTO.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Event type must be COMMENT")
+        }
+
+        require(eventDTO.comment != null) { "Comment must be provided" }
+
+        val existingCommentEvent = existingEvent as BotAnnotationEventComment
+        val updatedEvent = existingCommentEvent.copy(
+            comment = eventDTO.comment!!,
+            lastUpdateDate = Instant.now()
+        )
+
+        dialogReportDAO.updateAnnotationEvent(dialogId, actionId, eventId, updatedEvent)
+
+        return updatedEvent
+    }
+
+    fun deleteAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        annotationId: String,
+        eventId: String,
+        user: String
+    ) {
+        val existingEvent = dialogReportDAO.getAnnotationEvent(dialogId, actionId, eventId)
+            ?: throw IllegalArgumentException("Event not found")
+
+        if (existingEvent.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only comment events can be deleted")
+        }
+
+        dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
+    }
 
     fun createAnnotation(
         dialogId: String,

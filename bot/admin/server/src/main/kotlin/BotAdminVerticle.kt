@@ -193,6 +193,46 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingDelete(
+            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events/:eventId",
+            setOf(botUser)
+        ) { context ->
+            val botId = context.path("botId")
+            val dialogId = context.path("dialogId")
+            val actionId = context.path("actionId")
+            val annotationId = context.path("annotationId")
+            val eventId = context.path("eventId")
+            val user = context.userLogin
+
+            BotAdminService.deleteAnnotationEvent(
+                dialogId = dialogId,
+                actionId = actionId,
+                annotationId = annotationId,
+                eventId = eventId,
+                user = user
+            )
+        }
+
+        blockingJsonPut(
+            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId",
+            setOf(botUser)
+        ) { context, eventDTO: BotAnnotationEventDTO ->
+            val botId = context.path("botId")
+            val dialogId = context.path("dialogId")
+            val actionId = context.path("actionId")
+            val eventId = context.path("eventId")
+            val user = context.userLogin
+
+            val updatedEvent = BotAdminService.updateAnnotationEvent(
+                dialogId = dialogId,
+                actionId = actionId,
+                eventId = eventId,
+                eventDTO = eventDTO,
+                user = user
+            )
+            updatedEvent
+        }
+
         blockingJsonPost(
             "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events",
             setOf(botUser)

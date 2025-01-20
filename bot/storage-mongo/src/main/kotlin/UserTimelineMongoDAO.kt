@@ -774,6 +774,74 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
+    override fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent? {
+        val dialog = dialogCol.findOneById(dialogId) ?: return null
+        for (story in dialog.stories) {
+            val action = story.actions.find { it.id.toString() == actionId } ?: continue
+            val annotation = action.annotation ?: return null
+            return annotation.events.find { it.eventId.toString() == eventId }
+        }
+        return null
+    }
+
+    override fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent) {
+        val dialog = dialogCol.findOneById(dialogId) ?: run {
+            logger.warn("Dialog $dialogId not found")
+            return
+        }
+        var updated = false
+        for (story in dialog.stories) {
+            val actionIdx = story.actions.indexOfFirst { it.id.toString() == actionId }
+            if (actionIdx == -1) continue
+            val action = story.actions[actionIdx]
+            val annotation = action.annotation ?: run {
+                logger.warn("Annotation not found for action $actionId")
+                return
+            }
+            val eventIdx = annotation.events.indexOfFirst { it.eventId.toString() == eventId }
+            if (eventIdx == -1) {
+                logger.warn("Event $eventId not found in annotation")
+                return
+            }
+            annotation.events[eventIdx] = updatedEvent
+            dialogCol.save(dialog)
+            updated = true
+            return
+        }
+        if (!updated) {
+            logger.warn("Action $actionId not found in dialog $dialogId")
+        }
+    }
+
+    override fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String) {
+        val dialog = dialogCol.findOneById(dialogId) ?: run {
+            logger.warn("Dialog $dialogId not found")
+            return
+        }
+        var eventDeleted = false
+        dialog.stories.forEach { story ->
+            val actionIndex = story.actions.indexOfFirst { it.id.toString() == actionId }
+            if (actionIndex != -1) {
+                val annotation = story.actions[actionIndex].annotation ?: run {
+                    logger.warn("Annotation not found for action $actionId")
+                    return
+                }
+                val event = annotation.events.find { it.eventId.toString() == eventId }
+                if (event?.type != BotAnnotationEventType.COMMENT) {
+                    logger.warn("Event $eventId not found or not a comment")
+                    return
+                }
+                annotation.events.remove(event)
+                dialogCol.save(dialog)
+                eventDeleted = true
+                return
+            }
+        }
+        if (!eventDeleted) {
+            logger.warn("Action $actionId not found in dialog $dialogId")
+        }
+    }
+
     override fun getArchivedEntityValues(
         stateValueId: Id<EntityStateValue>,
         oldActionsMap: Map<Id<Action>, Action>
