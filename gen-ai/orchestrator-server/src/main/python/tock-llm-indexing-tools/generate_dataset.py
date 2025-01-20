@@ -76,9 +76,10 @@ def _extract_dataset_items(filename: str, locale: str, no_answer: str) -> list[D
     # Replace NaN with None in the DataFrame
     df = input_df.map(lambda x: None if pd.isna(x) else x)
     # Data extraction
-    topics = df.iloc[2, 8:].tolist()     # Line 1: Topic
-    questions = df.iloc[3, 8:].tolist()  # Line 2: Question
-    answers = df.iloc[4, 8:].tolist()    # Line 3: Expected answer
+    # Using panda lines and columns are numbered from 0, row 8 match with raw "I" in Excel or LibreOffice
+    topics = df.iloc[2, 8:].tolist()     # Line 2 (line 3 in Excel or LibreOffice): Topic
+    questions = df.iloc[3, 8:].tolist()  # Line 3 (line 4 in Excel or LibreOffice): Question
+    answers = df.iloc[4, 8:].tolist()    # Line 4 (line 5 in Excel or LibreOffice): Expected answer
     # DatasetItems
     for topic, question, answer in zip(topics, questions, answers):
         if question is not None:
