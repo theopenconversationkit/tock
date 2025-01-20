@@ -18,6 +18,7 @@ package ai.tock.bot.engine
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
@@ -87,6 +88,7 @@ abstract class BotEngineTest {
     val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
     val featureDAO: FeatureDAO = mockk(relaxed = true)
     val botObservabilityConfigurationDAO : BotObservabilityConfigurationDAO = mockk(relaxed = true)
+    val botDocumentCompressorConfigurationDAO : BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
@@ -137,6 +139,7 @@ abstract class BotEngineTest {
             bind<BotRAGConfigurationDAO>() with provider { botRAGConfigurationDAO }
             bind<BotVectorStoreConfigurationDAO>() with provider { botVectorStoreConfigurationDAO }
             bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
+            bind<BotDocumentCompressorConfigurationDAO>() with provider { botDocumentCompressorConfigurationDAO }
         }
     }
 
