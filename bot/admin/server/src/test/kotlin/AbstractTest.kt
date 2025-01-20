@@ -19,6 +19,7 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
@@ -69,6 +70,7 @@ abstract class AbstractTest {
                 bind<ModelTester>() with provider { mockk<ModelTester>(relaxed = true) }
                 bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
                 bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
+                bind<BotDocumentCompressorConfigurationDAO>() with provider { mockk<BotDocumentCompressorConfigurationDAO>(relaxed = true) }
             }
             return module
         }
