@@ -16,10 +16,9 @@
 
 package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 
 interface EMProviderService {
-    fun checkSetting(query: EMProviderSettingStatusQuery): ProviderSettingStatusResponse?
+    fun checkSetting(query: EMProviderSettingStatusRequest): ProviderSettingStatusResponse?
 }

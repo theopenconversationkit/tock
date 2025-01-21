@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.requests
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
+import java.util.Locale
 
-class ObservabilityProviderSettingStatusQuery(
-    val setting: ObservabilitySetting
+data class SentenceGenerationRequest(
+    val llmTemperature: String,
+    val sentences: List<String>,
+    val locale: Locale,
+    val options: SentenceGenerationOptions,
 )
+
+
+
+
+

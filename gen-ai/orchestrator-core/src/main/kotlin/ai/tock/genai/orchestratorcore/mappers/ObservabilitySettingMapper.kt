@@ -16,7 +16,9 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.observability.*
+import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySettingDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
@@ -30,12 +32,13 @@ object ObservabilitySettingMapper {
      * @return [ObservabilitySettingDTO]
      */
     fun toDTO(entity: ObservabilitySetting): ObservabilitySettingDTO =
-        with(entity){
-            when(this){
+        with(entity) {
+            when (this) {
                 is LangfuseObservabilitySetting -> {
                     val secretKey = SecurityUtils.fetchSecretKeyValue(secretKey)
                     return LangfuseObservabilitySetting(secretKey, publicKey, url)
                 }
+
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
             }
@@ -47,15 +50,23 @@ object ObservabilitySettingMapper {
      * @param botId the bot ID (also known as application name)
      * @param feature the feature name
      * @param dto the [ObservabilitySettingDTO]
+     * @param rawByForce force the creation of a raw secret key
      * @return [ObservabilitySetting]
      */
-    fun toEntity(namespace: String, botId: String, feature: String, dto: ObservabilitySettingDTO): ObservabilitySetting =
+    fun toEntity(
+        namespace: String,
+        botId: String,
+        feature: String,
+        dto: ObservabilitySettingDTO,
+        rawByForce: Boolean = false
+    ): ObservabilitySetting =
         with(dto) {
             when (this) {
                 is LangfuseObservabilitySetting -> {
-                    val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey)
+                    val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey, rawByForce)
                     return LangfuseObservabilitySetting(secretKey, publicKey, url)
                 }
+
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
             }

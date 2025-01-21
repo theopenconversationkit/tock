@@ -16,8 +16,8 @@
 
 package ai.tock.genai.orchestratorclient.responses
 
-class SentenceGenerationResponse(
-    val sentences: List<String>
+data class CompletionResponse(
+    val answer: String,
+    val observabilityInfo: ObservabilityInfo? = null,
 )
-
 

@@ -16,12 +16,11 @@
 
 package ai.tock.genai.orchestratorclient.requests
 
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
-class SentenceGenerationQuery(
-    val llmSetting: LLMSetting,
-    val prompt: PromptTemplate,
-    val observabilitySetting: ObservabilitySetting?
+class VectorStoreProviderSettingStatusRequest(
+    val vectorStoreSetting: VectorStoreSetting? = null,
+    val emSetting : EMSetting? = null,
+    val documentIndexName: String? = null
 )
-

@@ -19,7 +19,7 @@ import logging
 from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
-    AIProviderBadQueryException,
+    AIProviderBadRequestException,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
@@ -43,7 +43,7 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
-    ObservabilityProviderSettingStatusQuery,
+    ObservabilityProviderSettingStatusRequest,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
     ObservabilityProviderResponse,
@@ -73,12 +73,12 @@ async def get_all_observability_providers() -> list[ObservabilityProvider]:
 
 @observability_providers_router.get('/{provider_id}')
 async def get_observability_provider_by_id(
-    request: Request, provider_id: str
+    http_request: Request, provider_id: str
 ) -> ObservabilityProviderResponse:
     """
     Get Observability Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -88,20 +88,20 @@ async def get_observability_provider_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_observability_provider(request, provider_id)
+    # Request validation
+    validate_observability_provider(http_request, provider_id)
 
     return ObservabilityProviderResponse(provider=ObservabilityProvider(provider_id))
 
 
 @observability_providers_router.get('/{provider_id}/setting/example')
 async def get_observability_provider_setting_by_id(
-    request: Request, provider_id: ObservabilityProvider
+    http_request: Request, provider_id: ObservabilityProvider
 ) -> ObservabilitySetting:
     """
     Get a setting example for a given Observability Provider ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -111,8 +111,8 @@ async def get_observability_provider_setting_by_id(
         GenAIUnknownObservabilityProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_observability_provider(request, provider_id)
+    # Request validation
+    validate_observability_provider(http_request, provider_id)
 
     if provider_id == ObservabilityProvider.LANGFUSE:
         return ObservabilitySetting(
@@ -125,29 +125,29 @@ async def get_observability_provider_setting_by_id(
 
 @observability_providers_router.post('/{provider_id}/setting/status')
 async def check_observability_provider_setting(
-    request: Request, provider_id: str, query: ObservabilityProviderSettingStatusQuery
+    http_request: Request, provider_id: str, request: ObservabilityProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given Observability Provider Setting
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
-        query: The query of the Observability Provider Setting to be checked
+        request: The request of the Observability Provider Setting to be checked
 
     Returns:
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
     logger.info('Start Observability setting check for provider %s', provider_id)
-    # Query validation
-    validate_query(request, provider_id, query.setting)
+    # Request validation
+    validate_query(http_request, provider_id, request.setting)
 
     try:
         # Observability setting check
-        check_observability_setting(query.setting)
+        check_observability_setting(request.setting)
 
         logger.info('The Observability setting is valid')
         return ProviderSettingStatusResponse(valid=True)
@@ -157,31 +157,31 @@ async def check_observability_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(request: Request, provider_id: str, setting: ObservabilitySetting):
+def validate_query(http_request: Request, provider_id: str, setting: ObservabilitySetting):
     """
     Check the consistency of the Provider ID with the request body
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
         setting:  The Observability Provider Setting
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug('Observability setting - Query validation')
-    validate_observability_provider(request, provider_id)
+    logger.debug('Observability setting - Request validation')
+    validate_observability_provider(http_request, provider_id)
     if provider_id != setting.provider:
-        raise AIProviderBadQueryException(
-            create_error_info_bad_request(request, provider_id)
+        raise AIProviderBadRequestException(
+            create_error_info_bad_request(http_request, provider_id)
         )
 
 
-def validate_observability_provider(request: Request, provider_id: str):
+def validate_observability_provider(http_request: Request, provider_id: str):
     """
     Check existence of Observability Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
 
     Raises:
@@ -191,6 +191,6 @@ def validate_observability_provider(request: Request, provider_id: str):
     if not ObservabilityProvider.has_value(provider_id):
         raise GenAIUnknownObservabilityProviderException(
             create_error_info_not_found(
-                request, provider_id, [provider.value for provider in ObservabilityProvider]
+                http_request, provider_id, [provider.value for provider in ObservabilityProvider]
             )
         )

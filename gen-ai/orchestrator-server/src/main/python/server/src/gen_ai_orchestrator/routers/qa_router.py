@@ -16,7 +16,7 @@
 
 from fastapi import APIRouter
 
-from gen_ai_orchestrator.routers.requests.requests import QAQuery
+from gen_ai_orchestrator.routers.requests.requests import QARequest
 from gen_ai_orchestrator.routers.responses.responses import QAResponse
 from gen_ai_orchestrator.services.qa.qa_service import qa
 
@@ -24,9 +24,9 @@ qa_router = APIRouter(prefix='/qa', tags=['Question Answering'])
 
 
 @qa_router.post('')
-async def ask_qa(query: QAQuery) -> QAResponse:
+async def ask_qa(request: QARequest) -> QAResponse:
     """
     ## Ask a QA System
     Ask question to a QA System, and return sources founded in a knowledge base (documents)
     """
-    return await qa(query)
+    return await qa(request)

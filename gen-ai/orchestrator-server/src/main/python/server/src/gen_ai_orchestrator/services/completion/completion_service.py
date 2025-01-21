@@ -17,7 +17,8 @@
 import logging
 import time
 
-from langchain_core.output_parsers import NumberedListOutputParser
+from gen_ai_orchestrator.services.observability.observabilty_service import get_observability_info
+from langchain_core.output_parsers import NumberedListOutputParser, StrOutputParser
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
@@ -25,10 +26,11 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 )
 from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
 from gen_ai_orchestrator.routers.requests.requests import (
-    SentenceGenerationQuery,
+    CompletionRequest,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
     SentenceGenerationResponse,
+    PlaygroundResponse
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory, create_observability_callback_handler,
@@ -37,47 +39,95 @@ from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_te
 
 logger = logging.getLogger(__name__)
 
-
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-async def generate_and_split_sentences(
-    query: SentenceGenerationQuery,
-) -> SentenceGenerationResponse:
+async def generate(
+    request: CompletionRequest,
+) -> PlaygroundResponse:
     """
-    Generate sentences using a language model based on the provided query,
-    and split the generated content into a list of sentences using a specific parser.
+    Generate answer using a language model based on the provided request.
 
-    :param query: A GenerateSentencesQuery object containing the llm setting.
-    :return: A GenerateSentencesResponse object containing the list of sentences.
+    :param request: A PlaygroundRequest object containing the llm setting.
+    :return: A PlaygroundResponse object containing the answer and observability info.
     """
-    logger.info('Prompt completion - Start of execution...')
+    logger.info('Prompt completion (Playground) - Start of execution...')
     start_time = time.time()
 
-    logger.info('Prompt completion - template validation')
-    validate_prompt_template(query.prompt, 'Sentence generation prompt')
+    logger.info('Prompt completion (Playground) - template validation')
+    validate_prompt_template(request.prompt, 'Playground prompt')
+
+    parser = StrOutputParser()
+    prompt = LangChainPromptTemplate.from_template(
+        template=request.prompt.template,
+        template_format=request.prompt.formatter.value,
+    )
+    model = get_llm_factory(request.llm_setting).get_language_model()
+
+    chain = prompt | model | parser
+
+    config = None
+    observability_handler = None
+    # Create a RunnableConfig containing the observability callback handler
+    if request.observability_setting is not None:
+        # Langfuse callback handler
+        observability_handler = create_observability_callback_handler(
+            observability_setting=request.observability_setting,
+            trace_name=ObservabilityTrace.PLAYGROUND.value,
+            session_id=None,
+            user_id=None,
+            tags=None,
+        )
+        config = {"callbacks": [observability_handler]}
+
+    parsedLlmAnswer = await chain.ainvoke(request.prompt.inputs, config=config)
+
+    logger.info(
+        'Prompt completion (Playground) - End of execution. (Duration : %.2f seconds)',
+        time.time() - start_time,
+        )
+
+    return PlaygroundResponse(answer=parsedLlmAnswer, observability_info=get_observability_info(observability_handler))
+
+
+@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+async def generate_sentences(
+    request: CompletionRequest,
+) -> SentenceGenerationResponse:
+    """
+    Generate sentences using a language model based on the provided request,
+    and split the generated content into a list of sentences using a specific parser.
+
+    :param request: A PlaygroundRequest object containing the llm setting.
+    :return: A GenerateSentencesResponse object containing the list of sentences.
+    """
+    logger.info('Prompt completion (Sentence Generation) - Start of execution...')
+    start_time = time.time()
+
+    logger.info('Prompt completion (Sentence Generation) - template validation')
+    validate_prompt_template(request.prompt, 'Sentence generation prompt')
 
     parser = NumberedListOutputParser()
     prompt = LangChainPromptTemplate.from_template(
-        template=query.prompt.template,
-        template_format=query.prompt.formatter.value,
+        template=request.prompt.template,
+        template_format=request.prompt.formatter.value,
         partial_variables={'format_instructions': parser.get_format_instructions()},
     )
-    model = get_llm_factory(query.llm_setting).get_language_model()
+    model = get_llm_factory(request.llm_setting).get_language_model()
 
     chain = prompt | model | parser
 
     config = None
     # Create a RunnableConfig containing the observability callback handler
-    if query.observability_setting is not None:
+    if request.observability_setting is not None:
         config = {"callbacks": [
             create_observability_callback_handler(
-                observability_setting=query.observability_setting,
+                observability_setting=request.observability_setting,
                 trace_name=ObservabilityTrace.SENTENCE_GENERATION.value
             )]}
 
-    sentences = await chain.ainvoke(query.prompt.inputs, config=config)
+    sentences = await chain.ainvoke(request.prompt.inputs, config=config)
 
     logger.info(
-        'Prompt completion - End of execution. (Duration : %.2f seconds)',
+        'Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)',
         time.time() - start_time,
         )
 

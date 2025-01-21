@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
-import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
 import ai.tock.shared.exception.error.ErrorMessage
@@ -33,7 +33,7 @@ object VectorStoreValidationService {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 vectorStoreProviderService
-                    .checkSetting(VectorStoreProviderSettingStatusQuery(vectorStoreSetting = config.setting))
+                    .checkSetting(VectorStoreProviderSettingStatusRequest(vectorStoreSetting = config.setting))
                     .getErrors("Vector store setting check failed")
             )
         }

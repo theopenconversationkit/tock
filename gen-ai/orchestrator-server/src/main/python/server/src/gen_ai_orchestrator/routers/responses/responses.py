@@ -119,7 +119,7 @@ class ObservabilityInfo(BaseModel):
         description='The observability trace url.'
     )
 
-class RagResponse(BaseModel):
+class RAGResponse(BaseModel):
     """The RAG response model"""
 
     answer: TextWithFootnotes = Field(
@@ -148,4 +148,15 @@ class SentenceGenerationResponse(BaseModel):
 
     sentences: list[str] = Field(
         description='The list of generated sentences.', default=[]
+    )
+
+class PlaygroundResponse(BaseModel):
+    """The playground response model"""
+
+    answer: str = Field(
+        description='The playground answer.'
+    )
+    observability_info: Optional[ObservabilityInfo] = Field(
+        description='The observability info.',
+        default=None
     )

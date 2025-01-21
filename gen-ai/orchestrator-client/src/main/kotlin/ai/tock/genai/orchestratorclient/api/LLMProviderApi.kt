@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorcore.models.llm.LLMProvider
 import retrofit2.Call
@@ -27,7 +27,7 @@ import retrofit2.http.Path
 internal interface LLMProviderApi {
     @POST("/llm-providers/{provider-id}/setting/status")
     fun checkLLMSetting(
-        @Body query: LLMProviderSettingStatusQuery,
+        @Body query: LLMProviderSettingStatusRequest,
         @Path("provider-id") providerId: LLMProvider
     ): Call<ProviderSettingStatusResponse>
 

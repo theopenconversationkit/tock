@@ -40,6 +40,7 @@ object LLMSettingMapper {
                         model = model,
                         baseUrl = baseUrl
                     )
+
                 is AzureOpenAILLMSetting ->
                     AzureOpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
@@ -49,12 +50,14 @@ object LLMSettingMapper {
                         model = model,
                         apiVersion = apiVersion
                     )
+
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(
                         temperature = temperature,
                         model = model,
                         baseUrl = baseUrl
                     )
+
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
@@ -66,27 +69,36 @@ object LLMSettingMapper {
      * @param botId the bot ID (also known as application name)
      * @param feature the feature name
      * @param dto the [LLMSettingDTO]
+     * @param rawByForce force the creation of a raw secret key
      * @return [LLMSetting]
      */
-    fun toEntity(namespace: String, botId: String, feature: String, dto: LLMSettingDTO): LLMSetting =
+    fun toEntity(
+        namespace: String = "",
+        botId: String = "",
+        feature: String = "",
+        dto: LLMSettingDTO,
+        rawByForce: Boolean = false
+    ): LLMSetting =
         with(dto) {
             when (this) {
                 is OpenAILLMSetting ->
                     OpenAILLMSetting(
-                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
                         model = model,
                         baseUrl = baseUrl
                     )
+
                 is AzureOpenAILLMSetting ->
                     AzureOpenAILLMSetting(
-                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
                         model = model
                     )
+
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(
                         temperature = temperature,

@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.shared.exception.error.ErrorMessage
@@ -29,7 +29,7 @@ object SentenceGenerationValidationService {
     fun validate(sentenceGenerationConfig: BotSentenceGenerationConfiguration): Set<ErrorMessage> {
         return llmProviderService
             .checkSetting(
-                LLMProviderSettingStatusQuery(
+                LLMProviderSettingStatusRequest(
                     sentenceGenerationConfig.llmSetting,
                     ObservabilityService.getObservabilityConfiguration(
                         sentenceGenerationConfig.namespace,

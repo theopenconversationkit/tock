@@ -174,7 +174,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             try {
                 val response = ragService.rag(
-                    query = RAGQuery(
+                    query = RAGRequest(
                         dialog = DialogDetails(
                             dialogId = dialog.id.toString(),
                             userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,

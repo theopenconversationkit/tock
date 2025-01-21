@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
-import ai.tock.bot.admin.model.BotObservabilityConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotObservabilityConfigurationDTO
 import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException

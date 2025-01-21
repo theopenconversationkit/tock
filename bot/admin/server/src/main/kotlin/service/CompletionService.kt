@@ -17,13 +17,14 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
-import ai.tock.bot.admin.model.SentenceGenerationRequest
-
-import ai.tock.genai.orchestratorclient.requests.Formatter
-import ai.tock.genai.orchestratorclient.requests.PromptTemplate
-import ai.tock.genai.orchestratorclient.requests.SentenceGenerationQuery
-import ai.tock.genai.orchestratorclient.responses.SentenceGenerationResponse
+import ai.tock.bot.admin.model.genai.PlaygroundRequest
+import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.genai.orchestratorclient.requests.CompletionRequest
+import ai.tock.genai.orchestratorclient.responses.CompletionResponse
+import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import ai.tock.genai.orchestratorclient.services.CompletionService
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
+import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.WebVerticle
@@ -39,25 +40,58 @@ object CompletionService {
 
     /**
      * Generate sentences
+     * @param request [CompletionRequest] : the playground request
+     * @param namespace [String] : the namespace
+     * @param botId [String] : the bot id
+     * @return [SentenceCompletionResponse]
+     */
+    fun generate(
+        request: PlaygroundRequest,
+        namespace: String,
+        botId: String
+    ): CompletionResponse? {
+        return completionService
+            .generate(
+                CompletionRequest(
+                    llmSetting = LLMSettingMapper.toEntity(
+                        dto = request.llmSetting,
+                        rawByForce = true
+                    ),
+                    prompt = request.prompt,
+                    observabilitySetting = ObservabilityService.getObservabilityConfiguration(
+                        namespace,
+                        botId,
+                        enabled = true
+                    )?.setting
+                )
+            )
+    }
+
+    /**
+     * Generate sentences
      * @param request [SentenceGenerationRequest] : the sentence generation request
      * @param namespace [String] : the namespace
      * @param botId [String] : the bot id
-     * @return [SentenceGenerationResponse]
+     * @return [SentenceCompletionResponse]
      */
     fun generateSentences(
         request: SentenceGenerationRequest,
         namespace: String,
         botId: String
-    ): SentenceGenerationResponse? {
+    ): SentenceCompletionResponse? {
         // Check if feature is configured
         val sentenceGenerationConfig = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No configuration of sentence generation feature is defined yet " +
-                    "[namespace: ${namespace}, botId = ${botId}]")
+            ?: WebVerticle.badRequest(
+                "No configuration of sentence generation feature is defined yet " +
+                        "[namespace: ${namespace}, botId = ${botId}]"
+            )
 
         // Check if feature is enabled
-        if(!sentenceGenerationConfig.enabled){
-            WebVerticle.badRequest("The sentence generation feature is disabled " +
-                    "[namespace: ${namespace}, botId = ${botId}]")
+        if (!sentenceGenerationConfig.enabled) {
+            WebVerticle.badRequest(
+                "The sentence generation feature is disabled " +
+                        "[namespace: ${namespace}, botId = ${botId}]"
+            )
         }
 
         // Get LLM Setting and override the temperature
@@ -81,7 +115,7 @@ object CompletionService {
         // call the completion service to generate sentences
         return completionService
             .generateSentences(
-                SentenceGenerationQuery(
+                CompletionRequest(
                     llmSetting, prompt.copy(inputs = inputs),
                     ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
                 )

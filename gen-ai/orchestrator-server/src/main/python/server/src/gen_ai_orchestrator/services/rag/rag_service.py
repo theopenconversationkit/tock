@@ -14,11 +14,11 @@
 #
 """Module for the RAG Service"""
 
-from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from gen_ai_orchestrator.routers.responses.responses import RagResponse
+from gen_ai_orchestrator.routers.requests.requests import RAGRequest
+from gen_ai_orchestrator.routers.responses.responses import RAGResponse
 from gen_ai_orchestrator.services.langchain.rag_chain import execute_rag_chain
 
 
-async def rag(query: RagQuery, debug: bool) -> RagResponse:
+async def rag(request: RAGRequest, debug: bool) -> RAGResponse:
     """Launch execution of the RAG chain"""
-    return await execute_rag_chain(query, debug)
+    return await execute_rag_chain(request, debug)

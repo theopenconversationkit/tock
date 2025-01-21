@@ -14,36 +14,43 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.model.genai
 
-
-import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
-import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
+import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
+import ai.tock.genai.orchestratorcore.models.Constants
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSettingDTO
+import ai.tock.genai.orchestratorcore.models.vectorstore.toDTO
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
-data class BotDocumentCompressorConfigurationDTO(
+data class BotVectorStoreConfigurationDTO(
     val id: String? = null,
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val setting: DocumentCompressorSetting,
+    val setting: VectorStoreSettingDTO,
 ) {
-    constructor(configuration: BotDocumentCompressorConfiguration) : this(
+    constructor(configuration: BotVectorStoreConfiguration) : this(
         id = configuration._id.toString(),
         namespace = configuration.namespace,
         botId = configuration.botId,
         enabled = configuration.enabled,
-        setting = configuration.setting,
+        setting = configuration.setting.toDTO(),
     )
 
-    fun toBotDocumentCompressorConfiguration(): BotDocumentCompressorConfiguration =
-        BotDocumentCompressorConfiguration(
+    fun toBotVectorStoreConfiguration(): BotVectorStoreConfiguration =
+        BotVectorStoreConfiguration(
             _id = id?.toId() ?: newId(),
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            setting = setting,
+            setting = VectorStoreSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_VECTOR_STORE,
+                dto = setting
+            )
         )
 }
 

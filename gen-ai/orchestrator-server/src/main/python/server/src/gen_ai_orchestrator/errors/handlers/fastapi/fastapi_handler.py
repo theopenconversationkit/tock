@@ -57,13 +57,13 @@ def generic_exception_handler(_, exc: Exception):
 
 
 def create_error_info_not_found(
-    request: Request, provider: str, accepted_values: list[str]
+    http_request: Request, provider: str, accepted_values: list[str]
 ) -> ErrorInfo:
     """
     Create ErrorInfo for a not found error
 
     Args:
-        request: the http request
+        http_request: the http request
         provider: the AI provider type
         accepted_values: the accepted values (expected)
     Returns:
@@ -74,12 +74,12 @@ def create_error_info_not_found(
         provider=provider,
         error='NotFoundError',
         cause=f'Accepted values are : {accepted_values}',
-        request=f'[{request.method}] {request.url}',
+        request=f'[{http_request.method}] {http_request.url}',
     )
 
 
 def create_error_info_bad_request(
-    request: Request,
+    http_request: Request,
     provider: str,
     cause: str = 'The AI provider ID given for setting is not correct.',
 ) -> ErrorInfo:
@@ -87,7 +87,7 @@ def create_error_info_bad_request(
     Create ErrorInfo for a bad request error
 
     Args:
-        request: the http request
+        http_request: the http request
         provider: the AI provider type
         cause: the error cause
     Returns:
@@ -98,7 +98,7 @@ def create_error_info_bad_request(
         provider=provider,
         error='BadRequestError',
         cause=cause,
-        request=f'[{request.method}] {request.url}',
+        request=f'[{http_request.method}] {http_request.url}',
     )
 
 

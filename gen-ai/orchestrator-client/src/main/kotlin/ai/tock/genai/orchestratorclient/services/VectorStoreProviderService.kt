@@ -16,9 +16,9 @@
 
 package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 
 interface VectorStoreProviderService {
-    fun checkSetting(query: VectorStoreProviderSettingStatusQuery): ProviderSettingStatusResponse?
+    fun checkSetting(query: VectorStoreProviderSettingStatusRequest): ProviderSettingStatusResponse?
 }

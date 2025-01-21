@@ -15,10 +15,12 @@
 """Module for the Observability Service"""
 
 import logging
-
+from typing import Optional
 
 from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.routers.responses.responses import ObservabilityInfo
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_callback_handler_factory
+from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
 logger = logging.getLogger(__name__)
 
@@ -36,3 +38,15 @@ def check_observability_setting(setting: ObservabilitySetting) -> bool:
 
     logger.info('Get the Callback handler Factory, then check the Observability setting.')
     return get_callback_handler_factory(setting).check_observability_setting()
+
+
+def get_observability_info(observability_handler) -> Optional[ObservabilityInfo]:
+    """Get the observability Information"""
+    if isinstance(observability_handler, LangfuseCallbackHandler):
+        return ObservabilityInfo(
+            trace_id=observability_handler.trace.id,
+            trace_name=observability_handler.trace_name,
+            trace_url=observability_handler.get_trace_url()
+        )
+    else:
+        return None

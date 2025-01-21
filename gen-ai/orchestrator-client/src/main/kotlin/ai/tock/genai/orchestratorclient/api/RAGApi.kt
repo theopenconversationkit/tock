@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.RAGQuery
+import ai.tock.genai.orchestratorclient.requests.RAGRequest
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -25,6 +25,6 @@ import retrofit2.http.Query
 
 internal interface RAGApi {
     @POST("/rag")
-    fun rag(@Body query: RAGQuery, @Query("debug") debug: Boolean): Call<RAGResponse>
+    fun rag(@Body query: RAGRequest, @Query("debug") debug: Boolean): Call<RAGResponse>
 
 }

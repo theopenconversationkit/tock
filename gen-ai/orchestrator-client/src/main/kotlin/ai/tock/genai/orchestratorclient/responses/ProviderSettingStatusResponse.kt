@@ -21,16 +21,3 @@ class ProviderSettingStatusResponse(
     val errors: List<ErrorResponse> = emptyList()
 )
 
-class ErrorResponse(
-    val code: String,
-    val message: String,
-    val detail: String?,
-    val info: ErrorInfo
-)
-
-class ErrorInfo(
-    val provider: String,
-    val error: String,
-    val cause: String,
-    val request: String
-)

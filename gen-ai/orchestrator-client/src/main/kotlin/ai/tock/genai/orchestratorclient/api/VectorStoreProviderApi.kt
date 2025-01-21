@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
 import retrofit2.Call
@@ -27,7 +27,7 @@ import retrofit2.http.Path
 internal interface VectorStoreProviderApi {
     @POST("/vector-store-providers/{provider-id}/setting/status")
     fun checkVectorStoreSetting(
-        @Body query: VectorStoreProviderSettingStatusQuery,
+        @Body query: VectorStoreProviderSettingStatusRequest,
         @Path("provider-id") providerId: VectorStoreProvider
     ): Call<ProviderSettingStatusResponse>
 }

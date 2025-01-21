@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.requests
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 
-class EMProviderSettingStatusQuery (
-    val setting: EMSetting
-)
+data class BotSentenceGenerationInfoDTO(
+    val enabled: Boolean = false,
+    val nbSentences: Int? = null,
+    val llmTemperature: String? = null
+) {
+    constructor(configuration: BotSentenceGenerationConfiguration): this(
+        configuration.enabled,
+        configuration.nbSentences,
+        configuration.llmSetting.temperature
+    )
+}
+
+
+

@@ -36,8 +36,8 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
 )
 
 
-class LLMProviderSettingStatusQuery(BaseModel):
-    """The query for the LLM Provider Setting Status"""
+class LLMProviderSettingStatusRequest(BaseModel):
+    """The request for the LLM Provider Setting Status"""
 
     setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
     observability_setting: Optional[ObservabilitySetting] = Field(
@@ -45,30 +45,30 @@ class LLMProviderSettingStatusQuery(BaseModel):
     )
 
 
-class EMProviderSettingStatusQuery(BaseModel):
-    """The query for the EM Provider Setting Status"""
+class EMProviderSettingStatusRequest(BaseModel):
+    """The request for the EM Provider Setting Status"""
 
     setting: EMSetting = Field(
         description='The Embedding Model Provider setting to be checked.'
     )
 
 
-class ObservabilityProviderSettingStatusQuery(BaseModel):
-    """The query for the Observability Provider Setting Status"""
+class ObservabilityProviderSettingStatusRequest(BaseModel):
+    """The request for the Observability Provider Setting Status"""
 
     setting: ObservabilitySetting = Field(
         description='The Observability Provider setting to be checked.'
     )
 
 
-class DocumentCompressorProviderSettingStatusQuery(BaseModel):
-    """The query for the Document Compressor Provider Setting Status"""
+class DocumentCompressorProviderSettingStatusRequest(BaseModel):
+    """The request for the Document Compressor Provider Setting Status"""
 
     setting: DocumentCompressorSetting = Field(description='The Document Compressor Provider setting to be checked.')
 
 
-class BaseQuery(BaseModel):
-    """The Base query model"""
+class BaseRequest(BaseModel):
+    """The Base request model"""
 
     embedding_question_em_setting: EMSetting = Field(
         description="Embedding model setting, used to calculate the user's question vector."
@@ -91,7 +91,7 @@ class BaseQuery(BaseModel):
     )
 
 
-class QAQuery(BaseQuery):
+class QARequest(BaseRequest):
     user_query: str = Field(
         description="The user's request. Will be sent as is to the model."
     )
@@ -127,8 +127,8 @@ class QAQuery(BaseQuery):
     }
 
 
-class VectorStoreProviderSettingStatusQuery(BaseModel):
-    """The query for the Vector Store Provider Setting Status"""
+class VectorStoreProviderSettingStatusRequest(BaseModel):
+    """The request for the Vector Store Provider Setting Status"""
 
     vector_store_setting: Optional[VectorStoreSetting] = Field(
         description='The Vector Store Provider setting to be checked.', default=None
@@ -159,8 +159,8 @@ class DialogDetails(BaseModel):
         examples=[["my-Tag"]])
 
 
-class RagQuery(BaseQuery):
-    """The RAG query model"""
+class RAGRequest(BaseRequest):
+    """The RAG request model"""
 
     dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
     question_condensing_llm_setting: Optional[LLMSetting] = Field(
@@ -264,8 +264,8 @@ Answer in {locale}:""",
     }
 
 
-class SentenceGenerationQuery(BaseModel):
-    """The sentence generation query model"""
+class CompletionRequest(BaseModel):
+    """The completion request model"""
 
     llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a sentences generation.'

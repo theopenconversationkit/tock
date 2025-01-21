@@ -60,20 +60,27 @@ object EMSettingMapper {
      * @param botId the bot ID (also known as application name)
      * @param feature the feature name
      * @param dto the [EMSettingDTO]
+     * @param rawByForce force the creation of a raw secret key
      * @return [EMSetting]
      */
-    fun toEntity(namespace: String, botId: String, feature: String, dto: EMSettingDTO): EMSetting =
+    fun toEntity(
+        namespace: String,
+        botId: String,
+        feature: String,
+        dto: EMSettingDTO,
+        rawByForce: Boolean = false
+    ): EMSetting =
         with(dto){
             when(this){
                 is OpenAIEMSetting ->
                     OpenAIEMSetting(
-                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         model = model,
                         baseUrl = baseUrl
                     )
                 is AzureOpenAIEMSetting ->
                     AzureOpenAIEMSetting(
-                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
