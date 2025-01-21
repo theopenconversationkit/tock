@@ -260,6 +260,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
+            "/analytics/messages/byStory",
+            setOf(botUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStory(request)
+            }
+        }
+
+        blockingJsonPost(
             "/analytics/messages/byIntent",
             setOf(botUser)
         ) { context, request: DialogFlowRequest ->
