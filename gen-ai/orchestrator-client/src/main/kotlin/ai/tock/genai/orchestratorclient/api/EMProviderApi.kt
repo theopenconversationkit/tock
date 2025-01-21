@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorcore.models.em.EMProvider
 import retrofit2.Call
@@ -27,7 +27,7 @@ import retrofit2.http.Path
 internal interface EMProviderApi {
     @POST("/em-providers/{provider-id}/setting/status")
     fun checkEMSetting(
-        @Body query: EMProviderSettingStatusQuery,
+        @Body query: EMProviderSettingStatusRequest,
         @Path("provider-id") providerId: EMProvider
     ): Call<ProviderSettingStatusResponse>
 

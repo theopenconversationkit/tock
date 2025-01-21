@@ -19,7 +19,7 @@ import logging
 from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
-    AIProviderBadQueryException,
+    AIProviderBadRequestException,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
@@ -42,7 +42,7 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
-    LLMProviderSettingStatusQuery,
+    LLMProviderSettingStatusRequest,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
     LLMProviderResponse,
@@ -70,12 +70,12 @@ async def get_all_llm_providers() -> list[LLMProvider]:
 
 @llm_providers_router.get('/{provider_id}')
 async def get_llm_provider_by_id(
-    request: Request, provider_id: str
+    http_request: Request, provider_id: str
 ) -> LLMProviderResponse:
     """
     Get Large Language Model Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -85,20 +85,20 @@ async def get_llm_provider_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_llm_provider(request, provider_id)
+    # Request validation
+    validate_llm_provider(http_request, provider_id)
 
     return LLMProviderResponse(provider=LLMProvider(provider_id))
 
 
 @llm_providers_router.get('/{provider_id}/setting/example')
 async def get_llm_provider_setting_by_id(
-    request: Request, provider_id: LLMProvider
+    http_request: Request, provider_id: LLMProvider
 ) -> LLMSetting:
     """
     Get a setting example for a given LLM Provider ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -108,8 +108,8 @@ async def get_llm_provider_setting_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_llm_provider(request, provider_id)
+    # Request validation
+    validate_llm_provider(http_request, provider_id)
 
     if provider_id == LLMProvider.OPEN_AI:
         return OpenAILLMSetting(
@@ -134,29 +134,29 @@ async def get_llm_provider_setting_by_id(
 
 @llm_providers_router.post('/{provider_id}/setting/status')
 async def check_llm_provider_setting(
-    request: Request, provider_id: str, query: LLMProviderSettingStatusQuery
+    http_request: Request, provider_id: str, request: LLMProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given LLM Provider Setting
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
-        query: The query of the LLM Provider Setting to be checked
+        request: The request of the LLM Provider Setting to be checked
 
     Returns:
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
     logger.info('Start LLM setting check for provider %s', provider_id)
-    # Query validation
-    validate_query(request, provider_id, query.setting)
+    # Request validation
+    validate_query(http_request, provider_id, request.setting)
 
     try:
         # LLM setting check
-        await check_llm_setting(query)
+        await check_llm_setting(request)
 
         logger.info('The LLM setting is valid')
         return ProviderSettingStatusResponse(valid=True)
@@ -166,31 +166,31 @@ async def check_llm_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(request: Request, provider_id: str, setting: LLMSetting):
+def validate_query(http_request: Request, provider_id: str, setting: LLMSetting):
     """
     Check the consistency of the Provider ID with the request body
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
         setting:  The LLM Provider Setting
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug('LLM setting - Query validation')
-    validate_llm_provider(request, provider_id)
+    logger.debug('LLM setting - Request validation')
+    validate_llm_provider(http_request, provider_id)
     if provider_id != setting.provider:
-        raise AIProviderBadQueryException(
-            create_error_info_bad_request(request, provider_id)
+        raise AIProviderBadRequestException(
+            create_error_info_bad_request(http_request, provider_id)
         )
 
 
-def validate_llm_provider(request: Request, provider_id: str):
+def validate_llm_provider(http_request: Request, provider_id: str):
     """
     Check existence of LLM Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
 
     Raises:
@@ -200,6 +200,6 @@ def validate_llm_provider(request: Request, provider_id: str):
     if not LLMProvider.has_value(provider_id):
         raise GenAIUnknownProviderException(
             create_error_info_not_found(
-                request, provider_id, [provider.value for provider in LLMProvider]
+                http_request, provider_id, [provider.value for provider in LLMProvider]
             )
         )

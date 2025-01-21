@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.genai.orchestratorclient.requests
 
-data class SentenceGenerationOptions(
-    val spellingMistakes: Boolean = true,
-    val smsLanguage: Boolean = true,
-    val abbreviatedLanguage: Boolean = true,
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
+
+class VectorStoreProviderSettingStatusRequest(
+    val vectorStoreSetting: VectorStoreSetting? = null,
+    val emSetting : EMSetting? = null,
+    val documentIndexName: String? = null
 )

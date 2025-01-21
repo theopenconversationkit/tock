@@ -14,11 +14,11 @@
 #
 """Module for the QA Service"""
 
-from gen_ai_orchestrator.routers.requests.requests import QAQuery
+from gen_ai_orchestrator.routers.requests.requests import QARequest
 from gen_ai_orchestrator.routers.responses.responses import QAResponse
 from gen_ai_orchestrator.services.langchain.qa_chain import execute_qa_chain
 
 
-async def qa(query: QAQuery) -> QAResponse:
+async def qa(request: QARequest) -> QAResponse:
     """Launch execution of the RAG chain"""
-    return await execute_qa_chain(query)
+    return await execute_qa_chain(request)

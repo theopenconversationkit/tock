@@ -21,22 +21,3 @@ data class RAGResponse(
     val debug: Any? = null,
     val observabilityInfo: ObservabilityInfo? = null,
 )
-
-data class TextWithFootnotes(
-    val text: String,
-    val footnotes: List<Footnote> = emptyList(),
-)
-
-data class Footnote(
-    val identifier: String,
-    val title: String,
-    val url: String? = null,
-    val content: String? = null,
-    val score: Float? = null,
-)
-
-data class ObservabilityInfo(
-    val traceId: String,
-    val traceName: String,
-    val traceUrl: String,
-)

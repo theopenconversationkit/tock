@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.services
+package ai.tock.genai.orchestratorclient.requests
 
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
-import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
-interface DocumentCompressorProviderService {
-    fun checkSetting(query: DocumentCompressorProviderSettingStatusRequest): ProviderSettingStatusResponse?
-}
+class ObservabilityProviderSettingStatusRequest(
+    val setting: ObservabilitySetting
+)

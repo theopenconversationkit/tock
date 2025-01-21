@@ -80,7 +80,7 @@ class ChatMessage(BaseModel):
     type: ChatMessageType = Field(description='The message origin (Human or AI)')
 
 
-class RagDocumentMetadata(BaseModel):
+class RAGDocumentMetadata(BaseModel):
     """The RAG document metadata"""
 
     index_session_id: str = Field(
@@ -99,7 +99,7 @@ class RagDocumentMetadata(BaseModel):
     )
 
 
-class RagDocument(BaseModel):
+class RAGDocument(BaseModel):
     """The definition of RAG document"""
 
     content: str = Field(
@@ -109,7 +109,7 @@ class RagDocument(BaseModel):
             'forward or moves alongside the subject being recorded.'
         ],
     )
-    metadata: RagDocumentMetadata = Field(
+    metadata: RAGDocumentMetadata = Field(
         description='The document metadata.',
     )
 
@@ -121,7 +121,7 @@ class QADebugData(BaseModel):
         description="The user's initial question.",
         examples=["I'm interested in going to Morocco"],
     )
-    documents: List[RagDocument] = Field(
+    documents: List[RAGDocument] = Field(
         description='Documents retrieved from the vector store.'
     )
     document_index_name: str = Field(
@@ -135,7 +135,7 @@ class QADebugData(BaseModel):
     )
 
 
-class RagDebugData(QADebugData):
+class RAGDebugData(QADebugData):
     """A RAG debug data"""
 
     question_condensing_prompt: Optional[str] = Field(

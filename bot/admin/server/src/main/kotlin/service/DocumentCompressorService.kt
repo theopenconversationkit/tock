@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
-import ai.tock.bot.admin.model.BotDocumentCompressorConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotDocumentCompressorConfigurationDTO
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide

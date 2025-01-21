@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.services
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
-import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
+import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
 
-interface DocumentCompressorProviderService {
-    fun checkSetting(query: DocumentCompressorProviderSettingStatusRequest): ProviderSettingStatusResponse?
-}
+data class PlaygroundRequest(
+    val llmSetting: LLMSettingDTO,
+    val prompt: PromptTemplate,
+)
+
+
+
+
+
+

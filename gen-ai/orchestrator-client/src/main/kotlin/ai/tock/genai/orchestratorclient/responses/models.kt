@@ -16,8 +16,36 @@
 
 package ai.tock.genai.orchestratorclient.responses
 
-class SentenceGenerationResponse(
-    val sentences: List<String>
+
+data class TextWithFootnotes(
+    val text: String,
+    val footnotes: List<Footnote> = emptyList(),
 )
 
+data class Footnote(
+    val identifier: String,
+    val title: String,
+    val url: String? = null,
+    val content: String? = null,
+    val score: Float? = null,
+)
 
+data class ObservabilityInfo(
+    val traceId: String,
+    val traceName: String,
+    val traceUrl: String,
+)
+
+class ErrorResponse(
+    val code: String,
+    val message: String,
+    val detail: String?,
+    val info: ErrorInfo
+)
+
+class ErrorInfo(
+    val provider: String,
+    val error: String,
+    val cause: String,
+    val request: String
+)

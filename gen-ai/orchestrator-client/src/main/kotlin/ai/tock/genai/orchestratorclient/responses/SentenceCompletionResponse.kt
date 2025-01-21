@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.requests
+package ai.tock.genai.orchestratorclient.responses
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
-
-class VectorStoreProviderSettingStatusQuery(
-    val vectorStoreSetting: VectorStoreSetting? = null,
-    val emSetting : EMSetting? = null,
-    val documentIndexName: String? = null
+class SentenceCompletionResponse(
+    val sentences: List<String>
 )
+
+

@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorProvider
 import retrofit2.Call
@@ -27,7 +27,7 @@ import retrofit2.http.Path
 internal interface DocumentCompressorProviderApi {
     @POST("/document-compressor-providers/{provider-id}/setting/status")
     fun checkDocumentCompressorSetting(
-        @Body query: DocumentCompressorProviderSettingStatusQuery,
+        @Body query: DocumentCompressorProviderSettingStatusRequest,
         @Path("provider-id") providerId: DocumentCompressorProvider
     ): Call<ProviderSettingStatusResponse>
 
