@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.dialog
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
@@ -40,5 +41,6 @@ data class ActionReport(
     val id: Id<Action> = newId(),
     val intent : String?,
     val applicationId : String?,
-    val metadata: ActionMetadata
+    val metadata: ActionMetadata,
+    val annotation: BotAnnotation? = null
 )

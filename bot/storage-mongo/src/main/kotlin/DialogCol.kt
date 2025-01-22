@@ -148,7 +148,8 @@ internal data class DialogCol(
                                         a.toActionId(),
                                         a.state.intent,
                                         a.applicationId,
-                                        a.metadata
+                                        a.metadata,
+                                        a.annotation
                                 )
                             }
                         }

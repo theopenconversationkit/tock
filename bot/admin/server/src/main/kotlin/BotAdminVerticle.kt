@@ -315,14 +315,6 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet(
-            "/dialogs/intents/:applicationId",
-            setOf(botUser)
-        ) { context ->
-            val app = FrontClient.getApplicationById(context.path("applicationId").toId())
-            app?.let { BotAdminService.getIntentsInDialogs(app.namespace, app.name) }
-        }
-
         blockingJsonGet("/bots/:botId", setOf(botUser)) { context ->
             BotAdminService.getBots(context.organization, context.path("botId"))
         }
