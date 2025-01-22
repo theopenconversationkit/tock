@@ -272,6 +272,11 @@ object BotAdminService {
         annotationDTO: BotAnnotationDTO,
         user: String
     ): BotAnnotation {
+
+        if (dialogReportDAO.annotationExists(dialogId, actionId)) {
+            throw IllegalStateException("Une annotation existe déjà pour cette action.")
+        }
+
         val annotation = BotAnnotation(
             state = annotationDTO.state,
             reason = annotationDTO.reason,
