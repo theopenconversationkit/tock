@@ -199,7 +199,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         documentSearchParams = documentSearchParams,
                         compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
                         vectorStoreSetting = vectorStoreSetting,
-                        observabilitySetting = botDefinition.observabilityConfiguration?.setting
+                        observabilitySetting = botDefinition.observabilityConfiguration?.setting,
+                        documentsRequired = ragConfiguration.documentsRequired,
                     ), debug = action.metadata.debugEnabled || ragDebugEnabled
                 )
 

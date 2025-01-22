@@ -169,6 +169,7 @@ Answer in {locale}:""",
             'min_score': 0.7,
             'endpoint': 'http://test-rerank.com',
         },
+        'documents_required': True,
     }
     query = RagQuery(**query_dict)
 
@@ -467,20 +468,20 @@ def test_rag_guard_fails_if_no_docs_in_valid_answer(mocked_log):
         'source_documents': [],
     }
     try:
-        rag_chain.__rag_guard(inputs, response)
+        rag_chain.__rag_guard(inputs, response,documents_required=True)
     except Exception as e:
         assert isinstance(e, GenAIGuardCheckException)
 
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
-def test_rag_guard_removes_docs_if_no_answer(mocked_log):
+def test_rag_guard_accepts_no_answer_even_with_docs(mocked_log):
     inputs = {'no_answer': "Sorry, I don't know."}
     response = {
         'answer': "Sorry, I don't know.",
         'source_documents': ['a doc as a string'],
     }
-    rag_chain.__rag_guard(inputs, response)
-    assert response['source_documents'] == []
+    rag_chain.__rag_guard(inputs, response, documents_required=True)
+    assert response['source_documents'] == ['a doc as a string']
 
 
 def test_get_llm_prompts_one_record():
@@ -529,3 +530,38 @@ def test_get_condense_question():
     )
     question = get_condense_question(handler)
     assert question == 'Is this a question ?'
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+def test_rag_guard_valid_answer_with_docs(mocked_log):
+    inputs = {'no_answer': "Sorry, I don't know."}
+    response = {
+        'answer': 'a valid answer',
+        'source_documents': ['doc1', 'doc2'],
+    }
+    rag_chain.__rag_guard(inputs, response, documents_required=True)
+    assert response['source_documents'] == ['doc1', 'doc2']
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+def test_rag_guard_no_answer_with_no_docs(mocked_log):
+    inputs = {'no_answer': "Sorry, I don't know."}
+    response = {
+        'answer': "Sorry, I don't know.",
+        'source_documents': [],
+    }
+    rag_chain.__rag_guard(inputs, response, documents_required=True)
+    assert response['source_documents'] == []
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_log')
+def test_rag_guard_without_no_answer_input(mocked_log):
+    """Test that __rag_guard handles missing no_answer input correctly."""
+    inputs = {}  # No 'no_answer' key
+    response = {
+        'answer': 'some answer',
+        'source_documents': [],
+    }
+    with pytest.raises(GenAIGuardCheckException) as exc:
+        rag_chain.__rag_guard(inputs, response, documents_required=True)
+
+    mocked_log.assert_called_once()
+
+    assert isinstance(exc.value, GenAIGuardCheckException)

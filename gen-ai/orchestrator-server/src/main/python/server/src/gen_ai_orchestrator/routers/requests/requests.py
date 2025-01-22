@@ -16,6 +16,7 @@
 
 from typing import Any, Optional
 
+from pyasn1.type.univ import Boolean
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.document_compressor.document_compressor_types import DocumentCompressorSetting
@@ -194,6 +195,12 @@ class RagQuery(BaseQuery):
     compressor_setting: Optional[DocumentCompressorSetting] = Field(
         description='Compressor settings, to rerank relevant documents returned by retriever.',
         default=None,
+    )
+    documents_required: Optional[bool] = Field(
+        description='Specifies whether the presence of documents is mandatory for generating answers. '
+                    'If set to True, the system will only provide answers when relevant documents are found. '
+                    'If set to False, the system can respond without requiring document sources. Default is True.',
+        default=True,
     )
 
     model_config = {

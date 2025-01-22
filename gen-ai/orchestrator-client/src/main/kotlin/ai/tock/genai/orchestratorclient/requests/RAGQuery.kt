@@ -33,7 +33,8 @@ data class RAGQuery(
     val documentSearchParams: DocumentSearchParamsBase,
     val compressorSetting: DocumentCompressorSetting?,
     val vectorStoreSetting: VectorStoreSetting?,
-    val observabilitySetting: ObservabilitySetting?
+    val observabilitySetting: ObservabilitySetting?,
+    val documentsRequired: Boolean = true,
 )
 
 data class DialogDetails(
