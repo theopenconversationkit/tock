@@ -35,6 +35,7 @@ import ai.tock.bot.admin.service.*
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.IndicatorVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
@@ -81,6 +82,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val botAdminConfiguration = BotAdminConfiguration()
 
     private val indicatorVerticle = IndicatorVerticle()
+    private val dialogVerticle = DialogVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -127,6 +129,7 @@ open class BotAdminVerticle : AdminVerticle() {
         configureServices()
 
         indicatorVerticle.configure(this)
+        dialogVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -191,72 +194,6 @@ open class BotAdminVerticle : AdminVerticle() {
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByHour(request)
             }
-        }
-
-        blockingDelete(
-            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events/:eventId",
-            setOf(botUser)
-        ) { context ->
-            val botId = context.path("botId")
-            val dialogId = context.path("dialogId")
-            val actionId = context.path("actionId")
-            val annotationId = context.path("annotationId")
-            val eventId = context.path("eventId")
-            val user = context.userLogin
-
-            BotAdminService.deleteAnnotationEvent(
-                dialogId = dialogId,
-                actionId = actionId,
-                annotationId = annotationId,
-                eventId = eventId,
-                user = user
-            )
-        }
-
-        blockingJsonPut(
-            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId",
-            setOf(botUser)
-        ) { context, eventDTO: BotAnnotationEventDTO ->
-            val botId = context.path("botId")
-            val dialogId = context.path("dialogId")
-            val actionId = context.path("actionId")
-            val eventId = context.path("eventId")
-            val user = context.userLogin
-
-            val updatedEvent = BotAdminService.updateAnnotationEvent(
-                dialogId = dialogId,
-                actionId = actionId,
-                eventId = eventId,
-                eventDTO = eventDTO,
-                user = user
-            )
-            updatedEvent
-        }
-
-        blockingJsonPost(
-            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events",
-            setOf(botUser)
-        ) { context, eventDTO: BotAnnotationEventDTO ->
-            val dialogId = context.path("dialogId")
-            val actionId = context.path("actionId")
-            val annotationId = context.path("annotationId")
-            val user = context.userLogin
-
-            val event = addEventToAnnotation(dialogId, actionId, eventDTO, user)
-            event
-        }
-
-        blockingJsonPost(
-            "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation",
-            setOf(botUser)
-        ) { context, annotationDTO: BotAnnotationDTO ->
-            val botId = context.path("botId")
-            val dialogId = context.path("dialogId")
-            val actionId = context.path("actionId")
-            val user = context.userLogin
-
-            val annotation = BotAdminService.createAnnotation(dialogId, actionId, annotationDTO, user)
-            annotation
         }
 
         blockingJsonPost(
