@@ -153,70 +153,31 @@ object BotAdminService {
         }
     }
 
-    fun addEventToAnnotation(
+    fun addCommentToAnnotation(
         dialogId: String,
         actionId: String,
         eventDTO: BotAnnotationEventDTO,
         user: String
-    ) : BotAnnotationEvent {
-        val event = when (eventDTO.type) {
-            BotAnnotationEventType.COMMENT -> {
-                require(eventDTO.comment != null) { "Comment is required for COMMENT event type" }
-                BotAnnotationEventComment(
-                    eventId = newId(),
-                    creationDate = Instant.now(),
-                    lastUpdateDate = Instant.now(),
-                    user = user,
-                    comment = eventDTO.comment!!
-                )
-            }
-            BotAnnotationEventType.STATE -> {
-                BotAnnotationEventState(
-                    eventId = newId(),
-                    creationDate = Instant.now(),
-                    lastUpdateDate = Instant.now(),
-                    user = user,
-                    before = eventDTO.before,
-                    after = eventDTO.after
-                )
-            }
-            BotAnnotationEventType.REASON -> {
-                BotAnnotationEventReason(
-                    eventId = newId(),
-                    creationDate = Instant.now(),
-                    lastUpdateDate = Instant.now(),
-                    user = user,
-                    before = eventDTO.before,
-                    after = eventDTO.after
-                )
-            }
-            BotAnnotationEventType.GROUND_TRUTH -> {
-                BotAnnotationEventGroundTruth(
-                    eventId = newId(),
-                    creationDate = Instant.now(),
-                    lastUpdateDate = Instant.now(),
-                    user = user,
-                    before = eventDTO.before,
-                    after = eventDTO.after
-                )
-            }
-            BotAnnotationEventType.DESCRIPTION -> {
-                BotAnnotationEventDescription(
-                    eventId = newId(),
-                    creationDate = Instant.now(),
-                    lastUpdateDate = Instant.now(),
-                    user = user,
-                    before = eventDTO.before,
-                    after = eventDTO.after
-                )
-            }
+    ): BotAnnotationEvent {
+
+        if (eventDTO.type != BotAnnotationEventType.COMMENT) {
+            throw IllegalArgumentException("Only COMMENT events are allowed")
         }
+
+        require(eventDTO.comment != null) { "Comment is required for COMMENT event type" }
+
+        val event = BotAnnotationEventComment(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            comment = eventDTO.comment!!
+        )
 
         dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
 
-                return event
-
-        }
+        return event
+    }
 
     fun updateAnnotationEvent(
         dialogId: String,
@@ -264,6 +225,91 @@ object BotAdminService {
         }
 
         dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
+    }
+
+    fun updateAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationId: String,
+        updatedAnnotationDTO: BotAnnotationUpdateDTO,
+        user: String
+    ): BotAnnotation {
+        val existingAnnotation = dialogReportDAO.getAnnotation(dialogId, actionId, annotationId)
+            ?: throw IllegalStateException("Annotation not found")
+
+        val events = mutableListOf<BotAnnotationEvent>()
+
+        updatedAnnotationDTO.state?.let { newState ->
+            if (existingAnnotation.state != newState) {
+                events.add(
+                    BotAnnotationEventState(
+                        eventId = newId(),
+                        creationDate = Instant.now(),
+                        lastUpdateDate = Instant.now(),
+                        user = user,
+                        before = existingAnnotation.state.name,
+                        after = newState.name
+                    )
+                )
+                existingAnnotation.state = newState
+            }
+        }
+
+        updatedAnnotationDTO.reason?.let { newReason ->
+            if (existingAnnotation.reason != newReason) {
+                events.add(
+                    BotAnnotationEventReason(
+                        eventId = newId(),
+                        creationDate = Instant.now(),
+                        lastUpdateDate = Instant.now(),
+                        user = user,
+                        before = existingAnnotation.reason?.name,
+                        after = newReason.name
+                    )
+                )
+                existingAnnotation.reason = newReason
+            }
+        }
+
+        updatedAnnotationDTO.groundTruth?.let { newGroundTruth ->
+            if (existingAnnotation.groundTruth != newGroundTruth) {
+                events.add(
+                    BotAnnotationEventGroundTruth(
+                        eventId = newId(),
+                        creationDate = Instant.now(),
+                        lastUpdateDate = Instant.now(),
+                        user = user,
+                        before = existingAnnotation.groundTruth,
+                        after = newGroundTruth
+                    )
+                )
+                existingAnnotation.groundTruth = newGroundTruth
+            }
+        }
+
+        updatedAnnotationDTO.description?.let { newDescription ->
+            if (existingAnnotation.description != newDescription) {
+                events.add(
+                    BotAnnotationEventDescription(
+                        eventId = newId(),
+                        creationDate = Instant.now(),
+                        lastUpdateDate = Instant.now(),
+                        user = user,
+                        before = existingAnnotation.description,
+                        after = newDescription
+                    )
+                )
+                existingAnnotation.description = newDescription
+            }
+        }
+
+        existingAnnotation.lastUpdateDate = Instant.now()
+
+        existingAnnotation.events.addAll(events)
+
+        dialogReportDAO.updateAnnotation(dialogId, actionId, existingAnnotation)
+
+        return existingAnnotation
     }
 
     fun createAnnotation(

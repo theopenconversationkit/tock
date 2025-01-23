@@ -20,6 +20,8 @@ import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
+import ai.tock.bot.admin.annotation.BotAnnotationEventType
+import ai.tock.bot.admin.annotation.BotAnnotationUpdateDTO
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.CsvCodec
@@ -52,6 +54,7 @@ class DialogVerticle {
         private const val PATH_ANNOTATION = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
         private const val PATH_ANNOTATION_EVENTS = "$PATH_ANNOTATION/:annotationId/events"
         private const val PATH_ANNOTATION_EVENT = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId"
+        private const val PATH_ANNOTATION_UPDATE = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId"
         private const val PATH_ANNOTATION_EVENT_DELETE = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events/:eventId"
     }
 
@@ -181,7 +184,35 @@ class DialogVerticle {
                 }
             }
 
-            // ADD EVENT
+            // MODIFY ANNOTATION
+            blockingJsonPut(
+                PATH_ANNOTATION_UPDATE,
+                setOf(TockUserRole.botUser)
+            ) { context, updatedAnnotationDTO: BotAnnotationUpdateDTO ->
+                val botId = context.path("botId")
+                val dialogId = context.path("dialogId")
+                val actionId = context.path("actionId")
+                val annotationId = context.path("annotationId")
+                val user = context.userLogin
+
+                try {
+                    logger.info { "Updating annotation for bot $botId, dialog $dialogId, action $actionId..." }
+                    val updatedAnnotation = BotAdminService.updateAnnotation(
+                        dialogId = dialogId,
+                        actionId = actionId,
+                        annotationId = annotationId,
+                        updatedAnnotationDTO = updatedAnnotationDTO,
+                        user = user
+                    )
+                    updatedAnnotation
+                } catch (e: IllegalArgumentException) {
+                    context.fail(400, e)
+                } catch (e: IllegalStateException) {
+                    context.fail(404, e)
+                }
+            }
+
+            // ADD COMMENT
             blockingJsonPost(
                 PATH_ANNOTATION_EVENTS,
                 setOf(TockUserRole.botUser)
@@ -191,8 +222,12 @@ class DialogVerticle {
                 val annotationId = context.path("annotationId")
                 val user = context.userLogin
 
-                logger.info { "Adding an event to annotation $annotationId..." }
-                BotAdminService.addEventToAnnotation(dialogId, actionId, eventDTO, user)
+                if (eventDTO.type != BotAnnotationEventType.COMMENT) {
+                    throw IllegalArgumentException("Only COMMENT events are allowed")
+                }
+
+                logger.info { "Adding a COMMENT event to annotation $annotationId..." }
+                BotAdminService.addCommentToAnnotation(dialogId, actionId, eventDTO, user)
             }
 
             // MODIFY COMMENT
