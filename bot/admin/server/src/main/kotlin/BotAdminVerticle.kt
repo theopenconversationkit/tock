@@ -16,16 +16,12 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.admin.BotAdminService.addEventToAnnotation
+
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
-import ai.tock.bot.admin.annotation.BotAnnotation
-import ai.tock.bot.admin.annotation.BotAnnotationDTO
-import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
-import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
@@ -41,22 +37,17 @@ import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
 import ai.tock.bot.engine.BotRepository
-import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
-import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
-import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
-import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.shared.*
-import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.*
