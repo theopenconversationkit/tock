@@ -166,6 +166,9 @@ object BotAdminService {
 
         require(eventDTO.comment != null) { "Comment is required for COMMENT event type" }
 
+        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
         val event = BotAnnotationEventComment(
             eventId = newId(),
             creationDate = Instant.now(),
@@ -174,7 +177,10 @@ object BotAdminService {
             comment = eventDTO.comment!!
         )
 
+        annotation.lastUpdateDate = Instant.now()
+
         dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
+        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
 
         return event
     }
@@ -199,13 +205,19 @@ object BotAdminService {
 
         require(eventDTO.comment != null) { "Comment must be provided" }
 
+        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
         val existingCommentEvent = existingEvent as BotAnnotationEventComment
         val updatedEvent = existingCommentEvent.copy(
             comment = eventDTO.comment!!,
             lastUpdateDate = Instant.now()
         )
 
+        annotation.lastUpdateDate = Instant.now()
+
         dialogReportDAO.updateAnnotationEvent(dialogId, actionId, eventId, updatedEvent)
+        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
 
         return updatedEvent
     }
@@ -224,7 +236,13 @@ object BotAdminService {
             throw IllegalArgumentException("Only comment events can be deleted")
         }
 
+        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
+            ?: throw IllegalStateException("Annotation not found")
+
+        annotation.lastUpdateDate = Instant.now()
+
         dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
+        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
     }
 
     fun updateAnnotation(

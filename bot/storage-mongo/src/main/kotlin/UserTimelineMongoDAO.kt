@@ -736,6 +736,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         return null
     }
 
+    override fun getAnnotationByActionId(dialogId: String, actionId: String): BotAnnotation? {
+        val dialog = dialogCol.findOneById(dialogId) ?: return null
+        for (story in dialog.stories) {
+            val action = story.actions.find { it.id.toString() == actionId } ?: continue
+            return action.annotation
+        }
+        return null
+    }
+
     override fun updateAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
         val dialog = dialogCol.findOneById(dialogId)
         if (dialog != null) {
