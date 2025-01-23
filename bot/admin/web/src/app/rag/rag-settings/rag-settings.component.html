@@ -92,21 +92,21 @@
         </nb-toggle>
       </tock-form-control>
 
-      <h5 class="section-title">LLM engine</h5>
+      <h5 class="section-title">Question condensing</h5>
 
       <tock-form-control
-        name="llmEngine"
-        [controls]="llmEngine"
+        name="condenseQuestionLlmEngine"
+        [controls]="condenseQuestionLlmEngine"
         [required]="true"
         [showError]="isSubmitted"
       >
         <nb-radio-group
-          formControlName="llmEngine"
-          name="llmEngine"
+          formControlName="condenseQuestionLlmEngine"
+          name="condenseQuestionLlmEngine"
           class="d-flex"
         >
           <nb-radio
-            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.llmSetting]"
+            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.condenseQuestionLlmSetting]"
             [value]="engine.key"
           >
             {{ engine.label }}
@@ -115,24 +115,84 @@
       </tock-form-control>
 
       <div
-        *ngIf="currentLlmEngine"
+        *ngIf="currentCondenseQuestionLlmEngine"
         class="mt-2 mb-2"
       >
         <div class="row mb-1">
-          <ng-container *ngFor="let param of currentLlmEngine.params">
+          <ng-container *ngFor="let param of currentCondenseQuestionLlmEngine.params">
             <div
               class="col-6 px-3"
               [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
             >
               <tock-ai-settings-engine-config-param-input
-                [parentGroup]="engineSettingKeyName.llmSetting"
+                [parentGroup]="engineSettingKeyName.condenseQuestionLlmSetting"
                 [configurationParam]="param"
                 [form]="form"
                 [isSubmitted]="isSubmitted"
-                [defaultPrompt]="defaultPrompt"
               ></tock-ai-settings-engine-config-param-input>
             </div>
           </ng-container>
+          <div class="col-12 px-3">
+            <tock-ai-settings-engine-config-param-input
+              parentGroup="condenseQuestionPrompt"
+              [configurationParam]="questionCondensing_prompt_ConfigurationParam"
+              [form]="form"
+              [isSubmitted]="isSubmitted"
+              [defaultPrompt]="$any(questionCondensing_prompt_ConfigurationParam.defaultValue)"
+            ></tock-ai-settings-engine-config-param-input>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="section-title">Question answering</h5>
+
+      <tock-form-control
+        name="questionAnsweringLlmEngine"
+        [controls]="questionAnsweringLlmEngine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-radio-group
+          formControlName="questionAnsweringLlmEngine"
+          name="questionAnsweringLlmEngine"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]"
+            [value]="engine.key"
+          >
+            {{ engine.label }}
+          </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div
+        *ngIf="currentQuestionAnsweringLlmEngine"
+        class="mt-2 mb-2"
+      >
+        <div class="row mb-1">
+          <ng-container *ngFor="let param of currentQuestionAnsweringLlmEngine.params">
+            <div
+              class="col-6 px-3"
+              [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+            >
+              <tock-ai-settings-engine-config-param-input
+                [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
+                [configurationParam]="param"
+                [form]="form"
+                [isSubmitted]="isSubmitted"
+              ></tock-ai-settings-engine-config-param-input>
+            </div>
+          </ng-container>
+          <div class="col-12 px-3">
+            <tock-ai-settings-engine-config-param-input
+              parentGroup="questionAnsweringPrompt"
+              [configurationParam]="questionAnswering_prompt_ConfigurationParam"
+              [form]="form"
+              [isSubmitted]="isSubmitted"
+              [defaultPrompt]="$any(questionAnswering_prompt_ConfigurationParam.defaultValue)"
+            ></tock-ai-settings-engine-config-param-input>
+          </div>
         </div>
       </div>
 

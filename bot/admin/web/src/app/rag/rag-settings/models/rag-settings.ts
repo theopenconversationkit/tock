@@ -1,4 +1,4 @@
-import { emSetting, llmSetting } from '../../../shared/model/ai-settings';
+import { emSetting, llmSetting, promptDefinition } from '../../../shared/model/ai-settings';
 
 export interface RagSettings {
   id: string;
@@ -9,7 +9,12 @@ export interface RagSettings {
   noAnswerSentence: string;
   noAnswerStoryId: string | null;
 
-  llmSetting: llmSetting;
+  condenseQuestionLlmSetting: llmSetting;
+  condenseQuestionPrompt: promptDefinition;
+
+  questionAnsweringLlmSetting: llmSetting;
+  questionAnsweringPrompt: promptDefinition;
+
   emSetting: emSetting;
 
   indexSessionId: string;

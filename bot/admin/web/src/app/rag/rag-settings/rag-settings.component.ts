@@ -5,7 +5,11 @@ import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
+import {
+  EnginesConfigurations,
+  QuestionCondensing_prompt_ConfigurationParam,
+  QuestionAnswering_prompt_ConfigurationParam
+} from './models/engines-configurations';
 import { RagSettings } from './models';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
@@ -34,8 +38,14 @@ interface RagSettingsForm {
 
   documentsRequired: FormControl<boolean>;
 
-  llmEngine: FormControl<AiEngineProvider>;
-  llmSetting: FormGroup<any>;
+  condenseQuestionLlmEngine: FormControl<AiEngineProvider>;
+  condenseQuestionLlmSetting: FormGroup<any>;
+  condenseQuestionPrompt: FormGroup<any>;
+
+  questionAnsweringLlmEngine: FormControl<AiEngineProvider>;
+  questionAnsweringLlmSetting: FormGroup<any>;
+  questionAnsweringPrompt: FormGroup<any>;
+
   emEngine: FormControl<AiEngineProvider>;
   emSetting: FormGroup<any>;
 }
@@ -54,7 +64,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   engineSettingKeyName = AiEngineSettingKeyName;
 
-  defaultPrompt = DefaultPrompt;
+  questionCondensing_prompt_ConfigurationParam = QuestionCondensing_prompt_ConfigurationParam;
+
+  questionAnswering_prompt_ConfigurationParam = QuestionAnswering_prompt_ConfigurationParam;
 
   availableStories: StoryDefinitionConfiguration[];
 
@@ -85,10 +97,19 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
 
     this.form
-      .get('llmEngine')
+      .get('condenseQuestionLlmEngine')
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
-        this.initFormSettings(AiEngineSettingKeyName.llmSetting, engine);
+        this.initFormSettings(AiEngineSettingKeyName.condenseQuestionLlmSetting, engine);
+        this.initFormPrompt('condenseQuestionPrompt');
+      });
+
+    this.form
+      .get('questionAnsweringLlmEngine')
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, engine);
+        this.initFormPrompt('questionAnsweringPrompt');
       });
 
     this.form
@@ -103,8 +124,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
       // Reset form on configuration change
       this.form.reset();
+
       // Reset formGroup controls too, if any
-      this.resetFormGroupControls(AiEngineSettingKeyName.llmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.condenseQuestionLlmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.questionAnsweringLlmSetting);
       this.resetFormGroupControls(AiEngineSettingKeyName.emSetting);
 
       this.loading = true;
@@ -133,6 +156,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  private getRagSettingsLoader(): Observable<RagSettings> {
+    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
+  }
+
   form = new FormGroup<RagSettingsForm>({
     id: new FormControl(null),
     enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
@@ -141,8 +169,21 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
     documentsRequired: new FormControl(undefined),
-    llmEngine: new FormControl(undefined, [Validators.required]),
-    llmSetting: new FormGroup<any>({}),
+
+    condenseQuestionLlmEngine: new FormControl(undefined, [Validators.required]),
+    condenseQuestionLlmSetting: new FormGroup<any>({}),
+    condenseQuestionPrompt: new FormGroup<any>({
+      formatter: new FormControl(undefined),
+      template: new FormControl(undefined, [Validators.required])
+    }),
+
+    questionAnsweringLlmEngine: new FormControl(undefined, [Validators.required]),
+    questionAnsweringLlmSetting: new FormGroup<any>({}),
+    questionAnsweringPrompt: new FormGroup<any>({
+      formatter: new FormControl(undefined),
+      template: new FormControl(undefined, [Validators.required])
+    }),
+
     emEngine: new FormControl(undefined, [Validators.required]),
     emSetting: new FormGroup<any>({})
   });
@@ -150,9 +191,15 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   get enabled(): FormControl {
     return this.form.get('enabled') as FormControl;
   }
-  get llmEngine(): FormControl {
-    return this.form.get('llmEngine') as FormControl;
+
+  get condenseQuestionLlmEngine(): FormControl {
+    return this.form.get('condenseQuestionLlmEngine') as FormControl;
   }
+
+  get questionAnsweringLlmEngine(): FormControl {
+    return this.form.get('questionAnsweringLlmEngine') as FormControl;
+  }
+
   get emEngine(): FormControl {
     return this.form.get('emEngine') as FormControl;
   }
@@ -183,6 +230,107 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   get getCurrentStoryLabel(): string {
     const currentStory = this.availableStories?.find((story) => story.storyId === this.noAnswerStoryId.value);
     return currentStory?.name || '';
+  }
+
+  initFormPrompt(group: 'condenseQuestionPrompt' | 'questionAnsweringPrompt'): void {
+    let defaultPrompt;
+    if (group === 'condenseQuestionPrompt') {
+      defaultPrompt = QuestionCondensing_prompt_ConfigurationParam.defaultValue;
+    }
+    if (group === 'questionAnsweringPrompt') {
+      defaultPrompt = QuestionAnswering_prompt_ConfigurationParam.defaultValue;
+    }
+
+    this.form.get(group).patchValue({
+      // 'jinja2' | 'f-string'
+      formatter: 'f-string',
+      prompt: defaultPrompt
+    });
+  }
+
+  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
+    let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
+
+    if (requiredConfiguration) {
+      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
+      this.resetFormGroupControls(group);
+
+      requiredConfiguration.params.forEach((param) => {
+        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+      });
+
+      this.form.controls[group].addControl('provider', new FormControl(provider));
+    }
+  }
+
+  resetFormGroupControls(group: AiEngineSettingKeyName) {
+    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
+    existingGroupKeys.forEach((key) => {
+      this.form.controls[group].removeControl(key);
+    });
+  }
+
+  initForm(settings: RagSettings) {
+    this.initFormSettings(AiEngineSettingKeyName.condenseQuestionLlmSetting, settings.condenseQuestionLlmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, settings.questionAnsweringLlmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
+
+    this.form.patchValue({
+      condenseQuestionLlmEngine: settings.condenseQuestionLlmSetting?.provider,
+      questionAnsweringLlmEngine: settings.questionAnsweringLlmSetting?.provider,
+      emEngine: settings.emSetting?.provider
+    });
+    this.form.patchValue(settings);
+
+    this.initFormPrompt('condenseQuestionPrompt');
+    this.initFormPrompt('questionAnsweringPrompt');
+
+    this.form.markAsPristine();
+  }
+
+  canRagBeActivated(): boolean {
+    return this.form ? this.form.valid && this.indexSessionId.value?.length : false;
+  }
+
+  setActivationDisabledState(): void {
+    if (this.canRagBeActivated()) {
+      this.enabled.enable();
+    } else {
+      this.enabled.disable();
+    }
+  }
+
+  get currentCondenseQuestionLlmEngine(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.condenseQuestionLlmSetting].find(
+      (e) => e.key === this.condenseQuestionLlmEngine.value
+    );
+  }
+
+  get currentQuestionAnsweringLlmEngine(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.questionAnsweringLlmSetting].find(
+      (e) => e.key === this.questionAnsweringLlmEngine.value
+    );
+  }
+
+  get currentEmEngine(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
+  }
+
+  private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
+    return this.botService
+      .getStories(
+        new StorySearchQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          0,
+          10000,
+          undefined,
+          undefined,
+          false
+        )
+      )
+      .pipe(take(1));
   }
 
   isStoryEnabled(story) {
@@ -226,81 +374,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
       this.filteredStories$ = of(this.availableStories);
     }, 100);
-  }
-
-  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
-    let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
-
-    if (requiredConfiguration) {
-      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
-      this.resetFormGroupControls(group);
-
-      requiredConfiguration.params.forEach((param) => {
-        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
-      });
-
-      this.form.controls[group].addControl('provider', new FormControl(provider));
-    }
-  }
-
-  resetFormGroupControls(group: AiEngineSettingKeyName) {
-    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
-    existingGroupKeys.forEach((key) => {
-      this.form.controls[group].removeControl(key);
-    });
-  }
-
-  private getRagSettingsLoader(): Observable<RagSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
-    return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
-  }
-
-  initForm(settings: RagSettings) {
-    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting?.provider);
-    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
-    this.form.patchValue({
-      llmEngine: settings.llmSetting?.provider,
-      emEngine: settings.emSetting?.provider
-    });
-    this.form.patchValue(settings);
-    this.form.markAsPristine();
-  }
-
-  canRagBeActivated(): boolean {
-    return this.form ? this.form.valid && this.indexSessionId.value?.length : false;
-  }
-
-  setActivationDisabledState(): void {
-    if (this.canRagBeActivated()) {
-      this.enabled.enable();
-    } else {
-      this.enabled.disable();
-    }
-  }
-
-  get currentLlmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[AiEngineSettingKeyName.llmSetting].find((e) => e.key === this.llmEngine.value);
-  }
-
-  get currentEmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
-  }
-
-  private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
-    return this.botService
-      .getStories(
-        new StorySearchQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          0,
-          10000,
-          undefined,
-          undefined,
-          false
-        )
-      )
-      .pipe(take(1));
   }
 
   cancel(): void {
@@ -359,7 +432,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   get hasExportableData(): boolean {
-    if (this.llmEngine.value || this.emEngine.value) return true;
+    if (this.condenseQuestionLlmEngine.value || this.questionAnsweringLlmEngine.value || this.emEngine.value) return true;
 
     const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
 
@@ -374,16 +447,27 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.sensitiveParams = [];
 
     const shouldConfirm =
-      (this.llmEngine.value || this.emEngine.value) &&
-      [(this.currentLlmEngine.params, this.currentEmEngine.params)].some((engine) => {
-        return engine.some((entry) => {
-          return entry.confirmExport;
-        });
-      });
+      (this.condenseQuestionLlmEngine.value || this.questionAnsweringLlmEngine.value || this.emEngine.value) &&
+      [(this.currentCondenseQuestionLlmEngine.params, this.currentQuestionAnsweringLlmEngine.params, this.currentEmEngine.params)].some(
+        (engine) => {
+          return engine.some((entry) => {
+            return entry.confirmExport;
+          });
+        }
+      );
 
     if (shouldConfirm) {
       [
-        { label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params },
+        {
+          label: 'Question condensing LLM engine',
+          key: AiEngineSettingKeyName.condenseQuestionLlmSetting,
+          params: this.currentCondenseQuestionLlmEngine.params
+        },
+        {
+          label: 'Question answering LLM engine',
+          key: AiEngineSettingKeyName.questionAnsweringLlmSetting,
+          params: this.currentQuestionAnsweringLlmEngine.params
+        },
         { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmEngine.params }
       ].forEach((engine) => {
         engine.params.forEach((entry) => {

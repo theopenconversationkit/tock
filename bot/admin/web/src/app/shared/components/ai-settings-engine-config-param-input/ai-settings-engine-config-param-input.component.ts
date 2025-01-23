@@ -23,8 +23,8 @@ export class AiSettingsEngineConfigParamInputComponent {
   }
 
   restoreDefaultPrompt(): void {
-    this.form.get(this.parentGroup).get('prompt').setValue(this.defaultPrompt);
-    this.form.get(this.parentGroup).get('prompt').markAsDirty();
+    this.form.get(this.parentGroup).get('template').setValue(this.defaultPrompt);
+    this.form.get(this.parentGroup).get('template').markAsDirty();
   }
 
   showInput(event: FocusEvent): void {

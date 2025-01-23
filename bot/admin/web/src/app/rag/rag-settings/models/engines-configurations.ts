@@ -6,10 +6,13 @@ import {
   OllamaEmModelsList,
   OllamaLlmModelsList,
   OpenAIEmbeddingModel,
-  OpenAIModelsList
+  OpenAIModelsList,
+  ProvidersConfigurationParam
 } from '../../../shared/model/ai-settings';
 
-export const DefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
+export const QuestionCondensingDefaultPrompt: string = `Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be nderstood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is.`;
+
+export const QuestionAnsweringDefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
 
 ## General context
 
@@ -38,6 +41,22 @@ Answer in {locale}.
 {question}
 `;
 
+export const QuestionCondensing_prompt_ConfigurationParam: ProvidersConfigurationParam = {
+  key: 'template',
+  label: 'Condensing prompt',
+  type: 'prompt',
+  inputScale: 'fullwidth',
+  defaultValue: QuestionCondensingDefaultPrompt
+};
+
+export const QuestionAnswering_prompt_ConfigurationParam: ProvidersConfigurationParam = {
+  key: 'template',
+  label: 'Answering prompt',
+  type: 'prompt',
+  inputScale: 'fullwidth',
+  defaultValue: QuestionAnsweringDefaultPrompt
+};
+
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {
     label: 'OpenAI',
@@ -46,8 +65,8 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
-      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 },
-      { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
+      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
@@ -59,8 +78,8 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
-      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 },
-      { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
+      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
@@ -69,8 +88,8 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
     params: [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
-      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05, defaultValue: 0.7 },
-      { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05, defaultValue: 0.7 }
+      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   }
 ];
@@ -106,7 +125,15 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   }
 ];
 
-export const EnginesConfigurations: { [K in AiEngineSettingKeyName]: EnginesConfiguration[] } = {
-  llmSetting: EnginesConfigurations_Llm,
+export const EnginesConfigurations: {
+  [K in Extract<
+    AiEngineSettingKeyName,
+    | AiEngineSettingKeyName.questionAnsweringLlmSetting
+    | AiEngineSettingKeyName.condenseQuestionLlmSetting
+    | AiEngineSettingKeyName.emSetting
+  >]: EnginesConfiguration[];
+} = {
+  condenseQuestionLlmSetting: EnginesConfigurations_Llm,
+  questionAnsweringLlmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };
