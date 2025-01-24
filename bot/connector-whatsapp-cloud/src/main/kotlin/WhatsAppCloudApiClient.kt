@@ -56,7 +56,7 @@ class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
         fun retrieveMediaUrl(
             @Path("media-id") mediaId: String?,
             @Query("access_token") accessToken: String
-        ): Call<Media?>?
+        ): Call<Media>
 
         @GET
         @Streaming

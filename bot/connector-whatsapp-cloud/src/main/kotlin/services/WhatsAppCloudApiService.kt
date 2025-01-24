@@ -25,6 +25,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.SendSuccessfulResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.ResponseCreateTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.media.Media
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
@@ -92,6 +93,12 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         send(messageRequest) {
             apiClient.graphApi.sendMessage(phoneNumberId, token, messageRequest).execute()
         }
+    }
+
+    fun retreiveMediaUrl(token: String, mediaId: String): String{
+        return getMedia(mediaId) {
+            apiClient.graphApi.retrieveMediaUrl(mediaId, token).execute()
+        }.url
     }
 
     private fun handleSimpleMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotMessage) {
@@ -313,7 +320,31 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun replaceWithRealMessageImageId(
+
+    private fun <T : Any> getMedia(request: T, call: (T) -> Response<Media>): Media {
+        val requestTimerData =
+            BotRepository.requestTimer.start("whatsapp_send_${request.javaClass.simpleName.lowercase()}")
+        try {
+            val response = call(request)
+            if (!response.isSuccessful) {
+                throw ConnectorException("Failed to send message: ${response.errorBody()?.string()}")
+            }
+            return response.body() ?: throw ConnectorException("Null response body")
+
+        } catch (e: Throwable) {
+            BotRepository.requestTimer.throwable(e, requestTimerData)
+            if (e is ConnectorException) {
+                throw e
+            } else {
+                throwError(e.message ?: "")
+            }
+        } finally {
+            BotRepository.requestTimer.end(requestTimerData)
+        }
+    }
+
+
+        private fun replaceWithRealMessageImageId(
         messageRequest: WhatsAppCloudSendBotImageMessage,
         phoneNumberId: String,
         token: String
