@@ -332,3 +332,33 @@ nb-menu {
 .nb-form-field-suffix-medium {
   justify-content: end;
 }
+
+.nb-toggle-small {
+  --toggle-height-small: 1.25rem;
+  --toggle-width-small: 1.95rem;
+  --toggle-switcher-size-small: 1.125rem;
+  --toggle-switcher-icon-size-small: 0.5rem;
+
+  .toggle-label {
+    margin-bottom: 0;
+  }
+
+  .toggle {
+    height: var(--toggle-height-small);
+    width: var(--toggle-width-small);
+
+    [dir='ltr'] &.checked .toggle-switcher {
+      left: calc(100% - var(--toggle-switcher-size-small) - var(--toggle-border-width) - var(--toggle-border-width));
+    }
+
+    .toggle-switcher {
+      width: var(--toggle-switcher-size-small);
+      height: var(--toggle-switcher-size-small);
+
+      nb-icon {
+        height: var(--toggle-switcher-icon-size-small);
+        width: var(--toggle-switcher-icon-size-small);
+      }
+    }
+  }
+}

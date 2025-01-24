@@ -58,6 +58,21 @@
         </div>
       </ng-container>
 
+      <ng-container *ngIf="configurationParam.type === 'radio'">
+        <nb-radio-group
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+          class="d-flex"
+          name="{{ parentGroup }}-{{ configurationParam.key }}"
+        >
+          <nb-radio
+            *ngFor="let source of configurationParam.source"
+            [value]="source"
+          >
+            {{ source }}
+          </nb-radio>
+        </nb-radio-group>
+      </ng-container>
+
       <ng-container *ngIf="configurationParam.type === 'list'">
         <nb-select
           fullWidth

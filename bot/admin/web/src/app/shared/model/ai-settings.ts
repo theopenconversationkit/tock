@@ -1,7 +1,7 @@
 export interface ProvidersConfigurationParam {
   label: string;
   key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
+  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated' | 'radio';
   numberControlType?: 'slider' | 'input';
   source?: string[];
   inputScale?: 'default' | 'fullwidth';

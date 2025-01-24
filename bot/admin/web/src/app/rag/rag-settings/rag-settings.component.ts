@@ -1,15 +1,11 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil, pairwise } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import {
-  EnginesConfigurations,
-  QuestionCondensing_prompt_ConfigurationParam,
-  QuestionAnswering_prompt_ConfigurationParam
-} from './models/engines-configurations';
+import { EnginesConfigurations, QuestionCondensing_prompt, QuestionAnswering_prompt } from './models/engines-configurations';
 import { RagSettings } from './models';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
@@ -64,9 +60,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   engineSettingKeyName = AiEngineSettingKeyName;
 
-  questionCondensing_prompt_ConfigurationParam = QuestionCondensing_prompt_ConfigurationParam;
-
-  questionAnswering_prompt_ConfigurationParam = QuestionAnswering_prompt_ConfigurationParam;
+  questionCondensing_prompt = QuestionCondensing_prompt;
+  questionAnswering_prompt = QuestionAnswering_prompt;
 
   availableStories: StoryDefinitionConfiguration[];
 
@@ -101,7 +96,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
         this.initFormSettings(AiEngineSettingKeyName.condenseQuestionLlmSetting, engine);
-        this.initFormPrompt('condenseQuestionPrompt');
       });
 
     this.form
@@ -109,7 +103,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
         this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, engine);
-        this.initFormPrompt('questionAnsweringPrompt');
       });
 
     this.form
@@ -118,6 +111,17 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       .subscribe((engine: AiEngineProvider) => {
         this.initFormSettings(AiEngineSettingKeyName.emSetting, engine);
       });
+
+    ['condenseQuestionPrompt', 'questionAnsweringPrompt'].forEach((wich) => {
+      this.form
+        .get(wich)
+        .valueChanges.pipe(pairwise(), takeUntil(this.destroy$))
+        .subscribe(([prev, next]) => {
+          if (next?.formatter === 'jinja2' && prev?.formatter === 'f-string' && next?.template?.length) {
+            this.fStringToJinja(wich);
+          }
+        });
+    });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
       delete this.settingsBackup;
@@ -130,8 +134,14 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       this.resetFormGroupControls(AiEngineSettingKeyName.questionAnsweringLlmSetting);
       this.resetFormGroupControls(AiEngineSettingKeyName.emSetting);
 
+      // Reset accordions states
+      this.accordionItemsExpandedState = undefined;
+
       this.loading = true;
       this.configurations = confs;
+
+      this.initFormPrompt('condenseQuestionPrompt');
+      this.initFormPrompt('questionAnsweringPrompt');
 
       if (confs.length) {
         forkJoin([this.getStoriesLoader(), this.getRagSettingsLoader()]).subscribe((res) => {
@@ -172,17 +182,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
     condenseQuestionLlmEngine: new FormControl(undefined, [Validators.required]),
     condenseQuestionLlmSetting: new FormGroup<any>({}),
-    condenseQuestionPrompt: new FormGroup<any>({
-      formatter: new FormControl(undefined),
-      template: new FormControl(undefined, [Validators.required])
-    }),
+    condenseQuestionPrompt: new FormGroup<any>({}),
 
     questionAnsweringLlmEngine: new FormControl(undefined, [Validators.required]),
     questionAnsweringLlmSetting: new FormGroup<any>({}),
-    questionAnsweringPrompt: new FormGroup<any>({
-      formatter: new FormControl(undefined),
-      template: new FormControl(undefined, [Validators.required])
-    }),
+    questionAnsweringPrompt: new FormGroup<any>({}),
 
     emEngine: new FormControl(undefined, [Validators.required]),
     emSetting: new FormGroup<any>({})
@@ -232,19 +236,79 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return currentStory?.name || '';
   }
 
-  initFormPrompt(group: 'condenseQuestionPrompt' | 'questionAnsweringPrompt'): void {
-    let defaultPrompt;
-    if (group === 'condenseQuestionPrompt') {
-      defaultPrompt = QuestionCondensing_prompt_ConfigurationParam.defaultValue;
-    }
-    if (group === 'questionAnsweringPrompt') {
-      defaultPrompt = QuestionAnswering_prompt_ConfigurationParam.defaultValue;
+  accordionItemsExpandedState: Map<string, boolean>;
+
+  isAccordionItemsExpanded(itemName: string) {
+    if (!this.accordionItemsExpandedState) {
+      this.accordionItemsExpandedState = new Map();
     }
 
-    this.form.get(group).patchValue({
-      // 'jinja2' | 'f-string'
-      formatter: 'f-string',
-      prompt: defaultPrompt
+    if (!this.accordionItemsExpandedState.has(itemName)) {
+      switch (itemName) {
+        case 'questionConsensingConfiguration':
+          this.accordionItemsExpandedState.set(
+            'questionConsensingConfiguration',
+            this.form.get('condenseQuestionLlmEngine').invalid || this.form.get('condenseQuestionLlmSetting').invalid
+          );
+          break;
+        case 'questionConsensingPprompt':
+          this.accordionItemsExpandedState.set('questionConsensingPprompt', this.form.get('condenseQuestionPrompt').invalid);
+          break;
+        case 'questionAnsweringConfiguration':
+          this.accordionItemsExpandedState.set(
+            'questionAnsweringConfiguration',
+            this.form.get('questionAnsweringLlmEngine').invalid || this.form.get('questionAnsweringLlmSetting').invalid
+          );
+          break;
+        case 'questionAnsweringPrompt':
+          this.accordionItemsExpandedState.set('questionAnsweringPrompt', this.form.get('questionAnsweringPrompt').invalid);
+          break;
+        case 'embeddingConfiguration':
+          this.accordionItemsExpandedState.set(
+            'embeddingConfiguration',
+            this.form.get('emEngine').invalid || this.form.get('emSetting').invalid
+          );
+          break;
+      }
+    }
+
+    return this.accordionItemsExpandedState.get(itemName);
+  }
+
+  shouldDisplayPromptParam(parentGroup, param) {
+    // Goal : We want templates to use the Jinja2 format by default.
+    if (param.key === 'formatter') {
+      // We only care about the “formatter” param
+      if (this.form.get(parentGroup).get(param.key).value === 'jinja2') {
+        // If the format is already Jinja2, we can hide the choice control
+        return false;
+      }
+    }
+    return true;
+  }
+
+  fStringToJinja(wich) {
+    const source = this.form.get(wich).get('template').value;
+    const result = source.replace(/{(.*?)}/g, '{{$1}}');
+    this.form.get(wich).patchValue({
+      template: result
+    });
+  }
+
+  initFormPrompt(group: 'condenseQuestionPrompt' | 'questionAnsweringPrompt'): void {
+    this.resetFormGroupControls(group);
+
+    let params: ProvidersConfigurationParam[];
+
+    if (group === 'condenseQuestionPrompt') {
+      params = QuestionCondensing_prompt;
+    }
+    if (group === 'questionAnsweringPrompt') {
+      params = QuestionAnswering_prompt;
+    }
+
+    params.forEach((param) => {
+      this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
     });
   }
 
@@ -263,7 +327,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetFormGroupControls(group: AiEngineSettingKeyName) {
+  resetFormGroupControls(group: string) {
     const existingGroupKeys = Object.keys(this.form.controls[group].controls);
     existingGroupKeys.forEach((key) => {
       this.form.controls[group].removeControl(key);
@@ -284,6 +348,13 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
     this.initFormPrompt('condenseQuestionPrompt');
     this.initFormPrompt('questionAnsweringPrompt');
+
+    this.form.patchValue({
+      condenseQuestionPrompt: settings.condenseQuestionPrompt,
+      questionAnsweringPrompt: settings.questionAnsweringPrompt
+    });
+
+    this.accordionItemsExpandedState = undefined;
 
     this.form.markAsPristine();
   }

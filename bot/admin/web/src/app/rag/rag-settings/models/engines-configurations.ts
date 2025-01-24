@@ -29,33 +29,54 @@ Your tone is empathetic, informative and polite.
 ## Additional instructions
 
 Use the following pieces of retrieved context to answer the question.
-If you dont know the answer, answer (exactly) with "{no_answer}".
-Answer in {locale}.
+If you dont know the answer, answer (exactly) with "{{no_answer}}".
+Answer in {{locale}}.
 
 ## Context
 
-{context}
+{{context}}
 
 ## Question
 
-{question}
+{{question}}
 `;
 
-export const QuestionCondensing_prompt_ConfigurationParam: ProvidersConfigurationParam = {
-  key: 'template',
-  label: 'Condensing prompt',
-  type: 'prompt',
-  inputScale: 'fullwidth',
-  defaultValue: QuestionCondensingDefaultPrompt
-};
+export const QuestionCondensing_prompt: ProvidersConfigurationParam[] = [
+  {
+    key: 'formatter',
+    label: 'Prompt template format',
+    type: 'radio',
+    source: ['jinja2', 'f-string'],
+    defaultValue: 'jinja2',
+    inputScale: 'fullwidth'
+  },
+  {
+    key: 'template',
+    label: 'Prompt template',
+    type: 'prompt',
+    inputScale: 'fullwidth',
+    defaultValue: QuestionCondensingDefaultPrompt,
+    information: 'LangChain ChatPromptTemplate'
+  }
+];
 
-export const QuestionAnswering_prompt_ConfigurationParam: ProvidersConfigurationParam = {
-  key: 'template',
-  label: 'Answering prompt',
-  type: 'prompt',
-  inputScale: 'fullwidth',
-  defaultValue: QuestionAnsweringDefaultPrompt
-};
+export const QuestionAnswering_prompt: ProvidersConfigurationParam[] = [
+  {
+    key: 'formatter',
+    label: 'Prompt template format',
+    type: 'radio',
+    source: ['jinja2', 'f-string'],
+    defaultValue: 'jinja2',
+    inputScale: 'fullwidth'
+  },
+  {
+    key: 'template',
+    label: 'Prompt template',
+    type: 'prompt',
+    inputScale: 'fullwidth',
+    defaultValue: QuestionAnsweringDefaultPrompt
+  }
+];
 
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {
