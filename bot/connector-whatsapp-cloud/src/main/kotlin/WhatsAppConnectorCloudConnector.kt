@@ -21,11 +21,6 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButtonReply
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractive
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMessage
@@ -168,7 +163,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     restrictedPhoneNumbers?.contains(it.from) ?: true
                 }.forEach { message: WhatsAppCloudMessage ->
                     executor.executeBlocking {
-                        val event = WebhookActionConverter.toEvent(message, connectorId)
+                        val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService, token)
                         if (event != null) {
                             controller.handle(
                                 event,
