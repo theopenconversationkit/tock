@@ -7,7 +7,8 @@ import {
   OllamaLlmModelsList,
   OpenAIEmbeddingModel,
   OpenAIModelsList,
-  ProvidersConfigurationParam
+  ProvidersConfigurationParam,
+  PromptDefinitionFormatter
 } from '../../../shared/model/ai-settings';
 
 export const QuestionCondensingDefaultPrompt: string = `Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be nderstood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is.`;
@@ -46,8 +47,8 @@ export const QuestionCondensing_prompt: ProvidersConfigurationParam[] = [
     key: 'formatter',
     label: 'Prompt template format',
     type: 'radio',
-    source: ['jinja2', 'f-string'],
-    defaultValue: 'jinja2',
+    source: [PromptDefinitionFormatter.jinja2, PromptDefinitionFormatter.fstring],
+    defaultValue: PromptDefinitionFormatter.jinja2,
     inputScale: 'fullwidth'
   },
   {
@@ -56,7 +57,7 @@ export const QuestionCondensing_prompt: ProvidersConfigurationParam[] = [
     type: 'prompt',
     inputScale: 'fullwidth',
     defaultValue: QuestionCondensingDefaultPrompt,
-    information: 'LangChain ChatPromptTemplate'
+    information: "See LangChain's ChatPromptTemplate for more infos"
   }
 ];
 
@@ -65,8 +66,8 @@ export const QuestionAnswering_prompt: ProvidersConfigurationParam[] = [
     key: 'formatter',
     label: 'Prompt template format',
     type: 'radio',
-    source: ['jinja2', 'f-string'],
-    defaultValue: 'jinja2',
+    source: [PromptDefinitionFormatter.jinja2, PromptDefinitionFormatter.fstring],
+    defaultValue: PromptDefinitionFormatter.jinja2,
     inputScale: 'fullwidth'
   },
   {
@@ -150,11 +151,11 @@ export const EnginesConfigurations: {
   [K in Extract<
     AiEngineSettingKeyName,
     | AiEngineSettingKeyName.questionAnsweringLlmSetting
-    | AiEngineSettingKeyName.condenseQuestionLlmSetting
+    | AiEngineSettingKeyName.questionCondensingLlmSetting
     | AiEngineSettingKeyName.emSetting
   >]: EnginesConfiguration[];
 } = {
-  condenseQuestionLlmSetting: EnginesConfigurations_Llm,
+  questionCondensingLlmSetting: EnginesConfigurations_Llm,
   questionAnsweringLlmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };

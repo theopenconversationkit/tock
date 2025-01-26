@@ -20,14 +20,24 @@ export enum AiEngineProvider {
 }
 
 export enum AiEngineSettingKeyName {
-  condenseQuestionLlmSetting = 'condenseQuestionLlmSetting',
+  questionCondensingLlmSetting = 'questionCondensingLlmSetting',
   questionAnsweringLlmSetting = 'questionAnsweringLlmSetting',
   llmSetting = 'llmSetting',
   emSetting = 'emSetting'
 }
 
+export enum PromptTypeKeyName {
+  questionCondensingPrompt = 'questionCondensingPrompt',
+  questionAnsweringPrompt = 'questionAnsweringPrompt'
+}
+
+export enum PromptDefinitionFormatter {
+  jinja2 = 'jinja2',
+  fstring = 'f-string'
+}
+
 export interface promptDefinition {
-  formatter: 'jinja2' | 'f-string';
+  formatter: PromptDefinitionFormatter;
   template: string;
 }
 
@@ -42,7 +52,6 @@ export interface llmSetting {
   apiVersion?: String;
 
   temperature?: Number;
-  // prompt?: String;
 }
 
 export interface emSetting {

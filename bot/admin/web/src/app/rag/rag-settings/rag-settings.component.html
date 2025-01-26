@@ -76,11 +76,11 @@
   <nb-card class="mt-1">
     <nb-card-body
       [nbSpinner]="loading"
-      class="pt-4"
+      class="pb-0"
     >
-      <nb-card class="mb-3">
+      <nb-card class="mt-2 mb-3">
         <nb-card-header>RAG activation</nb-card-header>
-        <nb-card-body>
+        <nb-card-body class="d-flex gap-2 align-items-start">
           <tock-form-control
             name="enabled"
             [controls]="enabled"
@@ -93,6 +93,22 @@
             >
               <span *ngIf="enabled.value">Rag activated</span>
               <span *ngIf="!enabled.value">Rag deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
+
+          <tock-form-control
+            name="debugEnabled"
+            [controls]="debugEnabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
+          >
+            <nb-toggle
+              formControlName="debugEnabled"
+              class="nb-toggle-small mt-2"
+              status="basic"
+            >
+              <span *ngIf="debugEnabled.value">Debug activated</span>
+              <span *ngIf="!debugEnabled.value">Debug deactivated</span>
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
@@ -109,18 +125,18 @@
               <nb-accordion-item-header>Configuration</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
-                  name="condenseQuestionLlmEngine"
-                  [controls]="condenseQuestionLlmEngine"
+                  name="questionCondensingLlmProvider"
+                  [controls]="questionCondensingLlmProvider"
                   [required]="true"
                   [showError]="isSubmitted"
                 >
                   <nb-radio-group
-                    formControlName="condenseQuestionLlmEngine"
-                    name="condenseQuestionLlmEngine"
+                    formControlName="questionCondensingLlmProvider"
+                    name="questionCondensingLlmProvider"
                     class="d-flex"
                   >
                     <nb-radio
-                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.condenseQuestionLlmSetting]"
+                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionCondensingLlmSetting]"
                       [value]="engine.key"
                     >
                       {{ engine.label }}
@@ -129,17 +145,17 @@
                 </tock-form-control>
 
                 <div
-                  *ngIf="currentCondenseQuestionLlmEngine"
+                  *ngIf="currentQuestionCondensingConfig"
                   class="mt-2"
                 >
                   <div class="row">
-                    <ng-container *ngFor="let param of currentCondenseQuestionLlmEngine.params">
+                    <ng-container *ngFor="let param of currentQuestionCondensingConfig.params">
                       <div
                         class="col-6 px-3"
                         [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
                       >
                         <tock-ai-settings-engine-config-param-input
-                          [parentGroup]="engineSettingKeyName.condenseQuestionLlmSetting"
+                          [parentGroup]="engineSettingKeyName.questionCondensingLlmSetting"
                           [configurationParam]="param"
                           [form]="form"
                           [isSubmitted]="isSubmitted"
@@ -151,17 +167,17 @@
               </nb-accordion-item-body>
             </nb-accordion-item>
 
-            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionConsensingPprompt')">
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionCondensingPrompt')">
               <nb-accordion-item-header>Prompt</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <div class="row">
                   <ng-container *ngFor="let param of questionCondensing_prompt">
                     <div
                       class="col-12 px-3"
-                      *ngIf="shouldDisplayPromptParam('condenseQuestionPrompt', param)"
+                      *ngIf="shouldDisplayPromptParam('questionCondensingPrompt', param)"
                     >
                       <tock-ai-settings-engine-config-param-input
-                        parentGroup="condenseQuestionPrompt"
+                        parentGroup="questionCondensingPrompt"
                         [configurationParam]="param"
                         [form]="form"
                         [isSubmitted]="isSubmitted"
@@ -169,6 +185,29 @@
                       ></tock-ai-settings-engine-config-param-input>
                     </div>
                   </ng-container>
+
+                  <div class="col-6 px-3">
+                    <tock-form-control
+                      label="Max number of messages in history"
+                      name="maxMessagesFromHistory"
+                      [controls]="maxMessagesFromHistory"
+                      [required]="false"
+                      [showError]="isSubmitted"
+                      [boldLabel]="false"
+                      information="Number of messages in the dialog history to be taken into account when condensing the question. Zero = no history."
+                    >
+                      <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        max="20"
+                        nbInput
+                        fieldSize="small"
+                        fullWidth
+                        formControlName="maxMessagesFromHistory"
+                      />
+                    </tock-form-control>
+                  </div>
                 </div>
               </nb-accordion-item-body>
             </nb-accordion-item>
@@ -187,14 +226,14 @@
               <nb-accordion-item-header>Configuration</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
-                  name="questionAnsweringLlmEngine"
-                  [controls]="questionAnsweringLlmEngine"
+                  name="questionAnsweringLlmProvider"
+                  [controls]="questionAnsweringLlmProvider"
                   [required]="true"
                   [showError]="isSubmitted"
                 >
                   <nb-radio-group
-                    formControlName="questionAnsweringLlmEngine"
-                    name="questionAnsweringLlmEngine"
+                    formControlName="questionAnsweringLlmProvider"
+                    name="questionAnsweringLlmProvider"
                     class="d-flex"
                   >
                     <nb-radio
@@ -207,11 +246,11 @@
                 </tock-form-control>
 
                 <div
-                  *ngIf="currentQuestionAnsweringLlmEngine"
+                  *ngIf="currentQuestionAnsweringConfig"
                   class="mt-2"
                 >
                   <div class="row">
-                    <ng-container *ngFor="let param of currentQuestionAnsweringLlmEngine.params">
+                    <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
                       <div
                         class="col-6 px-3"
                         [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
@@ -265,14 +304,14 @@
               <nb-accordion-item-header>Configuration</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <tock-form-control
-                  name="emEngine"
-                  [controls]="emEngine"
+                  name="emProvider"
+                  [controls]="emProvider"
                   [required]="true"
                   [showError]="isSubmitted"
                 >
                   <nb-radio-group
-                    formControlName="emEngine"
-                    name="emEngine"
+                    formControlName="emProvider"
+                    name="emProvider"
                     class="d-flex"
                   >
                     <nb-radio
@@ -285,13 +324,13 @@
                 </tock-form-control>
 
                 <div
-                  *ngIf="currentEmEngine"
+                  *ngIf="currentEmConfig"
                   class="mt-2"
                 >
                   <div class="row">
                     <div
                       class="col-6 px-3"
-                      *ngFor="let param of currentEmEngine.params"
+                      *ngFor="let param of currentEmConfig.params"
                     >
                       <tock-ai-settings-engine-config-param-input
                         [parentGroup]="engineSettingKeyName.emSetting"
@@ -341,22 +380,47 @@
             />
           </tock-form-control>
 
-          <tock-form-control
-            label="Documents required"
-            name="documentsRequired"
-            [controls]="documentsRequired"
-            [required]="false"
-            [boldLabel]="false"
-            information="Allowing the LLM to answer even if no documents have been found allows to make small talk and answer more general questions."
-          >
-            <nb-toggle
-              formControlName="documentsRequired"
-              class="nb-toggle-small"
-            >
-              <span *ngIf="documentsRequired.value">Don't allow undocumented answers</span>
-              <span *ngIf="!documentsRequired.value">Allow undocumented answers</span>
-            </nb-toggle>
-          </tock-form-control>
+          <div class="row">
+            <div class="col-6">
+              <tock-form-control
+                label="Max documents retrieved"
+                name="maxDocumentsRetrieved"
+                [controls]="maxDocumentsRetrieved"
+                [required]="false"
+                [boldLabel]="false"
+                information="Maximum number of documents to return in vector queries."
+              >
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="50"
+                  nbInput
+                  fieldSize="small"
+                  fullWidth
+                  formControlName="maxDocumentsRetrieved"
+                />
+              </tock-form-control>
+            </div>
+            <div class="col-6">
+              <tock-form-control
+                label="Documents required"
+                name="documentsRequired"
+                [controls]="documentsRequired"
+                [required]="false"
+                [boldLabel]="false"
+                information="Allow the LLM to respond even if no documents were retrieved. Allows to make small talk and answer more general questions."
+              >
+                <nb-toggle
+                  formControlName="documentsRequired"
+                  class="nb-toggle-small mt-1"
+                >
+                  <span *ngIf="documentsRequired.value">Don't allow undocumented answers</span>
+                  <span *ngIf="!documentsRequired.value">Allow undocumented answers</span>
+                </nb-toggle>
+              </tock-form-control>
+            </div>
+          </div>
         </nb-card-body>
       </nb-card>
 

@@ -6,11 +6,14 @@ export interface RagSettings {
   botId: string;
   enabled: boolean;
 
+  debugEnabled: boolean;
+
   noAnswerSentence: string;
   noAnswerStoryId: string | null;
 
-  condenseQuestionLlmSetting: llmSetting;
-  condenseQuestionPrompt: promptDefinition;
+  questionCondensingLlmSetting: llmSetting;
+  questionCondensingPrompt: promptDefinition;
+  maxMessagesFromHistory: number;
 
   questionAnsweringLlmSetting: llmSetting;
   questionAnsweringPrompt: promptDefinition;
@@ -19,6 +22,8 @@ export interface RagSettings {
 
   indexSessionId: string;
   indexName: string;
+
+  maxDocumentsRetrieved: number;
 
   documentsRequired: boolean;
 }
