@@ -63,6 +63,9 @@ object CompletionService {
         // Get LLM Setting and override the temperature
         val llmSetting = sentenceGenerationConfig.llmSetting.copyWithTemperature(request.llmTemperature)
 
+        // Get prompt
+        val prompt = sentenceGenerationConfig.prompt ?: sentenceGenerationConfig.initPrompt()
+
         // Create the inputs map
         val inputs = mapOf(
             "locale" to request.locale,
@@ -79,7 +82,7 @@ object CompletionService {
         return completionService
             .generateSentences(
                 SentenceGenerationQuery(
-                    llmSetting, request.prompt.copy(inputs = inputs),
+                    llmSetting, prompt.copy(inputs = inputs),
                     ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
                 )
             )
