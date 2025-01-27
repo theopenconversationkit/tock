@@ -75,7 +75,8 @@ export const QuestionAnswering_prompt: ProvidersConfigurationParam[] = [
     label: 'Prompt template',
     type: 'prompt',
     inputScale: 'fullwidth',
-    defaultValue: QuestionAnsweringDefaultPrompt
+    defaultValue: QuestionAnsweringDefaultPrompt,
+    rows: 16
   }
 ];
 
@@ -88,7 +89,6 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
-      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
@@ -101,7 +101,6 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
-      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
@@ -111,7 +110,6 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05, defaultValue: 0.7 }
-      // { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   }
 ];

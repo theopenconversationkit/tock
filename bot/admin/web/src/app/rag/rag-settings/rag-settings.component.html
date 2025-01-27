@@ -151,8 +151,8 @@
                   <div class="row">
                     <ng-container *ngFor="let param of currentQuestionCondensingConfig.params">
                       <div
-                        class="col-6 px-3"
-                        [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+                        class="col-12 px-3"
+                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
                       >
                         <tock-ai-settings-engine-config-param-input
                           [parentGroup]="engineSettingKeyName.questionCondensingLlmSetting"
@@ -252,8 +252,8 @@
                   <div class="row">
                     <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
                       <div
-                        class="col-6 px-3"
-                        [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+                        class="col-12 px-3"
+                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
                       >
                         <tock-ai-settings-engine-config-param-input
                           [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
@@ -329,7 +329,8 @@
                 >
                   <div class="row">
                     <div
-                      class="col-6 px-3"
+                      class="col-12 px-3"
+                      [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
                       *ngFor="let param of currentEmConfig.params"
                     >
                       <tock-ai-settings-engine-config-param-input
@@ -350,38 +351,42 @@
       <nb-card class="mb-3">
         <nb-card-header>Indexing session</nb-card-header>
         <nb-card-body>
-          <tock-form-control
-            label="Vector database index name"
-            name="indexName"
-            [controls]="indexName"
-            [required]="false"
-            [boldLabel]="false"
-          >
-            <input
-              nbInput
-              fullWidth
-              formControlName="indexName"
-              readonly
-            />
-          </tock-form-control>
-
-          <tock-form-control
-            label="Indexing session id"
-            name="indexingSessionId"
-            [controls]="indexSessionId"
-            [required]="false"
-            [showError]="isSubmitted"
-            [boldLabel]="false"
-          >
-            <input
-              nbInput
-              fullWidth
-              formControlName="indexSessionId"
-            />
-          </tock-form-control>
-
           <div class="row">
-            <div class="col-6">
+            <div class="col-12 col-lg-6 px-3">
+              <tock-form-control
+                label="Indexing session id"
+                name="indexingSessionId"
+                [controls]="indexSessionId"
+                [required]="false"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+              >
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="indexSessionId"
+                />
+              </tock-form-control>
+            </div>
+
+            <div class="col-12 col-lg-6 px-3">
+              <tock-form-control
+                label="Vector database index name"
+                name="indexName"
+                [controls]="indexName"
+                [required]="false"
+                [boldLabel]="false"
+              >
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="indexName"
+                  readonly
+                />
+              </tock-form-control>
+            </div>
+
+            <div class="col-6 px-3">
               <tock-form-control
                 label="Max documents retrieved"
                 name="maxDocumentsRetrieved"
@@ -402,7 +407,8 @@
                 />
               </tock-form-control>
             </div>
-            <div class="col-6">
+
+            <div class="col-6 px-3">
               <tock-form-control
                 label="Documents required"
                 name="documentsRequired"
@@ -427,69 +433,74 @@
       <nb-card class="mb-3">
         <nb-card-header>Conversation flow</nb-card-header>
         <nb-card-body>
-          <tock-form-control
-            label="No answer sentence"
-            name="noAnswerSentence"
-            [controls]="noAnswerSentence"
-            [required]="true"
-            [showError]="isSubmitted"
-            [boldLabel]="false"
-            information="Phrase to be displayed to the user if no response could be given to his request"
-          >
-            <input
-              nbInput
-              fullWidth
-              formControlName="noAnswerSentence"
-            />
-          </tock-form-control>
-
-          <tock-form-control
-            label="Unanswered story redirection"
-            name="noAnswerStoryId"
-            [controls]="noAnswerStoryId"
-            [showError]="isSubmitted"
-            [boldLabel]="false"
-            information="Story to redirect the user to if no answer is given to the request"
-          >
-            <nb-form-field>
-              <input
-                nbInput
-                fullWidth
-                autocomplete="off"
-                type="text"
-                [value]="getCurrentStoryLabel"
-                [nbAutocomplete]="storiesautocomplete"
-                (input)="filterStoriesList($any($event.target).value)"
-                (change)="onStoryChange($any($event.target).value)"
-                (focus)="storyInputFocus()"
-                (blur)="storyInputBlur($event)"
-              />
-              <button
-                nbSuffix
-                nbButton
-                ghost
-                nbTooltip="Delete unanswered story redirection"
-                (click)="removeNoAnswerStoryId()"
-                *ngIf="getCurrentStoryLabel !== ''"
+          <div class="row">
+            <div class="col-12 px-3">
+              <tock-form-control
+                label="No answer sentence"
+                name="noAnswerSentence"
+                [controls]="noAnswerSentence"
+                [required]="true"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+                information="Phrase to be displayed to the user if no response could be given to his request"
               >
-                <nb-icon icon="x-lg"></nb-icon>
-              </button>
-            </nb-form-field>
-          </tock-form-control>
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="noAnswerSentence"
+                />
+              </tock-form-control>
+            </div>
+            <div class="col-12 px-3">
+              <tock-form-control
+                label="Unanswered story redirection"
+                name="noAnswerStoryId"
+                [controls]="noAnswerStoryId"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+                information="Story to redirect the user to if no answer is given to the request"
+              >
+                <nb-form-field>
+                  <input
+                    nbInput
+                    fullWidth
+                    autocomplete="off"
+                    type="text"
+                    [value]="getCurrentStoryLabel"
+                    [nbAutocomplete]="storiesautocomplete"
+                    (input)="filterStoriesList($any($event.target).value)"
+                    (change)="onStoryChange($any($event.target).value)"
+                    (focus)="storyInputFocus()"
+                    (blur)="storyInputBlur($event)"
+                  />
+                  <button
+                    nbSuffix
+                    nbButton
+                    ghost
+                    nbTooltip="Delete unanswered story redirection"
+                    (click)="removeNoAnswerStoryId()"
+                    *ngIf="getCurrentStoryLabel !== ''"
+                  >
+                    <nb-icon icon="x-lg"></nb-icon>
+                  </button>
+                </nb-form-field>
+              </tock-form-control>
 
-          <nb-autocomplete
-            #storiesautocomplete
-            optionsListClass="option-list--break-word"
-            (selectedChange)="storySelectedChange($event)"
-          >
-            <nb-option
-              *ngFor="let option of filteredStories$ | async"
-              [value]="option.storyId"
-              [disabled]="!isStoryEnabled(option)"
-            >
-              {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
-            </nb-option>
-          </nb-autocomplete>
+              <nb-autocomplete
+                #storiesautocomplete
+                optionsListClass="option-list--break-word"
+                (selectedChange)="storySelectedChange($event)"
+              >
+                <nb-option
+                  *ngFor="let option of filteredStories$ | async"
+                  [value]="option.storyId"
+                  [disabled]="!isStoryEnabled(option)"
+                >
+                  {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
+                </nb-option>
+              </nb-autocomplete>
+            </div>
+          </div>
         </nb-card-body>
       </nb-card>
 

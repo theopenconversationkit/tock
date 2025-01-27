@@ -10,6 +10,7 @@ export interface ProvidersConfigurationParam {
   min?: number;
   max?: number;
   step?: number;
+  rows?: number;
   confirmExport?: boolean;
 }
 
@@ -36,7 +37,7 @@ export enum PromptDefinitionFormatter {
   fstring = 'f-string'
 }
 
-export interface promptDefinition {
+export interface PromptDefinition {
   formatter: PromptDefinitionFormatter;
   template: string;
 }

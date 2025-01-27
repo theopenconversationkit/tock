@@ -1,4 +1,4 @@
-import { emSetting, llmSetting, promptDefinition } from '../../../shared/model/ai-settings';
+import { emSetting, llmSetting, PromptDefinition } from '../../../shared/model/ai-settings';
 
 export interface RagSettings {
   id: string;
@@ -12,11 +12,11 @@ export interface RagSettings {
   noAnswerStoryId: string | null;
 
   questionCondensingLlmSetting: llmSetting;
-  questionCondensingPrompt: promptDefinition;
+  questionCondensingPrompt: PromptDefinition;
   maxMessagesFromHistory: number;
 
   questionAnsweringLlmSetting: llmSetting;
-  questionAnsweringPrompt: promptDefinition;
+  questionAnsweringPrompt: PromptDefinition;
 
   emSetting: emSetting;
 

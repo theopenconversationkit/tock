@@ -1,7 +1,7 @@
 <div [formGroup]="form">
   <div [formGroupName]="parentGroup">
     <tock-form-control
-      [label]="configurationParam.label"
+      [label]="getFormControlLabel()"
       [name]="configurationParam.key"
       [controls]="getFormControl()"
       [required]="true"
@@ -42,7 +42,7 @@
         <textarea
           nbInput
           fullWidth
-          rows="16"
+          [rows]="configurationParam.rows || 6"
           fieldSize="small"
           [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
         ></textarea>

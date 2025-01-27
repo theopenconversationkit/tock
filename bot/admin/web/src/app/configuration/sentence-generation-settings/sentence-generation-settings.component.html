@@ -99,17 +99,17 @@
       </nb-card>
 
       <nb-card>
-        <nb-card-header>LLM engine</nb-card-header>
+        <nb-card-header>Configuration</nb-card-header>
         <nb-card-body>
           <tock-form-control
-            name="llmEngine"
-            [controls]="llmEngine"
+            name="llmProvider"
+            [controls]="llmProvider"
             [required]="true"
             [showError]="isSubmitted"
           >
             <nb-radio-group
-              formControlName="llmEngine"
-              name="llmEngine"
+              formControlName="llmProvider"
+              name="llmProvider"
               class="d-flex"
             >
               <nb-radio
@@ -122,11 +122,11 @@
           </tock-form-control>
 
           <div
-            *ngIf="currentLlmEngine"
+            *ngIf="currentLlmProvider"
             class="mt-2 mb-2"
           >
             <div class="row mb-1">
-              <ng-container *ngFor="let param of currentLlmEngine.params">
+              <ng-container *ngFor="let param of currentLlmProvider.params">
                 <div
                   class="col-6 px-3"
                   [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
@@ -137,6 +137,21 @@
                     [form]="form"
                     [isSubmitted]="isSubmitted"
                     [defaultPrompt]="defaultPrompt"
+                  ></tock-ai-settings-engine-config-param-input>
+                </div>
+              </ng-container>
+
+              <ng-container *ngFor="let param of sentenceGeneration_prompt">
+                <div
+                  class="col-12 px-3"
+                  *ngIf="shouldDisplayPromptParam('prompt', param)"
+                >
+                  <tock-ai-settings-engine-config-param-input
+                    parentGroup="prompt"
+                    [configurationParam]="param"
+                    [form]="form"
+                    [isSubmitted]="isSubmitted"
+                    [defaultPrompt]="$any(param.defaultValue)"
                   ></tock-ai-settings-engine-config-param-input>
                 </div>
               </ng-container>
