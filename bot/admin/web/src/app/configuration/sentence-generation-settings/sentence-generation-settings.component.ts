@@ -5,7 +5,7 @@ import { DefaultPrompt, EngineConfigurations, SentenceGeneration_prompt } from '
 import { SentenceGenerationSettings } from './models/sentence-generation-settings';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import {
   AiEngineSettingKeyName,
@@ -130,7 +130,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  shouldDisplayPromptParam(parentGroup, param) {
+  shouldDisplayPromptParam(parentGroup: string, param: ProvidersConfigurationParam) {
     // Goal : We want templates to use the Jinja2 format by default.
     if (param.key === 'formatter') {
       // We only care about the “formatter” param
@@ -167,7 +167,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetFormGroupControls(group: string) {
+  resetFormGroupControls(group: string): void {
     const existingGroupKeys = Object.keys(this.form.controls[group].controls);
     existingGroupKeys.forEach((key) => {
       this.form.controls[group].removeControl(key);
@@ -179,7 +179,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     return this.rest.get<SentenceGenerationSettings>(url, (settings: SentenceGenerationSettings) => settings);
   }
 
-  initForm(settings: SentenceGenerationSettings) {
+  initForm(settings: SentenceGenerationSettings): void {
     this.initFormSettings(settings.llmSetting.provider);
     this.form.patchValue({
       llmProvider: settings.llmSetting.provider
@@ -270,7 +270,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
   sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
-  exportSettings() {
+  exportSettings(): void {
     this.sensitiveParams = [];
 
     const shouldConfirm =
@@ -294,18 +294,18 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  exportConfirmationModalRef;
+  exportConfirmationModalRef: NbDialogRef<any>;
 
-  closeExportConfirmationModal() {
+  closeExportConfirmationModal(): void {
     this.exportConfirmationModalRef.close();
   }
 
-  confirmExportSettings() {
+  confirmExportSettings(): void {
     this.downloadSettings();
     this.closeExportConfirmationModal();
   }
 
-  downloadSettings() {
+  downloadSettings(): void {
     const formValue: SentenceGenerationSettings = deepCopy(this.form.value) as unknown as SentenceGenerationSettings;
     delete formValue['llmProvider'];
     delete formValue['id'];
@@ -338,15 +338,15 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  importModalRef;
+  importModalRef: NbDialogRef<any>;
 
-  importSettings() {
+  importSettings(): void {
     this.isImportSubmitted = false;
     this.importForm.reset();
     this.importModalRef = this.nbDialogService.open(this.importModal);
   }
 
-  closeImportModal() {
+  closeImportModal(): void {
     this.importModalRef.close();
   }
 
@@ -367,7 +367,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  submitImportSettings() {
+  submitImportSettings(): void {
     this.isImportSubmitted = true;
     if (this.canSaveImport) {
       const file = this.fileSource.value[0];
@@ -398,7 +398,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmSettingsDeletion() {
+  confirmSettingsDeletion(): void {
     const confirmAction = 'Delete';
     const cancelAction = 'Cancel';
 
@@ -420,7 +420,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSettings() {
+  deleteSettings(): void {
     const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;

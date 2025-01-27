@@ -1,17 +1,18 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil, pairwise } from 'rxjs';
+import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+
 import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { EnginesConfigurations, QuestionCondensing_prompt, QuestionAnswering_prompt } from './models/engines-configurations';
 import { RagSettings } from './models';
-import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
+import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import {
   AiEngineSettingKeyName,
   EnginesConfiguration,
@@ -187,32 +188,32 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   form = new FormGroup<RagSettingsForm>({
-    id: new FormControl<string>(null),
-    enabled: new FormControl<boolean>({ value: undefined, disabled: !this.canRagBeActivated() }),
+    id: new FormControl(null),
+    enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
-    debugEnabled: new FormControl<boolean>({ value: undefined, disabled: !this.canRagBeActivated() }),
+    debugEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
-    noAnswerSentence: new FormControl<string>(undefined, [Validators.required]),
-    noAnswerStoryId: new FormControl<string>(undefined),
+    noAnswerSentence: new FormControl(undefined, [Validators.required]),
+    noAnswerStoryId: new FormControl(undefined),
 
-    indexSessionId: new FormControl<string>(undefined),
-    indexName: new FormControl<string>(undefined),
+    indexSessionId: new FormControl(undefined),
+    indexName: new FormControl(undefined),
 
-    documentsRequired: new FormControl<boolean>(undefined),
-    maxDocumentsRetrieved: new FormControl<number>(undefined),
+    documentsRequired: new FormControl(undefined),
+    maxDocumentsRetrieved: new FormControl(undefined),
 
-    questionCondensingLlmProvider: new FormControl<AiEngineProvider>(undefined, [Validators.required]),
-    questionCondensingLlmSetting: new FormGroup<any>({}),
-    questionCondensingPrompt: new FormGroup<any>({}),
+    questionCondensingLlmProvider: new FormControl(undefined, [Validators.required]),
+    questionCondensingLlmSetting: new FormGroup({}),
+    questionCondensingPrompt: new FormGroup({}),
 
     maxMessagesFromHistory: new FormControl(undefined),
 
-    questionAnsweringLlmProvider: new FormControl<AiEngineProvider>(undefined, [Validators.required]),
-    questionAnsweringLlmSetting: new FormGroup<any>({}),
-    questionAnsweringPrompt: new FormGroup<any>({}),
+    questionAnsweringLlmProvider: new FormControl(undefined, [Validators.required]),
+    questionAnsweringLlmSetting: new FormGroup({}),
+    questionAnsweringPrompt: new FormGroup({}),
 
-    emProvider: new FormControl<AiEngineProvider>(undefined, [Validators.required]),
-    emSetting: new FormGroup<any>({})
+    emProvider: new FormControl(undefined, [Validators.required]),
+    emSetting: new FormGroup({})
   });
 
   get enabled(): FormControl {
@@ -273,7 +274,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   accordionItemsExpandedState: Map<string, boolean>;
 
-  isAccordionItemsExpanded(itemName: string) {
+  isAccordionItemsExpanded(itemName: string): boolean {
     if (!this.accordionItemsExpandedState) {
       this.accordionItemsExpandedState = new Map();
     }
@@ -283,7 +284,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         case 'questionConsensingConfiguration':
           this.accordionItemsExpandedState.set(
             'questionConsensingConfiguration',
-            this.form.get('questionCondensingLlmProvider').invalid || this.form.get('questionCondensingLlmSetting').invalid
+            this.form.get('questionCondensingLlmProvider').invalid ||
+              this.form.get(AiEngineSettingKeyName.questionCondensingLlmSetting).invalid
           );
           break;
         case 'questionCondensingPrompt':
@@ -295,7 +297,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         case 'questionAnsweringConfiguration':
           this.accordionItemsExpandedState.set(
             'questionAnsweringConfiguration',
-            this.form.get('questionAnsweringLlmProvider').invalid || this.form.get('questionAnsweringLlmSetting').invalid
+            this.form.get('questionAnsweringLlmProvider').invalid ||
+              this.form.get(AiEngineSettingKeyName.questionAnsweringLlmSetting).invalid
           );
           break;
         case 'questionAnsweringPrompt':
@@ -313,7 +316,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return this.accordionItemsExpandedState.get(itemName);
   }
 
-  shouldDisplayPromptParam(parentGroup, param) {
+  shouldDisplayPromptParam(parentGroup: string, param: ProvidersConfigurationParam) {
     // Goal : We want templates to use the Jinja2 format by default.
     if (param.key === 'formatter') {
       // We only care about the “formatter” param
@@ -325,10 +328,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  fStringToJinja(wich) {
-    const source = this.form.get(wich).get('template').value;
+  fStringToJinja(group: string): void {
+    const source = this.form.get(group).get('template').value;
     const result = source.replace(/{(.*?)}/g, '{{$1}}');
-    this.form.get(wich).patchValue({
+    this.form.get(group).patchValue({
       template: result
     });
   }
@@ -365,14 +368,14 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetFormGroupControls(group: string) {
+  resetFormGroupControls(group: string): void {
     const existingGroupKeys = Object.keys(this.form.controls[group].controls);
     existingGroupKeys.forEach((key) => {
       this.form.controls[group].removeControl(key);
     });
   }
 
-  setFormDefaultValues() {
+  setFormDefaultValues(): void {
     this.form.patchValue({
       documentsRequired: true,
       debugEnabled: false,
@@ -381,7 +384,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  initForm(settings: RagSettings) {
+  initForm(settings: RagSettings): void {
     this.initFormSettings(AiEngineSettingKeyName.questionCondensingLlmSetting, settings.questionCondensingLlmSetting?.provider);
     this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, settings.questionAnsweringLlmSetting?.provider);
     this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
@@ -453,7 +456,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       .pipe(take(1));
   }
 
-  isStoryEnabled(story) {
+  isStoryEnabled(story: StoryDefinitionConfiguration): boolean {
     for (let i = 0; i < story.features.length; i++) {
       if (!story.features[i].enabled && !story.features[i].switchToStoryId && !story.features[i].endWithStoryId) {
         return false;
@@ -564,7 +567,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
-  exportSettings() {
+  exportSettings(): void {
     this.sensitiveParams = [];
 
     const shouldConfirm =
@@ -604,18 +607,18 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  exportConfirmationModalRef;
+  exportConfirmationModalRef: NbDialogRef<any>;
 
-  closeExportConfirmationModal() {
+  closeExportConfirmationModal(): void {
     this.exportConfirmationModalRef.close();
   }
 
-  confirmExportSettings() {
+  confirmExportSettings(): void {
     this.downloadSettings();
     this.closeExportConfirmationModal();
   }
 
-  downloadSettings() {
+  downloadSettings(): void {
     const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
     delete formValue['questionCondensingLlmProvider'];
     delete formValue['questionAnsweringLlmProvider'];
@@ -647,15 +650,15 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.toastrService.show(`Rag settings dump provided`, 'Rag settings dump', { duration: 3000, status: 'success' });
   }
 
-  importModalRef;
+  importModalRef: NbDialogRef<any>;
 
-  importSettings() {
+  importSettings(): void {
     this.isImportSubmitted = false;
     this.importForm.reset();
     this.importModalRef = this.nbDialogService.open(this.importModal);
   }
 
-  closeImportModal() {
+  closeImportModal(): void {
     this.importModalRef.close();
   }
 
@@ -676,7 +679,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  submitImportSettings() {
+  submitImportSettings(): void {
     this.isImportSubmitted = true;
     if (this.canSaveImport) {
       const file = this.fileSource.value[0];
@@ -708,7 +711,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmSettingsDeletion() {
+  confirmSettingsDeletion(): void {
     const confirmAction = 'Delete';
     const cancelAction = 'Cancel';
 
@@ -730,7 +733,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSettings() {
+  deleteSettings(): void {
     const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
