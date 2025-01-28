@@ -298,7 +298,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 // join FaqDefinition with IntentDefinition
                 joinOnIntentDefinition(),
                 // join FaqDefinition with ClassifiedSentence
-                joinOnClassifiedSentenceStatusNotDeleted(applicationDefinition._id),
+                joinOnClassifiedSentenceStatusNotDeletedAndNotInboxed(applicationDefinition._id),
                 // unwind : to flat faq array into an object
                 FaqQueryResult::faq.unwind(),
                 match(
@@ -459,9 +459,9 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         )
 
     /**
-     * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted sentences
+     * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted and inboxed sentences
      */
-    private fun FaqQuery.joinOnClassifiedSentenceStatusNotDeleted(applicationId: Id<ApplicationDefinition>) =
+    private fun FaqQuery.joinOnClassifiedSentenceStatusNotDeletedAndNotInboxed(applicationId: Id<ApplicationDefinition>) =
         //inspired from https://github.com/Litote/kmongo/blob/master/kmongo-core-tests/src/main/kotlin/org/litote/kmongo/AggregateTypedTest.kt#L322
         lookup(
             CLASSIFIED_SENTENCE_COLLECTION,
@@ -486,6 +486,10 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                                 ne from listOf(
                                     ClassifiedSentence::status,
                                     ClassifiedSentenceStatus.deleted
+                                ),
+                                ne from listOf(
+                                    ClassifiedSentence::status,
+                                    ClassifiedSentenceStatus.inbox
                                 )
                             ),
                 )
