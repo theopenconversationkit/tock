@@ -783,6 +783,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     val annotation = story.actions[actionIndex].annotation
                     if (annotation != null) {
                         annotation.events.add(event)
+                        annotation.lastUpdateDate = Instant.now()
                         eventAdded = true
                         dialogCol.save(dialog)
                         return

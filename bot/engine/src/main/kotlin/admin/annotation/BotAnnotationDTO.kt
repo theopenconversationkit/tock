@@ -22,38 +22,9 @@ import java.time.Instant
 
 data class BotAnnotationDTO(
     val id: String? = null,
-    val dialogId: String,
-    val actionId: String,
     val state: BotAnnotationState,
     val reason: BotAnnotationReasonType? = null,
     val description: String,
     val groundTruth: String? = null,
     val events: List<BotAnnotationEventDTO> = emptyList()
-) {
-    constructor(annotation: BotAnnotation) : this(
-        id = annotation._id.toString(),
-        dialogId = annotation.dialogId,
-        actionId = annotation.actionId,
-        state = annotation.state,
-        reason = annotation.reason,
-        description = annotation.description,
-        groundTruth = annotation.groundTruth,
-        events = annotation.events.map { event ->
-            when (event) {
-                is BotAnnotationEventComment -> BotAnnotationEventDTO(
-                    type = event.type,
-                    comment = event.comment,
-                    before = null,
-                    after = null
-                )
-                is BotAnnotationEventChange -> BotAnnotationEventDTO(
-                    type = event.type,
-                    comment = null,
-                    before = event.before,
-                    after = event.after
-                )
-                else -> throw IllegalArgumentException("Unknown event type: ${event::class}")
-            }
-        }
-    )
-}
+)

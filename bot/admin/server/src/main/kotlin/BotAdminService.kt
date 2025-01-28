@@ -177,10 +177,7 @@ object BotAdminService {
             comment = eventDTO.comment!!
         )
 
-        annotation.lastUpdateDate = Instant.now()
-
         dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
-        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
 
         return event
     }
@@ -214,10 +211,7 @@ object BotAdminService {
             lastUpdateDate = Instant.now()
         )
 
-        annotation.lastUpdateDate = Instant.now()
-
         dialogReportDAO.updateAnnotationEvent(dialogId, actionId, eventId, updatedEvent)
-        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
 
         return updatedEvent
     }
@@ -239,10 +233,8 @@ object BotAdminService {
         val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
             ?: throw IllegalStateException("Annotation not found")
 
-        annotation.lastUpdateDate = Instant.now()
 
         dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
-        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
     }
 
     fun updateAnnotation(
@@ -352,16 +344,6 @@ object BotAdminService {
             lastUpdateDate = Instant.now()
         )
 
-        val event = BotAnnotationEventState(
-            eventId = newId(),
-            creationDate = Instant.now(),
-            lastUpdateDate = Instant.now(),
-            user = user,
-            before = null,
-            after = BotAnnotationState.ANOMALY.name
-        )
-
-        annotation.events.add(event)
         dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
         return annotation
     }

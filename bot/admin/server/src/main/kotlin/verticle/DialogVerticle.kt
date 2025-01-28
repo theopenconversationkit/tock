@@ -255,8 +255,6 @@ class DialogVerticle {
                 logger.info { "Deleting a comment..." }
                 BotAdminService.deleteAnnotationEvent(dialogId, actionId, annotationId, eventId, user)
             }
-
-
         }
         }
 

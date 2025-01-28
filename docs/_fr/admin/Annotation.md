@@ -105,57 +105,52 @@ classDiagram
 
 ### Exemple de document stocké dans la collection :
 
-Les events (`events`) sont toujours retournés dans l'ordre chronologique, triés par date.
-
 Une purge sera mise sur les annotations, alignée sur la logique de purge des dialogs.
 
 ```json
 {
-  "_id": ObjectId("65a1b2c3d4e5f6a7b8c9d0e1"),
-  "actionId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e2"),
-  "dialogId": "65a1b2c3d4e5f6a7b8c9d0e0",
-  "state": "ANOMALY",
-  "reason": "INACCURATE_ANSWER",
-  "description": "La date donnée est incorrecte.",
-  "ground_truth": "La date butoire de souscription au contrat est le 1er Janvier 2025",
-  "events": [
-    {
-      "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e3"),
-      "type": "STATE",
-      "creationDate": ISODate("2023-10-01T10:00:00Z"),
-      "lastUpdateDate": ISODate("2023-10-01T10:00:00Z"),
-      "user": "USER192",
-      "before": {
-        "state": null
+  "annotation": {
+    "_id": "67980231d6fe5b49dd565613",
+    "actionId": "6797fc4fe8fd32779aa7cae7",
+    "dialogId": "6797fc4de8fd32779aa7cae0",
+    "state": "ANOMALY",
+    "reason": "INACCURATE_ANSWER",
+    "description": "Il devrait suggérer de bloquer la carte en urgence.",
+    "groundTruth": null,
+    "events": [
+      {
+        "eventId": "67980231d6fe5b49dd565614",
+        "creationDate": {
+          "$date": "2025-01-27T22:01:21.853Z"
+        },
+        "lastUpdateDate": {
+          "$date": "2025-01-27T22:01:21.853Z"
+        },
+        "user": "admin@app.com",
+        "before": null,
+        "after": "ANOMALY",
+        "type": "STATE"
       },
-      "after": {
-        "state": "ANOMALY"
+      {
+        "eventId": "6798080853bf0c3beaab8827",
+        "creationDate": {
+          "$date": "2025-01-27T22:26:16.237Z"
+        },
+        "lastUpdateDate": {
+          "$date": "2025-01-27T22:26:16.237Z"
+        },
+        "user": "admin@app.com",
+        "comment": "Le problème est en cours de traitement",
+        "type": "COMMENT"
       }
+    ],
+    "createdAt": {
+      "$date": "2025-01-27T22:01:21.853Z"
     },
-    {
-      "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e4"),
-      "type": "COMMENT",
-      "creationDate": ISODate("2023-10-01T10:05:00Z"),
-      "lastUpdateDate": ISODate("2023-10-01T10:05:00Z"),
-      "user": "USER192",
-      "comment": "La date donnée est incorrecte."
-    },
-    {
-      "eventId": ObjectId("65a1b2c3d4e5f6a7b8c9d0e5"),
-      "type": "STATE",
-      "creationDate": ISODate("2023-10-01T11:00:00Z"),
-      "lastUpdateDate": ISODate("2023-10-01T11:00:00Z"),
-      "user": "ADMIN1",
-      "before": {
-        "state": "ANOMALY"
-      },
-      "after": {
-        "state": "REVIEW_NEEDED"
-      }
+    "lastUpdateDate": {
+      "$date": "2025-01-27T22:26:16.241Z"
     }
-  ],
-  "createdAt": ISODate("2023-10-01T10:00:00Z"),
-  "lastUpdateDate": ISODate("2023-10-01T11:00:00Z"),
+  }
 }
 ```
 
@@ -165,8 +160,7 @@ Une purge sera mise sur les annotations, alignée sur la logique de purge des di
 **[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation**
 
 Crée une nouvelle annotation.
-Un event de changement d'état est automatiquement créé pour passer de `null` à l'état initial `ANOMALY`.  
-Une annotation ne peut pas être créée si une action existe déjà pour la même `actionId`.
+Une annotation ne peut pas être créée si une annotation existe déjà pour la même `actionId`.
 
 **Path Parameter**
 - `botId` : Identifiant unique du bot.
@@ -186,33 +180,22 @@ Une annotation ne peut pas être créée si une action existe déjà pour la mê
 ```json
 {
   "state": "ANOMALY",
-  "description": "Je teste la description",
-  "reason": "INACCURATE_ANSWER",
-  "groundTruth": "Est-ce que la GT est bien enregistrée?"
+  "description": "Il devrait suggérer de bloquer la carte en urgence.",
+  "reason": "INACCURATE_ANSWER"
 }
 ```
 **Response:**
 ```json
 {
-  "_id": "679239da1b3e6329afa99ace",
-  "actionId": "6791072cab5d311d16f0b884",
-  "dialogId": "67910700ab5d311d16f0b872",
+  "_id": "67989c4c4efa5148b2818ac7",
+  "actionId": "6797fc4fe8fd32779aa7cae7",
+  "dialogId": "6797fc4de8fd32779aa7cae0",
   "state": "ANOMALY",
   "reason": "INACCURATE_ANSWER",
-  "description": "Je teste la description",
-  "groundTruth": "Est-ce que la GT est bien enregistrée?",
-  "events": [
-    {
-      "eventId": "679239da1b3e6329afa99acf",
-      "creationDate": "2025-01-23T12:45:14.791551048Z",
-      "lastUpdateDate": "2025-01-23T12:45:14.791553841Z",
-      "user": "admin@app.com",
-      "after": "ANOMALY",
-      "type": "STATE"
-    }
-  ],
-  "createdAt": "2025-01-23T12:45:14.791535053Z",
-  "lastUpdateDate": "2025-01-23T12:45:14.791114801Z"
+  "description": "Il devrait suggérer de bloquer la carte en urgence.",
+  "events": [],
+  "createdAt": "2025-01-28T08:58:52.060318713Z",
+  "lastUpdateDate": "2025-01-28T08:58:52.059974242Z"
 }
 ```
 
@@ -235,29 +218,29 @@ Crée un nouvel event de type comment.
 ```json
 {
   "type": "COMMENT",
-  "comment": "Je vérifie et reviens vers vous."
+  "comment": "Le problème est en cours de traitement"
 }
 ```
 
 **Response Example (COMMENT):**
 ```json
 {
-  "eventId": "67923c551b3e6329afa99ad0",
-  "creationDate": "2025-01-23T12:55:49.606860514Z",
-  "lastUpdateDate": "2025-01-23T12:55:49.606864425Z",
+  "eventId": "67989c8a4efa5148b2818ac8",
+  "creationDate": "2025-01-28T08:59:54.980977949Z",
+  "lastUpdateDate": "2025-01-28T08:59:54.980982209Z",
   "user": "admin@app.com",
-  "comment": "Je vérifie et reviens vers vous.",
+  "comment": "Le problème est en cours de traitement",
   "type": "COMMENT"
 }
 ```
 
-**[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation**
+**[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId**
 
 Met à jour un event.  
 On ne peut pas mettre à jour un event de type `comment`.
 
 Une mise à jour de lastUpdateDate sera faite lors de chaque modification.
-Une comparaison sera faite sur le back-end entre l'objet stocké sur Mongo et l'objet retourné par le front our déterminer les changements opérés.  
+Une comparaison est faite sur le back-end entre l'objet stocké sur Mongo et l'objet retourné par le front our déterminer les changements opérés.  
 
 **Path Parameters** :
 - `botId` : Identifiant unique du bot.
@@ -268,41 +251,40 @@ Une comparaison sera faite sur le back-end entre l'objet stocké sur Mongo et l'
 **Corps Example**
 ```json
 {
-  "state": "RESOLVED"
+  "state": "REVIEW_NEEDED"
 }
 ```
 
 **Response Example:**
 ```json
 {
-  "_id": "679239da1b3e6329afa99ace",
-  "actionId": "6791072cab5d311d16f0b884",
-  "dialogId": "67910700ab5d311d16f0b872",
-  "state": "RESOLVED",
+  "_id": "67989c4c4efa5148b2818ac7",
+  "actionId": "6797fc4fe8fd32779aa7cae7",
+  "dialogId": "6797fc4de8fd32779aa7cae0",
+  "state": "REVIEW_NEEDED",
   "reason": "INACCURATE_ANSWER",
-  "description": "Description V2",
-  "groundTruth": "Est-ce que la GT est bien enregistrée?",
+  "description": "Il devrait suggérer de bloquer la carte en urgence.",
   "events": [
     {
-      "eventId": "679239da1b3e6329afa99acf",
-      "creationDate": "2025-01-23T12:45:14.791Z",
-      "lastUpdateDate": "2025-01-23T12:45:14.791Z",
+      "eventId": "67989c8a4efa5148b2818ac8",
+      "creationDate": "2025-01-28T08:59:54.980Z",
+      "lastUpdateDate": "2025-01-28T08:59:54.980Z",
       "user": "admin@app.com",
-      "after": "ANOMALY",
-      "type": "STATE"
+      "comment": "Le problème est en cours de traitement",
+      "type": "COMMENT"
     },
     {
-      "eventId": "67926623f119ce63cd8ba12b",
-      "creationDate": "2025-01-23T15:54:11.413284007Z",
-      "lastUpdateDate": "2025-01-23T15:54:11.413288338Z",
+      "eventId": "67989dd34efa5148b2818ac9",
+      "creationDate": "2025-01-28T09:05:23.353635673Z",
+      "lastUpdateDate": "2025-01-28T09:05:23.353642448Z",
       "user": "admin@app.com",
       "before": "ANOMALY",
-      "after": "RESOLVED",
+      "after": "REVIEW_NEEDED",
       "type": "STATE"
     }
   ],
-  "createdAt": "2025-01-23T12:45:14.791Z",
-  "lastUpdateDate": "2025-01-23T15:54:11.413304611Z"
+  "createdAt": "2025-01-28T08:58:52.060Z",
+  "lastUpdateDate": "2025-01-28T09:05:23.353695739Z"
 }
 ```
 
@@ -326,91 +308,3 @@ On ne peut supprimer qu'un event de type `comment`.
 ```
 
 The endpoint /dialogs/search will also reply with the action annotations.
-
-
-### Sample d'utilisation :
-
-**[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation**
-
-**Request Example:**
-```json
-{
-  "actionId": "65a1b2c3d4e5f6a7b8c9d0e2",
-  "state": "ANOMALY",
-  "description": "La réponse donnée est incorrecte.",
-  "user": "USER192",
-  "reason": "INACCURATE_ANSWER"
-}
-```
-
-**Response Example:**
-```json
-{
-  "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
-  "actionId": "65a1b2c3d4e5f6a7b8c9d0e2",
-  "dialogId": "65a1b2c3d4e5f6a7b8c9d0e0",
-  "state": "ANOMALY",
-  "description": "La réponse donnée est incorrecte.",
-  "user": "USER192",
-  "events": [],
-  "createdAt": "2025-01-01T12:00:00Z",
-  "lastUpdateDate": "2025-01-01T12:00:00Z"
-}
-```
-
-**[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events**
-
-**Request Example:**
-```json
-{
-  "type": "COMMENT",
-  "user": "USER192",
-  "comment": "L'erreur semble venir d'une mauvaise compréhension de la question."
-}
-
-```
-
-**Response Example:**
-```json
-{
-  "eventId": "65a1b2c3d4e5f6a7b8c9d0e3",
-  "type": "COMMENT",
-  "creationDate": "2025-01-01T12:05:00Z",
-  "lastUpdateDate": "2025-01-01T12:05:00Z",
-  "user": "USER192",
-  "comment": "L'erreur semble venir d'une mauvaise compréhension de la question."
-}
-```
-
-**[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events**
-
-**Request Example:**
-```json
-{
-  "type": "STATE",
-  "user": "ADMIN1",
-  "before": {
-    "state": "ANOMALY"
-  },
-  "after": {
-    "state": "REVIEW_NEEDED"
-  }
-}
-```
-
-**Response Example:**
-```json
-{
-  "eventId": "65a1b2c3d4e5f6a7b8c9d0e5",
-  "type": "STATE",
-  "creationDate": "2025-01-01T12:30:00Z",
-  "lastUpdateDate": "2025-01-01T12:30:00Z",
-  "user": "ADMIN1",
-  "before": {
-    "state": "ANOMALY"
-  },
-  "after": {
-    "state": "REVIEW_NEEDED"
-  }
-}
-```
