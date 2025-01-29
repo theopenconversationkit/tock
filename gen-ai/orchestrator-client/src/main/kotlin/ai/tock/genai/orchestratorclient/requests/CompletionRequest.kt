@@ -15,9 +15,11 @@
  */
 
 package ai.tock.genai.orchestratorclient.requests
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-
-class EMProviderSettingStatusQuery (
-    val setting: EMSetting
+data class CompletionRequest(
+    val llmSetting: LLMSetting,
+    val prompt: PromptTemplate,
+    val observabilitySetting: ObservabilitySetting?
 )

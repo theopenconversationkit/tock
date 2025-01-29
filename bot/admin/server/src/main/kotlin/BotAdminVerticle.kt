@@ -26,10 +26,11 @@ import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
-import ai.tock.bot.admin.service.*
+import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.GenAIVerticle
 import ai.tock.bot.admin.verticle.IndicatorVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
@@ -50,7 +51,8 @@ import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.*
+import ai.tock.shared.security.TockUserRole.admin
+import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.vertx.ServerStatus
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -73,6 +75,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val botAdminConfiguration = BotAdminConfiguration()
 
     private val indicatorVerticle = IndicatorVerticle()
+    private val aiVerticle = GenAIVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -119,6 +122,7 @@ open class BotAdminVerticle : AdminVerticle() {
         configureServices()
 
         indicatorVerticle.configure(this)
+        aiVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -442,95 +446,6 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
-        }
-
-        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, request: BotRAGConfigurationDTO  ->
-            if (context.organization == request.namespace) {
-                BotRAGConfigurationDTO(RAGService.saveRag(request))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context ->
-            val botId = context.path("botId")
-            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
-                RAGService.getRAGConfiguration(context.organization, botId)
-                    ?.let { BotRAGConfigurationDTO(it) }
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
-            RAGService.deleteConfig(context.organization, context.path("botId"))
-        }
-
-        blockingJsonPost("/configuration/bots/:botId/observability", admin) { context, configuration: BotObservabilityConfigurationDTO  ->
-            if (context.organization == configuration.namespace) {
-                BotObservabilityConfigurationDTO(ObservabilityService.saveObservability(configuration))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/configuration/bots/:botId/observability", admin) { context  ->
-            val botId = context.path("botId")
-            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
-                ObservabilityService.getObservabilityConfiguration(context.organization, botId)
-                    ?.let {
-                        BotObservabilityConfigurationDTO(it)
-                    }
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
-            ObservabilityService.deleteConfig(context.organization, context.path("botId"))
-        }
-
-        blockingJsonPost("/configuration/bots/:botId/document-compressor", admin) { context, configuration: BotDocumentCompressorConfigurationDTO  ->
-            if (context.organization == configuration.namespace) {
-                BotDocumentCompressorConfigurationDTO(DocumentCompressorService.saveDocumentCompressor(configuration))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/configuration/bots/:botId/document-compressor", admin) { context  ->
-            DocumentCompressorService.getDocumentCompressorConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotDocumentCompressorConfigurationDTO(it)
-                }
-        }
-
-        blockingDelete("/configuration/bots/:botId/document-compressor", admin) { context  ->
-            DocumentCompressorService.deleteConfig(context.organization, context.path("botId"))
-        }
-
-        blockingJsonPost("/configuration/bots/:botId/vector-store", admin) { context, configuration: BotVectorStoreConfigurationDTO  ->
-            if (context.organization == configuration.namespace) {
-                BotVectorStoreConfigurationDTO(VectorStoreService.saveVectorStore(configuration))
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet("/configuration/bots/:botId/vector-store", admin) { context  ->
-            val botId = context.path("botId")
-            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
-                VectorStoreService.getVectorStoreConfiguration(context.organization, botId)
-                    ?.let {
-                        BotVectorStoreConfigurationDTO(it)
-                    }
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
-            VectorStoreService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(
@@ -1113,66 +1028,6 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
-        }
-
-        blockingJsonPost(
-            "/gen-ai/bot/:botId/sentence-generation",
-            setOf(botUser)
-        ) { context, request: SentenceGenerationRequest ->
-            CompletionService.generateSentences(
-                request,
-                namespace = context.organization,
-                botId = context.path("botId")
-            )
-        }
-
-        blockingJsonPost(
-            "/configuration/bots/:botId/sentence-generation/configuration",
-            admin
-        ) { context, configuration: BotSentenceGenerationConfigurationDTO ->
-            if (context.organization == configuration.namespace) {
-                BotSentenceGenerationConfigurationDTO(
-                    SentenceGenerationService.saveSentenceGeneration(configuration)
-                )
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet(
-            "/configuration/bots/:botId/sentence-generation/configuration",
-            admin
-        ) { context ->
-            val botId = context.path("botId")
-            if (front.getApplicationByNamespaceAndName(context.organization, botId) != null) {
-                SentenceGenerationService.getSentenceGenerationConfiguration(
-                    context.organization,
-                    botId
-                )
-                    ?.let {
-                        BotSentenceGenerationConfigurationDTO(it)
-                    }
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet(
-            "/configuration/bots/:botId/sentence-generation/info",
-            nlpUser
-        ) { context ->
-            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization,
-                context.path("botId"))
-                ?.let {
-                    BotSentenceGenerationInfoDTO(it)
-                } ?: BotSentenceGenerationInfoDTO()
-        }
-
-        blockingDelete(
-            "/configuration/bots/:botId/sentence-generation/configuration",
-            admin
-        ) { context ->
-            SentenceGenerationService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonGet("/configuration") {

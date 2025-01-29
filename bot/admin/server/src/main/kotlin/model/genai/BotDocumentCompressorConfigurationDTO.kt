@@ -14,47 +14,36 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
-import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
-import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
-import ai.tock.genai.orchestratorcore.models.llm.toDTO
-import ai.tock.genai.orchestratorcore.utils.SecurityUtils
+
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
+import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
-data class BotSentenceGenerationConfigurationDTO(
+data class BotDocumentCompressorConfigurationDTO(
     val id: String? = null,
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val nbSentences: Int,
-    val llmSetting: LLMSettingDTO,
+    val setting: DocumentCompressorSetting,
 ) {
-    constructor(configuration: BotSentenceGenerationConfiguration) : this(
+    constructor(configuration: BotDocumentCompressorConfiguration) : this(
         id = configuration._id.toString(),
         namespace = configuration.namespace,
         botId = configuration.botId,
         enabled = configuration.enabled,
-        nbSentences = configuration.nbSentences,
-        llmSetting = configuration.llmSetting.toDTO(),
+        setting = configuration.setting,
     )
 
-    fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
-        BotSentenceGenerationConfiguration(
+    fun toBotDocumentCompressorConfiguration(): BotDocumentCompressorConfiguration =
+        BotDocumentCompressorConfiguration(
             _id = id?.toId() ?: newId(),
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            nbSentences = nbSentences,
-            llmSetting = LLMSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
-                dto = llmSetting
-            )
+            setting = setting,
         )
 }
 

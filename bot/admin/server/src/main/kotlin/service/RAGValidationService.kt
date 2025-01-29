@@ -17,9 +17,9 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
-import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
-import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusRequest
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusRequest
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
@@ -37,18 +37,27 @@ object RAGValidationService {
     private val vectorStoreProviderService: VectorStoreProviderService get() = injector.provide()
 
     fun validate(ragConfig: BotRAGConfiguration): Set<ErrorMessage> {
+        val observabilitySetting = ObservabilityService.getObservabilityConfiguration(
+            ragConfig.namespace, ragConfig.botId, enabled = true
+        )?.setting
+
         return mutableSetOf<ErrorMessage>().apply {
-            val llmErrors = llmProviderService.checkSetting(
-                LLMProviderSettingStatusQuery(
-                    ragConfig.llmSetting,
-                    ObservabilityService.getObservabilityConfiguration(
-                        ragConfig.namespace, ragConfig.botId, enabled = true
-                    )?.setting
+            val questionCondensingLlmErrors = llmProviderService.checkSetting(
+                LLMProviderSettingStatusRequest(
+                    ragConfig.questionCondensingLlmSetting!!,
+                    observabilitySetting
                 )
-            ).getErrors("LLM setting check failed")
+            ).getErrors("LLM setting check failed (for question condensing)")
+
+            val questionAnsweringLlmErrors = llmProviderService.checkSetting(
+                LLMProviderSettingStatusRequest(
+                    ragConfig.questionAnsweringLlmSetting!!,
+                    observabilitySetting
+                )
+            ).getErrors("LLM setting check failed (for question answering)")
 
             val embeddingErrors = emProviderService.checkSetting(
-                EMProviderSettingStatusQuery(ragConfig.emSetting)
+                EMProviderSettingStatusRequest(ragConfig.emSetting)
             ).getErrors("Embedding Model setting check failed")
 
             val indexSessionIdErrors = validateIndexSessionId(ragConfig)
@@ -59,11 +68,15 @@ object RAGValidationService {
                 )?.setting
 
                 val (_, indexName) = VectorStoreUtils.getVectorStoreElements(
-                    ragConfig.namespace, ragConfig.botId, ragConfig.indexSessionId!!, vectorStoreSetting
+                    ragConfig.namespace,
+                    ragConfig.botId,
+                    ragConfig.indexSessionId!!,
+                    ragConfig.maxDocumentsRetrieved,
+                    vectorStoreSetting
                 )
 
                 vectorStoreProviderService.checkSetting(
-                    VectorStoreProviderSettingStatusQuery(
+                    VectorStoreProviderSettingStatusRequest(
                         vectorStoreSetting = vectorStoreSetting,
                         emSetting = ragConfig.emSetting,
                         documentIndexName = indexName
@@ -71,7 +84,7 @@ object RAGValidationService {
                 ).getErrors("Vector store setting check failed")
             } ?: emptySet()
 
-            addAll(llmErrors + embeddingErrors + indexSessionIdErrors + vectorStoreErrors)
+            addAll(questionCondensingLlmErrors + questionAnsweringLlmErrors + embeddingErrors + indexSessionIdErrors + vectorStoreErrors)
         }
     }
 

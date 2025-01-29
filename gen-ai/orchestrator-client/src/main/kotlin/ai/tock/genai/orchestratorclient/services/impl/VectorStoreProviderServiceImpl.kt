@@ -17,7 +17,7 @@
 package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.VectorStoreProviderApi
-import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
@@ -27,7 +27,7 @@ class VectorStoreProviderServiceImpl: VectorStoreProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val vectorStoreProviderApi = retrofit.create(VectorStoreProviderApi::class.java)
 
-    override fun checkSetting(query: VectorStoreProviderSettingStatusQuery): ProviderSettingStatusResponse? {
+    override fun checkSetting(query: VectorStoreProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response = vectorStoreProviderApi.checkVectorStoreSetting(
             query,
             query.vectorStoreSetting?.provider ?: VectorStoreProvider.Default

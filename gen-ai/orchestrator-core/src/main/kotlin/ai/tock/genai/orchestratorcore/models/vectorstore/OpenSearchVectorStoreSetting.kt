@@ -23,25 +23,23 @@ data class OpenSearchVectorStoreSetting<T>(
     override val port: Int,
     override val username: String,
     override val password: T,
-    override val k: Int,
 ) : VectorStoreSettingBase<T>(
     provider = VectorStoreProvider.OpenSearch,
     host = host,
     port = port,
     username = username,
-    password = password,
-    k = k
+    password = password
 ) {
 
     override fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String =
         OpenSearchUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
 
-    override fun getDocumentSearchParams(): OpenSearchParams =
-        OpenSearchParams(k = k, filter = null)
+    override fun getDocumentSearchParams(kNeighborsDocuments: Int): OpenSearchParams =
+        OpenSearchParams(k = kNeighborsDocuments, filter = null)
 }
 
 data class OpenSearchParams(
-    val k: Int = 4,
+    val k: Int,
     val filter: List<Term>? = null
 ) : DocumentSearchParamsBase(VectorStoreProvider.OpenSearch)
 

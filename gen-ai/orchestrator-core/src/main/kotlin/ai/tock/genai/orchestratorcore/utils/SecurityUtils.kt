@@ -76,12 +76,21 @@ object SecurityUtils {
      * @param botId the bot ID (also known as application name)
      * @param feature the feature name
      * @param secretValue the secret value
+     * @param rawByForce force the creation of a raw secret key
      * @return [SecretKey]
      */
-    fun createSecretKey(namespace: String, botId: String, feature: String, secretValue: String): SecretKey =
-        genAISecretManagerProvider?.let {
+    fun createSecretKey(
+        namespace: String,
+        botId: String,
+        feature: String,
+        secretValue: String,
+        rawByForce: Boolean
+    ): SecretKey =
+        if (rawByForce || genAISecretManagerProvider == null)
+            RawSecretKey(secretValue)
+        else
             secretMangerService.createOrUpdateSecretKey(namespace, botId, feature, secretValue)
-        } ?: RawSecretKey(secretValue)
+
 
     /**
      * Delete a secret

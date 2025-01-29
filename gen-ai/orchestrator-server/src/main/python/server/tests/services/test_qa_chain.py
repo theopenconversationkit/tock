@@ -20,7 +20,7 @@ from langchain_core.documents import Document
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.routers.requests.requests import QAQuery
+from gen_ai_orchestrator.routers.requests.requests import QARequest
 from gen_ai_orchestrator.services.langchain.qa_chain import execute_qa_chain
 
 
@@ -46,7 +46,7 @@ async def test_qa_chain(
     mocked_get_em_factory,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
-    # Build a test RagQuery
+    # Build a test RAGRequest
     query_dict = {
         'user_query': 'How to get started playing guitar ?',
         'embedding_question_em_setting': {
@@ -68,7 +68,7 @@ async def test_qa_chain(
         },
         'documents_required': True,
     }
-    query = QAQuery(**query_dict)
+    request = QARequest(**query_dict)
 
     # Setup mock factories/init return value
     em_factory_instance = mocked_get_em_factory.return_value
@@ -85,26 +85,26 @@ async def test_qa_chain(
     mocked_qa_answer = mocked_chain.ainvoke.return_value
 
     # Call function
-    await execute_qa_chain(query)
+    await execute_qa_chain(request)
 
-    # Assert factories are called with the expected settings from query
+    # Assert factories are called with the expected settings from request
     mocked_get_em_factory.assert_called_once_with(
-        setting=query.embedding_question_em_setting
+        setting=request.embedding_question_em_setting
     )
     mocked_get_vector_store_factory.assert_called_once_with(
         vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
         embedding_function=em_factory_instance.get_embedding_model(),
-        index_name=query.document_index_name,
+        index_name=request.document_index_name,
     )
-    # Assert LangChain qa chain is created using the expected settings from query
+    # Assert LangChain qa chain is created using the expected settings from request
     mocked_build_chain.assert_called_once_with(
         vector_store_factory_instance.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
+            search_kwargs=request.document_search_params.to_dict()
         )
     )
 
-    # Assert qa chain is ainvoke()d with the expected settings from query
-    mocked_chain.ainvoke.assert_called_once_with(query.user_query)
+    # Assert qa chain is ainvoke()d with the expected settings from request
+    mocked_chain.ainvoke.assert_called_once_with(request.user_query)
 
     # Assert the response is build using the expected settings
     mocked_qa_response.assert_called_once_with(

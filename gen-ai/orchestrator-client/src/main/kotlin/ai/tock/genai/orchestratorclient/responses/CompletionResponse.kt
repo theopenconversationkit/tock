@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.requests
+package ai.tock.genai.orchestratorclient.responses
 
-enum class Formatter(val id: String) {
-    F_STRING(id = "f-string"),
-    JINJA2(id = "jinja2");
-
-}
-class PromptTemplate (
-    val formatter: String,
-    val template: String,
-    val inputs:  Map<String, Any>
+data class CompletionResponse(
+    val answer: String,
+    val observabilityInfo: ObservabilityInfo? = null,
 )
+

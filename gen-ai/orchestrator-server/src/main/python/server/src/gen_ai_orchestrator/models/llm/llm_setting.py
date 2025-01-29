@@ -39,8 +39,3 @@ class BaseLLMSetting(BaseModel):
         ge=0,
         le=2,
     )
-    prompt: str = Field(
-        description='The prompt to generate completions for.',
-        examples=['How to learn to ride a bike without wheels!'],
-        min_length=1,
-    )

@@ -18,7 +18,7 @@ package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.api.LLMProviderApi
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 
@@ -26,7 +26,7 @@ class LLMProviderServiceImpl: LLMProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val llmProviderApi = retrofit.create(LLMProviderApi::class.java)
 
-    override fun checkSetting(query: LLMProviderSettingStatusQuery): ProviderSettingStatusResponse? {
+    override fun checkSetting(query: LLMProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response = llmProviderApi.checkLLMSetting(query, query.setting.provider).execute()
         return response.body()
     }

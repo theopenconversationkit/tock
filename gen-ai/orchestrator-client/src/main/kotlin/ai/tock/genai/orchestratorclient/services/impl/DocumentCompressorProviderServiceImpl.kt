@@ -18,7 +18,7 @@ package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.api.DocumentCompressorProviderApi
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.DocumentCompressorProviderService
 
@@ -26,7 +26,7 @@ class DocumentCompressorProviderServiceImpl: DocumentCompressorProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val documentCompressorProviderApi = retrofit.create(DocumentCompressorProviderApi::class.java)
 
-    override fun checkSetting(query: DocumentCompressorProviderSettingStatusQuery): ProviderSettingStatusResponse? {
+    override fun checkSetting(query: DocumentCompressorProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response = documentCompressorProviderApi.checkDocumentCompressorSetting(query, query.setting.provider).execute()
         return response.body()
     }

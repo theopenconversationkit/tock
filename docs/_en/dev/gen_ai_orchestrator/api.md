@@ -132,8 +132,8 @@
 ```python
     class RagQuery(BaseModel):
         history: list[ChatMessage]
-        # condense_question_llm_setting: LLMSetting
-        # condense_question_prompt_inputs: Any
+        question_condensing_llm_setting: LLMSetting
+        question_condensing_prompt_inputs: Any
         question_answering_llm_setting: LLMSetting
         question_answering_prompt_inputs: Any
         embedding_question_em_setting: EMSetting

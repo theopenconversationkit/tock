@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
@@ -64,8 +64,11 @@ object RAGService {
         logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
         ragConfigurationDAO.delete(ragConfig._id)
 
-        logger.info { "Deleting the LLM secret ..." }
-        ragConfig.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        logger.info { "Deleting the question condensing LLM secret ..." }
+        ragConfig.questionCondensingLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        logger.info { "Deleting the question answering LLM secret ..." }
+        ragConfig.questionAnsweringLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        ragConfig.llmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
         logger.info { "Deleting the Embedding secret ..." }
         ragConfig.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
     }

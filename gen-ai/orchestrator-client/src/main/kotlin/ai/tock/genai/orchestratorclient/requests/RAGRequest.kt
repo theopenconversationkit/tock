@@ -22,12 +22,12 @@ import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBase
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
-data class RAGQuery(
-    // val condenseQuestionLlmSetting: LLMSetting,
-    // val condenseQuestionPromptInputs: Map<String, String>,
+data class RAGRequest(
     val dialog: DialogDetails?,
+    val questionCondensingLlmSetting: LLMSetting?,
+    val questionCondensingPrompt: PromptTemplate?,
     val questionAnsweringLlmSetting: LLMSetting,
-    val questionAnsweringPromptInputs: Map<String, String>,
+    val questionAnsweringPrompt: PromptTemplate,
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
     val documentSearchParams: DocumentSearchParamsBase,
@@ -37,19 +37,4 @@ data class RAGQuery(
     val documentsRequired: Boolean = true,
 )
 
-data class DialogDetails(
-    val dialogId: String? = null,
-    val userId: String? = null,
-    val history: List<ChatMessage> = emptyList(),
-    val tags: List<String> = emptyList(),
-)
 
-data class ChatMessage(
-    val text: String,
-    val type: ChatMessageType,
-)
-
-enum class ChatMessageType{
-    HUMAN,
-    AI
-}

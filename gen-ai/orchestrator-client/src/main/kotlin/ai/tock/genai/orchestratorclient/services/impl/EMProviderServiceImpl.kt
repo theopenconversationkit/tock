@@ -18,7 +18,7 @@ package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.EMProviderApi
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
-import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 
@@ -26,7 +26,7 @@ class EMProviderServiceImpl: EMProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val emProviderApi = retrofit.create(EMProviderApi::class.java)
 
-    override fun checkSetting(query: EMProviderSettingStatusQuery): ProviderSettingStatusResponse? {
+    override fun checkSetting(query: EMProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response = emProviderApi.checkEMSetting(query, query.setting.provider).execute()
         return response.body()
     }

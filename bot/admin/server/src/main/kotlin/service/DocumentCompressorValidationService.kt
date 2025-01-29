@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.DocumentCompressorProviderService
 import ai.tock.shared.exception.error.ErrorMessage
@@ -34,7 +34,7 @@ object DocumentCompressorValidationService {
             addAll(
                 documentCompressorProviderService
                     .checkSetting(
-                        DocumentCompressorProviderSettingStatusQuery(
+                        DocumentCompressorProviderSettingStatusRequest(
                             setting = config.setting
                         )
                     )

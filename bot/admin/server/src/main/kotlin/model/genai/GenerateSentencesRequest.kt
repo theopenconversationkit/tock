@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
+import java.util.Locale
 
-data class BotSentenceGenerationInfoDTO(
-    val enabled: Boolean = false,
-    val nbSentences: Int? = null,
-    val llmTemperature: String? = null
-) {
-    constructor(configuration: BotSentenceGenerationConfiguration): this(
-        configuration.enabled,
-        configuration.nbSentences,
-        configuration.llmSetting.temperature
-    )
-}
+data class SentenceGenerationRequest(
+    val llmTemperature: String,
+    val sentences: List<String>,
+    val locale: Locale,
+    val options: SentenceGenerationOptions,
+)
+
+
 
 
 

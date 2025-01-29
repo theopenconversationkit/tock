@@ -24,6 +24,7 @@ class ObservabilityTrace(str, Enum):
     RAG = 'RAG'
     CHECK_LLM_SETTINGS = 'Check LLM Settings'
     SENTENCE_GENERATION = 'Sentence Generation'
+    PLAYGROUND = 'Playground'
     CHECK_OBSERVABILITY_SETTINGS = 'Check Observability Settings'
 
     @classmethod

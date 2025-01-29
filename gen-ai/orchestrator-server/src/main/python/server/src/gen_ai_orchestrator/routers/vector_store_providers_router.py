@@ -19,7 +19,7 @@ import logging
 from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
-    AIProviderBadQueryException,
+    AIProviderBadRequestException,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
@@ -45,7 +45,7 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
-    VectorStoreProviderSettingStatusQuery,
+    VectorStoreProviderSettingStatusRequest,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
     ProviderSettingStatusResponse,
@@ -75,12 +75,12 @@ async def get_all_vector_store_providers() -> list[VectorStoreProvider]:
 
 @vector_store_providers_router.get('/{provider_id}')
 async def get_vector_store_provider_by_id(
-    request: Request, provider_id: str
+    http_request: Request, provider_id: str
 ) -> VectorStoreProviderResponse:
     """
     Get Vector Store Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -90,20 +90,20 @@ async def get_vector_store_provider_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_vector_store_provider(request, provider_id)
+    # Request validation
+    validate_vector_store_provider(http_request, provider_id)
 
     return VectorStoreProviderResponse(provider=VectorStoreProvider(provider_id))
 
 
 @vector_store_providers_router.get('/{provider_id}/setting/example')
 async def get_vector_store_provider_setting_by_id(
-    request: Request, provider_id: VectorStoreProvider
+    http_request: Request, provider_id: VectorStoreProvider
 ) -> VectorStoreSetting:
     """
     Get a setting example for a given Vector Store Provider ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -113,8 +113,8 @@ async def get_vector_store_provider_setting_by_id(
         GenAIUnknownVectorStoreProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_vector_store_provider(request, provider_id)
+    # Request validation
+    validate_vector_store_provider(http_request, provider_id)
 
     if provider_id == VectorStoreProvider.OPEN_SEARCH:
         return OpenSearchVectorStoreSetting(
@@ -128,30 +128,30 @@ async def get_vector_store_provider_setting_by_id(
 
 @vector_store_providers_router.post('/{provider_id}/setting/status')
 async def check_vector_store_provider_setting(
-    request: Request, provider_id: str, query: VectorStoreProviderSettingStatusQuery
+    http_request: Request, provider_id: str, request: VectorStoreProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given Vector Store Provider Setting
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
-        query: The query of the Vector Store Provider Setting to be checked
+        request: The request of the Vector Store Provider Setting to be checked
 
     Returns:
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
     logger.info('Start Vector Store setting check for provider %s', provider_id)
-    # Query validation
-    if query.vector_store_setting is not None:
-        validate_query(request, provider_id, query.vector_store_setting)
+    # Request validation
+    if request.vector_store_setting is not None:
+        validate_query(http_request, provider_id, request.vector_store_setting)
 
     try:
         # Vector Store setting check
-        await check_vector_store_setting(query.vector_store_setting, query.em_setting, query.document_index_name)
+        await check_vector_store_setting(request.vector_store_setting, request.em_setting, request.document_index_name)
 
         logger.info('The Vector Store setting is valid')
         return ProviderSettingStatusResponse(valid=True)
@@ -161,31 +161,31 @@ async def check_vector_store_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(request: Request, provider_id: str, setting: VectorStoreSetting):
+def validate_query(http_request: Request, provider_id: str, setting: VectorStoreSetting):
     """
     Check the consistency of the Provider ID with the request body
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
         setting:  The Vector Store Provider Setting
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug('VectorStore setting - Query validation')
-    validate_vector_store_provider(request, provider_id)
+    logger.debug('VectorStore setting - Request validation')
+    validate_vector_store_provider(http_request, provider_id)
     if provider_id != setting.provider:
-        raise AIProviderBadQueryException(
-            create_error_info_bad_request(request, provider_id)
+        raise AIProviderBadRequestException(
+            create_error_info_bad_request(http_request, provider_id)
         )
 
 
-def validate_vector_store_provider(request: Request, provider_id: str):
+def validate_vector_store_provider(http_request: Request, provider_id: str):
     """
     Check existence of Vector Store Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
 
     Raises:
@@ -195,6 +195,6 @@ def validate_vector_store_provider(request: Request, provider_id: str):
     if not VectorStoreProvider.has_value(provider_id):
         raise GenAIUnknownVectorStoreProviderException(
             create_error_info_not_found(
-                request, provider_id, [provider.value for provider in VectorStoreProvider]
+                http_request, provider_id, [provider.value for provider in VectorStoreProvider]
             )
         )
