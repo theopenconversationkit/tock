@@ -39,11 +39,14 @@ export class AnnotationComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = false;
+    if (this.actionReport.annotation) {
+      this.form.patchValue(this.actionReport.annotation);
+    }
   }
 
   form = new FormGroup<AnnotationFormGroupKeysType>({
     state: new FormControl(AnnotationState.ANOMALY, [Validators.required]),
-    reason: new FormControl(undefined, [Validators.required]),
+    reason: new FormControl(undefined),
     description: new FormControl(undefined, [Validators.required]),
 
     ground_truth: new FormControl(undefined),
@@ -58,28 +61,46 @@ export class AnnotationComponent implements OnInit {
     this.isSubmitted = true;
     if (this.canSave && this.form.dirty) {
       const formValue: any = this.form.value;
-
-      formValue.user = this.state.user.email;
-
       console.log(formValue);
-      console.log(this.state.user);
-      console.log(this.dialogReport);
-      console.log(this.actionReport);
 
-      const url = `/bots/${this.state.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation`;
-      this.rest.post(url, formValue, null, null, true).subscribe({
-        next: (annotation: Annotation) => {
-          console.log('RESULT');
-          console.log(annotation);
-        },
-        error: (error) => {
-          this.toastrService.danger('An error occured', 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
-        }
-      });
+      if (!this.actionReport.annotation._id) {
+        this.postAnnotation(formValue);
+      } else {
+        this.putAnnotation(formValue);
+      }
     }
+  }
+
+  postAnnotation(formValue) {
+    const url = `/bots/${this.state.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation`;
+    this.rest.post(url, formValue, null, null, true).subscribe({
+      next: (annotation: Annotation) => {
+        console.log('POST RESULT');
+        console.log(annotation);
+      },
+      error: (error) => {
+        this.toastrService.danger('An error occured', 'Error', {
+          duration: 5000,
+          status: 'danger'
+        });
+      }
+    });
+  }
+
+  putAnnotation(formValue) {
+    const url = `/bots/${this.state.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation/${this.actionReport.annotation._id}`;
+    this.rest.put(url, formValue).subscribe({
+      next: (annotation: Annotation) => {
+        console.log('PUT RESULT');
+        console.log(annotation);
+      },
+      error: (error) => {
+        this.toastrService.danger('An error occured', 'Error', {
+          duration: 5000,
+          status: 'danger'
+        });
+      }
+    });
   }
 
   cancel(): void {

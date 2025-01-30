@@ -178,7 +178,7 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   }
 
   containsReport(action: ActionReport): boolean {
-    return false;
+    return !!action.annotation;
   }
 
   openAnnotation(action: ActionReport) {

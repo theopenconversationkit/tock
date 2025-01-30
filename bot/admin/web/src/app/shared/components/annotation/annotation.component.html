@@ -14,55 +14,81 @@
     </nb-card-header>
 
     <nb-card-body>
-      <tock-form-control
-        label="State"
-        name="state"
-        [required]="true"
-        [noLabelMargin]="true"
-      >
-        <nb-radio-group
-          formControlName="state"
-          value="2"
-          class="d-flex"
-        >
-          <nb-radio
-            *ngFor="let state of annotationStates"
-            [value]="state.value"
-            >{{ state.label }}</nb-radio
+      <div class="row">
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="State"
+            name="state"
+            [required]="true"
+            [showError]="isSubmitted"
+            [noLabelMargin]="true"
           >
-        </nb-radio-group>
-      </tock-form-control>
-
-      <tock-form-control
-        label="Reason"
-        name="reason"
-        [required]="true"
-      >
-        <nb-select
-          formControlName="reason"
-          placeholder="Select the reason for the report"
-          fullWidth
-        >
-          <nb-option
-            *ngFor="let reason of annotationReasons"
-            [value]="reason.value"
-            >{{ reason.label }}</nb-option
+            <nb-radio-group
+              formControlName="state"
+              value="2"
+              class="d-flex"
+            >
+              <nb-radio
+                *ngFor="let state of annotationStates"
+                [value]="state.value"
+                >{{ state.label }}</nb-radio
+              >
+            </nb-radio-group>
+          </tock-form-control>
+        </div>
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Reason"
+            name="reason"
           >
-        </nb-select>
-      </tock-form-control>
+            <nb-select
+              formControlName="reason"
+              placeholder="Select the reason for the report"
+              fullWidth
+            >
+              <nb-option
+                *ngFor="let reason of annotationReasons"
+                [value]="reason.value"
+                >{{ reason.label }}</nb-option
+              >
+            </nb-select>
+          </tock-form-control>
+        </div>
 
-      <tock-form-control
-        label="Add a description"
-        name="description"
-        [required]="true"
-      >
-        <textarea
-          formControlName="description"
-          nbInput
-          fullWidth
-          fieldSize="small"
-        ></textarea>
-      </tock-form-control>
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Description"
+            name="description"
+            [required]="true"
+            [showError]="isSubmitted"
+          >
+            <textarea
+              formControlName="description"
+              nbInput
+              fullWidth
+              fieldSize="small"
+              rows="4"
+              placeholder="Add a description here"
+            ></textarea>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Ground truth"
+            name="ground_truth"
+          >
+            <textarea
+              formControlName="ground_truth"
+              nbInput
+              fullWidth
+              fieldSize="small"
+              rows="4"
+              placeholder="Add ground truth here"
+            ></textarea>
+          </tock-form-control>
+        </div>
+      </div>
     </nb-card-body>
 
     <nb-card-footer class="card-footer-actions">
@@ -80,6 +106,7 @@
         status="primary"
         size="small"
         (click)="submit()"
+        [disabled]="!form.dirty"
       >
         Submit
       </button>
