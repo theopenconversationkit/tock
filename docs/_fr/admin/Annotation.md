@@ -169,10 +169,8 @@ Une annotation ne peut pas être créée si une annotation existe déjà pour la
 
 **Request Body:**
 
-- `actionId`: Obligatoire
 - `state`: Obligatoire
 - `description`: Obligatoire
-- `user`: Obligatoire
 - `reason`: Facultatif
 - `ground_truth`: Facultatif
 
@@ -187,15 +185,25 @@ Une annotation ne peut pas être créée si une annotation existe déjà pour la
 **Response:**
 ```json
 {
-  "_id": "67989c4c4efa5148b2818ac7",
-  "actionId": "6797fc4fe8fd32779aa7cae7",
-  "dialogId": "6797fc4de8fd32779aa7cae0",
-  "state": "ANOMALY",
+  "_id": "679b8c1d0d0fbf25765d05f8",
+  "actionId": "679b7f3fab395066f2740f7e",
+  "dialogId": "679b7f19ab395066f2740f6c",
+  "state": "RESOLVED",
   "reason": "INACCURATE_ANSWER",
-  "description": "Il devrait suggérer de bloquer la carte en urgence.",
-  "events": [],
-  "createdAt": "2025-01-28T08:58:52.060318713Z",
-  "lastUpdateDate": "2025-01-28T08:58:52.059974242Z"
+  "description": "Test Description",
+  "groundTruth": "GTTEST",
+  "events": [
+    {
+      "eventId": "679b8c1d0d0fbf25765d05f9",
+      "creationDate": "2025-01-30T14:26:37.886678871Z",
+      "lastUpdateDate": "2025-01-30T14:26:37.886682153Z",
+      "user": "admin@app.com",
+      "after": "RESOLVED",
+      "type": "STATE"
+    }
+  ],
+  "createdAt": "2025-01-30T14:26:37.886665600Z",
+  "lastUpdateDate": "2025-01-30T14:26:37.886644088Z"
 }
 ```
 
@@ -210,8 +218,7 @@ Crée un nouvel event de type comment.
 - `annotationId` : Identifiant unique de l'annotation.
 
 **Request Body:**
-- `type`: Type de l'event COMMENT
-- `user`: Utilisateur ayant créé l'event.
+- `type`: Type de l'event: COMMENT
 - `comment`: Commentaire associé à l'event.
 
 **Corps Example (COMMENT):**

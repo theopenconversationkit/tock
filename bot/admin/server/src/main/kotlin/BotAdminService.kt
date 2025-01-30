@@ -344,6 +344,16 @@ object BotAdminService {
             lastUpdateDate = Instant.now()
         )
 
+        val event = BotAnnotationEventState(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            before = null,
+            after = annotationDTO.state.name
+        )
+
+        annotation.events.add(event)
         dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
         return annotation
     }
