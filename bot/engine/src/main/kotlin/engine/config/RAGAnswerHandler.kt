@@ -30,10 +30,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.genai.orchestratorclient.requests.ChatMessage
-import ai.tock.genai.orchestratorclient.requests.ChatMessageType
-import ai.tock.genai.orchestratorclient.requests.DialogDetails
-import ai.tock.genai.orchestratorclient.requests.RAGQuery
+import ai.tock.genai.orchestratorclient.requests.*
 import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
@@ -189,10 +186,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                             )
                         ),
                         questionAnsweringLlmSetting = ragConfiguration.llmSetting,
-                        questionAnsweringPromptInputs = mapOf(
-                            "question" to action.toString(),
-                            "locale" to userPreferences.locale.displayLanguage,
-                            "no_answer" to ragConfiguration.noAnswerSentence
+                        questionAnsweringPrompt = PromptTemplate(
+                            formatter = Formatter.F_STRING.id,
+                            template = ragConfiguration.llmSetting.prompt,
+                            inputs = mapOf(
+                                "question" to action.toString(),
+                                "locale" to userPreferences.locale.displayLanguage,
+                                "no_answer" to ragConfiguration.noAnswerSentence
+                            )
                         ),
                         embeddingQuestionEmSetting = ragConfiguration.emSetting,
                         documentIndexName = indexName,
