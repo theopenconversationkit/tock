@@ -12,35 +12,49 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Dataset generator. This script takes an excel file as input and generates a csv dataset as output. The generated dataset can also be directly sent to langsmith.
+"""
+Dataset Generator: Generate CSV or Langfuse datasets from an Excel file.
 
 Usage:
-    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
-    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] --input-excel=<ie> [--csv-output=<co>] [--langsmith-dataset-name=<lsdn>] [--langfuse-dataset-name=<lfdn>] [--locale=<l>] [--no-answer=<na>]
+
+Description:
+    This script processes an input Excel file to generate a testing dataset. The output can be saved as a CSV file,
+    uploaded to Langsmith, or uploaded to Langfuse. The input Excel file must follow the specified format
+    (see examples/generate_dataset_input.example.xlsx).
 
 Arguments:
-    input_excel path to the input excel file
+    --input-excel=<ie>              Path to the input Excel file. This is a required argument.
 
 Options:
-    --range=<s>                     Range of sheet to be parsed. The expected format is X,Y where X is the first sheet to be included, and Y is the last. Indices are 0-indexed.
-    --sheet=<n>                     Sheet numbers to be parsed (ie: --sheet 0 1 3). Indices are 0-indexed.
-    --csv-output=<path>             Output path of csv file to be generated.
-    --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
-    --langfuse-dataset-name=<name> Name of the dataset to be saved on langfuse.
-    --locale=<locale>               Locale to be included in de dataset. [default: French]
-    --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
-    -h --help                       Show this screen
-    --version                       Show version
-    -v                              Verbose output for debugging (without this option, script will be silent but for errors)
+    --csv-output=<co>               Path to save the generated dataset as a CSV file. Optional.
+    --langsmith-dataset-name=<lsdn> Name of the dataset to be uploaded to Langsmith. Optional.
+    --langfuse-dataset-name=<lfdn>  Name of the dataset to be uploaded to Langfuse. Optional.
+    --locale=<l>                    Locale information to include in the dataset. Defaults to "French". Optional.
+    --no-answer=<na>                Label of no-answer to include in the dataset. Defaults to "NO_RAG_SENTENCE". Optional.
+    -v                              Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                      Display this help message and exit.
+    --version                       Display the version of the script.
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
+Examples:
+    1. Generate a CSV dataset:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv
+
+    2. Generate and upload a dataset to Langfuse:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --langfuse-dataset-name=my_dataset
+
+    3. Generate a CSV dataset with a specified locale and verbose mode:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv --locale=English -v
+
+Notes:
+    - The input Excel file must adhere to the required format. Check examples/generate_dataset_input.example.xlsx for reference.
+    - You can simultaneously save the dataset locally (as a CSV) and upload it to Langsmith or Langfuse by providing the respective options.
 """
+
 import base64
 import logging
 import os
-from json import loads
 from pathlib import Path
-from typing import List
 
 import boto3
 import httpx
@@ -53,55 +67,38 @@ from httpx_auth_awssigv4 import SigV4Auth
 from langfuse import Langfuse
 from langsmith import Client
 
-
-def _generate_dataset(
-    filename: str, sheet_indices: List[int], locale: str, no_answer: str
-) -> pd.DataFrame:
-    dataframes = [_parse_sheet(filename, i) for i in sheet_indices]
-    dataset = pd.concat(dataframes)
-    dataset = _add_locale(dataset, locale)
-    dataset = _add_no_answer(dataset, no_answer)
-    return dataset
+from models import DatasetItem
 
 
-def _parse_sheet(filename: str, sheet_index: int) -> pd.DataFrame:
-    logging.debug('Parsing sheet %s', sheet_index)
-    df = pd.read_excel(filename, sheet_name=sheet_index, header=None)
+def _extract_dataset_items(filename: str, locale: str, no_answer: str) -> list[DatasetItem]:
+    dataset_items = []
+    input_df = pd.read_excel(filename, sheet_name='Template_Suivi_Recette', header=None)
+    # Replace NaN with None in the DataFrame
+    df = input_df.map(lambda x: None if pd.isna(x) else x)
+    # Data extraction
+    # Using panda lines and columns are numbered from 0, row 8 match with raw "I" in Excel or LibreOffice
+    topics = df.iloc[2, 8:].tolist()     # Line 2 (line 3 in Excel or LibreOffice): Topic
+    questions = df.iloc[3, 8:].tolist()  # Line 3 (line 4 in Excel or LibreOffice): Question
+    answers = df.iloc[4, 8:].tolist()    # Line 4 (line 5 in Excel or LibreOffice): Expected answer
+    # DatasetItems
+    for topic, question, answer in zip(topics, questions, answers):
+        if question is not None:
+            dataset_items.append(DatasetItem(
+                topic=topic,
+                question=question,
+                locale=locale,
+                answer=answer,
+                no_answer=no_answer
+            ))
 
-    df = df.drop(0, axis=0)  # Remove header row
-    df = df.drop([3, 4, 6, 7], axis=1)  # Remove unnecessary columns
-    df = df.rename(columns={0: 'topic', 1: 'question', 2: 'answer', 5: 'quality'})
-    df['quality'] = df['quality'].fillna('No default quality')
-    df['answer'] = df['answer'].fillna('No default answer')
-    df['topic'] = df['topic'].fillna('No default topic')
-    return df
+    return dataset_items
 
+def _save_on_fs(dataset_items: list[DatasetItem], output_path: str):
+    logging.info('Saving dataset on path %s', output_path)
+    dataset = pd.DataFrame([item.model_dump() for item in dataset_items])
+    dataset.to_csv(output_path, index=False)
 
-def _add_locale(dataset: pd.DataFrame, locale: str) -> pd.DataFrame:
-    logging.debug('Using locale %s', locale)
-    return dataset.assign(locale=locale)
-
-
-def _add_no_answer(dataset: pd.DataFrame, no_answer: str) -> pd.DataFrame:
-    logging.debug('Using no_answer label %s', no_answer)
-    return dataset.assign(no_answer=no_answer)
-
-
-def _parse_range(input_range: str) -> List[int]:
-    [a, b] = input_range.split(',')
-    return [i for i in range(int(a), int(b) + 1)]
-
-
-def _save_on_fs(dataset: pd.DataFrame, path: str):
-    logging.info('Saving dataset on path %s', path)
-    dataset.to_csv(path, index=False)
-
-
-def _send_to_langsmith(dataset: pd.DataFrame, dataset_name: str):
-    # Transforms dataset to langsmith format
-    records = dataset.to_json(orient='records')
-    records = loads(str(records))
-
+def _send_to_langsmith(dataset_items: list[DatasetItem], dataset_name: str):
     # Creates dataset in langsmith
     client = Client()
     logging.info('Creating dataset %s on langsmith...', dataset_name)
@@ -110,25 +107,23 @@ def _send_to_langsmith(dataset: pd.DataFrame, dataset_name: str):
     client.create_examples(
         inputs=[
             {
-                'question': r['question'],
-                'locale': r['locale'],
-                'no_answer': r['no_answer'],
+                'question': item.question,
+                'locale': item.locale,
+                'no_answer': item.no_answer,
                 'metadata': {
-                    'topic': r['topic'],
+                    'topic': item.topic,
                 },
             }
-            for r in records
+            for item in dataset_items
         ],
         outputs=[
             {
-                'answer': r['answer'],
-                'quality': r['quality'],
+                'answer': item.answer
             }
-            for r in records
+            for item in dataset_items
         ],
         dataset_id=ls_dataset.id,
     )
-
 
 def init_langfuse():
     if ProxyServerType.AWS_LAMBDA == application_settings.observability_proxy_server:
@@ -164,50 +159,32 @@ def init_langfuse():
     return Langfuse()
 
 
-def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
-    # Transforms dataset to JSON format
-    records = dataset.to_json(orient='records')
-    records = loads(str(records))
-
+def _send_to_langfuse(dataset_items: list[DatasetItem], dataset_name: str):
     # Initializes the Langfuse client
     client = init_langfuse()
-
     logging.info('Creating dataset %s on Langfuse...', dataset_name)
-
-    # Creates dataset in Langfuse
     lf_dataset = client.create_dataset(name=dataset_name)
-
     logging.info('Creating examples on Langfuse dataset id %s...', lf_dataset.id)
-
-    # Prepares inputs and outputs
-    inputs = [
-        {
-            'question': r['question'],
-            'locale': r['locale'],
-            'no_answer': r['no_answer'],
+    for item in dataset_items:
+        item_input = {
+            'question': item.question,
+            'locale': item.locale,
+            'no_answer': item.no_answer,
         }
-        for r in records
-    ]
-    metadatas = [{'topic': r['topic']} for r in records]
-
-    outputs = [
-        {
-            'answer': r['answer'],
-            'quality': r['quality'],
+        item_metadata = {
+            'topic': item.topic
         }
-        for r in records
-    ]
+        item_output = {
+            'answer': item.answer
+        }
 
-    # Creates examples in the dataset on Langfuse
-    for input, metadata, output in zip(inputs, metadatas, outputs):
-        logging.info('import data')
+        # Creates examples in the dataset on Langfuse
         client.create_dataset_item(
             dataset_name=dataset_name,
-            input=input,
-            expected_output=output,
-            metadata=metadata,
+            input=item_input,
+            expected_output=item_output,
+            metadata=item_metadata,
         )
-
 
 if __name__ == '__main__':
     cli_args = docopt(__doc__, version='Dataset generator 0.1.0')
@@ -219,9 +196,9 @@ if __name__ == '__main__':
     )
 
     # check if input filer exists
-    filename = cli_args['<input_excel>']
-    if not os.path.isfile(filename):
-        logging.error(f'Specified input excel file was not found ({filename}).')
+    input_excel_filename = cli_args['--input-excel']
+    if not os.path.isfile(input_excel_filename):
+        logging.error(f'Specified input excel file was not found ({input_excel_filename}).')
         exit(1)
 
     # check if langsmith creds is set
@@ -244,14 +221,8 @@ if __name__ == '__main__':
         )
         exit(1)
 
-    if cli_args.get('--range') is not None:
-        sheet_indices = _parse_range(str(cli_args['--range']))
-    else:
-        sheet_indices = [int(i) for i in cli_args['--sheet']]
-
-    dataset = _generate_dataset(
-        filename=filename,
-        sheet_indices=sheet_indices,
+    dataset = _extract_dataset_items(
+        filename=input_excel_filename,
         locale=cli_args['--locale'] or 'French',
         no_answer=cli_args['--no-answer'] or 'NO_RAG_SENTENCE',
     )

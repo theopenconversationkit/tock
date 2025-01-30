@@ -37,6 +37,8 @@ import time
 import requests
 from docopt import docopt
 from dotenv import load_dotenv
+from openpyxl.reader.excel import load_workbook
+from openpyxl.utils import get_column_letter
 
 from generate_dataset import init_langfuse
 
@@ -369,6 +371,33 @@ def check_environment_variables(provider):
             logging.error('Cannot proceed: LANGCHAIN_API_KEY is not defined.')
             sys.exit(1)
 
+def create_excel_output(iterations: list[str], dataset_items, output_file):
+    # Create a new workbook and sheet
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    wb = load_workbook(os.path.join(script_dir, "examples/generate_dataset_input.example.xlsx"))
+
+    sheet = wb['Template_Suivi_Recette']
+
+    for i in range(len(iterations)):
+        start_row = 7 + 6 * i
+        # Merge cells (example 6B:11B)
+        sheet.merge_cells(start_row=start_row, start_column=2, end_row=12+6*i, end_column=2)
+        sheet[f"B{start_row}"] = iterations[i]
+
+    for i in range(len(dataset_items)):
+        col_letter = get_column_letter(9 + i) # Column I (corresponds to index 9)
+        sheet[f"{col_letter}3"] = dataset_items[i][0] # Topic
+        sheet[f"{col_letter}4"] = dataset_items[i][1] # Question
+        sheet[f"{col_letter}5"] = dataset_items[i][2] # Expected response
+        counter = 2
+        for j in range(len(iterations)):
+            start_row = 7 + 6 * j
+            counter = counter + 1
+            sheet[f"{col_letter}{start_row}"] = dataset_items[i][counter] # Response for iteration j
+            counter = counter + 1
+            sheet[f"{col_letter}{start_row+1}"] = dataset_items[i][counter] # Response sources for iteration j
+
+    wb.save(output_file)
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -381,16 +410,16 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG if cli_args['-v'] else logging.INFO, format=log_format)
 
     check_environment_variables(provider)  # Check environment variables based on provider
+    session_or_run_ids = cli_args['<session_or_run_ids>']
 
     csv_lines = []
     if provider == 'langfuse':
         dataset_name = cli_args['<dataset_id_or_name>']
-        runs_names = cli_args['<session_or_run_ids>']
         client = init_langfuse()
         dataset = client.get_dataset(name=dataset_name)
-        csv_lines = [create_csv_header(runs_names, provider, dataset_name)]
+        csv_lines = [create_csv_header(session_or_run_ids, provider, dataset_name)]
         for item in dataset.items:
-            csv_lines.append(append_runs_langfuse(item, runs_names))
+            csv_lines.append(append_runs_langfuse(item, session_or_run_ids))
 
     elif provider == 'langsmith':
         # The LangSmith API base url
@@ -398,17 +427,21 @@ if __name__ == '__main__':
         # Get LangSmith API key from environment
         _LANGSMITH_API_KEY = os.environ["LANGCHAIN_API_KEY"]
         dataset_id = cli_args['<dataset_id_or_name>']
-        session_ids = cli_args['<session_or_run_ids>']
         dataset_info = get_sessions(dataset_id)
         examples = get_dataset_examples(len(dataset_info), dataset_id)
-        csv_lines = [create_csv_header(session_ids, provider, dataset_id)]
+        csv_lines = [create_csv_header(session_or_run_ids, provider, dataset_id)]
         for example in examples:
-            csv_lines.append(append_runs_langsmith(example, session_ids))
+            csv_lines.append(append_runs_langsmith(example, session_or_run_ids))
 
-    output_csv_file = f"export_run_result_{provider}_{int(time.time())}.csv"
+    output_file = f"export_run_result_{provider}_{int(time.time())}"
+    output_csv_file = f"{output_file}.csv"
     with open(output_csv_file, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter='|')
         writer.writerows(csv_lines)
-
     logging.info(f"CSV file successfully generated: {output_csv_file}")
+
+    output_xlsx_file = f"{output_file}.xlsx"
+    create_excel_output(session_or_run_ids, csv_lines[1:], output_xlsx_file)
+    logging.info(f"Xls file successfully generated: {output_xlsx_file}")
+
     logging.info(f"Total execution time: {time.time() - start_time:.2f} seconds")
