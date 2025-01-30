@@ -161,14 +161,14 @@
             <nb-icon icon="link"></nb-icon>
           </button>
 
-          <!-- <div *ngIf="containsReport(action); else does_not_contain_a_report">
+          <div *ngIf="containsReport(action); else does_not_contain_a_report">
             <button
               nbButton
               size="small"
               status="warning"
               ghost
-              nbTooltip="Display report"
-              (click)="openReport(action)"
+              nbTooltip="Display annotation"
+              (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle-fill"></nb-icon>
             </button>
@@ -178,14 +178,13 @@
             <button
               nbButton
               size="small"
-              status="warning"
               ghost
-              nbTooltip="Add a report"
-              (click)="openReport(action)"
+              nbTooltip="Annotate this exchange"
+              (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle"></nb-icon>
             </button>
-          </ng-template> -->
+          </ng-template>
 
           <button
             *ngIf="action.metadata?.isGenAiRagAnswer"

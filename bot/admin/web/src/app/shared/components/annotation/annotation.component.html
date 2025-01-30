@@ -1,0 +1,88 @@
+<form [formGroup]="form">
+  <nb-card class="min-width-90vw">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      <div>Annotation</div>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        (click)="cancel()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <tock-form-control
+        label="State"
+        name="state"
+        [required]="true"
+        [noLabelMargin]="true"
+      >
+        <nb-radio-group
+          formControlName="state"
+          value="2"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let state of annotationStates"
+            [value]="state.value"
+            >{{ state.label }}</nb-radio
+          >
+        </nb-radio-group>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Reason"
+        name="reason"
+        [required]="true"
+      >
+        <nb-select
+          formControlName="reason"
+          placeholder="Select the reason for the report"
+          fullWidth
+        >
+          <nb-option
+            *ngFor="let reason of annotationReasons"
+            [value]="reason.value"
+            >{{ reason.label }}</nb-option
+          >
+        </nb-select>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Add a description"
+        name="description"
+        [required]="true"
+      >
+        <textarea
+          formControlName="description"
+          nbInput
+          fullWidth
+          fieldSize="small"
+        ></textarea>
+      </tock-form-control>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="cancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submit()"
+      >
+        Submit
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</form>

@@ -11,6 +11,7 @@ import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-view
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
+import { AnnotationComponent } from 'src/app/shared/components';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -176,17 +177,18 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
   }
 
-  // containsReport(action: ActionReport): boolean {
-  //   return (parseInt(action.id) % 10) % 2 === 0;
-  // }
+  containsReport(action: ActionReport): boolean {
+    return false;
+  }
 
-  // openReport(action: ActionReport) {
-  //   this.nbDialogService.open(ReportComponent, {
-  //     context: {
-  //       actionReport: action
-  //     }
-  //   });
-  // }
+  openAnnotation(action: ActionReport) {
+    this.nbDialogService.open(AnnotationComponent, {
+      context: {
+        dialogReport: this.dialog,
+        actionReport: action
+      }
+    });
+  }
 
   showDebug(action: ActionReport) {
     this.nbDialogService.open(DebugViewerDialogComponent, {
