@@ -572,7 +572,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
     const shouldConfirm =
       (this.questionCondensingLlmProvider.value || this.questionAnsweringLlmProvider.value || this.emProvider.value) &&
-      [(this.currentQuestionCondensingConfig.params, this.currentQuestionAnsweringConfig.params, this.currentEmConfig.params)].some(
+      [(this.currentQuestionCondensingConfig?.params, this.currentQuestionAnsweringConfig?.params, this.currentEmConfig?.params)].some(
         (engine) => {
           return engine.some((entry) => {
             return entry.confirmExport;
@@ -585,16 +585,16 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         {
           label: 'Question condensing LLM engine',
           key: AiEngineSettingKeyName.questionCondensingLlmSetting,
-          params: this.currentQuestionCondensingConfig.params
+          params: this.currentQuestionCondensingConfig?.params
         },
         {
           label: 'Question answering LLM engine',
           key: AiEngineSettingKeyName.questionAnsweringLlmSetting,
-          params: this.currentQuestionAnsweringConfig.params
+          params: this.currentQuestionAnsweringConfig?.params
         },
-        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmConfig.params }
+        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmConfig?.params }
       ].forEach((engine) => {
-        engine.params.forEach((entry) => {
+        engine.params?.forEach((entry) => {
           if (entry.confirmExport) {
             this.sensitiveParams.push({ label: engine.label, key: engine.key, include: false, param: entry });
           }
@@ -625,6 +625,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     delete formValue['emProvider'];
     delete formValue['id'];
     delete formValue['enabled'];
+    delete formValue['indexName'];
 
     if (this.sensitiveParams?.length) {
       this.sensitiveParams.forEach((sensitiveParam) => {

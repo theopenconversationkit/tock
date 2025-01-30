@@ -106,9 +106,10 @@
               formControlName="debugEnabled"
               class="nb-toggle-small mt-2"
               status="basic"
+              nbTooltip="Include Rag debug info in dialog logs (Analytics > Dialogs)"
             >
-              <span *ngIf="debugEnabled.value">Debug activated</span>
-              <span *ngIf="!debugEnabled.value">Debug deactivated</span>
+              <span *ngIf="debugEnabled.value">Dialogs debug activated</span>
+              <span *ngIf="!debugEnabled.value">Dialogs debug deactivated</span>
             </nb-toggle>
           </tock-form-control>
         </nb-card-body>
