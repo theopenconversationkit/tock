@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.event-comment {
+  .event-comment-body {
+    background-color: var(--background-basic-color-1);
+    border: 1px solid var(--border-basic-color-4);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+
+    .event-comment-body-header {
+      font-size: 80%;
+      color: var(--color-basic-600);
+      margin-top: -5px;
+    }
+  }
+}

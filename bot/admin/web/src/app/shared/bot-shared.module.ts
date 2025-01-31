@@ -84,7 +84,8 @@ import {
   TestDialogComponent,
   BotConfigurationSelectorComponent,
   ChatUiDialogLoggerComponent,
-  AnnotationComponent
+  AnnotationComponent,
+  AnnotationCommentComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -169,7 +170,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     TestDialogComponent,
     BotConfigurationSelectorComponent,
     TextareaAutocompleteDirective,
-    AnnotationComponent
+    AnnotationComponent,
+    AnnotationCommentComponent
   ],
   exports: [
     SelectBotComponent,

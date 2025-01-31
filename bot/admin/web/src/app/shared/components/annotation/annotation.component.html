@@ -1,5 +1,8 @@
 <form [formGroup]="form">
-  <nb-card class="min-width-90vw">
+  <nb-card
+    class="min-width-90vw"
+    [nbSpinner]="loading"
+  >
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
       <div>Annotation</div>
       <button
@@ -19,14 +22,15 @@
           <tock-form-control
             label="State"
             name="state"
-            [required]="true"
+            [controls]="state"
             [showError]="isSubmitted"
+            [required]="true"
             [noLabelMargin]="true"
           >
             <nb-radio-group
               formControlName="state"
               value="2"
-              class="d-flex"
+              class="d-flex mt-2"
             >
               <nb-radio
                 *ngFor="let state of annotationStates"
@@ -59,8 +63,9 @@
           <tock-form-control
             label="Description"
             name="description"
-            [required]="true"
+            [controls]="description"
             [showError]="isSubmitted"
+            [required]="true"
           >
             <textarea
               formControlName="description"
@@ -76,10 +81,10 @@
         <div class="col-12 col-xl-6">
           <tock-form-control
             label="Ground truth"
-            name="ground_truth"
+            name="groundTruth"
           >
             <textarea
-              formControlName="ground_truth"
+              formControlName="groundTruth"
               nbInput
               fullWidth
               fieldSize="small"
@@ -89,7 +94,67 @@
           </tock-form-control>
         </div>
       </div>
+
+      <ng-container *ngIf="actionReport.annotation?.events?.length">
+        <label class="text-mitigated font-weight-bold">Changes & comments</label>
+
+        <div class="events-wrapper mt-2">
+          <div *ngFor="let event of actionReport.annotation.events">
+            <!-- COMMENTS -->
+            <tock-annotation-comment
+              *ngIf="event.type === annotationEventType.COMMENT"
+              [event]="event"
+              (commentChange)="putComment($event)"
+              (commentDelete)="deleteComment($event)"
+              class="my-1"
+            ></tock-annotation-comment>
+
+            <!-- OTHER EVENTS -->
+            <div
+              *ngIf="event.type !== annotationEventType.COMMENT"
+              class="event-info my-1"
+            >
+              <q>{{ event.user }}</q> modified <span class="emphasize">{{ getEventTypeLabel(event.type) }}</span> from
+              <q>
+                <div
+                  class="before-after d-inline-block ellipsis"
+                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.before)"
+                >
+                  {{ getBeforeAfterDisplayLabel(event.type, event.before) }}
+                </div></q
+              >
+              to
+              <q>
+                <div
+                  class="before-after d-inline-block ellipsis"
+                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.after)"
+                >
+                  {{ getBeforeAfterDisplayLabel(event.type, event.after) }}
+                </div></q
+              >
+              on {{ event.lastUpdateDate | date: 'y/MM/dd' }} at {{ event.lastUpdateDate | date: 'HH:mm' }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
     </nb-card-body>
+
+    <div class="add-comment pt-2 pb-3 px-4 border-top">
+      <tock-form-control
+        label="Add a comment"
+        name="comment"
+        [hasMargin]="false"
+      >
+        <textarea
+          formControlName="comment"
+          nbInput
+          fullWidth
+          fieldSize="small"
+          rows="2"
+          placeholder="Add a new comment here"
+        ></textarea>
+      </tock-form-control>
+    </div>
 
     <nb-card-footer class="card-footer-actions">
       <button
@@ -98,7 +163,8 @@
         size="small"
         (click)="cancel()"
       >
-        Cancel
+        <ng-container *ngIf="form.dirty">Cancel</ng-container>
+        <ng-container *ngIf="!form.dirty">Close</ng-container>
       </button>
       <button
         type="button"
@@ -106,9 +172,10 @@
         status="primary"
         size="small"
         (click)="submit()"
-        [disabled]="!form.dirty"
+        *ngIf="form.dirty"
       >
-        Submit
+        <ng-container *ngIf="!actionReport.annotation?._id">Submit</ng-container>
+        <ng-container *ngIf="actionReport.annotation?._id">Update</ng-container>
       </button>
     </nb-card-footer>
   </nb-card>

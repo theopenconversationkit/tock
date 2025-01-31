@@ -6,20 +6,28 @@ export interface Annotation {
   reason: AnnotationReason;
   description: string;
   user: string;
-  ground_truth: string;
+  groundTruth: string;
   events?: AnnotationEvent[];
   createdAt?: Date;
   lastUpdateDate?: Date;
   expiresAt?: Date;
 }
 
-export const enum AnnotationEventType {
+export enum AnnotationEventType {
   COMMENT = 'COMMENT',
   STATE = 'STATE',
   REASON = 'REASON',
   GROUND_TRUTH = 'GROUND_TRUTH',
   DESCRIPTION = 'DESCRIPTION'
 }
+
+export const AnnotationEventTypes = [
+  { label: 'Comment', value: AnnotationEventType.COMMENT },
+  { label: 'State', value: AnnotationEventType.STATE },
+  { label: 'Reason', value: AnnotationEventType.REASON },
+  { label: 'Ground truth', value: AnnotationEventType.GROUND_TRUTH },
+  { label: 'Description', value: AnnotationEventType.DESCRIPTION }
+];
 
 export interface AnnotationEvent {
   eventId: string;
@@ -29,6 +37,8 @@ export interface AnnotationEvent {
   user: string;
   before: any;
   after: any;
+  comment?: string;
+  _edited?: boolean;
 }
 
 export enum AnnotationState {
@@ -45,7 +55,7 @@ export const AnnotationStates = [
   { label: "Won't fix", value: AnnotationState.WONT_FIX }
 ];
 
-export const enum AnnotationReason {
+export enum AnnotationReason {
   INACCURATE_ANSWER = 'INACCURATE_ANSWER',
   INCOMPLETE_ANSWER = 'INCOMPLETE_ANSWER',
   HALLUCINATION = 'HALLUCINATION',
