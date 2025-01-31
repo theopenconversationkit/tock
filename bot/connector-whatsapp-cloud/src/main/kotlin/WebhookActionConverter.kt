@@ -51,12 +51,12 @@ internal object WebhookActionConverter {
             )
 
             is WhatsAppCloudImageMessage -> {
-                val imgUrl = whatsAppCloudApiService.retreiveMediaUrl(token, message.image.id)
+                val binaryImg = whatsAppCloudApiService.downloadImgByBinary(token, message.image.id, message.image.mimeType)
                 SendAttachment(
                     PlayerId(senderId),
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
-                    imgUrl,
+                    binaryImg,
                     SendAttachment.AttachmentType.image
                 )
             }
