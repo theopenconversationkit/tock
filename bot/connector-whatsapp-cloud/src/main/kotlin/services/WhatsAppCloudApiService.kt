@@ -51,11 +51,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import org.litote.kmongo.toId
 import retrofit2.Response
 import java.time.Instant
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -88,17 +88,27 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun handleImageMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotImageMessage) {
+    private fun handleImageMessage(
+        phoneNumberId: String,
+        token: String,
+        messageRequest: WhatsAppCloudSendBotImageMessage
+    ) {
         replaceWithRealMessageImageId(messageRequest, phoneNumberId, token)
         send(messageRequest) {
             apiClient.graphApi.sendMessage(phoneNumberId, token, messageRequest).execute()
         }
     }
 
-    fun retreiveMediaUrl(token: String, mediaId: String): String{
-        return getMedia(mediaId) {
-            apiClient.graphApi.retrieveMediaUrl(mediaId, token).execute()
+    fun downloadImgByBinary(token: String, imgId: String, mimeType: String): String {
+
+        val url = getMedia(imgId) {
+            apiClient.graphApi.retrieveMediaUrl(imgId, token).execute()
         }.url
+
+        val base64Response = responseDownloadMedia(url, mimeType) {
+            apiClient.graphApi.downloadMediaBinary(url, "Bearer $token").execute()
+        }
+        return base64Response
     }
 
     private fun handleSimpleMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotMessage) {
@@ -320,7 +330,6 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-
     private fun <T : Any> getMedia(request: T, call: (T) -> Response<Media>): Media {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_${request.javaClass.simpleName.lowercase()}")
@@ -343,8 +352,33 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
+    private fun <T : Any> responseDownloadMedia(
+        request: T,
+        mimeType: String,
+        call: (T) -> Response<ResponseBody>
+    ): String {
+        val requestTimerData =
+            BotRepository.requestTimer.start("whatsapp_send_${request.javaClass.simpleName.lowercase()}")
 
-        private fun replaceWithRealMessageImageId(
+        try {
+            val response = call(request)
+            if (response.isSuccessful && response.body() != null) {
+                val byteArray = response.body()!!.bytes()
+                val base64String = Base64.getEncoder().encodeToString(byteArray)
+
+                return "data:$mimeType;base64,$base64String"
+            } else {
+                throw ConnectorException("Failed to download media: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Throwable) {
+            BotRepository.requestTimer.throwable(e, requestTimerData)
+            throw e
+        } finally {
+            BotRepository.requestTimer.end(requestTimerData)
+        }
+    }
+
+    private fun replaceWithRealMessageImageId(
         messageRequest: WhatsAppCloudSendBotImageMessage,
         phoneNumberId: String,
         token: String
