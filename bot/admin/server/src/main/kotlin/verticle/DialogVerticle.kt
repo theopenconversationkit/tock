@@ -51,11 +51,10 @@ class DialogVerticle {
         private const val PATH_DIALOGS_INTENTS = "/dialogs/intents/:applicationId"
 
         // ANNOTATION ENDPOINTS
-        private const val PATH_ANNOTATION = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
-        private const val PATH_ANNOTATION_EVENTS = "$PATH_ANNOTATION/:annotationId/events"
-        private const val PATH_ANNOTATION_EVENT = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId"
-        private const val PATH_ANNOTATION_UPDATE = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId"
-        private const val PATH_ANNOTATION_EVENT_DELETE = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events/:eventId"
+        private const val PATH_ANNOTATIONS = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
+        private const val PATH_ANNOTATION = "$PATH_ANNOTATIONS/:annotationId"
+        private const val PATH_ANNOTATION_EVENTS = "$PATH_ANNOTATION/events"
+        private const val PATH_ANNOTATION_EVENT = "$PATH_ANNOTATION_EVENTS/:eventId"
     }
 
     private val front = FrontClient
@@ -170,93 +169,60 @@ class DialogVerticle {
 
             // --------------------------------- Annotation Routes ----------------------------------
 
-            // CREATE ANNO
-            blockingJsonPost(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
-                val dialogId = context.path("dialogId")
-                val actionId = context.path("actionId")
-                val user = context.userLogin
-
-                try {
-                    logger.info { "Creating Annotation..." }
-                    BotAdminService.createAnnotation(dialogId, actionId, annotationDTO, user)
-                } catch (e: IllegalStateException) {
-                    context.fail(400, e)
-                }
+            // CREATE ANNOTATION
+            blockingJsonPost(PATH_ANNOTATIONS, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
+                BotAdminService.createAnnotation(
+                    context.path("dialogId"),
+                    context.path("actionId"),
+                    annotationDTO,
+                    context.userLogin
+                )
             }
 
             // MODIFY ANNOTATION
-            blockingJsonPut(
-                PATH_ANNOTATION_UPDATE,
-                setOf(TockUserRole.botUser)
-            ) { context, updatedAnnotationDTO: BotAnnotationUpdateDTO ->
-                val botId = context.path("botId")
-                val dialogId = context.path("dialogId")
-                val actionId = context.path("actionId")
-                val annotationId = context.path("annotationId")
-                val user = context.userLogin
-
-                try {
-                    logger.info { "Updating annotation for bot $botId, dialog $dialogId, action $actionId..." }
-                    val updatedAnnotation = BotAdminService.updateAnnotation(
-                        dialogId = dialogId,
-                        actionId = actionId,
-                        annotationId = annotationId,
-                        updatedAnnotationDTO = updatedAnnotationDTO,
-                        user = user
-                    )
-                    updatedAnnotation
-                } catch (e: IllegalArgumentException) {
-                    context.fail(400, e)
-                } catch (e: IllegalStateException) {
-                    context.fail(404, e)
-                }
+            blockingJsonPut(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, updatedAnnotationDTO: BotAnnotationUpdateDTO ->
+                BotAdminService.updateAnnotation(
+                    context.path("dialogId"),
+                    context.path("actionId"),
+                    context.path("annotationId"),
+                    updatedAnnotationDTO,
+                    context.userLogin
+                )
             }
 
             // ADD COMMENT
-            blockingJsonPost(
-                PATH_ANNOTATION_EVENTS,
-                setOf(TockUserRole.botUser)
-            ) { context, eventDTO: BotAnnotationEventDTO ->
-                val dialogId = context.path("dialogId")
-                val actionId = context.path("actionId")
-                val annotationId = context.path("annotationId")
-                val user = context.userLogin
-
-                if (eventDTO.type != BotAnnotationEventType.COMMENT) {
-                    throw IllegalArgumentException("Only COMMENT events are allowed")
-                }
-
-                logger.info { "Adding a COMMENT event to annotation $annotationId..." }
-                BotAdminService.addCommentToAnnotation(dialogId, actionId, eventDTO, user)
+            blockingJsonPost(PATH_ANNOTATION_EVENTS, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+                BotAdminService.addCommentToAnnotation(
+                    context.path("dialogId"),
+                    context.path("actionId"),
+                    eventDTO,
+                    context.userLogin
+                )
             }
 
             // MODIFY COMMENT
-            blockingJsonPut(
-                PATH_ANNOTATION_EVENT,
-                setOf(TockUserRole.botUser)
-            ) { context, eventDTO: BotAnnotationEventDTO ->
-                val dialogId = context.path("dialogId")
-                val actionId = context.path("actionId")
-                val eventId = context.path("eventId")
-                val user = context.userLogin
-
-                logger.info { "Modifying a comment..." }
-                BotAdminService.updateAnnotationEvent(dialogId, actionId, eventId, eventDTO, user)
+            blockingJsonPut(PATH_ANNOTATION_EVENT, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+                BotAdminService.updateAnnotationEvent(
+                    context.path("dialogId"),
+                    context.path("actionId"),
+                    context.path("eventId"),
+                    eventDTO,
+                    context.userLogin
+                )
             }
 
             // DELETE COMMENT
-            blockingDelete(PATH_ANNOTATION_EVENT_DELETE, setOf(TockUserRole.botUser)) { context ->
-                val dialogId = context.path("dialogId")
-                val actionId = context.path("actionId")
-                val annotationId = context.path("annotationId")
-                val eventId = context.path("eventId")
-                val user = context.userLogin
-
-                logger.info { "Deleting a comment..." }
-                BotAdminService.deleteAnnotationEvent(dialogId, actionId, annotationId, eventId, user)
+            blockingDelete(PATH_ANNOTATION_EVENT, setOf(TockUserRole.botUser)) { context ->
+                BotAdminService.deleteAnnotationEvent(
+                    context.path("dialogId"),
+                    context.path("actionId"),
+                    context.path("annotationId"),
+                    context.path("eventId"),
+                    context.userLogin
+                )
             }
         }
-        }
+    }
 
     /**
      * Get the namespace from the context

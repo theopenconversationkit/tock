@@ -31,8 +31,10 @@ import java.time.Instant
     property = "type"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = BotAnnotationEventComment::class, name = "COMMENT"),
-    JsonSubTypes.Type(value = BotAnnotationEventChange::class, name = "STATE"),
+    JsonSubTypes.Type(value = BotAnnotationEventState::class, name = "STATE"),
+    JsonSubTypes.Type(value = BotAnnotationEventGroundTruth::class, name = "GROUND_TRUTH"),
+    JsonSubTypes.Type(value = BotAnnotationEventReason::class, name = "REASON"),
+    JsonSubTypes.Type(value = BotAnnotationEventDescription::class, name = "DESCRIPTION"),
 )
 abstract class BotAnnotationEvent (
     open val eventId: Id<BotAnnotationEvent>,

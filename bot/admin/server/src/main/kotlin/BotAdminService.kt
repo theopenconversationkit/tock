@@ -159,14 +159,13 @@ object BotAdminService {
         eventDTO: BotAnnotationEventDTO,
         user: String
     ): BotAnnotationEvent {
-
         if (eventDTO.type != BotAnnotationEventType.COMMENT) {
             throw IllegalArgumentException("Only COMMENT events are allowed")
         }
 
-        require(eventDTO.comment != null) { "Comment is required for COMMENT event type" }
+        require(!eventDTO.comment.isNullOrBlank()) { "Comment is required and cannot be blank for COMMENT event type" }
 
-        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
+        val annotation = dialogReportDAO.findAnnotation(dialogId, actionId)
             ?: throw IllegalStateException("Annotation not found")
 
         val event = BotAnnotationEventComment(
@@ -202,7 +201,7 @@ object BotAdminService {
 
         require(eventDTO.comment != null) { "Comment must be provided" }
 
-        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
+        val annotation = dialogReportDAO.findAnnotation(dialogId, actionId)
             ?: throw IllegalStateException("Annotation not found")
 
         val existingCommentEvent = existingEvent as BotAnnotationEventComment
@@ -230,10 +229,6 @@ object BotAdminService {
             throw IllegalArgumentException("Only comment events can be deleted")
         }
 
-        val annotation = dialogReportDAO.getAnnotationByActionId(dialogId, actionId)
-            ?: throw IllegalStateException("Annotation not found")
-
-
         dialogReportDAO.deleteAnnotationEvent(dialogId, actionId, eventId)
     }
 
@@ -244,7 +239,7 @@ object BotAdminService {
         updatedAnnotationDTO: BotAnnotationUpdateDTO,
         user: String
     ): BotAnnotation {
-        val existingAnnotation = dialogReportDAO.getAnnotation(dialogId, actionId, annotationId)
+        val existingAnnotation = dialogReportDAO.findAnnotationById(dialogId, actionId, annotationId)
             ?: throw IllegalStateException("Annotation not found")
 
         val events = mutableListOf<BotAnnotationEvent>()
@@ -314,10 +309,9 @@ object BotAdminService {
         }
 
         existingAnnotation.lastUpdateDate = Instant.now()
-
         existingAnnotation.events.addAll(events)
 
-        dialogReportDAO.updateAnnotation(dialogId, actionId, existingAnnotation)
+        dialogReportDAO.insertAnnotation(dialogId, actionId, existingAnnotation)
 
         return existingAnnotation
     }
@@ -328,9 +322,8 @@ object BotAdminService {
         annotationDTO: BotAnnotationDTO,
         user: String
     ): BotAnnotation {
-
         if (dialogReportDAO.annotationExists(dialogId, actionId)) {
-            throw IllegalStateException("Une annotation existe déjà pour cette action.")
+            throw IllegalStateException("An annotation already exists for this action")
         }
 
         val annotation = BotAnnotation(
@@ -338,8 +331,6 @@ object BotAdminService {
             reason = annotationDTO.reason,
             description = annotationDTO.description,
             groundTruth = annotationDTO.groundTruth,
-            actionId = actionId,
-            dialogId = dialogId,
             events = mutableListOf(),
             lastUpdateDate = Instant.now()
         )
@@ -354,7 +345,7 @@ object BotAdminService {
         )
 
         annotation.events.add(event)
-        dialogReportDAO.updateAnnotation(dialogId, actionId, annotation)
+        dialogReportDAO.insertAnnotation(dialogId, actionId, annotation)
         return annotation
     }
 

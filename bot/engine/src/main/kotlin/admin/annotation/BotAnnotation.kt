@@ -23,13 +23,11 @@ import java.time.Instant
 
 data class BotAnnotation(
     val _id: Id<Annotation> = newId(),
-    val actionId: String,
-    val dialogId: String,
     var state: BotAnnotationState,
     var reason: BotAnnotationReasonType?,
     var description: String,
     var groundTruth: String?,
     val events: MutableList<BotAnnotationEvent>,
-    val createdAt: Instant = Instant.now(),
+    val creationDate: Instant = Instant.now(),
     var lastUpdateDate: Instant = Instant.now(),
 )

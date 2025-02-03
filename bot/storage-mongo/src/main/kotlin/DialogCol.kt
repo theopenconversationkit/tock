@@ -352,8 +352,7 @@ internal data class DialogCol(
                     id,
                     date,
                     state,
-                    botMetadata,
-                    annotation
+                    botMetadata
                 )
         }
     }

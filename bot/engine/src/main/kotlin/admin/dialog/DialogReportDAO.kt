@@ -40,6 +40,7 @@ interface DialogReportDAO {
     fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
 
     // ANNOTATION FUNCTIONS
+    fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
     fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
 
     fun updateAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
@@ -48,6 +49,6 @@ interface DialogReportDAO {
     fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent)
     fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String)
     fun annotationExists(dialogId: String, actionId: String): Boolean
-    fun getAnnotation(dialogId: String, actionId: String, annotationId: String): BotAnnotation?
-    fun getAnnotationByActionId(dialogId: String, actionId: String): BotAnnotation?
+    fun findAnnotation(dialogId: String, actionId: String): BotAnnotation?
+    fun findAnnotationById(dialogId: String, actionId: String, annotationId: String): BotAnnotation?
 }

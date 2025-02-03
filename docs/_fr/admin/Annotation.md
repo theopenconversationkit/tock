@@ -172,7 +172,7 @@ Une annotation ne peut pas être créée si une annotation existe déjà pour la
 - `state`: Obligatoire
 - `description`: Obligatoire
 - `reason`: Facultatif
-- `ground_truth`: Facultatif
+- `groundTruth`: Facultatif
 
 **Corps:**
 ```json
