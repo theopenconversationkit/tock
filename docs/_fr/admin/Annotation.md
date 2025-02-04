@@ -243,8 +243,7 @@ Crée un nouvel event de type comment.
 
 **[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId**
 
-Met à jour un event.  
-On ne peut pas mettre à jour un event de type `comment`.
+Met à jour une annotation.
 
 Une mise à jour de lastUpdateDate sera faite lors de chaque modification.
 Une comparaison est faite sur le back-end entre l'objet stocké sur Mongo et l'objet retourné par le front our déterminer les changements opérés.  
@@ -258,53 +257,52 @@ Une comparaison est faite sur le back-end entre l'objet stocké sur Mongo et l'o
 **Corps Example**
 ```json
 {
-  "state": "REVIEW_NEEDED"
+  "state": "ANOMALY",
+  "description": "Test",
+  "reason": "INACCURATE_ANSWER",
+  "groundTruth" : "Test groundTruth"
 }
 ```
 
 **Response Example:**
 ```json
 {
-  "_id": "67989c4c4efa5148b2818ac7",
-  "actionId": "6797fc4fe8fd32779aa7cae7",
-  "dialogId": "6797fc4de8fd32779aa7cae0",
-  "state": "REVIEW_NEEDED",
+  "_id": "67a210b8f8a965501c20eab0",
+  "state": "ANOMALY",
   "reason": "INACCURATE_ANSWER",
-  "description": "Il devrait suggérer de bloquer la carte en urgence.",
+  "description": "Test",
+  "groundTruth": "Test groundTruth",
   "events": [
     {
-      "eventId": "67989c8a4efa5148b2818ac8",
-      "creationDate": "2025-01-28T08:59:54.980Z",
-      "lastUpdateDate": "2025-01-28T08:59:54.980Z",
+      "eventId": "67a210b8f8a965501c20eab1",
+      "creationDate": "2025-02-04T13:06:00.055Z",
+      "lastUpdateDate": "2025-02-04T13:06:00.055Z",
       "user": "admin@app.com",
-      "comment": "Le problème est en cours de traitement",
-      "type": "COMMENT"
+      "after": "RESOLVED",
+      "type": "STATE"
     },
     {
-      "eventId": "67989dd34efa5148b2818ac9",
-      "creationDate": "2025-01-28T09:05:23.353635673Z",
-      "lastUpdateDate": "2025-01-28T09:05:23.353642448Z",
+      "eventId": "67a210f3f8a965501c20eab2",
+      "creationDate": "2025-02-04T13:06:59.476430153Z",
+      "lastUpdateDate": "2025-02-04T13:06:59.476433924Z",
       "user": "admin@app.com",
-      "before": "ANOMALY",
-      "after": "REVIEW_NEEDED",
+      "before": "RESOLVED",
+      "after": "ANOMALY",
       "type": "STATE"
     }
   ],
-  "createdAt": "2025-01-28T08:58:52.060Z",
-  "lastUpdateDate": "2025-01-28T09:05:23.353695739Z"
+  "creationDate": "2025-02-04T13:06:00.055Z",
+  "lastUpdateDate": "2025-02-04T13:06:59.476452642Z"
 }
 ```
 
 **[DELETE] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId**
-
-Supprime un event.  
-On ne peut supprimer qu'un event de type `comment`.
+Supprime un event de type comment.
 
 **Path Parameter**
 - `botId` : Identifiant unique du bot.
 - `dialogId` : Identifiant unique du dialogue.
 - `actionId` : Identifiant unique de l’action.
-- `annotationId` : Identifiant unique de l'annotation.
 - `eventId` : Identifiant unique de l'event.
 
 **Response Example:**
@@ -313,5 +311,14 @@ On ne peut supprimer qu'un event de type `comment`.
   "message": "Event deleted successfully"
 }
 ```
+
+**[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events/:eventId**
+Met à jour un event de type comment.
+
+**Path Parameters** :
+- `botId` : Identifiant unique du bot.
+- `dialogId` : Identifiant unique du dialogue.
+- `actionId` : Identifiant unique de l'action.
+- `eventId` : Identifiant unique de l'event.
 
 The endpoint /dialogs/search will also reply with the action annotations.

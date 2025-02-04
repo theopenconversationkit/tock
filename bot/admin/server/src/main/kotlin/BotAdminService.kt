@@ -218,7 +218,6 @@ object BotAdminService {
     fun deleteAnnotationEvent(
         dialogId: String,
         actionId: String,
-        annotationId: String,
         eventId: String,
         user: String
     ) {

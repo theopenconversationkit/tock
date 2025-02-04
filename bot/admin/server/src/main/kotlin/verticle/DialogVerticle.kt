@@ -215,7 +215,6 @@ class DialogVerticle {
                 BotAdminService.deleteAnnotationEvent(
                     context.path("dialogId"),
                     context.path("actionId"),
-                    context.path("annotationId"),
                     context.path("eventId"),
                     context.userLogin
                 )
