@@ -22,7 +22,10 @@
       </div>
     </div>
 
-    <div class="d-flex align-items-center">
+    <div
+      *ngIf="event.canEdit"
+      class="d-flex align-items-center"
+    >
       <button
         *ngIf="!event._edited"
         nbButton

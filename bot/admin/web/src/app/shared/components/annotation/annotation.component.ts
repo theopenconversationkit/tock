@@ -212,7 +212,7 @@ export class AnnotationComponent implements OnInit {
     const modifiedEvent = deepCopy(event);
     modifiedEvent.comment = value;
 
-    const url = `/bots/${this.stateService.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation/events/${event.eventId}`;
+    const url = `/bots/${this.stateService.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation/${this.actionReport.annotation._id}/events/${event.eventId}`;
 
     this.loading = true;
 

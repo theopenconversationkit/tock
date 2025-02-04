@@ -38,6 +38,7 @@ export interface AnnotationEvent {
   before: any;
   after: any;
   comment?: string;
+  canEdit?: boolean;
   _edited?: boolean;
 }
 
