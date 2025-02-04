@@ -18,7 +18,6 @@ package ai.tock.bot.admin.dialog
 
 import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
-import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.NlpCallStats
@@ -36,14 +35,11 @@ interface DialogReportDAO {
     fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
 
     fun getDialog(id: Id<Dialog>): DialogReport?
-
+    fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
     fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
 
     // ANNOTATION FUNCTIONS
     fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
-    fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
-
-    fun updateAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
     fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent)
     fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent?
     fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent)

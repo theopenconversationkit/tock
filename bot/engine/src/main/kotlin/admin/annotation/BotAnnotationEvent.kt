@@ -35,6 +35,7 @@ import java.time.Instant
     JsonSubTypes.Type(value = BotAnnotationEventGroundTruth::class, name = "GROUND_TRUTH"),
     JsonSubTypes.Type(value = BotAnnotationEventReason::class, name = "REASON"),
     JsonSubTypes.Type(value = BotAnnotationEventDescription::class, name = "DESCRIPTION"),
+    JsonSubTypes.Type(value = BotAnnotationEventDescription::class, name = "COMMENT"),
 )
 abstract class BotAnnotationEvent (
     open val eventId: Id<BotAnnotationEvent>,
