@@ -103,6 +103,11 @@ export class AnnotationComponent implements OnInit {
     return value;
   }
 
+  getTextAreaNbRows() {
+    if (!this.actionReport.annotation?._id) return 14;
+    return 4;
+  }
+
   sortEvents(): void {
     this.actionReport.annotation?.events?.sort((a, b) => {
       return new Date(b.lastUpdateDate).valueOf() - new Date(a.lastUpdateDate).valueOf();

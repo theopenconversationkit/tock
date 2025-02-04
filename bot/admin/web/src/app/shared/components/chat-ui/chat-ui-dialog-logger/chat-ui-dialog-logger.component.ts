@@ -118,6 +118,10 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     return this.dialog.actions.filter((action) => action.isBot() && action.metadata?.isGenAiRagAnswer).length;
   }
 
+  nbAnnotations(): number {
+    return this.dialog.actions.filter((action) => !!action.annotation).length;
+  }
+
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
@@ -177,7 +181,7 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
   }
 
-  containsReport(action: ActionReport): boolean {
+  containsAnnotation(action: ActionReport): boolean {
     return !!action.annotation;
   }
 

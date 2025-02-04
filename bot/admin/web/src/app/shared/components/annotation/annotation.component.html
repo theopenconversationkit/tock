@@ -72,7 +72,7 @@
               nbInput
               fullWidth
               fieldSize="small"
-              rows="4"
+              [rows]="getTextAreaNbRows()"
               placeholder="Add a description here"
             ></textarea>
           </tock-form-control>
@@ -88,7 +88,7 @@
               nbInput
               fullWidth
               fieldSize="small"
-              rows="4"
+              [rows]="getTextAreaNbRows()"
               placeholder="Add ground truth here"
             ></textarea>
           </tock-form-control>
@@ -139,7 +139,10 @@
       </ng-container>
     </nb-card-body>
 
-    <div class="add-comment pt-2 pb-3 px-4 border-top">
+    <div
+      class="pt-2 pb-3 px-4"
+      [ngClass]="{ 'add-comment-shadow': actionReport.annotation?.events?.length > 1 }"
+    >
       <tock-form-control
         label="Add a comment"
         name="comment"

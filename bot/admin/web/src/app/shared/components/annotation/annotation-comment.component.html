@@ -27,7 +27,7 @@
         *ngIf="!event._edited"
         nbButton
         ghost
-        size="tiny"
+        size="small"
         (click)="edit()"
         nbTooltip="Edit this comment"
       >
@@ -37,7 +37,7 @@
         *ngIf="!event._edited"
         nbButton
         ghost
-        size="tiny"
+        size="small"
         status="danger"
         (click)="delete()"
         nbTooltip="Delete this comment"
@@ -50,7 +50,7 @@
         status="success"
         nbButton
         ghost
-        size="tiny"
+        size="small"
         (click)="submit()"
         nbTooltip="Submit changes"
         [disabled]="!commentSubmittable()"
@@ -62,7 +62,7 @@
         status="warning"
         nbButton
         ghost
-        size="tiny"
+        size="small"
         status="danger"
         (click)="cancel()"
         nbTooltip="Cancel"

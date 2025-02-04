@@ -41,6 +41,18 @@
       ></nb-icon>
       {{ nbRagAnswers() }}
     </div>
+
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of annotations"
+      [class]="nbAnnotations() > 0 ? 'text-warning' : ''"
+    >
+      <nb-icon
+        icon="exclamation-triangle-fill"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbAnnotations() }}
+    </div>
   </div>
 
   <button
@@ -160,7 +172,7 @@
             <nb-icon icon="link"></nb-icon>
           </button>
 
-          <div *ngIf="containsReport(action); else does_not_contain_a_report">
+          <div *ngIf="containsAnnotation(action); else does_not_contain_a_report">
             <button
               nbButton
               size="small"
