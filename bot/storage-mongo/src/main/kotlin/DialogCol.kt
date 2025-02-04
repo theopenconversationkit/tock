@@ -282,7 +282,7 @@ internal data class DialogCol(
     data class SendSentenceMongoWrapper(
             val text: String?,
             val customMessage: Boolean = false,
-            val nlpStats: Boolean = false
+            val nlpStats: Boolean = false,
     ) : ActionMongoWrapper() {
 
         constructor(sentence: SendSentence) :
@@ -309,7 +309,8 @@ internal data class DialogCol(
                         state,
                         botMetadata,
                         customMessage,
-                        nlpStats
+                        nlpStats,
+                        annotation
                 )
             } else {
                 SendSentence(
@@ -352,7 +353,8 @@ internal data class DialogCol(
                     id,
                     date,
                     state,
-                    botMetadata
+                    botMetadata,
+                    annotation
                 )
         }
     }

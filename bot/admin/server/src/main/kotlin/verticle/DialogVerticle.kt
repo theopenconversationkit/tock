@@ -156,7 +156,7 @@ class DialogVerticle {
 
             blockingJsonPost(PATH_DIALOGS_SEARCH, setOf(TockUserRole.botUser)) { context, query: DialogsSearchQuery ->
                 if (context.organization == query.namespace) {
-                    BotAdminService.search(query)
+                    BotAdminService.searchWithCommentRights(query, context.userLogin)
                 } else {
                     unauthorized()
                 }

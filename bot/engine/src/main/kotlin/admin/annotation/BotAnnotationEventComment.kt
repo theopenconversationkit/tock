@@ -25,5 +25,6 @@ data class BotAnnotationEventComment(
     override val creationDate: Instant,
     override val lastUpdateDate: Instant,
     override val user: String,
-    val comment: String
+    val comment: String,
+    val canEdit: Boolean = false,
 ) : BotAnnotationEvent(eventId, BotAnnotationEventType.COMMENT, creationDate, lastUpdateDate, user)

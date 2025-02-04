@@ -381,6 +381,7 @@ object BotAdminService {
         return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
     }
 
+    // Méthode existante qui reste inchangée
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
         return dialogReportDAO.search(query.toDialogReportQuery())
             .run {
@@ -410,13 +411,35 @@ object BotAdminService {
                             )
                         }
                     )
-                }
-
-                // Add nlp stats
-                searchResult.copy(
+                }.copy(
                     nlpStats = dialogReportDAO.getNlpStats(searchResult.dialogs.map { it.id }, query.namespace)
                 )
             }
+    }
+
+    fun searchWithCommentRights(query: DialogsSearchQuery, userLogin: String): DialogReportQueryResult {
+        return search(query).copy(
+            dialogs = search(query).dialogs.map { dialog ->
+                dialog.copy(
+                    actions = dialog.actions.map { action ->
+                        action.copy(
+                            annotation = action.annotation?.let { annotation ->
+                                annotation.copy(
+                                    events = annotation.events.map { event ->
+                                        when (event) {
+                                            is BotAnnotationEventComment -> event.copy(
+                                                canEdit = event.user == userLogin
+                                            )
+                                            else -> event
+                                        }
+                                    }.toMutableList()
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+        )
     }
 
     fun getIntentsInDialogs(namespace: String,nlpModel : String) : Set<String>{

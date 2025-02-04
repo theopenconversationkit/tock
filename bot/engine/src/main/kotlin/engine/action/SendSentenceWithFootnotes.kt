@@ -35,7 +35,8 @@ open class SendSentenceWithFootnotes(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata()
+    metadata: ActionMetadata = ActionMetadata(),
+    override var annotation: BotAnnotation? = null
 ) :
     Action(playerId, recipientId, applicationId, id, date, state, metadata) {
     override fun toMessage(): Message = SentenceWithFootnotes(text.toString(), footnotes.toList())

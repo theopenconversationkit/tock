@@ -20,5 +20,6 @@ data class BotAnnotationEventDTO(
     val type: BotAnnotationEventType,
     val comment: String? = null,
     val before: String?,
-    val after: String?
+    val after: String?,
+    val canEdit: Boolean? = null,
 )
