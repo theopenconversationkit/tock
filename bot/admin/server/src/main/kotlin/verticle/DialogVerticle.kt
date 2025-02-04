@@ -21,7 +21,6 @@ import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
-import ai.tock.bot.admin.annotation.BotAnnotationUpdateDTO
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.CsvCodec
@@ -180,12 +179,12 @@ class DialogVerticle {
             }
 
             // MODIFY ANNOTATION
-            blockingJsonPut(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, updatedAnnotationDTO: BotAnnotationUpdateDTO ->
+            blockingJsonPut(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
                 BotAdminService.updateAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
                     context.path("annotationId"),
-                    updatedAnnotationDTO,
+                    annotationDTO,
                     context.userLogin
                 )
             }

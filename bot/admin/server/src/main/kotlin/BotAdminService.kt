@@ -236,7 +236,7 @@ object BotAdminService {
         dialogId: String,
         actionId: String,
         annotationId: String,
-        updatedAnnotationDTO: BotAnnotationUpdateDTO,
+        annotationDTO: BotAnnotationDTO,
         user: String
     ): BotAnnotation {
         val existingAnnotation = dialogReportDAO.findAnnotationById(dialogId, actionId, annotationId)
@@ -244,68 +244,60 @@ object BotAdminService {
 
         val events = mutableListOf<BotAnnotationEvent>()
 
-        updatedAnnotationDTO.state?.let { newState ->
-            if (existingAnnotation.state != newState) {
-                events.add(
-                    BotAnnotationEventState(
-                        eventId = newId(),
-                        creationDate = Instant.now(),
-                        lastUpdateDate = Instant.now(),
-                        user = user,
-                        before = existingAnnotation.state.name,
-                        after = newState.name
-                    )
+        if (existingAnnotation.state != annotationDTO.state) {
+            events.add(
+                BotAnnotationEventState(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.state.name,
+                    after = annotationDTO.state.name
                 )
-                existingAnnotation.state = newState
-            }
+            )
+            existingAnnotation.state = annotationDTO.state
         }
 
-        updatedAnnotationDTO.reason?.let { newReason ->
-            if (existingAnnotation.reason != newReason) {
-                events.add(
-                    BotAnnotationEventReason(
-                        eventId = newId(),
-                        creationDate = Instant.now(),
-                        lastUpdateDate = Instant.now(),
-                        user = user,
-                        before = existingAnnotation.reason?.name,
-                        after = newReason.name
-                    )
+        if (existingAnnotation.reason != annotationDTO.reason) {
+            events.add(
+                BotAnnotationEventReason(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.reason?.name,
+                    after = annotationDTO.reason?.name
                 )
-                existingAnnotation.reason = newReason
-            }
+            )
+            existingAnnotation.reason = annotationDTO.reason
         }
 
-        updatedAnnotationDTO.groundTruth?.let { newGroundTruth ->
-            if (existingAnnotation.groundTruth != newGroundTruth) {
-                events.add(
-                    BotAnnotationEventGroundTruth(
-                        eventId = newId(),
-                        creationDate = Instant.now(),
-                        lastUpdateDate = Instant.now(),
-                        user = user,
-                        before = existingAnnotation.groundTruth,
-                        after = newGroundTruth
-                    )
+        if (existingAnnotation.groundTruth != annotationDTO.groundTruth) {
+            events.add(
+                BotAnnotationEventGroundTruth(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.groundTruth,
+                    after = annotationDTO.groundTruth
                 )
-                existingAnnotation.groundTruth = newGroundTruth
-            }
+            )
+            existingAnnotation.groundTruth = annotationDTO.groundTruth
         }
 
-        updatedAnnotationDTO.description?.let { newDescription ->
-            if (existingAnnotation.description != newDescription) {
-                events.add(
-                    BotAnnotationEventDescription(
-                        eventId = newId(),
-                        creationDate = Instant.now(),
-                        lastUpdateDate = Instant.now(),
-                        user = user,
-                        before = existingAnnotation.description,
-                        after = newDescription
-                    )
+        if (existingAnnotation.description != annotationDTO.description) {
+            events.add(
+                BotAnnotationEventDescription(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = existingAnnotation.description,
+                    after = annotationDTO.description
                 )
-                existingAnnotation.description = newDescription
-            }
+            )
+            existingAnnotation.description = annotationDTO.description
         }
 
         existingAnnotation.lastUpdateDate = Instant.now()
