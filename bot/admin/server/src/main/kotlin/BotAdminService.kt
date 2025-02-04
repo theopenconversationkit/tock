@@ -178,7 +178,7 @@ object BotAdminService {
 
         dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
 
-        return event
+        return event.copy(canEdit = true)
     }
 
     fun updateAnnotationEvent(
@@ -372,7 +372,6 @@ object BotAdminService {
         return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
     }
 
-    // Méthode existante qui reste inchangée
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
         return dialogReportDAO.search(query.toDialogReportQuery())
             .run {
@@ -409,23 +408,33 @@ object BotAdminService {
     }
 
     fun searchWithCommentRights(query: DialogsSearchQuery, userLogin: String): DialogReportQueryResult {
-        return search(query).copy(
-            dialogs = search(query).dialogs.map { dialog ->
-                dialog.copy(
-                    actions = dialog.actions.map { action ->
-                        action.copy(
-                            annotation = action.annotation?.let { annotation ->
-                                annotation.copy(
-                                    events = annotation.events.map { event ->
-                                        when (event) {
-                                            is BotAnnotationEventComment -> event.copy(
-                                                canEdit = event.user == userLogin
-                                            )
-                                            else -> event
-                                        }
-                                    }.toMutableList()
-                                )
-                            }
+        val result = search(query)
+        return result.copy(
+            dialogs = result.dialogs.map { dialog ->
+                processAnnotationsForUser(dialog, userLogin)
+            }
+        )
+    }
+
+    fun getDialogWithCommentRights(id: Id<Dialog>, userLogin: String): DialogReport? {
+        return dialogReportDAO.getDialog(id)?.let { dialog ->
+            processAnnotationsForUser(dialog, userLogin)
+        }
+    }
+
+    private fun processAnnotationsForUser(dialog: DialogReport, userLogin: String): DialogReport {
+        return dialog.copy(
+            actions = dialog.actions.map { action ->
+                action.copy(
+                    annotation = action.annotation?.let { annotation ->
+                        annotation.copy(
+                            events = annotation.events.map { event ->
+                                if (event is BotAnnotationEventComment) {
+                                    event.copy(canEdit = event.user == userLogin)
+                                } else {
+                                    event
+                                }
+                            }.toMutableList()
                         )
                     }
                 )

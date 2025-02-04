@@ -297,7 +297,7 @@ internal data class DialogCol(
         }
 
         override fun toAction(dialogId: Id<Dialog>): Action {
-            return if (customMessage || nlpStats) {
+            return if (customMessage || nlpStats || annotation != null) {
                 SendSentenceNotYetLoaded(
                         dialogId,
                         playerId,
@@ -322,7 +322,7 @@ internal data class DialogCol(
                         id,
                         date,
                         state,
-                        botMetadata
+                        botMetadata,
                 )
             }
         }

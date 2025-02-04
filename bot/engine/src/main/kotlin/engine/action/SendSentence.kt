@@ -46,6 +46,7 @@ open class SendSentence(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
     open var nlpStats: NlpCallStats? = null,
+    override var annotation: BotAnnotation? = null,
     /**
      * Used by analysed nlp (ie Alexa).
      */

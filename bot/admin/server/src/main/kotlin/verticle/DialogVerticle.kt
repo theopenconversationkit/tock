@@ -138,7 +138,10 @@ class DialogVerticle {
             blockingJsonGet(PATH_DIALOG, setOf(TockUserRole.botUser)) { context ->
                 val app = FrontClient.getApplicationById(context.pathId("applicationId"))
                 if (context.organization == app?.namespace) {
-                    dialogReportDAO.getDialog(context.path("dialogId").toId())
+                    BotAdminService.getDialogWithCommentRights(
+                        context.path("dialogId").toId(),
+                        context.userLogin
+                    )
                 } else {
                     unauthorized()
                 }
