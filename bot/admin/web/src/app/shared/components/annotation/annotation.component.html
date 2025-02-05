@@ -3,21 +3,51 @@
     class="min-width-90vw"
     [nbSpinner]="loading"
   >
-    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      <div>Annotation</div>
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Close"
-        (click)="cancel()"
-      >
-        <nb-icon icon="x-lg"></nb-icon>
-      </button>
+    <nb-card-header>
+      <div class="d-flex gap-1 justify-content-between align-items-center">
+        Annotation
+
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="cancel()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
     </nb-card-header>
 
     <nb-card-body>
       <div class="row">
+        <div class="col-12 pb-3 mb-3 border-bottom">
+          <div
+            *ngIf="question"
+            class="ellipsis font-size-small"
+            [nbTooltip]="question"
+          >
+            <span class="text-muted font-weight-bold">Question:&nbsp;</span>
+            <q>{{ question }}</q>
+          </div>
+          <div
+            *ngIf="condensedQuestion"
+            class="ellipsis font-size-small"
+            [nbTooltip]="condensedQuestion"
+          >
+            <span class="text-muted font-weight-bold">Condensed question:&nbsp;</span>
+            <q>{{ condensedQuestion }}</q>
+          </div>
+          <div
+            *ngIf="answer"
+            class="ellipsis font-size-small"
+            [nbTooltip]="answer"
+          >
+            <span class="text-muted font-weight-bold">Answer:&nbsp;</span>
+            <q>{{ answer }}</q>
+          </div>
+        </div>
+
         <div class="col-12 col-xl-6">
           <tock-form-control
             label="State"
@@ -96,10 +126,42 @@
       </div>
 
       <ng-container *ngIf="actionReport.annotation?.events?.length">
-        <label class="text-mitigated font-weight-bold">Changes & comments</label>
+        <div class="d-flex gap-1 justify-content-between align-items-center">
+          <span
+            class="text-mitigated font-weight-bold pointer"
+            (click)="toggleEventsSortingDirection()"
+            nbTooltip="Click to reverse order"
+          >
+            Changes & comments
+            <nb-icon
+              class="align-middle"
+              [icon]="eventsSortingDirection === 'asc' ? 'chevron-down-outline' : 'chevron-up-outline'"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </span>
 
-        <div class="events-wrapper mt-2">
-          <div *ngFor="let event of actionReport.annotation.events">
+          <div>
+            <nb-toggle
+              [(ngModel)]="hideChangeEvents"
+              [ngModelOptions]="{ standalone: true }"
+              class="nb-toggle-small mt-2"
+              status="basic"
+              [nbTooltip]="hideChangeEvents ? 'Click to show change events' : 'Click to hide change events'"
+            >
+              Hide change events
+            </nb-toggle>
+          </div>
+        </div>
+
+        <div class="events-wrapper">
+          <div
+            *ngIf="getFilteredEvents().length < 1"
+            class="text-center text-muted py-2"
+          >
+            No data to display
+          </div>
+
+          <div *ngFor="let event of getFilteredEvents()">
             <!-- COMMENTS -->
             <tock-annotation-comment
               *ngIf="event.type === annotationEventType.COMMENT"

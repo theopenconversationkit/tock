@@ -14,25 +14,25 @@ export class AnnotationCommentComponent {
 
   @ViewChild('commentEditInput') commentEditInput: ElementRef;
 
-  edit() {
+  edit(): void {
     this.event._edited = true;
   }
 
-  commentSubmittable() {
+  commentSubmittable(): boolean {
     const currVal = this.commentEditInput?.nativeElement?.value;
     return currVal && currVal.trim().length && currVal !== this.event.comment;
   }
 
-  cancel() {
+  cancel(): void {
     this.event._edited = false;
   }
 
-  submit() {
+  submit(): void {
     this.commentChange.emit({ event: this.event, value: this.commentEditInput.nativeElement.value });
     this.cancel();
   }
 
-  delete() {
+  delete(): void {
     this.commentDelete.emit(this.event);
   }
 }

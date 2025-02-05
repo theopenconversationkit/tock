@@ -130,7 +130,7 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
 
       if (questionAction.message.isDebug()) {
         const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condense_question || actionDebug.data.user_question;
+        question = actionDebug.data.condensed_question || actionDebug.data.user_question;
       } else if (!questionAction.isBot()) {
         const questionSentence = questionAction.message as unknown as Sentence;
         question = questionSentence.text;
