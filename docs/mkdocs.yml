@@ -1,8 +1,8 @@
 site_name: My Docs
-site_url: https://titouvgx.github.io/tock/
 use_directory_urls: false
 
-repo_url: https://github.com/CreditMutuelArkea/tock/tree/1811_mkdocs_documentation_website
+repo_url : https://github.com/theopenconversationkit/tock/tree/master/ 
+
 
 theme:
   icon:
@@ -39,8 +39,8 @@ plugins:
   - tags
   - git-authors
   - git-committers:
-      repository: CreditMutuelArkea/tock
-      branch: 1811_mkdocs_documentation_website
+      repository: theopenconversationkit/tock
+      branch: master
       token: !ENV MKDOCS_GIT_COMMITTERS_APIKEY
 
   - search
@@ -81,4 +81,4 @@ markdown_extensions:
 
 
 # Configurer l'édition dynamique
-edit_uri: "https://github.com/CreditMutuelArkea/tock/tree/1811_mkdocs_documentation_website/docs/docs/"
+edit_uri: "https://github.com/theopenconversationkit/tock/tree/master/docs/docs"

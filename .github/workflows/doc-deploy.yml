@@ -79,6 +79,7 @@ jobs:
         run: |
           echo "Compilation du site MkDocs"
           cd docs
+          rm -rf site/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
           mkdocs build --site-dir site/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
 
       - name: Upload static files as artifact
