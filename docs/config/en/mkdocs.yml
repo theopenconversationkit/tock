@@ -1,0 +1,30 @@
+site_name: 'Manual'
+docs_dir: '../../docs/en'                           # Where to find the English markdown files
+site_dir: '../../generated/en'                      # Where to put the English HTML files
+
+theme:
+    name: material
+    custom_dir: '../../overrides/'                  # This is where the customization of the theme lives
+    logo: assets/images/logo.svg                    # The logo is shared by all languages
+    favicon: assets/images/favicon.ico              # The favicon is shared by all languages
+    language: en                                    # The build's language
+
+extra:                                              # Language Selection
+  alternate:  
+
+      # Switch to English
+    - name: English
+      link: /en/
+      lang: en
+
+    # Switch to French
+    - name: Français
+      link: /fr/
+      lang: fr
+
+plugins:
+  - search:                                         
+      lang: en                                      # Set language for search
+
+nav:
+- Welcome: index.md

@@ -1,0 +1,84 @@
+site_name: My Docs
+site_url: https://titouvgx.github.io/tock/
+use_directory_urls: false
+
+repo_url: https://github.com/CreditMutuelArkea/tock/tree/1811_mkdocs_documentation_website
+
+theme:
+  icon:
+    edit: material/pencil
+    view: material/eye
+    repo: fontawesome/brands/github
+  name: material
+  palette:
+    - scheme: default  
+      primary: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate  
+      primary: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.expand
+    - navigation.path
+    - palette.toggle
+    - navigation.top
+
+hooks:
+  - material/overrides/hooks/shortcodes.py
+  - hooks/copyapiswagger.py
+  - hooks/Rellinkadd.py
+
+plugins:
+  - tags
+  - git-authors
+  - git-committers:
+      repository: CreditMutuelArkea/tock
+      branch: 1811_mkdocs_documentation_website
+      token: !ENV MKDOCS_GIT_COMMITTERS_APIKEY
+
+  - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+          site_name: "Tock Documentation"
+        - locale: fr
+          name: Français
+          build: true
+          site_name: "Tock Documentation"
+  - git-revision-date-localized:
+      enable_creation_date: true
+
+extra_css:
+  - assets/css/style.css
+  - assets/css/badge.css
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - attr_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+
+# Configurer l'édition dynamique
+edit_uri: "https://github.com/CreditMutuelArkea/tock/tree/1811_mkdocs_documentation_website/docs/docs/"
