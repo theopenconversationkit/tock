@@ -1,10 +1,11 @@
 name: Deploy MkDocs
 
 on:
+  pull_request_target:
+    types: [opened]  
   push:
     branches:
-      - 1811_testpr
-      - 1811_mkdocs_documentation_website
+      - master
 
 permissions:
   contents: write
