@@ -55,7 +55,10 @@ Cette page liste en fait :
   style="width: 50px;">](../canaux#allo-media)
 [<img alt="Logo Google Chat" title="Google Chat"
    src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
-   style="width: 50px;">](../canaux#google-chat)  
+   style="width: 50px;">](../canaux#google-chat)
+[<img alt="Mattermost Logo" title="Mattermost"
+  src="../../img/mattermost.svg"
+  style="width: 50px;">](../canaux#mattermost)  
 [<img alt="Logo Web" title="Web (générique)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
  style="width: 50px;">](../canaux#web-générique)
@@ -274,6 +277,32 @@ style="width: 100px;">
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat) sur GitHub.
+
+### Google Chat
+
+<img alt="Logo Google Chat" title="Google Chat"
+src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png"
+style="width: 100px;">
+
+* **Canal** : [Google Chat](https://chat.google.com) (anciennement Google Hangouts)
+* **Type** : texte
+* **Status** : connecteur Tock utilisé hors production
+
+Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
+[connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat) sur GitHub.
+
+### Mattermost
+
+<img alt="Logo Mattermost" title="Mattermost"
+src="../../img/mattermost.svg"
+style="width: 100px;">
+
+* **Channel** : [Mattermost](https://mattermost.com/)
+* **Type** : text
+* **Status** : Tock connector not used for production (no use case yet)
+
+Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
+[connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost) sur GitHub.
 
 ### Web (générique)
 

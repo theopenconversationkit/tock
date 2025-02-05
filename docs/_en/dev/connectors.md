@@ -54,13 +54,17 @@ This page actually lists:
   style="width: 50px;">](../connectors#allo-media)
 [<img alt="Google Chat Logo" title="Google Chat"
  src="https://cdn.zapier.com/storage/photos/bfbce5bee25b1b50d8a910c30588c61e.png" 
- style="width: 50px;">](../connectors#google-chat)  
+ style="width: 50px;">](../connectors#google-chat)
+[<img alt="Mattermost Logo" title="Mattermost"
+  src="../img/mattermost.svg"
+  style="width: 50px;">](../connectors#mattermost)  
 [<img alt="Web Logo" title="Web (generic)"
  src="https://static.vecteezy.com/system/resources/previews/000/425/842/non_2x/vector-web-search-icon.jpg" 
  style="width: 50px;">](../connectors#web-generic)
 [<img alt="Test Logo" title="Test (generic)"
  src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR_8-ubeyOzkkKclCUX3V-LSJVik_u8wtbJs6FBGWp9P19kzAQH&usqp=CAU" 
  style="width: 50px;">](../connectors#test-generic)
+
 
 - Available [toolkits leveraging the _Web connector_](../connectors#integrations-through-the-web-connector) to integrate 
 with more channels:  
@@ -266,6 +270,19 @@ style="width: 100px;">
 * **Status** : Tock connector not used for production (no use case yet)
 
 Please refer to [connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat)
+for sources and _README_ instructions.
+
+### Mattermost
+
+<img alt="Mattermost Logo" title="Mattermost"
+src="../img/mattermost.svg"
+style="width: 100px;">
+
+* **Channel** : [Mattermost](https://mattermost.com/)
+* **Type** : text
+* **Status** : Tock connector not used for production (no use case yet)
+
+Please refer to [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost)
 for sources and _README_ instructions.
 
 ### Web (generic)
