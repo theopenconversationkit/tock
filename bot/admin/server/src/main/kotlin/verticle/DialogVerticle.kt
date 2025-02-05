@@ -58,6 +58,12 @@ class DialogVerticle {
 
     private val front = FrontClient
 
+    private fun RoutingContext.checkBotId(botId: String): ApplicationDefinition? {
+        val namespace = getNamespace(this)
+        return front.getApplicationByNamespaceAndName(namespace, botId)
+            ?: throw NotFoundException("Bot $botId not found in namespace $namespace")
+    }
+
     fun configure(webVerticle: WebVerticle) {
         with(webVerticle) {
 
@@ -173,6 +179,8 @@ class DialogVerticle {
 
             // CREATE ANNOTATION
             blockingJsonPost(PATH_ANNOTATIONS, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
                 BotAdminService.createAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
@@ -183,6 +191,8 @@ class DialogVerticle {
 
             // MODIFY ANNOTATION
             blockingJsonPut(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
                 BotAdminService.updateAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
@@ -194,6 +204,8 @@ class DialogVerticle {
 
             // ADD COMMENT
             blockingJsonPost(PATH_ANNOTATION_EVENTS, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
                 BotAdminService.addCommentToAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
@@ -204,6 +216,8 @@ class DialogVerticle {
 
             // MODIFY COMMENT
             blockingJsonPut(PATH_ANNOTATION_EVENT, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
                 BotAdminService.updateAnnotationEvent(
                     context.path("dialogId"),
                     context.path("actionId"),
@@ -215,6 +229,8 @@ class DialogVerticle {
 
             // DELETE COMMENT
             blockingDelete(PATH_ANNOTATION_EVENT, setOf(TockUserRole.botUser)) { context ->
+                val botId = context.path("botId")
+                context.checkBotId(botId)
                 BotAdminService.deleteAnnotationEvent(
                     context.path("dialogId"),
                     context.path("actionId"),
