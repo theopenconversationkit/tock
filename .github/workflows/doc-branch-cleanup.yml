@@ -36,7 +36,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const workflow_id = '.github/workflows/github-actions.yml'; // Remplace par ton vrai fichier
+            const workflow_id = '.github/workflows/doc-deploy.yml'; // Remplace par ton vrai fichier
 
             console.log('Récupération des derniers artefacts');
             const runs = await github.rest.actions.listWorkflowRuns({
