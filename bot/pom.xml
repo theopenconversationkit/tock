@@ -49,6 +49,7 @@
         <module>connector-web-model</module>
         <module>connector-google-chat</module>
         <module>connector-iadvize</module>
+        <module>connector-mattermost</module>
         <module>orchestration</module>
         <module>xray</module>
 
@@ -169,6 +170,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-web-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-connector-mattermost</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
