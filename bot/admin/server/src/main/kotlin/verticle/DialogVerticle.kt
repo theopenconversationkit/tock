@@ -50,8 +50,7 @@ class DialogVerticle {
         private const val PATH_DIALOGS_INTENTS = "/dialogs/intents/:applicationId"
 
         // ANNOTATION ENDPOINTS
-        private const val PATH_ANNOTATIONS = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
-        private const val PATH_ANNOTATION = "$PATH_ANNOTATIONS/:annotationId"
+        private const val PATH_ANNOTATION = "/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation"
         private const val PATH_ANNOTATION_EVENTS = "$PATH_ANNOTATION/events"
         private const val PATH_ANNOTATION_EVENT = "$PATH_ANNOTATION_EVENTS/:eventId"
     }
@@ -178,7 +177,7 @@ class DialogVerticle {
             // --------------------------------- Annotation Routes ----------------------------------
 
             // CREATE ANNOTATION
-            blockingJsonPost(PATH_ANNOTATIONS, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
+            blockingJsonPost(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
                 BotAdminService.createAnnotation(
@@ -196,7 +195,6 @@ class DialogVerticle {
                 BotAdminService.updateAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
-                    context.path("annotationId"),
                     annotationDTO,
                     context.userLogin
                 )

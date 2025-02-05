@@ -732,9 +732,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             ?.stories
             ?.firstNotNullOfOrNull { story -> story.actions.find { it.id.toString() == actionId }?.annotation }
 
-    override fun findAnnotationById(dialogId: String, actionId: String, annotationId: String): BotAnnotation? =
-        findAnnotation(dialogId, actionId)?.takeIf { it._id.toString() == annotationId }
-
     override fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
         dialogCol.findOneById(dialogId)?.takeIf { dialog ->
             dialog.stories.any { story ->

@@ -46,5 +46,4 @@ interface DialogReportDAO {
     fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String)
     fun annotationExists(dialogId: String, actionId: String): Boolean
     fun findAnnotation(dialogId: String, actionId: String): BotAnnotation?
-    fun findAnnotationById(dialogId: String, actionId: String, annotationId: String): BotAnnotation?
 }

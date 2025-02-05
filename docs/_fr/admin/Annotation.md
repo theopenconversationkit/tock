@@ -207,7 +207,7 @@ Une annotation ne peut pas être créée si une annotation existe déjà pour la
 }
 ```
 
-**[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId/events**
+**[POST] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/events**
 
 Crée un nouvel event de type comment.
 
@@ -215,7 +215,6 @@ Crée un nouvel event de type comment.
 - `botId` : Identifiant unique du bot.
 - `dialogId` : Identifiant unique du dialogue.
 - `actionId` : Identifiant unique de l’action.
-- `annotationId` : Identifiant unique de l'annotation.
 
 **Request Body:**
 - `type`: Type de l'event: COMMENT
@@ -241,7 +240,7 @@ Crée un nouvel event de type comment.
 }
 ```
 
-**[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/:annotationId**
+**[PUT] /rest/admin/bots/:botId/dialogs/:dialogId/actions/:actionId/annotation/**
 
 Met à jour une annotation.
 
@@ -252,7 +251,6 @@ Une comparaison est faite sur le back-end entre l'objet stocké sur Mongo et l'o
 - `botId` : Identifiant unique du bot.
 - `dialogId` : Identifiant unique du dialogue.
 - `actionId` : Identifiant unique de l’action.
-- `annotationId` : Identifiant unique de l'annotation.
 
 **Corps Example**
 ```json

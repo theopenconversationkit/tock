@@ -173,7 +173,7 @@ object BotAdminService {
             creationDate = Instant.now(),
             lastUpdateDate = Instant.now(),
             user = user,
-            comment = eventDTO.comment!!
+            comment = eventDTO.comment ?: throw IllegalArgumentException("Comment required")
         )
 
         dialogReportDAO.addAnnotationEvent(dialogId, actionId, event)
@@ -234,11 +234,10 @@ object BotAdminService {
     fun updateAnnotation(
         dialogId: String,
         actionId: String,
-        annotationId: String,
         annotationDTO: BotAnnotationDTO,
         user: String
     ): BotAnnotation {
-        val existingAnnotation = dialogReportDAO.findAnnotationById(dialogId, actionId, annotationId)
+        val existingAnnotation = dialogReportDAO.findAnnotation(dialogId, actionId)
             ?: throw IllegalStateException("Annotation not found")
 
         val events = mutableListOf<BotAnnotationEvent>()
