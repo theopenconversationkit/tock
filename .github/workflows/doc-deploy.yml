@@ -22,6 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+
   build:
     if: github.event.action == 'opened' || github.event_name == 'push'
     runs-on: ubuntu-latest
