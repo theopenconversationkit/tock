@@ -9,7 +9,6 @@ permalink: /en/
 
 ![NLU interface example - qualifying a sentence](../img/favicon.png "NLU interface example - qualifying a sentence")
 
-
 **Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
 Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
