@@ -2,14 +2,14 @@ name: Deploy and Cleanup MkDocs
 
 on:
   pull_request_target:
-    types: [opened, closed]
+    types: [assigned, opened, synchronize, reopened, closed]
     paths:
       - docs/**
   push:
     branches:
       - master
       - 1811_mkdocs_documentation_website
-      - Pr003
+      - pr006
     paths:
       - docs/**
   workflow_dispatch:
@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event.action == 'opened' || github.event_name == 'push'
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +107,7 @@ jobs:
           path: docs/site
 
   deploy:
-    if: github.event.action == 'opened' || github.event_name == 'push'
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     needs: build
     permissions:
       pages: write      
