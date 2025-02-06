@@ -37,6 +37,9 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotHeaderType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveHeader
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotMediaImage
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.Executor
 import ai.tock.shared.TockProxyAuthenticator
@@ -117,7 +120,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun handleInteractiveMessage(
+    private fun handleInteractiveMessage2(
         phoneNumberId: String,
         token: String,
         messageRequest: WhatsAppCloudSendBotInteractiveMessage
@@ -127,7 +130,20 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
                 val updateButtons = action.buttons.map { button ->
                     updateButton(button)
                 }
-                sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updateButtons)
+
+                if(messageRequest.interactive.header!=null){
+                    val updateHeader = WhatsAppCloudBotInteractiveHeader(
+                        type = WhatsAppCloudBotHeaderType.image,
+                        image = WhatsAppCloudBotMediaImage(
+                            id = getRealIdImg(messageRequest, phoneNumberId, token)
+
+                        )
+                    )
+                    sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updateButtons, updateHeader)
+                }else{
+                    sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updateButtons)
+                }
+
             } else {
                 send(messageRequest) {
                     apiClient.graphApi.sendMessage(
@@ -138,6 +154,48 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
                 }
             }
         }
+    }
+
+
+    private fun handleInteractiveMessage(
+        phoneNumberId: String,
+        token: String,
+        messageRequest: WhatsAppCloudSendBotInteractiveMessage
+    ) {
+        val action = messageRequest.interactive.action ?: return sendMessage(phoneNumberId, token, messageRequest)
+        val updatedButtons = action.buttons.takeIf { !it.isNullOrEmpty() }?.map { updateButton(it) }
+        val updatedHeader = messageRequest.interactive.header?.let {
+            WhatsAppCloudBotInteractiveHeader(
+                type = WhatsAppCloudBotHeaderType.image,
+                image = WhatsAppCloudBotMediaImage(id = getRealIdImg(messageRequest, phoneNumberId, token))
+            )
+        }
+        if (updatedButtons != null) {
+            sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updatedButtons, updatedHeader)
+        } else {
+            send(messageRequest) {
+                apiClient.graphApi.sendMessage(
+                    phoneNumberId,
+                    token,
+                    messageRequest
+                ).execute()
+            }
+        }
+    }
+
+    private fun getRealIdImg(
+        messageRequest: WhatsAppCloudSendBotInteractiveMessage,
+        phoneNumberId: String,
+        token: String
+    ): String {
+
+        val headerImageId = messageRequest.interactive.header?.image?.id
+
+        val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
+
+        val res = sendMedia(client, phoneNumberId, token, headerImageId.toString(), FileType.PNG.type)
+
+        return res.id
     }
 
     private fun updateButton(button: WhatsAppCloudBotActionButton): WhatsAppCloudBotActionButton =
@@ -162,11 +220,12 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         phoneNumberId: String,
         token: String,
         messageRequest: WhatsAppCloudSendBotInteractiveMessage,
-        updatedButtons: List<WhatsAppCloudBotActionButton>
+        updatedButtons: List<WhatsAppCloudBotActionButton>,
+        updateHeader: WhatsAppCloudBotInteractiveHeader? = null
     ) {
         val updateAction = messageRequest.interactive.action?.copy(buttons = updatedButtons)
         val updateMessageRequest = messageRequest.copy(
-            interactive = messageRequest.interactive.copy(action = updateAction)
+            interactive = messageRequest.interactive.copy(header = updateHeader, action = updateAction)
         )
         send(updateMessageRequest) {
             apiClient.graphApi.sendMessage(
