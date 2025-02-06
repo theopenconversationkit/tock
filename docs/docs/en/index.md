@@ -6,7 +6,7 @@ permalink: /en/
 
 
 
-# TESTPR001
+# TESTPR02
 
 ![NLU interface example - qualifying a sentence](../img/favicon.png "NLU interface example - qualifying a sentence")
 
