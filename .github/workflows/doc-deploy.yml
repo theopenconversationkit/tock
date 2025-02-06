@@ -2,11 +2,14 @@ name: Deploy and Cleanup MkDocs
 
 on:
   pull_request_target:
-    types: [opened, closed]  
+    types: [opened, closed]
+    paths:
+      - docs/**
   push:
     branches:
       - master
-      - 1811_mkdocs_documentation_website
+    paths:
+      - docs/**
   workflow_dispatch:
     inputs:
       cleanup_branch:
@@ -139,7 +142,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: 'Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})'
-            });
 
   cleanup:
     if: github.event.action == 'closed' || github.event_name == 'workflow_dispatch'
@@ -160,7 +162,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const workflow_id = '.github/workflows/doc-deploy.yml';
+            const workflow_id = 'doc-deploy.yml';
 
             console.log('Récupération des derniers artefacts');
             const runs = await github.rest.actions.listWorkflowRuns({
