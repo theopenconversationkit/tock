@@ -128,7 +128,14 @@ jobs:
       - name: Generate URL from PR name
         id: generate-url
         run: |
-          PR_NAME=$(echo "${{ github.event.pull_request.title }}" | tr ' ' '_' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]_')
+          # On vérifie si on est sur une PR ou si c'est un push direct sur une branche
+          if [[ "${GITHUB_REF}" == refs/heads/* ]]; then
+            PR_NAME="${GITHUB_REF#refs/heads/}"
+          else
+            PR_NAME=$(echo "${{ github.event.pull_request.title }}" | tr ' ' '_' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]_')
+          fi
+          
+          # Générer l'URL complète
           echo "new_page_url=https://titouvgx.github.io/tock/${PR_NAME}/" >> $GITHUB_OUTPUT
 
       - uses: actions/github-script@v7
