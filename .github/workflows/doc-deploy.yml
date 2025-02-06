@@ -259,3 +259,6 @@ jobs:
                 repo: context.repo.repo,
                 body: `🚀 Cleanup completed for PR and associated branch: [${{ steps.determine_branch.outputs.BRANCH_NAME }}]`
               });
+            } catch (error) {
+              console.error('Erreur lors de la publication du commentaire :', error);
+            }
