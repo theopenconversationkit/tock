@@ -141,7 +141,7 @@ jobs:
               body: 'Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})'
             });
 
-  cleanup:
+    cleanup:
     if: github.event.action == 'closed' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
@@ -203,17 +203,27 @@ jobs:
           echo "📂 Contenu de l'artefact après extraction :"
           ls -R /tmp/gh-artifact-extract/
 
+      - name: Déterminer la branche à nettoyer
+        id: determine_branch
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            branch_name="${{ github.event.inputs.cleanup_branch }}"
+          else
+            branch_name="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          fi
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+          echo "🛠️ Branche ciblée pour le nettoyage : $branch_name"
+
       - name: Supprimer le dossier associé à la PR fermée
         run: |
-          branch_name="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           echo "📂 Vérification du contenu :"
           ls -l docs/site/
 
-          folder_path="docs/site/${branch_name}"
+          folder_path="docs/site/${BRANCH_NAME}"
           echo "🛠️ Dossier ciblé : $folder_path"
 
           if [ ! -d "$folder_path" ]; then
-            echo "❌ Aucun dossier trouvé pour la branche ${branch_name} !"
+            echo "❌ Aucun dossier trouvé pour la branche ${BRANCH_NAME} !"
             exit 1
           else
             rm -rf "$folder_path"
@@ -237,5 +247,5 @@ jobs:
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🚀 Cleanup completed for PR and associated branch: [${{ github.event.pull_request.head.ref }}]'
+              body: '🚀 Cleanup completed for PR and associated branch: [${{ steps.determine_branch.outputs.BRANCH_NAME }}]'
             });
