@@ -205,7 +205,6 @@ export class AnnotationComponent implements OnInit {
     let method = this.rest.post(url, formValue);
 
     if (this.actionReport.annotation?._id) {
-      url += `/${this.actionReport.annotation._id}`;
       method = this.rest.put(url, formValue);
     }
 
@@ -237,7 +236,7 @@ export class AnnotationComponent implements OnInit {
         comment: formValue.comment
       };
 
-      const url = `${this.getAnnotationBaseUrl()}/${this.actionReport.annotation._id}/events`;
+      const url = `${this.getAnnotationBaseUrl()}/events`;
 
       this.loading = true;
 
@@ -261,7 +260,7 @@ export class AnnotationComponent implements OnInit {
   }
 
   deleteComment(event: AnnotationEvent): void {
-    const url = `${this.getAnnotationBaseUrl()}/${this.actionReport.annotation._id}/events/${event.eventId}`;
+    const url = `${this.getAnnotationBaseUrl()}/events/${event.eventId}`;
 
     this.loading = true;
 
@@ -278,7 +277,7 @@ export class AnnotationComponent implements OnInit {
     const modifiedEvent = deepCopy(event);
     modifiedEvent.comment = value;
 
-    const url = `${this.getAnnotationBaseUrl()}/${this.actionReport.annotation._id}/events/${event.eventId}`;
+    const url = `${this.getAnnotationBaseUrl()}/events/${event.eventId}`;
 
     this.loading = true;
 
