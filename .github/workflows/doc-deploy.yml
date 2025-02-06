@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - master
+      - 1811_mkdocs_documentation_website
     paths:
       - docs/**
   workflow_dispatch:

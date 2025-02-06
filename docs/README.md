@@ -31,10 +31,10 @@ Ensure the GitHub token you provide has the necessary repo permissions to access
 
 ## Actions / Workflows 
 
-This project uses GitHub Actions to deploy and clean up branches, and it contains two different workflows:
+This project uses GitHub Actions to deploy and clean up branches :
 
 
-The first one is for deployment, it automatically deploys the MkDocs documentation to GitHub Pages when a push is made to certain branches. It proceeds as follows:
+The project automatically deploys the MkDocs documentation to GitHub Pages when a push is made to certain branches. It proceeds as follows:
 
 
 - Trigger: PUSH
@@ -48,8 +48,7 @@ The first one is for deployment, it automatically deploys the MkDocs documentati
 - Update the deployment URL based on the branch.
 - Add a comment in the PR (if applicable) with the link to the deployed site.
 
-
-The second one deletes the MkDocs static files from a branch after the PR is closed, or on manual command. It proceeds as follows:
+Then, if you want to close a PR or simply remove a folder from your artifact:
 
 - Trigger: PR closure or manual launch via workflow_dispatch (by selecting the branch)
 - Retrieve the repository.
