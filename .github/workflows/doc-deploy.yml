@@ -2,13 +2,14 @@ name: Deploy and Cleanup MkDocs
 
 on:
   pull_request_target:
-    types: [opened, closed]
+    types: [assigned, opened, synchronize, reopened, closed]
     paths:
       - docs/**
   push:
     branches:
       - master
       - 1811_mkdocs_documentation_website
+      - pr0010
     paths:
       - docs/**
   workflow_dispatch:
@@ -27,7 +28,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event.action == 'opened' || github.event_name == 'push'
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +107,7 @@ jobs:
           path: docs/site
 
   deploy:
-    if: github.event.action == 'opened' || github.event_name == 'push'
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     needs: build
     permissions:
       pages: write      
@@ -124,15 +125,14 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Override page_url
+      - name: Override page_url using PR branch name
         id: change-page-url
         run: |
           echo "Mise à jour de l'URL de déploiement"
-          if [[ "${GITHUB_REF}" == "refs/heads/1811_testpr" ]]; then
-            echo "new_page_url=https://titouvgx.github.io/tock/1811_testpr/" >> $GITHUB_OUTPUT
-          elif [[ "${GITHUB_REF}" == "refs/heads/1811_mkdocs_documentation_website" ]]; then
-            echo "new_page_url=https://titouvgx.github.io/tock/1811_mkdocs_documentation_website/" >> $GITHUB_OUTPUT
-          fi
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+          BASE_URL="https://titouvgx.github.io/tock/"
+          NEW_URL="${BASE_URL}${PR_BRANCH}/"
+          echo "new_page_url=$NEW_URL" >> $GITHUB_OUTPUT
 
       - uses: actions/github-script@v7
         name: Post comment
@@ -141,6 +141,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             console.log('Commentaire sur la PR :');
+            console.log(context.payload);
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
