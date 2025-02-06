@@ -42,7 +42,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const workflow_id = 'doc-deploy.yml'; 
+            const workflow_id = 'doc-deploy.yml';
 
             console.log('Récupération des derniers artefacts');
             const runs = await github.rest.actions.listWorkflowRuns({
@@ -53,7 +53,7 @@ jobs:
               per_page: 1
             });
 
-            if (runs.data.total_count === 0) { 
+            if (runs.data.total_count === 0) {
               console.log("Aucun artefact trouvé. On continue quand même.");
               return;
             }
@@ -106,7 +106,7 @@ jobs:
     if: github.event.action == 'opened' || github.event_name == 'push'
     needs: build
     permissions:
-      pages: write      
+      pages: write
       id-token: write
       issues: write
       pull-requests: write
@@ -142,13 +142,14 @@ jobs:
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})'
+              body: `Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${ { steps.change-page-url.outputs.new_page_url } })`
+            });
 
   cleanup:
     if: github.event.action == 'closed' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
-      pages: write      
+      pages: write
       id-token: write
       issues: write
       pull-requests: write
@@ -174,7 +175,7 @@ jobs:
               per_page: 1
             });
 
-            if (runs.data.total_count === 0) { 
+            if (runs.data.total_count === 0) {
               console.log("Aucun artefact trouvé. On continue quand même.");
               return;
             }
@@ -250,5 +251,5 @@ jobs:
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🚀 Cleanup completed for PR and associated branch: [${{ steps.determine_branch.outputs.BRANCH_NAME }}]'
+              body: `🚀 Cleanup completed for PR and associated branch: ${ { steps.determine_branch.outputs.BRANCH_NAME } }`
             });
