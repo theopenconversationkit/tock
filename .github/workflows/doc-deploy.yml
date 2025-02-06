@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - 1811_mkdocs_documentation_website
   workflow_dispatch:
     inputs:
       cleanup_branch:
