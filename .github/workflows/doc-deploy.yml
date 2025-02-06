@@ -145,7 +145,8 @@ jobs:
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})'
+              body: `Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})`
+            });
 
   cleanup:
     if: github.event.action == 'closed' || github.event_name == 'workflow_dispatch'
@@ -257,8 +258,8 @@ jobs:
                 issue_number: context.payload.pull_request.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `🚀 Cleanup completed for PR and associated branch: [${{ steps.determine_branch.outputs.BRANCH_NAME }}]`
+                body: `🚀 Cleanup completed for PR and associated branch: ${process.env.BRANCH_NAME}`
               });
             } catch (error) {
-              console.error('Erreur lors de la publication du commentaire :', error);
+              console.error("Erreur lors de l'ajout du commentaire de nettoyage :", error);
             }
