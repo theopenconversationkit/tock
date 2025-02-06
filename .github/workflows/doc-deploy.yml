@@ -247,20 +247,22 @@ jobs:
         with:
           path: docs/site
 
-      - name: Post cleanup comment
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request_target'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            try {
-              const response = await github.rest.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `🚀 Cleanup completed for PR and associated branch: [${{ steps.determine_branch.outputs.BRANCH_NAME }}]`
-              });
-              console.log('Commentaire publié avec succès:', response.data);
-            } catch (error) {
-              console.error('Erreur lors de la publication du commentaire :', error);
-            }
+  post_cleanup_comment:
+    uses: actions/github-script@v7
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      script: |
+        try {
+          const branchName = process.env.BRANCH_NAME;
+          const response = await github.rest.issues.createComment({
+            issue_number: context.payload.pull_request.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `🚀 Cleanup completed for PR and associated branch: [${branchName}]`
+          });
+          console.log('Commentaire publié avec succès:', response.data);
+        } catch (error) {
+          console.error('Erreur lors de la publication du commentaire :', error);
+        }
+    env:
+      BRANCH_NAME: ${{ steps.determine_branch.outputs.BRANCH_NAME }}
