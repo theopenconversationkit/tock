@@ -37,7 +37,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const workflow_id = 'doc-deploy'; 
+            const workflow_id = 'doc-deploy.yml'; 
 
             console.log('Récupération des derniers artefacts');
             const runs = await github.rest.actions.listWorkflowRuns({
