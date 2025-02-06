@@ -6,7 +6,7 @@ permalink: /en/
 
 
 
-# blabla
+# blablablabla
 
 ![NLU interface example - qualifying a sentence](../img/favicon.png "NLU interface example - qualifying a sentence")
 

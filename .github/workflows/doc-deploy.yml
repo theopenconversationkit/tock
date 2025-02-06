@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - 1811_mkdocs_documentation_website
+      - Pr003
     paths:
       - docs/**
   workflow_dispatch:
