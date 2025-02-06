@@ -132,7 +132,7 @@ def append_runs_langfuse(dataset_item, _runs_names):
                 [f'[{doc["metadata"]["title"]}]({doc["metadata"]["source"]}) : {doc["page_content"]}'
                  f'\n################################################################################'
                  f'################################################################################' for doc in
-                 trace.output["source_documents"]]))
+                 trace.output["documents"]]))
 
     return csv_line
 
@@ -276,7 +276,7 @@ def append_runs_langsmith(dataset_example, _session_ids):
             csv_line.append('')
         else:
             csv_line.append(run["outputs"]["answer"])
-            csv_line.append(','.join([doc["metadata"]["url"] for doc in run["outputs"]["source_documents"]]))
+            csv_line.append(','.join([doc["metadata"]["url"] for doc in run["outputs"]["documents"]]))
 
     return csv_line
 
