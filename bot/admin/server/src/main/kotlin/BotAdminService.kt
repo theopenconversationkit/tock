@@ -212,7 +212,7 @@ object BotAdminService {
 
         dialogReportDAO.updateAnnotationEvent(dialogId, actionId, eventId, updatedEvent)
 
-        return updatedEvent
+        return updatedEvent.copy(canEdit = updatedEvent.user == user)
     }
 
     fun deleteAnnotationEvent(
@@ -303,7 +303,15 @@ object BotAdminService {
 
         dialogReportDAO.insertAnnotation(dialogId, actionId, existingAnnotation)
 
-        return existingAnnotation
+        return existingAnnotation.copy(
+            events = existingAnnotation.events.map { event ->
+                if (event is BotAnnotationEventComment) {
+                    event.copy(canEdit = event.user == user)
+                } else {
+                    event
+                }
+            }.toMutableList()
+        )
     }
 
     fun createAnnotation(
