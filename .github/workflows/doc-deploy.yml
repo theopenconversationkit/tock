@@ -250,6 +250,10 @@ jobs:
         with:
           path: docs/site
 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
       - name: Post cleanup comment
         uses: actions/github-script@v7
         with:
