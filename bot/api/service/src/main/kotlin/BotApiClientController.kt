@@ -21,33 +21,60 @@ import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
+import ai.tock.bot.connector.web.WebConnectorRequest
+import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.engine.WebSocketController
+import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.debug
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import com.launchdarkly.eventsource.ConnectStrategy
+import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.MessageEvent
+import com.launchdarkly.eventsource.background.BackgroundEventHandler
+import com.launchdarkly.eventsource.background.BackgroundEventSource
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 import mu.KotlinLogging
+import java.net.URI
+import java.time.Instant
+import java.util.Locale
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
+private val oldWebhookBehaviour: Boolean = booleanProperty("tock_api_old_webhook_behaviour", false)
+private val logger = KotlinLogging.logger {}
 
-private class WSHolder(
+private class WSHolder {
+
+    private val response: MutableList<ResponseData> = CopyOnWriteArrayList()
+    private val seen: MutableSet<ResponseData> = CopyOnWriteArraySet()
+
     @Volatile
-    private var response: ResponseData? = null,
-    private val latch: CountDownLatch = CountDownLatch(1)
-) {
+    private var latch: CountDownLatch = CountDownLatch(1)
 
     fun receive(response: ResponseData) {
-        this.response = response
+        this.response.add(response)
         latch.countDown()
     }
 
-    fun wait(): ResponseData? {
+    @Synchronized
+    fun wait(): List<ResponseData> {
         latch.await(timeoutInSeconds, SECONDS)
-        return response
+        val r = response.sortedBy { it.botResponse?.context?.date ?: Instant.now() }
+        logger.debug { r }
+        if (r.lastOrNull()?.botResponse?.context?.lastResponse == false) {
+            latch = CountDownLatch(1)
+        }
+        return r.filterNot { seen.contains(it) }.apply { seen.addAll(this) }
     }
 }
 
@@ -105,25 +132,46 @@ internal class BotApiClientController(
         client?.send(RequestData(configuration = true))?.botConfiguration
             ?: sendWithWebSocket(RequestData(configuration = true))?.botConfiguration
 
-    fun send(userRequest: UserRequest): ResponseData? {
+    fun send(userRequest: UserRequest, sendResponse: (ResponseData?) -> Unit) {
         val request = RequestData(userRequest)
-        return if (client != null) {
-            client.send(request)
+        if (client != null) {
+            sendWithWebhook(request, sendResponse)
         } else {
-            sendWithWebSocket(request) ?: error("no webhook set and no response from websocket")
+            sendWithWebSocket(request, sendResponse) ?: error("no webhook set and no response from websocket")
         }
     }
 
-    private fun sendWithWebSocket(request: RequestData): ResponseData? {
+    private fun sendWithWebhook(request: RequestData, sendResponse: (ResponseData?) -> Unit) {
+        client?.apply {
+            if (request.configuration == true || oldWebhookBehaviour) {
+                send(request).apply {
+                    sendResponse(this)
+                }
+            } else {
+                sendWithSse(request, sendResponse)
+            }
+        }
+    }
+
+    private fun sendWithWebSocket(request: RequestData, sendResponse: (ResponseData?) -> Unit = {}): ResponseData? {
         val pushHandler = WebSocketController.getPushHandler(apiKey)
         return if (pushHandler != null) {
             val holder = WSHolder()
             wsRepository.put(request.requestId, holder)
             logger.debug { "send request ${request.requestId}" }
             pushHandler.invoke(mapper.writeValueAsString(request))
-            holder.wait()
+            var response: ResponseData?
+            do {
+                val responses = holder.wait()
+                response = responses.lastOrNull()
+                responses.forEach {
+                    sendResponse(it)
+                }
+            } while (response?.botResponse?.context?.lastResponse == false)
+            response
         } else {
             null
         }
     }
+
 }

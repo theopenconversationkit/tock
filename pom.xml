@@ -71,6 +71,7 @@
         <google>26.52.0</google>
         <aws-sdk>1.12.780</aws-sdk>
         <pac4j>5.7.7</pac4j>
+        <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <vertx-pac4j>6.0.3</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
@@ -609,6 +610,13 @@
                 <artifactId>pac4j-cas</artifactId>
                 <version>${pac4j}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.launchdarkly</groupId>
+                <artifactId>okhttp-eventsource</artifactId>
+                <version>${okhttp-eventsource}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-unit</artifactId>

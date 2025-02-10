@@ -17,6 +17,7 @@
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.api.model.BotResponse
+import ai.tock.bot.api.model.ResponseContext
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
@@ -85,25 +86,20 @@ class BotApiHandlerTest {
     }
 
     private val clientController: BotApiClientController = mockk {
-        every { send(any()) } returns
+        every { send(any(), any()) } answers {
+            @Suppress("UNCHECKED_CAST")
+            (args[1] as (ResponseData?) -> Unit).invoke(
                 ResponseData(
                     "requestId",
                     BotResponse(
                         storyId = "storyId",
                         step = null,
                         messages = listOf(Sentence(I18nText("user text"))),
-                        context = mockk()
-                    )
-                ) andThen
-                ResponseData(
-                    "requestId",
-                    BotResponse(
-                        storyId = "storyId",
-                        step = null,
-                        messages = listOf(Sentence(I18nText("user text"))),
-                        context = mockk(),
+                        context = ResponseContext("requestId")
                     )
                 )
+            )
+        }
     }
 
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO = mockk {
@@ -162,7 +158,8 @@ class BotApiHandlerTest {
     @Test
     fun `actions history present in bus with actions`() {
         System.setProperty(
-            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "true")
+            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "true"
+        )
 
         val mockedBus: BotBus = bus.apply {
             every { bus.dialog } returns mockk {
@@ -179,7 +176,7 @@ class BotApiHandlerTest {
         handler.send(mockedBus)
 
         val slot = slot<UserRequest>()
-        verify { clientController.send(capture(slot)) }
+        verify { clientController.send(capture(slot), any()) }
 
         assertEquals(mockedBus.toUserRequest().context.actionsHistory, slot.captured.context.actionsHistory)
         assertEquals(mockedBus.toUserRequest().context.actionsHistory?.size, 2)
@@ -189,7 +186,8 @@ class BotApiHandlerTest {
     @Test
     fun `actions history property not set THEN no actions history in bus is present`() {
         System.setProperty(
-            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "false")
+            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "false"
+        )
 
         val mockedBus: BotBus = bus.apply {
             every { bus.dialog } returns mockk {
@@ -206,7 +204,7 @@ class BotApiHandlerTest {
         handler.send(mockedBus)
 
         val slot = slot<UserRequest>()
-        verify { clientController.send(capture(slot)) }
+        verify { clientController.send(capture(slot), any()) }
 
         assertEquals(null, slot.captured.context.actionsHistory)
         assertEquals(mockedBus.toUserRequest().context.actionsHistory?.size, null)
@@ -216,7 +214,8 @@ class BotApiHandlerTest {
     @Test
     fun `actions history property set and no actions history in bus`() {
         System.setProperty(
-            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "true")
+            TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "true"
+        )
 
         val mockedBus: BotBus = bus.apply {
             every { bus.dialog } returns mockk {
@@ -230,10 +229,10 @@ class BotApiHandlerTest {
         handler.send(mockedBus)
 
         val slot = slot<UserRequest>()
-        verify { clientController.send(capture(slot)) }
+        verify { clientController.send(capture(slot), any()) }
 
         assertEquals(emptyList(), slot.captured.context.actionsHistory)
-        assertEquals( 0,mockedBus.toUserRequest().context.actionsHistory?.size)
+        assertEquals(0, mockedBus.toUserRequest().context.actionsHistory?.size)
         assertTrue(mockedBus.toUserRequest().context.actionsHistory != null)
     }
 
