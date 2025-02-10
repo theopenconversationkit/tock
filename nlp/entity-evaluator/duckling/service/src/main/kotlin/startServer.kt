@@ -21,6 +21,6 @@ import ai.tock.shared.vertx.vertx
 /**
  * Server start class.
  */
-fun main(args: Array<String>) {
+fun main() {
     vertx.deployVerticle(DucklingVerticle())
 }

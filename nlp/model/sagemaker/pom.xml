@@ -28,7 +28,7 @@
     <description>Sagemaker client for Tock NLP Model</description>
 
     <properties>
-        <aws.version>2.29.43</aws.version>
+        <aws.version>2.30.16</aws.version>
     </properties>
 
     <dependencies>
