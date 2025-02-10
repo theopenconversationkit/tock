@@ -597,7 +597,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
                     if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
-                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null
+                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
+                    //if (query.withAnnotations == true) Stories.actions.annotation ne null else null
+                    //if (query.withAnnotations == null || query.withAnnotations == false) null else Stories.actions.annotation null
+                    if (query.withAnnotations == true) Stories.actions.annotation. true else null
                 )
                 logger.debug { "dialog search query: $filter" }
                 val c = dialogCol.withReadPreference(secondaryPreferred())

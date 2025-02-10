@@ -36,7 +36,8 @@ data class DialogsSearchQuery(
     val ratings: Set<Int> = emptySet(),
     val applicationId: String?,
     val intentsToHide: Set<String> = emptySet(),
-    val isGenAiRagDialog: Boolean?
+    val isGenAiRagDialog: Boolean?,
+    val withAnnotations: Boolean?,
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -57,7 +58,8 @@ data class DialogsSearchQuery(
             ratings = ratings,
             applicationId = applicationId,
             intentsToHide = intentsToHide,
-            isGenAiRagDialog = isGenAiRagDialog
+            isGenAiRagDialog = isGenAiRagDialog,
+            withAnnotations = withAnnotations,
         )
     }
 }

@@ -60,5 +60,7 @@ data class DialogReportQuery(
 
     val intentsToHide : Set<String> =  emptySet(),
 
-    val isGenAiRagDialog: Boolean? = null
+    val isGenAiRagDialog: Boolean? = null,
+
+    val withAnnotations: Boolean? = null
 )
