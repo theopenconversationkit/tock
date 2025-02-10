@@ -63,9 +63,6 @@ import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.MongoOperator.*
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
@@ -598,9 +595,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
                     if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
                     if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
-                    //if (query.withAnnotations == true) Stories.actions.annotation ne null else null
-                    //if (query.withAnnotations == null || query.withAnnotations == false) null else Stories.actions.annotation null
-                    if (query.withAnnotations == true) Stories.actions.annotation. true else null
+                    if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null
                 )
                 logger.debug { "dialog search query: $filter" }
                 val c = dialogCol.withReadPreference(secondaryPreferred())

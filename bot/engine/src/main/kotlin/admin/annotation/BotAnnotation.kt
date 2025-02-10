@@ -17,12 +17,9 @@
 package ai.tock.bot.admin.annotation
 
 
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import java.time.Instant
 
 data class BotAnnotation(
-    val _id: Id<Annotation> = newId(),
     var state: BotAnnotationState,
     var reason: BotAnnotationReasonType?,
     var description: String,
