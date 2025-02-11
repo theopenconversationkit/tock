@@ -41,7 +41,8 @@ data class DialogsSearchQuery(
     val isGenAiRagDialog: Boolean?,
     val withAnnotations: Boolean?,
     val annotationStates: Set<BotAnnotationState> = emptySet(),
-    val annotationReasons: Set<BotAnnotationReasonType> = emptySet()
+    val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),
+    val annotationSort: List<Pair<String, Boolean>> = emptyList(),
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -65,7 +66,8 @@ data class DialogsSearchQuery(
             isGenAiRagDialog = isGenAiRagDialog,
             withAnnotations = withAnnotations,
             annotationStates = annotationStates,
-            annotationReasons = annotationReasons
+            annotationReasons = annotationReasons,
+            annotationSort = annotationSort,
         )
     }
 }

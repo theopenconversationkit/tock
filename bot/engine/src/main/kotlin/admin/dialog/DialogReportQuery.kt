@@ -66,5 +66,6 @@ data class DialogReportQuery(
 
     val withAnnotations: Boolean? = null,
     val annotationStates: Set<BotAnnotationState> = emptySet(),
-    val annotationReasons: Set<BotAnnotationReasonType> = emptySet()
+    val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),
+    val annotationSort: List<Pair<String, Boolean>> = emptyList(),
 )

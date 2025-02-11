@@ -603,10 +603,23 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 val c = dialogCol.withReadPreference(secondaryPreferred())
                 val count = c.countDocuments(filter, defaultCountOptions)
                 return if (count > start) {
+                    val sortBson = when {
+                        annotationSort.isEmpty() -> descending(LastUpdateDate)
+                        else -> {
+                            val (field, ascending) = annotationSort.first()
+                            when (field) {
+                                "creationDate" -> if (ascending) ascending(LastUpdateDate) else descending(LastUpdateDate)
+                                "annotationDate" -> if (ascending) ascending(Stories.actions.annotation.lastUpdateDate)
+                                else descending(Stories.actions.annotation.lastUpdateDate)
+                                else -> descending(LastUpdateDate)
+                            }
+                        }
+                    }
+
                     val list = c.find(filter)
                         .skip(start.toInt())
                         .limit(size)
-                        .descendingSort(LastUpdateDate)
+                        .sort(sortBson)
                         .run {
                             map { it.toDialogReport() }
                                 .toList()
