@@ -16,6 +16,8 @@
 
 package ai.tock.bot.admin.model
 
+import ai.tock.bot.admin.annotation.BotAnnotationReasonType
+import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.user.PlayerId
@@ -38,6 +40,8 @@ data class DialogsSearchQuery(
     val intentsToHide: Set<String> = emptySet(),
     val isGenAiRagDialog: Boolean?,
     val withAnnotations: Boolean?,
+    val annotationStates: Set<BotAnnotationState> = emptySet(),
+    val annotationReasons: Set<BotAnnotationReasonType> = emptySet()
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -60,6 +64,8 @@ data class DialogsSearchQuery(
             intentsToHide = intentsToHide,
             isGenAiRagDialog = isGenAiRagDialog,
             withAnnotations = withAnnotations,
+            annotationStates = annotationStates,
+            annotationReasons = annotationReasons
         )
     }
 }
