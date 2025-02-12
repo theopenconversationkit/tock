@@ -24,10 +24,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.ArchivedEntityValue
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.dialog.EntityStateValue
-import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.dialog.*
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.nlp.NlpStats
 import ai.tock.bot.engine.user.PlayerId
@@ -47,6 +44,7 @@ import ai.tock.bot.mongo.DialogTextCol_.Companion.Text
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
+import ai.tock.bot.mongo.UserTimelineCol_.Companion.CreationDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUserActionDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
@@ -602,15 +600,32 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     else Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant(),
                     if (annotationCreationDateTo == null) null
                     else Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant(),
+                    if (dialogCreationDateFrom == null) null
+                    else Stories.actions.date gt dialogCreationDateFrom?.toInstant(),
+                    if (dialogCreationDateTo == null) null
+                    else Stories.actions.date lt dialogCreationDateTo?.toInstant(),
                 )
                 logger.debug { "dialog search query: $filter" }
                 val c = dialogCol.withReadPreference(secondaryPreferred())
                 val count = c.countDocuments(filter, defaultCountOptions)
                 return if (count > start) {
-                    val sortBson = when(annotationSort) {
-                        null -> descending(LastUpdateDate)
-                        BotAnnotationSortDirection.ASC -> ascending(Stories.actions.annotation.lastUpdateDate)
-                        BotAnnotationSortDirection.DESC -> descending(Stories.actions.annotation.lastUpdateDate)
+                    val sortBson = when {
+                        annotationSort != null -> {
+                            if (annotationSort == SortDirection.ASC)
+                                ascending(Stories.actions.annotation.lastUpdateDate)
+                            else
+                                descending(Stories.actions.annotation.lastUpdateDate)
+                        }
+
+                        dialogSort != null -> {
+                            if (dialogSort == SortDirection.ASC)
+                                orderBy(mapOf(Stories.actions.date to true))
+                            else
+                                orderBy(mapOf(Stories.actions.date to false))
+                        }
+
+                        // If no filter is specified, we keep default filtering
+                        else -> descending(LastUpdateDate)
                     }
                     val list = c.find(filter)
                         .skip(start.toInt())
