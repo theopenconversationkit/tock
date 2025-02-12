@@ -597,25 +597,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
                     if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
                     if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
-                    if (query.annotationReasons.isNotEmpty()) Stories.actions.annotation.reason `in` query.annotationReasons else null
+                    if (query.annotationReasons.isNotEmpty()) Stories.actions.annotation.reason `in` query.annotationReasons else null,
+                    if (annotationCreationDateFrom == null) null
+                    else Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant(),
+                    if (annotationCreationDateTo == null) null
+                    else Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant(),
                 )
                 logger.debug { "dialog search query: $filter" }
                 val c = dialogCol.withReadPreference(secondaryPreferred())
                 val count = c.countDocuments(filter, defaultCountOptions)
                 return if (count > start) {
-                    val sortBson = when {
-                        annotationSort.isEmpty() -> descending(LastUpdateDate)
-                        else -> {
-                            val (field, ascending) = annotationSort.first()
-                            when (field) {
-                                "creationDate" -> if (ascending) ascending(LastUpdateDate) else descending(LastUpdateDate)
-                                "annotationDate" -> if (ascending) ascending(Stories.actions.annotation.lastUpdateDate)
-                                else descending(Stories.actions.annotation.lastUpdateDate)
-                                else -> descending(LastUpdateDate)
-                            }
-                        }
+                    val sortBson = when(annotationSort) {
+                        null -> descending(LastUpdateDate)
+                        BotAnnotationSortDirection.ASC -> ascending(Stories.actions.annotation.lastUpdateDate)
+                        BotAnnotationSortDirection.DESC -> descending(Stories.actions.annotation.lastUpdateDate)
                     }
-
                     val list = c.find(filter)
                         .skip(start.toInt())
                         .limit(size)

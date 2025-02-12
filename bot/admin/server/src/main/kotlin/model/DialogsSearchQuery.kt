@@ -17,11 +17,13 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.annotation.BotAnnotationReasonType
+import ai.tock.bot.admin.annotation.BotAnnotationSortDirection
 import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.admin.model.PaginatedQuery
+import java.time.ZonedDateTime
 
 /**
  *
@@ -42,7 +44,9 @@ data class DialogsSearchQuery(
     val withAnnotations: Boolean?,
     val annotationStates: Set<BotAnnotationState> = emptySet(),
     val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),
-    val annotationSort: List<Pair<String, Boolean>> = emptyList(),
+    val annotationSort: BotAnnotationSortDirection? = null,
+    val annotationCreationDateFrom: ZonedDateTime? = null,
+    val annotationCreationDateTo: ZonedDateTime? = null,
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -68,6 +72,8 @@ data class DialogsSearchQuery(
             annotationStates = annotationStates,
             annotationReasons = annotationReasons,
             annotationSort = annotationSort,
+            annotationCreationDateFrom = annotationCreationDateFrom,
+            annotationCreationDateTo = annotationCreationDateTo,
         )
     }
 }

@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.dialog
 
 import ai.tock.bot.admin.annotation.BotAnnotationReasonType
+import ai.tock.bot.admin.annotation.BotAnnotationSortDirection
 import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.user.PlayerId
@@ -67,5 +68,7 @@ data class DialogReportQuery(
     val withAnnotations: Boolean? = null,
     val annotationStates: Set<BotAnnotationState> = emptySet(),
     val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),
-    val annotationSort: List<Pair<String, Boolean>> = emptyList(),
+    val annotationSort: BotAnnotationSortDirection? = null,
+    val annotationCreationDateFrom: ZonedDateTime? = null,
+    val annotationCreationDateTo: ZonedDateTime? = null,
 )
