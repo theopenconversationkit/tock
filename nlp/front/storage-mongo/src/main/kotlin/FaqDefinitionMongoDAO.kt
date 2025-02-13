@@ -38,7 +38,7 @@ import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.eq
-import org.litote.kmongo.MongoOperator.ne
+import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
@@ -298,7 +298,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 // join FaqDefinition with IntentDefinition
                 joinOnIntentDefinition(),
                 // join FaqDefinition with ClassifiedSentence
-                joinOnClassifiedSentenceStatusNotDeletedAndNotInboxed(applicationDefinition._id),
+                joinOnClassifiedSentenceStatus(applicationDefinition._id),
                 // unwind : to flat faq array into an object
                 FaqQueryResult::faq.unwind(),
                 match(
@@ -459,9 +459,10 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         )
 
     /**
-     * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted and inboxed sentences
+     * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId,
+     * while ClassifiedSentence::status is 'validated' or 'in model'
      */
-    private fun FaqQuery.joinOnClassifiedSentenceStatusNotDeletedAndNotInboxed(applicationId: Id<ApplicationDefinition>) =
+    private fun FaqQuery.joinOnClassifiedSentenceStatus(applicationId: Id<ApplicationDefinition>) =
         //inspired from https://github.com/Litote/kmongo/blob/master/kmongo-core-tests/src/main/kotlin/org/litote/kmongo/AggregateTypedTest.kt#L322
         lookup(
             CLASSIFIED_SENTENCE_COLLECTION,
@@ -479,17 +480,12 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                                     ClassifiedSentence::classification / Classification::intentId,
                                     "\$\$$FAQ_INTENTID"
                                 ),
-                                //filter on current applicationId
+                                // filter on current applicationId
                                 eq from listOf(ClassifiedSentence::applicationId, applicationId),
-                                // do not take classified sentences with deleted status because of the BuildWorker scheduled delay (1 second)
-                                // needed to check and erase the ones with deleted status each
-                                ne from listOf(
+                                // filter on classified sentence
+                                `in` from listOf(
                                     ClassifiedSentence::status,
-                                    ClassifiedSentenceStatus.deleted
-                                ),
-                                ne from listOf(
-                                    ClassifiedSentence::status,
-                                    ClassifiedSentenceStatus.inbox
+                                    listOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model)
                                 )
                             ),
                 )
