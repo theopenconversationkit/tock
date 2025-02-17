@@ -1,4 +1,4 @@
-import { llmSetting } from '../../../shared/model/ai-settings';
+import { PromptDefinition, llmSetting } from '../../../shared/model/ai-settings';
 
 export interface SentenceGenerationSettings {
   id: string;
@@ -7,4 +7,5 @@ export interface SentenceGenerationSettings {
   enabled: boolean;
 
   llmSetting: llmSetting;
+  prompt: PromptDefinition;
 }

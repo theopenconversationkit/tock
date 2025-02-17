@@ -207,6 +207,7 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     if (event) {
       const targetEvent = event.target as HTMLInputElement;
       results = results.filter((sentence: string) => sentence.toLowerCase().includes(targetEvent.value.trim().toLowerCase()));
+      this.updateMessageInputHeight(targetEvent);
     }
 
     this.userMessageAutocompleteValues = of(results);
@@ -214,14 +215,15 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     if (event && event.key !== 'Escape') this.textareaAutocompleteDirectiveRef.updatePosition();
   }
 
-  getUserAvatar(isBot: boolean): string {
-    return getDialogMessageUserAvatar(isBot);
+  updateMessageInputHeight(element): void {
+    if (element) {
+      element.style.height = 'auto';
+      element.style.height = Math.min(element.scrollHeight + 2, 250) + 'px';
+    }
   }
 
-  getUserMessageInputHeight(): string {
-    const lineHeight = 1.5;
-    const padding = 2 * 0.5;
-    return lineHeight * this.userMessage.split(/\n/).length + padding + 'rem';
+  getUserAvatar(isBot: boolean): string {
+    return getDialogMessageUserAvatar(isBot);
   }
 
   onUserMessageChange(value: string): void {
@@ -249,6 +251,10 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     }
     m = m.trim();
     this.talk(new Sentence(0, [], m));
+
+    setTimeout(() => {
+      this.textareaAutocompleteDirectiveRef.hide();
+    });
   }
 
   talkRequest(query: BotDialogRequest, debug: boolean = false, sourceWithContent: boolean = false): Observable<BotDialogResponse> {

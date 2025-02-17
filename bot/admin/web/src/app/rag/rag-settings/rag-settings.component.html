@@ -74,234 +74,451 @@
   *ngIf="configurations?.length > 0"
 >
   <nb-card class="mt-1">
-    <nb-card-body [nbSpinner]="loading">
-      <h5 class="section-title">RAG activation</h5>
-
-      <tock-form-control
-        name="enabled"
-        [controls]="enabled"
-        [showError]="isSubmitted"
-        [hasMargin]="false"
-      >
-        <nb-toggle
-          formControlName="enabled"
-          class="mt-1"
-        >
-          <span *ngIf="enabled.value">Rag activated</span>
-          <span *ngIf="!enabled.value">Rag deactivated</span>
-        </nb-toggle>
-      </tock-form-control>
-
-      <h5 class="section-title">LLM engine</h5>
-
-      <tock-form-control
-        name="llmEngine"
-        [controls]="llmEngine"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <nb-radio-group
-          formControlName="llmEngine"
-          name="llmEngine"
-          class="d-flex"
-        >
-          <nb-radio
-            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.llmSetting]"
-            [value]="engine.key"
+    <nb-card-body
+      [nbSpinner]="loading"
+      class="pb-0"
+    >
+      <nb-card class="mt-2 mb-3">
+        <nb-card-header>RAG activation</nb-card-header>
+        <nb-card-body class="d-flex gap-2 align-items-start">
+          <tock-form-control
+            name="enabled"
+            [controls]="enabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
           >
-            {{ engine.label }}
-          </nb-radio>
-        </nb-radio-group>
-      </tock-form-control>
-
-      <div
-        *ngIf="currentLlmEngine"
-        class="mt-2 mb-2"
-      >
-        <div class="row mb-1">
-          <ng-container *ngFor="let param of currentLlmEngine.params">
-            <div
-              class="col-6 px-3"
-              [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+            <nb-toggle
+              formControlName="enabled"
+              class="mt-1"
             >
-              <tock-ai-settings-engine-config-param-input
-                [parentGroup]="engineSettingKeyName.llmSetting"
-                [configurationParam]="param"
-                [form]="form"
-                [isSubmitted]="isSubmitted"
-                [defaultPrompt]="defaultPrompt"
-              ></tock-ai-settings-engine-config-param-input>
+              <span *ngIf="enabled.value">Rag activated</span>
+              <span *ngIf="!enabled.value">Rag deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
+
+          <tock-form-control
+            name="debugEnabled"
+            [controls]="debugEnabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
+          >
+            <nb-toggle
+              formControlName="debugEnabled"
+              class="nb-toggle-small mt-2"
+              status="basic"
+              nbTooltip="Include Rag debug info in dialog logs (Analytics > Dialogs)"
+            >
+              <span *ngIf="debugEnabled.value">Dialogs debug activated</span>
+              <span *ngIf="!debugEnabled.value">Dialogs debug deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card class="mb-3">
+        <nb-card-header>Question condensing</nb-card-header>
+        <nb-card-body class="p-0">
+          <nb-accordion
+            multi
+            class="shadow-none"
+          >
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionConsensingConfiguration')">
+              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <tock-form-control
+                  name="questionCondensingLlmProvider"
+                  [controls]="questionCondensingLlmProvider"
+                  [required]="true"
+                  [showError]="isSubmitted"
+                >
+                  <nb-radio-group
+                    formControlName="questionCondensingLlmProvider"
+                    name="questionCondensingLlmProvider"
+                    class="d-flex"
+                  >
+                    <nb-radio
+                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionCondensingLlmSetting]"
+                      [value]="engine.key"
+                    >
+                      {{ engine.label }}
+                    </nb-radio>
+                  </nb-radio-group>
+                </tock-form-control>
+
+                <div
+                  *ngIf="currentQuestionCondensingConfig"
+                  class="mt-2"
+                >
+                  <div class="row">
+                    <ng-container *ngFor="let param of currentQuestionCondensingConfig.params">
+                      <div
+                        class="col-12 px-3"
+                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
+                      >
+                        <tock-ai-settings-engine-config-param-input
+                          [parentGroup]="engineSettingKeyName.questionCondensingLlmSetting"
+                          [configurationParam]="param"
+                          [form]="form"
+                          [isSubmitted]="isSubmitted"
+                        ></tock-ai-settings-engine-config-param-input>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionCondensingPrompt')">
+              <nb-accordion-item-header>Prompt</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <div class="row">
+                  <ng-container *ngFor="let param of questionCondensing_prompt">
+                    <div
+                      class="col-12 px-3"
+                      *ngIf="shouldDisplayPromptParam('questionCondensingPrompt', param)"
+                    >
+                      <tock-ai-settings-engine-config-param-input
+                        parentGroup="questionCondensingPrompt"
+                        [configurationParam]="param"
+                        [form]="form"
+                        [isSubmitted]="isSubmitted"
+                        [defaultPrompt]="$any(param.defaultValue)"
+                      ></tock-ai-settings-engine-config-param-input>
+                    </div>
+                  </ng-container>
+
+                  <div class="col-6 px-3">
+                    <tock-form-control
+                      label="Max number of messages in history"
+                      name="maxMessagesFromHistory"
+                      [controls]="maxMessagesFromHistory"
+                      [required]="false"
+                      [showError]="isSubmitted"
+                      [boldLabel]="false"
+                      information="Number of messages in the dialog history to be taken into account when condensing the question. Zero = no history."
+                    >
+                      <input
+                        type="number"
+                        step="1"
+                        min="0"
+                        max="20"
+                        nbInput
+                        fieldSize="small"
+                        fullWidth
+                        formControlName="maxMessagesFromHistory"
+                      />
+                    </tock-form-control>
+                  </div>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+          </nb-accordion>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card class="mb-3">
+        <nb-card-header>Question answering</nb-card-header>
+        <nb-card-body class="p-0">
+          <nb-accordion
+            multi
+            class="shadow-none"
+          >
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionAnsweringConfiguration')">
+              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <tock-form-control
+                  name="questionAnsweringLlmProvider"
+                  [controls]="questionAnsweringLlmProvider"
+                  [required]="true"
+                  [showError]="isSubmitted"
+                >
+                  <nb-radio-group
+                    formControlName="questionAnsweringLlmProvider"
+                    name="questionAnsweringLlmProvider"
+                    class="d-flex"
+                  >
+                    <nb-radio
+                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]"
+                      [value]="engine.key"
+                    >
+                      {{ engine.label }}
+                    </nb-radio>
+                  </nb-radio-group>
+                </tock-form-control>
+
+                <div
+                  *ngIf="currentQuestionAnsweringConfig"
+                  class="mt-2"
+                >
+                  <div class="row">
+                    <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
+                      <div
+                        class="col-12 px-3"
+                        [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
+                      >
+                        <tock-ai-settings-engine-config-param-input
+                          [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
+                          [configurationParam]="param"
+                          [form]="form"
+                          [isSubmitted]="isSubmitted"
+                        ></tock-ai-settings-engine-config-param-input>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('questionAnsweringPrompt')">
+              <nb-accordion-item-header>Prompt</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <div class="row">
+                  <ng-container *ngFor="let param of questionAnswering_prompt">
+                    <div
+                      class="col-12 px-3"
+                      *ngIf="shouldDisplayPromptParam('questionAnsweringPrompt', param)"
+                    >
+                      <tock-ai-settings-engine-config-param-input
+                        parentGroup="questionAnsweringPrompt"
+                        [configurationParam]="param"
+                        [form]="form"
+                        [isSubmitted]="isSubmitted"
+                        [defaultPrompt]="$any(param.defaultValue)"
+                      ></tock-ai-settings-engine-config-param-input>
+                    </div>
+                  </ng-container>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+          </nb-accordion>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card class="mb-3">
+        <nb-card-header>Embedding</nb-card-header>
+        <nb-card-body class="p-0">
+          <nb-accordion
+            multi
+            class="shadow-none"
+          >
+            <nb-accordion-item [expanded]="isAccordionItemsExpanded('embeddingConfiguration')">
+              <nb-accordion-item-header>Configuration</nb-accordion-item-header>
+              <nb-accordion-item-body>
+                <tock-form-control
+                  name="emProvider"
+                  [controls]="emProvider"
+                  [required]="true"
+                  [showError]="isSubmitted"
+                >
+                  <nb-radio-group
+                    formControlName="emProvider"
+                    name="emProvider"
+                    class="d-flex"
+                  >
+                    <nb-radio
+                      *ngFor="let engine of enginesConfigurations[engineSettingKeyName.emSetting]"
+                      [value]="engine.key"
+                    >
+                      {{ engine.label }}
+                    </nb-radio>
+                  </nb-radio-group>
+                </tock-form-control>
+
+                <div
+                  *ngIf="currentEmConfig"
+                  class="mt-2"
+                >
+                  <div class="row">
+                    <div
+                      class="col-12 px-3"
+                      [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
+                      *ngFor="let param of currentEmConfig.params"
+                    >
+                      <tock-ai-settings-engine-config-param-input
+                        [parentGroup]="engineSettingKeyName.emSetting"
+                        [configurationParam]="param"
+                        [form]="form"
+                        [isSubmitted]="isSubmitted"
+                      ></tock-ai-settings-engine-config-param-input>
+                    </div>
+                  </div>
+                </div>
+              </nb-accordion-item-body>
+            </nb-accordion-item>
+          </nb-accordion>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card class="mb-3">
+        <nb-card-header>Indexing session</nb-card-header>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-12 col-lg-6 px-3">
+              <tock-form-control
+                label="Indexing session id"
+                name="indexingSessionId"
+                [controls]="indexSessionId"
+                [required]="false"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+              >
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="indexSessionId"
+                />
+              </tock-form-control>
             </div>
-          </ng-container>
-        </div>
-      </div>
 
-      <h5 class="section-title mt-2">Embedding engine</h5>
+            <div class="col-12 col-lg-6 px-3">
+              <tock-form-control
+                label="Vector database index name"
+                name="indexName"
+                [controls]="indexName"
+                [required]="false"
+                [boldLabel]="false"
+              >
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="indexName"
+                  readonly
+                />
+              </tock-form-control>
+            </div>
 
-      <tock-form-control
-        name="emEngine"
-        [controls]="emEngine"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <nb-radio-group
-          formControlName="emEngine"
-          name="emEngine"
-          class="d-flex"
-        >
-          <nb-radio
-            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.emSetting]"
-            [value]="engine.key"
-          >
-            {{ engine.label }}
-          </nb-radio>
-        </nb-radio-group>
-      </tock-form-control>
+            <div class="col-6 px-3">
+              <tock-form-control
+                label="Max documents retrieved"
+                name="maxDocumentsRetrieved"
+                [controls]="maxDocumentsRetrieved"
+                [required]="false"
+                [boldLabel]="false"
+                information="Maximum number of documents to return in vector queries."
+              >
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="50"
+                  nbInput
+                  fieldSize="small"
+                  fullWidth
+                  formControlName="maxDocumentsRetrieved"
+                />
+              </tock-form-control>
+            </div>
 
-      <div
-        *ngIf="currentEmEngine"
-        class="mt-2 mb-2"
-      >
-        <div class="row mb-1">
-          <div
-            class="col-6 px-3"
-            *ngFor="let param of currentEmEngine.params"
-          >
-            <tock-ai-settings-engine-config-param-input
-              [parentGroup]="engineSettingKeyName.emSetting"
-              [configurationParam]="param"
-              [form]="form"
-              [isSubmitted]="isSubmitted"
-            ></tock-ai-settings-engine-config-param-input>
+            <div class="col-6 px-3">
+              <tock-form-control
+                label="Documents required"
+                name="documentsRequired"
+                [controls]="documentsRequired"
+                [required]="false"
+                [boldLabel]="false"
+                information="Allow the LLM to respond even if no documents were retrieved. Allows to make small talk and answer more general questions."
+              >
+                <nb-toggle
+                  formControlName="documentsRequired"
+                  class="nb-toggle-small mt-1"
+                >
+                  <span *ngIf="documentsRequired.value">Don't allow undocumented answers</span>
+                  <span *ngIf="!documentsRequired.value">Allow undocumented answers</span>
+                </nb-toggle>
+              </tock-form-control>
+            </div>
           </div>
-        </div>
-      </div>
+        </nb-card-body>
+      </nb-card>
 
-      <h5 class="section-title mt-2">Indexing session</h5>
+      <nb-card class="mb-3">
+        <nb-card-header>Conversation flow</nb-card-header>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-12 px-3">
+              <tock-form-control
+                label="No answer sentence"
+                name="noAnswerSentence"
+                [controls]="noAnswerSentence"
+                [required]="true"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+                information="Phrase to be displayed to the user if no response could be given to his request"
+              >
+                <input
+                  nbInput
+                  fullWidth
+                  formControlName="noAnswerSentence"
+                />
+              </tock-form-control>
+            </div>
+            <div class="col-12 px-3">
+              <tock-form-control
+                label="Unanswered story redirection"
+                name="noAnswerStoryId"
+                [controls]="noAnswerStoryId"
+                [showError]="isSubmitted"
+                [boldLabel]="false"
+                information="Story to redirect the user to if no answer is given to the request"
+              >
+                <nb-form-field>
+                  <input
+                    nbInput
+                    fullWidth
+                    autocomplete="off"
+                    type="text"
+                    [value]="getCurrentStoryLabel"
+                    [nbAutocomplete]="storiesautocomplete"
+                    (input)="filterStoriesList($any($event.target).value)"
+                    (change)="onStoryChange($any($event.target).value)"
+                    (focus)="storyInputFocus()"
+                    (blur)="storyInputBlur($event)"
+                  />
+                  <button
+                    nbSuffix
+                    nbButton
+                    ghost
+                    nbTooltip="Delete unanswered story redirection"
+                    (click)="removeNoAnswerStoryId()"
+                    *ngIf="getCurrentStoryLabel !== ''"
+                  >
+                    <nb-icon icon="x-lg"></nb-icon>
+                  </button>
+                </nb-form-field>
+              </tock-form-control>
 
-      <tock-form-control
-        label="Vector database index name"
-        name="indexName"
-        [controls]="indexName"
-        [required]="false"
-        [boldLabel]="false"
-      >
-        <input
-          nbInput
-          fullWidth
-          formControlName="indexName"
-          readonly
-        />
-      </tock-form-control>
+              <nb-autocomplete
+                #storiesautocomplete
+                optionsListClass="option-list--break-word"
+                (selectedChange)="storySelectedChange($event)"
+              >
+                <nb-option
+                  *ngFor="let option of filteredStories$ | async"
+                  [value]="option.storyId"
+                  [disabled]="!isStoryEnabled(option)"
+                >
+                  {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
+                </nb-option>
+              </nb-autocomplete>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
 
-      <tock-form-control
-        label="Indexing session id"
-        name="indexingSessionId"
-        [controls]="indexSessionId"
-        [required]="false"
-        [showError]="isSubmitted"
-        [boldLabel]="false"
-      >
-        <input
-          nbInput
-          fullWidth
-          formControlName="indexSessionId"
-        />
-      </tock-form-control>
-
-      <tock-form-control
-        label="Documents required"
-        name="documentsRequired"
-        [controls]="documentsRequired"
-        [required]="false"
-        [boldLabel]="false"
-        information="Allowing the LLM to answer even if no documents have been found allows to make small talk and answer more general questions."
-      >
-        <nb-checkbox formControlName="documentsRequired">
-          <span *ngIf="documentsRequired.value">Don't allow undocumented answers.</span>
-          <span *ngIf="!documentsRequired.value">Allow undocumented answers.</span>
-        </nb-checkbox>
-      </tock-form-control>
-
-      <h5 class="section-title mt-2">Conversation flow</h5>
-
-      <tock-form-control
-        label="No answer sentence"
-        name="noAnswerSentence"
-        [controls]="noAnswerSentence"
-        [required]="true"
-        [showError]="isSubmitted"
-        [boldLabel]="false"
-        information="Phrase to be displayed to the user if no response could be given to his request"
-      >
-        <input
-          nbInput
-          fullWidth
-          formControlName="noAnswerSentence"
-        />
-      </tock-form-control>
-
-      <tock-form-control
-        label="Unanswered story redirection"
-        name="noAnswerStoryId"
-        [controls]="noAnswerStoryId"
-        [showError]="isSubmitted"
-        [boldLabel]="false"
-        information="Story to redirect the user to if no answer is given to the request"
-      >
-        <nb-form-field>
-          <input
-            nbInput
-            fullWidth
-            autocomplete="off"
-            type="text"
-            [value]="getCurrentStoryLabel"
-            [nbAutocomplete]="storiesautocomplete"
-            (input)="filterStoriesList($any($event.target).value)"
-            (change)="onStoryChange($any($event.target).value)"
-            (focus)="storyInputFocus()"
-            (blur)="storyInputBlur($event)"
-          />
+      <nb-card *ngIf="settingsBackup">
+        <nb-card-header>Settings deletion</nb-card-header>
+        <nb-card-body>
           <button
-            nbSuffix
             nbButton
-            ghost
-            nbTooltip="Delete unanswered story redirection"
-            (click)="removeNoAnswerStoryId()"
-            *ngIf="getCurrentStoryLabel !== ''"
+            status="danger"
+            nbTooltip="Delete settings"
+            (click)="confirmSettingsDeletion()"
           >
-            <nb-icon icon="x-lg"></nb-icon>
+            <nb-icon icon="trash"></nb-icon>
+            DELETE SETTINGS
           </button>
-        </nb-form-field>
-      </tock-form-control>
-
-      <nb-autocomplete
-        #storiesautocomplete
-        optionsListClass="option-list--break-word"
-        (selectedChange)="storySelectedChange($event)"
-      >
-        <nb-option
-          *ngFor="let option of filteredStories$ | async"
-          [value]="option.storyId"
-          [disabled]="!isStoryEnabled(option)"
-        >
-          {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
-        </nb-option>
-      </nb-autocomplete>
-
-      <ng-container *ngIf="settingsBackup">
-        <h5 class="section-title mt-2">Settings deletion</h5>
-
-        <button
-          nbButton
-          status="danger"
-          nbTooltip="Delete settings"
-          (click)="confirmSettingsDeletion()"
-        >
-          <nb-icon icon="trash"></nb-icon>
-          DELETE SETTINGS
-        </button>
-      </ng-container>
+        </nb-card-body>
+      </nb-card>
     </nb-card-body>
   </nb-card>
 </form>

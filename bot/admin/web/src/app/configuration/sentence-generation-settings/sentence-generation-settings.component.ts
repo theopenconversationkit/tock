@@ -1,17 +1,18 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { DefaultPrompt, EngineConfigurations } from './models/engines-configuration';
+import { DefaultPrompt, EngineConfigurations, SentenceGeneration_prompt } from './models/engines-configuration';
 import { SentenceGenerationSettings } from './models/sentence-generation-settings';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import {
   AiEngineSettingKeyName,
   EnginesConfiguration,
   AiEngineProvider,
-  ProvidersConfigurationParam
+  ProvidersConfigurationParam,
+  PromptDefinitionFormatter
 } from '../../shared/model/ai-settings';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -23,8 +24,9 @@ interface GenAiSettingsForm {
   id: FormControl<string>;
   enabled: FormControl<boolean>;
   nbSentences: FormControl<number>;
-  llmEngine: FormControl<AiEngineProvider>;
+  llmProvider: FormControl<AiEngineProvider>;
   llmSetting: FormGroup<any>;
+  prompt: FormGroup<any>;
 }
 
 @Component({
@@ -38,6 +40,8 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   configurations: BotApplicationConfiguration[];
 
   engineConfigurations = EngineConfigurations;
+
+  sentenceGeneration_prompt = SentenceGeneration_prompt;
 
   defaultPrompt = DefaultPrompt;
 
@@ -65,7 +69,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
 
     this.form
-      .get('llmEngine')
+      .get('llmProvider')
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
         this.initFormSettings(engine);
@@ -77,7 +81,9 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
       // Reset form on configuration change
       this.form.reset();
       // Reset formGroup control too, if any
-      this.resetFormGroupControls();
+      this.resetFormGroupControls('llmSetting');
+
+      this.initFormPrompt();
 
       this.loading = true;
       this.configurations = confs;
@@ -105,8 +111,9 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     enabled: new FormControl({ value: undefined, disabled: !this.canBeActivated() }),
     nbSentences: new FormControl(10),
 
-    llmEngine: new FormControl(undefined, [Validators.required]),
-    llmSetting: new FormGroup<any>({})
+    llmProvider: new FormControl(undefined, [Validators.required]),
+    llmSetting: new FormGroup<any>({}),
+    prompt: new FormGroup<any>({})
   });
 
   get enabled(): FormControl {
@@ -115,12 +122,34 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   get nbSentences(): FormControl {
     return this.form.get('nbSentences') as FormControl;
   }
-  get llmEngine(): FormControl {
-    return this.form.get('llmEngine') as FormControl;
+  get llmProvider(): FormControl {
+    return this.form.get('llmProvider') as FormControl;
   }
 
   get canSave(): boolean {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
+  }
+
+  shouldDisplayPromptParam(parentGroup: string, param: ProvidersConfigurationParam) {
+    // Goal : We want templates to use the Jinja2 format by default.
+    if (param.key === 'formatter') {
+      // We only care about the “formatter” param
+      if (this.form.get(parentGroup).get(param.key).value === PromptDefinitionFormatter.jinja2) {
+        // If the format is already Jinja2, we can hide the choice control
+        return false;
+      }
+    }
+    return true;
+  }
+
+  initFormPrompt(): void {
+    this.resetFormGroupControls('prompt');
+
+    let params = SentenceGeneration_prompt;
+
+    params.forEach((param) => {
+      this.form.controls['prompt'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+    });
   }
 
   initFormSettings(provider: AiEngineProvider): void {
@@ -128,7 +157,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
-      this.resetFormGroupControls();
+      this.resetFormGroupControls('llmSetting');
 
       requiredConfiguration.params.forEach((param) => {
         this.form.controls['llmSetting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
@@ -138,10 +167,10 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetFormGroupControls() {
-    const existingGroupKeys = Object.keys(this.form.controls['llmSetting'].controls);
+  resetFormGroupControls(group: string): void {
+    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
     existingGroupKeys.forEach((key) => {
-      this.form.controls['llmSetting'].removeControl(key);
+      this.form.controls[group].removeControl(key);
     });
   }
 
@@ -150,12 +179,19 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     return this.rest.get<SentenceGenerationSettings>(url, (settings: SentenceGenerationSettings) => settings);
   }
 
-  initForm(settings: SentenceGenerationSettings) {
+  initForm(settings: SentenceGenerationSettings): void {
     this.initFormSettings(settings.llmSetting.provider);
     this.form.patchValue({
-      llmEngine: settings.llmSetting.provider
+      llmProvider: settings.llmSetting.provider
     });
     this.form.patchValue(settings);
+
+    this.initFormPrompt();
+
+    this.form.patchValue({
+      prompt: settings.prompt
+    });
+
     this.form.markAsPristine();
   }
 
@@ -171,8 +207,8 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  get currentLlmEngine(): EnginesConfiguration {
-    return EngineConfigurations.find((e) => e.key === this.llmEngine.value);
+  get currentLlmProvider(): EnginesConfiguration {
+    return EngineConfigurations.find((e) => e.key === this.llmProvider.value);
   }
 
   cancel(): void {
@@ -187,7 +223,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
 
-      delete formValue['llmEngine'];
+      delete formValue['llmProvider'];
 
       const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
       this.rest.post(url, formValue, null, null, true).subscribe({
@@ -223,7 +259,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   }
 
   get hasExportableData(): boolean {
-    if (this.llmEngine.value) return true;
+    if (this.llmProvider.value) return true;
 
     const formValue: SentenceGenerationSettings = deepCopy(this.form.value) as unknown as SentenceGenerationSettings;
 
@@ -234,18 +270,18 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
   sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
-  exportSettings() {
+  exportSettings(): void {
     this.sensitiveParams = [];
 
     const shouldConfirm =
-      this.llmEngine.value &&
-      this.currentLlmEngine.params.some((entry) => {
+      this.llmProvider.value &&
+      this.currentLlmProvider.params.some((entry) => {
         return entry.confirmExport;
       });
 
     if (shouldConfirm) {
-      [{ label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params }].forEach((engine) => {
-        this.currentLlmEngine.params.forEach((entry) => {
+      [{ label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmProvider.params }].forEach((engine) => {
+        this.currentLlmProvider.params.forEach((entry) => {
           if (entry.confirmExport) {
             this.sensitiveParams.push({ label: 'LLM engine', key: engine.key, include: false, param: entry });
           }
@@ -258,20 +294,20 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  exportConfirmationModalRef;
+  exportConfirmationModalRef: NbDialogRef<any>;
 
-  closeExportConfirmationModal() {
+  closeExportConfirmationModal(): void {
     this.exportConfirmationModalRef.close();
   }
 
-  confirmExportSettings() {
+  confirmExportSettings(): void {
     this.downloadSettings();
     this.closeExportConfirmationModal();
   }
 
-  downloadSettings() {
+  downloadSettings(): void {
     const formValue: SentenceGenerationSettings = deepCopy(this.form.value) as unknown as SentenceGenerationSettings;
-    delete formValue['llmEngine'];
+    delete formValue['llmProvider'];
     delete formValue['id'];
     delete formValue['enabled'];
 
@@ -302,15 +338,15 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  importModalRef;
+  importModalRef: NbDialogRef<any>;
 
-  importSettings() {
+  importSettings(): void {
     this.isImportSubmitted = false;
     this.importForm.reset();
     this.importModalRef = this.nbDialogService.open(this.importModal);
   }
 
-  closeImportModal() {
+  closeImportModal(): void {
     this.importModalRef.close();
   }
 
@@ -331,7 +367,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  submitImportSettings() {
+  submitImportSettings(): void {
     this.isImportSubmitted = true;
     if (this.canSaveImport) {
       const file = this.fileSource.value[0];
@@ -362,7 +398,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmSettingsDeletion() {
+  confirmSettingsDeletion(): void {
     const confirmAction = 'Delete';
     const cancelAction = 'Cancel';
 
@@ -384,7 +420,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSettings() {
+  deleteSettings(): void {
     const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;

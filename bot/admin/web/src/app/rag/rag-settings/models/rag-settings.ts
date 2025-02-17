@@ -1,4 +1,4 @@
-import { emSetting, llmSetting } from '../../../shared/model/ai-settings';
+import { emSetting, llmSetting, PromptDefinition } from '../../../shared/model/ai-settings';
 
 export interface RagSettings {
   id: string;
@@ -6,14 +6,24 @@ export interface RagSettings {
   botId: string;
   enabled: boolean;
 
+  debugEnabled: boolean;
+
   noAnswerSentence: string;
   noAnswerStoryId: string | null;
 
-  llmSetting: llmSetting;
+  questionCondensingLlmSetting: llmSetting;
+  questionCondensingPrompt: PromptDefinition;
+  maxMessagesFromHistory: number;
+
+  questionAnsweringLlmSetting: llmSetting;
+  questionAnsweringPrompt: PromptDefinition;
+
   emSetting: emSetting;
 
   indexSessionId: string;
   indexName: string;
+
+  maxDocumentsRetrieved: number;
 
   documentsRequired: boolean;
 }
