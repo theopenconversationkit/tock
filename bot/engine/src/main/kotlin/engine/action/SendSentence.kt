@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.dialog.EventState
@@ -45,6 +46,7 @@ open class SendSentence(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
     open var nlpStats: NlpCallStats? = null,
+    override var annotation: BotAnnotation? = null,
     /**
      * Used by analysed nlp (ie Alexa).
      */
