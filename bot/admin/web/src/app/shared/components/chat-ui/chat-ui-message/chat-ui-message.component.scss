@@ -92,6 +92,7 @@
           border-top-right-radius: 0;
           background-color: var(--background-basic-color-3);
           color: nb-theme(chat-message-reply-text-color);
+          overflow-x: auto;
         }
       }
     }

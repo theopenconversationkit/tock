@@ -37,6 +37,7 @@
 }
 
 @mixin tables-styling() {
+  margin: 0.5em 0;
   thead {
     font-weight: var(--text-subtitle-font-weight);
     th {
@@ -112,7 +113,41 @@ code::-webkit-scrollbar-track {
 // Rich messages styling in chat-ui component
 .chat-ui-message-content-styling {
   p {
-    margin: 0;
+    margin: 0.5em 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0.25em 0;
+  }
+
+  h1 {
+    font-size: 160%;
+    line-height: 160%;
+  }
+  h2 {
+    font-size: 150%;
+    line-height: 150%;
+  }
+  h3 {
+    font-size: 140%;
+    line-height: 140%;
+  }
+  h4 {
+    font-size: 130%;
+    line-height: 130%;
+  }
+  h5 {
+    font-size: 120%;
+    line-height: 120%;
+  }
+  h6 {
+    font-size: 110%;
+    line-height: 110%;
   }
 
   img {
