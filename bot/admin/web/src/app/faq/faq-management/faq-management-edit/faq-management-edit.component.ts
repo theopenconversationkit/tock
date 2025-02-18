@@ -3,6 +3,8 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, V
 import { NbDialogService, NbPopoverDirective, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { take } from 'rxjs/operators';
+import DOMPurify from 'dompurify';
+import { sanitizeURLSync } from 'url-sanitizer';
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
@@ -94,8 +96,8 @@ export class FaqManagementEditComponent implements OnChanges {
 
   answerExportFormatsRadios = [
     { label: 'Plain text', value: MarkupFormats.PLAINTEXT },
-    { label: 'Html', value: MarkupFormats.HTML }
-    // { label: 'Markdown', value: MarkupFormats.MARKDOWN }
+    // { label: 'Html', value: MarkupFormats.HTML }
+    { label: 'Markdown', value: MarkupFormats.MARKDOWN }
   ];
 
   @Input() loading: boolean;
@@ -171,7 +173,7 @@ export class FaqManagementEditComponent implements OnChanges {
             new FormGroup({
               title: new FormControl(note.title, [Validators.required]),
               identifier: new FormControl(note.identifier),
-              url: new FormControl(note.url),
+              url: new FormControl(sanitizeURLSync(note.url)),
               content: new FormControl(note.content)
             })
           );
@@ -305,7 +307,7 @@ export class FaqManagementEditComponent implements OnChanges {
         // we deduplicate footnotes (with exactly the same 'title', 'url' and 'content' )
         const deduplicatedFooteNotes = this.deduplicateFootnotes(faq._initAnswer.footnotes);
         deduplicatedFooteNotes.forEach((footnote) => {
-          this.addFootnote(footnote.title, footnote.url, footnote.content);
+          this.addFootnote(footnote.title, sanitizeURLSync(footnote.url), footnote.content);
         });
       }
 
@@ -325,7 +327,7 @@ export class FaqManagementEditComponent implements OnChanges {
     } else {
       faq.answer?.i18n.forEach((i18nLabel: I18nLocalizedLabel) => {
         const guessedFormat = !i18nLabel.connectorId
-          ? detectMarkupFormat(i18nLabel.label, { checkForHtml: true, checkForMarkdown: false })
+          ? detectMarkupFormat(i18nLabel.label, { checkForHtml: false, checkForMarkdown: true })
           : MarkupFormats.PLAINTEXT;
 
         this.answers.push(
@@ -335,7 +337,7 @@ export class FaqManagementEditComponent implements OnChanges {
             connectorId: new FormControl(i18nLabel.connectorId),
             // We make the label mandatory if a string is already defined. We don't do this systematically, as we know that the database contains a large number of empty and unwanted I18nLocalizedLabels.
             label: new FormControl(
-              i18nLabel.label,
+              DOMPurify.sanitize(i18nLabel.label),
               i18nLabel.label?.trim().length ? [Validators.required, this.validateAnswerMarkupContent.bind(this)] : []
             ),
             answerExportFormat: new FormControl(guessedFormat)
@@ -661,12 +663,21 @@ export class FaqManagementEditComponent implements OnChanges {
     );
   }
 
+  sanitizeFootnotesUrls(footnotes: Footnote[]) {
+    footnotes.map((fn) => {
+      fn.url = sanitizeURLSync(fn.url);
+      return fn;
+    });
+
+    return footnotes;
+  }
+
   addFootnote(title: string = '', url: string = '', content: string = ''): void {
     this.footnotes.push(
       new FormGroup({
         title: new FormControl(title, [Validators.required]),
         identifier: new FormControl(this.footnotes.controls.length + 1),
-        url: new FormControl(url),
+        url: new FormControl(sanitizeURLSync(url)),
         content: new FormControl(content)
       })
     );
@@ -962,12 +973,13 @@ export class FaqManagementEditComponent implements OnChanges {
 
           if (targetI18n) {
             // I18nLocalizedLabel exists, we should update
-            targetI18n.label = answer.label;
+
+            targetI18n.label = DOMPurify.sanitize(answer.label);
             targetI18n.interfaceType = UserInterfaceType[targetI18n.interfaceType] as any;
           } else {
             // new I18nLocalizedLabel, we should create
             faqData.answer.i18n.push(
-              new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [])
+              new I18nLocalizedLabel(answer.locale, answer.interfaceType, DOMPurify.sanitize(answer.label), false, answer.connectorId, [])
             );
           }
         });
@@ -986,7 +998,11 @@ export class FaqManagementEditComponent implements OnChanges {
         // We are creating a new Faq, we should create the answer I18nLabel
         const currentLocaleAnswerLabel = faqData.answers.find((answer) => answer.locale === this.state.currentLocale);
 
-        const i18nLabelCreationRequest = new CreateI18nLabelRequest('faq', currentLocaleAnswerLabel.label, this.state.currentLocale);
+        const i18nLabelCreationRequest = new CreateI18nLabelRequest(
+          'faq',
+          DOMPurify.sanitize(currentLocaleAnswerLabel.label),
+          this.state.currentLocale
+        );
 
         this.botService.createI18nLabel(i18nLabelCreationRequest).subscribe((i18n) => {
           // We associate the newly created I18nLabel to the Faq
@@ -999,7 +1015,15 @@ export class FaqManagementEditComponent implements OnChanges {
 
             faqData.answers.forEach((answer) => {
               faqData.answer.i18n.push(
-                new I18nLocalizedLabel(answer.locale, answer.interfaceType, answer.label, false, answer.connectorId, [], [])
+                new I18nLocalizedLabel(
+                  answer.locale,
+                  answer.interfaceType,
+                  DOMPurify.sanitize(answer.label),
+                  false,
+                  answer.connectorId,
+                  [],
+                  []
+                )
               );
             });
 
@@ -1030,6 +1054,7 @@ export class FaqManagementEditComponent implements OnChanges {
   save(faqData): void {
     // we deduplicate footnotes (with exactly the same 'title', 'url' and 'content' )
     faqData.footnotes = this.deduplicateFootnotes(faqData.footnotes);
+    faqData.footnotes = this.sanitizeFootnotesUrls(faqData.footnotes);
 
     this.onSave.emit(faqData);
     if (!this.faq.id) this.onClose.emit(true);

@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BotMessage, Sentence } from '../../../../model/dialog-data';
-import linkifyHtml from 'linkify-html';
 
 @Component({
   selector: 'tock-chat-ui-message-sentence',
@@ -14,11 +13,9 @@ export class ChatUiMessageSentenceComponent {
 
   @Input() reply: boolean = false;
 
-  @Output() sendMessage: EventEmitter<BotMessage> = new EventEmitter();
+  @Input() formatting: boolean = true;
 
-  linkifyHtml(str) {
-    return linkifyHtml(str, { target: '_blank' });
-  }
+  @Output() sendMessage: EventEmitter<BotMessage> = new EventEmitter();
 
   replyMessage(message: BotMessage) {
     this.sendMessage.emit(message);

@@ -4,24 +4,25 @@
   class="userInterface"
   nbTooltip="{{ sentence.userInterface }}"
 />
-<span
+
+<tock-chat-ui-display-markup
+  [sentence]="sentence"
+  [formatting]="formatting"
   *ngIf="reply"
-  [innerHTML]="linkifyHtml(sentence.text)"
-  class="chat-ui-message-content-styling"
-></span>
+></tock-chat-ui-display-markup>
 <span *ngIf="!reply">{{ sentence.text }}</span>
 
 <div
-  class="footnotes mt-1"
+  class="footnotes mt-3"
   *ngIf="sentence.footnotes?.length"
 >
   <strong class="title mr-1">SOURCES : </strong>
   <span *ngFor="let footNote of sentence.footnotes; let i = index; let last = last">
     <span [class.d-block]="footNote.content">
       <a
-        [href]="footNote.url"
-        target="_blank"
         *ngIf="footNote.url?.trim().length"
+        [href]="sanitizeUrl(footNote.url)"
+        target="_blank"
       >
         {{ footNote.title }}
       </a>

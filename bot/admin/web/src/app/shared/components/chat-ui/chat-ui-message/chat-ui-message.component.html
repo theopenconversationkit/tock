@@ -13,21 +13,41 @@
 
   <div class="message mb-2">
     <div class="message-text">
-      <p
-        class="sender font-size-small mb-1"
-        *ngIf="sender || date"
-      >
-        {{ sender }}
-
-        <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
-
-        <span
-          *ngIf="applicationId"
-          nbTooltip="Configuration : {{ getApplicationConfigurationName(false) }}"
+      <div class="d-flex gap-1 justify-content-between align-items-end">
+        <div
+          class="sender font-size-small mb-1"
+          *ngIf="sender || date"
         >
-          | {{ getApplicationConfigurationName() }}</span
+          {{ sender }}
+
+          <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
+
+          <span
+            *ngIf="applicationId"
+            nbTooltip="Configuration : {{ getApplicationConfigurationName(false) }}"
+          >
+            | {{ getApplicationConfigurationName() }}</span
+          >
+        </div>
+
+        <button
+          *ngIf="sender && reply && (message.isSentence() || message.isSentenceWithFootnotes()) && $any(message).text"
+          nbButton
+          size="small"
+          ghost
+          nbTooltip="Switch message formatting"
+          (click)="switchFormatting()"
         >
-      </p>
+          <nb-icon
+            *ngIf="!formatting"
+            icon="body-text"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="formatting"
+            icon="code-square"
+          ></nb-icon>
+        </button>
+      </div>
 
       <div class="text">
         <tock-chat-ui-message-sentence
@@ -35,6 +55,7 @@
           [sentence]="$any(message)"
           [replay]="replay"
           [reply]="reply"
+          [formatting]="formatting"
           (sendMessage)="replyMessage($event)"
         ></tock-chat-ui-message-sentence>
 
@@ -42,6 +63,7 @@
           *ngIf="message.isSentenceWithFootnotes()"
           [sentence]="$any(message)"
           [reply]="reply"
+          [formatting]="formatting"
         ></tock-chat-ui-message-sentence-footnotes>
 
         <tock-chat-ui-message-choice
