@@ -78,13 +78,15 @@
         align-items: flex-end;
         margin-left: 0;
         margin-right: 0.5rem;
+        max-width: calc(100% - 4em);
       }
 
       .message-text {
+        max-width: 100%;
         align-items: flex-end;
-        .sender {
-          text-align: right;
-        }
+        // .sender {
+        //   text-align: right;
+        // }
 
         .text {
           border-top-right-radius: 0;

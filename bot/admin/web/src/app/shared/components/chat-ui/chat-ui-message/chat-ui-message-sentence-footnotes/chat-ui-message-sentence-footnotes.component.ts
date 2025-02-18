@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import linkifyHtml from 'linkify-html';
 import { SentenceWithFootnotes } from '../../../../model/dialog-data';
+import { sanitizeURLSync } from 'url-sanitizer';
 
 @Component({
   selector: 'tock-chat-ui-message-sentence-footnotes',
@@ -12,11 +12,13 @@ export class ChatUiMessageSentenceFootnotesComponent {
 
   @Input() reply: boolean = false;
 
-  linkifyHtml(str) {
-    return linkifyHtml(str, { target: '_blank' });
-  }
+  @Input() formatting: boolean = true;
 
   isClamped(el): boolean {
     return el.offsetHeight < el.scrollHeight;
+  }
+
+  sanitizeUrl(url: string): string | null {
+    return sanitizeURLSync(url);
   }
 }
