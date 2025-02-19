@@ -228,9 +228,9 @@ def create_rag_chain(query: RagQuery, vector_db_async_mode: Optional[bool] = Tru
 
     # Log progress and validate prompt template
     logger.info('RAG chain - Validating LLM prompt template')
-    validate_prompt_template(query.question_condensing_prompt, 'Question condensing prompt')
-    if query.question_answering_prompt is not None:
-        validate_prompt_template(query.question_answering_prompt, 'Question answering prompt')
+    validate_prompt_template(query.question_answering_prompt, 'Question answering prompt')
+    if query.question_condensing_prompt is not None:
+        validate_prompt_template(query.question_condensing_prompt, 'Question condensing prompt')
 
     question_condensing_llm_factory = None
     if query.question_condensing_llm_setting is not None:
