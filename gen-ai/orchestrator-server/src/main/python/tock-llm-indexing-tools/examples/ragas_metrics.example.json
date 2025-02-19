@@ -1,0 +1,15 @@
+{
+  "metric_names": [
+    "LLMContextPrecisionWithoutReference",
+    "LLMContextRecall",
+    "ResponseRelevancy",
+    "Faithfulness",
+    "FactualCorrectness",
+    "SemanticSimilarity",
+    "NonLLMStringSimilarity",
+    "BleuScore",
+    "RougeScore",
+    "StringPresence",
+    "ExactMatch"
+  ]
+}
