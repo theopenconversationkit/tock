@@ -87,7 +87,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
 
-from indexing_details import IndexingDetails
+from models import IndexingDetails
 
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)

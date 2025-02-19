@@ -21,8 +21,8 @@ enum class Formatter(val id: String) {
     JINJA2(id = "jinja2");
 
 }
-class PromptTemplate (
-    val formatter: String,
+data class PromptTemplate (
+    val formatter: String = Formatter.JINJA2.id,
     val template: String,
-    val inputs:  Map<String, Any>
+    val inputs:  Map<String, Any> = emptyMap()
 )

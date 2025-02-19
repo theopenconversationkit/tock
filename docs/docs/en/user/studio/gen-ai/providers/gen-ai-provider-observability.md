@@ -2,14 +2,14 @@
 title: Fournisseurs d'observabilité des LLMs
 ---
 
-# Fournisseurs d'observabilité des LLMs.
+# LLM observability providers.
 
-Voici la liste des fournisseurs d'observabilité des LLM pris en compte par Tock :
+Here is the list of LLM observability providers supported by Tock:
 
 <table>
 <thead>
 <tr>
-<th style="font-weight:bold">Fournisseur d'observabilité</th>
+<th style="font-weight:bold">LLM observability providers</th>
 <th style="font-weight:bold">Configuration</th>
 </tr>
 </thead>

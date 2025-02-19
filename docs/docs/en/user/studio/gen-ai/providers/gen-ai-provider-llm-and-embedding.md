@@ -2,16 +2,15 @@
 title: Fournisseurs des modèles LLM et d'Embedding
 ---
 
-# Fournisseurs des modèles LLM et d'Embedding
+# LLM and Embedding model providers
 
-Voici la liste des fournisseurs des modèles LLM et d'Embedding pris en compte par Tock :
-
+Here is the list of LLM and Embedding model suppliers supported by Tock:
 <table>
 <thead>
 <tr>
-<th style="font-weight:bold">Fournisseur de l'IA</th>
-<th style="font-weight:bold">Configuration du LLM</th>
-<th style="font-weight:bold">Configuration de l'Embedding</th>
+<th style="font-weight:bold">AI provider</th>
+<th style="font-weight:bold">LLM configuration</th>
+<th style="font-weight:bold">Embedding configuration</th>
 </tr>
 </thead>
 <tbody>
@@ -29,7 +28,6 @@ OpenAI<br/>
     "value": "aebb4b****************7b25e3371"
   },
   "temperature": "1.0",
-  "prompt": "Customized prompt for the use case",
   "model": "gpt-3.5-turbo"
 }
 </pre>
@@ -61,7 +59,6 @@ AzureOpenAIService <br />
     "value": "aebb4b****************7b25e3371"
   },
   "temperature": "1.0",
-  "prompt": "Customized prompt for the use case",
   "api_base": "https://custom-api-name.azure-api.net",
   "deployment_name": "custom-deployment-name",
   "model": "gpt-4o",

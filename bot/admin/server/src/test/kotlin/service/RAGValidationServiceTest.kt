@@ -19,6 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorclient.responses.ErrorInfo
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
@@ -63,7 +64,7 @@ class RAGValidationServiceTest {
     }
 
     private val openAILLMSetting = OpenAILLMSetting(
-        apiKey = "123-abc", model = "unavailable-model", temperature = "0.4", prompt = "How to bike in the rain",
+        apiKey = "123-abc", model = "unavailable-model", temperature = "0.4",
         baseUrl = "https://api.openai.com/v1",
     )
 
@@ -78,9 +79,16 @@ class RAGValidationServiceTest {
     private val ragConfiguration = BotRAGConfigurationDTO(
         namespace = "namespace",
         botId = "botId",
-        llmSetting = openAILLMSetting,
+        questionCondensingLlmSetting = openAILLMSetting,
+        questionCondensingPrompt = PromptTemplate(template = "test"),
+        questionAnsweringLlmSetting = openAILLMSetting,
+        questionAnsweringPrompt = PromptTemplate(template = "How to bike in the rain"),
         emSetting = azureOpenAIEMSetting,
         noAnswerSentence = " No answer sentence",
+        documentsRequired = true,
+        debugEnabled = false,
+        maxDocumentsRetrieved = 2,
+        maxMessagesFromHistory = 2,
     )
 
     @Test
@@ -163,7 +171,7 @@ class RAGValidationServiceTest {
     fun `validation of the RAG configuration when the Orchestrator returns 2 errors for LLM and 1 for Embedding model, the RAG function has not been activated`() {
 
         // GIVEN
-        // - 3 errors returned by Generative AI Orchestrator for LLM (2) and EM (1)
+        // - 3 errors returned by Generative AI Orchestrator for LLM (4 = 2 for condensing + 2 for answering) and EM (1)
         // - RAG is not enabled
         every {
             llmProviderService.checkSetting(any())
@@ -187,11 +195,13 @@ class RAGValidationServiceTest {
         )
 
         // THEN :
-        // Check that 3 errors have been found
-        assertEquals(2, errors.size)
+        // Check that 3 groups of errors have been found
+        assertEquals(3, errors.size)
         assertEquals("10", (((errors.elementAt(0).params) as List<*>)[0] as ErrorResponse).code)
         assertEquals("20", (((errors.elementAt(0).params) as List<*>)[1] as ErrorResponse).code)
-        assertEquals("30", (((errors.elementAt(1).params) as List<*>)[0] as ErrorResponse).code)
+        assertEquals("10", (((errors.elementAt(1).params) as List<*>)[0] as ErrorResponse).code)
+        assertEquals("20", (((errors.elementAt(1).params) as List<*>)[1] as ErrorResponse).code)
+        assertEquals("30", (((errors.elementAt(2).params) as List<*>)[0] as ErrorResponse).code)
     }
 
     private fun createFakeErrorResponse(code: String) = ErrorResponse(

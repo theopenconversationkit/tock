@@ -2,14 +2,14 @@
 title: Fournisseurs de base vectorielle
 ---
 
-# Fournisseurs de base vectorielle.
+# Vector base providers.
 
-Voici la liste des fournisseurs de base vectorielle pris en compte par Tock :
+Here is the list of vector base providers supported by Tock:
 
 <table>
 <thead>
 <tr>
-<th style="font-weight:bold">Fournisseur de base vectorielle</th>
+<th style="font-weight:bold">Vector base providers</th>
 <th style="font-weight:bold">Configuration</th>
 </tr>
 </thead>

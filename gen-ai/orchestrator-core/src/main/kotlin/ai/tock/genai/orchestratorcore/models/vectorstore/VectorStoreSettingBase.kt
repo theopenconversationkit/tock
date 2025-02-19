@@ -37,9 +37,7 @@ abstract class VectorStoreSettingBase<T>(
     open val host: String,
     open val port: Int,
     open val username: String,
-    open val password: T,
-    // The number of documents (neighbors) to return for each vector search
-    open val k: Int,
+    open val password: T
 ){
     /**
      * Normalize the document index name
@@ -51,7 +49,7 @@ abstract class VectorStoreSettingBase<T>(
     /**
      * Get search params (filter) params
      */
-    abstract fun getDocumentSearchParams(): DocumentSearchParamsBase
+    abstract fun getDocumentSearchParams(kNeighborsDocuments: Int): DocumentSearchParamsBase
 }
 
 typealias VectorStoreSettingDTO = VectorStoreSettingBase<String>

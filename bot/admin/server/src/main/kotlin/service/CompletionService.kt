@@ -63,6 +63,9 @@ object CompletionService {
         // Get LLM Setting and override the temperature
         val llmSetting = sentenceGenerationConfig.llmSetting.copyWithTemperature(request.llmTemperature)
 
+        // Get prompt
+        val prompt = sentenceGenerationConfig.prompt ?: sentenceGenerationConfig.initPrompt()
+
         // Create the inputs map
         val inputs = mapOf(
             "locale" to request.locale,
@@ -75,18 +78,11 @@ object CompletionService {
             )
         )
 
-        // Create a Jinja2 prompt template
-        val prompt = PromptTemplate(
-            formatter = Formatter.JINJA2.id,
-            template = llmSetting.prompt,
-            inputs = inputs
-        )
-
         // call the completion service to generate sentences
         return completionService
             .generateSentences(
                 SentenceGenerationQuery(
-                    llmSetting, prompt,
+                    llmSetting, prompt.copy(inputs = inputs),
                     ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
                 )
             )

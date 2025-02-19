@@ -30,6 +30,7 @@ import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
 import ai.tock.bot.test.TestCase
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
@@ -65,17 +66,24 @@ class RAGServiceTest : AbstractTest() {
         const val INDEX_SESSION_ID = "1010101"
 
         private val DEFAULT_RAG_CONFIG = BotRAGConfigurationDTO(
-            id = "ragId",
+             id = "ragId",
             namespace = NAMESPACE,
             botId = BOT_ID,
             enabled = false,
-            llmSetting = OpenAILLMSettingDTO(
+            questionCondensingLlmSetting = OpenAILLMSettingDTO(
                 apiKey = "apikey",
                 model = MODEL,
-                prompt = PROMPT,
                 temperature = TEMPERATURE,
                 baseUrl = "https://api.openai.com/v1"
             ),
+            questionCondensingPrompt = PromptTemplate(template = PROMPT),
+            questionAnsweringLlmSetting = OpenAILLMSettingDTO(
+                apiKey = "apikey",
+                model = MODEL,
+                temperature = TEMPERATURE,
+                baseUrl = "https://api.openai.com/v1"
+            ),
+            questionAnsweringPrompt = PromptTemplate(template = PROMPT),
             emSetting = AzureOpenAIEMSettingDTO(
                 apiKey = "apiKey",
                 apiVersion = "apiVersion",
@@ -83,7 +91,11 @@ class RAGServiceTest : AbstractTest() {
                 model = "model",
                 apiBase = "url"
             ),
-            noAnswerSentence = "No answer sentence"
+            noAnswerSentence = "No answer sentence",
+            documentsRequired = true,
+            debugEnabled = false,
+            maxDocumentsRetrieved = 2,
+            maxMessagesFromHistory = 2,
         )
 
         private val DEFAULT_BOT_CONFIG = aApplication.copy(namespace = NAMESPACE, botId = BOT_ID)
@@ -186,9 +198,9 @@ class RAGServiceTest : AbstractTest() {
             Assertions.assertEquals(BOT_ID, captured.botId)
             Assertions.assertEquals(true, captured.enabled)
             Assertions.assertEquals(NAMESPACE, captured.namespace)
-            Assertions.assertEquals(PROVIDER, captured.llmSetting.provider.name)
-            Assertions.assertEquals(TEMPERATURE, captured.llmSetting.temperature)
-            Assertions.assertEquals(PROMPT, captured.llmSetting.prompt)
+            Assertions.assertEquals(PROVIDER, captured.questionAnsweringLlmSetting!!.provider.name)
+            Assertions.assertEquals(TEMPERATURE, captured.questionAnsweringLlmSetting!!.temperature)
+            Assertions.assertEquals(PROMPT, captured.questionAnsweringPrompt!!.template)
             Assertions.assertEquals(null, captured.noAnswerStoryId)
         }
 

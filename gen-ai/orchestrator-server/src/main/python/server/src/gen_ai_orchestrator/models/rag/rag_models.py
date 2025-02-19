@@ -138,19 +138,13 @@ class QADebugData(BaseModel):
 class RagDebugData(QADebugData):
     """A RAG debug data"""
 
-    condense_question_prompt: Optional[str] = Field(
+    question_condensing_prompt: Optional[str] = Field(
         description='The prompt of the question rephrased with the history of the conversation.',
-        examples=[
-            """Given the following conversation and a follow up question,
-        rephrase the follow up question to be a standalone question, in its original language.
-        Chat History:
-        Human: What travel offers are you proposing?
-        Assistant: We offer trips to all of Europe and North Africa.
-        Follow Up Input: I'm interested in going to Morocco
-        Standalone question:"""
-        ],
+        examples=['Given the following conversation, rephrase the follow up question to be a standalone question.'],
     )
-    condense_question: Optional[str] = Field(
+    question_condensing_history: list[ChatMessage] = Field(
+        description="Conversation history, used to reformulate the user's question.")
+    condensed_question: Optional[str] = Field(
         description='The question rephrased with the history of the conversation.',
         examples=['Hello, how to plan a trip to Morocco ?'],
     )

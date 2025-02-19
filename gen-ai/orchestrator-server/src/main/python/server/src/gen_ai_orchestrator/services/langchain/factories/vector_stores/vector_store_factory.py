@@ -75,7 +75,7 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         """
         logger.info('Invoke vector store provider to check setting')
         documents: List[Document] = await self.get_vector_store().asimilarity_search(
-            query=application_settings.vector_store_test_query, k=application_settings.vector_store_k
+            query=application_settings.vector_store_test_query, k=application_settings.vector_store_test_max_docs_retrieved
         )
         logger.debug('Invocation successful')
         logger.debug('[index: %s], [query: %s], [document count: %s]', self.index_name, application_settings.vector_store_test_query, len(documents))
