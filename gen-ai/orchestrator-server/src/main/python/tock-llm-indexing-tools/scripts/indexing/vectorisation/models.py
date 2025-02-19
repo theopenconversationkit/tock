@@ -6,13 +6,11 @@ from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
 from pydantic import BaseModel, Field
 
-class DatasetItem(BaseModel):
+class DatasetItemInfo(BaseModel):
     """The dataset item"""
     topic: Optional[str] = Field(description='The question topic.', examples=["Security"])
     question: Optional[str] = Field(description='The question.', examples=["How do I secure my application?"])
-    locale: Optional[str] = Field(description='The question language.', examples=["French"])
     answer: Optional[str] = Field(description='The answer.', examples=["No way to do that!"])
-    no_answer: Optional[str] = Field(description='The default answer if no answer.', examples=["Sorry! I don't know."])
 
 class IndexingDetails(BaseModel):
     """The indexing detail base class for Embedding Model Setting."""

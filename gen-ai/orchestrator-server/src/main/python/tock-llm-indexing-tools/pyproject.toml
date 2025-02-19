@@ -14,7 +14,6 @@ pandas = "^2.2.3"
 openpyxl = "^3.1.5"
 beautifulsoup4 = "^4.12.2"
 langchain = "^0.3.7"
-langsmith = "^0.1.143"
 python-dotenv = "^1.0.1"
 opensearch-py = "^2.7.1"
 gen_ai_orchestrator = {path = "../server", develop=true}
@@ -22,10 +21,17 @@ langchain-community = "^0.3.7"
 pre-commit = "^4.0.1"
 aiometer = "^0.5.0"
 aiohttp = "^3.11.6"
-aiohttp-socks = "^0.9.0"
+aiohttp-socks = "^0.10.1"
 pydantic = "^2.9.2"
 humanize = "^4.11.0"
-langfuse = "^2.54.0"
+langfuse = "^2.57.7"
+ragas = "^0.2.13"
+rapidfuzz = "^3.12.2"
+sacrebleu = "^2.5.1"
+rouge_score = "^0.1.2"
+python-pptx = "^1.0.2"
+python-magic = "^0.4.27"
+
 
 [build-system]
 requires = ["poetry-core"]

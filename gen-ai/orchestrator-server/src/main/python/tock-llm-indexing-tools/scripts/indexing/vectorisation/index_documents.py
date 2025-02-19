@@ -1,24 +1,10 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
 """
 Index a CSV file (line format: 'title'|'source'|'text') into a vector database.
 
 Usage:
   index_documents.py --input-csv=<path> --namespace=<ns> --bot-id=<id> \
                      --embeddings-json-config=<emb_cfg> --vector-store-json-config=<vs_cfg> \
-                     --chunks-size=<size> [--ignore-source=<is>] [--embedding-bulk-size=<em_bs>] \
+                     --chunks-size=<size> [--ignore-source=<is>] [--append-title=<at>] [--embedding-bulk-size=<em_bs>] \
                      [--env-file=<env>] [-v]
   index_documents.py (-h | --help)
   index_documents.py --version
@@ -36,6 +22,8 @@ Options:
   --chunks-size=<size>                Size of the embedded document chunks.
   --ignore-source=<is>                Ignore source validation. Useful if sources aren't valid URLs.
                                        [default: false]
+  --append-title=<at>                 Add the title to the text to be embedded.
+                                       [default: true]
   --embedding-bulk-size=<em_bs>       Number of chunks sent in each embedding request.
                                        [default: 100]
   --env-file=<env>                    Path to an optional environment configuration file.
@@ -70,7 +58,6 @@ from docopt import docopt
 from dotenv import load_dotenv
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import BloomzEMSetting
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
 from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
@@ -133,10 +120,15 @@ def index_documents() -> IndexingDetails:
     logging.debug(f"Split texts in {chunks_size} characters-sized chunks")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunks_size)
     splitted_docs = text_splitter.split_documents(docs)
+    for doc in splitted_docs:
+        doc.page_content = f"```markdown\n{doc.page_content}\n```"
+
     # Add chunk id ('n/N') metadata to each chunk
     splitted_docs = generate_ids_for_each_chunks(splitted_docs)
-    # Add title to text (for better semantic search)
-    splitted_docs = add_title_to_text(splitted_docs)
+
+    if append_title:
+        # Add title to text (for better semantic search)
+        splitted_docs = add_title_to_text(splitted_docs)
 
     logging.debug(f"Get embeddings model from {embeddings_json_config} config file")
     with open(Path(embeddings_json_config), 'r') as json_file:
@@ -410,7 +402,8 @@ if __name__ == '__main__':
     embeddings_json_config = validate_file(args['--embeddings-json-config'], allowed_extension='json')
     vector_store_json_config = validate_file(args['--vector-store-json-config'], allowed_extension='json')
     chunks_size = validate_positive_integer(args, option_name='--chunks-size')
-    ignore_source = validate_boolean(args, option_name='--ignore-source') # Default: 'false'
+    ignore_source = validate_boolean(args, option_name='--ignore-source')
+    append_title = validate_boolean(args, option_name='--append-title')
     embedding_bulk_size = validate_positive_integer(args, option_name='--embedding-bulk-size')
 
     # Load .env file if provided

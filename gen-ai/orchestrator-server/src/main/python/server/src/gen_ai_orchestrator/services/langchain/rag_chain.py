@@ -30,6 +30,7 @@ from langchain.retrievers.contextual_compression import (
     ContextualCompressionRetriever,
 )
 from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate, ChatPromptTemplate, MessagesPlaceholder
@@ -82,12 +83,16 @@ logger = logging.getLogger(__name__)
 
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-async def execute_rag_chain(query: RagQuery, debug: bool) -> RagResponse:
+async def execute_rag_chain(
+        query: RagQuery,
+        debug: bool,
+        custom_observability_handler: Optional[BaseCallbackHandler] = None) -> RagResponse:
     """
     RAG chain execution, using the LLM and Embedding settings specified in the query
 
     Args:
         query: The RAG query
+        custom_observability_handler: Custom observability handler
         debug: True if RAG data debug should be returned with the response.
     Returns:
         The RAG response (Answer and document sources)
@@ -132,7 +137,10 @@ async def execute_rag_chain(query: RagQuery, debug: bool) -> RagResponse:
     if debug:
         # Debug callback handler
         callback_handlers.append(records_callback_handler)
-    if query.observability_setting is not None:
+
+    if custom_observability_handler is not None:
+        callback_handlers.append(custom_observability_handler)
+    elif query.observability_setting is not None:
         # Langfuse callback handler
         observability_handler = create_observability_callback_handler(
             observability_setting=query.observability_setting,
