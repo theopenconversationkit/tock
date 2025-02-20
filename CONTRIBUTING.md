@@ -37,6 +37,6 @@ Every new feature or fix should embed its unit test(s).
 
 ## More...
 
-More about [sources and contrib](http://doc.tock.ai/tock/en/about/contribute/).
+More about [sources and contrib](https://doc.tock.ai/tock/master/about/contribute.html).
 
-Feel free to [contact us](https://doc.tock.ai/tock/en/about/contact/).
+Feel free to [contact us](https://doc.tock.ai/tock/master/about/contact.html).
