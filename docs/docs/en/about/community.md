@@ -32,9 +32,9 @@ To find Tock news, new projects, conferences, releases and more please visit the
 
 Specific news can be found on these topics:
 
-* [Known users & projects](http://doc.tock.ai/tock/en/about/showcase/)
-* [Presentations & conferences](http://doc.tock.ai/tock/en/about/resources/)
-* [Awards](http://doc.tock.ai/tock/en/about/awards/)
+* [Known users & projects](https://doc.tock.ai/tock/master/about/showcase.html)
+* [Presentations & conferences](https://doc.tock.ai/tock/master/about/ressources.html)
+* [Awards](https://doc.tock.ai/tock/master/about/awards.html)
 
 For releases & features:
 
@@ -84,7 +84,7 @@ Thanks to [e.Voyageurs SNCF](https://www.sncf.com/fr/groupe/newsroom/e-voyageurs
 public Live Demo platform.
 
 * [Live Demo](https://demo.tock.ai/) 
-* [Guide _Create your 1st bot with Tock_](https://doc.tock.ai/tock/en/guides/studio.md/)
+* [Guide _Create your 1st bot with Tock_](https://doc.tock.ai/tock/master/guides/studio.html)
 
 ## Help
 

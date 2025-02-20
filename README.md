@@ -12,7 +12,7 @@
 
 # Tock - The Open Conversation Kit
 
-<img alt="Tock Logo" src="http://doc.tock.ai/tock/en/assets/images/logo.svg" style="width: 150px;"><br>
+<img alt="Tock Logo" src="http://doc.tock.ai/tock/master/img/logo.svg" style="width: 150px;"><br>
 
 _Curious about what Tock is or, who is using it? Check out our [website](https://doc.tock.ai)!_
 
@@ -27,7 +27,7 @@ Open Conversational AI platform to build Bots:
  
 🏠 Home: [https://doc.tock.ai](https://doc.tock.ai)
  
-🕮 Documentation: [https://doc.tock.ai/tock](https://doc.tock.ai/tock/index.html)
+🕮 Documentation: [https://doc.tock.ai/tock/master/](https://doc.tock.ai/tock/master/)
 
 🐋 Docker configurations: [https://github.com/theopenconversationkit/tock-docker](https://github.com/theopenconversationkit/tock-docker)
 

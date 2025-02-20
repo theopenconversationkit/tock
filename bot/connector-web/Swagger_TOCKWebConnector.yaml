@@ -60,7 +60,7 @@ paths:
                       title: 'The Open Conversation Kit'
                       subTitle: 'Open platform for Conversational AI.'
                       file:
-                        url: 'https://doc.tock.ai/tock/fr/assets/images/logo.svg'
+                        url: 'https://doc.tock.ai/tock/master/fr/assets/images/logo.svg'
                         name: 'logo.svg'
                         type: image
                       buttons:
