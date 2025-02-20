@@ -56,15 +56,15 @@ class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
         fun retrieveMediaUrl(
             @Path("media-id") mediaId: String?,
             @Query("access_token") accessToken: String
-        ): Call<Media?>?
+        ): Call<Media>
 
         @GET
         @Streaming
         @Headers(value = ["User-Agent:curl/7.64.1"])
-        fun downloadMediaFile(
+        fun downloadMediaBinary(
             @Url url: String?,
-            @Query("access_token") accessToken: String
-        ): Call<ResponseBody?>?
+            @Header("Authorization") authorization: String,
+        ): Call<ResponseBody>
 
         @DELETE("v$VERSION/{media-id}")
         fun deleteMedia(

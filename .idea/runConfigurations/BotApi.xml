@@ -1,16 +1,22 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="BotApi" type="JetRunConfigurationType" factoryName="Kotlin">
-    <module name="tock-bot-api-service" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="MAIN_CLASS_NAME" value="ai.tock.bot.api.service.StartBotApiKt" />
-    <option name="WORKING_DIRECTORY" value="" />
+  <configuration default="false" name="BotApi" type="JetRunConfigurationType">
     <envs>
       <env name="tock_websocket_enabled" value="true" />
+      <env name="tock_web_sse" value="true" />
     </envs>
+    <option name="MAIN_CLASS_NAME" value="ai.tock.bot.api.service.StartBotApiKt" />
+    <module name="tock-bot-api-service" />
+    <shortenClasspath name="NONE" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+      </ENTRIES>
+    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

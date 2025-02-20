@@ -20,6 +20,8 @@ import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache.createHashedId
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudMongoDAO
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.*
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
+import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
@@ -33,7 +35,12 @@ internal object WebhookActionConverter {
 
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
 
-    fun toEvent(message: WhatsAppCloudMessage, applicationId: String): Event? {
+    fun toEvent(
+        message: WhatsAppCloudMessage,
+        applicationId: String,
+        whatsAppCloudApiService: WhatsAppCloudApiService,
+        token: String
+    ): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
             is WhatsAppCloudTextMessage -> SendSentence(
@@ -42,6 +49,17 @@ internal object WebhookActionConverter {
                 PlayerId(applicationId, PlayerType.bot),
                 message.text.body
             )
+
+            is WhatsAppCloudImageMessage -> {
+                val binaryImg = whatsAppCloudApiService.downloadImgByBinary(token, message.image.id, message.image.mimeType)
+                SendAttachment(
+                    PlayerId(senderId),
+                    applicationId,
+                    PlayerId(applicationId, PlayerType.bot),
+                    binaryImg,
+                    SendAttachment.AttachmentType.image
+                )
+            }
 
             is WhatsAppCloudLocationMessage -> SendLocation(
                 PlayerId(senderId),
@@ -90,7 +108,7 @@ internal object WebhookActionConverter {
     private fun getMessageInteractiveCopy(
         message: WhatsAppCloudInteractiveMessage
     )
-        : WhatsAppCloudInteractiveMessage {
+            : WhatsAppCloudInteractiveMessage {
 
         val buttonReply = message.interactive.buttonReply
         val listReply = message.interactive.listReply

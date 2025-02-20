@@ -52,7 +52,7 @@ class TockClientBus(
 ) : ClientBus {
 
     constructor(botDefinition: ClientBotDefinition, data: RequestData, sendAnswer: (BotResponse) -> Unit) :
-        this(botDefinition, data.requestId, data.botRequest!!, sendAnswer)
+            this(botDefinition, data.requestId, data.botRequest!!, sendAnswer)
 
     override val connectorId: String = request.context.applicationId
     override val userId: PlayerId = request.context.userId
@@ -64,6 +64,7 @@ class TockClientBus(
 
     // Source connector : is the connector which initialize a conversation
     override val sourceConnectorType: ConnectorType = request.context.sourceConnectorType
+
     // Target connector : is the connector for which the message is produced
     override val targetConnectorType: ConnectorType = request.context.targetConnectorType
 
@@ -74,7 +75,6 @@ class TockClientBus(
     override val message: UserMessage = request.message
 
     private val context = ClientBusContext()
-    private val messages: MutableList<BotMessage> = CopyOnWriteArrayList()
 
     override lateinit var story: ClientStoryDefinition
     override var step: ClientStep? = null
@@ -96,25 +96,41 @@ class TockClientBus(
 
     override fun defaultDelay(answerIndex: Int): Long = 0
 
-    private fun addMessage(plainText: CharSequence?, delay: Long, suggestions: List<Suggestion> = emptyList()) {
+    private fun addMessage(message: BotMessage?, lastResponse: Boolean = false) {
+        if (message != null) {
+            answer(message, lastResponse)
+        }
+    }
+
+    private fun addMessage(
+        plainText: CharSequence?,
+        delay: Long = 0,
+        suggestions: List<Suggestion> = emptyList(),
+        lastResponse: Boolean = false
+    ) {
         context.connectorMessages.remove(targetConnectorType)?.also {
-            messages.add(CustomMessage(ConstrainedValueWrapper(it), delay))
+            answer(CustomMessage(ConstrainedValueWrapper(it), delay), lastResponse && plainText == null)
         }
         if (plainText != null) {
-            messages.add(
+            answer(
                 when (plainText) {
                     is String -> Sentence(I18nText(plainText), delay = delay, suggestions = suggestions)
-                    is TranslatedSequence -> Sentence(I18nText(plainText.toString(), toBeTranslated = false), delay = delay, suggestions = suggestions)
+                    is TranslatedSequence -> Sentence(
+                        I18nText(plainText.toString(), toBeTranslated = false),
+                        delay = delay,
+                        suggestions = suggestions
+                    )
+
                     is I18nText -> Sentence(plainText, delay = delay, suggestions = suggestions)
                     else -> Sentence(I18nText(plainText.toString()), delay = delay, suggestions = suggestions)
-                }
+                },
+                lastResponse
             )
         }
     }
 
     override fun endRawText(plainText: CharSequence?, delay: Long): ClientBus {
-        addMessage(plainText, delay)
-        answer(messages)
+        addMessage(plainText, delay, lastResponse = true)
         return this
     }
 
@@ -132,54 +148,67 @@ class TockClientBus(
         // The test connector is a rest connector (source),
         // but it invokes the engine with a target connector,
         // to receive the corresponding messages
-        if(ConnectorType.rest == sourceConnectorType) {
-            messages.add(Debug(title, data))
+        if (ConnectorType.rest == sourceConnectorType) {
+            addMessage(Debug(title, data))
         }
         return this
     }
 
-    override fun send(i18nText: CharSequence, suggestions: List<Suggestion>, delay: Long, vararg i18nArgs: Any?): ClientBus {
+    override fun send(
+        i18nText: CharSequence,
+        suggestions: List<Suggestion>,
+        delay: Long,
+        vararg i18nArgs: Any?
+    ): ClientBus {
         addMessage(translate(i18nText, i18nArgs), delay, suggestions)
         return this
     }
 
-    override fun end(i18nText: CharSequence, suggestions: List<Suggestion>, delay: Long, vararg i18nArgs: Any?): ClientBus {
-        addMessage(translate(i18nText, i18nArgs), delay, suggestions)
-        answer(messages)
+    override fun end(
+        i18nText: CharSequence,
+        suggestions: List<Suggestion>,
+        delay: Long,
+        vararg i18nArgs: Any?
+    ): ClientBus {
+        addMessage(translate(i18nText, i18nArgs), delay, suggestions, lastResponse = true)
         return this
     }
 
     override fun end(card: Card): ClientBus {
-        send(card)
-        answer(messages)
+        addMessage(card, lastResponse = true)
         return this
     }
 
     override fun end(carousel: Carousel): ClientBus {
-        send(carousel)
-        answer(messages)
+        addMessage(carousel, lastResponse = true)
         return this
     }
 
-    private fun answer(messages: List<BotMessage>) {
+    private fun answer(message: BotMessage, lastResponse: Boolean = false) =
+        answer(listOf(message), lastResponse)
+
+    private fun answer(messages: List<BotMessage>, lastResponse: Boolean = false) {
         sendAnswer(
             BotResponse(
                 messages,
                 story.storyId,
                 step?.name,
                 entities,
-                ResponseContext(requestId)
+                ResponseContext(
+                    requestId = requestId,
+                    lastResponse = lastResponse
+                )
             )
         )
     }
 
     override fun send(carousel: Carousel): ClientBus {
-        messages.add(carousel)
+        addMessage(carousel)
         return this
     }
 
     override fun send(card: Card): ClientBus {
-        messages.add(card)
+        addMessage(card)
         return this
     }
 
@@ -190,7 +219,11 @@ class TockClientBus(
         return this
     }
 
-    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): ClientBus {
+    override fun withMessage(
+        connectorType: ConnectorType,
+        connectorId: String,
+        messageProvider: () -> ConnectorMessage
+    ): ClientBus {
         if (this.connectorId == connectorId && targetConnectorType == connectorType) {
             context.connectorMessages[connectorType] = messageProvider()
         }

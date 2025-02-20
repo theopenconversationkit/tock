@@ -16,6 +16,7 @@
 
 from typing import Any, Optional
 
+from pyasn1.type.univ import Boolean
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.document_compressor.document_compressor_types import DocumentCompressorSetting
@@ -83,6 +84,10 @@ class BaseQuery(BaseModel):
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
         description='The observability settings.', default=None
+    )
+    compressor_setting: Optional[DocumentCompressorSetting] = Field(
+        description='Compressor settings, to rerank relevant documents returned by retriever.',
+        default=None,
     )
 
 
@@ -158,42 +163,25 @@ class RagQuery(BaseQuery):
     """The RAG query model"""
 
     dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
-    question_answering_prompt_inputs: Any = Field(
-        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the dialog.history field',
-    )
     # condense_question_llm_setting: LLMSetting =
     #   Field(description="LLM setting, used to condense the user's question.")
-    # condense_question_prompt_inputs: Any = (
-    #         Field(
-    #             description='Key-value inputs for the condense question llm prompt, when used as a template.',
-    #         ),
+    # condense_question_prompt: PromptTemplate = Field(
+    #         description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     #     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
     )
-    question_answering_prompt_inputs: Any = Field(
-        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the dialog.history field',
-    )
-    embedding_question_em_setting: EMSetting = Field(
-        description="Embedding model setting, used to calculate the user's question vector."
-    )
-    document_index_name: str = Field(
-        description='Index name corresponding to a document collection in the vector database.',
-    )
-    document_search_params: DocumentSearchParams = Field(
-        description='The document search parameters. Ex: number of documents, metadata filter',
-    )
-    observability_setting: Optional[ObservabilitySetting] = Field(
-        description='The observability settings.', default=None
+    question_answering_prompt : PromptTemplate = Field(
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
     guardrail_setting: Optional[GuardrailSetting] = Field(
         description='Guardrail settings, to classify LLM output toxicity.', default=None
     )
-    compressor_setting: Optional[DocumentCompressorSetting] = Field(
-        description='Compressor settings, to rerank relevant documents returned by retriever.',
-        default=None,
+    documents_required: Optional[bool] = Field(
+        description='Specifies whether the presence of documents is mandatory for generating answers. '
+                    'If set to True, the system will only provide answers when relevant documents are found. '
+                    'If set to False, the system can respond without requiring document sources. Default is True.',
+        default=True,
     )
 
     model_config = {
@@ -216,7 +204,11 @@ class RagQuery(BaseQuery):
                             'secret': 'ab7***************************A1IV4B',
                         },
                         'temperature': 1.2,
-                        'prompt': """Use the following context to answer the question at the end.
+                        'model': 'gpt-3.5-turbo',
+                    },
+                    'question_answering_prompt': {
+                        'formatter': 'f-string',
+                        'template': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
 
 Context:
@@ -226,12 +218,11 @@ Question:
 {question}
 
 Answer in {locale}:""",
-                        'model': 'gpt-3.5-turbo',
-                    },
-                    'question_answering_prompt_inputs': {
-                        'question': 'How to get started playing guitar ?',
-                        'no_answer': "Sorry, I don't know.",
-                        'locale': 'French',
+                        'inputs': {
+                            'question': 'How to get started playing guitar ?',
+                            'no_answer': 'Sorry, I don t know.',
+                            'locale': 'French',
+                        }
                     },
                     'embedding_question_em_setting': {
                         'provider': 'OpenAI',

@@ -19,6 +19,16 @@ package ai.tock.bot.api.model
 import ai.tock.bot.api.model.context.Entity
 import ai.tock.bot.api.model.message.bot.BotMessage
 
+fun merge(r1: BotResponse?, r2: BotResponse?) =
+    if (r1 == null) {
+        r2
+    } else if (r2 == null) {
+        r1
+    } else r2.copy(
+        messages = r1.messages + r2.messages,
+        entities = r1.entities + r2.entities,
+    )
+
 data class BotResponse(
     val messages: List<BotMessage> = emptyList(),
     val storyId: String,

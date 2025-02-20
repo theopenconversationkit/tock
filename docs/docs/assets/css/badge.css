@@ -1,0 +1,116 @@
+@keyframes heart {
+    0%, 40%, 80%, 100% {
+        transform: scale(1);
+   }
+    20%, 60% {
+        transform: scale(1.15);
+   }
+}
+.md-typeset .twitter {
+    color: #00acee;
+}
+.md-typeset .mastodon {
+    color: #897ff8;
+}
+.md-typeset .mdx-video {
+    width: auto;
+}
+.md-typeset .mdx-video__inner {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.138%;
+}
+.md-typeset .mdx-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border: none;
+}
+.md-typeset .mdx-heart {
+    animation: heart 1000ms infinite;
+}
+.md-typeset .mdx-insiders {
+    color: #e91e63;
+}
+.md-typeset .mdx-badge {
+    font-size: 0.85em;
+}
+.md-typeset .mdx-badge--heart {
+    --md-typeset-a-color: #e92063;
+    --md-accent-fg-color: #ff4281;
+    --md-accent-fg-color--transparent: #e92063 1a;
+    color: #e91e63;
+}
+.md-typeset .mdx-badge--heart .twemoji {
+    animation: heart 1000ms infinite;
+}
+.md-typeset .mdx-badge--right {
+    float: right;
+    margin-left: 0.35em;
+}
+.md-typeset .mdx-badge__icon {
+    padding: 4px;
+    background: var(--md-accent-fg-color--transparent);
+    border-start-start-radius: 2px;
+    border-end-start-radius: 2px;
+}
+.md-typeset .mdx-badge__icon:last-child {
+    border-radius: 2px;
+}
+.md-typeset .mdx-badge__text {
+    padding: 0.2rem 0.3rem;
+    border-start-end-radius: 2px;
+    border-end-end-radius: 2px;
+    box-shadow: 0 0 0 1px inset var(--md-accent-fg-color--transparent);
+}
+.md-typeset .mdx-switch button {
+    cursor: pointer;
+    transition: opacity 250ms;
+}
+.md-typeset .mdx-switch button self:is(:focus, :hover) {
+    opacity: 0.75;
+}
+.md-typeset .mdx-switch button > code {
+    display: block;
+    color: var(--md-primary-bg-color);
+    background-color: var(--md-primary-fg-color);
+}
+.md-typeset .mdx-columns ol, .md-typeset .mdx-columns ul {
+    columns: 2;
+}
+.md-typeset .mdx-columns li {
+    break-inside: avoid;
+}
+.md-typeset .mdx-flags {
+    margin: 2em auto;
+}
+.md-typeset .mdx-flags ol {
+    list-style: none;
+}
+.md-typeset .mdx-flags ol li {
+    margin-bottom: 1em;
+}
+.md-typeset .mdx-flags__item {
+    display: flex;
+    gap: 12px;
+}
+.md-typeset .mdx-flags__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+.md-typeset .mdx-flags__content span {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+.md-typeset .mdx-flags__content > span:nth-child(2) {
+    font-size: 80%;
+}
+.md-typeset .mdx-flags__content code {
+    float: right;
+}

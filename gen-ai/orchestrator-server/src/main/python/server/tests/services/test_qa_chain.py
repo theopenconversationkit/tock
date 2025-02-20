@@ -66,6 +66,7 @@ async def test_qa_chain(
             ],
             'k': 4,
         },
+        'documents_required': True,
     }
     query = QAQuery(**query_dict)
 

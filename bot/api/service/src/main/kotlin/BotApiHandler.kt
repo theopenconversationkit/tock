@@ -68,8 +68,9 @@ internal class BotApiHandler(
 
     fun send(bus: BotBus) {
         val request = bus.toUserRequest()
-        val response = clientController.send(request)
-        bus.handleResponse(request, response?.botResponse)
+        clientController.send(request) { response ->
+            bus.handleResponse(request, response?.botResponse)
+        }
     }
 
     private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
@@ -81,6 +82,7 @@ internal class BotApiHandler(
                 story.definition.id
             )
             val endingStoryId = storySetting?.findEnabledEndWithStoryId(connectorId)
+                .takeIf { response.context.lastResponse }
 
             val messages = response.messages
             if (messages.isEmpty()) {
@@ -91,7 +93,7 @@ internal class BotApiHandler(
                     send(a)
                 }
             messages.last().apply {
-                send(this, endingStoryId == null)
+                send(this, response.context.lastResponse && endingStoryId == null)
             }
             // handle entity changes
             entities
@@ -139,7 +141,7 @@ internal class BotApiHandler(
             if (endingStoryId != null) {
 
                 // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
-                if (connectorData.saveTimeline){
+                if (connectorData.saveTimeline) {
                     userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
                 }
 

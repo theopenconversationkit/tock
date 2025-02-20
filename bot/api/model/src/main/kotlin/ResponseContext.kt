@@ -19,4 +19,8 @@ package ai.tock.bot.api.model
 import java.time.Instant
 import java.time.Instant.now
 
-data class ResponseContext(val requestId: String, val date: Instant = now())
+data class ResponseContext(
+    val requestId: String,
+    val date: Instant = now(),
+    val lastResponse: Boolean = true
+)

@@ -210,10 +210,7 @@ object BotAdminService {
                             )
                         }
                     )
-                }
-
-                // Add nlp stats
-                searchResult.copy(
+                }.copy(
                     nlpStats = dialogReportDAO.getNlpStats(searchResult.dialogs.map { it.id }, query.namespace)
                 )
             }

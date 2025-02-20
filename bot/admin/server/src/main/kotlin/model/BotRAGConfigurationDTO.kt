@@ -40,6 +40,7 @@ data class BotRAGConfigurationDTO(
     val indexName: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
+    val documentsRequired: Boolean = true,
 ) {
     constructor(configuration: BotRAGConfiguration) : this(
         id = configuration._id.toString(),
@@ -51,7 +52,8 @@ data class BotRAGConfigurationDTO(
         indexSessionId = configuration.indexSessionId,
         indexName = configuration.generateIndexName(),
         noAnswerSentence = configuration.noAnswerSentence,
-        noAnswerStoryId = configuration.noAnswerStoryId
+        noAnswerStoryId = configuration.noAnswerStoryId,
+        documentsRequired = configuration.documentsRequired,
     )
 
     fun toBotRAGConfiguration(): BotRAGConfiguration =
@@ -74,7 +76,8 @@ data class BotRAGConfigurationDTO(
             ),
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
-            noAnswerStoryId = noAnswerStoryId
+            noAnswerStoryId = noAnswerStoryId,
+            documentsRequired = documentsRequired,
         )
 }
 
