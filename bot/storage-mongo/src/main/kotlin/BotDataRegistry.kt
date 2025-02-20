@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -49,7 +50,8 @@ import org.litote.kmongo.DataRegistry
         PlayerId::class,
         EventState::class,
         ConnectorType::class,
-        ActionMetadata::class
+        ActionMetadata::class,
+        BotAnnotation::class
     ]
 )
 @JacksonDataRegistry(

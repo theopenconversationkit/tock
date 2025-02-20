@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class FaqSettings_Serializer : StdSerializer<FaqSettings>(FaqSettings::class.java),
-        JacksonModuleServiceLoader {
+    JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addSerializer(FaqSettings::class.java, this)
 
     override fun serialize(
@@ -28,8 +28,8 @@ internal class FaqSettings_Serializer : StdSerializer<FaqSettings>(FaqSettings::
         gen.writeFieldName("satisfactionStoryId")
         val _satisfactionStoryId_ = value.satisfactionStoryId
         if(_satisfactionStoryId_ == null) { gen.writeNull() } else {
-                gen.writeString(_satisfactionStoryId_)
-                }
+            gen.writeString(_satisfactionStoryId_)
+        }
         gen.writeFieldName("creationDate")
         val _creationDate_ = value.creationDate
         serializers.defaultSerializeValue(_creationDate_, gen)

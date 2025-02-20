@@ -1,5 +1,7 @@
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotation_
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.ActionMetadata_
@@ -32,6 +34,8 @@ private val __RecipientId: KProperty1<DialogCol.ActionMongoWrapper, PlayerId?>
     get() = DialogCol.ActionMongoWrapper::recipientId
 private val __ApplicationId: KProperty1<DialogCol.ActionMongoWrapper, String?>
     get() = DialogCol.ActionMongoWrapper::applicationId
+private val __Annotation: KProperty1<DialogCol.ActionMongoWrapper, BotAnnotation?>
+    get() = DialogCol.ActionMongoWrapper::annotation
 internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         DialogCol.ActionMongoWrapper?>) : KPropertyPath<T,
         DialogCol.ActionMongoWrapper?>(previous,property) {
@@ -56,6 +60,9 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
     val applicationId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ApplicationId)
 
+    val annotation: BotAnnotation_<T>
+        get() = BotAnnotation_(this,DialogCol.ActionMongoWrapper::annotation)
+
     companion object {
         val Id: KProperty1<DialogCol.ActionMongoWrapper, Id<Action>?>
             get() = __Id
@@ -70,7 +77,9 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
         val RecipientId: PlayerId_<DialogCol.ActionMongoWrapper>
             get() = PlayerId_(null,__RecipientId)
         val ApplicationId: KProperty1<DialogCol.ActionMongoWrapper, String?>
-            get() = __ApplicationId}
+            get() = __ApplicationId
+        val Annotation: BotAnnotation_<DialogCol.ActionMongoWrapper>
+            get() = BotAnnotation_(null,__Annotation)}
 }
 
 internal open class ActionMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property:
@@ -96,6 +105,9 @@ internal open class ActionMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, pr
 
     val applicationId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ApplicationId)
+
+    val annotation: BotAnnotation_<T>
+        get() = BotAnnotation_(this,DialogCol.ActionMongoWrapper::annotation)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMongoWrapper_<T> =
@@ -124,6 +136,9 @@ internal open class ActionMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?,
 
     val applicationId: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__ApplicationId)
+
+    val annotation: BotAnnotation_<T>
+        get() = BotAnnotation_(this,DialogCol.ActionMongoWrapper::annotation)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMongoWrapper_<T> =
