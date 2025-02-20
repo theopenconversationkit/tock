@@ -176,11 +176,11 @@ class DialogVerticle {
 
             // --------------------------------- Annotation Routes ----------------------------------
 
-            // CREATE ANNOTATION
+            // CREATE/UPDATE ANNOTATION
             blockingJsonPost(PATH_ANNOTATION, setOf(TockUserRole.botUser)) { context, annotationDTO: BotAnnotationDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
-                BotAdminService.createAnnotation(
+                BotAdminService.saveAnnotation(
                     context.path("dialogId"),
                     context.path("actionId"),
                     annotationDTO,

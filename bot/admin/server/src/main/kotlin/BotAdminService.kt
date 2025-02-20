@@ -153,6 +153,48 @@ object BotAdminService {
         }
     }
 
+    fun saveAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        return if (dialogReportDAO.annotationExists(dialogId, actionId)) {
+            updateAnnotation(dialogId, actionId, annotationDTO, user)
+        } else {
+            createAnnotationInternal(dialogId, actionId, annotationDTO, user)
+        }
+    }
+
+    private fun createAnnotationInternal(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        val annotation = BotAnnotation(
+            state = annotationDTO.state,
+            reason = annotationDTO.reason,
+            description = annotationDTO.description,
+            groundTruth = annotationDTO.groundTruth,
+            events = mutableListOf(),
+            lastUpdateDate = Instant.now()
+        )
+
+        val event = BotAnnotationEventState(
+            eventId = newId(),
+            creationDate = Instant.now(),
+            lastUpdateDate = Instant.now(),
+            user = user,
+            before = null,
+            after = annotationDTO.state.name
+        )
+
+        annotation.events.add(event)
+        dialogReportDAO.insertAnnotation(dialogId, actionId, annotation)
+        return annotation
+    }
+
     fun addCommentToAnnotation(
         dialogId: String,
         actionId: String,
