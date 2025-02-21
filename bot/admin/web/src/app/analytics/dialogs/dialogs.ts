@@ -17,6 +17,8 @@ import { PaginatedQuery } from '../../model/commons';
 import { ActionNlpStats, DialogReport, PlayerId } from '../../shared/model/dialog-data';
 import { PaginatedResult } from '../../model/nlp';
 import { ConnectorType } from '../../core/model/configuration';
+import { AnnotationReason, AnnotationState } from '../../shared/components/annotation/annotations';
+import { SortOrder } from '../../shared/model/misc';
 
 export class DialogReportQuery extends PaginatedQuery {
   constructor(
@@ -35,7 +37,16 @@ export class DialogReportQuery extends PaginatedQuery {
     public ratings?: number[],
     public applicationId?: string,
     public intentsToHide?: string[],
-    public isGenAiRagDialog?: boolean
+    public isGenAiRagDialog?: boolean,
+    public dialogSort?: SortOrder,
+    public dialogCreationDateFrom?: Date,
+    public dialogCreationDateTo?: Date,
+    public withAnnotations?: boolean,
+    public annotationStates?: AnnotationState[],
+    public annotationReasons?: AnnotationReason[],
+    public annotationSort?: SortOrder,
+    public annotationCreationDateFrom?: Date,
+    public annotationCreationDateTo?: Date
   ) {
     super(namespace, applicationName, language, start, size);
   }

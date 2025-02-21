@@ -10,6 +10,7 @@ import { getExportFileName } from '../../../shared/utils';
 import { DOCUMENT, Location } from '@angular/common';
 import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
+import { SortOrder } from '../../../shared/model/misc';
 
 @Component({
   selector: 'tock-dialogs-list',
@@ -26,7 +27,8 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   data: DialogReport[] = [];
 
   filters: Partial<DialogListFilters> = {
-    exactMatch: false
+    exactMatch: false,
+    dialogSort: SortOrder.DESC
   };
 
   dialogReportQuery: DialogReportQuery;
@@ -39,6 +41,8 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
     size: 10,
     total: undefined
   };
+
+  sortOrder = SortOrder;
 
   @Input() ratingFilter: number[];
 
@@ -70,6 +74,17 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       ...this.filters,
       ...filters
     };
+
+    this.search();
+  }
+
+  toggleDialogSortOrder() {
+    if (this.filters.dialogSort === SortOrder.DESC) {
+      this.filters.dialogSort = SortOrder.ASC;
+    } else {
+      this.filters.dialogSort = SortOrder.DESC;
+    }
+    this.filters.annotationSort = null;
 
     this.search();
   }
@@ -117,7 +132,16 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.ratingFilter,
       this.filters.configuration,
       this.filters.intentsToHide,
-      this.filters.isGenAiRagDialog
+      this.filters.isGenAiRagDialog,
+      this.filters.dialogSort,
+      this.filters.dialogCreationDateFrom,
+      this.filters.dialogCreationDateTo,
+      this.filters.withAnnotations,
+      this.filters.annotationStates,
+      this.filters.annotationReasons,
+      this.filters.annotationSort,
+      this.filters.annotationCreationDateFrom,
+      this.filters.annotationCreationDateTo
     );
 
     this.analytics.dialogs(this.dialogReportQuery).subscribe((result) => {

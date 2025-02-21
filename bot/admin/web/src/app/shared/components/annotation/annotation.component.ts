@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } from '../../model/dialog-data';
+import { ActionReport, Debug, DialogReport, Sentence } from '../../model/dialog-data';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import {
   Annotation,
@@ -16,6 +16,7 @@ import { FormType, G } from 'ngx-mf';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { deepCopy } from '../../utils';
+import { SortOrder } from '../../model/misc';
 
 type AnnotationForm = FormType<Omit<Annotation, '_id' | 'user' | 'createdAt' | 'lastUpdateDate' | 'expiresAt'> & { comment: string }>;
 type AnnotationFormGroupKeysType = AnnotationForm[G];
@@ -43,6 +44,8 @@ export class AnnotationComponent implements OnInit {
   question: string;
   condensedQuestion: string;
   answer: string;
+
+  sortOrder = SortOrder;
 
   constructor(
     private dialogRef: NbDialogRef<AnnotationComponent>,
@@ -99,13 +102,13 @@ export class AnnotationComponent implements OnInit {
 
   hideChangeEvents: boolean = false;
 
-  eventsSortingDirection: 'asc' | 'desc' = 'desc';
+  eventsSortingDirection: SortOrder = SortOrder.DESC;
 
   toggleEventsSortingDirection(): void {
-    if (this.eventsSortingDirection === 'asc') {
-      this.eventsSortingDirection = 'desc';
+    if (this.eventsSortingDirection === SortOrder.ASC) {
+      this.eventsSortingDirection = SortOrder.DESC;
     } else {
-      this.eventsSortingDirection = 'asc';
+      this.eventsSortingDirection = SortOrder.ASC;
     }
   }
 
@@ -120,7 +123,7 @@ export class AnnotationComponent implements OnInit {
       const A = new Date(a.creationDate).valueOf();
       const B = new Date(b.creationDate).valueOf();
 
-      if (this.eventsSortingDirection === 'desc') {
+      if (this.eventsSortingDirection === SortOrder.DESC) {
         return B - A;
       } else {
         return A - B;
@@ -172,7 +175,7 @@ export class AnnotationComponent implements OnInit {
   }
 
   getTextAreaNbRows(): number {
-    if (!this.actionReport.annotation?._id) return 14;
+    if (!this.actionReport.annotation) return 14;
     return 4;
   }
 
@@ -185,7 +188,7 @@ export class AnnotationComponent implements OnInit {
       });
 
       if (isFormDirty) {
-        this.postOrPut();
+        this.post();
       } else {
         this.postComment();
       }
@@ -196,19 +199,14 @@ export class AnnotationComponent implements OnInit {
     return `/bots/${this.stateService.currentApplication.name}/dialogs/${this.dialogReport.id}/actions/${this.actionReport.id}/annotation`;
   }
 
-  postOrPut(): void {
+  post(): void {
     const formValue: any = deepCopy(this.form.value);
     delete formValue['comment'];
     delete formValue['events'];
 
     let url = this.getAnnotationBaseUrl();
-    let method = this.rest.post(url, formValue);
 
-    if (this.actionReport.annotation?._id) {
-      method = this.rest.put(url, formValue);
-    }
-
-    method.subscribe({
+    this.rest.post(url, formValue).subscribe({
       next: (annotation: Annotation) => {
         this.actionReport.annotation = annotation;
         this.form.markAsPristine();

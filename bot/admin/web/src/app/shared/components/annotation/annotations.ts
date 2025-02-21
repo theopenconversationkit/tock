@@ -1,5 +1,4 @@
 export interface Annotation {
-  _id?: string;
   actionId?: string;
   dialogId?: string;
   state: AnnotationState;

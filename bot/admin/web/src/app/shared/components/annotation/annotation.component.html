@@ -135,7 +135,7 @@
             Changes & comments
             <nb-icon
               class="align-middle"
-              [icon]="eventsSortingDirection === 'asc' ? 'chevron-down-outline' : 'chevron-up-outline'"
+              [icon]="eventsSortingDirection === sortOrder.ASC ? 'chevron-down-outline' : 'chevron-up-outline'"
               pack="nebular-essentials"
             ></nb-icon>
           </span>
@@ -239,8 +239,8 @@
         (click)="submit()"
         *ngIf="form.dirty"
       >
-        <ng-container *ngIf="!actionReport.annotation?._id">Submit</ng-container>
-        <ng-container *ngIf="actionReport.annotation?._id">Update</ng-container>
+        <ng-container *ngIf="!actionReport.annotation">Submit</ng-container>
+        <ng-container *ngIf="actionReport.annotation">Update</ng-container>
       </button>
     </nb-card-footer>
   </nb-card>

@@ -7,6 +7,13 @@ import { BotSharedService } from '../../../../shared/bot-shared.service';
 import { StateService } from '../../../../core-nlp/state.service';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RestService } from '../../../../core-nlp/rest/rest.service';
+import {
+  AnnotationReason,
+  AnnotationReasons,
+  AnnotationState,
+  AnnotationStates
+} from '../../../../shared/components/annotation/annotations';
+import { SortOrder, SortOrders } from '../../../../shared/model/misc';
 
 interface DialogListFiltersForm {
   exactMatch: FormControl<boolean>;
@@ -19,6 +26,15 @@ interface DialogListFiltersForm {
   configuration?: FormControl<string>;
   intentsToHide?: FormControl<string[]>;
   isGenAiRagDialog?: FormControl<boolean>;
+  dialogSort?: FormControl<SortOrder>;
+  dialogCreationDateFrom?: FormControl<Date>;
+  dialogCreationDateTo?: FormControl<Date>;
+  withAnnotations?: FormControl<boolean>;
+  annotationStates?: FormControl<AnnotationState[]>;
+  annotationReasons?: FormControl<AnnotationReason[]>;
+  annotationSort?: FormControl<SortOrder>;
+  annotationCreationDateFrom?: FormControl<Date>;
+  annotationCreationDateTo?: FormControl<Date>;
 }
 
 export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
@@ -34,6 +50,10 @@ export class DialogsListFiltersComponent implements OnInit {
   advanced: boolean = false;
   connectorTypes: ConnectorType[] = [];
   configurationNameList: { label: string; applicationId: string }[];
+
+  annotationStates = AnnotationStates;
+  annotationReasons = AnnotationReasons;
+  sortOrders = SortOrders;
 
   @Input() initialFilters: Partial<DialogListFilters>;
   @Output() onFilter = new EventEmitter<Partial<DialogListFilters>>();
@@ -74,7 +94,16 @@ export class DialogsListFiltersComponent implements OnInit {
     ratings: new FormControl(),
     configuration: new FormControl(),
     intentsToHide: new FormControl([]),
-    isGenAiRagDialog: new FormControl()
+    isGenAiRagDialog: new FormControl(),
+    dialogSort: new FormControl(),
+    dialogCreationDateFrom: new FormControl(),
+    dialogCreationDateTo: new FormControl(),
+    withAnnotations: new FormControl(),
+    annotationStates: new FormControl([]),
+    annotationReasons: new FormControl([]),
+    annotationSort: new FormControl(),
+    annotationCreationDateFrom: new FormControl(),
+    annotationCreationDateTo: new FormControl()
   });
 
   getFormControl(formControlName: string): FormControl {
