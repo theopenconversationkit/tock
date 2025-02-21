@@ -18,6 +18,7 @@ import { AttachmentType, ConnectorType, EventType, UserInterfaceType } from '../
 import { JsonUtils } from '../../model/commons';
 import { ClassifiedEntity } from '../../model/nlp';
 import { IntentName } from '../../bot/model/story';
+import { Annotation } from '../components/annotation/annotations';
 
 export class DialogReport {
   displayActions: boolean;
@@ -66,6 +67,8 @@ export class ActionReport {
   ) {}
 
   metadata?: ActionReportMetadata;
+
+  annotation?: Annotation;
 
   _nlpStats?: NlpCallStats; // expando to store nlpStats of the action when getting a DialogReport
 
