@@ -163,11 +163,12 @@ class RagQuery(BaseQuery):
     """The RAG query model"""
 
     dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
-    # condense_question_llm_setting: LLMSetting =
-    #   Field(description="LLM setting, used to condense the user's question.")
-    # condense_question_prompt: PromptTemplate = Field(
-    #         description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
-    #     )
+    question_condensing_llm_setting: Optional[LLMSetting] = Field(
+        description="LLM setting, used to condense the user's question.", default=None)
+    question_condensing_prompt: Optional[PromptTemplate] = Field(
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format',
+        default = None
+    )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
     )

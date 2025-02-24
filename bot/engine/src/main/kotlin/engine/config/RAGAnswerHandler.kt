@@ -42,15 +42,9 @@ import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
-private val nLastMessages = intProperty(
-    name = "tock_gen_ai_orchestrator_dialog_number_messages",
-    defaultValue = 5)
 private val technicalErrorMessage = property(
     name = "tock_gen_ai_orchestrator_technical_error",
     defaultValue = "Technical error :( sorry!")
-private val ragDebugEnabled = booleanProperty(
-    name = "tock_gen_ai_orchestrator_rag_debug_enabled",
-    defaultValue = false)
 
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
@@ -68,7 +62,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             val (answer, debug, noAnswerStory, observabilityInfo) = rag(this)
 
             // Add debug data if available and if debugging is enabled
-            if (debug != null && (action.metadata.debugEnabled || ragDebugEnabled)) {
+            if (debug != null) {
                 logger.info { "Send RAG debug data." }
                 sendDebugData("RAG", debug)
             }
@@ -171,8 +165,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 ragConfiguration.botId,
                 // The indexSessionId is mandatory to enable RAG Story
                 ragConfiguration.indexSessionId!!,
+                ragConfiguration.maxDocumentsRetrieved,
                 vectorStoreSetting
             )
+
+            val questionAnsweringPrompt = ragConfiguration.questionAnsweringPrompt
+                ?: ragConfiguration.initQuestionAnsweringPrompt()
 
             try {
                 val response = ragService.rag(
@@ -180,15 +178,15 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         dialog = DialogDetails(
                             dialogId = dialog.id.toString(),
                             userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
-                            history = getDialogHistory(dialog),
+                            history = getDialogHistory(dialog, ragConfiguration.maxMessagesFromHistory),
                             tags = listOf(
                                 "connector:${underlyingConnector.connectorType.id}"
                             )
                         ),
-                        questionAnsweringLlmSetting = ragConfiguration.llmSetting,
-                        questionAnsweringPrompt = PromptTemplate(
-                            formatter = Formatter.F_STRING.id,
-                            template = ragConfiguration.llmSetting.prompt,
+                        questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
+                        questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
+                        questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
+                        questionAnsweringPrompt = questionAnsweringPrompt.copy(
                             inputs = mapOf(
                                 "question" to action.toString(),
                                 "locale" to userPreferences.locale.displayLanguage,
@@ -202,7 +200,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         vectorStoreSetting = vectorStoreSetting,
                         observabilitySetting = botDefinition.observabilityConfiguration?.setting,
                         documentsRequired = ragConfiguration.documentsRequired,
-                    ), debug = action.metadata.debugEnabled || ragDebugEnabled
+                    ), debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled
                 )
 
                 // Handle RAG response
@@ -232,7 +230,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Create a dialog history (Human and Bot message)
      * @param dialog
      */
-    private fun getDialogHistory(dialog: Dialog): List<ChatMessage> = dialog.stories.flatMap { it.actions }.mapNotNull {
+    private fun getDialogHistory(dialog: Dialog, nLastMessages: Int): List<ChatMessage> = dialog.stories.flatMap { it.actions }.mapNotNull {
         when (it) {
             is SendSentence -> if (it.text == null) null
             else ChatMessage(

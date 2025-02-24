@@ -52,6 +52,8 @@ from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
 )
+from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
+from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
@@ -116,7 +118,7 @@ async def execute_rag_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     inputs = {
         **query.question_answering_prompt.inputs,
-        'chat_history': message_history.messages,
+        'chat_history': message_history.messages
     }
 
     logger.debug(
@@ -224,7 +226,16 @@ def create_rag_chain(query: RagQuery, vector_db_async_mode: Optional[bool] = Tru
         The RAG chain.
     """
 
-    llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
+    # Log progress and validate prompt template
+    logger.info('RAG chain - Validating LLM prompt template')
+    validate_prompt_template(query.question_answering_prompt, 'Question answering prompt')
+    if query.question_condensing_prompt is not None:
+        validate_prompt_template(query.question_condensing_prompt, 'Question condensing prompt')
+
+    question_condensing_llm_factory = None
+    if query.question_condensing_llm_setting is not None:
+        question_condensing_llm_factory = get_llm_factory(setting=query.question_condensing_llm_setting)
+    question_answering_llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
     em_factory = get_em_factory(setting=query.embedding_question_em_setting)
     vector_store_factory = get_vector_store_factory(
         setting=query.vector_store_setting,
@@ -239,22 +250,24 @@ def create_rag_chain(query: RagQuery, vector_db_async_mode: Optional[bool] = Tru
     if query.compressor_setting:
         retriever = add_document_compressor(retriever, query.compressor_setting)
 
-    # Log progress and validate prompt template
-    logger.info('RAG chain - Validating LLM prompt template')
-    validate_prompt_template(query.question_answering_prompt)
-
     logger.debug('RAG chain - Document index name: %s', query.document_index_name)
 
     # Build LLM and prompt templates
-    llm = llm_factory.get_language_model()
+    question_condensing_llm = None
+    if question_condensing_llm_factory is not None:
+        question_condensing_llm = question_condensing_llm_factory.get_language_model()
+    question_answering_llm = question_answering_llm_factory.get_language_model()
     rag_prompt = build_rag_prompt(query)
 
     # Construct the RAG chain using the prompt and LLM,
     # This chain will consume the documents retrieved by the retriever as input.
-    rag_chain = construct_rag_chain(llm, rag_prompt)
+    rag_chain = construct_rag_chain(question_answering_llm, rag_prompt)
 
     # Build the chat chain for question contextualization
-    chat_chain = build_question_condensation_chain(llm)
+    chat_chain = build_question_condensation_chain(
+        question_condensing_llm if question_condensing_llm is not None else question_answering_llm,
+        query.question_condensing_prompt
+    )
 
     # Function to contextualize the question based on chat history
     contextualize_question_fn = partial(contextualize_question, chat_chain=chat_chain)
@@ -288,17 +301,24 @@ def construct_rag_chain(llm, rag_prompt):
         "question": lambda inputs: inputs["question"] # Override the user's original question with the condensed one
     } | rag_prompt | llm | StrOutputParser(name="rag_chain_output")
 
-def build_question_condensation_chain(llm) -> ChatPromptTemplate:
+def build_question_condensation_chain(llm, prompt: Optional[PromptTemplate]) -> ChatPromptTemplate:
     """
     Build the chat chain for contextualizing questions.
     """
+    if prompt is None:
+        # Default prompt
+        prompt = PromptTemplate(
+            formatter = PromptFormatter.F_STRING, inputs = {},
+            template = "Given a chat history and the latest user question which might reference context in \
+the chat history, formulate a standalone question which can be understood without the chat history. \
+Do NOT answer the question, just reformulate it if needed and otherwise return it as is.",
+        )
+
     return ChatPromptTemplate.from_messages([
-        ("system", """Given a chat history and the latest user question which might reference context in \
-        the chat history, formulate a standalone question which can be understood without the chat history. \
-        Do NOT answer the question, just reformulate it if needed and otherwise return it as is."""),
+        ("system", prompt.template),
         MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{question}"),
-    ]) | llm | StrOutputParser(name="chat_chain_output")
+    ]).partial(**prompt.inputs) | llm | StrOutputParser(name="chat_chain_output")
 
 def contextualize_question(inputs: dict, chat_chain) -> str:
     """
@@ -328,14 +348,21 @@ def rag_guard(inputs, response, documents_required):
         chain_reply_no_answer = response['answer'] == inputs['no_answer']
 
     if no_docs_but_required:
-        if chain_can_give_no_answer_reply and chain_reply_no_answer:  # We expect the chain to use it's no answer value and it did, it's the expected behavior
+        if chain_can_give_no_answer_reply and chain_reply_no_answer:
+            # We expect the chain to use its non-response value, and it has done so, which is the expected behavior.
             return
         # Everything else isn't expected
         message = 'The RAG system cannot provide an answer when no documents are found and documents are required'
         rag_log(level=ERROR, message=message, inputs=inputs, response=response)
         raise GenAIGuardCheckException(ErrorInfo(cause=message))
 
-    return
+    if chain_reply_no_answer and not no_docs_retrieved:
+        # If the chain responds with its non-response value and the documents are retrieved,
+        # so we remove them from the RAG response.
+        message = 'The RAG gives no answer for user question, but some documents has been found!'
+        rag_log(level=WARNING, message=message, inputs=inputs, response=response)
+        response['documents'] = []
+
 
 def rag_log(level, message, inputs, response):
     """
@@ -366,7 +393,7 @@ def get_rag_documents(handler: RAGCallbackHandler) -> List[RagDocument]:
     Get documents used on RAG context
 
     Args:
-        response: the rag answer
+        handler: the RAG Callback Handler
     """
 
     return [
@@ -384,10 +411,15 @@ def get_rag_debug_data(
 ) -> RagDebugData:
     """RAG debug data assembly"""
 
+    history = []
+    if query.dialog:
+        history = query.dialog.history
+
     return RagDebugData(
         user_question=query.question_answering_prompt.inputs['question'],
-        condense_question_prompt=records_callback_handler.records['chat_prompt'],
-        condense_question=records_callback_handler.records['chat_chain_output'],
+        question_condensing_prompt=records_callback_handler.records['chat_prompt'],
+        question_condensing_history=history,
+        condensed_question=records_callback_handler.records['chat_chain_output'],
         question_answering_prompt=records_callback_handler.records['rag_prompt'],
         documents=get_rag_documents(records_callback_handler),
         document_index_name=query.document_index_name,

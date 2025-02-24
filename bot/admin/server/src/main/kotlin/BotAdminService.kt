@@ -1153,7 +1153,9 @@ object BotAdminService {
         // delete the RAG configuration
         ragConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
             ragConfigurationDAO.delete(config._id)
-            config.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            config.questionCondensingLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            config.questionAnsweringLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+            config.llmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
             config.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
         }
 

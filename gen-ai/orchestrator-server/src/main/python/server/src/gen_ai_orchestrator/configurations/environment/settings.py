@@ -67,11 +67,11 @@ class _Settings(BaseSettings):
     vector_store_database: Optional[str] = None # Only if necessary. Example: PGVector
     vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
     vector_store_credentials_secret_name: Optional[str] = None
-    """Number of document to retrieve from the Vector Store"""
-    vector_store_k: int = 4
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     vector_store_timeout: int = 4
-    vector_store_test_query: str = 'What knowledge do you have?'
+    """Maximum number of documents to be retrieved from the Vector Store"""
+    vector_store_test_max_docs_retrieved: int = 4
+    vector_store_test_query: str = 'Any definition'
 
     """Observability Setting"""
     observability_provider_max_retries: int = 0

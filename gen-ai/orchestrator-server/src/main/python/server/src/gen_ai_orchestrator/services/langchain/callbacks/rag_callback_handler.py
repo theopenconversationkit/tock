@@ -27,13 +27,14 @@ logger = logging.getLogger(__name__)
 class RAGCallbackHandler(BaseCallbackHandler):
     """Customized RAG callback handler that retrieves data from the chain execution."""
 
-    records: Dict[str, Any] = {
-        'chat_prompt': None,
-        'chat_chain_output': None,
-        'rag_prompt': None,
-        'rag_chain_output': None,
-        'documents': None,
-    }
+    def __init__(self):
+        self.records: Dict[str, Any] = {
+            'chat_prompt': None,
+            'chat_chain_output': None,
+            'rag_prompt': None,
+            'rag_chain_output': None,
+            'documents': None,
+        }
 
     def on_chain_start(
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
