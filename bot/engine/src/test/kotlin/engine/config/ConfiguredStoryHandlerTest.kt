@@ -48,10 +48,10 @@ import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Test
-import org.litote.kmongo.toId
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 
 class ConfiguredStoryHandlerTest {
 
@@ -90,7 +90,7 @@ class ConfiguredStoryHandlerTest {
             every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
-            every { applicationId } returns "appId"
+            every { connectorId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
@@ -193,7 +193,7 @@ class ConfiguredStoryHandlerTest {
             every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
-            every { applicationId } returns "appId"
+            every { connectorId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
@@ -338,7 +338,7 @@ class ConfiguredStoryHandlerTest {
             every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
-            every { applicationId } returns "appId"
+            every { connectorId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
@@ -487,7 +487,7 @@ class ConfiguredStoryHandlerTest {
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
             every { userTimeline } returns UserTimeline(userId)
-            every { applicationId } returns "appId"
+            every { connectorId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns null
@@ -573,7 +573,7 @@ class ConfiguredStoryHandlerTest {
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
             every { userTimeline } returns UserTimeline(userId)
-            every { applicationId } returns "appId"
+            every { connectorId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns storyDefinitionConfigurationStep.toStoryStep(configuration)

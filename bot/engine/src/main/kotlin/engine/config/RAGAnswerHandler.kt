@@ -72,7 +72,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 logger.info { "Send RAG answer." }
                 send(
                     SendSentenceWithFootnotes(
-                        botId, applicationId, userId, text = answer.text, footnotes = answer.footnotes.map {
+                        botId, connectorId, userId, text = answer.text, footnotes = answer.footnotes.map {
                             Footnote(
                                 it.identifier, it.title, it.url,
                                 if(action.metadata.sourceWithContent) it.content else null,
@@ -129,7 +129,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         val noAnswerStoryId = ragConfig.noAnswerStoryId
         if (!noAnswerStoryId.isNullOrBlank()) {
             logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
-            noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId).let {
+            noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, connectorId).let {
                 // Prevent infinite loop when the noAnswerStory is removed or disabled
                 if (it.id == RAGStoryDefinition.RAG_STORY_NAME) {
                     logger.info { "The no-answer story is removed or disabled, so run the default unknown story." }
