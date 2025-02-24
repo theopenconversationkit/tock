@@ -93,7 +93,7 @@ export class CompressorSettingsComponent implements OnInit, OnDestroy {
   }
 
   private getCompressorSettingsLoader(): Observable<CompressorSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/document-compressor`;
     return this.rest.get<CompressorSettings>(url, (settings: CompressorSettings) => settings);
   }
 
@@ -178,7 +178,7 @@ export class CompressorSettingsComponent implements OnInit, OnDestroy {
 
       delete formValue['compressorProvider'];
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
+      const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/document-compressor`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (compressorSettings: CompressorSettings) => {
           this.settingsBackup = compressorSettings;
@@ -371,7 +371,7 @@ export class CompressorSettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteSettings() {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/document-compressor`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/document-compressor`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();

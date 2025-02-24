@@ -94,7 +94,7 @@ export class VectorDbSettingsComponent implements OnInit {
   }
 
   private getVectorDbSettingsLoader(): Observable<VectorDbSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/vector-store`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/vector-store`;
     return this.rest.get<VectorDbSettings>(url, (settings: VectorDbSettings) => settings);
   }
 
@@ -178,7 +178,7 @@ export class VectorDbSettingsComponent implements OnInit {
 
       delete formValue['vectorDbProvider'];
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/vector-store`;
+      const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/vector-store`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (vectorDbSettings: VectorDbSettings) => {
           this.settingsBackup = vectorDbSettings;
@@ -371,7 +371,7 @@ export class VectorDbSettingsComponent implements OnInit {
   }
 
   deleteSettings() {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/vector-store`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/vector-store`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();
