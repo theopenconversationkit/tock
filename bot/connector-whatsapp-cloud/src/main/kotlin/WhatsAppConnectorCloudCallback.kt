@@ -17,9 +17,9 @@
 package ai.tock.bot.connector.whatsapp.cloud
 
 import ai.tock.bot.connector.ConnectorCallbackBase
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.engine.action.ActionNotificationType
 
 class WhatsAppConnectorCloudCallback (
         applicationId: String,
+        val phoneNumber : String? = null,
+        val username : String? = null,
 ) : ConnectorCallbackBase(applicationId, whatsAppCloudConnectorType)
