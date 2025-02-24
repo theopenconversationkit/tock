@@ -99,12 +99,12 @@ async def _get_question(token, row, current_page):
             response_get_questions_json = await response.json()
             df_all_questions = pd.DataFrame(response_get_questions_json.get('data'))
             df_all_questions = df_all_questions.rename(
-                columns={'title': 'Title', 'slug': 'URL'}
+                columns={'title': 'title', 'slug': 'source'}
             )
             df_all_questions['knowledge_base_id'] = row.iloc[0]
             df_all_questions['channel_id'] = row.iloc[1]
             return df_all_questions.get(
-                ['knowledge_base_id', 'channel_id', 'documentId', 'Title', 'URL']
+                ['knowledge_base_id', 'channel_id', 'documentId', 'title', 'source']
             )
 
 
@@ -118,32 +118,32 @@ async def _get_answer(token, row):
     async with aiohttp.ClientSession(trust_env=True) as session:
         async with session.get(url, headers=headers) as response:
             if response.status != 200:
-                row['Text'] = None
+                row['text'] = None
                 logging.error(await response.text(), response.status)
                 return row.get(
                     [
                         'knowledge_base_id',
                         'channel_id',
                         'documentId',
-                        'Title',
-                        'URL',
-                        'Text',
+                        'title',
+                        'source',
+                        'text',
                     ]
                 )
 
             response_json = await response.json()
             if response_json.get('data'):
-                row['Text'] = response_json.get('data')[0].get('content').get('body')
+                row['text'] = response_json.get('data')[0].get('content').get('body')
             else:
-                row['Text'] = None
+                row['text'] = None
             return row.get(
                 [
                     'knowledge_base_id',
                     'channel_id',
                     'documentId',
-                    'Title',
-                    'URL',
-                    'Text',
+                    'title',
+                    'source',
+                    'text',
                 ]
             )
 
@@ -276,12 +276,12 @@ async def _main(args, body_credentials):
     )
 
     df_all_questions = pd.DataFrame(rawdata)
-    print(df_all_questions.get('URL'))
+    print(df_all_questions.get('source'))
     # format data
     logging.debug('format data')
     df_all_questions[
-        'URL'
-    ] = f"{cli_args.get('<base_url>')}?question=" + df_all_questions.get('URL')
+        'source'
+    ] = f"{cli_args.get('<base_url>')}?question=" + df_all_questions.get('source')
 
     # export data
     logging.debug(f"Export to output CSV file {args.get('<output_csv>')}")

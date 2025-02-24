@@ -103,7 +103,7 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         body()
             ?: run {
                 logger.error { "nlp error : ${errorBody()?.string()}" }
-                null as Nothing?
+                null
             }
 
     override fun parse(query: NlpQuery): NlpResult? {

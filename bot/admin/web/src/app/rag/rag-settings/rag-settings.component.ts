@@ -1,22 +1,25 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil, pairwise } from 'rxjs';
+import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
+
 import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
+import { EnginesConfigurations, QuestionCondensing_prompt, QuestionAnswering_prompt } from './models/engines-configurations';
 import { RagSettings } from './models';
-import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
+import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import {
   AiEngineSettingKeyName,
   EnginesConfiguration,
   AiEngineProvider,
-  ProvidersConfigurationParam
+  ProvidersConfigurationParam,
+  PromptTypeKeyName,
+  PromptDefinitionFormatter
 } from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
@@ -26,17 +29,29 @@ interface RagSettingsForm {
   id: FormControl<string>;
   enabled: FormControl<boolean>;
 
+  debugEnabled: FormControl<boolean>;
+
   noAnswerSentence: FormControl<string>;
   noAnswerStoryId: FormControl<string>;
 
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
 
+  maxDocumentsRetrieved: FormControl<number>;
+
   documentsRequired: FormControl<boolean>;
 
-  llmEngine: FormControl<AiEngineProvider>;
-  llmSetting: FormGroup<any>;
-  emEngine: FormControl<AiEngineProvider>;
+  questionCondensingLlmProvider: FormControl<AiEngineProvider>;
+  questionCondensingLlmSetting: FormGroup<any>;
+  questionCondensingPrompt: FormGroup<any>;
+
+  maxMessagesFromHistory: FormControl<number>;
+
+  questionAnsweringLlmProvider: FormControl<AiEngineProvider>;
+  questionAnsweringLlmSetting: FormGroup<any>;
+  questionAnsweringPrompt: FormGroup<any>;
+
+  emProvider: FormControl<AiEngineProvider>;
   emSetting: FormGroup<any>;
 }
 
@@ -54,7 +69,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   engineSettingKeyName = AiEngineSettingKeyName;
 
-  defaultPrompt = DefaultPrompt;
+  questionCondensing_prompt = QuestionCondensing_prompt;
+
+  questionAnswering_prompt = QuestionAnswering_prompt;
 
   availableStories: StoryDefinitionConfiguration[];
 
@@ -85,27 +102,59 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
 
     this.form
-      .get('llmEngine')
+      .get('questionCondensingLlmProvider')
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
-        this.initFormSettings(AiEngineSettingKeyName.llmSetting, engine);
+        this.initFormSettings(AiEngineSettingKeyName.questionCondensingLlmSetting, engine);
       });
 
     this.form
-      .get('emEngine')
+      .get('questionAnsweringLlmProvider')
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, engine);
+      });
+
+    this.form
+      .get('emProvider')
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((engine: AiEngineProvider) => {
         this.initFormSettings(AiEngineSettingKeyName.emSetting, engine);
       });
+
+    [PromptTypeKeyName.questionCondensingPrompt, PromptTypeKeyName.questionAnsweringPrompt].forEach((wich) => {
+      this.form
+        .get(wich)
+        .valueChanges.pipe(pairwise(), takeUntil(this.destroy$))
+        .subscribe(([prev, next]) => {
+          if (
+            next?.formatter === PromptDefinitionFormatter.jinja2 &&
+            prev?.formatter === PromptDefinitionFormatter.fstring &&
+            next?.template?.length
+          ) {
+            this.fStringToJinja(wich);
+          }
+        });
+    });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
       delete this.settingsBackup;
 
       // Reset form on configuration change
       this.form.reset();
+
+      this.setFormDefaultValues();
+
       // Reset formGroup controls too, if any
-      this.resetFormGroupControls(AiEngineSettingKeyName.llmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.questionCondensingLlmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.questionAnsweringLlmSetting);
       this.resetFormGroupControls(AiEngineSettingKeyName.emSetting);
+
+      // Reset accordions states
+      this.accordionItemsExpandedState = undefined;
+
+      this.initFormPrompt(PromptTypeKeyName.questionCondensingPrompt);
+      this.initFormPrompt(PromptTypeKeyName.questionAnsweringPrompt);
 
       this.loading = true;
       this.configurations = confs;
@@ -133,28 +182,62 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  private getRagSettingsLoader(): Observable<RagSettings> {
+    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
+  }
+
   form = new FormGroup<RagSettingsForm>({
     id: new FormControl(null),
     enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
+
+    debugEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
+
     noAnswerSentence: new FormControl(undefined, [Validators.required]),
     noAnswerStoryId: new FormControl(undefined),
+
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
+
     documentsRequired: new FormControl(undefined),
-    llmEngine: new FormControl(undefined, [Validators.required]),
-    llmSetting: new FormGroup<any>({}),
-    emEngine: new FormControl(undefined, [Validators.required]),
-    emSetting: new FormGroup<any>({})
+    maxDocumentsRetrieved: new FormControl(undefined),
+
+    questionCondensingLlmProvider: new FormControl(undefined, [Validators.required]),
+    questionCondensingLlmSetting: new FormGroup({}),
+    questionCondensingPrompt: new FormGroup({}),
+
+    maxMessagesFromHistory: new FormControl(undefined),
+
+    questionAnsweringLlmProvider: new FormControl(undefined, [Validators.required]),
+    questionAnsweringLlmSetting: new FormGroup({}),
+    questionAnsweringPrompt: new FormGroup({}),
+
+    emProvider: new FormControl(undefined, [Validators.required]),
+    emSetting: new FormGroup({})
   });
 
   get enabled(): FormControl {
     return this.form.get('enabled') as FormControl;
   }
-  get llmEngine(): FormControl {
-    return this.form.get('llmEngine') as FormControl;
+
+  get debugEnabled(): FormControl {
+    return this.form.get('debugEnabled') as FormControl;
   }
-  get emEngine(): FormControl {
-    return this.form.get('emEngine') as FormControl;
+
+  get questionCondensingLlmProvider(): FormControl {
+    return this.form.get('questionCondensingLlmProvider') as FormControl;
+  }
+
+  get questionAnsweringLlmProvider(): FormControl {
+    return this.form.get('questionAnsweringLlmProvider') as FormControl;
+  }
+
+  get emProvider(): FormControl {
+    return this.form.get('emProvider') as FormControl;
+  }
+
+  get maxMessagesFromHistory(): FormControl {
+    return this.form.get('maxMessagesFromHistory') as FormControl;
   }
 
   get noAnswerSentence(): FormControl {
@@ -172,6 +255,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return this.form.get('documentsRequired') as FormControl;
   }
 
+  get maxDocumentsRetrieved(): FormControl {
+    return this.form.get('maxDocumentsRetrieved') as FormControl;
+  }
+
   get indexName(): FormControl {
     return this.form.get('indexName') as FormControl;
   }
@@ -185,7 +272,191 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return currentStory?.name || '';
   }
 
-  isStoryEnabled(story) {
+  accordionItemsExpandedState: Map<string, boolean>;
+
+  isAccordionItemsExpanded(itemName: string): boolean {
+    if (!this.accordionItemsExpandedState) {
+      this.accordionItemsExpandedState = new Map();
+    }
+
+    if (!this.accordionItemsExpandedState.has(itemName)) {
+      switch (itemName) {
+        case 'questionConsensingConfiguration':
+          this.accordionItemsExpandedState.set(
+            'questionConsensingConfiguration',
+            this.form.get('questionCondensingLlmProvider').invalid ||
+              this.form.get(AiEngineSettingKeyName.questionCondensingLlmSetting).invalid
+          );
+          break;
+        case 'questionCondensingPrompt':
+          this.accordionItemsExpandedState.set(
+            'questionCondensingPrompt',
+            this.form.get(PromptTypeKeyName.questionCondensingPrompt).invalid
+          );
+          break;
+        case 'questionAnsweringConfiguration':
+          this.accordionItemsExpandedState.set(
+            'questionAnsweringConfiguration',
+            this.form.get('questionAnsweringLlmProvider').invalid ||
+              this.form.get(AiEngineSettingKeyName.questionAnsweringLlmSetting).invalid
+          );
+          break;
+        case 'questionAnsweringPrompt':
+          this.accordionItemsExpandedState.set('questionAnsweringPrompt', this.form.get(PromptTypeKeyName.questionAnsweringPrompt).invalid);
+          break;
+        case 'embeddingConfiguration':
+          this.accordionItemsExpandedState.set(
+            'embeddingConfiguration',
+            this.form.get('emProvider').invalid || this.form.get('emSetting').invalid
+          );
+          break;
+      }
+    }
+
+    return this.accordionItemsExpandedState.get(itemName);
+  }
+
+  shouldDisplayPromptParam(parentGroup: string, param: ProvidersConfigurationParam) {
+    // Goal : We want templates to use the Jinja2 format by default.
+    if (param.key === 'formatter') {
+      // We only care about the “formatter” param
+      if (this.form.get(parentGroup).get(param.key).value === PromptDefinitionFormatter.jinja2) {
+        // If the format is already Jinja2, we can hide the choice control
+        return false;
+      }
+    }
+    return true;
+  }
+
+  fStringToJinja(group: string): void {
+    const source = this.form.get(group).get('template').value;
+    const result = source.replace(/{(.*?)}/g, '{{$1}}');
+    this.form.get(group).patchValue({
+      template: result
+    });
+  }
+
+  initFormPrompt(group: PromptTypeKeyName): void {
+    this.resetFormGroupControls(group);
+
+    let params: ProvidersConfigurationParam[];
+
+    if (group === PromptTypeKeyName.questionCondensingPrompt) {
+      params = QuestionCondensing_prompt;
+    }
+    if (group === 'questionAnsweringPrompt') {
+      params = QuestionAnswering_prompt;
+    }
+
+    params.forEach((param) => {
+      this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+    });
+  }
+
+  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
+    let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
+
+    if (requiredConfiguration) {
+      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
+      this.resetFormGroupControls(group);
+
+      requiredConfiguration.params.forEach((param) => {
+        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+      });
+
+      this.form.controls[group].addControl('provider', new FormControl(provider));
+    }
+  }
+
+  resetFormGroupControls(group: string): void {
+    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
+    existingGroupKeys.forEach((key) => {
+      this.form.controls[group].removeControl(key);
+    });
+  }
+
+  setFormDefaultValues(): void {
+    this.form.patchValue({
+      documentsRequired: true,
+      debugEnabled: false,
+      maxMessagesFromHistory: 5,
+      maxDocumentsRetrieved: 4
+    });
+  }
+
+  initForm(settings: RagSettings): void {
+    this.initFormSettings(AiEngineSettingKeyName.questionCondensingLlmSetting, settings.questionCondensingLlmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.questionAnsweringLlmSetting, settings.questionAnsweringLlmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
+
+    this.form.patchValue({
+      questionCondensingLlmProvider: settings.questionCondensingLlmSetting?.provider,
+      questionAnsweringLlmProvider: settings.questionAnsweringLlmSetting?.provider,
+      emProvider: settings.emSetting?.provider
+    });
+    this.form.patchValue(settings);
+
+    this.initFormPrompt(PromptTypeKeyName.questionCondensingPrompt);
+    this.initFormPrompt(PromptTypeKeyName.questionAnsweringPrompt);
+
+    this.form.patchValue({
+      questionCondensingPrompt: settings.questionCondensingPrompt,
+      questionAnsweringPrompt: settings.questionAnsweringPrompt
+    });
+
+    this.accordionItemsExpandedState = undefined;
+
+    this.form.markAsPristine();
+  }
+
+  canRagBeActivated(): boolean {
+    return this.form ? this.form.valid && this.indexSessionId.value?.length : false;
+  }
+
+  setActivationDisabledState(): void {
+    if (this.canRagBeActivated()) {
+      this.enabled.enable();
+      this.debugEnabled.enable();
+    } else {
+      this.enabled.disable();
+      this.debugEnabled.disable();
+    }
+  }
+
+  get currentQuestionCondensingConfig(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.questionCondensingLlmSetting].find(
+      (e) => e.key === this.questionCondensingLlmProvider.value
+    );
+  }
+
+  get currentQuestionAnsweringConfig(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.questionAnsweringLlmSetting].find(
+      (e) => e.key === this.questionAnsweringLlmProvider.value
+    );
+  }
+
+  get currentEmConfig(): EnginesConfiguration {
+    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emProvider.value);
+  }
+
+  private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
+    return this.botService
+      .getStories(
+        new StorySearchQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          0,
+          10000,
+          undefined,
+          undefined,
+          false
+        )
+      )
+      .pipe(take(1));
+  }
+
+  isStoryEnabled(story: StoryDefinitionConfiguration): boolean {
     for (let i = 0; i < story.features.length; i++) {
       if (!story.features[i].enabled && !story.features[i].switchToStoryId && !story.features[i].endWithStoryId) {
         return false;
@@ -228,81 +499,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
-    let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
-
-    if (requiredConfiguration) {
-      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
-      this.resetFormGroupControls(group);
-
-      requiredConfiguration.params.forEach((param) => {
-        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
-      });
-
-      this.form.controls[group].addControl('provider', new FormControl(provider));
-    }
-  }
-
-  resetFormGroupControls(group: AiEngineSettingKeyName) {
-    const existingGroupKeys = Object.keys(this.form.controls[group].controls);
-    existingGroupKeys.forEach((key) => {
-      this.form.controls[group].removeControl(key);
-    });
-  }
-
-  private getRagSettingsLoader(): Observable<RagSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
-    return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
-  }
-
-  initForm(settings: RagSettings) {
-    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting?.provider);
-    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
-    this.form.patchValue({
-      llmEngine: settings.llmSetting?.provider,
-      emEngine: settings.emSetting?.provider
-    });
-    this.form.patchValue(settings);
-    this.form.markAsPristine();
-  }
-
-  canRagBeActivated(): boolean {
-    return this.form ? this.form.valid && this.indexSessionId.value?.length : false;
-  }
-
-  setActivationDisabledState(): void {
-    if (this.canRagBeActivated()) {
-      this.enabled.enable();
-    } else {
-      this.enabled.disable();
-    }
-  }
-
-  get currentLlmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[AiEngineSettingKeyName.llmSetting].find((e) => e.key === this.llmEngine.value);
-  }
-
-  get currentEmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
-  }
-
-  private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
-    return this.botService
-      .getStories(
-        new StorySearchQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          0,
-          10000,
-          undefined,
-          undefined,
-          false
-        )
-      )
-      .pipe(take(1));
-  }
-
   cancel(): void {
     this.initForm(this.settingsBackup);
   }
@@ -312,8 +508,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     if (this.canSave && this.form.dirty) {
       this.loading = true;
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
-      delete formValue['llmEngine'];
-      delete formValue['emEngine'];
+      delete formValue['questionCondensingLlmProvider'];
+      delete formValue['questionAnsweringLlmProvider'];
+      delete formValue['emProvider'];
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
       formValue.noAnswerStoryId = this.noAnswerStoryId.value === 'null' ? null : this.noAnswerStoryId.value;
@@ -359,7 +556,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   get hasExportableData(): boolean {
-    if (this.llmEngine.value || this.emEngine.value) return true;
+    if (this.questionCondensingLlmProvider.value || this.questionAnsweringLlmProvider.value || this.emProvider.value) return true;
 
     const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
 
@@ -370,23 +567,34 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
 
-  exportSettings() {
+  exportSettings(): void {
     this.sensitiveParams = [];
 
     const shouldConfirm =
-      (this.llmEngine.value || this.emEngine.value) &&
-      [(this.currentLlmEngine.params, this.currentEmEngine.params)].some((engine) => {
-        return engine.some((entry) => {
-          return entry.confirmExport;
-        });
-      });
+      (this.questionCondensingLlmProvider.value || this.questionAnsweringLlmProvider.value || this.emProvider.value) &&
+      [(this.currentQuestionCondensingConfig?.params, this.currentQuestionAnsweringConfig?.params, this.currentEmConfig?.params)].some(
+        (engine) => {
+          return engine.some((entry) => {
+            return entry.confirmExport;
+          });
+        }
+      );
 
     if (shouldConfirm) {
       [
-        { label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params },
-        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmEngine.params }
+        {
+          label: 'Question condensing LLM engine',
+          key: AiEngineSettingKeyName.questionCondensingLlmSetting,
+          params: this.currentQuestionCondensingConfig?.params
+        },
+        {
+          label: 'Question answering LLM engine',
+          key: AiEngineSettingKeyName.questionAnsweringLlmSetting,
+          params: this.currentQuestionAnsweringConfig?.params
+        },
+        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmConfig?.params }
       ].forEach((engine) => {
-        engine.params.forEach((entry) => {
+        engine.params?.forEach((entry) => {
           if (entry.confirmExport) {
             this.sensitiveParams.push({ label: engine.label, key: engine.key, include: false, param: entry });
           }
@@ -399,23 +607,25 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  exportConfirmationModalRef;
+  exportConfirmationModalRef: NbDialogRef<any>;
 
-  closeExportConfirmationModal() {
+  closeExportConfirmationModal(): void {
     this.exportConfirmationModalRef.close();
   }
 
-  confirmExportSettings() {
+  confirmExportSettings(): void {
     this.downloadSettings();
     this.closeExportConfirmationModal();
   }
 
-  downloadSettings() {
+  downloadSettings(): void {
     const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
-    delete formValue['llmEngine'];
-    delete formValue['emEngine'];
+    delete formValue['questionCondensingLlmProvider'];
+    delete formValue['questionAnsweringLlmProvider'];
+    delete formValue['emProvider'];
     delete formValue['id'];
     delete formValue['enabled'];
+    delete formValue['indexName'];
 
     if (this.sensitiveParams?.length) {
       this.sensitiveParams.forEach((sensitiveParam) => {
@@ -441,15 +651,15 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.toastrService.show(`Rag settings dump provided`, 'Rag settings dump', { duration: 3000, status: 'success' });
   }
 
-  importModalRef;
+  importModalRef: NbDialogRef<any>;
 
-  importSettings() {
+  importSettings(): void {
     this.isImportSubmitted = false;
     this.importForm.reset();
     this.importModalRef = this.nbDialogService.open(this.importModal);
   }
 
-  closeImportModal() {
+  closeImportModal(): void {
     this.importModalRef.close();
   }
 
@@ -470,7 +680,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  submitImportSettings() {
+  submitImportSettings(): void {
     this.isImportSubmitted = true;
     if (this.canSaveImport) {
       const file = this.fileSource.value[0];
@@ -502,7 +712,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmSettingsDeletion() {
+  confirmSettingsDeletion(): void {
     const confirmAction = 'Delete';
     const cancelAction = 'Cancel';
 
@@ -524,7 +734,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteSettings() {
+  deleteSettings(): void {
     const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;

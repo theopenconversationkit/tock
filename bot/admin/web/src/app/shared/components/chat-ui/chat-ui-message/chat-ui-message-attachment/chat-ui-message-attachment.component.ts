@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Attachment } from 'src/app/shared/model/dialog-data';
 import { RestService } from '../../../../../core-nlp/rest/rest.service';
-
+import { sanitizeURLSync } from 'url-sanitizer';
 @Component({
   selector: 'tock-chat-ui-message-attachment',
   templateUrl: './chat-ui-message-attachment.component.html',
@@ -14,6 +14,7 @@ export class ChatUiMessageAttachmentComponent {
 
   localUrl() {
     const file = this.attachment.url.split('/').pop();
-    return this.rest.url + '/file/' + file;
+
+    return sanitizeURLSync(this.rest.url + '/file/' + file);
   }
 }

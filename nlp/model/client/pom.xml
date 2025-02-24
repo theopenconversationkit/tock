@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-model</artifactId>
-        <version>24.9.7-SNAPSHOT</version>
+        <version>24.9.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-model-client</artifactId>

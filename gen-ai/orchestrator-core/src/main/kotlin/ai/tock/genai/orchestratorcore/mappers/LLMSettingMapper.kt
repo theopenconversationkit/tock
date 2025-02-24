@@ -37,7 +37,6 @@ object LLMSettingMapper {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
-                        prompt = prompt,
                         model = model,
                         baseUrl = baseUrl
                     )
@@ -45,7 +44,6 @@ object LLMSettingMapper {
                     AzureOpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
-                        prompt = prompt,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         model = model,
@@ -54,7 +52,6 @@ object LLMSettingMapper {
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(
                         temperature = temperature,
-                        prompt = prompt,
                         model = model,
                         baseUrl = baseUrl
                     )
@@ -78,7 +75,6 @@ object LLMSettingMapper {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
                         temperature = temperature,
-                        prompt = prompt,
                         model = model,
                         baseUrl = baseUrl
                     )
@@ -86,14 +82,17 @@ object LLMSettingMapper {
                     AzureOpenAILLMSetting(
                         SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
                         temperature = temperature,
-                        prompt = prompt,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
                         model = model
                     )
                 is OllamaLLMSetting ->
-                    OllamaLLMSetting(temperature, prompt, model, baseUrl)
+                    OllamaLLMSetting(
+                        temperature = temperature,
+                        model = model,
+                        baseUrl = baseUrl
+                    )
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }

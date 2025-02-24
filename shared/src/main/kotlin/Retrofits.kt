@@ -375,8 +375,8 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
 
         val responseBody = response.body
-        val contentLength = responseBody?.contentLength()
-        val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
+        val contentLength = responseBody.contentLength()
+        val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
         logger.info(
             "<-- " + response.code + ' ' + response.message + ' ' +
                     response.request.url + " (" + tookMs + "ms" + (
@@ -402,17 +402,17 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
             } else if (bodyEncoded(response.headers)) {
                 logger.info("<-- END HTTP (encoded body omitted)")
             } else {
-                val source = responseBody?.source()
-                source?.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
-                val buffer = source?.buffer
+                val source = responseBody.source()
+                source.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
+                val buffer = source.buffer
 
                 var charset = UTF_8
-                val contentType = responseBody?.contentType()
+                val contentType = responseBody.contentType()
                 if (contentType != null) {
                     charset = contentType.charset(UTF_8)
                 }
 
-                if (buffer != null && !isPlaintext(buffer)) {
+                if (!isPlaintext(buffer)) {
                     logger.info("")
                     logger.info("<-- END HTTP (binary " + buffer.size + "-byte body omitted)")
                     return response

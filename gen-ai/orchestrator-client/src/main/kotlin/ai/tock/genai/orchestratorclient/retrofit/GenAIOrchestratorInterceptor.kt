@@ -44,7 +44,7 @@ class GenAIOrchestratorInterceptor(private val jsonObjectMapper: ObjectMapper = 
     }
 
     private fun handleApiError(response: Response) {
-        val errorBody = response.body?.string()
+        val errorBody = response.body.string()
         when (response.code) {
             400 -> {
                 val errorResponse = jsonObjectMapper.readValue(errorBody, ErrorResponse::class.java)

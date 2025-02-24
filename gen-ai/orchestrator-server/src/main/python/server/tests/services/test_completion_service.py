@@ -13,9 +13,7 @@
 #   limitations under the License.
 #
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
-from gen_ai_orchestrator.services.completion.completion_service import (
-    validate_prompt_template,
-)
+from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
 
 
 def test_validate_prompt_template():
@@ -30,4 +28,4 @@ def test_validate_prompt_template():
         },
     }
     template = PromptTemplate(**json)
-    validate_prompt_template(template)
+    validate_prompt_template(template, "prompt_name")

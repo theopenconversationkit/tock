@@ -1,0 +1,11 @@
+<div
+  *ngIf="formatting"
+  class="chat-ui-message-content-styling"
+  [innerHTML]="markup"
+></div>
+
+<span
+  *ngIf="!formatting"
+  style="white-space: pre-wrap"
+  >{{ sentence.text }}</span
+>

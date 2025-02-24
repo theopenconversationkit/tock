@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ProvidersConfigurationParam } from '../../model/ai-settings';
+import { PromptDefinitionFormatter, ProvidersConfigurationParam } from '../../model/ai-settings';
 
 @Component({
   selector: 'tock-ai-settings-engine-config-param-input',
@@ -22,9 +22,26 @@ export class AiSettingsEngineConfigParamInputComponent {
     return this.form.get(this.parentGroup).get(this.configurationParam.key) as FormControl;
   }
 
+  getFormControlLabel() {
+    let label = this.configurationParam.label;
+    if (this.configurationParam.type === 'prompt' && this.configurationParam.key === 'template') {
+      const formatter = this.form.get(this.parentGroup).get('formatter').value;
+
+      if (formatter === PromptDefinitionFormatter.jinja2) {
+        label += ' (Jinja2 format)';
+      }
+      if (formatter === PromptDefinitionFormatter.fstring) {
+        label += ' (f-string format | deprecated)';
+      }
+    }
+
+    return label;
+  }
+
   restoreDefaultPrompt(): void {
-    this.form.get(this.parentGroup).get('prompt').setValue(this.defaultPrompt);
-    this.form.get(this.parentGroup).get('prompt').markAsDirty();
+    this.form.get(this.parentGroup).get('formatter').setValue(PromptDefinitionFormatter.jinja2);
+    this.form.get(this.parentGroup).get('template').setValue(this.defaultPrompt);
+    this.form.get(this.parentGroup).get('template').markAsDirty();
   }
 
   showInput(event: FocusEvent): void {

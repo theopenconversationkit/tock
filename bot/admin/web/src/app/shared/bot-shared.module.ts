@@ -84,6 +84,7 @@ import {
   TestDialogComponent,
   BotConfigurationSelectorComponent,
   ChatUiDialogLoggerComponent,
+  ChatUiDisplayMarkupComponent,
   AnnotationComponent,
   AnnotationCommentComponent
 } from './components';
@@ -141,6 +142,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
     ChatUiMessageDebugComponent,
     ChatUiMessageSentenceFootnotesComponent,
     ChatUiDialogLoggerComponent,
+    ChatUiDisplayMarkupComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,

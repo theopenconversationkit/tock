@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Tock Widget</title>
+  <!-- Ajouter le CSS du tock-vue-kit -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tock-vue-kit@latest/dist/tock-vue-kit.css">
+  <style>
+    /* Style de base pour s'assurer que le widget est visible */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f4f4f4;
+    }
+    #tock-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test du Widget Tock Vue Kit</h1>
+  <p>Le widget devrait apparaître en bas à droite de la page.</p>
+
+  <!-- Conteneur pour le widget -->
+  <div id="tock-widget"></div>
+
+  <!-- Ajouter le JS du tock-vue-kit -->
+  <script src="https://cdn.jsdelivr.net/npm/tock-vue-kit@latest/dist/tock-vue-kit.umd.min.js"></script>
+  <script>
+    // Initialiser le widget Tock Vue Kit
+    document.addEventListener("DOMContentLoaded", function () {
+      const tockKit = new TockVueKit({
+        botApiUrl: "https://votre-bot-api.tock.ai", // URL de l'API de votre bot
+        botId: "your-bot-id", // ID unique de votre bot
+        userId: "user-session-id" // Optionnel : Identifiant utilisateur unique
+      });
+      tockKit.mount('#tock-widget'); // Monte le widget dans le conteneur
+    });
+  </script>
+</body>
+</html>

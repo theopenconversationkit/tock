@@ -46,6 +46,8 @@ export class ChatUiMessageComponent {
   }
   protected _reply: boolean = false;
 
+  formatting: boolean = true;
+
   @Output() sendMessage: EventEmitter<BotMessage> = new EventEmitter();
 
   constructor(protected domSanitizer: DomSanitizer, private botConfiguration: BotConfigurationService) {}
@@ -72,5 +74,9 @@ export class ChatUiMessageComponent {
 
   replyMessage(message: BotMessage) {
     this.sendMessage.emit(message);
+  }
+
+  switchFormatting() {
+    this.formatting = !this.formatting;
   }
 }

@@ -24,10 +24,13 @@ import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.provideOrDefault
 import io.vertx.core.AsyncResult
+import io.vertx.core.CompositeFuture
+import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.VertxOptions.DEFAULT_WORKER_POOL_SIZE
+import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.slf4j.MDCContext
@@ -207,3 +210,24 @@ internal fun vertxExecutor(): Executor {
         }
     }
 }
+
+fun HttpServerResponse.setupSSE(): CompositeFuture {
+    isChunked = true
+    headers().apply {
+        add("Content-Type", "text/event-stream;charset=UTF-8")
+        add("Connection", "keep-alive")
+        add("Cache-Control", "no-cache")
+    }
+    return sendSsePing()
+}
+
+fun HttpServerResponse.sendSsePing(): CompositeFuture =
+    Future.all(listOf(write("event: ping\n"), write("data: 1\n\n")))
+
+fun HttpServerResponse.sendSseMessage(data: String): CompositeFuture =
+    Future.all(
+        listOf(
+            write("event: message\n"),
+            write("data: $data\n\n")
+        )
+    )

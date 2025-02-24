@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
@@ -32,6 +33,7 @@ data class BotSentenceGenerationConfigurationDTO(
     val enabled: Boolean = false,
     val nbSentences: Int,
     val llmSetting: LLMSettingDTO,
+    val prompt: PromptTemplate,
 ) {
     constructor(configuration: BotSentenceGenerationConfiguration) : this(
         id = configuration._id.toString(),
@@ -40,6 +42,7 @@ data class BotSentenceGenerationConfigurationDTO(
         enabled = configuration.enabled,
         nbSentences = configuration.nbSentences,
         llmSetting = configuration.llmSetting.toDTO(),
+        prompt = configuration.prompt ?: configuration.initPrompt()
     )
 
     fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
@@ -54,7 +57,8 @@ data class BotSentenceGenerationConfigurationDTO(
                 botId = botId,
                 feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
                 dto = llmSetting
-            )
+            ),
+            prompt = prompt
         )
 }
 

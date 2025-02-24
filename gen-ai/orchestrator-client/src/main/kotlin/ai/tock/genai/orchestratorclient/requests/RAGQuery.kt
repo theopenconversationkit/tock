@@ -23,11 +23,11 @@ import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBas
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
 data class RAGQuery(
-    // val condenseQuestionLlmSetting: LLMSetting,
-    // val condenseQuestionPromptInputs: Map<String, String>,
     val dialog: DialogDetails?,
+    val questionCondensingLlmSetting: LLMSetting?,
+    val questionCondensingPrompt: PromptTemplate?,
     val questionAnsweringLlmSetting: LLMSetting,
-    val questionAnsweringPromptInputs: Map<String, String>,
+    val questionAnsweringPrompt: PromptTemplate,
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
     val documentSearchParams: DocumentSearchParamsBase,

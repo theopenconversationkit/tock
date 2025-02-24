@@ -58,7 +58,7 @@
           <nb-checkbox
             [(ngModel)]="debug"
             nbTooltip="Get debug infos of RAG responses"
-            >Debug</nb-checkbox
+            >Rag debug</nb-checkbox
           >
 
           <nb-checkbox
@@ -117,9 +117,8 @@
       <div class="d-flex gap-1 flex-grow-1">
         <textarea
           #textareaAutocompleteDirectiveRef
-          [ngStyle]="{ height: getUserMessageInputHeight() }"
-          rows="1"
           class="w-100 nb-autocomplete-position-top"
+          rows="1"
           nbInput
           fullWidth
           fieldSize="medium"

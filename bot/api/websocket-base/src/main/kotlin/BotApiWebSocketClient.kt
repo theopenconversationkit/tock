@@ -128,7 +128,11 @@ fun start(
                                 logger.debug { "send bus response" }
                                 val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
                                 logger.debug { response }
-                                it.complete(response)
+                                if(r.context.lastResponse) {
+                                    it.complete(response)
+                                } else {
+                                    socket.writeTextMessage(response)
+                                }
                             }
                             bus.handle()
                         } else if (data.configuration == true) {

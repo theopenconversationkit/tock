@@ -35,7 +35,7 @@ data class WhatsAppCloudBotInteractive(
 data class WhatsAppCloudBotInteractiveHeader(
     var type: WhatsAppCloudBotHeaderType,
     val document: WhatsAppCloudBotMedia? = null,
-    val image: WhatsAppCloudBotMedia? = null,
+    val image: WhatsAppCloudBotMediaImage? = null,
     val video: WhatsAppCloudBotMedia? = null,
     val text: String? = null
 )
@@ -50,6 +50,10 @@ data class WhatsAppCloudBotMedia(
     val caption: String? = null,
     val filename: String? = null,
     val provider: String? = null,
+)
+
+data class WhatsAppCloudBotMediaImage(
+    val id: String
 )
 
 data class WhatsAppCloudBotBody(

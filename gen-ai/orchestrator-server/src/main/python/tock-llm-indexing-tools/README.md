@@ -240,28 +240,43 @@ To configure the default vector store, you can use the following environment var
 
 ### generate_dataset.py
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
+Dataset Generator: Generate CSV, Langfuse or Langfuse datasets from an Excel file.
 
 ```
 Usage:
-    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
-    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] --input-excel=<ie> [--csv-output=<co>] [--langsmith-dataset-name=<lsdn>] [--langfuse-dataset-name=<lfdn>] [--locale=<l>] [--no-answer=<na>]
+
+Description:
+    This script processes an input Excel file to generate a testing dataset. The output can be saved as a CSV file,
+    uploaded to Langsmith, or uploaded to Langfuse. The input Excel file must follow the specified format
+    (see examples/generate_dataset_input.example.xlsx).
 
 Arguments:
-    input_excel path to the input excel file
+    --input-excel=<ie>              Path to the input Excel file. This is a required argument.
 
 Options:
-    --range=<s>                     Range of sheet to be parsed. The expected format is X,Y where X is the first sheet to be included, and Y is the last. Indices are 0-indexed.
-    --sheet=<n>                     Sheet numbers to be parsed. Indices are 0-indexed.
-    --csv-output=<path>             Output path of csv file to be generated.
-    --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
-    --langfuse-dataset-name=<name> Name of the dataset to be saved on langfuse.
-    --locale=<locale>               Locale to be included in de dataset. [default: French]
-    --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
-    -h --help                       Show this screen
-    --version                       Show version
-    -v                              Verbose output for debugging (without this option, script will be silent but for errors)
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
+    --csv-output=<co>               Path to save the generated dataset as a CSV file. Optional.
+    --langsmith-dataset-name=<lsdn> Name of the dataset to be uploaded to Langsmith. Optional.
+    --langfuse-dataset-name=<lfdn>  Name of the dataset to be uploaded to Langfuse. Optional.
+    --locale=<l>                    Locale information to include in the dataset. Defaults to "French". Optional.
+    --no-answer=<na>                Label of no-answer to include in the dataset. Defaults to "NO_RAG_SENTENCE". Optional.
+    -v                              Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                      Display this help message and exit.
+    --version                       Display the version of the script.
+
+Examples:
+    1. Generate a CSV dataset:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv
+
+    2. Generate and upload a dataset to Langfuse:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --langfuse-dataset-name=my_dataset
+
+    3. Generate a CSV dataset with a specified locale and verbose mode:
+        python generate_dataset.py --input-excel=path/to/input.xlsx --csv-output=path/to/output.csv --locale=English -v
+
+Notes:
+    - The input Excel file must adhere to the required format. Check examples/generate_dataset_input.example.xlsx for reference.
+    - You can simultaneously save the dataset locally (as a CSV) and upload it to Langsmith or Langfuse by providing the respective options.
 ```
 
 ### rag_testing_tool.py

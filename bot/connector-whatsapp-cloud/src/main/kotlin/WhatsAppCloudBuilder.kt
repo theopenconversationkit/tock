@@ -137,6 +137,43 @@ fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     )
 )
 
+fun I18nTranslator.whatsAppCloudReplyImgButtonMessage(
+    imgUrl: String,
+    text: CharSequence,
+    vararg replies: QuickReply,
+
+    ): WhatsAppCloudBotInteractiveMessage =
+    whatsAppCloudReplyImgButtonMessage(imgUrl, text, replies.toList())
+
+fun I18nTranslator.whatsAppCloudReplyImgButtonMessage(
+    imgUrl: String,
+    text: CharSequence,
+    replies: List<QuickReply>,
+): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
+    messagingProduct = "whatsapp",
+    recipientType = WhatsAppCloudBotRecipientType.individual,
+    interactive = WhatsAppCloudBotInteractive(
+        type = WhatsAppCloudBotInteractiveType.button,
+        header = WhatsAppCloudBotInteractiveHeader(
+            type = WhatsAppCloudBotHeaderType.image,
+            image = WhatsAppCloudBotMediaImage(
+                id = imgUrl
+            )
+        ),
+        body = WhatsAppCloudBotBody(translate(text).toString()),
+        action = WhatsAppCloudBotAction(
+            buttons = replies.map {
+                WhatsAppCloudBotActionButton(
+                    reply = WhatsAppCloudBotActionButtonReply(
+                        id = it.payload.checkLength(WHATS_APP_BUTTONS_ID_MAX_LENGTH),
+                        title = translate(it.title).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
+                    )
+                )
+            }
+        )
+    )
+)
+
 fun I18nTranslator.whatsAppCloudUrlButtonMessage(
     text: CharSequence? = null,
     textButton: String,

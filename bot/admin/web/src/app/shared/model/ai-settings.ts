@@ -1,7 +1,7 @@
 export interface ProvidersConfigurationParam {
   label: string;
   key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
+  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated' | 'radio';
   numberControlType?: 'slider' | 'input';
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
@@ -10,6 +10,7 @@ export interface ProvidersConfigurationParam {
   min?: number;
   max?: number;
   step?: number;
+  rows?: number;
   confirmExport?: boolean;
 }
 
@@ -20,8 +21,25 @@ export enum AiEngineProvider {
 }
 
 export enum AiEngineSettingKeyName {
+  questionCondensingLlmSetting = 'questionCondensingLlmSetting',
+  questionAnsweringLlmSetting = 'questionAnsweringLlmSetting',
   llmSetting = 'llmSetting',
   emSetting = 'emSetting'
+}
+
+export enum PromptTypeKeyName {
+  questionCondensingPrompt = 'questionCondensingPrompt',
+  questionAnsweringPrompt = 'questionAnsweringPrompt'
+}
+
+export enum PromptDefinitionFormatter {
+  jinja2 = 'jinja2',
+  fstring = 'f-string'
+}
+
+export interface PromptDefinition {
+  formatter: PromptDefinitionFormatter;
+  template: string;
 }
 
 export interface llmSetting {
@@ -35,7 +53,6 @@ export interface llmSetting {
   apiVersion?: String;
 
   temperature?: Number;
-  prompt?: String;
 }
 
 export interface emSetting {

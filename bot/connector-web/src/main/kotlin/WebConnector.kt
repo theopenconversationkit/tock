@@ -65,6 +65,9 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
+import ai.tock.shared.vertx.sendSseMessage
+import ai.tock.shared.vertx.sendSsePing
+import ai.tock.shared.vertx.setupSSE
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
@@ -125,26 +128,8 @@ class WebConnector internal constructor(
         )
         private val channels by lazy { Channels() }
 
-        private fun HttpServerResponse.setupSSE() {
-            isChunked = true
-            headers().apply {
-                add("Content-Type", "text/event-stream;charset=UTF-8")
-                add("Connection", "keep-alive")
-                add("Cache-Control", "no-cache")
-            }
-            sendSsePing()
-        }
-
-        private fun HttpServerResponse.sendSsePing() =
-            Future.all(listOf(write("event: ping\n"), write("data: 1\n\n")))
-
         internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponse) =
-            Future.all(
-                listOf(
-                    write("event: message\n"),
-                    write("data: ${webMapper.writeValueAsString(webConnectorResponse)}\n\n")
-                )
-            )
+            sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
 
     }
 

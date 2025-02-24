@@ -30,7 +30,8 @@
               "src/styles.css",
               "src/jsoneditor.css",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
-              "node_modules/jodit/es2021/jodit.css"
+              "node_modules/jodit/es2021/jodit.css",
+              "node_modules/katex/dist/katex.min.css"
             ],
             "scripts": []
           },
