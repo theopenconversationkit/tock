@@ -1,4 +1,7 @@
-<div class="d-flex flex-wrap mb-2">
+<div
+  class="d-flex flex-wrap mb-2"
+  [nbSpinner]="loading.edit || loading.delete"
+>
   <h1 class="flex-grow-1">FAQs stories</h1>
 
   <section class="grid-actions">
@@ -39,6 +42,7 @@
 <section
   [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings || isSidePanelOpen.export"
   [class.sidePanelExpanded]="sidePanelExpanded"
+  [nbSpinner]="loading.edit || loading.delete"
 >
   <tock-no-data-found
     *ngIf="configurations?.length === 0"
@@ -80,7 +84,6 @@
 
       <tock-faq-management-list
         *ngIf="!loading.list && faqs?.length"
-        [nbSpinner]="loading.delete"
         [faqs]="faqs"
         [selectedFaq]="faqEdit"
         (onEdit)="addOrEditFaq($event)"

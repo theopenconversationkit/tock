@@ -84,7 +84,8 @@ import {
   TestDialogComponent,
   BotConfigurationSelectorComponent,
   ReportComponent,
-  ChatUiDialogLoggerComponent
+  ChatUiDialogLoggerComponent,
+  ChatUiDisplayMarkupComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -140,6 +141,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
     ChatUiMessageDebugComponent,
     ChatUiMessageSentenceFootnotesComponent,
     ChatUiDialogLoggerComponent,
+    ChatUiDisplayMarkupComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,
