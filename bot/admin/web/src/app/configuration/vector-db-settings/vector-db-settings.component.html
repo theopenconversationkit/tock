@@ -67,82 +67,92 @@
   *ngIf="configurations?.length > 0"
 >
   <nb-card class="mt-2">
-    <nb-card-body [nbSpinner]="loading">
-      <h5 class="section-title">Vector DB activation</h5>
-
-      <tock-form-control
-        name="enabled"
-        [controls]="enabled"
-        [showError]="isSubmitted"
-        [hasMargin]="false"
-      >
-        <nb-toggle
-          formControlName="enabled"
-          class="mt-1"
-        >
-          <span *ngIf="enabled.value">Vector DB activated</span>
-          <span *ngIf="!enabled.value">Vector DB deactivated</span>
-        </nb-toggle>
-      </tock-form-control>
-
-      <h5 class="section-title">
-        Vector DB provider for application <i>{{ state.currentApplication.name }}</i>
-      </h5>
-
-      <tock-form-control
-        name="vectorDbProvider"
-        [controls]="vectorDbProvider"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <nb-radio-group
-          formControlName="vectorDbProvider"
-          name="vectorDbProvider"
-          class="d-flex"
-        >
-          <nb-radio
-            *ngFor="let provider of providersConfigurations"
-            [value]="provider.key"
+    <nb-card-body
+      [nbSpinner]="loading"
+      class="pb-0"
+    >
+      <nb-card class="mt-2">
+        <nb-card-header>Vector DB activation</nb-card-header>
+        <nb-card-body>
+          <tock-form-control
+            name="enabled"
+            [controls]="enabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
           >
-            {{ provider.label }}
-          </nb-radio>
-        </nb-radio-group>
-      </tock-form-control>
-
-      <div
-        *ngIf="currentVectorDbProvider"
-        class="mt-2 mb-2"
-      >
-        <div class="row mb-1">
-          <ng-container *ngFor="let param of currentVectorDbProvider.params">
-            <div
-              class="col-6 px-3"
-              [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+            <nb-toggle
+              formControlName="enabled"
+              class="mt-1"
             >
-              <tock-ai-settings-engine-config-param-input
-                parentGroup="setting"
-                [configurationParam]="param"
-                [form]="form"
-                [isSubmitted]="isSubmitted"
-              ></tock-ai-settings-engine-config-param-input>
+              <span *ngIf="enabled.value">Vector DB activated</span>
+              <span *ngIf="!enabled.value">Vector DB deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
+        </nb-card-body>
+      </nb-card>
+
+      <nb-card>
+        <nb-card-header>
+          Vector DB provider for application <i>{{ state.currentApplication.name }}</i>
+        </nb-card-header>
+        <nb-card-body>
+          <tock-form-control
+            name="vectorDbProvider"
+            [controls]="vectorDbProvider"
+            [required]="true"
+            [showError]="isSubmitted"
+          >
+            <nb-radio-group
+              formControlName="vectorDbProvider"
+              name="vectorDbProvider"
+              class="d-flex"
+            >
+              <nb-radio
+                *ngFor="let provider of providersConfigurations"
+                [value]="provider.key"
+              >
+                {{ provider.label }}
+              </nb-radio>
+            </nb-radio-group>
+          </tock-form-control>
+
+          <div
+            *ngIf="currentVectorDbProvider"
+            class="mt-2 mb-2"
+          >
+            <div class="row mb-1">
+              <ng-container *ngFor="let param of currentVectorDbProvider.params">
+                <div
+                  class="col-6 px-3"
+                  [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+                >
+                  <tock-ai-settings-engine-config-param-input
+                    parentGroup="setting"
+                    [configurationParam]="param"
+                    [form]="form"
+                    [isSubmitted]="isSubmitted"
+                  ></tock-ai-settings-engine-config-param-input>
+                </div>
+              </ng-container>
             </div>
-          </ng-container>
-        </div>
-      </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
 
-      <ng-container *ngIf="settingsBackup">
-        <h5 class="section-title mt-2">Settings deletion</h5>
-
-        <button
-          nbButton
-          status="danger"
-          nbTooltip="Delete settings"
-          (click)="confirmSettingsDeletion()"
-        >
-          <nb-icon icon="trash"></nb-icon>
-          DELETE SETTINGS
-        </button>
-      </ng-container>
+      <nb-card *ngIf="settingsBackup">
+        <nb-card-header>Settings deletion</nb-card-header>
+        <nb-card-body>
+          <button
+            nbButton
+            status="danger"
+            nbTooltip="Delete settings"
+            (click)="confirmSettingsDeletion()"
+          >
+            <nb-icon icon="trash"></nb-icon>
+            DELETE SETTINGS
+          </button>
+        </nb-card-body>
+      </nb-card>
     </nb-card-body>
   </nb-card>
 </form>

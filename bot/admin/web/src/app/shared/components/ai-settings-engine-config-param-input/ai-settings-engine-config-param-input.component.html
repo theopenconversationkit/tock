@@ -1,7 +1,7 @@
 <div [formGroup]="form">
   <div [formGroupName]="parentGroup">
     <tock-form-control
-      [label]="configurationParam.label"
+      [label]="getFormControlLabel()"
       [name]="configurationParam.key"
       [controls]="getFormControl()"
       [required]="true"
@@ -42,7 +42,7 @@
         <textarea
           nbInput
           fullWidth
-          rows="8"
+          [rows]="configurationParam.rows || 6"
           fieldSize="small"
           [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
         ></textarea>
@@ -56,6 +56,21 @@
             Use default prompt
           </button>
         </div>
+      </ng-container>
+
+      <ng-container *ngIf="configurationParam.type === 'radio'">
+        <nb-radio-group
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+          class="d-flex"
+          name="{{ parentGroup }}-{{ configurationParam.key }}"
+        >
+          <nb-radio
+            *ngFor="let source of configurationParam.source"
+            [value]="source"
+          >
+            {{ source }}
+          </nb-radio>
+        </nb-radio-group>
       </ng-container>
 
       <ng-container *ngIf="configurationParam.type === 'list'">
