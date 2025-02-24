@@ -1,0 +1,247 @@
+<form [formGroup]="form">
+  <nb-card
+    class="min-width-90vw"
+    [nbSpinner]="loading"
+  >
+    <nb-card-header>
+      <div class="d-flex gap-1 justify-content-between align-items-center">
+        Annotation
+
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="cancel()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+        </button>
+      </div>
+    </nb-card-header>
+
+    <nb-card-body>
+      <div class="row">
+        <div class="col-12 pb-3 mb-3 border-bottom">
+          <div
+            *ngIf="question"
+            class="ellipsis font-size-small"
+            [nbTooltip]="question"
+          >
+            <span class="text-muted font-weight-bold">Question:&nbsp;</span>
+            <q>{{ question }}</q>
+          </div>
+          <div
+            *ngIf="condensedQuestion"
+            class="ellipsis font-size-small"
+            [nbTooltip]="condensedQuestion"
+          >
+            <span class="text-muted font-weight-bold">Condensed question:&nbsp;</span>
+            <q>{{ condensedQuestion }}</q>
+          </div>
+          <div
+            *ngIf="answer"
+            class="ellipsis font-size-small"
+            [nbTooltip]="answer"
+          >
+            <span class="text-muted font-weight-bold">Answer:&nbsp;</span>
+            <q>{{ answer }}</q>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="State"
+            name="state"
+            [controls]="state"
+            [showError]="isSubmitted"
+            [required]="true"
+            [noLabelMargin]="true"
+          >
+            <nb-radio-group
+              formControlName="state"
+              value="2"
+              class="d-flex mt-2"
+            >
+              <nb-radio
+                *ngFor="let state of annotationStates"
+                [value]="state.value"
+                >{{ state.label }}</nb-radio
+              >
+            </nb-radio-group>
+          </tock-form-control>
+        </div>
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Reason"
+            name="reason"
+          >
+            <nb-select
+              formControlName="reason"
+              placeholder="Select the reason for the report"
+              fullWidth
+            >
+              <nb-option
+                *ngFor="let reason of annotationReasons"
+                [value]="reason.value"
+                >{{ reason.label }}</nb-option
+              >
+            </nb-select>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Description"
+            name="description"
+            [controls]="description"
+            [showError]="isSubmitted"
+            [required]="true"
+          >
+            <textarea
+              formControlName="description"
+              nbInput
+              fullWidth
+              fieldSize="small"
+              [rows]="getTextAreaNbRows()"
+              placeholder="Add a description here"
+            ></textarea>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <tock-form-control
+            label="Ground truth"
+            name="groundTruth"
+          >
+            <textarea
+              formControlName="groundTruth"
+              nbInput
+              fullWidth
+              fieldSize="small"
+              [rows]="getTextAreaNbRows()"
+              placeholder="Add ground truth here"
+            ></textarea>
+          </tock-form-control>
+        </div>
+      </div>
+
+      <ng-container *ngIf="actionReport.annotation?.events?.length">
+        <div class="d-flex gap-1 justify-content-between align-items-center">
+          <span
+            class="text-mitigated font-weight-bold pointer"
+            (click)="toggleEventsSortingDirection()"
+            nbTooltip="Click to reverse order"
+          >
+            Changes & comments
+            <nb-icon
+              class="align-middle"
+              [icon]="eventsSortingDirection === sortOrder.ASC ? 'chevron-down-outline' : 'chevron-up-outline'"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </span>
+
+          <div>
+            <nb-toggle
+              [(ngModel)]="hideChangeEvents"
+              [ngModelOptions]="{ standalone: true }"
+              class="nb-toggle-small mt-2"
+              status="basic"
+              [nbTooltip]="hideChangeEvents ? 'Click to show change events' : 'Click to hide change events'"
+            >
+              Hide change events
+            </nb-toggle>
+          </div>
+        </div>
+
+        <div class="events-wrapper">
+          <div
+            *ngIf="getFilteredEvents().length < 1"
+            class="text-center text-muted py-2"
+          >
+            No data to display
+          </div>
+
+          <div *ngFor="let event of getFilteredEvents()">
+            <!-- COMMENTS -->
+            <tock-annotation-comment
+              *ngIf="event.type === annotationEventType.COMMENT"
+              [event]="event"
+              (commentChange)="putComment($event)"
+              (commentDelete)="deleteComment($event)"
+              class="my-1"
+            ></tock-annotation-comment>
+
+            <!-- OTHER EVENTS -->
+            <div
+              *ngIf="event.type !== annotationEventType.COMMENT"
+              class="event-info my-1"
+            >
+              <q>{{ event.user }}</q> modified <span class="emphasize">{{ getEventTypeLabel(event.type) }}</span> from
+              <q>
+                <div
+                  class="before-after d-inline-block ellipsis"
+                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.before)"
+                >
+                  {{ getBeforeAfterDisplayLabel(event.type, event.before) }}
+                </div></q
+              >
+              to
+              <q>
+                <div
+                  class="before-after d-inline-block ellipsis"
+                  [nbTooltip]="getBeforeAfterDisplayLabel(event.type, event.after)"
+                >
+                  {{ getBeforeAfterDisplayLabel(event.type, event.after) }}
+                </div></q
+              >
+              on {{ event.lastUpdateDate | date: 'y/MM/dd' }} at {{ event.lastUpdateDate | date: 'HH:mm' }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </nb-card-body>
+
+    <div
+      class="pt-2 pb-3 px-4"
+      [ngClass]="{ 'add-comment-shadow': actionReport.annotation?.events?.length > 1 }"
+    >
+      <tock-form-control
+        label="Add a comment"
+        name="comment"
+        [hasMargin]="false"
+      >
+        <textarea
+          formControlName="comment"
+          nbInput
+          fullWidth
+          fieldSize="small"
+          rows="2"
+          placeholder="Add a new comment here"
+        ></textarea>
+      </tock-form-control>
+    </div>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="cancel()"
+      >
+        <ng-container *ngIf="form.dirty">Cancel</ng-container>
+        <ng-container *ngIf="!form.dirty">Close</ng-container>
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submit()"
+        *ngIf="form.dirty"
+      >
+        <ng-container *ngIf="!actionReport.annotation">Submit</ng-container>
+        <ng-container *ngIf="actionReport.annotation">Update</ng-container>
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</form>

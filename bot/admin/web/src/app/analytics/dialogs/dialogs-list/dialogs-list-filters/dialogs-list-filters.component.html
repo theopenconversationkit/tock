@@ -86,10 +86,71 @@
             <nb-form-field class="mb-2">
               <nb-icon
                 nbPrefix
+                icon="calendar-plus"
+              ></nb-icon>
+              <input
+                nbInput
+                fullWidth
+                fieldSize="small"
+                placeholder="Data collected after"
+                nbTooltip="Show dialogs created after this date"
+                [nbDatepicker]="from_date"
+                formControlName="dialogCreationDateFrom"
+              />
+              <button
+                *ngIf="!!getFormControl('dialogCreationDateFrom').value"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Clear"
+                type="button"
+                (click)="resetControl(getFormControl('dialogCreationDateFrom'))"
+              >
+                <nb-icon icon="x"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #from_date></nb-datepicker>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="calendar-minus"
+              ></nb-icon>
+              <input
+                nbInput
+                fullWidth
+                fieldSize="small"
+                placeholder="Data collected before"
+                nbTooltip="Show dialogs created before this date"
+                [nbDatepicker]="to_date"
+                formControlName="dialogCreationDateTo"
+              />
+              <button
+                *ngIf="!!getFormControl('dialogCreationDateTo').value"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Clear"
+                type="button"
+                (click)="resetControl(getFormControl('dialogCreationDateTo'))"
+              >
+                <nb-icon icon="x"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #to_date></nb-datepicker>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
                 icon="link-45deg"
               ></nb-icon>
               <nb-select
                 fullWidth
+                size="small"
                 nbTooltip="Search for dialogs using this configuration."
                 placeholder="Configuration"
                 formControlName="configuration"
@@ -113,6 +174,7 @@
               ></nb-icon>
               <nb-select
                 fullWidth
+                size="small"
                 nbTooltip="Search for dialogs using this connector."
                 placeholder="Connector"
                 formControlName="connectorType"
@@ -140,6 +202,7 @@
               ></nb-icon>
               <nb-select
                 fullWidth
+                size="small"
                 nbTooltip="Search dialogs containing exchanges corresponding to the selected intent."
                 placeholder="Intent"
                 formControlName="intentName"
@@ -164,6 +227,7 @@
               ></nb-icon>
               <nb-select
                 fullWidth
+                size="small"
                 multiple
                 nbTooltip="Hide exchanges corresponding to selected intents."
                 placeholder="Hide intents"
@@ -179,9 +243,7 @@
               </nb-select>
             </nb-form-field>
           </div>
-        </div>
 
-        <div class="row">
           <div class="col-6 col-lg-3">
             <nb-form-field>
               <nb-icon
@@ -191,7 +253,7 @@
               <input
                 nbInput
                 fullWidth
-                fieldSize="medium"
+                fieldSize="small"
                 nbTooltip="Search a dialog by id"
                 placeholder="Dialog id"
                 type="text"
@@ -213,7 +275,16 @@
             </nb-form-field>
           </div>
 
-          <div class="col-6 col-lg-3 pt-2">
+          <div class="col-6 col-lg-3 pt-1">
+            <nb-checkbox
+              nbTooltip="Display dialogues held from the studio test view"
+              class="text-nowrap"
+              formControlName="displayTests"
+              >Display tests
+            </nb-checkbox>
+          </div>
+
+          <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
               nbTooltip="Display only dialogs containing Rag responses"
               class="text-nowrap"
@@ -222,13 +293,155 @@
             </nb-checkbox>
           </div>
 
-          <div class="col-6 col-lg-3 pt-2">
+          <!-- Annotations filters -->
+
+          <div class="col-6 col-lg-3 pt-1 ellipsis">
             <nb-checkbox
-              nbTooltip="Display dialogues held from the studio test view"
+              nbTooltip="Display only annotated dialogs"
               class="text-nowrap"
-              formControlName="displayTests"
-              >Display tests
+              formControlName="withAnnotations"
+              >With annotation
             </nb-checkbox>
+          </div>
+
+          <div
+            class="col-6 col-lg-3"
+            *ngIf="getFormControl('withAnnotations').value"
+          >
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="pin-angle"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                size="small"
+                multiple
+                nbTooltip="Filter annotations by state"
+                placeholder="Annotations state"
+                formControlName="annotationStates"
+              >
+                <nb-option>Clear selection</nb-option>
+                <nb-option
+                  *ngFor="let state of annotationStates"
+                  [value]="state.value"
+                >
+                  {{ state.label }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div
+            class="col-6 col-lg-3"
+            *ngIf="getFormControl('withAnnotations').value"
+          >
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="cone-striped"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                size="small"
+                multiple
+                nbTooltip="Filter annotations by reason"
+                placeholder="Annotations reasons"
+                formControlName="annotationReasons"
+              >
+                <nb-option>Clear selection</nb-option>
+                <nb-option
+                  *ngFor="let reason of annotationReasons"
+                  [value]="reason.value"
+                >
+                  {{ reason.label }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div
+            class="col-6 col-lg-3"
+            *ngIf="getFormControl('withAnnotations').value"
+          >
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="calendar-plus"
+              ></nb-icon>
+              <input
+                nbInput
+                fullWidth
+                fieldSize="small"
+                placeholder="Annotations created after"
+                nbTooltip="Show annotations created after this date"
+                [nbDatepicker]="from_date_annotation"
+                formControlName="annotationCreationDateFrom"
+              />
+              <button
+                *ngIf="!!getFormControl('annotationCreationDateFrom').value"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Clear"
+                type="button"
+                (click)="resetControl(getFormControl('annotationCreationDateFrom'))"
+              >
+                <nb-icon icon="x"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #from_date_annotation></nb-datepicker>
+          </div>
+
+          <div
+            class="col-6 col-lg-3"
+            *ngIf="getFormControl('withAnnotations').value"
+          >
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="calendar-minus"
+              ></nb-icon>
+              <input
+                nbInput
+                fullWidth
+                fieldSize="small"
+                placeholder="Annotations created before"
+                nbTooltip="Show annotations created before this date"
+                [nbDatepicker]="to_date_annotation"
+                formControlName="annotationCreationDateTo"
+              />
+              <button
+                *ngIf="!!getFormControl('annotationCreationDateTo').value"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Clear"
+                type="button"
+                (click)="resetControl(getFormControl('annotationCreationDateTo'))"
+              >
+                <nb-icon icon="x"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #to_date_annotation></nb-datepicker>
+          </div>
+
+          <div
+            class="col-12 col-xl-6 d-flex gap-1 align-items-center"
+            *ngIf="getFormControl('withAnnotations').value"
+          >
+            Sort order of annotations:
+            <nb-radio-group
+              formControlName="annotationSort"
+              class="d-flex"
+            >
+              <nb-radio
+                *ngFor="let order of sortOrders"
+                [value]="order.value"
+              >
+                {{ order.label }}
+              </nb-radio>
+            </nb-radio-group>
           </div>
         </div>
       </form>

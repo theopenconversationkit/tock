@@ -83,9 +83,10 @@ import {
   WysiwygEditorComponent,
   TestDialogComponent,
   BotConfigurationSelectorComponent,
-  ReportComponent,
   ChatUiDialogLoggerComponent,
-  ChatUiDisplayMarkupComponent
+  ChatUiDisplayMarkupComponent,
+  AnnotationComponent,
+  AnnotationCommentComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -171,7 +172,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     TestDialogComponent,
     BotConfigurationSelectorComponent,
     TextareaAutocompleteDirective,
-    ReportComponent
+    AnnotationComponent,
+    AnnotationCommentComponent
   ],
   exports: [
     SelectBotComponent,
