@@ -60,8 +60,17 @@ data class UserPreferences(
     /**
      * The initial locale of the user
      */
-    var initialLocale: Locale = locale
-) {
+    var initialLocale: Locale = locale,
+    /**
+     * Full name or screen name of the user in the application.
+     */
+    var username: String? = null,
+    /**
+     * Phone number of the user of application in E.164 format : +33612345678.
+     */
+    var phoneNumber: String? = null,
+
+    ) {
 
     /**
      * Fill the current [UserPreferences] with the specified [UserPreferences].
@@ -76,6 +85,8 @@ data class UserPreferences(
         gender = userPref.gender
         test = userPref.test
         initialLocale = userPref.locale
+        username = userPref.username
+        phoneNumber = userPref.phoneNumber
     }
 
     /**
@@ -90,5 +101,7 @@ data class UserPreferences(
         locale = userPref.locale
         userPref.picture?.also { picture = it }
         userPref.gender?.also { gender = it }
+        userPref.username?.also { username = it }
+        userPref.phoneNumber?.also { phoneNumber = it }
     }
 }

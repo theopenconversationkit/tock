@@ -40,6 +40,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
+import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -167,7 +168,11 @@ class WhatsAppConnectorCloudConnector internal constructor(
                         if (event != null) {
                             controller.handle(
                                 event,
-                                ConnectorData(WhatsAppConnectorCloudCallback(event.applicationId))
+                                ConnectorData(WhatsAppConnectorCloudCallback(
+                                    applicationId = event.applicationId,
+                                    phoneNumber = message.from,
+                                    username = change.value.contacts.find { it.waId == message.from }?.profile?.name,
+                                ))
                             )
                         } else {
                             logger.warn("unable to convert $message to event")
@@ -214,6 +219,11 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 WhatsAppConnectorCloudCallback(connectorId)
             )
         )
+    }
+
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
+        return (callback as? WhatsAppConnectorCloudCallback)
+            ?.run {  UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
     }
 
     override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
