@@ -30,7 +30,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSend
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsappTemplateComponent
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionSection
@@ -211,8 +211,8 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     ) {
         val updatedComponents = messageRequest.template.components.map { component ->
             when (component) {
-                is WhatsappTemplateComponent.Carousel -> updateCarouselPayloads(component)
-                is WhatsappTemplateComponent.Button -> updateTemplateButton(component)
+                is Component.Carousel -> updateCarouselPayloads(component)
+                is Component.Button -> updateTemplateButton(component)
                 else -> component
             }
         }
@@ -226,10 +226,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         sendUpdatedTemplateMessage(phoneNumberId, token, updatedMessageRequest)
     }
 
-    private fun updateCarouselPayloads(carousel: WhatsappTemplateComponent.Carousel): WhatsappTemplateComponent.Carousel {
+    private fun updateCarouselPayloads(carousel: Component.Carousel): Component.Carousel {
         val updatedCards = carousel.cards.map { card ->
             val updatedComponents = card.components.map { component ->
-                if (component is WhatsappTemplateComponent.Button) {
+                if (component is Component.Button) {
                     updateTemplateButton(component)
                 } else {
                     component
@@ -240,7 +240,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         return carousel.copy(cards = updatedCards)
     }
 
-    private fun updateTemplateButton(button: WhatsappTemplateComponent.Button): WhatsappTemplateComponent.Button =
+    private fun updateTemplateButton(button: Component.Button): Component.Button =
         button.copy(parameters = button.parameters.map { parameters ->
             parameters.payload?.takeIf { it.length >= 128 }?.let {
                 val uuidPayload = UUID.randomUUID().toString()
@@ -380,10 +380,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     ) {
         messageRequest.template.components
             .asSequence()
-            .filterIsInstance<WhatsappTemplateComponent.Carousel>()
+            .filterIsInstance<Component.Carousel>()
             .flatMap { it.cards }
             .flatMap { it.components }
-            .filterIsInstance<WhatsappTemplateComponent.Header>()
+            .filterIsInstance<Component.Header>()
             .flatMap { it.parameters }
             .filterIsInstance<HeaderParameter.Image>()
             .filter { it.image.id != null }

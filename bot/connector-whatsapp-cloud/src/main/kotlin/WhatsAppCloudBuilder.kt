@@ -375,7 +375,7 @@ fun I18nTranslator.whatsAppCloudListMessage(
     header: CharSequence? = null,
     footer: CharSequence? = null,
 ): WhatsAppCloudBotInteractiveMessage =
-    whatsAppCloudListMessage(text, button, header, footer, sections.toList())
+    whatsAppCloudListMessage(text, button, sections.toList(), header, footer)
 
 /**
  * Creates an [Interactive List Message](https://developers.facebook.com/docs/whatsapp/cloud-api/messages/interactive-list-messages)
@@ -395,12 +395,13 @@ fun I18nTranslator.whatsAppCloudListMessage(
  *
  * @see whatsAppCloudListSection
  */
+@JvmName("whatsAppCloudListMessageWithSections")
 fun I18nTranslator.whatsAppCloudListMessage(
     text: CharSequence,
     button: CharSequence,
+    sections: List<WhatsAppCloudBotActionSection>,
     header: CharSequence? = null,
     footer: CharSequence? = null,
-    sections: List<WhatsAppCloudBotActionSection>,
 ): WhatsAppCloudBotInteractiveMessage {
     return WhatsAppCloudBotInteractiveMessage(
         messagingProduct = "whatsapp",
@@ -611,7 +612,7 @@ fun I18nTranslator.whatsAppCloudNlpQuickReply(
 fun I18nTranslator.whatsAppBuildCloudTemplateMessage(
     templateName: String,
     languageCode: String,
-    components: List<WhatsappTemplateComponent>
+    components: List<Component>
 ) = whatsAppCloudTemplateMessage(templateName, languageCode, components)
 
 /**
@@ -622,7 +623,7 @@ fun I18nTranslator.whatsAppBuildCloudTemplateMessage(
 fun I18nTranslator.whatsAppCloudTemplateMessage(
     templateName: String,
     languageCode: String,
-    components: List<WhatsappTemplateComponent>
+    components: List<Component>
 ): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
         messagingProduct = "whatsapp",
@@ -640,7 +641,7 @@ fun I18nTranslator.whatsAppCloudTemplateMessage(
 @Deprecated("renamed", ReplaceWith("whatsAppCloudTemplateMessageCarousel(templateName, components, languageCode)"))
 fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
     templateName: String,
-    components: List<WhatsappTemplateComponent.Card>,
+    components: List<Component.Card>,
     languageCode: String
 ) = whatsAppCloudTemplateMessageCarousel(templateName, components, languageCode)
 
@@ -651,7 +652,7 @@ fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
  */
 fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
     templateName: String,
-    components: List<WhatsappTemplateComponent.Card>,
+    components: List<Component.Card>,
     languageCode: String
 ): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
@@ -663,12 +664,18 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
                 code = languageCode,
             ),
             components = listOf(
-                WhatsappTemplateComponent.Carousel(
+                Component.Carousel(
                     type = ComponentType.CAROUSEL,
                     cards = components
                 )
             )
         )
+    )
+}
+
+fun <T : Bus<T>> T.whatsAppCloudCardCarousel(cardIndex: Int, components: List<Component>): Component.Card {
+    return whatsAppCloudTemplateCard(
+        cardIndex, components
     )
 }
 
@@ -682,8 +689,8 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
  */
 fun <T : Bus<T>> T.whatsAppCloudTemplateCard(
     cardIndex: Int,
-    components: List<WhatsappTemplateComponent>
-): WhatsappTemplateComponent.Card = WhatsappTemplateComponent.Card(
+    components: List<Component>
+): Component.Card = Component.Card(
     cardIndex = cardIndex,
     components = components
 )
@@ -700,7 +707,7 @@ fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
  */
 fun <T : Bus<T>> T.whatsAppCloudTemplateBody(
     parameters: List<TextParameter>
-): WhatsappTemplateComponent.Body = WhatsappTemplateComponent.Body(
+): Component.Body = Component.Body(
     type = ComponentType.BODY,
     parameters = parameters
 )
@@ -725,7 +732,7 @@ fun whatsAppCloudButtonTemplate(
     index: Int,
     subType: ButtonSubType,
     parameters: List<PayloadParameter>
-): WhatsappTemplateComponent.Button = WhatsappTemplateComponent.Button(
+): Component.Button = Component.Button(
     type = ComponentType.BUTTON,
     subType = subType,
     index = index.toString(),
@@ -736,11 +743,20 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: Int,
     textButton: String,
     payload: String?
-): WhatsappTemplateComponent.Button = whatsAppCloudButtonTemplate(
+): Component.Button = whatsAppCloudButtonTemplate(
     index, ButtonSubType.QUICK_REPLY, listOf(
         whatsAppCloudPayloadParameterTemplate(textButton, payload, ParameterType.PAYLOAD)
     )
 )
+
+@Deprecated("Use variant with Int index")
+fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
+    index: String,
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters = Parameters()
+) = whatsAppCloudPostbackButton(index.toInt(), title, targetIntent, step, parameters)
 
 fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: Int,
@@ -748,7 +764,7 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters()
-): WhatsappTemplateComponent.Button = whatsAppCloudPostbackButton(
+): Component.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
     // Add an index parameter to ensure that all buttons in the list have unique ids
@@ -759,7 +775,7 @@ fun <T : Bus<T>> T.whatsAppCloudNLPPostbackButton(
     index: Int,
     title: CharSequence,
     textToSend: CharSequence = title,
-): WhatsappTemplateComponent.Button = whatsAppCloudPostbackButton(
+): Component.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
     payload = SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
@@ -768,7 +784,7 @@ fun <T : Bus<T>> T.whatsAppCloudNLPPostbackButton(
 fun <T : Bus<T>> T.whatsAppCloudUrlButton(
     index: Int,
     textButton: String,
-): WhatsappTemplateComponent.Button = whatsAppCloudButtonTemplate(
+): Component.Button = whatsAppCloudButtonTemplate(
     index, ButtonSubType.URL, listOf(
         whatsAppCloudPayloadParameterTemplate(textButton, null, ParameterType.TEXT)
     )
@@ -793,7 +809,7 @@ fun whatsAppCloudHeaderTemplate(
 
 fun whatsAppCloudTemplateImageHeader(
     imageId: String
-): WhatsappTemplateComponent.Header = WhatsappTemplateComponent.Header(
+): Component.Header = Component.Header(
     type = ComponentType.HEADER,
     parameters = listOf(
         HeaderParameter.Image(
