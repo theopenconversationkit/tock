@@ -42,7 +42,7 @@ In order to connect your bot with a WhatsApp bot application, you need a Meta ap
 
 ## Proxy authentication
 
-TOCK uses the default proxy selector for calls to the Messenger API.
+TOCK uses the default proxy selector for calls to the WhatsApp API.
 If the bot is deployed behind an HTTP proxy that requires authentication to perform these calls,
 you will need to set credentials in the form of the `tock_proxy_user` and `tock_proxy_password` properties (only Basic auth is supported).
 These properties can be set either as Java system properties or as environment variables.
