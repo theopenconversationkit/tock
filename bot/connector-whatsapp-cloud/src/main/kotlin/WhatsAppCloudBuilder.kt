@@ -527,7 +527,7 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
 fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: String? = null,
+    step: String?,
     parameters: Map<String, String> = mapOf()
 ): QuickReply =
     whatsAppCloudQuickReply(title, null, targetIntent, step, parameters) { intent, s, params ->
@@ -552,12 +552,12 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
 
-@Deprecated("Use step object directly instead of its name")
+@Deprecated("Use step object directly instead of its name", level = DeprecationLevel.HIDDEN)
 fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
-    step: String? = null,
+    step: String?,
     parameters: Map<String, String> = mapOf()
 ): QuickReply =
     whatsAppCloudQuickReply(title,subTitle, targetIntent, step, parameters) { intent, s, params ->
