@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin
 
+
 import ai.tock.bot.admin.BotAdminService.createI18nRequest
 import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
@@ -30,6 +31,7 @@ import ai.tock.bot.admin.service.*
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.IndicatorVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
@@ -39,9 +41,7 @@ import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
 import ai.tock.bot.engine.dialog.DialogFlowDAO
-import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
-import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
@@ -73,6 +73,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val botAdminConfiguration = BotAdminConfiguration()
 
     private val indicatorVerticle = IndicatorVerticle()
+    private val dialogVerticle = DialogVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -119,6 +120,7 @@ open class BotAdminVerticle : AdminVerticle() {
         configureServices()
 
         indicatorVerticle.configure(this)
+        dialogVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -186,6 +188,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
+            "/analytics/messages/byStory",
+            setOf(botUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStory(request)
+            }
+        }
+
+        blockingJsonPost(
             "/analytics/messages/byIntent",
             setOf(botUser)
         ) { context, request: DialogFlowRequest ->
@@ -209,15 +220,6 @@ open class BotAdminVerticle : AdminVerticle() {
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDateAndStory(request)
-            }
-        }
-
-        blockingJsonPost(
-            "/analytics/messages/byStory",
-            setOf(botUser)
-        ) { context, request: DialogFlowRequest ->
-            checkAndMeasure(context, request) {
-                BotAdminAnalyticsService.reportMessagesByStory(request)
             }
         }
 
@@ -302,117 +304,6 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
-        }
-
-        blockingJsonPost(
-            "/dialogs/ratings/export",
-            setOf(botUser)
-        ) { context, query: DialogsSearchQuery ->
-            if (context.organization == query.namespace) {
-                val sb = StringBuilder()
-                val printer = CsvCodec.newPrinter(sb)
-                printer.printRecord(listOf("Timestamp", "Dialog ID", "Note", "Commentaire"))
-                BotAdminService.search(query)
-                    .dialogs
-                    .forEach { label ->
-                        printer.printRecord(
-                            listOf(
-                                label.actions.first().date,
-                                label.id,
-                                label.rating,
-                                label.review,
-                            )
-                        )
-                    }
-                sb.toString()
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost(
-            "/dialogs/ratings/intents/export",
-            setOf(botUser)
-        ) { context, query: DialogsSearchQuery ->
-            if (context.organization == query.namespace) {
-                val sb = StringBuilder()
-                val printer = CsvCodec.newPrinter(sb)
-                printer.printRecord(
-                    listOf(
-                        "Timestamp",
-                        "Intent",
-                        "Dialog ID",
-                        "Player Type",
-                        "Application ID",
-                        "Message"
-                    )
-                )
-                BotAdminService.search(query)
-                    .dialogs
-                    .forEach { dialog ->
-                        dialog.actions.forEach {
-                            printer.printRecord(
-                                listOf(
-                                    it.date,
-                                    it.intent,
-                                    dialog.id,
-                                    it.playerId.type,
-                                    it.applicationId,
-                                    if (it.message.isSimpleMessage()) it.message.toPrettyString().replace(
-                                        "\n",
-                                        " "
-                                    ) else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }
-                                        .replace("\n", " ")
-                                )
-                            )
-                        }
-                    }
-                sb.toString()
-
-            } else {
-                unauthorized()
-            }
-        }
-
-
-        blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser)) { context ->
-            val app = FrontClient.getApplicationById(context.pathId("applicationId"))
-            if (context.organization == app?.namespace) {
-                dialogReportDAO.getDialog(context.path("dialogId").toId())
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost(
-            "/dialog/:applicationId/:dialogId/satisfaction",
-            setOf(botUser)
-        ) { context, query: Set<String> ->
-            val app = FrontClient.getApplicationById(context.pathId("applicationId"))
-            if (context.organization == app?.namespace) {
-                BotAdminService.getDialogObfuscatedById(context.pathId("dialogId"), query)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost(
-            "/dialogs/search",
-            setOf(botUser)
-        ) { context, query: DialogsSearchQuery ->
-            if (context.organization == query.namespace) {
-                BotAdminService.search(query)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonGet(
-            "/dialogs/intents/:applicationId",
-            setOf(botUser)
-        ) { context ->
-            val app = FrontClient.getApplicationById(context.path("applicationId").toId())
-            app?.let { BotAdminService.getIntentsInDialogs(app.namespace, app.name) }
         }
 
         blockingJsonGet("/bots/:botId", setOf(botUser)) { context ->
