@@ -34,7 +34,6 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionSection
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotHeaderType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveHeader
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotMediaImage
 import ai.tock.bot.engine.BotRepository
@@ -130,11 +129,18 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         val updatedSections = action.sections.takeIf { !it.isNullOrEmpty() }?.map { section ->
             section.copy(rows = section.rows?.map { it.copy(id = shortenPayload(it.id) ) })
         }
-        val updatedHeader = messageRequest.interactive.header?.let {
-            WhatsAppCloudBotInteractiveHeader(
-                type = WhatsAppCloudBotHeaderType.image,
-                image = WhatsAppCloudBotMediaImage(id = getRealIdImg(messageRequest, phoneNumberId, token))
-            )
+        val updatedHeader = messageRequest.interactive.header?.let { header ->
+            if (header.image != null) {
+                header.copy(
+                    image = WhatsAppCloudBotMediaImage(id = getRealIdImg(
+                        phoneNumberId,
+                        token,
+                        header.image.id
+                    ))
+                )
+            } else {
+                header
+            }
         }
         if (updatedButtons != null || updatedSections != null) {
             sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updatedButtons, updatedSections, updatedHeader)
@@ -150,14 +156,11 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     }
 
     private fun getRealIdImg(
-        messageRequest: WhatsAppCloudSendBotInteractiveMessage,
         phoneNumberId: String,
-        token: String
+        token: String,
+        headerImageId: String
     ): String {
-
-        val headerImageId = messageRequest.interactive.header?.image?.id
-
-        val res = sendMedia(this.client, phoneNumberId, token, headerImageId.toString(), FileType.PNG.type)
+        val res = sendMedia(this.client, phoneNumberId, token, headerImageId, FileType.PNG.type)
 
         return res.id
     }
