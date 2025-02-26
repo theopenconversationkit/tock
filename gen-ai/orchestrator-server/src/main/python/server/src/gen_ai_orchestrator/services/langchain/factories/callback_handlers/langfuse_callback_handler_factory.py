@@ -63,10 +63,9 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
         return True
 
     def _fetch_settings(self):
-        host = str(self.setting.public_url or self.setting.url)
-        logger.info(f"Using Langfuse host: {host}")
         return {
-            'host': host,
+            'host': str(self.setting.url),
+            'public_key': self.setting.public_key,
             'secret_key': fetch_secret_key_value(self.setting.secret_key),
             'timeout': application_settings.observability_provider_timeout,
             'max_retries': application_settings.observability_provider_max_retries
