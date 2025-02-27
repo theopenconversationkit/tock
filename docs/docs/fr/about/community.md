@@ -32,9 +32,9 @@ Pour suivre l'actualité des projets Tock mais aussi les meetups, conférences, 
 
 Vous pouvez également retrouver les nouveautés dans ces pages plus spécfiques :
 
-* [Projets & utilisateurs connus](https://doc.tock.ai/tock/fr/about/showcase/)
-* [Présentations & conférences](https://doc.tock.ai/tock/fr/about/ressources/)
-* [Prix & récompenses](https://doc.tock.ai/tock/fr/about/recompenses/)
+* [Projets & utilisateurs connus](https://doc.tock.ai/tock/master/fr/about/showcase.html)
+* [Présentations & conférences](https://doc.tock.ai/tock/master/fr/about/ressources.html)
+* [Prix & récompenses](https://doc.tock.ai/tock/master/fr/about/awards.html)
 
 Enfin, pour suivre les versions et fonctionnalités de Tock :
 
@@ -87,7 +87,7 @@ la solution. Elle est accompagnée d'un guide pour faire ses premiers pas. Merci
 plateforme de démo en ligne.
 
 * [Plateforme Démo en ligne](https://demo.tock.ai/) 
-* [Guide _Créer son 1er bot avec Tock_](http://doc.tock.ai/tock/fr/guides/studio.md/)
+* [Guide _Créer son 1er bot avec Tock_](https://doc.tock.ai/tock/master/fr/guides/studio.html)
 
 ## Aide
 

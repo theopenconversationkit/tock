@@ -11,7 +11,7 @@
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
  and create a new configuration with these parameters. 
 
-For a more detailed guide, refer to https://doc.tock.ai/tock/en/guide/messenger/
+For a more detailed guide, refer to https://doc.tock.ai/tock/master/guides/messenger.html
  
 ## Bot API 
  
