@@ -2,26 +2,30 @@
 title: Gen AI - Observability Settings
 ---
 
-# Le menu *Gen AI - Observability Settings*
+# The _Gen AI - Observability Settings_ Menu
 
-- L'observabilité des modèles de langage (LLM Observability) aide à surveiller, d'analyser et de comprendre le comportement des modèles de langage à grande échelle.
-- Cela inclut la collecte de données sur leurs performances, la détection d'anomalies et la compréhension des erreurs qu'ils peuvent produire. 
-- L'objectif est de garantir que ces modèles fonctionnent de manière fiable, transparente, en fournissant des informations qui permettent d'améliorer leur performance et de corriger les problèmes potentiels.
-- Plus précisément, nous pourrons :
-    - Voir les différents enchainements d'appels de LLM avec le prompt d'entrée et de sortie
-    - Analyser les portions de documents contextuels utilisés
-    - Suivre les informations et les métriques sur les coûts, le nombre de jetons consommés, la latence, etc.
+- **LLM Observability** helps monitor, analyze, and understand the behavior of large-scale language models.
+- This includes collecting data on their performance, detecting anomalies, and understanding the errors they may produce.
+- The goal is to ensure that these models operate reliably and transparently, providing insights that help improve their performance and address potential issues.
+- Specifically, we can:
+  - View different sequences of LLM calls, including input and output prompts.
+  - Analyze contextual document sections used.
+  - Track information and metrics such as costs, token consumption, latency, etc.
 
-
-> Pour accéder à cette page il faut bénéficier du rôle **_botUser_**.
-> <br />( plus de détails sur les rôles dans [securité]() ).
+> To access this page, you must have the **_botUser_** role.
+> <br />(More details on roles can be found in [security](../../../../../admin/securite#rôles)).
 
 ## Configuration
-Pour permettre à Tock de se connecter à un outil d'observabilité, un écran de configuration a été mis en place : 
+To enable Tock to connect to an observability tool, a configuration screen has been set up:
 
-![LLM Observability](../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration de l'outil d'observation de l'IA")
+![LLM Observability](../../../../../img/gen-ai/gen-ai-feature-observability.png "Configuration screen for the AI observability tool")
 
-## Utilisation
+## Public URL Configuration
 
-- Voici la [liste des fournisseurs d'observabilité des LLM](../../../../user/studio/gen-ai/providers/gen-ai-provider-observability.md) qui sont pris en compte par Tock.
-- Veuillez vous référer à la documentation de chaque outil pour comprendre comment l'utiliser.
+- The **Public URL** field allows specifying an externally accessible URL for observability tools such as Langfuse.
+- This URL will be used in the frontend interface to redirect users to observability traces, replacing the internal URL, which may not be publicly accessible.
+
+## Usage
+
+- Here is the [list of LLM observability providers](../../providers/gen-ai-provider-observability) supported by Tock.
+- Please refer to each tool's documentation to understand how to use it.
