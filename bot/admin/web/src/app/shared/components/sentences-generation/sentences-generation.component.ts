@@ -52,7 +52,7 @@ export class SentencesGenerationComponent implements OnInit {
   }
 
   checkLlmSettingsConfiguration(): void {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/info`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/sentence-generation/info`;
     this.restService
       .get(url, (settings) => settings)
       .subscribe((settings) => {
@@ -116,7 +116,7 @@ export class SentencesGenerationComponent implements OnInit {
   }
 
   generateSentences(body: CompletionRequest): Observable<CompletionResponse> {
-    const url = `/gen-ai/bot/${this.state.currentApplication.name}/sentence-generation`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/completion/sentence-generation`;
 
     return this.restService.post<CompletionRequest, CompletionResponse>(url, body);
   }
