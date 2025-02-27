@@ -9,9 +9,8 @@
   <div class="messages">
     <ng-content></ng-content>
 
-    <div
-      *ngIf="queryInProgress"
-      class="query-spinner my-2"
-    ></div>
+    <div *ngIf="queryInProgress">
+      <div class="query-spinner my-2 mx-auto"></div>
+    </div>
   </div>
 </div>

@@ -16,6 +16,7 @@ export class ChatUiMessageComponent {
   @Input() sender?: string;
   @Input() date?: Date;
   @Input() applicationId?: string;
+  @Input() switchFormattingPos: 'afterSender' | 'afterAvatar' = 'afterSender';
 
   @Input()
   set avatar(value: string) {

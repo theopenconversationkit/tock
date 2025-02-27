@@ -140,8 +140,21 @@
             nbTooltip="Show debug infos"
             (click)="showDebug(action)"
             class="mb-1"
+            *ngIf="$any(action).message?.data?.errorDetail"
           >
             <nb-icon icon="bug"></nb-icon>
+          </button>
+
+          <button
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="Open query in playground"
+            (click)="goToPlayground(action)"
+            class="mb-1"
+            *ngIf="$any(action).message?.data?.question_answering_prompt"
+          >
+            <nb-icon icon="joystick"></nb-icon>
           </button>
         </div>
 
