@@ -1085,7 +1085,11 @@ open class AdminVerticle : WebVerticle() {
         ) { context ->
             val ns = context.path("namespace").trim()
             try {
-                AdminService.deleteNamespaceIfEmpty(ns)
+                if (front.isNamespaceOwner(context.userLogin, ns)) {
+                    AdminService.deleteNamespaceIfEmpty(ns)
+                } else {
+                    unauthorized()
+                }
             } catch (e: IllegalStateException) {
                 badRequest(e.message ?: "Error while deleting namespace.")
             }
