@@ -24,7 +24,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 requirements_file="$SCRIPT_DIR/requirements.txt"
 
 # Remove the gen-ai-orchestrator dependency that will referenced locally
-pattern="gen-ai-orchestrator"
+pattern="orchestrator-server"
 
 # Convert poetry to "requirements.txt"
 poetry export --without-hashes --format=requirements.txt --output=$requirements_file
