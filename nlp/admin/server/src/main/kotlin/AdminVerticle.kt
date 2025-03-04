@@ -1084,13 +1084,10 @@ open class AdminVerticle : WebVerticle() {
             simpleLogger("Delete Namespace", { it.path("namespace") })
         ) { context ->
             val ns = context.path("namespace").trim()
-
-            if (front.getApplications().any { it.namespace == ns }) {
-                badRequest("Le namespace '$ns' contient encore des applications associées.")
-            } else {
-                front.getUsers(ns).forEach { userNamespace ->
-                    front.deleteNamespace(userNamespace.login, ns)
-                }
+            try {
+                AdminService.deleteNamespaceIfEmpty(ns)
+            } catch (e: IllegalStateException) {
+                badRequest(e.message ?: "Error while deleting namespace.")
             }
         }
 
