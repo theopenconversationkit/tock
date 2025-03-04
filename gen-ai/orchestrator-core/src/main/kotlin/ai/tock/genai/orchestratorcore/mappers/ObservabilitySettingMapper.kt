@@ -34,7 +34,7 @@ object ObservabilitySettingMapper {
             when(this){
                 is LangfuseObservabilitySetting -> {
                     val secretKey = SecurityUtils.fetchSecretKeyValue(secretKey)
-                    return LangfuseObservabilitySetting(secretKey, publicKey, url)
+                    return LangfuseObservabilitySetting(secretKey, publicKey, url, publicUrl)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
@@ -54,7 +54,7 @@ object ObservabilitySettingMapper {
             when (this) {
                 is LangfuseObservabilitySetting -> {
                     val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey)
-                    return LangfuseObservabilitySetting(secretKey, publicKey, url)
+                    return LangfuseObservabilitySetting(secretKey, publicKey, url, publicUrl)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
