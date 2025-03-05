@@ -39,17 +39,17 @@ private val logger = KotlinLogging.logger {}
 private val errorOnInvalidMessages = booleanProperty("tock_whatsapp_error_on_invalid_messages", false)
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp_cloud"
-private const val WHATS_APP_BUTTONS_TITLE_MAX_LENGTH = 50
-private const val WHATS_APP_LIST_BODY_MAX_LENGTH = 4096
-private const val WHATS_APP_REPLY_BUTTON_BODY_MAX_LENGTH = 1024
-private const val WHATS_APP_REPLY_BUTTONS_MAX_COUNT = 3
-private const val WHATS_APP_LIST_HEADER_MAX_LENGTH = 60
-private const val WHATS_APP_LIST_BUTTON_MAX_LENGTH = 20
-private const val WHATS_APP_SECTION_TITLE_MAX_LENGTH = 24
-private const val WHATS_APP_ROW_TITLE_MAX_LENGTH = 24
-private const val WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH = 72
-private const val WHATS_APP_MAX_ROWS = 10
-private const val WHATS_APP_MAX_SECTIONS = 10
+const val WHATSAPP_BUTTONS_TITLE_MAX_LENGTH = 50
+const val WHATSAPP_LIST_BODY_MAX_LENGTH = 4096
+const val WHATSAPP_REPLY_BUTTON_BODY_MAX_LENGTH = 1024
+const val WHATSAPP_REPLY_BUTTONS_MAX_COUNT = 3
+const val WHATSAPP_LIST_HEADER_MAX_LENGTH = 60
+const val WHATSAPP_LIST_BUTTON_MAX_LENGTH = 20
+const val WHATSAPP_SECTION_TITLE_MAX_LENGTH = 24
+const val WHATSAPP_ROW_TITLE_MAX_LENGTH = 24
+const val WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH = 72
+const val WHATSAPP_MAX_ROWS = 10
+const val WHATSAPP_MAX_SECTIONS = 10
 
 /**
  * The WhatsApp cloud connector type.
@@ -179,20 +179,20 @@ internal fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.button,
         header = header,
-        body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATS_APP_REPLY_BUTTON_BODY_MAX_LENGTH)),
+        body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATSAPP_REPLY_BUTTON_BODY_MAX_LENGTH)),
         footer = footer?.let {
             WhatsAppCloudBotFooter(
-                translate(it).toString().checkLength(WHATS_APP_LIST_HEADER_MAX_LENGTH, "message footer"),
+                translate(it).toString().checkLength(WHATSAPP_LIST_HEADER_MAX_LENGTH, "message footer"),
             )
         },
         action = WhatsAppCloudBotAction(
-            buttons = replies.checkCount(WHATS_APP_REPLY_BUTTONS_MAX_COUNT) { count ->
+            buttons = replies.checkCount(WHATSAPP_REPLY_BUTTONS_MAX_COUNT) { count ->
                 "$count is too many buttons for a reply button message"
             }.map {
                 WhatsAppCloudBotActionButton(
                     reply = WhatsAppCloudBotActionButtonReply(
                         id = it.payload,
-                        title = translate(it.title).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
+                        title = translate(it.title).toString().checkLength(WHATSAPP_BUTTONS_TITLE_MAX_LENGTH),
                     )
                 )
             }
@@ -411,26 +411,26 @@ fun I18nTranslator.whatsAppCloudListMessage(
             header = header?.let {
                 WhatsAppCloudBotInteractiveHeader(
                     WhatsAppCloudBotHeaderType.text,
-                    text = translate(it).toString().checkLength(WHATS_APP_LIST_HEADER_MAX_LENGTH, "list message header")
+                    text = translate(it).toString().checkLength(WHATSAPP_LIST_HEADER_MAX_LENGTH, "list message header")
                 )
             },
             footer = footer?.let {
                 WhatsAppCloudBotFooter(
-                    translate(it).toString().checkLength(WHATS_APP_LIST_HEADER_MAX_LENGTH, "list message footer")
+                    translate(it).toString().checkLength(WHATSAPP_LIST_HEADER_MAX_LENGTH, "list message footer")
                 )
             },
-            body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATS_APP_LIST_BODY_MAX_LENGTH, "list message body")),
+            body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATSAPP_LIST_BODY_MAX_LENGTH, "list message body")),
             action = WhatsAppCloudBotAction(
-                button = translate(button).toString().checkLength(WHATS_APP_LIST_BUTTON_MAX_LENGTH, "list message button text"),
+                button = translate(button).toString().checkLength(WHATSAPP_LIST_BUTTON_MAX_LENGTH, "list message button text"),
                 sections = sections,
             )
         )
     ).also {
-        if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATS_APP_MAX_ROWS) {
-            error("a list message is limited to $WHATS_APP_MAX_ROWS rows across all sections.")
+        if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATSAPP_MAX_ROWS) {
+            error("a list message is limited to $WHATSAPP_MAX_ROWS rows across all sections.")
         }
-        if ((it.interactive.action?.sections?.count() ?: 0) > WHATS_APP_MAX_SECTIONS) {
-            error("sections count in list message should not exceed $WHATS_APP_MAX_SECTIONS.")
+        if ((it.interactive.action?.sections?.count() ?: 0) > WHATSAPP_MAX_SECTIONS) {
+            error("sections count in list message should not exceed $WHATSAPP_MAX_SECTIONS.")
         }
     }
 }
@@ -464,11 +464,11 @@ fun I18nTranslator.whatsAppCloudListSection(title: CharSequence, vararg rows: Qu
  * @see whatsAppCloudQuickReply
  */
 fun I18nTranslator.whatsAppCloudListSection(title: CharSequence, rows: List<QuickReply>) = WhatsAppCloudBotActionSection(
-    title = translate(title).toString().checkLength(WHATS_APP_SECTION_TITLE_MAX_LENGTH),
+    title = translate(title).toString().checkLength(WHATSAPP_SECTION_TITLE_MAX_LENGTH),
     rows = rows.map { qr -> WhatsAppBotRow(
         id = qr.payload,
-        title = translate(qr.title).toString().checkLength(WHATS_APP_ROW_TITLE_MAX_LENGTH),
-        description = translate(qr.description).toString().checkLength(WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH)
+        title = translate(qr.title).toString().checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
+        description = translate(qr.description).toString().checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH)
     ) }
 )
 
@@ -486,7 +486,7 @@ fun I18nTranslator.whatsAppCloudReplyLocationMessage(
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.location_request_message,
-        body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATS_APP_REPLY_BUTTON_BODY_MAX_LENGTH)),
+        body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATSAPP_REPLY_BUTTON_BODY_MAX_LENGTH)),
         action = WhatsAppCloudBotAction(
             name = "send_location"
         )
