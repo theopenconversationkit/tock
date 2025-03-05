@@ -63,6 +63,42 @@ internal class ConnectorQueueTest {
     }
 
     @Test
+    fun `preserve the order in which messages are sent when the first action preparation is slower than the following`() {
+        val queue = ConnectorQueue(executor)
+        val action1a = `given action`("user1")
+        val action2a = `given action`("user1")
+        val action3a = `given action`("user1")
+        val action1b = `given action`("user1")
+        val action2b = `given action`("user1")
+        val action3b = `given action`("user1")
+
+        val send = spyk(ActionSender())
+        val prepare = spyk<(Action) -> Action>({ it }, name = "prepare")
+        send.send(prepare(action1a))
+        queue.add(action1b, 0, { Thread.sleep(1000); prepare(it) }, send::send)
+        send.send(prepare(action2a))
+        queue.add(action2b, 0, { Thread.sleep(500); prepare(it) }, send::send)
+        send.send(prepare(action3a))
+        queue.add(action3b, 0, { prepare(it) }, send::send)
+        verify(timeout = 5000, ordering = Ordering.SEQUENCE) {
+            prepare(action1a)
+            send.send(action1a)
+            prepare(action2a)
+            send.send(action2a)
+            prepare(action3a)
+            send.send(action3a)
+            // Prepare doesn't wait
+            prepare(action3b)
+            prepare(action2b)
+            prepare(action1b)
+            // send waits for prepare and previous send
+            send.send(action1b)
+            send.send(action2b)
+            send.send(action3b)
+        }
+    }
+
+    @Test
     fun `each user has their own queue which keeps the order in which messages are sent`() {
         val queue = ConnectorQueue(executor)
         val user1Action1 = `given action`("user1")

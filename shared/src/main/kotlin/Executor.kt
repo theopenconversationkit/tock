@@ -18,6 +18,8 @@ package ai.tock.shared
 
 import java.time.Duration
 import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 
 /**
  * Manage async tasks.
@@ -31,6 +33,16 @@ interface Executor {
      * @param runnable the task to run
      */
     fun executeBlocking(delay: Duration, runnable: () -> Unit)
+
+    /**
+     * Execute a task to another thread.
+     *
+     * The returned future will schedule any followup async task on this executor.
+     *
+     * @delay delay the delay before run
+     * @param task the task to run
+     */
+    fun <T> executeBlockingTask(delay: Duration = Duration.ZERO, task: () -> T): CompletableFuture<T>
 
     /**
      * Execute a task to another thread.
@@ -65,4 +77,22 @@ interface Executor {
      * @param runnable the task to run
      */
     fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long
+
+    /**
+     * Returns an incomplete [CompletableFuture] which uses this executor for async methods that do not specify
+     * another executor
+     */
+    fun <T> newIncompleteFuture(): CompletableFuture<T> = ExecutableFuture {
+        command -> executeBlocking { command.run() }
+    }
+
+    open class ExecutableFuture<T>(private val executor: Executor) : CompletableFuture<T>() {
+        override fun <U : Any?> newIncompleteFuture(): CompletableFuture<U> {
+            return ExecutableFuture(executor)
+        }
+
+        override fun defaultExecutor(): Executor {
+            return executor
+        }
+    }
 }

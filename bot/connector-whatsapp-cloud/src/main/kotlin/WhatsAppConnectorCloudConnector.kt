@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorQueue
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
@@ -48,7 +49,6 @@ import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import java.time.Duration
 import mu.KotlinLogging
 
 class WhatsAppConnectorCloudConnector internal constructor(
@@ -70,6 +70,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
 
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
+    private val messageQueue = ConnectorQueue(executor)
 
     private val restrictedPhoneNumbers =
         listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
@@ -180,15 +181,15 @@ class WhatsAppConnectorCloudConnector internal constructor(
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is Action) {
-            SendActionConverter.toBotMessage(event)
-                ?.also {
-                    val delay = Duration.ofMillis(delayInMs)
-                    executor.executeBlocking(delay) {
-                        whatsAppCloudApiService.sendMessage(
-                            phoneNumberId, token, it
-                        )
-                    }
+            messageQueue.add(event, delayInMs, prepare = { action ->
+                SendActionConverter.toBotMessage(action)?.let {
+                    whatsAppCloudApiService.prepareMessage(
+                        phoneNumberId, token, it
+                    )
                 }
+            }, send = {
+                whatsAppCloudApiService.sendMessage(phoneNumberId, token, it)
+            })
         }
     }
 
