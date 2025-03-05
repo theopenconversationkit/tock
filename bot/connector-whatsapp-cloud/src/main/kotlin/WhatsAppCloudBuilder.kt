@@ -42,6 +42,7 @@ internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp_cloud"
 const val WHATSAPP_BUTTONS_TITLE_MAX_LENGTH = 50
 const val WHATSAPP_LIST_BODY_MAX_LENGTH = 4096
 const val WHATSAPP_REPLY_BUTTON_BODY_MAX_LENGTH = 1024
+const val WHATSAPP_IMAGE_CAPTION_MAX_LENGTH = 1024
 const val WHATSAPP_REPLY_BUTTONS_MAX_COUNT = 3
 const val WHATSAPP_LIST_HEADER_MAX_LENGTH = 60
 const val WHATSAPP_LIST_BUTTON_MAX_LENGTH = 20
@@ -113,7 +114,7 @@ fun BotBus.whatsAppCloudImage(
         image = WhatsAppCloudBotImage(
             id = id,
             link = link,
-            caption = translate(caption).toString()
+            caption = translate(caption).toString().checkLength(WHATSAPP_IMAGE_CAPTION_MAX_LENGTH)
         ),
         recipientType = WhatsAppCloudBotRecipientType.individual,
         userId = userId.id,
@@ -339,7 +340,9 @@ fun I18nTranslator.whatsAppCloudListMessage(
 ): WhatsAppCloudBotInteractiveMessage =
     whatsAppCloudListMessage(
         text, button,
-        WhatsAppCloudBotActionSection(rows = replies.map {
+        WhatsAppCloudBotActionSection(rows = replies.checkCount(WHATSAPP_MAX_ROWS) { count ->
+            "$count is too many buttons for a list message"
+        }.map {
             WhatsAppBotRow(
                 id = it.payload,
                 title = it.title.checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
@@ -422,15 +425,14 @@ fun I18nTranslator.whatsAppCloudListMessage(
             body = WhatsAppCloudBotBody(translate(text).toString().checkLength(WHATSAPP_LIST_BODY_MAX_LENGTH, "list message body")),
             action = WhatsAppCloudBotAction(
                 button = translate(button).toString().checkLength(WHATSAPP_LIST_BUTTON_MAX_LENGTH, "list message button text"),
-                sections = sections,
+                sections = sections.checkCount(WHATSAPP_MAX_SECTIONS) { count ->
+                    "$count is too many sections for a list message"
+                },
             )
         )
     ).also {
         if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATSAPP_MAX_ROWS) {
             error("a list message is limited to $WHATSAPP_MAX_ROWS rows across all sections.")
-        }
-        if ((it.interactive.action?.sections?.count() ?: 0) > WHATSAPP_MAX_SECTIONS) {
-            error("sections count in list message should not exceed $WHATSAPP_MAX_SECTIONS.")
         }
     }
 }
@@ -465,7 +467,9 @@ fun I18nTranslator.whatsAppCloudListSection(title: CharSequence, vararg rows: Qu
  */
 fun I18nTranslator.whatsAppCloudListSection(title: CharSequence, rows: List<QuickReply>) = WhatsAppCloudBotActionSection(
     title = translate(title).toString().checkLength(WHATSAPP_SECTION_TITLE_MAX_LENGTH),
-    rows = rows.map { qr -> WhatsAppBotRow(
+    rows = rows.checkCount(WHATSAPP_MAX_ROWS) { count ->
+        "$count is too many rows for a list section"
+    }.map { qr -> WhatsAppBotRow(
         id = qr.payload,
         title = translate(qr.title).toString().checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
         description = translate(qr.description).toString().checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH)
