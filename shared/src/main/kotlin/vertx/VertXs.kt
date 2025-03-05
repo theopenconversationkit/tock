@@ -126,6 +126,8 @@ fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
         false
     )
 
+private val VERTX_MIN_DELAY = Duration.ofMillis(1)
+
 internal fun vertxExecutor(): Executor {
     return object : Executor {
         override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
@@ -134,7 +136,7 @@ internal fun vertxExecutor(): Executor {
 
         override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> {
             val future = newIncompleteFuture<T>()
-            if (delay.isZero) {
+            if (delay < VERTX_MIN_DELAY) {
                 future.completeAsync(task)
             } else {
                 val loggingContext = MDCContext().contextMap
