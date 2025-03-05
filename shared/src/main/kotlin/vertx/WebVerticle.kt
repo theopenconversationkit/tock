@@ -73,7 +73,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import retrofit2.Call
+import ai.tock.shared.listProperty
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -785,12 +785,17 @@ abstract class WebVerticle : AbstractVerticle() {
         origins: List<String> = emptyList(),
         allowCredentials: Boolean = false,
         allowedMethods: Set<HttpMethod> = setOf(GET, POST, PUT, DELETE),
-        allowedHeaders: Set<String> = listOfNotNull(
-            "X-Requested-With",
-            "Access-Control-Allow-Origin",
-            if (allowCredentials) "Authorization" else null,
-            "Content-Type"
-        ).toSet()
+        allowedHeaders: Set<String> = (
+                listOfNotNull(
+                    "X-Requested-With",
+                    "Access-Control-Allow-Origin",
+                    if (allowCredentials) "Authorization" else null,
+                    "Content-Type",
+                )
+                        //in order to support extra headers from web connector
+                        + listProperty("tock_web_connector_extra_headers", emptyList())
+                )
+            .toSet()
     ): CorsHandler =
         (if (origins.isEmpty()) CorsHandler.create("*") else CorsHandler.create().addOrigins(origins))
             .allowedMethods(allowedMethods)
