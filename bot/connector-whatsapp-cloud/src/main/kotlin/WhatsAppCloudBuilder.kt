@@ -342,8 +342,8 @@ fun I18nTranslator.whatsAppCloudListMessage(
         WhatsAppCloudBotActionSection(rows = replies.map {
             WhatsAppBotRow(
                 id = it.payload,
-                title = it.title,
-                description = it.description
+                title = it.title.checkLength(WHATSAPP_ROW_TITLE_MAX_LENGTH),
+                description = it.description?.checkLength(WHATSAPP_ROW_DESCRIPTION_MAX_LENGTH)
             )
         }),
         header = header,
