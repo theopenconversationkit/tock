@@ -29,6 +29,8 @@ data class WhatsAppCloudBotTemplate(
 
 data class Language(@JsonProperty("code") val code: String)
 
+// TODO (breaking) finish renaming Component to WhatsappTemplateComponent
+typealias WhatsappTemplateComponent = Component
 sealed class Component {
     abstract val type: ComponentType
 

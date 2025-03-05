@@ -26,16 +26,18 @@ data class WhatsAppCloudBotTextMessage (
         val text: TextContent,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
+        val previewUrl: Boolean = false,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.text, userId) {
     override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
             WhatsAppCloudSendBotTextMessage(
                     messagingProduct,
                     text,
                     recipientType,
-                    recipientId
+                    recipientId,
+                    previewUrl,
             )
 
-    override fun toGenericMessage(): GenericMessage? =
+    override fun toGenericMessage(): GenericMessage =
             GenericMessage(
                     texts = mapOf(GenericMessage.TEXT_PARAM to text.body),
             )
