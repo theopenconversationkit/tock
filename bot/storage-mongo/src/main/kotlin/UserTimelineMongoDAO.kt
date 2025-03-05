@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.user.*
 import ai.tock.bot.connector.ConnectorMessage
@@ -724,6 +725,75 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.error(e)
             null
         }
+    }
+
+    override fun findAnnotation(dialogId: String, actionId: String): BotAnnotation? =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.firstNotNullOfOrNull { story -> story.actions.find { it.id.toString() == actionId }?.annotation }
+
+    override fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
+        dialogCol.findOneById(dialogId)?.takeIf { dialog ->
+            dialog.stories.any { story ->
+                story.actions.find { it.id.toString() == actionId }
+                    ?.also { it.annotation = annotation } != null
+            }
+        }?.let { dialogCol.save(it) }
+            ?: logger.warn("Action with ID $actionId not found in dialog $dialogId")
+    }
+
+    override fun annotationExists(dialogId: String, actionId: String): Boolean =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.any { story -> story.actions.any { it.id.toString() == actionId && it.annotation != null } }
+            ?: false
+
+    override fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.apply {
+                events.add(event)
+                lastUpdateDate = Instant.now()
+                dialogCol.save(dialog)
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
+    }
+
+    override fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent? =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation?.events?.find { it.eventId.toString() == eventId }
+            }
+
+    override fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.let { annotation ->
+                annotation.events.indexOfFirst { it.eventId.toString() == eventId }
+                    .takeIf { it != -1 }
+                    ?.let { index ->
+                        annotation.events[index] = updatedEvent
+                        dialogCol.save(dialog)
+                    } ?: logger.warn("Event $eventId not found")
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
+    }
+
+    override fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.let { annotation ->
+                if (annotation.events.removeIf { it.eventId.toString() == eventId && it.type == BotAnnotationEventType.COMMENT }) {
+                    dialogCol.save(dialog)
+                } else {
+                    logger.warn("Event $eventId not found or not a comment in annotation for action $actionId")
+                }
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
     }
 
     override fun getArchivedEntityValues(

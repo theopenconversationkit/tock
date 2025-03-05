@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
@@ -43,7 +44,8 @@ internal class SendSentenceNotYetLoaded(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
     val hasCustomMessage: Boolean = true,
-    val hasNlpStats: Boolean = false
+    val hasNlpStats: Boolean = false,
+    override var annotation: BotAnnotation? = null
 ) : SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, null) {
 
     companion object {
