@@ -116,7 +116,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: Clock = 
         action: ScheduledAction<T>,
         queue: ConcurrentLinkedQueue<ScheduledAction<*>>,
     ) {
-        val timeToWait = Duration.between(Instant.now(), action.timestamp)
+        val timeToWait = Duration.between(Instant.now(clock), action.timestamp)
         executor.executeBlocking(timeToWait) {
             try {
                 action.joinAndSend()
