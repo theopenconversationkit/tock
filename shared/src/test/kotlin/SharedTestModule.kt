@@ -37,6 +37,7 @@ import org.litote.kmongo.KFlapdoodle
 import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
 import java.time.Duration
 import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -137,6 +138,14 @@ class SimpleExecutor(private val nbThreads: Int) : Executor {
         executor.schedule(runnable, delay.toMillis(), MILLISECONDS)
     }
 
+    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> {
+        return newIncompleteFuture<T>().apply {
+            executor.schedule({
+                complete(task())
+            }, delay.toMillis(), MILLISECONDS)
+        }
+    }
+
     override fun executeBlocking(runnable: () -> Unit) {
         executor.schedule(runnable, 0L, MILLISECONDS)
     }
@@ -157,6 +166,10 @@ private object TestExecutor : Executor {
     override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
         runnable.invoke()
     }
+
+    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> = CompletableFuture.completedFuture(
+        task.invoke()
+    )
 
     override fun executeBlocking(runnable: () -> Unit) {
         runnable.invoke()

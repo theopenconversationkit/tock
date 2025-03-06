@@ -39,6 +39,7 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import java.time.Duration
 import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
 
 private val logger = KotlinLogging.logger {}
 
@@ -125,20 +126,27 @@ fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
         false
     )
 
+private val VERTX_MIN_DELAY = Duration.ofMillis(1)
+
 internal fun vertxExecutor(): Executor {
     return object : Executor {
-
         override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
-            if (delay.isZero) {
-                executeBlocking(runnable)
+            executeBlockingTask(delay, runnable)
+        }
+
+        override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> {
+            val future = newIncompleteFuture<T>()
+            if (delay < VERTX_MIN_DELAY) {
+                future.completeAsync(task)
             } else {
                 val loggingContext = MDCContext().contextMap
                 vertx.setTimer(delay.toMillis()) {
                     invokeWithLoggingContext(loggingContext) {
-                        executeBlocking(runnable)
+                        executeBlocking(task) { future.complete(it) }
                     }
                 }
             }
+            return future
         }
 
         override fun executeBlocking(runnable: () -> Unit) {

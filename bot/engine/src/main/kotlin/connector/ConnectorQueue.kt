@@ -17,21 +17,27 @@
 package ai.tock.bot.connector
 
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import java.time.Clock
 import java.time.Duration
+import java.time.Instant
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 
 /**
  * A Queue to ensure the calls from the same user id are sent sequentially.
  */
-class ConnectorQueue(private val executor: Executor) {
+class ConnectorQueue(private val executor: Executor, private val clock: Clock = Clock.systemUTC()) {
 
-    private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
+    private class ScheduledAction<T>(private val processedAction: CompletableFuture<T?>, private val send: (action: T) -> Unit, val timestamp: Instant) {
+        fun joinAndSend() = processedAction.join()?.let(send)
+    }
 
-    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ActionWithTimestamp>> =
+    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ScheduledAction<*>>> =
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
@@ -46,43 +52,83 @@ class ConnectorQueue(private val executor: Executor) {
      * @param send the send function
      */
     fun add(action: Action, delayInMs: Long, send: (action: Action) -> Unit) {
-        val actionWrapper = ActionWithTimestamp(action, System.currentTimeMillis() + delayInMs)
+        val actionWrapper = ScheduledAction(
+            CompletableFuture.completedFuture(action),
+            send,
+            Instant.now(clock) + Duration.ofMillis(delayInMs),
+        )
 
+        add0(action.recipientId, actionWrapper)
+    }
+
+    /**
+     * Adds an action to send to a queue by recipient, with a specific [prepare] step
+     * beforehand.
+     *
+     * [prepare] is run asynchronously as soon as this method is called.
+     * [send] is run once the following preconditions are met:
+     * - [prepare] returned a result. If [prepare] returns `null`, [send] is not called.
+     * - [delayInMs] has passed
+     * - the previous message has been sent
+     *
+     * This method is thread safe.
+     *
+     * @param action the action to send
+     * @param delayInMs the optional delay
+     * @param send the send function
+     */
+    fun <T> add(
+        action: Action,
+        delayInMs: Long,
+        prepare: (action: Action) -> T?,
+        send: (action: T) -> Unit
+    ) {
+        val actionWrapper = ScheduledAction(
+            executor.executeBlockingTask { prepare(action) },
+            send,
+            Instant.now(clock) + Duration.ofMillis(delayInMs),
+        )
+
+        add0(action.recipientId, actionWrapper)
+    }
+
+    private fun <T> add0(
+        recipient: PlayerId,
+        actionWrapper: ScheduledAction<T>,
+    ) {
         val queue = messagesByRecipientMap
-            .get(action.recipientId.id) { ConcurrentLinkedQueue() }
+            .get(recipient.id) { ConcurrentLinkedQueue() }
             .apply {
                 synchronized(this) {
                     peek().also { existingAction ->
                         offer(actionWrapper)
                         if (existingAction != null) {
+                            // sendNextAction is already looping through messages
                             return
                         }
                     }
                 }
             }
-        executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            sendActionFromConnector(actionWrapper, queue, send)
-        }
+        sendNextAction(actionWrapper, queue)
     }
 
-    private fun sendActionFromConnector(
-        action: ActionWithTimestamp,
-        queue: ConcurrentLinkedQueue<ActionWithTimestamp>,
-        send: (action: Action) -> Unit
+    private fun <T> sendNextAction(
+        action: ScheduledAction<T>,
+        queue: ConcurrentLinkedQueue<ScheduledAction<*>>,
     ) {
-        try {
-            val timeToWait = action.timestamp - System.currentTimeMillis()
-            if (timeToWait > 0) {
-                Thread.sleep(timeToWait)
-            }
-            send(action.action)
-        } finally {
-            synchronized(queue) {
-                // remove the current one
-                queue.poll()
-                queue.peek()
-            }?.also { a ->
-                sendActionFromConnector(a, queue, send)
+        val timeToWait = Duration.between(Instant.now(clock), action.timestamp)
+        executor.executeBlocking(timeToWait) {
+            try {
+                action.joinAndSend()
+            } finally {
+                synchronized(queue) {
+                    // remove the current one
+                    queue.poll()
+                    // schedule the next one
+                    queue.peek()
+                }?.also { a ->
+                    sendNextAction(a, queue)
+                }
             }
         }
     }
