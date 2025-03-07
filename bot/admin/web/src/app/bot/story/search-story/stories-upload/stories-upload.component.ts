@@ -45,7 +45,7 @@ export class StoriesUploadComponent implements OnInit {
 
   private loadRagSettings() {
     this.loading = true;
-    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
     this.rest
       .get<RagSettings>(url, (settings: RagSettings) => settings)
       .subscribe((settings: RagSettings) => {
@@ -110,9 +110,9 @@ export class StoriesUploadComponent implements OnInit {
       context: {
         title: `Unknown story detected : ${story.name}`,
         subtitle: `
-        The batch of stories provided contains a story (${story.name}) whose intent is 'unknown' while Retrieval Augmented Generation (RAG) is active. 
-        When RAG is active, the 'unkown' story is replaced by the RAG. It is therefore not possible to import the indicated story and keep the RAG active. 
-        
+        The batch of stories provided contains a story (${story.name}) whose intent is 'unknown' while Retrieval Augmented Generation (RAG) is active.
+        When RAG is active, the 'unkown' story is replaced by the RAG. It is therefore not possible to import the indicated story and keep the RAG active.
+
         What do you want to do:
         - Deactivate the RAG and activate the 'unknown' story
         - Deactivate the 'unknown' story and keep the RAG active`,

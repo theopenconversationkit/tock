@@ -2,12 +2,34 @@
   *ngIf="!message.isDebug() && !isMessageEmpty()"
   class="wrapper"
 >
-  <div>
+  <div class="avatar-wrapper">
     <div
       class="avatar"
       [style.background-image]="avatarStyle"
       [class.mt-1]="sender || date"
     ></div>
+
+    <button
+      *ngIf="
+        switchFormattingPos === 'afterAvatar' && reply && (message.isSentence() || message.isSentenceWithFootnotes()) && $any(message).text
+      "
+      nbButton
+      size="small"
+      ghost
+      nbTooltip="Switch message formatting"
+      class="mt-1"
+      (click)="switchFormatting()"
+    >
+      <nb-icon
+        *ngIf="!formatting"
+        icon="body-text"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="formatting"
+        icon="code-square"
+      ></nb-icon>
+    </button>
+
     <ng-content></ng-content>
   </div>
 
@@ -31,7 +53,13 @@
         </div>
 
         <button
-          *ngIf="sender && reply && (message.isSentence() || message.isSentenceWithFootnotes()) && $any(message).text"
+          *ngIf="
+            sender &&
+            switchFormattingPos === 'afterSender' &&
+            reply &&
+            (message.isSentence() || message.isSentenceWithFootnotes()) &&
+            $any(message).text
+          "
           nbButton
           size="small"
           ghost
