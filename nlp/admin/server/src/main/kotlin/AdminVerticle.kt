@@ -42,6 +42,7 @@ import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.PredefinedValue
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.front.client.FrontClient
+import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.build.ModelBuildTrigger
 import ai.tock.nlp.front.shared.codec.ApplicationDump
 import ai.tock.nlp.front.shared.codec.ApplicationImportConfiguration
@@ -1074,6 +1075,23 @@ open class AdminVerticle : WebVerticle() {
                 }
             } else {
                 unauthorized()
+            }
+        }
+
+        blockingDelete(
+            "/namespace/:namespace",
+            technicalAdmin,
+            simpleLogger("Delete Namespace", { it.path("namespace") })
+        ) { context ->
+            val ns = context.path("namespace").trim()
+            try {
+                if (front.isNamespaceOwner(context.userLogin, ns)) {
+                    AdminService.deleteNamespaceIfEmpty(ns)
+                } else {
+                    unauthorized()
+                }
+            } catch (e: IllegalStateException) {
+                badRequest(e.message ?: "Error while deleting namespace.")
             }
         }
 
