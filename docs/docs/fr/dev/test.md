@@ -14,7 +14,7 @@ Avec Maven :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-test</artifactId>
-            <version>24.9.7</version>
+            <version>24.9.8</version>
             <scope>test</scope>
         </dependency>
 ```
@@ -22,7 +22,7 @@ Avec Maven :
 ou Gradle :
 
 ```groovy
-      testCompile 'ai.tock:bot-test:24.9.7'
+      testCompile 'ai.tock:bot-test:24.9.8'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](https://doc.tock.ai/tock/dokka/tock/ai.tock.bot.test).
