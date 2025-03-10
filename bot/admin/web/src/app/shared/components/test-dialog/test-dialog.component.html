@@ -85,6 +85,7 @@
           [reply]="message.bot"
           [avatar]="getUserAvatar(message.bot)"
           (sendMessage)="onNewMessage($event)"
+          switchFormattingPos="afterAvatar"
         >
           <div
             *ngIf="message.locale"
@@ -114,6 +115,17 @@
     </div>
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mt-3">
+      <button
+        *ngIf="messages.length !== 0"
+        nbTooltip="Clear conversation"
+        nbButton
+        status="warning"
+        size="medium"
+        (click)="clear()"
+      >
+        <nb-icon icon="trash"></nb-icon>
+      </button>
+
       <div class="d-flex gap-1 flex-grow-1">
         <textarea
           #textareaAutocompleteDirectiveRef
@@ -139,22 +151,13 @@
         <button
           nbButton
           size="medium"
+          status="primary"
           (click)="submit()"
+          [disabled]="!userMessage.trim().length"
         >
-          GO
+          <nb-icon icon="send"></nb-icon>
         </button>
       </div>
-
-      <button
-        *ngIf="messages.length !== 0"
-        nbTooltip="Clear conversation"
-        nbButton
-        status="warning"
-        size="medium"
-        (click)="clear()"
-      >
-        <nb-icon icon="trash"></nb-icon>
-      </button>
     </div>
     <nb-autocomplete
       #userMessageAutocomplete

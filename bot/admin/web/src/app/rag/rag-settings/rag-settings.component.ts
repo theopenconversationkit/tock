@@ -183,7 +183,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   private getRagSettingsLoader(): Observable<RagSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
     return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
   }
 
@@ -515,7 +515,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       formValue.botId = this.state.currentApplication.name;
       formValue.noAnswerStoryId = this.noAnswerStoryId.value === 'null' ? null : this.noAnswerStoryId.value;
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+      const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (ragSettings: RagSettings) => {
           if (!ragSettings.noAnswerStoryId) {
@@ -735,7 +735,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteSettings(): void {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/rag`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();

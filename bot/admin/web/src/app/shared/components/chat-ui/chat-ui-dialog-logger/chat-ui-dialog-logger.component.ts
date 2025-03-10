@@ -196,6 +196,13 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     });
   }
 
+  goToPlayground(action: ActionReport) {
+    const debugData = (action.message as Debug).data;
+    if (debugData.question_answering_prompt) {
+      this.router.navigate(['playground'], { state: { question_answering_prompt: debugData.question_answering_prompt } });
+    }
+  }
+
   messageClicked(action: ActionReport): void {
     this.onMessageClicked.emit(action);
   }
