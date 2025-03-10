@@ -11,6 +11,7 @@ import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-view
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
+import { AnnotationComponent } from 'src/app/shared/components';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -117,6 +118,10 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     return this.dialog.actions.filter((action) => action.isBot() && action.metadata?.isGenAiRagAnswer).length;
   }
 
+  nbAnnotations(): number {
+    return this.dialog.actions.filter((action) => !!action.annotation).length;
+  }
+
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
@@ -125,7 +130,7 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
 
       if (questionAction.message.isDebug()) {
         const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condense_question || actionDebug.data.user_question;
+        question = actionDebug.data.condensed_question || actionDebug.data.user_question;
       } else if (!questionAction.isBot()) {
         const questionSentence = questionAction.message as unknown as Sentence;
         question = questionSentence.text;
@@ -176,17 +181,18 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     window.open(action.metadata.observabilityInfo.traceUrl, '_blank');
   }
 
-  // containsReport(action: ActionReport): boolean {
-  //   return (parseInt(action.id) % 10) % 2 === 0;
-  // }
+  containsAnnotation(action: ActionReport): boolean {
+    return !!action.annotation;
+  }
 
-  // openReport(action: ActionReport) {
-  //   this.nbDialogService.open(ReportComponent, {
-  //     context: {
-  //       actionReport: action
-  //     }
-  //   });
-  // }
+  openAnnotation(action: ActionReport) {
+    this.nbDialogService.open(AnnotationComponent, {
+      context: {
+        dialogReport: this.dialog,
+        actionReport: action
+      }
+    });
+  }
 
   showDebug(action: ActionReport) {
     this.nbDialogService.open(DebugViewerDialogComponent, {

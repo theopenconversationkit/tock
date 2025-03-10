@@ -42,5 +42,6 @@ export * from './data-export/data-export.component';
 export * from './wysiwyg-editor/wysiwyg-editor.component';
 export * from './test-dialog/test-dialog.component';
 export * from './bot-configuration-selector/bot-configuration-selector.component';
-export * from './report/report.component';
+export * from './annotation/annotation.component';
+export * from './annotation/annotation-comment.component';
 export * from './chat-ui/chat-ui-dialog-logger/chat-ui-dialog-logger.component';

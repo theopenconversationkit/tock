@@ -18,7 +18,26 @@
 
   <tock-sticky-menu *ngIf="!loading && data?.length">
     <div class="d-flex align-items-center justify-content-between">
-      <div>
+      <div class="d-flex gap-1 align-items-center">
+        <span
+          class="pointer"
+          (click)="toggleDialogSortOrder()"
+          data-testid="sort"
+        >
+          Sort dialogs by creation date
+          <nb-icon
+            *ngIf="filters.dialogSort === sortOrder.ASC"
+            class="align-middle"
+            icon="chevron-down-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="filters.dialogSort === sortOrder.DESC"
+            class="align-middle"
+            icon="chevron-up-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </span>
         <div class="sticky-menu-scrolled-info">
           <button
             nbButton
