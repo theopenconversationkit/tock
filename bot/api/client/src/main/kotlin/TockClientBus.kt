@@ -54,7 +54,7 @@ class TockClientBus(
     constructor(botDefinition: ClientBotDefinition, data: RequestData, sendAnswer: (BotResponse) -> Unit) :
             this(botDefinition, data.requestId, data.botRequest!!, sendAnswer)
 
-    override val applicationId: String = request.context.applicationId
+    override val connectorId: String = request.context.applicationId
     override val userId: PlayerId = request.context.userId
     override val botId: PlayerId = request.context.botId
     override val intent: IntentAware? = request.intent?.let { Intent(it) }
@@ -224,7 +224,7 @@ class TockClientBus(
         connectorId: String,
         messageProvider: () -> ConnectorMessage
     ): ClientBus {
-        if (applicationId == connectorId && targetConnectorType == connectorType) {
+        if (this.connectorId == connectorId && targetConnectorType == connectorType) {
             context.connectorMessages[connectorType] = messageProvider()
         }
         return this

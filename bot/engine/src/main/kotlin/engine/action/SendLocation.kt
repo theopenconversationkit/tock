@@ -27,8 +27,6 @@ import org.litote.kmongo.newId
 
 /**
  * A user location transmission.
- *
- * @param applicationId the TOCK application id (matches the id of the connector)
  */
 class SendLocation(
     playerId: PlayerId,
@@ -41,6 +39,27 @@ class SendLocation(
     metadata: ActionMetadata = ActionMetadata()
 ) :
     Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+
+    @Deprecated("Use constructor with connectorId", ReplaceWith("SendLocation(" +
+            "playerId, " +
+            "connectorId = applicationId, " +
+            "recipientId, " +
+            "location, " +
+            "id, " +
+            "date, " +
+            "state, " +
+            "metadata)"))
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        location: UserLocation?,
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, applicationId, recipientId, location, id, date, state, metadata)
 
     override fun toMessage(): Message {
         return Location(location)

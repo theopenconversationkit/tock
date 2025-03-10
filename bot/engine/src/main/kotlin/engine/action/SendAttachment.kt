@@ -26,12 +26,10 @@ import org.litote.kmongo.newId
 
 /**
  * A simple attachment file sent.
- *
- * @param applicationId the TOCK application id (matches the id of the connector)
  */
 open class SendAttachment(
     playerId: PlayerId,
-    applicationId: String,
+    connectorId: String,
     recipientId: PlayerId,
     val url: String,
     val type: AttachmentType,
@@ -40,7 +38,21 @@ open class SendAttachment(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata()
 ) :
-    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+    Action(playerId, recipientId, connectorId, id, date, state, metadata) {
+
+    @Deprecated("Use constructor with connectorId", ReplaceWith("Action(connectorId = applicationId, id, date, state)"))
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        url: String,
+        type: AttachmentType,
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, applicationId, recipientId, url, type, id, date, state, metadata)
 
     enum class AttachmentType {
         image, audio, video, file

@@ -30,9 +30,18 @@ import ai.tock.bot.engine.user.PlayerId
 interface Bus<T : Bus<T>> : I18nTranslator {
 
     /**
-     * The current TOCK application id.
+     * The connector ID.
      */
-    val applicationId: String
+    val connectorId: String
+
+    /**
+     * The current TOCK application id.
+     *
+     * *This identifier is not to be confused with the chat platform's application id (this is not a Messenger/Whatsapp
+     * application ID).*
+     */
+    @Deprecated("Use more appropriately named connectorId", ReplaceWith("connectorId"))
+    val applicationId: String get() = connectorId
 
     /**
      * The current bot id.

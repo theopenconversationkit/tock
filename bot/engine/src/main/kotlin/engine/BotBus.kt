@@ -75,16 +75,13 @@ interface BotBus : Bus<BotBus> {
     }
 
     /**
-     * The current TOCK application id.
+     * The connector ID.
      *
      * This identifier matches the identifier of the [underlyingConnector], as defined in TOCK Studio.
      *
-     * *This identifier is not to be confused with the chat platform's application id (this is not a Messenger/Whatsapp
-     * application ID).*
-     *
      * @see ConnectorConfiguration.connectorId
      */
-    override val applicationId: String
+    override val connectorId: String
 
     /**
      * The bot definition of the current bot.
@@ -373,7 +370,7 @@ interface BotBus : Bus<BotBus> {
      * Sends text that should not be translated as last bot answer.
      */
     override fun endRawText(plainText: CharSequence?, delay: Long): BotBus {
-        return end(SendSentence(botId, applicationId, userId, plainText), delay)
+        return end(SendSentence(botId, connectorId, userId, plainText), delay)
     }
 
     /**
@@ -507,7 +504,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
         injector.provide<FeatureDAO>()
-            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default, userId.id)
+            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
 
     /**
      * Marks the current as not understood in the nlp model.
