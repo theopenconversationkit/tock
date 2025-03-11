@@ -45,6 +45,8 @@ This page actually lists:
  
 ![logo google chat ](../../img/ggchat.png "google chat"){style="width:50px;"}
 
+![logo mattermost](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
+
 ![logo web](../../img/web.png "web"){style="width:50px;"}
 
 ![logo test](../../img/test.jpeg "test"){style="width:50px;"}
@@ -148,7 +150,7 @@ Only the conversational framework part of Tock can be used.
 To learn more about this connector, see its sources and its _README_ in the
 [connector-alexa](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-alexa) folder on GitHub.
 
-## # Rocket.Chat
+### Rocket.Chat
 
 ![logo BusinessChat Logo](../../img/rocketrachat.png "BusinessChat Logo"){style="width:75px;"}
 
@@ -226,6 +228,17 @@ class with the [bot sources](https://github.com/theopenconversationkit/allocovid
 
 To learn more about this connector, see its sources and _README_ in the
 [connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat) folder on GitHub.
+
+### Mattermost
+
+![logo mattermost Logo](../../img/mattermost.svg "Mattermost Logo"){style="width:50px;"}
+
+* **Channel** : [Mattermost](https://mattermost.com/)
+* **Type** : text
+* **Status** : Tock connector not used for production (no use case yet)
+
+Please refer to [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost)
+for sources and _README_ instructions.
 
 ### Web generic
 

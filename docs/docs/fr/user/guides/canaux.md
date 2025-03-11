@@ -19,7 +19,8 @@ En conséquence, il permet encore davantage d'intégrations côté "frontend", u
 
 Cette page liste en fait :
 
-- Les [_connecteurs_](#integrations-via-le-connecteur-web) fournis avec la distribution Tock :  
+- Les [_connecteurs_](#integrations-via-le-connecteur-web) fournis avec la distribution Tock :
+
 ![logo messenger](../../img/messenger.png "whatsapp"){style="width:50px;"}
 
 ![Logo slack](../../img/slack.png "Slack"){style="width: 75px;"}
@@ -42,6 +43,8 @@ Cette page liste en fait :
 
  
 ![logo google chat ](../../img/ggchat.png "google chat"){style="width:50px;"}
+
+![logo mattermost](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
 
 ![logo web](../../img/web.png "web"){style="width:50px;"}
 
@@ -223,10 +226,20 @@ avec les [sources du bot](https://github.com/theopenconversationkit/allocovid) s
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-google-chat](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-google-chat) sur GitHub.
 
+### Mattermost
+
+![logo mattermost Logo](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
+
+* **Channel** : [Mattermost](https://mattermost.com/)
+* **Type** : text
+* **Status** : Tock connector not used for production (no use case yet)
+
+Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
+[connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost) sur GitHub.
+
 ### Web generique
 
 ![logo web](../../img/web.png "web"){style="width:75px;"}
-
 
 Ce connecteur générique permet d'intégrer un bot Tock à n'importe quel site Web ou application :
 portail, application Web ou mobile, client REST, etc.
