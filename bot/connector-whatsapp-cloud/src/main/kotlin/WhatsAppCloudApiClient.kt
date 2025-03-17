@@ -17,23 +17,48 @@
 package ai.tock.bot.connector.whatsapp.cloud
 
 import ai.tock.bot.connector.whatsapp.cloud.model.send.SendSuccessfulResponse
-import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.ResponseCreateTemplate
-import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.Media
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.ResponseDeleteMedia
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.shared.*
+import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
+import ai.tock.bot.connector.whatsapp.cloud.model.template.management.CreateTemplateResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.template.management.GetTemplatesResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.template.management.StartUploadAssetResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.template.management.UpdateTemplateResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.template.management.UploadAssetResponse
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.create
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import com.fasterxml.jackson.module.kotlin.readValue
+import java.io.IOException
 import mu.KotlinLogging
-import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
-private const val VERSION = "19.0"
+private const val WHATSAPP_API_BASE_URL = "https://graph.facebook.com"
+private const val VERSION = "22.0"
+private const val WHATSAPP_API_URL = "$WHATSAPP_API_BASE_URL/v$VERSION"
 
-
-class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
+class WhatsAppCloudApiClient(val token: String, val businessAccountId: String, val phoneNumber: String) {
 
     interface GraphApi {
 
@@ -72,14 +97,41 @@ class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
             @Query("access_token") accessToken: String
         ): Call<ResponseDeleteMedia?>?
 
+        @POST("v$VERSION/{metaApplicationId}/uploads")
+        fun startUpload(
+            @Path("metaApplicationId") metaApplicationId: String,
+            @Query("file_length") fileLength: Long,
+            @Query("file_type") fileType: String,
+            @Header("Authorization") authorization: String,
+        ): Call<StartUploadAssetResponse>
 
         @POST("v$VERSION/{whatsAppBusinessAccountId}/message_templates")
         fun createMessageTemplate(
             @Path("whatsAppBusinessAccountId") whatsappBusinessAccountId: String?,
             @Query("access_token") accessToken: String,
-            @Body messageTemplate: WhatsAppCloudTemplate?
-        )
-                : Call<ResponseCreateTemplate>
+            @Body messageTemplate: WhatsappTemplate?
+        ) : Call<CreateTemplateResponse>
+
+        @DELETE("v$VERSION/{whatsAppBusinessAccountId}/message_templates")
+        fun deleteMessageTemplate(
+            @Path("whatsAppBusinessAccountId") whatsappBusinessAccountId: String?,
+            @Query("access_token") accessToken: String,
+            @Query("name") templateName: String,
+        ) : Call<UpdateTemplateResponse>
+
+        @GET("v$VERSION/{whatsAppBusinessAccountId}/message_templates")
+        fun getMessageTemplates(
+            @Path("whatsAppBusinessAccountId") whatsappBusinessAccountId: String?,
+            @Query("access_token") accessToken: String,
+            @Query("name") templateName: String,
+        ) : Call<GetTemplatesResponse>
+
+        @POST("v$VERSION/{templateId}")
+        fun editMessageTemplate(
+            @Query("access_token") accessToken: String,
+            @Path("templateId") templateId: String,
+            @Body updatedTemplate: WhatsappTemplate,
+        ) : Call<UpdateTemplateResponse>
 
     }
 
@@ -89,9 +141,38 @@ class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
         logger,
         requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", false)
     )
-        .baseUrl("https://graph.facebook.com")
+        .baseUrl(WHATSAPP_API_BASE_URL)
         .addJacksonConverter()
         .build()
         .create()
 
+    fun createMessageTemplate(template: WhatsappTemplate) = graphApi.createMessageTemplate(businessAccountId, token, template)
+    fun deleteMessageTemplate(templateName: String) = graphApi.deleteMessageTemplate(businessAccountId, token, templateName)
+    fun editMessageTemplate(templateId: String, updatedTemplate: WhatsappTemplate) = graphApi.editMessageTemplate(token, templateId, updatedTemplate)
+    fun getMessageTemplates(templateName: String) = graphApi.getMessageTemplates(businessAccountId, token, templateName)
+
+    fun startFileUpload(metaApplicationId: String, fileLength: Long, fileType: String) = graphApi.startUpload(
+        metaApplicationId,
+        fileLength,
+        fileType,
+        authorization = "Bearer $token",
+    )
+
+    fun uploadFile(client: OkHttpClient, uploadId: String, fileContents: ByteArray): String {
+        val url = "$WHATSAPP_API_URL/$uploadId"
+        val requestBody = fileContents.toRequestBody("application/octet-stream".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .addHeader("file_offset", "0")
+            .addHeader("Authorization", "OAuth $token")
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected code $response")
+            }
+            return mapper.readValue<UploadAssetResponse>(response.body.string()).handle
+        }
+    }
 }

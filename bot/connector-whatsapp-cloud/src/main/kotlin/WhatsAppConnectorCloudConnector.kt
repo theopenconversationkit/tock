@@ -21,13 +21,15 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorQueue
-import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
+import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudMessage
 import ai.tock.bot.connector.whatsapp.cloud.services.SendActionConverter
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
+import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateGenerationContext
+import ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
@@ -43,6 +45,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -50,12 +53,14 @@ import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import java.util.ServiceLoader
 import mu.KotlinLogging
 
 class WhatsAppConnectorCloudConnector internal constructor(
     val connectorId: String,
     private val phoneNumberId: String,
     private val whatsAppBusinessAccountId: String,
+    private val metaApplicationId: String?,
     private val path: String,
     private val token: String,
     private val verifyToken: String?,
@@ -67,6 +72,10 @@ class WhatsAppConnectorCloudConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val syncTemplates = booleanProperty("tock_whatsapp_sync_templates", false)
+        private val templateProviders: List<WhatsappTemplateProvider> by lazy {
+            ServiceLoader.load(WhatsappTemplateProvider::class.java).toList()
+        }
     }
 
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
@@ -133,11 +142,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 try {
                     val body = context.body().asString()
                     logger.info { body }
-                    val requestBody = mapper.readValue<WhatsAppCloudTemplate>(body)
+                    val requestBody = mapper.readValue<WhatsappTemplate>(body)
 
-                    whatsAppCloudApiService.sendBuildTemplate(
-                        whatsAppBusinessAccountId, token, requestBody
-                    )
+                    whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
 
                     logger.info { "ok" }
 
@@ -153,6 +160,49 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 }
 
             }
+        }
+
+        if (syncTemplates && metaApplicationId != null) {
+            executor.executeBlocking {
+                generateAndSyncTemplates(TemplateGenerationContext(
+                    connectorId,
+                    whatsAppBusinessAccountId,
+                    metaApplicationId,
+                    whatsAppCloudApiService,
+                ))
+            }
+        }
+    }
+
+    private fun generateAndSyncTemplates(context: TemplateGenerationContext) {
+        for (templateName in gatherDeletedTemplates()) {
+            executor.executeBlocking {
+                whatsAppCloudApiService.deleteTemplate(templateName)
+            }
+        }
+        for (template in gatherAddedTemplates(context)) {
+            executor.executeBlocking {
+                whatsAppCloudApiService.createOrUpdateTemplate(template)
+            }
+        }
+    }
+
+    private fun gatherAddedTemplates(context: TemplateGenerationContext) =
+        templateProviders.flatMap {
+            try {
+                it.createTemplates(context)
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to get added templates from $it" }
+                emptyList()
+            }
+        }
+
+    private fun gatherDeletedTemplates() = templateProviders.flatMapTo(mutableSetOf()) {
+        try {
+            it.getRemovedTemplateNames()
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to get removed templates from $it" }
+            emptyList()
         }
     }
 
