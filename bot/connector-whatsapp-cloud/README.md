@@ -63,16 +63,22 @@ feature, eliminating the need to manually create templates
 in the business management console before being able to send them.
 
 This feature can be enabled by setting the `tock_whatsapp_sync_templates` property to `true`,
-and providing at least one `WhatsappTemplateProvider` implementation.
+and providing at least one [`WhatsappTemplateProvider`](./src/main/kotlin/spi/WhatsappTemplateProvider.kt) implementation.
 Only the WhatsApp connectors with a set *Meta Application Id* property will trigger a template sync
 on their corresponding business account.
 
-**Warning**: WhatsApp templates incur a cost for every message sent.
+**Some warnings**:
+- WhatsApp templates incur a cost for every message sent.
 Check the [pricing page](https://developers.facebook.com/docs/whatsapp/pricing/)
 to determine if this makes sense for your application.
+- Templates have quite strict modification rules - while prototyping, you may need to delete
+and recreate templates with a different ID to get around this.
 
 ### WhatsApp Template Provider Example
 ```kotlin
+/*
+ * Must be registered in META-INF/services/ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
+ */
 class TutorialWhatsappTemplateProvider : WhatsappTemplateProvider {
     companion object {
         const val TEMPLATE_ID = "tutorial_carousel"
@@ -80,9 +86,7 @@ class TutorialWhatsappTemplateProvider : WhatsappTemplateProvider {
     }
 
     override fun createTemplates(ctx: TemplateGenerationContext): List<WhatsappTemplate> {
-        return supportedLanguages.map { lang ->
-            ctx.createTutorialTemplate(lang)
-        }
+        return supportedLanguages.map(ctx::createTutorialTemplate)
     }
 
     private fun TemplateGenerationContext.createTutorialTemplate(locale: Locale): WhatsappTemplate {
