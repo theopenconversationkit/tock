@@ -17,6 +17,7 @@
 package ai.tock.bot.connector
 
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.SimpleExecutor
 import io.mockk.Ordering
@@ -24,6 +25,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import java.time.Duration
+import java.time.Instant
+import java.time.InstantSource
 import org.junit.jupiter.api.Test
 
 internal class ConnectorQueueTest {
@@ -101,10 +105,10 @@ internal class ConnectorQueueTest {
     @Test
     fun `each user has their own queue which keeps the order in which messages are sent`() {
         val queue = ConnectorQueue(executor)
-        val user1Action1 = `given action`("user1")
-        val user1Action2 = `given action`("user1")
-        val user2Action1 = `given action`("user2")
-        val user2Action2 = `given action`("user2")
+        val user1Action1 = `given action`("user1", "user1Action1")
+        val user1Action2 = `given action`("user1", "user1Action2")
+        val user2Action1 = `given action`("user2", "user2Action1")
+        val user2Action2 = `given action`("user2", "user2Action2")
         val send = spyk(ActionSender())
         queue.add(user1Action1, 0) { action -> Thread.sleep(1500); send.send(action); }
         queue.add(user1Action2, 0) { action -> Thread.sleep(1000); send.send(action); }
@@ -117,12 +121,58 @@ internal class ConnectorQueueTest {
             send.send(user1Action2)
         }
     }
-}
 
-private fun `given action`(recipientId: String): Action {
-    val action = mockk<Action>(relaxed = true)
-    every {
-        action.recipientId
-    } returns PlayerId(recipientId)
-    return action
+    @Test
+    fun `message queues respect the delay between messages`() {
+        var instant = Instant.now()
+        val clock = InstantSource { instant }
+        val queue = ConnectorQueue(executor, clock)
+        /**This action should be sent immediately*/
+        val action1 = `given action`("user1", lastAnswer = false)
+        /**This action should be sent immediately after action1*/
+        val action2 = `given action`("user1", lastAnswer = false)
+        /**This action should be sent 100ms after action2 - end of an answer*/
+        val action3 = `given action`("user1", lastAnswer = true)
+        /**This action should be sent after action3, 100ms after it is scheduled*/
+        val action4 = `given action`("user1", lastAnswer = false)
+        /**This action should be sent 100ms after action4 - end of an answer*/
+        val action5 = `given action`("user1", lastAnswer = true)
+        val send = spyk(ActionSender())
+        queue.add(action1, delayInMs = 0, send::send)
+        queue.add(action2, delayInMs = 0, send::send)
+        queue.add(action3, delayInMs = 100, send::send)
+        queue.add(action4, delayInMs = 100, send::send)
+        queue.add(action5, delayInMs = 100, send::send)
+        verify(ordering = Ordering.SEQUENCE, timeout = 500) {
+            send.send(action1)
+            send.send(action2)
+        }
+
+        instant += Duration.ofMillis(100)
+        verify(ordering = Ordering.SEQUENCE, timeout = 500) {
+            send.send(action1)
+            send.send(action2)
+            send.send(action3)
+            send.send(action4)
+        }
+
+        instant += Duration.ofMillis(100)
+        verify(ordering = Ordering.SEQUENCE, timeout = 500) {
+            send.send(action1)
+            send.send(action2)
+            send.send(action3)
+            send.send(action4)
+            send.send(action5)
+        }
+    }
+
+    private var actionId = 1
+    private fun `given action`(recipientId: String, actionName: String = "action${actionId++}", lastAnswer: Boolean = true): Action {
+        val action = mockk<Action>(relaxed = true, name = actionName)
+        every {
+            action.recipientId
+        } returns PlayerId(recipientId)
+        every { action.metadata } returns ActionMetadata(lastAnswer = lastAnswer)
+        return action
+    }
 }
