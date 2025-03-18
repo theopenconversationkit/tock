@@ -29,6 +29,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudM
 import ai.tock.bot.connector.whatsapp.cloud.services.SendActionConverter
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateGenerationContext
+import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateManagementContext
 import ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryHandlerDefinition
@@ -175,7 +176,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
     }
 
     private fun generateAndSyncTemplates(context: TemplateGenerationContext) {
-        for (templateName in gatherDeletedTemplates()) {
+        for (templateName in gatherDeletedTemplates(context)) {
             executor.executeBlocking {
                 whatsAppCloudApiService.deleteTemplate(templateName)
             }
@@ -197,9 +198,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
             }
         }
 
-    private fun gatherDeletedTemplates() = templateProviders.flatMapTo(mutableSetOf()) {
+    private fun gatherDeletedTemplates(context: TemplateManagementContext) = templateProviders.flatMapTo(mutableSetOf()) {
         try {
-            it.getRemovedTemplateNames()
+            it.getRemovedTemplateNames(context)
         } catch (e: Exception) {
             logger.error(e) { "Failed to get removed templates from $it" }
             emptyList()

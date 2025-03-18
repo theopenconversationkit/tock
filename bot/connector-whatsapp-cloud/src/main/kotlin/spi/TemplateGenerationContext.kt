@@ -21,12 +21,18 @@ import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import java.util.Locale
 
-class TemplateGenerationContext internal constructor(
+open class TemplateManagementContext(
     val connectorId: String,
     val businessAccountId: String,
     val metaApplicationId: String,
+)
+
+class TemplateGenerationContext internal constructor(
+    connectorId: String,
+    businessAccountId: String,
+    metaApplicationId: String,
     private val apiService: WhatsAppCloudApiService,
-) {
+): TemplateManagementContext(connectorId, businessAccountId, metaApplicationId) {
     fun buildBasicTemplate(name: String, locale: Locale, builder: WhatsappBasicTemplateBuilder.() -> Unit): WhatsappTemplate {
         return WhatsappBasicTemplateBuilder(name, locale, connectorId).apply(builder).build()
     }

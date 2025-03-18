@@ -39,5 +39,5 @@ interface WhatsappTemplateProvider {
     /**
      * @return a set of names for templates that were created by past versions of this provider and should be cleaned up
      */
-    fun getRemovedTemplateNames(): Set<String> = emptySet()
+    fun getRemovedTemplateNames(ctx: TemplateManagementContext): Set<String> = emptySet()
 }
