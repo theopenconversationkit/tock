@@ -31,9 +31,10 @@ import logging
 
 from fastapi import APIRouter
 
-from gen_ai_orchestrator.routers.requests.requests import SentenceGenerationQuery
+from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
+from gen_ai_orchestrator.routers.responses.responses import PlaygroundResponse, SentenceGenerationResponse
 from gen_ai_orchestrator.services.completion.completion_service import (
-    generate_and_split_sentences,
+    generate_sentences, generate,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,14 +44,32 @@ completion_router = APIRouter(
     tags=['Prompt completion'],
 )
 
+@completion_router.post('/')
+async def completion(request: CompletionRequest) -> PlaygroundResponse:
+    """
+    Playground API
 
-@completion_router.post('/sentence-generation')
-async def generate_sentences(query: SentenceGenerationQuery):
+    Args:
+        request: The completion request
+
+    Returns:
+        The LLM answer and observability info.
+
+    Raises:
+        GenAIPromptTemplateException: if the prompt template is incorrect
+    """
+
+    logger.info('Completion')
+    return await generate(request)
+
+
+@completion_router.post('/sentences')
+async def completion_sentences(request: CompletionRequest) -> SentenceGenerationResponse:
     """
     Sentence Generation API
 
     Args:
-        query: The Sentence Generation Query
+        request: The Sentence Generation Request
 
     Returns:
         The list of generated sentences.
@@ -59,5 +78,6 @@ async def generate_sentences(query: SentenceGenerationQuery):
         GenAIPromptTemplateException: if the prompt template is incorrect
     """
 
-    logger.info('Generate sentences from %s', query.prompt.inputs)
-    return await generate_and_split_sentences(query)
+    logger.info('Generate sentences from %s', request.prompt.inputs)
+    return await generate_sentences(request)
+

@@ -58,12 +58,12 @@ class LangChainLLMFactory(ABC, BaseModel):
             BusinessException: For incorrect setting
         """
         logger.info('Invoke LLM provider to check setting')
-        query = 'Hi, are you there?'
-        response = await self.invoke(query, config={
+        text = 'Hi, are you there?'
+        response = await self.invoke(text, config={
             "callbacks": [observability_callback_handler] if observability_callback_handler else []
         })
         logger.info('Invocation successful')
-        logger.debug('[query: %s], [response: %s]', query, response)
+        logger.debug('[text: %s], [response: %s]', text, response)
         return True
 
     async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:

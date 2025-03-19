@@ -19,11 +19,11 @@ from fastapi import APIRouter
 from fastapi import Request
 
 from gen_ai_orchestrator.configurations.environment.settings import application_settings
-from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import AIProviderBadQueryException
+from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import AIProviderBadRequestException
 from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import create_error_info_bad_request
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting, DocumentSearchParams
-from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from gen_ai_orchestrator.routers.responses.responses import RagResponse
+from gen_ai_orchestrator.routers.requests.requests import RAGRequest
+from gen_ai_orchestrator.routers.responses.responses import RAGResponse
 from gen_ai_orchestrator.services.rag.rag_service import rag
 
 logger = logging.getLogger(__name__)
@@ -32,33 +32,33 @@ rag_router = APIRouter(prefix='/rag', tags=['Retrieval Augmented Generation'])
 
 
 @rag_router.post('')
-async def ask_rag(request: Request, query: RagQuery, debug: bool = False) -> RagResponse:
+async def ask_rag(http_request: Request, request: RAGRequest, debug: bool = False) -> RAGResponse:
     """
     ## Ask a RAG System
     Ask question to a RAG System, and return answer by using a knowledge base (documents)
     """
     # Check the consistency of the Vector Store Provider with the request body
-    validate_vector_store_rag_query(request, query.vector_store_setting, query.document_search_params)
+    validate_vector_store_rag_query(http_request, request.vector_store_setting, request.document_search_params)
 
     # execute RAG
-    return await rag(query, debug)
+    return await rag(request, debug)
 
 def validate_vector_store_rag_query(
-        request: Request,
+        http_request: Request,
         vector_store_setting: VectorStoreSetting,
         vector_store_search_params: DocumentSearchParams):
     """
     Check the consistency of the Vector Store Provider with the request body
     Args:
-        request: The http request
+        http_request: The http request
         vector_store_setting:  The Vector Store Provider Setting
         vector_store_search_params: the vector store search params
 
     Raises:
-        AIProviderBadQueryException: if the search parameters are not compatible with the vector store
+        AIProviderBadRequestException: if the search parameters are not compatible with the vector store
     """
 
-    logger.debug('RAG - Query validation')
+    logger.debug('RAG - Request validation')
 
     vector_store_provider = application_settings.vector_store_provider
     if vector_store_setting is not None:
@@ -67,9 +67,9 @@ def validate_vector_store_rag_query(
     if vector_store_provider != vector_store_search_params.provider:
         logger.error('Inconsistency between vector store provider and document search parameters (%s Vs %s)',
                      vector_store_provider.value, vector_store_search_params.provider.value)
-        raise AIProviderBadQueryException(
+        raise AIProviderBadRequestException(
             create_error_info_bad_request(
-                request=request,
+                request=http_request,
                 provider=vector_store_search_params.provider,
                 cause='Inconsistency between vector store provider and document search parameters')
         )

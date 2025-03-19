@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.requests
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
-
-
-class DocumentCompressorProviderSettingStatusQuery(
-    val setting: DocumentCompressorSetting
+data class SentenceGenerationOptions(
+    val spellingMistakes: Boolean = true,
+    val smsLanguage: Boolean = true,
+    val abbreviatedLanguage: Boolean = true,
 )

@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
-import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
 import ai.tock.shared.exception.error.ErrorMessage
@@ -33,7 +33,7 @@ object ObservabilityValidationService {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 observabilityProviderService
-                    .checkSetting(ObservabilityProviderSettingStatusQuery(config.setting))
+                    .checkSetting(ObservabilityProviderSettingStatusRequest(config.setting))
                     .getErrors("Observability setting check failed")
             )
         }

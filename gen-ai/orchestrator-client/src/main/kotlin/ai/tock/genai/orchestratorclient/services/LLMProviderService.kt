@@ -16,9 +16,9 @@
 
 package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 
 interface LLMProviderService {
-    fun checkSetting(query: LLMProviderSettingStatusQuery): ProviderSettingStatusResponse?
+    fun checkSetting(query: LLMProviderSettingStatusRequest): ProviderSettingStatusResponse?
 }

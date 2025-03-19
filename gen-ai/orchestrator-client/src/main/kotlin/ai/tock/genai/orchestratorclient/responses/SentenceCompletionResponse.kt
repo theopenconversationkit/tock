@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.genai.orchestratorclient.responses
 
-import java.util.Locale
-
-data class SentenceGenerationRequest(
-    val llmTemperature: String,
-    val sentences: List<String>,
-    val locale: Locale,
-    val options: SentenceGenerationOptions,
+class SentenceCompletionResponse(
+    val sentences: List<String>
 )
-
-
-
 
 

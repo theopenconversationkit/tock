@@ -18,7 +18,7 @@ package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.api.ObservabilityProviderApi
-import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
 
@@ -26,7 +26,7 @@ class ObservabilityProviderServiceImpl: ObservabilityProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val observabilityProviderApi = retrofit.create(ObservabilityProviderApi::class.java)
 
-    override fun checkSetting(query: ObservabilityProviderSettingStatusQuery): ProviderSettingStatusResponse? {
+    override fun checkSetting(query: ObservabilityProviderSettingStatusRequest): ProviderSettingStatusResponse? {
         val response = observabilityProviderApi.checkObservabilitySetting(query, query.setting.provider).execute()
         return response.body()
     }

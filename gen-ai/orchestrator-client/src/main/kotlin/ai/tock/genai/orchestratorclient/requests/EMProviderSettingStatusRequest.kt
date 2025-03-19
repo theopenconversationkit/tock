@@ -16,10 +16,8 @@
 
 package ai.tock.genai.orchestratorclient.requests
 
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
 
-class LLMProviderSettingStatusQuery(
-    val setting: LLMSetting,
-    val observabilitySetting: ObservabilitySetting?
+class EMProviderSettingStatusRequest (
+    val setting: EMSetting
 )

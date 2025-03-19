@@ -14,11 +14,33 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.services
+package ai.tock.genai.orchestratorclient.requests
 
-import ai.tock.genai.orchestratorclient.requests.DocumentCompressorProviderSettingStatusRequest
-import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+enum class Formatter(val id: String) {
+    F_STRING(id = "f-string"),
+    JINJA2(id = "jinja2");
 
-interface DocumentCompressorProviderService {
-    fun checkSetting(query: DocumentCompressorProviderSettingStatusRequest): ProviderSettingStatusResponse?
+}
+
+data class PromptTemplate (
+    val formatter: String = Formatter.JINJA2.id,
+    val template: String,
+    val inputs:  Map<String, Any> = emptyMap()
+)
+
+data class DialogDetails(
+    val dialogId: String? = null,
+    val userId: String? = null,
+    val history: List<ChatMessage> = emptyList(),
+    val tags: List<String> = emptyList(),
+)
+
+data class ChatMessage(
+    val text: String,
+    val type: ChatMessageType,
+)
+
+enum class ChatMessageType{
+    HUMAN,
+    AI
 }

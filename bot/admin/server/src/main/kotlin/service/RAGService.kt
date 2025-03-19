@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature

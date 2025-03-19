@@ -19,7 +19,7 @@ import logging
 from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
-    AIProviderBadQueryException,
+    AIProviderBadRequestException,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
@@ -45,7 +45,7 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
-    EMProviderSettingStatusQuery,
+    EMProviderSettingStatusRequest,
 )
 from gen_ai_orchestrator.routers.responses.responses import (
     EMProviderResponse,
@@ -73,12 +73,12 @@ async def get_all_em_providers() -> list[EMProvider]:
 
 @em_providers_router.get('/{provider_id}')
 async def get_em_provider_by_id(
-    request: Request, provider_id: str
+    http_request: Request, provider_id: str
 ) -> EMProviderResponse:
     """
     Get Embedding Model Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -88,20 +88,20 @@ async def get_em_provider_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_em_provider(request, provider_id)
+    # Request validation
+    validate_em_provider(http_request, provider_id)
 
     return EMProviderResponse(provider=EMProvider(provider_id))
 
 
 @em_providers_router.get('/{provider_id}/setting/example')
 async def get_em_provider_setting_by_id(
-    request: Request, provider_id: EMProvider
+    http_request: Request, provider_id: EMProvider
 ) -> EMSetting:
     """
     Get a setting example for a given EM Provider ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
 
     Returns:
@@ -111,8 +111,8 @@ async def get_em_provider_setting_by_id(
         GenAIUnknownProviderException: if the provider is unknown
     """
 
-    # Query validation
-    validate_em_provider(request, provider_id)
+    # Request validation
+    validate_em_provider(http_request, provider_id)
 
     if provider_id == EMProvider.OPEN_AI:
         return OpenAIEMSetting(
@@ -139,28 +139,28 @@ async def get_em_provider_setting_by_id(
 
 @em_providers_router.post('/{provider_id}/setting/status')
 async def check_em_provider_setting(
-    request: Request, provider_id: str, query: EMProviderSettingStatusQuery
+    http_request: Request, provider_id: str, request: EMProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given EM Provider Setting
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider id
-        query: The query of the EM Provider Setting to be checked
+        request: The request of the EM Provider Setting to be checked
 
     Returns:
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    # Query validation
-    validate_query(request, provider_id, query.setting)
+    # Request validation
+    validate_query(http_request, provider_id, request.setting)
 
     try:
         # EM setting check
-        await check_em_setting(query.setting)
+        await check_em_setting(request.setting)
 
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:
@@ -168,30 +168,30 @@ async def check_em_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(request: Request, provider_id: str, setting: EMSetting):
+def validate_query(http_request: Request, provider_id: str, setting: EMSetting):
     """
     Check the consistency of the Provider ID with the request body
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
         setting:  The EM Provider Setting
 
     Raises:
-        AIProviderBadQueryException: if the provider ID is not consistent with the request body
+        AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    validate_em_provider(request, provider_id)
+    validate_em_provider(http_request, provider_id)
     if provider_id != setting.provider:
-        raise AIProviderBadQueryException(
-            create_error_info_bad_request(request, provider_id)
+        raise AIProviderBadRequestException(
+            create_error_info_bad_request(http_request, provider_id)
         )
 
 
-def validate_em_provider(request: Request, provider_id: str):
+def validate_em_provider(http_request: Request, provider_id: str):
     """
     Check existence of EM Provider by ID
     Args:
-        request: The http request
+        http_request: The http request
         provider_id: The provider ID
 
     Raises:
@@ -201,6 +201,6 @@ def validate_em_provider(request: Request, provider_id: str):
     if not EMProvider.has_value(provider_id):
         raise GenAIUnknownProviderException(
             create_error_info_not_found(
-                request, provider_id, [provider.value for provider in EMProvider]
+                http_request, provider_id, [provider.value for provider in EMProvider]
             )
         )

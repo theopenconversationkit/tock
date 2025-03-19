@@ -16,17 +16,22 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.SentenceGenerationQuery
-import ai.tock.genai.orchestratorclient.responses.SentenceGenerationResponse
+import ai.tock.genai.orchestratorclient.requests.CompletionRequest
+import ai.tock.genai.orchestratorclient.responses.CompletionResponse
+import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 internal interface CompletionApi {
-    @POST("/completion/sentence-generation")
-    fun generateSentences(
-        @Body query: SentenceGenerationQuery,
-    ): Call<SentenceGenerationResponse>
+    @POST("/completion")
+    fun generate(
+        @Body query: CompletionRequest,
+    ): Call<CompletionResponse>
 
+    @POST("/completion/sentences")
+    fun generateSentences(
+        @Body query: CompletionRequest,
+    ): Call<SentenceCompletionResponse>
 }
 

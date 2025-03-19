@@ -23,13 +23,13 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
 
 
-class AIProviderBadQueryException(GenAIOrchestratorException):
+class AIProviderBadRequestException(GenAIOrchestratorException):
     """
-    An exception indicating that a query cannot be executed because it is invalid.
+    An exception indicating that a request cannot be executed because it is invalid.
     """
 
     def __init__(self, info: ErrorInfo):
-        super().__init__(ErrorCode.AI_PROVIDER_BAD_QUERY, info)
+        super().__init__(ErrorCode.AI_PROVIDER_BAD_REQUEST, info)
 
 
 class AIProviderAPIErrorException(GenAIOrchestratorException):

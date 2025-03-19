@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
-import ai.tock.bot.admin.model.BotVectorStoreConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
