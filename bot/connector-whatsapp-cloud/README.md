@@ -10,6 +10,7 @@
     * **WhatsApp Business Account id**: The id of the WhatApp business account on which the app is registered.
     * **Webhook verify token**: A token (choose what you want) used when registering the webhook in the Meta admin interface.
     * **Call Token**: The token allowing the bot to send messages.
+    * (Optional) **Meta Application id**: The id of the Meta application, only required for [template management](#template-management).
 
 * Then go to the *Configuration* -> *Bot Configurations* menu in Tock Studio, and create a new configuration with these parameters.
   Set the `Mode` field to "subscribe".
@@ -54,3 +55,88 @@ By default, if a text is too long, it will be truncated and a warning will be lo
 if a message contains too many buttons, only the first ones will be displayed.
 However, you can set the `tock_whatsapp_error_on_invalid_messages`
 property to `true` to throw an error instead, which can notably be helpful when running automated tests.
+
+## Template Management
+
+This connector provides an experimental [template management](https://developers.facebook.com/docs/whatsapp/business-management-api/message-templates/)
+feature, eliminating the need to manually create templates
+in the business management console before being able to send them.
+
+This feature can be enabled by setting the `tock_whatsapp_sync_templates` property to `true`,
+and providing at least one [`WhatsappTemplateProvider`](./src/main/kotlin/spi/WhatsappTemplateProvider.kt) implementation.
+Only the WhatsApp connectors with a set *Meta Application Id* property will trigger a template sync
+on their corresponding business account.
+
+**Some warnings**:
+- WhatsApp templates incur a cost for every message sent.
+Check the [pricing page](https://developers.facebook.com/docs/whatsapp/pricing/)
+to determine if this makes sense for your application.
+- Templates have quite strict modification rules - while prototyping, you may need to delete
+and recreate templates with a different ID to get around this.
+
+### WhatsApp Template Provider Example
+```kotlin
+/*
+ * Must be registered in META-INF/services/ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
+ */
+class TutorialWhatsappTemplateProvider : WhatsappTemplateProvider {
+    companion object {
+        const val TEMPLATE_ID = "tutorial_carousel"
+        private val supportedLanguages = setOf(Locale.ENGLISH, Locale.FRENCH)
+    }
+
+    override fun createTemplates(ctx: TemplateGenerationContext): List<WhatsappTemplate> {
+        return supportedLanguages.map(ctx::createTutorialTemplate)
+    }
+
+    private fun TemplateGenerationContext.createTutorialTemplate(locale: Locale): WhatsappTemplate {
+        return buildCarousel(TEMPLATE_ID, locale) {
+            body = TemplateBody(translate(TutorialTexts.MSG_1))
+            carousel = TemplateCarousel(
+                TutorialCard.entries.map { tutorialCard ->
+                    TemplateCard(
+                        TemplateCardHeader(HeaderFormat.IMAGE, getOrUpload(
+                            tutorialCard.imageUrl,
+                            "image/png",
+                        )),
+                        TemplateCardBody(translate(tutorialCard.text)),
+                        TemplateQuickReply(translate(tutorialCard.qr1Title)),
+                        TemplateQuickReply(translate(tutorialCard.qr2Title)),
+                    )
+                }
+            )
+        }
+    }
+}
+```
+
+This template can then be sent like so:
+```kotlin
+send {
+    whatsAppCloudBuildTemplateMessageCarousel(
+        TutorialWhatsappTemplateProvider.TEMPLATE_ID,
+        TutorialCard.entries.mapIndexed { idx, tutorialCard ->
+            whatsAppCloudCardCarousel(
+                idx,
+                listOf(
+                    whatsAppCloudHeaderTemplate(
+                        ParameterType.IMAGE.name,
+                        tutorialCard.imageUrl,
+                    ),
+                    whatsAppCloudPostbackButton(
+                        index = 0,
+                        title = tutorialCard.qr1Title,
+                        targetIntent = tutorialCard.qr1Story,
+                    ),
+                    whatsAppCloudPostbackButton(
+                        index = 1,
+                        title = tutorialCard.qr2Title,
+                        targetIntent = tutorialCard.qr2Story,
+                    ),
+                ),
+            )
+        },
+        userLocale.language,
+    )
+}
+```

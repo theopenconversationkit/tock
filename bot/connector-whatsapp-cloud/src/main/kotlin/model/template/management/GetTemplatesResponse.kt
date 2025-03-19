@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate
+package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
-data class ResponseCreateTemplate(
-        val id: String,
-        val status: String,
-        val category: String
-)
+import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
+
+data class GetTemplatesResponse(val data: List<WhatsappTemplate>)

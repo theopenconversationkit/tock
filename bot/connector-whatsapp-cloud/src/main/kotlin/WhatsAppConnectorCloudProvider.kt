@@ -16,16 +16,21 @@
 
 package ai.tock.bot.connector.whatsapp.cloud
 
-import ai.tock.bot.connector.*
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.resourceAsString
 
 internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
 
     internal const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
-    private const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
+    internal const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
+    internal const val META_APPLICATION_ID = "metaApplicationId"
     internal const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
-    internal const val SECRET = "secret"
     private const val MODE = "mode"
 
     override val connectorType: ConnectorType get() = whatsAppCloudConnectorType
@@ -36,6 +41,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 connectorId = connectorId,
                 phoneNumberId = parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
                 whatsAppBusinessAccountId = parameters.getValue(WHATSAPP_BUSINESS_ACCOUNT_ID),
+                metaApplicationId = parameters[META_APPLICATION_ID],
                 path = path,
                 token = parameters.getValue(TOKEN),
                 verifyToken = parameters[VERIFY_TOKEN],
@@ -75,6 +81,11 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                     "Mode",
                     MODE,
                     true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Meta Application Id",
+                    META_APPLICATION_ID,
+                    false
                 ),
             ),
             resourceAsString("/whatsapp.svg")
