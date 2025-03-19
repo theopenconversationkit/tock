@@ -22,12 +22,12 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.starProjectedType
+import mu.KotlinLogging
 
 /**
  * Base implementation of [StoryHandlerDefinition].
@@ -95,8 +95,8 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
         connectorProvider.provide(this, connectorId) as? T?
 
     private val cachedConnector: T? by lazy(PUBLICATION) {
-        (findConnector(applicationId) ?: findConnector(connectorType))
-            .also { if (it == null) logger.warn { "unsupported connector type $applicationId or $connectorType for ${this::class}" } }
+        (findConnector(connectorId) ?: findConnector(connectorType))
+            .also { if (it == null) logger.warn { "unsupported connector type $connectorId or $connectorType for ${this::class}" } }
     }
 
     /**

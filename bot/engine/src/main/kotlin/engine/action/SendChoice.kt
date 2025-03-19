@@ -35,12 +35,10 @@ import org.litote.kmongo.newId
 
 /**
  * A user choice (click on a button or direct action).
- *
- * @param applicationId the TOCK application id (matches the id of the connector)
  */
 class SendChoice(
     playerId: PlayerId,
-    applicationId: String,
+    connectorId: String,
     recipientId: PlayerId,
     val intentName: String,
     val parameters: Map<String, String> = emptyMap(),
@@ -48,11 +46,33 @@ class SendChoice(
     date: Instant = Instant.now(),
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata()
-) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
-
+) : Action(playerId, recipientId, connectorId, id, date, state, metadata) {
+    @Deprecated("Use constructor with connectorId", ReplaceWith("SendChoice(" +
+            "playerId, " +
+            "connectorId = applicationId, " +
+            "recipientId, " +
+            "intentName, " +
+            "parameters, " +
+            "id, " +
+            "date, " +
+            "state, " +
+            "metadata)"))
     constructor(
         playerId: PlayerId,
         applicationId: String,
+        recipientId: PlayerId,
+        intentName: String,
+        parameters: Map<String, String> = emptyMap(),
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, applicationId, recipientId, intentName, parameters, id, date, state, metadata)
+
+    constructor(
+        playerId: PlayerId,
+        connectorId: String,
         recipientId: PlayerId,
         intentName: String,
         step: StoryStep<out StoryHandlerDefinition>?,
@@ -64,7 +84,7 @@ class SendChoice(
     ) :
         this(
             playerId,
-            applicationId,
+            connectorId,
             recipientId,
             intentName,
             parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
@@ -73,6 +93,33 @@ class SendChoice(
             state,
             metadata
         )
+
+    @Deprecated("Use constructor with connectorId", ReplaceWith("SendChoice(" +
+            "playerId, " +
+            "connectorId = applicationId, " +
+            "recipientId, " +
+            "intentName, " +
+            "step, " +
+            "parameters, " +
+            "id, " +
+            "date, " +
+            "state, " +
+            "metadata)"))
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        intentName: String,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String> = emptyMap(),
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ) : this(
+        playerId, applicationId, recipientId, intentName, step, parameters, id, date, state, metadata
+    )
 
     companion object {
 
@@ -134,7 +181,7 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.currentIntent?.wrappedIntent(),
-                sourceAppId = bus.applicationId
+                sourceAppId = bus.connectorId
             )
         }
 
@@ -165,7 +212,7 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.currentIntent?.wrappedIntent(),
-                sourceAppId = bus.applicationId
+                sourceAppId = bus.connectorId
             )
         }
 

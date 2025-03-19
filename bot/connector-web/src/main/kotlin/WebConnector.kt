@@ -109,9 +109,11 @@ val webConnectorUseExtraHeadersAsMetadata: Boolean =
     booleanProperty("tock_web_connector_use_extra_header_as_metadata_request", false)
 
 class WebConnector internal constructor(
-    val applicationId: String,
+    val connectorId: String,
     val path: String
 ) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
+    @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
+    val applicationId: String get() = connectorId
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -171,7 +173,7 @@ class WebConnector internal constructor(
                             val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
                                 response.sendSsePing()
                             }
-                            val channelId = channels.register(applicationId, userId) { webConnectorResponse ->
+                            val channelId = channels.register(connectorId, userId) { webConnectorResponse ->
                                 response.sendSseResponse(webConnectorResponse)
                             }
                             response.closeHandler {
@@ -273,11 +275,11 @@ class WebConnector internal constructor(
             val applicationId =
                 if (request.connectorId?.isNotBlank() == true)
                     if (webConnectorBridgeEnabled)
-                        request.connectorId.also { logger.debug { "Web bridge: $applicationId -> $it" } }
+                        request.connectorId.also { logger.debug { "Web bridge: $connectorId -> $it" } }
                     else
-                        applicationId.also { logger.warn { "Web bridge disabled." } }
+                        connectorId.also { logger.warn { "Web bridge disabled." } }
                 else
-                    applicationId
+                    connectorId
 
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
@@ -334,12 +336,12 @@ class WebConnector internal constructor(
             throw UnsupportedOperationException("Web Connector only supports notifications when SSE is enabled")
         }
         handleEvent(
-            applicationId = applicationId,
+            applicationId = connectorId,
             locale = defaultLocale,
             event = SendChoice(
                 recipientId,
-                applicationId,
-                PlayerId(applicationId, bot),
+                connectorId,
+                PlayerId(connectorId, bot),
                 intent.wrappedIntent().name,
                 step,
                 parameters
@@ -377,14 +379,14 @@ class WebConnector internal constructor(
             val request: ResumeOrchestrationRequest = mapper.readValue(context.body().asString())
             val callback = RestOrchestrationCallback(
                 webConnectorType,
-                applicationId = applicationId,
+                applicationId = connectorId,
                 context = context,
                 orchestrationMapper = webMapper
             )
 
             controller.handle(request.toAction(), ConnectorData(callback))
         } catch (t: Throwable) {
-            RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
+            RestOrchestrationCallback(webConnectorType, connectorId, context = context).sendError()
             BotRepository.requestTimer.throwable(t, timerData)
         } finally {
             BotRepository.requestTimer.end(timerData)
@@ -401,23 +403,23 @@ class WebConnector internal constructor(
             val request: AskEligibilityToOrchestratedBotRequest = mapper.readValue(context.body().asString())
             val callback = RestOrchestrationCallback(
                 webConnectorType,
-                applicationId,
+                connectorId,
                 context = context,
                 orchestrationMapper = webMapper
             )
 
-            val support = controller.support(request.toAction(applicationId), ConnectorData(callback))
+            val support = controller.support(request.toAction(connectorId), ConnectorData(callback))
             val sendEligibility = SecondaryBotEligibilityResponse(
                 support,
                 OrchestrationMetaData(
-                    playerId = PlayerId(applicationId, bot),
-                    applicationId = applicationId,
+                    playerId = PlayerId(connectorId, bot),
+                    applicationId = connectorId,
                     recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user)
                 )
             )
             callback.sendResponse(sendEligibility)
         } catch (t: Throwable) {
-            RestOrchestrationCallback(webConnectorType, applicationId, context = context).sendError()
+            RestOrchestrationCallback(webConnectorType, connectorId, context = context).sendError()
             BotRepository.requestTimer.throwable(t, timerData)
         } finally {
             BotRepository.requestTimer.end(timerData)

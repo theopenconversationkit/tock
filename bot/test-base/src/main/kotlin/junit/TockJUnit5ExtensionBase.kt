@@ -71,7 +71,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      * @param locale see [BotBusMock.userLocale]
      * @param userId see [BotBusMock.userId]
      * @param botId see [BotBusMock.botId]
-     * @param applicationId see [BotBusMock.applicationId]
+     * @param connectorId see [BotBusMock.connectorId]
      * @param userPreferences see [BotBusMock.userPreferences]
      * @param tests a callback defining the assertions to execute after sending the choice
      */
@@ -83,7 +83,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
+        connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit
     ): BotBusMock {
@@ -99,7 +99,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             {
                 SendChoice(
                     userId,
-                    applicationId,
+                    connectorId,
                     botId,
                     intent.wrappedIntent().name,
                     parameters.toMap()
@@ -119,7 +119,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      * @param locale see [BotBusMock.userLocale]
      * @param userId see [BotBusMock.userId]
      * @param botId see [BotBusMock.botId]
-     * @param applicationId see [BotBusMock.applicationId]
+     * @param connectorId see [BotBusMock.connectorId]
      * @param userPreferences see [BotBusMock.userPreferences]
      * @param tests a callback containing the assertions to execute after sending the message
      */
@@ -131,7 +131,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
+        connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit
     ): BotBusMock {
@@ -144,7 +144,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             botId,
             userPreferences,
             listOf(),
-            { message.toAction(userId, applicationId, botId) },
+            { message.toAction(userId, connectorId, botId) },
             tests
         )
     }
@@ -191,7 +191,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      * @param locale see [BotBusMock.userLocale]
      * @param userId see [BotBusMock.userId]
      * @param botId see [BotBusMock.botId]
-     * @param applicationId see [BotBusMock.applicationId]
+     * @param connectorId see [BotBusMock.connectorId]
      * @param userPreferences see [BotBusMock.userPreferences]
      * @param tests a callback containing the assertions to execute after sending the text
      */
@@ -204,7 +204,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
+        connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         secondaryConnectorTypes: List<ConnectorType> = listOf(),
         metadata: ActionMetadata = ActionMetadata(),
@@ -222,7 +222,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             {
                 SendSentence(
                     userId,
-                    applicationId,
+                    connectorId,
                     botId,
                     text,
                     state = EventState(
@@ -257,12 +257,12 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                 testContext.botBusMockContext
             } else {
                 newBusMockContext(
-                    findStoryDefinition(intent, action.applicationId),
+                    findStoryDefinition(intent, action.connectorId),
                     connectorType,
                     locale,
                     userId,
                     botId,
-                    action.applicationId,
+                    action.connectorId,
                     action,
                     userInterfaceType,
                     userPreferences,
@@ -285,7 +285,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      * @param locale see [BotBusMock.userLocale]
      * @param userId see [BotBusMock.userId]
      * @param botId see [BotBusMock.botId]
-     * @param applicationId see [BotBusMock.applicationId]
+     * @param connectorId see [BotBusMock.connectorId]
      * @param userPreferences see [BotBusMock.userPreferences]
      * @param tests a callback containing the test code to execute in the context of the newly setup [BotBusMock]
      */
@@ -297,7 +297,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
+        connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit
     ) {
@@ -312,7 +312,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             {
                 SendChoice(
                     userId,
-                    applicationId,
+                    connectorId,
                     botId,
                     intent.wrappedIntent().name,
                     parameters.toMap()
@@ -334,7 +334,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
+        connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         tests: BotBusMock.() -> Unit
     ) {
@@ -349,7 +349,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             {
                 SendSentence(
                     userId,
-                    applicationId,
+                    connectorId,
                     botId,
                     text,
                     state = EventState(
@@ -383,12 +383,12 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     testContext.botBusMockContext
                 } else {
                     newBusMockContext(
-                        findStoryDefinition(intent, action.applicationId),
+                        findStoryDefinition(intent, action.connectorId),
                         connectorType,
                         locale,
                         userId,
                         botId,
-                        action.applicationId,
+                        action.connectorId,
                         action,
                         userInterfaceType,
                         userPreferences
@@ -399,7 +399,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         )
     }
 
-    private fun findStoryDefinition(intent: IntentAware, applicationId: String): StoryDefinition =
+    private fun findStoryDefinition(intent: IntentAware, connectorId: String): StoryDefinition =
         if (intent is StoryDefinition) {
             intent
         } else {
@@ -408,7 +408,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             ) {
                 testContext.defaultStoryDefinition(botDefinition)
             } else {
-                botDefinition.findStoryDefinition(intent, applicationId)
+                botDefinition.findStoryDefinition(intent, connectorId)
             }
         }
 
@@ -441,8 +441,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         locale: Locale = testContext.defaultLocale(),
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
-        applicationId: String = botDefinition.botId,
-        action: Action = SendSentence(userId, applicationId, botId, ""),
+        connectorId: String = botDefinition.botId,
+        action: Action = SendSentence(userId, connectorId, botId, ""),
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         secondaryConnectorTypes: List<ConnectorType> = listOf(),
@@ -454,7 +454,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             locale,
             userId,
             botId,
-            applicationId,
+            connectorId,
             action,
             userInterfaceType,
             userPreferences,

@@ -241,7 +241,7 @@ open class BotBusMock(
      * The translator used to translate labels - default is NoOp.
      */
     val translator: TranslatorEngine get() = context.testContext.testInjector.provide()
-    override val applicationId get() = action.applicationId
+    override val connectorId get() = action.applicationId
     override val botId get() = action.recipientId
     override val userId get() = action.playerId
     override val userPreferences: UserPreferences get() = userTimeline.userPreferences
@@ -390,7 +390,7 @@ open class BotBusMock(
     }
 
     fun createBotSentence(plainText: CharSequence?): SendSentence =
-        SendSentence(botId, applicationId, userId, plainText)
+        SendSentence(botId, connectorId, userId, plainText)
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
         return answer(createBotSentence(plainText), delay)
@@ -401,7 +401,7 @@ open class BotBusMock(
         // but it invokes the engine with a target connector,
         // to receive the corresponding messages
         if(ConnectorType.rest == sourceConnectorType) {
-            return answer(SendDebug(botId, applicationId, userId, title, data), 0)
+            return answer(SendDebug(botId, connectorId, userId, title, data), 0)
         }
         return this
     }
@@ -437,7 +437,7 @@ open class BotBusMock(
         connectorId: String,
         messageProvider: () -> ConnectorMessage
     ): BotBus {
-        if (applicationId == connectorId && (targetConnectorType == connectorType || isCompatibleWith(connectorType))) {
+        if (this.connectorId == connectorId && (targetConnectorType == connectorType || isCompatibleWith(connectorType))) {
             mockData.addMessage(messageProvider.invoke())
         }
         return this

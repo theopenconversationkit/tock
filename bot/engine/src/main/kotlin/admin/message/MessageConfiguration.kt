@@ -33,7 +33,7 @@ interface MessageConfiguration {
 
     fun toAction(bus: BotBus): Action = toAction(
         bus.userId,
-        bus.applicationId,
+        bus.connectorId,
         bus.botId,
         bus.userLocale,
         bus.userInterfaceType

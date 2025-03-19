@@ -81,7 +81,7 @@ internal class BotApiHandler(
                 botDefinition.botId,
                 story.definition.id
             )
-            val endingStoryId = storySetting?.findEnabledEndWithStoryId(applicationId)
+            val endingStoryId = storySetting?.findEnabledEndWithStoryId(connectorId)
                 .takeIf { response.context.lastResponse }
 
             val messages = response.messages
@@ -145,7 +145,7 @@ internal class BotApiHandler(
                     userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
                 }
 
-                val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, applicationId)
+                val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, connectorId)
                 switchEndingStory(targetStory)
             }
         }
@@ -187,7 +187,7 @@ internal class BotApiHandler(
     private fun BotBus.toAction(message: CustomMessage): Action {
         return SendSentence(
             botId,
-            applicationId,
+            connectorId,
             userId,
             null,
             listOfNotNull(message.message.value).toMutableList()
@@ -203,7 +203,7 @@ internal class BotApiHandler(
             if (message != null) {
                 return SendSentence(
                     botId,
-                    applicationId,
+                    connectorId,
                     userId,
                     null,
                     mutableListOf(message)
@@ -212,7 +212,7 @@ internal class BotApiHandler(
         }
         return SendSentence(
             botId,
-            applicationId,
+            connectorId,
             userId,
             text
         )
@@ -221,7 +221,7 @@ internal class BotApiHandler(
     private fun BotBus.toAction(data: Debug): Action {
         return SendDebug(
             botId,
-            applicationId,
+            connectorId,
             userId,
             data.text,
             data.data
@@ -239,7 +239,7 @@ internal class BotApiHandler(
         return connectorMessages?.map {
             SendSentence(
                 botId,
-                applicationId,
+                connectorId,
                 userId,
                 null,
                 mutableListOf(it)
@@ -258,7 +258,7 @@ internal class BotApiHandler(
         return connectorMessages?.map {
             SendSentence(
                 botId,
-                applicationId,
+                connectorId,
                 userId,
                 null,
                 mutableListOf(it)

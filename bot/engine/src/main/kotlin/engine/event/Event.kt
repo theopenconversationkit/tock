@@ -35,7 +35,7 @@ abstract class Event(
      *
      * @see ConnectorConfiguration.connectorId
      */
-    val applicationId: String,
+    val connectorId: String,
     /**
      * The unique id of the event.
      */
@@ -49,6 +49,18 @@ abstract class Event(
      */
     val state: EventState = EventState()
 ) {
+    @Deprecated("Use constructor with connectorId", ReplaceWith("Event(connectorId = applicationId, id, date, state)"))
+    constructor(
+        applicationId: String,
+        id: Id<out Event> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(applicationId, id, date, state)
+
+    @Deprecated("Use more appropriately named connectorId", ReplaceWith("connectorId"))
+    val applicationId: String get() = connectorId
+
     /**
      * Does this event contains specified role entity?
      */

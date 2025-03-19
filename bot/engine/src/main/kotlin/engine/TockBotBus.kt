@@ -61,7 +61,7 @@ internal class TockBotBus(
             currentDialog.stories.add(value)
         }
     override val botDefinition: BotDefinition = bot.botDefinition
-    override val applicationId = action.applicationId
+    override val connectorId = action.applicationId
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
@@ -166,11 +166,11 @@ internal class TockBotBus(
     }
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
+        return answer(SendSentence(botId, connectorId, userId, plainText), delay)
     }
 
     override fun sendDebugData(title: String, data: Any?): BotBus {
-        return answer(SendDebug(botId, applicationId, userId, title, data), 0)
+        return answer(SendDebug(botId, connectorId, userId, title, data), 0)
     }
 
     override fun send(action: Action, delay: Long): BotBus {
@@ -200,7 +200,7 @@ internal class TockBotBus(
     }
 
     override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
-        if (applicationId == connectorId && isCompatibleWith(connectorType)) {
+        if (this.connectorId == connectorId && isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
         }
         return this

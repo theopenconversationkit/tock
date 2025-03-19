@@ -137,5 +137,5 @@ data class BotApplicationConfigurationKey(
         botDefinition.namespace
     )
 
-    constructor(bus: BotBus) : this(bus.applicationId, bus.botDefinition)
+    constructor(bus: BotBus) : this(bus.connectorId, bus.botDefinition)
 }
