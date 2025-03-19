@@ -21,9 +21,9 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import java.time.Clock
 import java.time.Duration
-import java.time.Instant
+import java.time.InstantSource
+import java.util.Queue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
@@ -31,13 +31,53 @@ import java.util.concurrent.TimeUnit
 /**
  * A Queue to ensure the calls from the same user id are sent sequentially.
  */
-class ConnectorQueue(private val executor: Executor, private val clock: Clock = Clock.systemUTC()) {
+class ConnectorQueue(private val executor: Executor, private val clock: InstantSource = InstantSource.system()) {
 
-    private class ScheduledAction<T>(private val processedAction: CompletableFuture<T?>, private val send: (action: T) -> Unit, val timestamp: Instant) {
+    private class ScheduledAction<T>(
+        private val baseAction: Action,
+        private val processedAction: CompletableFuture<T?>,
+        private val send: (action: T) -> Unit,
+        val delay: Duration,
+    ) {
+        val lastInAnswer get() = baseAction.metadata.lastAnswer
         fun joinAndSend() = processedAction.join()?.let(send)
+
+        override fun toString(): String {
+            return baseAction.toString()
+        }
     }
 
-    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ScheduledAction<*>>> =
+    private inner class UserQueue : Queue<ScheduledAction<*>> by ConcurrentLinkedQueue() {
+        private var answerInProgress = false
+        private var lastScheduledTime = clock.instant()
+        private var lastSentTime = clock.instant()
+
+        @Synchronized
+        fun getElapsedTime(): Duration = Duration.between(
+            if (answerInProgress) lastSentTime else lastScheduledTime,
+            clock.instant()
+        )
+
+        @Synchronized
+        fun <T> enqueueMessage(actionWrapper: ScheduledAction<T>): Boolean {
+            lastScheduledTime = clock.instant()
+            val existingAction = peek()
+            offer(actionWrapper)
+            return existingAction != null
+        }
+
+        @Synchronized
+        fun dequeueMessage(): ScheduledAction<*>? {
+            // remove the current one
+            val popped: ScheduledAction<*>? = poll()
+            lastSentTime = clock.instant()
+            answerInProgress = popped != null && !popped.lastInAnswer
+            // schedule the next one
+            return peek()
+        }
+    }
+
+    private val messagesByRecipientMap: Cache<String, UserQueue> =
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
@@ -53,9 +93,10 @@ class ConnectorQueue(private val executor: Executor, private val clock: Clock = 
      */
     fun add(action: Action, delayInMs: Long, send: (action: Action) -> Unit) {
         val actionWrapper = ScheduledAction(
+            action,
             CompletableFuture.completedFuture(action),
             send,
-            Instant.now(clock) + Duration.ofMillis(delayInMs),
+            Duration.ofMillis(delayInMs),
         )
 
         add0(action.recipientId, actionWrapper)
@@ -84,9 +125,10 @@ class ConnectorQueue(private val executor: Executor, private val clock: Clock = 
         send: (action: T) -> Unit
     ) {
         val actionWrapper = ScheduledAction(
+            action,
             executor.executeBlockingTask { prepare(action) },
             send,
-            Instant.now(clock) + Duration.ofMillis(delayInMs),
+            Duration.ofMillis(delayInMs),
         )
 
         add0(action.recipientId, actionWrapper)
@@ -97,16 +139,10 @@ class ConnectorQueue(private val executor: Executor, private val clock: Clock = 
         actionWrapper: ScheduledAction<T>,
     ) {
         val queue = messagesByRecipientMap
-            .get(recipient.id) { ConcurrentLinkedQueue() }
+            .get(recipient.id) { UserQueue() }
             .apply {
-                synchronized(this) {
-                    peek().also { existingAction ->
-                        offer(actionWrapper)
-                        if (existingAction != null) {
-                            // sendNextAction is already looping through messages
-                            return
-                        }
-                    }
+                if (enqueueMessage(actionWrapper)) {
+                    return
                 }
             }
         sendNextAction(actionWrapper, queue)
@@ -114,19 +150,14 @@ class ConnectorQueue(private val executor: Executor, private val clock: Clock = 
 
     private fun <T> sendNextAction(
         action: ScheduledAction<T>,
-        queue: ConcurrentLinkedQueue<ScheduledAction<*>>,
+        queue: UserQueue,
     ) {
-        val timeToWait = Duration.between(Instant.now(clock), action.timestamp)
+        val timeToWait = action.delay - queue.getElapsedTime()
         executor.executeBlocking(timeToWait) {
             try {
                 action.joinAndSend()
             } finally {
-                synchronized(queue) {
-                    // remove the current one
-                    queue.poll()
-                    // schedule the next one
-                    queue.peek()
-                }?.also { a ->
+                queue.dequeueMessage()?.also { a ->
                     sendNextAction(a, queue)
                 }
             }

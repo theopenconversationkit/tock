@@ -21,6 +21,7 @@ import ai.tock.bot.connector.messenger.MessengerConnector.Companion.connectorIdT
 import ai.tock.bot.connector.messenger.MessengerConnector.Companion.pageIdConnectorIdMap
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
 import ai.tock.shared.SimpleExecutor
@@ -33,13 +34,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verifyOrder
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 internal class MessengerConnectorTest {
 
@@ -131,9 +132,11 @@ internal class MessengerConnectorTest {
         val userId = PlayerId("userId")
         val action1 = mockk<Action> {
             every { recipientId } returns userId
+            every { metadata } returns ActionMetadata(lastAnswer = false)
         }
         val action2 = mockk<Action> {
             every { recipientId } returns userId
+            every { metadata } returns ActionMetadata(lastAnswer = true)
         }
         val callback = MessengerConnectorCallback("appId")
 

@@ -27,7 +27,9 @@ import java.util.concurrent.Executor
 interface Executor {
 
     /**
-     * Execute a task to another thread.
+     * Schedules a blocking task for execution on another thread.
+     *
+     * This method returns immediately, without waiting for the task to finish.
      *
      * @delay delay the delay before run
      * @param runnable the task to run
@@ -35,17 +37,22 @@ interface Executor {
     fun executeBlocking(delay: Duration, runnable: () -> Unit)
 
     /**
-     * Execute a task to another thread.
+     * Schedules a blocking task for execution on another thread.
+     *
+     * This method returns immediately, without waiting for the task to finish.
      *
      * The returned future will schedule any followup async task on this executor.
      *
      * @delay delay the delay before run
      * @param task the task to run
+     * @return a [CompletableFuture] that is asynchronously completed with the given [task]
      */
     fun <T> executeBlockingTask(delay: Duration = Duration.ZERO, task: () -> T): CompletableFuture<T>
 
     /**
-     * Execute a task to another thread.
+     * Schedules a blocking task for execution on another thread.
+     *
+     * This method returns immediately, without waiting for the task to finish.
      *
      * @param runnable the task to run
      */
@@ -55,6 +62,8 @@ interface Executor {
      * Execute a task to another thread.
      * If an exception is thrown by the blocking function, null is passed to the result function.
      *
+     * This method returns immediately, without waiting for the task to finish.
+     *
      * @param blocking the task to run
      * @param result the result handler
      *
@@ -62,15 +71,19 @@ interface Executor {
     fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit)
 
     /**
-     * Execute a periodic task.
+     * Schedules a periodic task.
      *
-     * @param delay the delay between each other call
+     * This method returns immediately, without waiting for the task to execute.
+     *
+     * @param delay the delay before the first call, and between each following call
      * @param runnable the task to run
      */
     fun setPeriodic(delay: Duration, runnable: () -> Unit): Long = setPeriodic(delay, delay, runnable)
 
     /**
-     * Execute a periodic task.
+     * Schedules a periodic task.
+     *
+     * This method returns immediately, without waiting for the task to execute.
      *
      * @param initialDelay the delay before first call
      * @param delay the delay between each other call
