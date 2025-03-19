@@ -198,6 +198,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     )
                     ensureIndex(
                         Date,
+                        ApplicationId,
+                    )
+                    ensureIndex(
+                        Date,
                         indexOptions = IndexOptions()
                             .expireAfter(flowTransitionStatsDialogAggregationColTTL, TimeUnit.DAYS)
                     )
