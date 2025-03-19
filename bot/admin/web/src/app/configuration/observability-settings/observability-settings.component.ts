@@ -94,7 +94,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   }
 
   private getObservabilitySettingsLoader(): Observable<ObservabilitySettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/observability`;
     return this.rest.get<ObservabilitySettings>(url, (settings: ObservabilitySettings) => settings);
   }
 
@@ -178,7 +178,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
 
       delete formValue['observabilityProvider'];
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+      const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/observability`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (observabilitySettings: ObservabilitySettings) => {
           this.settingsBackup = observabilitySettings;
@@ -372,7 +372,7 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteSettings() {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/observability`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/observability`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();

@@ -39,6 +39,10 @@ const routes: Routes = [
     path: 'rag',
     loadChildren: () => import('./rag/rag.module').then((m) => m.RagModule)
   },
+  {
+    path: 'playground',
+    loadChildren: () => import('./playground/playground.module').then((m) => m.PlaygroundModule)
+  },
   { path: '**', redirectTo: '/language-understanding/inbox' }
 ];
 

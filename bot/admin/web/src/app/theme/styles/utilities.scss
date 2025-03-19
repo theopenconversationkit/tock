@@ -362,3 +362,33 @@ nb-menu {
     }
   }
 }
+
+.scrollbar-narrow::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.scrollbar-narrow::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default .scrollbar-narrow::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default .scrollbar-narrow::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+.nb-theme-default .scrollbar-narrow::-webkit-scrollbar-corner {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark .scrollbar-narrow::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark .scrollbar-narrow::-webkit-scrollbar-track {
+  background: #192038;
+}
+.nb-theme-dark .scrollbar-narrow::-webkit-scrollbar-corner {
+  background: #192038;
+}
