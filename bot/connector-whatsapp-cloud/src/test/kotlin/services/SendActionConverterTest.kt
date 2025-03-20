@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test
 
 class SendActionConverterTest {
     @Test
-    fun `message conversion is correct for `() {
+    fun `message conversion is correct for reply button`() {
         mockkObject(UserHashedIdCache)
         val userId = "4567876543"
         every { UserHashedIdCache.getRealId(userId) } returns userId
