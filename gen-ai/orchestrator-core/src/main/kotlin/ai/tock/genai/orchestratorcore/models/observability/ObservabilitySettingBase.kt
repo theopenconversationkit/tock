@@ -38,5 +38,5 @@ abstract class ObservabilitySettingBase<T>(
 typealias ObservabilitySettingDTO = ObservabilitySettingBase<String>
 typealias ObservabilitySetting = ObservabilitySettingBase<SecretKey>
 
-// Extension functions for DTO conversion
+// Extension functions for DTO conversion'
 fun ObservabilitySetting.toDTO(): ObservabilitySettingDTO = ObservabilitySettingMapper.toDTO(this)

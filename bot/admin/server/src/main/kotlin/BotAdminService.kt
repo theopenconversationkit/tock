@@ -153,6 +153,47 @@ object BotAdminService {
         }
     }
 
+    fun saveAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        return if (dialogReportDAO.annotationExists(dialogId, actionId)) {
+            updateAnnotation(dialogId, actionId, annotationDTO, user)
+        } else {
+            createAnnotation(dialogId, actionId, annotationDTO, user)
+        }
+    }
+
+    private fun createAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotationDTO: BotAnnotationDTO,
+        user: String
+    ): BotAnnotation {
+        val annotation = BotAnnotation(
+            state = annotationDTO.state,
+            reason = annotationDTO.reason,
+            description = annotationDTO.description,
+            groundTruth = annotationDTO.groundTruth,
+            events = mutableListOf(
+                BotAnnotationEventState(
+                    eventId = newId(),
+                    creationDate = Instant.now(),
+                    lastUpdateDate = Instant.now(),
+                    user = user,
+                    before = null,
+                    after = annotationDTO.state.name
+                )
+            ),
+            lastUpdateDate = Instant.now()
+        )
+
+        dialogReportDAO.insertAnnotation(dialogId, actionId, annotation)
+        return annotation
+    }
+
     fun addCommentToAnnotation(
         dialogId: String,
         actionId: String,
@@ -312,39 +353,6 @@ object BotAdminService {
                 }
             }.toMutableList()
         )
-    }
-
-    fun createAnnotation(
-        dialogId: String,
-        actionId: String,
-        annotationDTO: BotAnnotationDTO,
-        user: String
-    ): BotAnnotation {
-        if (dialogReportDAO.annotationExists(dialogId, actionId)) {
-            throw IllegalStateException("An annotation already exists for this action")
-        }
-
-        val annotation = BotAnnotation(
-            state = annotationDTO.state,
-            reason = annotationDTO.reason,
-            description = annotationDTO.description,
-            groundTruth = annotationDTO.groundTruth,
-            events = mutableListOf(),
-            lastUpdateDate = Instant.now()
-        )
-
-        val event = BotAnnotationEventState(
-            eventId = newId(),
-            creationDate = Instant.now(),
-            lastUpdateDate = Instant.now(),
-            user = user,
-            before = null,
-            after = annotationDTO.state.name
-        )
-
-        annotation.events.add(event)
-        dialogReportDAO.insertAnnotation(dialogId, actionId, annotation)
-        return annotation
     }
 
     fun createOrGetIntent(

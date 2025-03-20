@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.annotation
+package ai.tock.bot.engine.dialog
 
-
-import java.time.Instant
-
-data class BotAnnotation(
-    var state: BotAnnotationState,
-    var reason: BotAnnotationReasonType?,
-    var description: String,
-    var groundTruth: String?,
-    val events: MutableList<BotAnnotationEvent>,
-    val creationDate: Instant = Instant.now(),
-    var lastUpdateDate: Instant = Instant.now(),
-)
+enum class SortDirection {
+    ASC,
+    DESC
+}

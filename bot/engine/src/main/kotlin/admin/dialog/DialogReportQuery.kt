@@ -16,7 +16,10 @@
 
 package ai.tock.bot.admin.dialog
 
+import ai.tock.bot.admin.annotation.BotAnnotationReasonType
+import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.engine.dialog.SortDirection
 import ai.tock.bot.engine.user.PlayerId
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -60,5 +63,15 @@ data class DialogReportQuery(
 
     val intentsToHide : Set<String> =  emptySet(),
 
-    val isGenAiRagDialog: Boolean? = null
+    val isGenAiRagDialog: Boolean? = null,
+
+    val withAnnotations: Boolean? = null,
+    val annotationStates: Set<BotAnnotationState> = emptySet(),
+    val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),
+    val annotationSort: SortDirection? = null,
+    val dialogSort: SortDirection? = null,
+    val annotationCreationDateFrom: ZonedDateTime? = null,
+    val annotationCreationDateTo: ZonedDateTime? = null,
+    val dialogCreationDateFrom: ZonedDateTime? = null,
+    val dialogCreationDateTo: ZonedDateTime? = null,
 )
