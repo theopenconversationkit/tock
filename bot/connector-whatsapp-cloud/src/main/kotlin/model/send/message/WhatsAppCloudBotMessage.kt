@@ -20,9 +20,13 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudConnectorMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.*
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotImageMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotLocationMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplateMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
-import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import ai.tock.bot.engine.message.Choice
@@ -52,13 +56,13 @@ abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppCloudConnectorType
 
-    @get:JsonProperty("messaging_product")
-    abstract val messagingProduct: String
-
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppCloudBotRecipientType
 
-    internal abstract fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage
+    /**
+     * Processes a bot message in preparation for sending it to the WhatsApp cloud API
+     */
+    internal abstract fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage
 
     @get:JsonIgnore
     val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"

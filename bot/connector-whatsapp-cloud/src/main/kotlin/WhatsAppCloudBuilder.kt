@@ -22,8 +22,34 @@ import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.send.QuickReply
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.*
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.ButtonSubType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.ComponentType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.ImageId
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Language
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.ParameterType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.ParametersUrl
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.TextParameter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppBotRow
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotAction
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButtonReply
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionSection
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotBody
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotFooter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotHeaderType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotImage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotImageMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractive
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveHeader
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotMediaImage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplate
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplateMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsappTemplateComponent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
 import ai.tock.bot.definition.StoryHandlerDefinition
@@ -37,6 +63,7 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 private val errorOnInvalidMessages = booleanProperty("tock_whatsapp_error_on_invalid_messages", false)
+private val uploadImagesToWhatsapp = booleanProperty("tock_whatsapp_reupload_images", true)
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp_cloud"
 const val WHATSAPP_BUTTONS_TITLE_MAX_LENGTH = 50
@@ -71,6 +98,19 @@ fun <T : Bus<T>> T.sendToWhatsAppCloud(
     return this
 }
 
+/**
+ * Sends an WhatsApp message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [whatsAppCloudConnectorType].
+ */
+fun <T : Bus<T>> T.endForWhatsAppCloud(
+    messageProvider: T.() -> WhatsAppCloudBotMessage,
+    delay: Long = defaultDelay(currentAnswerIndex)
+): T {
+    if (isCompatibleWith(whatsAppCloudConnectorType)) {
+        withMessage(messageProvider(this))
+        end(delay)
+    }
+    return this
+}
 
 /**
  * Adds a WhatsApp [ConnectorMessage] if the current connector is WhatsApp.
@@ -91,7 +131,6 @@ fun BotBus.whatsAppCloudText(
     previewUrl: Boolean = false
 ): WhatsAppCloudBotTextMessage =
     WhatsAppCloudBotTextMessage(
-        messagingProduct = "whatsapp",
         text = TextContent(translate(text).toString()),
         recipientType = WhatsAppCloudBotRecipientType.individual,
         userId = userId.id,
@@ -101,20 +140,44 @@ fun BotBus.whatsAppCloudText(
 /**
  * Creates an [Image Message](https://developers.facebook.com/docs/whatsapp/cloud-api/messages/image-messages)
  *
- * @param id the URL of the image
+ * @param url the URL of the image
+ * @param caption a caption to display below the image
+ * @param uploadToWhatsapp if `true`, the image will be uploaded to Meta's servers (recommended)
+ */
+fun BotBus.whatsAppCloudImage(
+    url: String,
+    caption: CharSequence? = null,
+    uploadToWhatsapp: Boolean = uploadImagesToWhatsapp,
+): WhatsAppCloudBotImageMessage =
+    WhatsAppCloudBotImageMessage(
+        image = WhatsAppCloudBotImage.LinkedImage(
+            url = url,
+            caption = translate(caption).toString().checkLength(WHATSAPP_IMAGE_CAPTION_MAX_LENGTH),
+            uploadToWhatsapp,
+        ),
+        recipientType = WhatsAppCloudBotRecipientType.individual,
+        userId = userId.id,
+    )
+
+/**
+ * Creates an [Image Message](https://developers.facebook.com/docs/whatsapp/cloud-api/messages/image-messages)
+ *
+ * @param id a unique ID for the image
+ * @param imageBytes a byte array containing the image data
  * @param caption a caption to display below the image
  */
 fun BotBus.whatsAppCloudImage(
     id: String,
-    link: String? = null,
+    imageBytes: ByteArray,
     caption: CharSequence? = null,
+    mimeType: String = "image/png",
 ): WhatsAppCloudBotImageMessage =
     WhatsAppCloudBotImageMessage(
-        messagingProduct = "whatsapp",
-        image = WhatsAppCloudBotImage(
+        image = WhatsAppCloudBotImage.UploadedImage(
             id = id,
-            link = link,
-            caption = translate(caption).toString().checkLength(WHATSAPP_IMAGE_CAPTION_MAX_LENGTH)
+            bytes = imageBytes,
+            mimeType = mimeType,
+            caption = translate(caption).toString().checkLength(WHATSAPP_IMAGE_CAPTION_MAX_LENGTH),
         ),
         recipientType = WhatsAppCloudBotRecipientType.individual,
         userId = userId.id,
@@ -175,7 +238,6 @@ internal fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     replies: List<QuickReply>,
     header: WhatsAppCloudBotInteractiveHeader?
 ) = WhatsAppCloudBotInteractiveMessage(
-    messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.button,
@@ -275,7 +337,6 @@ fun I18nTranslator.whatsAppCloudUrlButtonMessage(
     header: CharSequence? = null,
     footer: CharSequence? = null,
 ): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
-    messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.cta_url,
@@ -407,7 +468,6 @@ fun I18nTranslator.whatsAppCloudListMessage(
     footer: CharSequence? = null,
 ): WhatsAppCloudBotInteractiveMessage {
     return WhatsAppCloudBotInteractiveMessage(
-        messagingProduct = "whatsapp",
         recipientType = WhatsAppCloudBotRecipientType.individual,
         interactive = WhatsAppCloudBotInteractive(
             type = WhatsAppCloudBotInteractiveType.list,
@@ -486,7 +546,6 @@ fun I18nTranslator.whatsAppCloudListSection(title: CharSequence, rows: List<Quic
 fun I18nTranslator.whatsAppCloudReplyLocationMessage(
     text: CharSequence
 ): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
-    messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.location_request_message,
@@ -616,7 +675,7 @@ fun I18nTranslator.whatsAppCloudNlpQuickReply(
 fun I18nTranslator.whatsAppBuildCloudTemplateMessage(
     templateName: String,
     languageCode: String,
-    components: List<Component>
+    components: List<WhatsappTemplateComponent>
 ) = whatsAppCloudTemplateMessage(templateName, languageCode, components)
 
 /**
@@ -627,10 +686,9 @@ fun I18nTranslator.whatsAppBuildCloudTemplateMessage(
 fun I18nTranslator.whatsAppCloudTemplateMessage(
     templateName: String,
     languageCode: String,
-    components: List<Component>
+    components: List<WhatsappTemplateComponent>
 ): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
-        messagingProduct = "whatsapp",
         recipientType = WhatsAppCloudBotRecipientType.individual,
         template = WhatsAppCloudBotTemplate(
             name = templateName,
@@ -645,7 +703,7 @@ fun I18nTranslator.whatsAppCloudTemplateMessage(
 @Deprecated("renamed", ReplaceWith("whatsAppCloudTemplateMessageCarousel(templateName, components, languageCode)"))
 fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
     templateName: String,
-    components: List<Component.Card>,
+    components: List<WhatsappTemplateComponent.Card>,
     languageCode: String
 ) = whatsAppCloudTemplateMessageCarousel(templateName, components, languageCode)
 
@@ -656,11 +714,10 @@ fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
  */
 fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
     templateName: String,
-    components: List<Component.Card>,
+    components: List<WhatsappTemplateComponent.Card>,
     languageCode: String
 ): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
-        messagingProduct = "whatsapp",
         recipientType = WhatsAppCloudBotRecipientType.individual,
         template = WhatsAppCloudBotTemplate(
             name = templateName,
@@ -668,7 +725,7 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
                 code = languageCode,
             ),
             components = listOf(
-                Component.Carousel(
+                WhatsappTemplateComponent.Carousel(
                     type = ComponentType.CAROUSEL,
                     cards = components
                 )
@@ -677,7 +734,7 @@ fun I18nTranslator.whatsAppCloudTemplateMessageCarousel(
     )
 }
 
-fun <T : Bus<T>> T.whatsAppCloudCardCarousel(cardIndex: Int, components: List<Component>): Component.Card {
+fun <T : Bus<T>> T.whatsAppCloudCardCarousel(cardIndex: Int, components: List<WhatsappTemplateComponent>): WhatsappTemplateComponent.Card {
     return whatsAppCloudTemplateCard(
         cardIndex, components
     )
@@ -693,8 +750,8 @@ fun <T : Bus<T>> T.whatsAppCloudCardCarousel(cardIndex: Int, components: List<Co
  */
 fun <T : Bus<T>> T.whatsAppCloudTemplateCard(
     cardIndex: Int,
-    components: List<Component>
-): Component.Card = Component.Card(
+    components: List<WhatsappTemplateComponent>
+): WhatsappTemplateComponent.Card = WhatsappTemplateComponent.Card(
     cardIndex = cardIndex,
     components = components
 )
@@ -711,7 +768,7 @@ fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
  */
 fun <T : Bus<T>> T.whatsAppCloudTemplateBody(
     parameters: List<TextParameter>
-): Component.Body = Component.Body(
+): WhatsappTemplateComponent.Body = WhatsappTemplateComponent.Body(
     type = ComponentType.BODY,
     parameters = parameters
 )
@@ -736,7 +793,7 @@ fun whatsAppCloudButtonTemplate(
     index: Int,
     subType: ButtonSubType,
     parameters: List<PayloadParameter>
-): Component.Button = Component.Button(
+): WhatsappTemplateComponent.Button = WhatsappTemplateComponent.Button(
     type = ComponentType.BUTTON,
     subType = subType,
     index = index.toString(),
@@ -747,7 +804,7 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: Int,
     textButton: String,
     payload: String?
-): Component.Button = whatsAppCloudButtonTemplate(
+): WhatsappTemplateComponent.Button = whatsAppCloudButtonTemplate(
     index, ButtonSubType.QUICK_REPLY, listOf(
         whatsAppCloudPayloadParameterTemplate(textButton, payload, ParameterType.PAYLOAD)
     )
@@ -768,7 +825,7 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters()
-): Component.Button = whatsAppCloudPostbackButton(
+): WhatsappTemplateComponent.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
     // Add an index parameter to ensure that all buttons in the list have unique ids
@@ -779,7 +836,7 @@ fun <T : Bus<T>> T.whatsAppCloudNLPPostbackButton(
     index: Int,
     title: CharSequence,
     textToSend: CharSequence = title,
-): Component.Button = whatsAppCloudPostbackButton(
+): WhatsappTemplateComponent.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
     payload = SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
@@ -788,7 +845,7 @@ fun <T : Bus<T>> T.whatsAppCloudNLPPostbackButton(
 fun <T : Bus<T>> T.whatsAppCloudUrlButton(
     index: Int,
     textButton: String,
-): Component.Button = whatsAppCloudButtonTemplate(
+): WhatsappTemplateComponent.Button = whatsAppCloudButtonTemplate(
     index, ButtonSubType.URL, listOf(
         whatsAppCloudPayloadParameterTemplate(textButton, null, ParameterType.TEXT)
     )
@@ -813,7 +870,7 @@ fun whatsAppCloudHeaderTemplate(
 
 fun whatsAppCloudTemplateImageHeader(
     imageId: String
-): Component.Header = Component.Header(
+): WhatsappTemplateComponent.Header = WhatsappTemplateComponent.Header(
     type = ComponentType.HEADER,
     parameters = listOf(
         HeaderParameter.Image(

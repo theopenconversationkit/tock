@@ -22,62 +22,36 @@ This page actually lists:
 - The [_connectors_](canaux.md#connectors-provided-with-tock) provided with the Tock distribution:
 
 ![logo messenger](../../img/messenger.png "whatsapp"){style="width:50px;"}
-
 ![Logo slack](../../img/slack.png "Slack"){style="width: 75px;"}
-
 ![Logo Google assistant](../../img/googelassist.png "google assisstant"){style="width: 70px;"}
-
 ![logo google home](../../img/googlehome.png "google home "){style="width:50px;"}
-
 ![Logo Alexa](../../img/alexa2.png "alexa"){style="width: 75px;"}
-
 ![logo Rocket rachat](../../img/rocketrachat.png "rocket rachat"){style="width:50px;"}
-
 ![logo whatsapp](../../img/whatsapp.png "whatsapp"){style="width:50px;"}
-
 ![logo teams](../../img/teams.png "teams"){style="width:50px;"}
-
 ![logo BusinessChat Logo](../../img/message.png "BusinessChat Logo"){style="width:50px;"}
-
-
 ![logo twitter](../../img/twitter.png "twitter"){style="width:50px;"}
-
- 
 ![logo google chat ](../../img/ggchat.png "google chat"){style="width:50px;"}
-
 ![logo mattermost](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
-
 ![logo web](../../img/web.png "web"){style="width:50px;"}
-
 ![logo test](../../img/test.jpeg "test"){style="width:50px;"}
 
 - The [kits using the _Web connector_](canaux.md#integrations-via-the-web-connector) to integrate other channels:
 
 ![logo React](../../img/React.png "React"){style="width:50px;"}
-
 ![logo flutter](../../img/flutter.png "allo media"){style="width:50px;"}
-
-
 ![logo Sharepoint](../../img/sharepoint.png "Sharepopint"){style="width:50px;"}
 
 - The [possible integrations for voice processing](canaux.md#voice-technologies):
 
 ![logo android](../../img/android.png "allo media"){style="width:50px;"}
-
 ![Logo Google assistant](../../img/googelassist.png "google assistant"){style="width: 70px;"}
-
 ![logo google home](../../img/googlehome.png "google home "){style="width:50px;"}
-
 ![logo teams](../../img/teams.png "teams"){style="width:50px;"}
-
 ![logo ios](../../img/ios.png "ios"){style="width:50px;"}
-
 ![logo BusinessChat Logo](../../img/message.png "BusinessChat Logo"){style="width:50px;"}
-
 ![Logo Alexa](../../img/alexa2.png "Alexa"){style="width: 75px;"}
-
- ![Logo voxygen](../../img/voxygen.png "Voxygen"){style="width: 100px;"}
-
+![Logo voxygen](../../img/voxygen.png "Voxygen"){style="width: 100px;"}
 ![Logo nuance](../../img/nuance.png "Nuance"){style="width: 75px;"}
 
 ## Connectors provided with Tock
@@ -167,10 +141,14 @@ To learn more about this connector, see its sources and its _README_ in the fold
 
 * **Channel** : [WhatsApp from Facebook](https://www.whatsapp.com/)
 * **Type** : text
-* **Status** : Tock connector used in production since 2019
+* **Status** :
+    * [*On-Premise API*](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) : Tock connector
+      used in production since 2019, deprecated following the sunsetting of the API by Meta
+    * [*Cloud API*](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp-cloud) : Tock connector
+      used in production since 2024
 
 To learn more about this connector, see its sources and its _README_ in the folder
-[connector-whatsapp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) on GitHub.
+[connector-whatsapp-cloud](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp-cloud) on GitHub.
 
 ### Teams
 
@@ -201,7 +179,7 @@ To learn more about this connector, see its sources and its _README_ in the fold
 
 * **Channel** : [Twitter](https://twitter.com/) (private messages)
 * **Type** : text
-* **Status** : Tock connector used in production since 2019
+* **Status** : Tock connector previously used in production, no active support
 
 To learn more about this connector, see its sources and its _README_ in the folder
 [connector-twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter) on GitHub.

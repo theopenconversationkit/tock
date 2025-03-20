@@ -17,21 +17,20 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
 data class WhatsAppCloudBotLocationMessage(
-        override val messagingProduct: String,
         val location: WhatsAppCloudBotLocation,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.location, userId) {
-    override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
+    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage =
             WhatsAppCloudSendBotLocationMessage(
-                    messagingProduct,
                     location,
                     recipientType,
                     recipientId
