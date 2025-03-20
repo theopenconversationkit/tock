@@ -37,6 +37,7 @@ import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
@@ -70,6 +71,35 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Handle the RAG answer
             if (noAnswerStory == null && answer != null) {
                 logger.info { "Send RAG answer." }
+
+                val publicTraceUrl = observabilityInfo?.let {
+                    // Get observability configuration
+                    val observabilityConfig = botDefinition.observabilityConfiguration
+                    // If observability configuration exists and contain a public URL, replace the trace URL
+                    if (observabilityConfig?.enabled == true && observabilityConfig.setting is LangfuseObservabilitySetting<*>) {
+                        val publicUrl = (observabilityConfig.setting as LangfuseObservabilitySetting<*>).publicUrl
+                        if (!publicUrl.isNullOrBlank()) {
+                            it.traceUrl.replace(
+                                (observabilityConfig.setting as LangfuseObservabilitySetting<*>).url,
+                                publicUrl
+                            )
+                        } else {
+                            it.traceUrl
+                        }
+                    } else {
+                        it.traceUrl
+                    }
+                }
+
+                // Modified ObservabilityInfo
+                val modifiedObservabilityInfo = observabilityInfo?.let {
+                    ObservabilityInfo(
+                        traceId = it.traceId,
+                        traceName = it.traceName,
+                        traceUrl = publicTraceUrl ?: it.traceUrl
+                    )
+                }
+
                 send(
                     SendSentenceWithFootnotes(
                         botId, connectorId, userId, text = answer.text, footnotes = answer.footnotes.map {
@@ -79,7 +109,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 it.score
                             )
                         }.toMutableList(),
-                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = observabilityInfo)
+                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
                     )
                 )
             } else {

@@ -119,7 +119,7 @@ async def get_observability_provider_setting_by_id(
             provider=ObservabilityProvider.LANGFUSE,
             secret_key=RawSecretKey(secret='sk-********************be8f'),
             public_key='pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
-            url='https://cloud.langfuse.com'
+            url='https://cloud.langfuse.com',
         )
 
 

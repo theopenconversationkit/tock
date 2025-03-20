@@ -21,5 +21,6 @@ import ai.tock.shared.security.key.HasSecretKey
 data class LangfuseObservabilitySetting<T>(
     override val secretKey: T,
     val publicKey: String,
-    val url: String
+    val url: String,
+    val publicUrl : String? = null,
 ) : ObservabilitySettingBase<T>(ObservabilityProvider.Langfuse), HasSecretKey<T>
