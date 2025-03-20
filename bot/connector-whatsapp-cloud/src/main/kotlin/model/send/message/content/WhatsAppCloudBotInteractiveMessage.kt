@@ -16,31 +16,72 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
+import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericMessage
 
-data class WhatsAppCloudBotInteractiveMessage (
-        override val messagingProduct: String,
-        val interactive: WhatsAppCloudBotInteractive,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val userId: String? = null,
-): WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.interactive, userId) {
-    override fun toGenericMessage(): GenericMessage? {
-        val texts = mapOf(GenericMessage.TEXT_PARAM to (interactive.body?.text ?: ""))
+data class WhatsAppCloudBotInteractiveMessage(
+    val interactive: WhatsAppCloudBotInteractive,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val userId: String? = null,
+) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.interactive, userId) {
+    override fun toGenericMessage(): GenericMessage {
+        val texts = listOfNotNull(
+            interactive.header?.text?.let { GenericMessage.TITLE_PARAM to it },
+            GenericMessage.TEXT_PARAM to (interactive.body?.text ?: "")
+        ).toMap()
         return GenericMessage(
-                texts = texts,
-                choices = interactive.action?.buttons?.map { it.toChoice() }
-                        ?: interactive.action?.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
-                        ?: listOf()
+            texts = texts,
+            attachments = listOfNotNull(
+                interactive.header?.image?.id?.let { Attachment(it, SendAttachment.AttachmentType.image) },
+                interactive.header?.video?.id?.let { Attachment(it, SendAttachment.AttachmentType.video) },
+            ),
+            choices = interactive.action.buttons?.map { it.toChoice() }
+                ?: interactive.action.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
+                ?: listOf()
         )
     }
 
-    override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotInteractiveMessage(
-                    messagingProduct,
-                    interactive,
-                    recipientType,
-                    recipientId
-            )
+    override fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String
+    ): WhatsAppCloudSendBotMessage {
+        val action = interactive.action
+        val updatedButtons = action.buttons.takeIf { !it.isNullOrEmpty() }?.map { btn ->
+            btn.copy(reply = btn.reply.copy(id = apiService.shortenPayload(btn.reply.id)))
+        }
+        val updatedSections = action.sections.takeIf { !it.isNullOrEmpty() }?.map { section ->
+            section.copy(rows = section.rows?.map { row ->
+                row.copy(id = apiService.shortenPayload(row.id))
+            })
+        }
+        val updatedHeader = interactive.header?.let { header ->
+            if (header.image != null) {
+                header.copy(
+                    image = WhatsAppCloudBotMediaImage(
+                        id = apiService.getUploadedImageId(
+                            header.image.id
+                        )
+                    )
+                )
+            } else {
+                header
+            }
+        }
+        val updatedAction = interactive.action.copy(
+            buttons = updatedButtons,
+            sections = updatedSections,
+        )
+        return WhatsAppCloudSendBotInteractiveMessage(
+            interactive.copy(header = updatedHeader, action = updatedAction),
+            recipientType,
+            recipientId,
+        )
+    }
 }

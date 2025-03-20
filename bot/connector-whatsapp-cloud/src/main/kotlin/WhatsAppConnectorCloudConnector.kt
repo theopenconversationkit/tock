@@ -63,17 +63,18 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val whatsAppBusinessAccountId: String,
     private val metaApplicationId: String?,
     private val path: String,
-    private val token: String,
     private val verifyToken: String?,
-    private val mode: String,
-    internal val client: WhatsAppCloudApiClient,
-    private val requestFilter: RequestFilter
-
+    private val requestFilter: RequestFilter,
+    client: WhatsAppCloudApiClient,
 ) : ConnectorBase(whatsAppCloudConnectorType) {
 
     companion object {
+        private const val WEBHOOK_SUBSCRIBE_MODE = "subscribe"
+
         private val logger = KotlinLogging.logger {}
         private val syncTemplates = booleanProperty("tock_whatsapp_sync_templates", false)
+        private val restrictedPhoneNumbers = listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList())
+            .toSet().takeIf { it.isNotEmpty() }
         private val templateProviders: List<WhatsappTemplateProvider> by lazy {
             ServiceLoader.load(WhatsappTemplateProvider::class.java).toList()
         }
@@ -82,9 +83,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
     private val messageQueue = ConnectorQueue(executor)
-
-    private val restrictedPhoneNumbers =
-        listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -96,7 +94,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     val modeHub = queryParams.get("hub.mode")
                     val verifyTokenMeta = queryParams.get("hub.verify_token")
                     val challenge = queryParams.get("hub.challenge")
-                    if (modeHub == mode && verifyToken == verifyTokenMeta) {
+                    if (modeHub == WEBHOOK_SUBSCRIBE_MODE && verifyToken == verifyTokenMeta) {
                         logger.info("WEBHOOK_VERIFIED")
                         context.response().setStatusCode(200).end(challenge)
                     } else {
@@ -216,12 +214,12 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     restrictedPhoneNumbers?.contains(it.from) ?: true
                 }.forEach { message: WhatsAppCloudMessage ->
                     executor.executeBlocking {
-                        val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService, token)
+                        val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
                         if (event != null) {
                             controller.handle(
                                 event,
                                 ConnectorData(WhatsAppConnectorCloudCallback(
-                                    applicationId = event.applicationId,
+                                    applicationId = event.connectorId,
                                     phoneNumber = message.from,
                                     username = change.value.contacts.find { it.waId == message.from }?.profile?.name,
                                 ))
@@ -238,13 +236,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is Action) {
             messageQueue.add(event, delayInMs, prepare = { action ->
-                SendActionConverter.toBotMessage(action)?.let {
-                    whatsAppCloudApiService.prepareMessage(
-                        phoneNumberId, token, it
-                    )
-                }
+                SendActionConverter.toBotMessage(whatsAppCloudApiService, action)
             }, send = {
-                whatsAppCloudApiService.sendMessage(phoneNumberId, token, it)
+                whatsAppCloudApiService.sendMessage(phoneNumberId, it)
             })
         }
     }

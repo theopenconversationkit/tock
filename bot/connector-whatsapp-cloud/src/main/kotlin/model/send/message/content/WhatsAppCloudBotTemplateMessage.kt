@@ -17,28 +17,31 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
 data class WhatsAppCloudBotTemplateMessage(
-        override val messagingProduct: String,
-        val template: WhatsAppCloudBotTemplate,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val userId: String? = null,
+    val template: WhatsAppCloudBotTemplate,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val userId: String? = null,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.template, userId) {
-    override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotTemplateMessage(
-                    messagingProduct,
-                    template,
-                    recipientType,
-                    recipientId
-            )
+    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage {
+        val updatedComponents = template.components
+        apiService.replaceWithRealImageId(updatedComponents, recipientId)
 
-    override fun toGenericMessage(): GenericMessage? =
-            GenericMessage(
-                    texts = mapOf(GenericMessage.TEXT_PARAM to "template"),
-            )
+        return WhatsAppCloudSendBotTemplateMessage(
+            template.copy(components = updatedComponents),
+            recipientType,
+            recipientId
+        )
+    }
+
+    override fun toGenericMessage(): GenericMessage =
+        GenericMessage(
+            texts = mapOf(GenericMessage.TEXT_PARAM to "template"),
+        )
 }

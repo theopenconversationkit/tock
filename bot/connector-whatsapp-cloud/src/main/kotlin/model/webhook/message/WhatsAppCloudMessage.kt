@@ -16,7 +16,9 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.*
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ContextContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -34,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = WhatsAppCloudImageMessage::class, name = "image"),
         JsonSubTypes.Type(value = WhatsAppCloudInteractiveMessage::class, name = "interactive"),
         JsonSubTypes.Type(value = WhatsAppCloudOrderMessage::class, name = "order"),
-        JsonSubTypes.Type(value = WhatsAppCloudStrickerMessage::class, name = "sticker"),
+        JsonSubTypes.Type(value = WhatsAppCloudStickerMessage::class, name = "sticker"),
         JsonSubTypes.Type(value = WhatsAppCloudSystemMessage::class, name = "system"),
         JsonSubTypes.Type(value = WhatsAppCloudVideoMessage::class, name = "video"),
         JsonSubTypes.Type(value = WhatsAppCloudLocationMessage::class, name = "location")

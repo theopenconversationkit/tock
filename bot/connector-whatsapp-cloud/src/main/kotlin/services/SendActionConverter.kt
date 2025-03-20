@@ -16,41 +16,55 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.services
 
-import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorException
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType.individual
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType.individual
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
-
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.error
+import mu.KotlinLogging
 
 
 object SendActionConverter {
+    private val logger = KotlinLogging.logger {}
 
-    fun toBotMessage(action: Action): WhatsAppCloudSendBotMessage? {
+    fun toBotMessage(whatsAppCloudApiService: WhatsAppCloudApiService, action: Action): WhatsAppCloudSendBotMessage? {
         return if (action is SendSentence) {
-            (action.message(whatsAppCloudConnectorType) as? WhatsAppCloudBotMessage)
-                ?.let {
-                    it.toSendBotMessage(
-                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) }
-                    )
-                }
-                ?: action.stringText?.let { text ->
-                    WhatsAppCloudSendBotTextMessage(
-                        "whatsapp",
-                        TextContent(text),
-                        individual,
-                        UserHashedIdCache.getRealId(action.recipientId.id)
-                    )
-                } ?: error("null text in action $action")
+            val whatsappMessage = action.message(whatsAppCloudConnectorType)
+            val stringText = action.stringText
 
+            if (whatsappMessage is WhatsAppCloudBotMessage) {
+                prepareBotMessage(whatsappMessage, whatsAppCloudApiService, action.recipientId)
+            } else if (stringText != null) {
+                WhatsAppCloudSendBotTextMessage(
+                    TextContent(stringText),
+                    individual,
+                    UserHashedIdCache.getRealId(action.recipientId.id)
+                )
+            } else {
+                throw ConnectorException("Action has neither bare text nor whatsapp-specific connector message: $action")
+            }
         } else {
             null
         }
+    }
 
+    private fun prepareBotMessage(
+        message: WhatsAppCloudBotMessage,
+        apiService: WhatsAppCloudApiService,
+        recipientId: PlayerId
+    ) = try {
+        message.prepareMessage(
+            apiService,
+            (message.userId ?: recipientId.id).let { id -> UserHashedIdCache.getRealId(id) })
+    } catch (e: Exception) {
+        logger.error(e)
+        null
     }
 }
