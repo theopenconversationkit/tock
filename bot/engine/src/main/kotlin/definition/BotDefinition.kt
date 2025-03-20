@@ -57,7 +57,7 @@ interface BotDefinition : I18nKeyProvider {
          * Convenient default value in ms to wait before next answer sentence. 1s by default.
          */
         @Volatile
-        var defaultBreath: Long = longProperty("tock_bot_breath_ms", 1000L)
+        var defaultBreath: Long = longProperty("tock_bot_default_breath_ms", 1000L)
 
         /**
          * The minimum delay between two consecutive messages,
