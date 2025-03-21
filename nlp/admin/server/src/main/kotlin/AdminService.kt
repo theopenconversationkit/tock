@@ -315,4 +315,15 @@ object AdminService {
             i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(1)
         }
     }
+
+    fun deleteNamespaceIfEmpty(namespace: String) {
+        // Check that no application is linked to namespace
+        if (FrontClient.getApplications().any { it.namespace == namespace }) {
+            throw IllegalStateException("Namespace '$namespace' still contains applications.")
+        }
+        // Delete all user/namespace associations
+        FrontClient.getUsers(namespace).forEach { userNamespace ->
+            FrontClient.deleteNamespace(userNamespace.login, namespace)
+        }
+    }
 }
