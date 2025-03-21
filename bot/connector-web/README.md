@@ -251,3 +251,27 @@ This connector can process [Markdown formatting](https://daringfireball.net/proj
 This feature can be enabled by setting the `tock_web_enable_markdown` property to `true`.
 When Markdown processing is enabled, the text content of each message is rendered with a Markdown to HTML converter before being sent to the client.
 Note that at the current time, only the main text body is rendered - markdown in cards and buttons is not supported yet.
+
+### Web Security Modes
+
+Different security modes are available for the web connector. The selected mode is configured during bot creation :
+
+### 1. `DEFAULT`
+- If the environment variable `env.tock_web_cookie_auth` is set to `true`, the `COOKIES` mode is applied.
+- Otherwise, the `PASSTHROUGH` mode is used, meaning no authentication is enforced.
+
+### 2. `COOKIES`
+- This mode retrieves the `tock_user_id` cookie to authenticate the user.
+- The system relies on session-based authentication using browser cookies.
+
+### 3. `PASSTHROUGH`
+- This mode allows all requests to pass through without any security enforcement.
+- No authentication or authorization checks are performed.
+
+### 4. `JWT`
+- This mode validates JSON Web Tokens (JWT) included in requests.
+- It checks the signature, ensures the token has not been revoked, and manages user authorization.
+- This mode is recommended for stateless authentication in secure environments.
+- The implementation of JWT validation is not provided by default, as each company has its own approach to verifying tokens.
+- To use this mode, you must provide an implementation using Java's Service Loader mechanism.
+
