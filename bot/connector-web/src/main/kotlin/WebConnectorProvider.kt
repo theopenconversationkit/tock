@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 
 private const val WEB_SECURITY_MODE_PARAM = "web_security_mode"
 
-val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
+private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
 
 internal object WebConnectorProvider : ConnectorProvider {
 

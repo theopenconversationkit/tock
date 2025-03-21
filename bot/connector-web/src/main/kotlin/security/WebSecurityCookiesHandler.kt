@@ -36,6 +36,7 @@ class WebSecurityCookiesHandler : WebSecurityHandler {
 
     override fun handle(routingContext: RoutingContext) {
         try {
+            logger.debug { "Get or create a cookie for the user ID." }
             executor.executeBlocking {
                 routingContext.put(TOCK_USER_ID, getOrCreateUserIdCookie(routingContext))
                 routingContext.next()
@@ -45,37 +46,37 @@ class WebSecurityCookiesHandler : WebSecurityHandler {
             routingContext.fail(e)
         }
     }
-}
 
-/**
- * Retrieves the value of the tock_user_id cookie or generates it if the user agent did not send such a cookie
- *
- * If the user agent does not have the cookie, or if a cookie Max-Age is specified, this method also instructs
- * the user agent to create/refresh it.
- */
-fun getOrCreateUserIdCookie(context: RoutingContext): String {
-    val tockUserId = context.request().getCookie(TOCK_USER_ID)?.value
+    /**
+     * Retrieves the value of the tock_user_id cookie or generates it if the user agent did not send such a cookie
+     *
+     * If the user agent does not have the cookie, or if a cookie Max-Age is specified, this method also instructs
+     * the user agent to create/refresh it.
+     */
+    private fun getOrCreateUserIdCookie(context: RoutingContext): String {
+        val tockUserId = context.request().getCookie(TOCK_USER_ID)?.value
 
-    return if (tockUserId != null && cookieAuthMaxAge < 0) {
-        tockUserId // no need to refresh an existing session cookie, it would be a waste of bandwidth
-    } else {
-        val cookieValue = tockUserId ?: UUID.randomUUID().toString()
+        return if (tockUserId != null && cookieAuthMaxAge < 0) {
+            tockUserId // no need to refresh an existing session cookie, it would be a waste of bandwidth
+        } else {
+            val cookieValue = tockUserId ?: UUID.randomUUID().toString()
 
-        val cookie = Cookie.cookie(TOCK_USER_ID, cookieValue)
-            .setHttpOnly(true)
-            .setSecure(true)
-            .setSameSite(CookieSameSite.NONE)   // bot backend may not be on the same domain as the website frontend
+            val cookie = Cookie.cookie(TOCK_USER_ID, cookieValue)
+                .setHttpOnly(true)
+                .setSecure(true)
+                .setSameSite(CookieSameSite.NONE)   // bot backend may not be on the same domain as the website frontend
 
-        if (cookieAuthMaxAge >= 0) {
-            cookie.setMaxAge(cookieAuthMaxAge)
+            if (cookieAuthMaxAge >= 0) {
+                cookie.setMaxAge(cookieAuthMaxAge)
+            }
+
+            if (cookieAuthPath != null) {
+                cookie.setPath(cookieAuthPath)
+            }
+
+            context.response().addCookie(cookie)
+
+            cookieValue
         }
-
-        if (cookieAuthPath != null) {
-            cookie.setPath(cookieAuthPath)
-        }
-
-        context.response().addCookie(cookie)
-
-        cookieValue
     }
 }

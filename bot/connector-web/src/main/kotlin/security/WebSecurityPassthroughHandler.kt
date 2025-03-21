@@ -24,7 +24,7 @@ class WebSecurityPassthroughHandler : WebSecurityHandler {
     private val logger = KotlinLogging.logger {}
 
     override fun handle(routingContext: RoutingContext) {
-        logger.info { "Nothing to do." }
+        logger.debug { "Nothing to do." }
         routingContext.next()
     }
 }

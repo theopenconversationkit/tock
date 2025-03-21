@@ -24,7 +24,6 @@ import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.web.channel.Channels
 import ai.tock.bot.connector.web.security.WebSecurityCookiesHandler
-import ai.tock.bot.connector.web.security.getOrCreateUserIdCookie
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
@@ -54,21 +53,15 @@ import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.listProperty
-import ai.tock.shared.longProperty
-import ai.tock.shared.property
-import ai.tock.shared.propertyOrNull
-import ai.tock.shared.provide
+import ai.tock.shared.security.auth.spi.TOCK_USER_ID
+import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.sendSsePing
 import ai.tock.shared.vertx.setupSSE
-import ai.tock.shared.security.auth.spi.TOCK_USER_ID
-import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.Future
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
@@ -98,7 +91,7 @@ val webConnectorUseExtraHeadersAsMetadata: Boolean =
 class WebConnector internal constructor(
     val connectorId: String,
     val path: String,
-    val webSecurityHandler: WebSecurityHandler
+    private val webSecurityHandler: WebSecurityHandler
 ) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
     @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
@@ -148,13 +141,10 @@ class WebConnector internal constructor(
                 )
             if (sseEnabled) {
                 router.route("$path/sse")
+                    .handler(webSecurityHandler)
                     .handler { context ->
                         try {
-                            val userId = if (cookieAuth) {
-                                getOrCreateUserIdCookie(context)
-                            } else {
-                                context.queryParams()["userId"]
-                            }
+                            val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
                             val response = context.response()
                             response.setupSSE()
                             val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
