@@ -19,7 +19,7 @@ Options:
     --version                  Display the version of the script.
 
 Examples:
-        python export_experiments.py --json-config-file=path/to/config-file.json
+    python export_experiments.py --json-config-file=path/to/config-file.json
 """
 
 import csv
@@ -143,6 +143,7 @@ def main():
     cli_args = docopt(__doc__, version='Run Experiment 1.0.0')
     logger = configure_logging(cli_args)
 
+    dataset_name: str = ""
     items: list[DatasetExperimentItem] = []
     try:
         logger.info("Loading input data...")
@@ -157,8 +158,8 @@ def main():
             public_key=input_config.observability_setting.public_key,
             secret_key=fetch_secret_key_value(input_config.observability_setting.secret_key),
         )
-
-        dataset = client.get_dataset(name=input_config.dataset_experiments.dataset_name)
+        dataset_name=input_config.dataset_experiments.dataset_name
+        dataset = client.get_dataset(name=dataset_name)
         items: list[DatasetExperimentItem] = []
         for item in dataset.items:
             items.append(append_runs_langfuse(client, input_config.dataset_experiments, item))
@@ -177,26 +178,13 @@ def main():
 
     output = ExportExperimentsOutput(
         status = activity_status,
-        dataset_name="dddd",
+        dataset_name=dataset_name,
         duration = datetime.now() - start_time,
-        nb_dataset_items=len(items),
+        items_count=len(items),
         success_rate=100
     )
     logger.debug(f"\n{output.format()}")
 
 
 if __name__ == '__main__':
-
     main()
-
-    exit(1)
-
-
-
-
-
-
-    create_excel_output(session_or_run_ids, csv_lines, output_xlsx_file)
-    logging.info(f"Xls file successfully generated: {output_xlsx_file}")
-
-    logging.info(f"Total execution time: {time.time() - start_time:.2f} seconds")

@@ -83,7 +83,7 @@ class RunEvaluationOutput(ActivityOutput):
         details_str = f"""
         The dataset name               : {self.dataset_experiment.dataset_name}
         The experiment name            : {self.dataset_experiment.experiment_name}
-        Number of items in dataset     : {self.nb_dataset_items}
+        Number of items in dataset     : {self.items_count}
         Rate of successful evaluations : {self.success_rate:.2f}%
         Duration                       : {humanize.precisedelta(self.duration)}
         Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}

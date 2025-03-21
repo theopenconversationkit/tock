@@ -47,7 +47,7 @@ class CreateDatasetOutput(ActivityOutput):
         header_text = " CREATE DATASET OUTPUT "
         details_str = f"""
         The dataset name               : {self.dataset_name}
-        Number of items in dataset     : {self.nb_dataset_items}
+        Number of items in dataset     : {self.items_count}
         Rate of successful experiment  : {self.success_rate:.2f}%
         Duration                       : {humanize.precisedelta(self.duration)}
         Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}

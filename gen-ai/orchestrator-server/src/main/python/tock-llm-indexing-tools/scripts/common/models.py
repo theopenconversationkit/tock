@@ -1,13 +1,19 @@
 import json
 from enum import Enum, unique, auto
 from datetime import timedelta
+from typing import Optional
 
 from pydantic import BaseModel, Field
+
+class FileTemplate(BaseModel):
+    name: str = Field(description='The file name.')
+    type: str = Field(description='The dataset template.')
+    file: str = Field(description='The file containing dataset items.')
 
 class BotInfo(BaseModel):
     namespace: str = Field(description='The namespace.')
     bot_id: str = Field(description='The bot id.')
-    file_location: str = Field(description='The file location.')
+    file_location: Optional[str] = Field(description='The file location.', default=None)
 
 class FromJsonMixin(BaseModel):
     @classmethod
@@ -36,7 +42,7 @@ class StatusWithReason(BaseModel):
 class ActivityOutput(BaseModel):
     status: StatusWithReason = Field(description='The activity status.')
     duration: timedelta = Field(description='The evaluation time.')
-    nb_dataset_items: int = Field(description='Number of processed items in the dataset.')
+    items_count: int = Field(description='Number of processed items.')
     success_rate: float = Field(description='The success rate.')
 
 class DatasetTemplate(BaseModel):

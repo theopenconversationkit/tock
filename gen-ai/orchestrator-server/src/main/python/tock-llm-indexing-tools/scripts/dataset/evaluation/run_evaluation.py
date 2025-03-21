@@ -17,7 +17,7 @@ Options:
     --version                  Display the version of the script.
 
 Examples:
-        python run_evaluation.py --json-config-file=path/to/config-file.json
+    python run_evaluation.py --json-config-file=path/to/config-file.json
 """
 from datetime import datetime
 from typing import Optional, List
@@ -106,7 +106,7 @@ def main():
         dataset_experiment=dataset_experiment,
         dataset_experiment_scores=experiment_scores,
         duration = datetime.now() - start_time,
-        nb_dataset_items=len(dataset_items),
+        items_count=len(dataset_items),
         success_rate=100 * (len(experiment_scores) / len_dataset_items) if len_dataset_items > 0 else 0
     )
     logger.debug(f"\n{output.format()}")

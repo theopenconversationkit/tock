@@ -77,7 +77,7 @@ class ExportExperimentsOutput(ActivityOutput):
         header_text = " EXPORT EXPERIMENTS OUTPUT "
         details_str = f"""
         The dataset name               : {self.dataset_name}
-        Number of items in dataset     : {self.nb_dataset_items}
+        Number of items in dataset     : {self.items_count}
         Duration                       : {humanize.precisedelta(self.duration)}
         Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         """

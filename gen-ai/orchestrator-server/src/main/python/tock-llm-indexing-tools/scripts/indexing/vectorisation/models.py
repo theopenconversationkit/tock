@@ -1,16 +1,87 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from pathlib import Path
 
 import humanize
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
-from pydantic import BaseModel, Field
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
+from pydantic import Field, BaseModel
 
-class DatasetItemInfo(BaseModel):
-    """The dataset item"""
-    topic: Optional[str] = Field(description='The question topic.', examples=["Security"])
-    question: Optional[str] = Field(description='The question.', examples=["How do I secure my application?"])
-    answer: Optional[str] = Field(description='The answer.', examples=["No way to do that!"])
+from scripts.common.models import ActivityOutput, FromJsonMixin, BotInfo
+
+
+class RunVectorisationInput(FromJsonMixin):
+    bot: BotInfo = Field(description='The bot information.')
+    em_setting: EMSetting = Field(description='Embeddings setting')
+    vector_store_setting: VectorStoreSetting = Field(description='The vector store settings.')
+    data_csv_file: Path = Field(description='The csv file path.')
+    max_chunk_size: int = Field(description='The maximum of chunk size.')
+    embedding_bulk_size: int = Field(description='The embedding bulk size.')
+    ignore_source: bool = Field(description='Ignore source url if True.')
+    append_doc_title_and_chunk: bool = Field(description='Append title and chunk before vectorisation if True.')
+
+    def format(self):
+        header_text = " VECTORISATION INPUT "
+        details_str = f"""
+                Bot                     : {self.bot.namespace} - {self.bot.bot_id}
+                The EM model            : {self.em_setting.model} ({self.em_setting.provider})
+                The Vector DB           : {self.vector_store_setting.host} ({self.vector_store_setting.provider})
+                The data csv path       : {self.data_csv_path}
+                Chunk size              : {self.max_chunk_size}
+                Embedding bulk size     : {self.embedding_bulk_size}
+                Ignoring sources        : {self.ignore_source}
+                Append title and chunk  : {self.append_doc_title_and_chunk}
+                """
+
+        # Find the longest line in the details
+        details = details_str.splitlines()
+        max_detail_length = max(len(detail) for detail in details)
+        # Construct the header and separator lines
+        header_line = header_text.center(max_detail_length, '-')
+        separator = '-' * max_detail_length
+
+        to_string = f"{header_line}\n{details_str}\n{separator}"
+        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+
+class RunVectorisationOutput(ActivityOutput):
+    index_name: str = Field(
+        description='The full index name.',
+        examples=["ns_03_bot_cmso_session_6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+    )
+    session_uuid: str = Field(
+        description='The indexing session unique id.',
+        examples=["6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+    )
+    chunks_count: int = Field(
+        description='Number of chunked documents.',
+        examples=[81033]
+    )
+
+    def format(self):
+        header_text = " VECTORISATION OUTPUT "
+        details_str = f"""
+        Index name             : {self.index_name}
+        Index session ID       : {self.session_uuid}
+        Documents extracted    : {self.items_count} (Docs)
+        Documents chunked      : {self.chunks_count} (Chunks)
+        Duration               : {humanize.precisedelta(self.duration)}
+        Date                   : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        """
+        status_str = f"""
+        Status                : {self.status.status.name}
+        Reason                : {self.status.status_reason}
+        """
+
+        # Find the longest line in the details
+        details = details_str.splitlines()
+        max_detail_length = max(len(detail) for detail in details)
+        # Construct the header and separator lines
+        header_line = header_text.center(max_detail_length, '-')
+        separator = '-' * max_detail_length
+
+        to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
+        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class IndexingDetails(BaseModel):
     """The indexing detail base class for Embedding Model Setting."""
@@ -56,27 +127,4 @@ Vector Store        : {self.vector_store_settings.provider}
 Ignoring sources    : {self.ignore_source}
 Duration            : {humanize.precisedelta(self.duration)}
 Date                : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-"""
-
-        # Find the longest line in the details
-        lines = details_str.splitlines()
-        max_line_length = max(len(line) for line in lines)
-
-        # The text for the header
-        header_text = " Indexing details "
-
-        # Calculate the number of dashes needed on both sides
-        total_dashes = max_line_length - len(header_text)
-        left_dashes = total_dashes // 2
-        right_dashes = total_dashes - left_dashes
-
-        # Construct the header and separator lines
-        separator = '-' * max_line_length
-        header_line = '-' * left_dashes + header_text + '-' * right_dashes
-
-        # Return the formatted string
-        return f"""
-{header_line}
-{details_str}
-{separator}
 """

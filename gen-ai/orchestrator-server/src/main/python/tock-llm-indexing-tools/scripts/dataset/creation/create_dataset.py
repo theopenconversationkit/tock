@@ -19,7 +19,7 @@ Options:
     --version                  Display the version of the script.
 
 Examples:
-        python create_dataset.py --json-config-file=path/to/config-file.json
+    python create_dataset.py --json-config-file=path/to/config-file.json
 """
 from datetime import datetime
 
@@ -134,7 +134,7 @@ def main():
         status=activity_status,
         dataset_name=dataset_name,
         duration=datetime.now() - start_time,
-        nb_dataset_items=len_dataset_items,
+        items_count=len_dataset_items,
         success_rate=100 * (len(created_items) / len_dataset_items) if len_dataset_items > 0 else 0
     )
     logger.debug(f"\n{output.format()}")

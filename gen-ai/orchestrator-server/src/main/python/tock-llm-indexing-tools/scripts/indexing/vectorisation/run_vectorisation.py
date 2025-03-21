@@ -2,44 +2,28 @@
 Index a CSV file (line format: 'title'|'source'|'text') into a vector database.
 
 Usage:
-  index_documents.py --input-csv=<path> --namespace=<ns> --bot-id=<id> \
-                     --embeddings-json-config=<emb_cfg> --vector-store-json-config=<vs_cfg> \
-                     --chunks-size=<size> [--ignore-source=<is>] [--append-title=<at>] [--embedding-bulk-size=<em_bs>] \
-                     [--env-file=<env>] [-v]
-  index_documents.py (-h | --help)
-  index_documents.py --version
-
-Options:
-  -h --help                           Show this help message.
-  --version                           Show the version.
-  --input-csv=<path>                  Path to the CSV file to be indexed.
-  --namespace=<ns>                    TOCK bot namespace to which the index belongs.
-  --bot-id=<id>                       TOCK bot ID to which the index belongs.
-  --embeddings-json-config=<emb_cfg>  Path to embeddings configuration JSON file.
-                                       (Describes settings for embeddings models supported by TOCK.)
-  --vector-store-json-config=<vs_cfg> Path to vector store configuration JSON file.
-                                       (Describes settings for vector stores supported by TOCK.)
-  --chunks-size=<size>                Size of the embedded document chunks.
-  --ignore-source=<is>                Ignore source validation. Useful if sources aren't valid URLs.
-                                       [default: false]
-  --append-title=<at>                 Add the title to the text to be embedded.
-                                       [default: true]
-  --embedding-bulk-size=<em_bs>       Number of chunks sent in each embedding request.
-                                       [default: 100]
-  --env-file=<env>                    Path to an optional environment configuration file.
-  -v                                  Verbose output for debugging.
+    run_vectorisation.py [-v] --json-config-file=<jcf>
 
 Description:
-  This script indexes the contents of a CSV file into a vector database.
-  The CSV must contain 'title', 'source', and 'text' columns. The 'text' will be chunked
-  according to the specified chunk size and embedded using settings described in the
-  embeddings JSON configuration file. Documents will then be indexed into a vector store
-  using the vector store JSON configuration.
+    This script indexes the contents of a CSV file into a vector database.
+    The CSV must contain 'title', 'source', and 'text' columns. The 'text' will be chunked
+    according to the specified chunk size and embedded using settings described json configuration file.
+    Document chunks will then be indexed into a vector store specified on the configuration file .
+    The index name is automatically generated based on the namespace, bot ID, and a unique identifier
+    (UUID). For example, in OpenSearch: ns-{namespace}-bot-{bot_id}-session-{uuid4}.
+    Indexing details will be displayed on the console at the end of the operation,
+    and saved in a specific log file in ./logs
 
-  The index name is automatically generated based on the namespace, bot ID, and a unique identifier
-  (UUID). For example, in OpenSearch: ns-{namespace}-bot-{bot_id}-session-{uuid4}.
-  Indexing details will be displayed on the console at the end of the operation,
-  and saved in a specific log file in ./logs
+Arguments:
+    --json-config-file=<jcf>   Path to the input config file. This is a required argument.
+
+Options:
+    -v                         Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                 Display this help message and exit.
+    --version                  Display the version of the script.
+
+Examples:
+    python run_vectorisation.py --json-config-file=path/to/config-file.json
 """
 import copy
 import csv
@@ -75,6 +59,9 @@ from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
 
 from models import IndexingDetails
+from scripts.common.logging_config import configure_logging
+from scripts.common.models import StatusWithReason, ActivityStatus
+from scripts.indexing.vectorisation.models import RunVectorisationOutput, RunVectorisationInput
 
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)
@@ -389,8 +376,44 @@ def str_to_bool(value):
     else:
         raise ValueError(f"Cannot proceed: {value} is not a valid boolean value")
 
+def main():
+    start_time = datetime.now()
+    cli_args = docopt(__doc__, version='Run Vectorisation 1.0.0')
+    logger = configure_logging(cli_args)
+
+    index_name: str = ""
+    session_uuid: str = ""
+    documents_count: int = 0
+    chunks_count: int = 0
+    try:
+        logger.info("Loading input data...")
+        input_config = RunVectorisationInput.from_json_file(cli_args['--json-config-file'])
+        logger.debug(f"\n{input_config.format()}")
+
+        location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}"
+        data_csv_path = f"{location}/input/{input_config.data_csv_path}"
+
+        activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
+    except Exception as e:
+        full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
+        activity_status = StatusWithReason(status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}")
+        logger.error(e, exc_info=True)
+
+    output = RunVectorisationOutput(
+        status = activity_status,
+        index_name=index_name,
+        session_uuid=session_uuid,
+        chunks_count=documents_count,
+        items_count=chunks_count,
+        duration=datetime.now() - start_time,
+        success_rate=100
+    )
+    logger.debug(f"\n{output.format()}")
 
 if __name__ == '__main__':
+    main()
+
+    exit(1)
     # Parse command-line arguments
     args = docopt(__doc__, version='Index Documents 1.0')
 

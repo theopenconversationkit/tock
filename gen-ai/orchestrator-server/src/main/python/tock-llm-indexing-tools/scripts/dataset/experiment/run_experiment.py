@@ -19,7 +19,7 @@ Options:
     --version                  Display the version of the script.
 
 Examples:
-        python run_experiment.py --json-config-file=path/to/config-file.json
+    python run_experiment.py --json-config-file=path/to/config-file.json
 """
 import asyncio
 import time

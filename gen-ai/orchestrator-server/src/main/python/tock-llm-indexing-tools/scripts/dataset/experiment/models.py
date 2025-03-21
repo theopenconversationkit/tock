@@ -60,7 +60,7 @@ class RunExperimentOutput(ActivityOutput):
         description='The dataset to experiment.'
     )
 
-    nb_dataset_items: int = Field(description='Number of items in dataset.')
+    items_count: int = Field(description='Number of items in dataset.')
 
     def format(self):
         # Format the details string
