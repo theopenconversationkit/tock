@@ -16,19 +16,19 @@ class RunVectorisationInput(FromJsonMixin):
     em_setting: EMSetting = Field(description='Embeddings setting')
     vector_store_setting: VectorStoreSetting = Field(description='The vector store settings.')
     data_csv_file: Path = Field(description='The csv file path.')
-    max_chunk_size: int = Field(description='The maximum of chunk size.')
-    embedding_bulk_size: int = Field(description='The embedding bulk size.')
+    chunk_size: int = Field(description='The chunk size (number of characters).', ge=500)
+    embedding_bulk_size: int = Field(description='The embedding bulk size.', ge=1)
     ignore_source: bool = Field(description='Ignore source url if True.')
     append_doc_title_and_chunk: bool = Field(description='Append title and chunk before vectorisation if True.')
 
     def format(self):
-        header_text = " VECTORISATION INPUT "
+        header_text = " RUN VECTORISATION INPUT "
         details_str = f"""
                 Bot                     : {self.bot.namespace} - {self.bot.bot_id}
                 The EM model            : {self.em_setting.model} ({self.em_setting.provider})
                 The Vector DB           : {self.vector_store_setting.host} ({self.vector_store_setting.provider})
-                The data csv path       : {self.data_csv_path}
-                Chunk size              : {self.max_chunk_size}
+                The data csv path       : {self.data_csv_file}
+                Chunk size              : {self.chunk_size}
                 Embedding bulk size     : {self.embedding_bulk_size}
                 Ignoring sources        : {self.ignore_source}
                 Append title and chunk  : {self.append_doc_title_and_chunk}
@@ -59,7 +59,7 @@ class RunVectorisationOutput(ActivityOutput):
     )
 
     def format(self):
-        header_text = " VECTORISATION OUTPUT "
+        header_text = " RUN VECTORISATION OUTPUT "
         details_str = f"""
         Index name             : {self.index_name}
         Index session ID       : {self.session_uuid}
@@ -69,8 +69,8 @@ class RunVectorisationOutput(ActivityOutput):
         Date                   : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         """
         status_str = f"""
-        Status                : {self.status.status.name}
-        Reason                : {self.status.status_reason}
+        Status                 : {self.status.status.name}
+      {"Reason                 : " + self.status.status_reason if self.status.status_reason else ""}
         """
 
         # Find the longest line in the details

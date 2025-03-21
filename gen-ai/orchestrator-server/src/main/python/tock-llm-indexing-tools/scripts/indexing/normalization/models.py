@@ -104,7 +104,7 @@ class RunChunkContextualizationOutput(OutputStatus):
         # Construct the header and separator lines
         separator = '-' * max_line_length
         header_line = header_text.center(max_line_length, '-')
-
+# TODO MASS
         # Format status line
         status_line = f" STATUS: {self.status.status.name} ".center(max_line_length)
 

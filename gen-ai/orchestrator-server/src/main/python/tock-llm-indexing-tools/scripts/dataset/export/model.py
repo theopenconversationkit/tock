@@ -83,7 +83,7 @@ class ExportExperimentsOutput(ActivityOutput):
         """
         status_str = f"""
         Status                         : {self.status.status.name}
-        Reason                         : {self.status.status_reason}
+      {"Reason                         : " + self.status.status_reason if self.status.status_reason else ""}
         """
 
         # Find the longest line in the details

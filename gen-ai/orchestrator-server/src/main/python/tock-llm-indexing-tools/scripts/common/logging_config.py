@@ -6,6 +6,9 @@ from datetime import datetime
 import colorlog
 
 app_logger = None
+import warnings
+
+
 
 def configure_logging(cli_args):
     global app_logger
@@ -60,6 +63,12 @@ def configure_logging(cli_args):
     gen_ai_orchestrator_logger.addHandler(console_handler)
     gen_ai_orchestrator_logger.propagate = False
 
+    gen_ai_orchestrator_logger = logging.getLogger("httpx")
+    gen_ai_orchestrator_logger.setLevel(log_level)
+    gen_ai_orchestrator_logger.addHandler(file_handler)
+    gen_ai_orchestrator_logger.addHandler(console_handler)
+    gen_ai_orchestrator_logger.propagate = False
+
     # TODO MASS anglais
     # Capture des exceptions non gérées et log dans le fichier
     def handle_exception(exc_type, exc_value, exc_traceback):
@@ -73,5 +82,11 @@ def configure_logging(cli_args):
 
     # Rediriger toutes les erreurs vers le logger
     sys.excepthook = handle_exception
+
+    # Rediriger les avertissements vers le logger
+    def log_warning(message, category, filename, lineno, file=None, line=None):
+        app_logger.warning(f"{category.__name__}: {message} (from {filename}, line {lineno})")
+
+    warnings.showwarning = log_warning
 
     return app_logger
