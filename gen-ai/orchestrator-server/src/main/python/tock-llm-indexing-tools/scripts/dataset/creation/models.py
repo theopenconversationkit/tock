@@ -14,6 +14,11 @@ class DatasetInfo(BaseModel):
     metadata: dict = Field(description='The dataset metadata.', default={})
     template: DatasetTemplate = Field(description='The dataset template.')
 
+class DatasetItemInfo(BaseModel):
+    topic: str = Field(description='The question topic.')
+    question: str = Field(description='The question.')
+    answer: str = Field(description='The expected answer.')
+
 class CreateDatasetInput(FromJsonMixin):
     bot: BotInfo = Field(description='The bot information.')
     dataset: DatasetInfo = Field(description='The dataset information.')

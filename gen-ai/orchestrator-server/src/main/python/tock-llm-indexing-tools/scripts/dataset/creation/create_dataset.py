@@ -31,8 +31,7 @@ from langfuse.api import DatasetItem, NotFoundError
 
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import ActivityStatus, StatusWithReason
-from scripts.dataset.creation.models import CreateDatasetInput, CreateDatasetOutput
-from scripts.indexing.vectorisation.models import DatasetItemInfo
+from scripts.dataset.creation.models import CreateDatasetInput, CreateDatasetOutput, DatasetItemInfo
 
 
 def extract_dataset_items(template_file_path: str) -> list[DatasetItemInfo]:
