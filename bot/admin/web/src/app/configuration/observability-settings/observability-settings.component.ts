@@ -150,7 +150,9 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       this.resetFormGroupControls();
 
       requiredConfiguration.params.forEach((param) => {
-        this.form.controls['setting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+        const isRequired = param.required || typeof param.required === 'undefined';
+
+        this.form.controls['setting'].addControl(param.key, new FormControl(param.defaultValue, isRequired ? Validators.required : {}));
       });
 
       this.form.controls['setting'].addControl('provider', new FormControl(provider));

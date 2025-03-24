@@ -7,6 +7,7 @@ export interface ObservabilitySetting {
   publicKey?: String;
 
   url?: String;
+  publicUrl?: String;
 }
 
 export interface ObservabilitySettings {
