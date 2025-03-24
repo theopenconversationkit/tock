@@ -27,10 +27,6 @@
     <name>Tock NLP Sagemaker Model</name>
     <description>Sagemaker client for Tock NLP Model</description>
 
-    <properties>
-        <aws.version>2.30.16</aws.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ai.tock</groupId>
@@ -39,22 +35,18 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sagemakerruntime</artifactId>
-            <version>${aws.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sts</artifactId>
-            <version>${aws.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>aws-query-protocol</artifactId>
-            <version>${aws.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.3.2</version>
         </dependency>
     </dependencies>
 

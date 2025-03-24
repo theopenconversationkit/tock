@@ -32,10 +32,10 @@ import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.testFramework.LightVirtualFile
 import mu.KotlinLogging
 import org.jetbrains.kotlin.analyzer.AnalysisResult
+import org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory
 import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
 import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
 import org.jetbrains.kotlin.codegen.ClassBuilderFactories
-import org.jetbrains.kotlin.codegen.KotlinCodegenFacade
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
@@ -98,21 +98,21 @@ internal object KotlinCompiler {
                     logger.debug { "load url $it" }
                     Paths.get(it.toURI())
                 }
-                // java 9
+            // java 9
                 ?: (classPath + cp.split(File.pathSeparator))
-                .flatMap {
-                    Paths.get(it).let {
-                        if (Files.isDirectory(it)) {
-                            Files.list(it).filter {
-                                it.toString().endsWith(".jar")
-                            }.collect(Collectors.toList()) + listOf(it)
-                        } else {
-                            listOf(it)
+                    .flatMap {
+                        Paths.get(it).let {
+                            if (Files.isDirectory(it)) {
+                                Files.list(it).filter {
+                                    it.toString().endsWith(".jar")
+                                }.collect(Collectors.toList()) + listOf(it)
+                            } else {
+                                listOf(it)
+                            }
                         }
                     }
-                }
-                .distinct()
-                .apply { logger.info { "class path used : $this" } }
+                    .distinct()
+                    .apply { logger.info { "class path used : $this" } }
         )
     }
 
@@ -139,8 +139,9 @@ internal object KotlinCompiler {
         searchForMain: Boolean
     ): CompilationResult {
         val generationState = getGenerationState(currentPsiFiles, currentProject, configuration)
-        val mainClass = findMainClass(generationState.bindingContext, currentPsiFiles, fileName, searchForMain)
-        KotlinCodegenFacade.compileCorrectFiles(generationState)
+        val context = getBindingContext(currentPsiFiles, currentProject)
+        JvmIrCodegenFactory(configuration).convertAndGenerate(currentPsiFiles, generationState, context)
+        val mainClass = findMainClass(context, currentPsiFiles, fileName, searchForMain)
 
         val factory = generationState.factory
         val files = HashMap<String, ByteArray>()
@@ -156,14 +157,12 @@ internal object KotlinCompiler {
         compilerConfiguration: CompilerConfiguration
     ): GenerationState {
         val analyzeExhaust = analyzeFileForJvm(files, project).getFirst()
-        return GenerationState.Builder(
+        return GenerationState(
             project,
-            ClassBuilderFactories.BINARIES,
             analyzeExhaust.moduleDescriptor,
-            analyzeExhaust.bindingContext,
-            files,
-            compilerConfiguration
-        ).build()
+            compilerConfiguration,
+            ClassBuilderFactories.BINARIES
+        )
     }
 
     private fun findMainClass(
@@ -175,13 +174,27 @@ internal object KotlinCompiler {
         val mainFunctionDetector = MainFunctionDetector(bindingContext, LanguageVersionSettingsImpl.DEFAULT)
         for (file in files) {
             if (file.name.contains(fileName)) {
-                if (!searchForMain || file.declarations.any { it is KtNamedFunction &&  mainFunctionDetector.isMain(it) } ) {
+                if (!searchForMain || file.declarations.any {
+                        it is KtNamedFunction && try {
+                            mainFunctionDetector.isMain(it)
+                        } catch (e: Exception) {
+                            false
+                        }
+                    }) {
                     return getMainClassName(file)
                 }
             }
         }
         return files
-            .firstOrNull { it.declarations.any { it is KtNamedFunction &&  mainFunctionDetector.isMain(it) } }
+            .firstOrNull {
+                it.declarations.any {
+                    it is KtNamedFunction && try {
+                        mainFunctionDetector.isMain(it)
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+            }
             ?.let { getMainClassName(it) }
             ?: getMainClassName(files.iterator().next())
     }
