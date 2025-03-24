@@ -8,7 +8,7 @@ from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from pydantic import BaseModel, Field
 
-from scripts.common.models import OutputStatus
+from scripts.common.models import OutputStatus, ActivityOutput
 
 
 class DocumentChunk(BaseModel):
@@ -48,7 +48,7 @@ class RunChunkContextualizationInput(BaseModel):
             raise ValueError(f"the file '{file_path}' is not a valid JSON!")
 
     def format(self):
-        # Format the details string
+        header_text = " RUN CHUNK CONTEXTUALIZATION INTPUT "
         details_str = f"""
             Langfuse environment   : {str(self.observability_setting.url)}
             The reference document : {self.document.name}
@@ -58,62 +58,37 @@ class RunChunkContextualizationInput(BaseModel):
         """
 
         # Find the longest line in the details
-        lines = details_str.splitlines()
-        max_line_length = max(len(line) for line in lines)
-
-        # The text for the header
-        header_text = " RUN CHUNK CONTEXTUALIZATION INTPUT "
-
-        # Calculate the number of dashes needed on both sides
-        total_dashes = max_line_length - len(header_text)
-        left_dashes = total_dashes // 2
-        right_dashes = total_dashes - left_dashes
-
+        details = details_str.splitlines()
+        max_detail_length = max(len(detail) for detail in details)
         # Construct the header and separator lines
-        separator = '-' * max_line_length
-        header_line = '-' * left_dashes + header_text + '-' * right_dashes
+        header_line = header_text.center(max_detail_length, '-')
+        separator = '-' * max_detail_length
 
-        # Return the formatted string
         to_string = f"{header_line}\n{details_str}\n{separator}"
         return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
 
-
-class RunChunkContextualizationOutput(OutputStatus):
-
+class RunChunkContextualizationOutput(ActivityOutput):
     duration: timedelta = Field(description='The evaluation time.')
-    nb_chunks: int = Field(description='Number of chunks.') # TODO MASS : a factoriser
-    success_rate: float = Field(description='Rate of successful contextualization.')
 
     def format(self):
-        # Format the details string
+        header_text = " RUN CHUNK CONTEXTUALIZATION OUTPUT "
         details_str = f"""
-            Number of chunks               : {self.nb_chunks}
-            Rate of successful evaluations : {self.pass_rate:.2f}%
-            Duration                       : {humanize.precisedelta(self.duration)}
-            Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        Number of chunks               : {self.items_count}
+        Rate of successful evaluations : {self.success_rate:.2f}%
+        Duration                       : {humanize.precisedelta(self.duration)}
+        Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        """
+        status_str = f"""
+        Status                         : {self.status.status.name}
+      {"Reason                         : " + self.status.status_reason if self.status.status_reason else ""}
         """
 
         # Find the longest line in the details
-        lines = details_str.splitlines()
-        max_line_length = max(max(len(line.strip()) for line in details_str.splitlines()),
-                              len(f" REASON: {self.status.status_reason} "))
-
-        # The text for the header
-        header_text = " RUN CHUNK CONTEXTUALIZATION OUTPUT "
-
+        details = details_str.splitlines()
+        max_detail_length = max(len(detail) for detail in details)
         # Construct the header and separator lines
-        separator = '-' * max_line_length
-        header_line = header_text.center(max_line_length, '-')
-# TODO MASS
-        # Format status line
-        status_line = f" STATUS: {self.status.status.name} ".center(max_line_length)
+        header_line = header_text.center(max_detail_length, '-')
+        separator = '-' * max_detail_length
 
-        if self.status.status_reason:
-            status_reason_line = f" REASON: {self.status.status_reason} ".center(max_line_length)
-            status_line = f'{status_line}\n{status_reason_line}'
-
-        # Return the formatted string
-        to_string = f"{header_line}\n{details_str}\n{separator}\n"
-        to_string_strip = "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
-        return f'{to_string_strip}\n{status_line}\n{separator}'
-
+        to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
+        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())

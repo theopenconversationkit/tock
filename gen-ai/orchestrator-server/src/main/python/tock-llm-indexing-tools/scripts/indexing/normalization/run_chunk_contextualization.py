@@ -125,17 +125,13 @@ def main():
         full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
         activity_status = StatusWithReason(status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}")
         logger.error(e, exc_info=True)
-    except BaseException as e: # TODO MASS
-        full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
-        activity_status = StatusWithReason(status=ActivityStatus.STOPPED, status_reason=f"{full_exception_name} : {e}")
-        logger.error(e, exc_info=True)
 
     len_chunks = len(chunks)
     output = RunChunkContextualizationOutput(
         status = activity_status,
         duration = datetime.now() - start_time,
-        nb_chunks=len_chunks,
-        pass_rate=100 * (len(tested_chunks) / len_chunks) if len_chunks > 0 else 0
+        items_count=len_chunks,
+        success_rate=100 * (len(tested_chunks) / len_chunks) if len_chunks > 0 else 0
     )
     logger.debug(f"\n{output.format()}")
 
