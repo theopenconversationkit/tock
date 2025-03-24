@@ -57,17 +57,18 @@ class RunExperimentOutput(ActivityOutput):
         details_str = f"""
         The dataset name               : {self.dataset_experiment.dataset_name}
         The experiment name            : {self.dataset_experiment.experiment_name}
-        Number of items in dataset     : {self.nb_dataset_items}
+        Number of items in dataset     : {self.items_count}
         Rate of successful experiment  : {self.success_rate:.2f}%
         Duration                       : {humanize.precisedelta(self.duration)}
         Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         """
         rag_config_str = f"""
+        The Vector store               : {self.rag_query.vector_store_setting.provider}
         The document index name        : {self.rag_query.document_index_name}
         The knn                        : {self.rag_query.document_search_params.k}
         The LLM model                  : {self.rag_query.question_answering_llm_setting.model} ({self.rag_query.question_answering_llm_setting.provider})
-        The EM model                   : {self.rag_query.embedding_question_em_setting.model} ({self.rag_query.embedding_question_em_setting.provider})
         The LLM temperature            : {self.rag_query.question_answering_llm_setting.temperature}
+        The EM model                   : {self.rag_query.embedding_question_em_setting.model} ({self.rag_query.embedding_question_em_setting.provider})
         """
         status_str = f"""
         Status                         : {self.status.status.name}

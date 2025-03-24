@@ -79,6 +79,7 @@ async def main():
                         'provider': rag_query.embedding_question_em_setting.provider,
                         'model': rag_query.embedding_question_em_setting.model,
                     },
+                    'vector_store': rag_query.vector_store_setting.provider,
                     'document_index_name': rag_query.document_index_name,
                     'k': rag_query.document_search_params.k,
                 },
@@ -104,7 +105,7 @@ async def main():
         rag_query=rag_query,
         dataset_experiment=dataset_experiment,
         duration = datetime.now() - start_time,
-        nb_dataset_items=len(dataset_items),
+        items_count=len(dataset_items),
         success_rate=100 * (len(tested_items) / len_dataset_items) if len_dataset_items > 0 else 0
     )
     logger.debug(f"\n{output.format()}")
