@@ -1,0 +1,306 @@
+<div class="d-flex flex-wrap align-items-center">
+  <h1 class="flex-grow-1">Gen AI playground</h1>
+
+  <section class="grid-actions">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Import Rag settings dump"
+      (click)="importSettings()"
+    >
+      <nb-icon icon="upload"></nb-icon>
+    </button>
+  </section>
+</div>
+
+<tock-no-data-found
+  *ngIf="configurations?.length === 0"
+  title="No bot configuration detected"
+></tock-no-data-found>
+
+<form
+  [formGroup]="form"
+  *ngIf="configurations?.length > 0"
+>
+  <nb-card class="mb-3">
+    <nb-card-header class="p-0 border-bottom">
+      <nb-accordion
+        multi
+        class="shadow-none"
+      >
+        <nb-accordion-item
+          [expanded]="llmSettingsIsExpanded"
+          class="settings-card"
+        >
+          <nb-accordion-item-header>
+            LLM settings
+
+            <ng-container *ngIf="getCurrentProviderLabel()">
+              (
+              {{ getCurrentProviderLabel() }}
+              <ng-container *ngIf="questionAnsweringLlmSetting.value?.model">
+                | {{ questionAnsweringLlmSetting.value.model }}
+              </ng-container>
+              )
+            </ng-container>
+          </nb-accordion-item-header>
+
+          <nb-accordion-item-body>
+            <tock-form-control
+              name="questionAnsweringLlmProvider"
+              [controls]="questionAnsweringLlmProvider"
+              [required]="true"
+              [showError]="isSubmitted"
+              [hasMargin]="false"
+            >
+              <nb-radio-group
+                formControlName="questionAnsweringLlmProvider"
+                name="questionAnsweringLlmProvider"
+                class="d-flex"
+              >
+                <nb-radio
+                  *ngFor="let engine of enginesConfigurations[engineSettingKeyName.questionAnsweringLlmSetting]"
+                  [value]="engine.key"
+                >
+                  {{ engine.label }}
+                </nb-radio>
+              </nb-radio-group>
+            </tock-form-control>
+
+            <div
+              *ngIf="currentQuestionAnsweringConfig"
+              class="mt-3"
+            >
+              <div class="row">
+                <ng-container *ngFor="let param of currentQuestionAnsweringConfig.params">
+                  <div
+                    class="col-12 px-3"
+                    [ngClass]="{ 'col-lg-6': param.inputScale !== 'fullwidth' }"
+                  >
+                    <tock-ai-settings-engine-config-param-input
+                      [parentGroup]="engineSettingKeyName.questionAnsweringLlmSetting"
+                      [configurationParam]="param"
+                      [form]="form"
+                      [isSubmitted]="isSubmitted"
+                    ></tock-ai-settings-engine-config-param-input>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+    </nb-card-header>
+
+    <nb-card-body class="d-flex justify-content-between align-items-start pr-3">
+      <nb-form-field class="w-100 align-items-start">
+        <textarea
+          #textareaPromptRef
+          id="prompt-textarea"
+          class="w-100"
+          rows="6"
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Enter your prompt here..."
+          formControlName="prompt"
+          (keydown.enter)="preventDefault($event)"
+          (keyup.enter)="submit($event)"
+          autocomplete="off"
+          spellcheck="false"
+          tockAutofocusElement
+          class="scrollbar-narrow"
+          [readonly]="testQueryInProgress"
+        ></textarea>
+
+        <button
+          nbSuffix
+          nbButton
+          ghost
+          [nbContextMenu]="promptTemplateShortcuts"
+          nbContextMenuTag="prompt-template-shortcuts"
+        >
+          <nb-icon
+            icon="chevron-down-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+
+        <button
+          nbSuffix
+          nbButton
+          ghost
+          nbTooltip="Expand/reduce the input area"
+          [style.margin]="getPromptShortcutsMargin()"
+          (click)="expandTextareaPrompt()"
+        >
+          <nb-icon icon="arrows-angle-expand"></nb-icon>
+        </button>
+      </nb-form-field>
+
+      <div
+        class="ml-2"
+        style="width: min-content"
+      >
+        <button
+          nbButton
+          size="medium"
+          status="primary"
+          nbTooltip="Send query"
+          (click)="submit()"
+          [disabled]="testQueryInProgress || !form.valid || !prompt.value?.length"
+        >
+          <nb-icon icon="send"></nb-icon>
+        </button>
+
+        <button
+          *ngIf="messages.length !== 0"
+          nbTooltip="Clear history"
+          nbButton
+          status="warning"
+          size="medium"
+          class="mt-2"
+          (click)="clearHistory()"
+        >
+          <nb-icon icon="trash"></nb-icon>
+        </button>
+
+        <div
+          *ngIf="!testQueryInProgress && messagesHistory.length > 1"
+          class="border-top mt-2"
+        >
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="medium"
+            nbTooltip="Go back in query history"
+            class="index-change-button"
+            (click)="messageHistoryMove(false)"
+            [disabled]="messagesHistoryCursor < 1"
+          >
+            <nb-icon
+              icon="chevron-up-outline"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </button>
+
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="medium"
+            nbTooltip="Move forward in query history"
+            class="index-change-button"
+            (click)="messageHistoryMove(true)"
+            [disabled]="messagesHistory.length < 2 || messagesHistoryCursor === messagesHistory.length - 1"
+          >
+            <nb-icon
+              icon="chevron-down-outline"
+              pack="nebular-essentials"
+            ></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-card-body>
+
+    <nb-card-footer
+      class="overflow-visible px-2"
+      *ngIf="testQueryInProgress || messages.length"
+    >
+      <div #resultWrapper>
+        <tock-chat-ui
+          padding="0.2em 0.5em 0 0.2em"
+          [mayScroll]="false"
+          [queryInProgress]="testQueryInProgress"
+        >
+          <tock-chat-ui-message
+            *ngFor="let message of messages"
+            [message]="message.message.message"
+            [reply]="message.message.bot"
+            [avatar]="getUserAvatar(message.message.bot)"
+            switchFormattingPos="afterAvatar"
+          >
+            <ng-container *ngIf="message.observabilityInfo">
+              <br />
+              <button
+                nbButton
+                ghost
+                size="small"
+                nbTooltip="View observability details"
+                class="mb-2"
+                (click)="openObservabilityTrace(message)"
+              >
+                <nb-icon icon="display"></nb-icon>
+              </button>
+            </ng-container>
+          </tock-chat-ui-message>
+        </tock-chat-ui>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</form>
+
+<tock-scroll-top-button></tock-scroll-top-button>
+
+<ng-template #importModal>
+  <nb-card class="help-modal">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Import Rag settings dump
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeImportModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <form
+        [formGroup]="importForm"
+        (submit)="submitImportSettings()"
+      >
+        <tock-form-control
+          label="Rag settings dump file"
+          name="importFile"
+          [required]="true"
+          [controls]="fileSource"
+          [showError]="isImportSubmitted"
+        >
+          <tock-file-upload
+            id="importFile"
+            formControlName="fileSource"
+            [autofocus]="true"
+            [fullWidth]="true"
+            [multiple]="false"
+            [fileTypeAccepted]="['json']"
+          ></tock-file-upload>
+        </tock-form-control>
+      </form>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeImportModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submitImportSettings()"
+      >
+        Import
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

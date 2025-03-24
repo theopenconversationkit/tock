@@ -175,7 +175,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   }
 
   private getSentenceGenerationSettingsLoader(): Observable<SentenceGenerationSettings> {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/sentence-generation`;
     return this.rest.get<SentenceGenerationSettings>(url, (settings: SentenceGenerationSettings) => settings);
   }
 
@@ -225,7 +225,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
       delete formValue['llmProvider'];
 
-      const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
+      const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/sentence-generation`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (genAiSettings: SentenceGenerationSettings) => {
           this.settingsBackup = genAiSettings;
@@ -421,7 +421,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
   }
 
   deleteSettings(): void {
-    const url = `/configuration/bots/${this.state.currentApplication.name}/sentence-generation/configuration`;
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/sentence-generation`;
     this.rest.delete<boolean>(url).subscribe(() => {
       delete this.settingsBackup;
       this.form.reset();
