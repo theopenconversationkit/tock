@@ -1,0 +1,77 @@
+<div class="event-comment">
+  <div class="event-comment-body d-flex gap-1">
+    <div class="flex-grow-1 mt-1">
+      <div class="event-comment-body-header">
+        <q>{{ event.user }}</q> added a comment on {{ event.lastUpdateDate | date: 'y/MM/dd' }} at
+        {{ event.lastUpdateDate | date: 'HH:mm' }}:
+      </div>
+
+      <span *ngIf="!event._edited">
+        {{ event.comment }}
+      </span>
+
+      <div *ngIf="event._edited">
+        <textarea
+          nbInput
+          fullWidth
+          fieldSize="small"
+          rows="2"
+          #commentEditInput
+          >{{ event.comment }}</textarea
+        >
+      </div>
+    </div>
+
+    <div
+      *ngIf="event.canEdit"
+      class="d-flex align-items-center"
+    >
+      <button
+        *ngIf="!event._edited"
+        nbButton
+        ghost
+        size="small"
+        (click)="edit()"
+        nbTooltip="Edit this comment"
+      >
+        <nb-icon icon="pencil"></nb-icon>
+      </button>
+      <button
+        *ngIf="!event._edited"
+        nbButton
+        ghost
+        size="small"
+        status="danger"
+        (click)="delete()"
+        nbTooltip="Delete this comment"
+      >
+        <nb-icon icon="trash"></nb-icon>
+      </button>
+
+      <button
+        *ngIf="event._edited"
+        status="success"
+        nbButton
+        ghost
+        size="small"
+        (click)="submit()"
+        nbTooltip="Submit changes"
+        [disabled]="!commentSubmittable()"
+      >
+        <nb-icon icon="check-lg"></nb-icon>
+      </button>
+      <button
+        *ngIf="event._edited"
+        status="warning"
+        nbButton
+        ghost
+        size="small"
+        status="danger"
+        (click)="cancel()"
+        nbTooltip="Cancel"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </div>
+  </div>
+</div>

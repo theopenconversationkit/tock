@@ -41,6 +41,18 @@
       ></nb-icon>
       {{ nbRagAnswers() }}
     </div>
+
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of annotations"
+      [class]="nbAnnotations() > 0 ? 'text-warning' : ''"
+    >
+      <nb-icon
+        icon="exclamation-triangle-fill"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbAnnotations() }}
+    </div>
   </div>
 
   <button
@@ -135,7 +147,6 @@
           <button
             nbButton
             ghost
-            status="warning"
             size="small"
             nbTooltip="Show debug infos"
             (click)="showDebug(action)"
@@ -174,14 +185,14 @@
             <nb-icon icon="link"></nb-icon>
           </button>
 
-          <!-- <div *ngIf="containsReport(action); else does_not_contain_a_report">
+          <div *ngIf="containsAnnotation(action); else does_not_contain_a_report">
             <button
               nbButton
               size="small"
               status="warning"
               ghost
-              nbTooltip="Display report"
-              (click)="openReport(action)"
+              nbTooltip="Display annotation"
+              (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle-fill"></nb-icon>
             </button>
@@ -191,20 +202,18 @@
             <button
               nbButton
               size="small"
-              status="warning"
               ghost
-              nbTooltip="Add a report"
-              (click)="openReport(action)"
+              nbTooltip="Annotate this exchange"
+              (click)="openAnnotation(action)"
             >
               <nb-icon icon="exclamation-triangle"></nb-icon>
             </button>
-          </ng-template> -->
+          </ng-template>
 
           <button
             *ngIf="action.metadata?.isGenAiRagAnswer"
             nbButton
             size="small"
-            status="primary"
             ghost
             nbTooltip="Create a FAQ with this question/answer pair"
             (click)="createFaq(action, dialog.actions)"
