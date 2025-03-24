@@ -273,5 +273,5 @@ Different security modes are available for the web connector. The selected mode 
 - It checks the signature, ensures the token has not been revoked, and manages user authorization.
 - This mode is recommended for stateless authentication in secure environments.
 - The implementation of JWT validation is not provided by default, as each company has its own approach to verifying tokens.
-- To use this mode, you must provide an implementation using Java's Service Loader mechanism.
+- To use this mode, you must provide an implementation of `BotAdditionalModulesService` using Java's Service Loader mechanism, and use it to bind your implementation of `WebSecurityHandler` with the tag `JWT`.
 
