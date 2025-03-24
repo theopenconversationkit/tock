@@ -16,17 +16,20 @@
 
 package ai.tock.bot.connector
 
+import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.time.Duration
+import java.time.Instant
 import java.time.InstantSource
 import java.util.Queue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * A Queue to ensure the calls from the same user id are sent sequentially.
@@ -37,7 +40,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
         private val baseAction: Action,
         private val processedAction: CompletableFuture<T?>,
         private val send: (action: T) -> Unit,
-        val delay: Duration,
+        val scheduledFor: Instant,
     ) {
         val lastInAnswer get() = baseAction.metadata.lastAnswer
         fun joinAndSend() = processedAction.join()?.let(send)
@@ -48,19 +51,11 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
     }
 
     private inner class UserQueue : Queue<ScheduledAction<*>> by ConcurrentLinkedQueue() {
-        private var answerInProgress = false
-        private var lastScheduledTime = clock.instant()
+        val answerInProgress = AtomicBoolean()
         private var lastSentTime = clock.instant()
 
         @Synchronized
-        fun getElapsedTime(): Duration = Duration.between(
-            if (answerInProgress) lastSentTime else lastScheduledTime,
-            clock.instant()
-        )
-
-        @Synchronized
         fun <T> enqueueMessage(actionWrapper: ScheduledAction<T>): Boolean {
-            lastScheduledTime = clock.instant()
             val existingAction = peek()
             offer(actionWrapper)
             return existingAction != null
@@ -71,7 +66,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
             // remove the current one
             val popped: ScheduledAction<*>? = poll()
             lastSentTime = clock.instant()
-            answerInProgress = popped != null && !popped.lastInAnswer
+            answerInProgress.set(popped != null && !popped.lastInAnswer)
             // schedule the next one
             return peek()
         }
@@ -96,7 +91,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
             action,
             CompletableFuture.completedFuture(action),
             send,
-            Duration.ofMillis(delayInMs),
+            clock.instant() + Duration.ofMillis(delayInMs),
         )
 
         add0(action.recipientId, actionWrapper)
@@ -128,7 +123,7 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
             action,
             executor.executeBlockingTask { prepare(action) },
             send,
-            Duration.ofMillis(delayInMs),
+            clock.instant() + Duration.ofMillis(delayInMs),
         )
 
         add0(action.recipientId, actionWrapper)
@@ -152,7 +147,10 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
         action: ScheduledAction<T>,
         queue: UserQueue,
     ) {
-        val timeToWait = action.delay - queue.getElapsedTime()
+        val timeToWait = maxOf(
+            Duration.between(clock.instant(), action.scheduledFor),
+            if (queue.answerInProgress.get()) BotDefinition.minBreath else Duration.ZERO
+        )
         executor.executeBlocking(timeToWait) {
             try {
                 action.joinAndSend()
