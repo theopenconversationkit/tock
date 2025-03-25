@@ -42,13 +42,16 @@ contents into a ready-to-index CSV file (one 'title'|'source'|'text' line per
 URL with scraped contents).
 """
 import logging
+import mimetypes
 import sys
 from pathlib import Path
 from urllib import request
 from urllib.error import URLError
 from urllib.parse import urljoin, urlparse
 
+import magic
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 from docopt import docopt
 
@@ -236,8 +239,39 @@ def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain')
         header=False,
     )
 
+def get_mime_type(url):
+    # 1. Essayer via Content-Type HTTP
+    _mime_type = "Unknown"
+    try:
+        response = requests.head(url, allow_redirects=True)
+        content_type = response.headers.get("Content-Type")
+        if content_type:
+            _mime_type =  content_type
+    except requests.RequestException:
+        pass
+
+    # 2. Essayer via l'extension de fichier
+    _mime_type = mimetypes.guess_type(url)[0]
+    if _mime_type:
+        return _mime_type
+
+    # 3. Télécharger un petit morceau et détecter avec magic
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        sample = response.raw.read(2048)
+        mime = magic.Magic(mime=True)
+        _mime_type = mime.from_buffer(sample)
+    except requests.RequestException:
+        pass
+
+    return _mime_type
+
+
 
 if __name__ == '__main__':
+
+
     cli_args = docopt(__doc__, version='Webscraper 0.1.0')
 
     # Set logging level
@@ -249,6 +283,10 @@ if __name__ == '__main__':
     # Check args:
     # - input URLs
     base_urls = cli_args['<input_urls>'].split(',')
+
+    print(get_mime_type(base_urls[0]))
+    exit(0)
+
     if not base_urls[0]:
         logging.error(f"Cannot proceed: could not find a URL in list '{base_urls}'")
         sys.exit(1)

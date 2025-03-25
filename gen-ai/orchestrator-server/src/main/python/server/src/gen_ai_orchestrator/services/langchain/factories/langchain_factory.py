@@ -160,9 +160,7 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_fac
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
 )
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import (
-    vector_store_credentials,
-)
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import fetch_default_vector_store_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -237,14 +235,15 @@ def get_vector_store_factory(
         The LangChain Vector Store Factory, or raise an exception otherwise
     """
     logger.info('Get Vector Store Factory for the given setting')
+    vector_store_credentials = fetch_default_vector_store_credentials()
 
     # Helper function to create OpenSearchFactory
     def create_opensearch_factory(
-        vs_setting: Optional[OpenSearchVectorStoreSetting],
+            vs_setting: Optional[OpenSearchVectorStoreSetting],
     ) -> OpenSearchFactory:
         return OpenSearchFactory(
             setting=vs_setting
-            or OpenSearchVectorStoreSetting(
+                    or OpenSearchVectorStoreSetting(
                 host=application_settings.vector_store_host,
                 port=application_settings.vector_store_port,
                 username=vector_store_credentials.username,
@@ -256,11 +255,12 @@ def get_vector_store_factory(
 
     # Helper function to create PGVectorFactory
     def create_pgvector_factory(
-        vs_setting: Optional[PGVectorStoreSetting],
+            vs_setting: Optional[PGVectorStoreSetting],
     ) -> PGVectorFactory:
+        vector_store_credentials = fetch_default_vector_store_credentials()
         return PGVectorFactory(
             setting=vs_setting
-            or PGVectorStoreSetting(
+                    or PGVectorStoreSetting(
                 host=application_settings.vector_store_host,
                 port=application_settings.vector_store_port,
                 username=vector_store_credentials.username,
@@ -277,8 +277,8 @@ def get_vector_store_factory(
 
         # Validate required default settings
         if (
-            application_settings.vector_store_provider is None
-            or vector_store_credentials is None
+                application_settings.vector_store_provider is None
+                or vector_store_credentials is None
         ):
             logger.error('No default Vector Store defined!')
             raise GenAIUnknownVectorStoreProviderSettingException()
