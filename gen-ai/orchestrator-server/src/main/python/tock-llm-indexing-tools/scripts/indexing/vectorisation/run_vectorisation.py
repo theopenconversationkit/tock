@@ -152,6 +152,7 @@ def main():
 
         loader = DataFrameLoader(df_filtered, page_content_column='text')
         docs = loader.load()
+        documents_count = len(docs)
 
         # Add metadata to each document
         for doc, (_, row) in zip(docs, df_filtered_clone.iterrows()):
@@ -191,6 +192,7 @@ def main():
         vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
         # Index all chunks in vector DB
+        chunks_count = len(splitted_docs)
         for i in range(0, len(splitted_docs), input_config.embedding_bulk_size):
             vector_store.add_documents(documents=splitted_docs[i: i + input_config.embedding_bulk_size],
                                        bulk_size=input_config.embedding_bulk_size)
