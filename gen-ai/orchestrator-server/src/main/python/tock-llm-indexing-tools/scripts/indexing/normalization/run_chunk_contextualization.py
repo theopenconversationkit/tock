@@ -114,11 +114,12 @@ def main():
 
         location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}"
         reference_document_path = f"{location}/input/{input_config.reference_document_name}"
+        output_path = f"{location}/output/{input_config.reference_document_name}"
 
-        reference_document_content = input_config.reference_document_name
+        with open(reference_document_path, "r", encoding="utf-8") as f:
+            reference_document_content = f.read()
 
         result = []
-
 
         it = iter(chunks)
         while chunks_group := list(islice(it, 5)):
@@ -131,7 +132,7 @@ def main():
             }, config={'callbacks': [observability_handler]}))
             nb_tested_chunks += len(chunks_group)
 
-        json_filename = reference_document_path.rsplit('.', 1)[0] + f"-context-{formatted_datetime}.json"
+        json_filename = output_path.rsplit('.', 1)[0] + f"-chunk-context-{formatted_datetime}.json"
 
         # Fusionner tous les contexts en une seule liste
         merged_contexts = []
