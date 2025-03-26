@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, Subject, of } from 'rxjs';
@@ -9,6 +9,8 @@ import { EntityDefinition, EntityType, Intent, IntentsCategory, SearchQuery, Sen
 import { StateService } from '../../../../core-nlp/state.service';
 import { NlpService } from '../../../../core-nlp/nlp.service';
 import { UserRole } from '../../../../model/auth';
+import { isNullOrUndefined } from '../../../../model/commons';
+import { deepCopy } from '../../../utils';
 
 interface SentenceTrainingFilterForm {
   search: FormControl<string>;
@@ -83,14 +85,18 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
 
   changeIntent: Intent;
 
+  initSearchOptions: Record<string, string>;
+
   swapEntitiesOrigin: EntityDefinition;
 
   swapEntitiesTarget: EntityDefinition;
 
   translateTargetLocale: string;
 
+  @ViewChild('intentInput') intentInput: ElementRef;
+
   constructor(public state: StateService, private nlp: NlpService, private location: Location) {
-    const search = (this.location.getState() as any)?.searchIntent;
+    const search = (this.location.getState() as any)?.searchSentence;
     if (search) {
       this.form.patchValue({
         search: search
@@ -98,6 +104,15 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.submitFiltersChange();
       }, 500);
+    }
+
+    const intentId = (this.location.getState() as any)?.intentId;
+    const status = (this.location.getState() as any)?.status;
+    if (!isNullOrUndefined(intentId) || !isNullOrUndefined(status)) {
+      this.initSearchOptions = {
+        intentId,
+        status
+      };
     }
   }
 
@@ -150,6 +165,36 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
     this.updateEntitiesFilters();
 
     this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(() => this.submitFiltersChange());
+  }
+
+  ngAfterViewInit(): void {
+    if (this.initSearchOptions) {
+      this.advanced = true;
+      setTimeout(() => {
+        this.setInitSearchOptions(deepCopy(this.initSearchOptions));
+        this.initSearchOptions = undefined;
+      }, 100);
+    }
+  }
+
+  setInitSearchOptions(initSearchOptions: Record<string, string>): void {
+    const options: Record<string, any> = {};
+
+    if (!isNullOrUndefined(initSearchOptions.intentId)) {
+      const searchedIntent = this.state.findIntentById(initSearchOptions.intentId);
+      if (searchedIntent) {
+        options.intent = searchedIntent;
+        this.intentInput.nativeElement.value = searchedIntent.label || searchedIntent.name;
+      }
+    }
+
+    if (!isNullOrUndefined(initSearchOptions.status)) {
+      options.status = initSearchOptions.status;
+    }
+
+    if (Object.keys(options).length) {
+      this.form.patchValue(options);
+    }
   }
 
   submitFiltersChange(): void {

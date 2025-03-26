@@ -34,7 +34,7 @@ export class DialogComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    setTimeout(() => this.initialize());
+    setTimeout(() => this.initialize(), 500);
   }
 
   initialize(): void {

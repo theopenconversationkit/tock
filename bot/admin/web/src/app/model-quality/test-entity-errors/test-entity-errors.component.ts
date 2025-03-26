@@ -84,7 +84,7 @@ export class TestEntityErrorsComponent implements OnInit, OnDestroy {
 
   change(error: EntityTestError) {
     this.qualityService.deleteEntityError(error).subscribe((e) => {
-      this.router.navigate(['/language-understanding/search'], { state: { searchIntent: '^' + escapeRegex(error.sentence.text) + '$' } });
+      this.router.navigate(['/language-understanding/search'], { state: { searchSentence: '^' + escapeRegex(error.sentence.text) + '$' } });
     });
   }
 

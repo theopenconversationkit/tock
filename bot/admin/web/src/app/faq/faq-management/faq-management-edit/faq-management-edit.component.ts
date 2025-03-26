@@ -27,6 +27,7 @@ import { KeyValue } from '@angular/common';
 import { ExtractFormControlTyping, GenericObject } from '../../../shared/utils/typescript.utils';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { Footnote } from '../../../shared/model/dialog-data';
+import { Router } from '@angular/router';
 
 export enum FaqTabs {
   INFO = 'info',
@@ -100,6 +101,8 @@ export class FaqManagementEditComponent implements OnChanges {
     { label: 'Markdown', value: MarkupFormats.MARKDOWN }
   ];
 
+  showInboxSentencesWarning: boolean = true;
+
   @Input() loading: boolean;
   @Input() faq?: FaqDefinitionExtended;
   @Input() tagsCache?: string[];
@@ -120,7 +123,8 @@ export class FaqManagementEditComponent implements OnChanges {
     private state: StateService,
     public botSharedService: BotSharedService,
     private botService: BotService,
-    private botConfiguration: BotConfigurationService
+    private botConfiguration: BotConfigurationService,
+    private router: Router
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -1075,6 +1079,19 @@ export class FaqManagementEditComponent implements OnChanges {
 
   expandSidePanel() {
     this.onExpandSidePanel.emit(true);
+  }
+
+  onCloseInboxSentencesWarning() {
+    this.showInboxSentencesWarning = false;
+  }
+
+  sendToInbox() {
+    this.router.navigate(['/language-understanding/search'], {
+      state: {
+        intentId: this.faq.intentId,
+        status: SentenceStatus.inbox
+      }
+    });
   }
 
   ngOnDestroy(): void {
