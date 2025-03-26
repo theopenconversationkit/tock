@@ -54,17 +54,24 @@ object VectorStoreSettingMapper {
      * @param botId the bot ID (also known as application name)
      * @param feature the feature name
      * @param dto the [VectorStoreSettingDTO]
+     * @param rawByForce force the creation of a raw secret key
      * @return [VectorStoreSetting]
      */
-    fun toEntity(namespace: String, botId: String, feature: String, dto: VectorStoreSettingDTO): VectorStoreSetting =
+    fun toEntity(
+        namespace: String,
+        botId: String,
+        feature: String,
+        dto: VectorStoreSettingDTO,
+        rawByForce: Boolean = false
+    ): VectorStoreSetting =
         with(dto){
             when(this){
                 is OpenSearchVectorStoreSetting -> {
-                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
+                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password, rawByForce)
                     return OpenSearchVectorStoreSetting(host, port, username, secretPassword)
                 }
                 is PGVectorStoreSetting -> {
-                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
+                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password, rawByForce)
                     return PGVectorStoreSetting(host, port, username, secretPassword, database)
                 }
                 else ->

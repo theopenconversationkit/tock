@@ -14,45 +14,50 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.model.genai
 
-import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
+import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
-import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSettingDTO
-import ai.tock.genai.orchestratorcore.models.vectorstore.toDTO
-import ai.tock.genai.orchestratorcore.utils.SecurityUtils
+import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
+import ai.tock.genai.orchestratorcore.models.llm.toDTO
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
-data class BotVectorStoreConfigurationDTO(
+data class BotSentenceGenerationConfigurationDTO(
     val id: String? = null,
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val setting: VectorStoreSettingDTO,
+    val nbSentences: Int,
+    val llmSetting: LLMSettingDTO,
+    val prompt: PromptTemplate,
 ) {
-    constructor(configuration: BotVectorStoreConfiguration) : this(
+    constructor(configuration: BotSentenceGenerationConfiguration) : this(
         id = configuration._id.toString(),
         namespace = configuration.namespace,
         botId = configuration.botId,
         enabled = configuration.enabled,
-        setting = configuration.setting.toDTO(),
+        nbSentences = configuration.nbSentences,
+        llmSetting = configuration.llmSetting.toDTO(),
+        prompt = configuration.prompt ?: configuration.initPrompt()
     )
 
-    fun toBotVectorStoreConfiguration(): BotVectorStoreConfiguration =
-        BotVectorStoreConfiguration(
+    fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
+        BotSentenceGenerationConfiguration(
             _id = id?.toId() ?: newId(),
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            setting = VectorStoreSettingMapper.toEntity(
+            nbSentences = nbSentences,
+            llmSetting = LLMSettingMapper.toEntity(
                 namespace = namespace,
                 botId = botId,
-                feature = Constants.GEN_AI_VECTOR_STORE,
-                dto = setting
-            )
+                feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
+                dto = llmSetting
+            ),
+            prompt = prompt
         )
 }
 

@@ -16,11 +16,10 @@
 
 package ai.tock.genai.orchestratorclient.requests
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
-class VectorStoreProviderSettingStatusQuery(
-    val vectorStoreSetting: VectorStoreSetting? = null,
-    val emSetting : EMSetting? = null,
-    val documentIndexName: String? = null
+class LLMProviderSettingStatusRequest(
+    val setting: LLMSetting,
+    val observabilitySetting: ObservabilitySetting?
 )

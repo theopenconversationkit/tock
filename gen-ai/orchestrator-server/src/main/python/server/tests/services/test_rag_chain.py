@@ -28,7 +28,7 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
 )
-from gen_ai_orchestrator.routers.requests.requests import RagQuery
+from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain import rag_chain
 
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
@@ -47,9 +47,9 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGCallbackHandler')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_guard')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGDebugData')
 @pytest.mark.asyncio
 async def test_rag_chain(
     mocked_rag_debug_data,
@@ -63,7 +63,7 @@ async def test_rag_chain(
     mocked_guardrail_parse,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
-    # Build a test RagQuery
+    # Build a test RAGRequest
     query_dict = {
         'dialog': {
             'history': [
@@ -144,9 +144,9 @@ Answer in {locale}:""",
         },
         'documents_required': True,
     }
-    query = RagQuery(**query_dict)
+    request = RAGRequest(**query_dict)
     inputs = {
-        **query.question_answering_prompt.inputs,
+        **request.question_answering_prompt.inputs,
         'chat_history': [
             HumanMessage(content='Hello, how can I do this?'),
             AIMessage(content='you can do this with the following method ....'),
@@ -173,13 +173,13 @@ Answer in {locale}:""",
     mocked_guardrail_parse.return_value = mocked_response
 
     # Call function
-    await execute_rag_chain(query, debug=True)
+    await execute_rag_chain(request, debug=True)
 
     # Assert that the given observability_setting is used
     mocked_get_callback_handler_factory.assert_called_once_with(
-        setting=query.observability_setting
+        setting=request.observability_setting
     )
-    # Assert qa chain is ainvoke()d with the expected settings from query
+    # Assert qa chain is ainvoke()d with the expected settings from request
     mocked_chain.ainvoke.assert_called_once_with(
         input=inputs,
         config={'callbacks': [mocked_callback, mocked_langfuse_callback]},
@@ -190,20 +190,20 @@ Answer in {locale}:""",
         answer=mocked_text_with_footnotes(
             text=mocked_rag_answer['answer'], footnotes=[]
         ),
-        debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
+        debug=mocked_rag_debug_data(request, mocked_rag_answer, mocked_callback, 1),
         observability_info=None
     )
     mocked_get_document_compressor_factory(
-        setting=query.compressor_setting
+        setting=request.compressor_setting
     )
     # Assert the rag guardrail is called
     mocked_guardrail_parse.assert_called_once_with(
-        os.path.join(query.guardrail_setting.api_base, 'guardrail'),
+        os.path.join(request.guardrail_setting.api_base, 'guardrail'),
         json={'text': [mocked_rag_answer['answer']]},
     )
     # Assert the rag guard is called
     mocked_rag_guard.assert_called_once_with(
-        inputs, response, query.documents_required
+        inputs, response, request.documents_required
     )
 
 @patch('gen_ai_orchestrator.services.langchain.impls.guardrail.bloomz_guardrail.requests.post')

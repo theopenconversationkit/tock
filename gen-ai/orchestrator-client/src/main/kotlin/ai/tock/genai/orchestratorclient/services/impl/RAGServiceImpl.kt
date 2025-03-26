@@ -17,7 +17,7 @@
 package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.RAGApi
-import ai.tock.genai.orchestratorclient.requests.RAGQuery
+import ai.tock.genai.orchestratorclient.requests.RAGRequest
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.RAGService
@@ -26,6 +26,6 @@ class RAGServiceImpl: RAGService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val ragApi = retrofit.create(RAGApi::class.java)
 
-    override fun rag(query: RAGQuery, debug: Boolean): RAGResponse?
+    override fun rag(query: RAGRequest, debug: Boolean): RAGResponse?
         = ragApi.rag(query, debug).execute().body()
 }

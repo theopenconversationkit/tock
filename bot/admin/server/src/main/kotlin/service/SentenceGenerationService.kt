@@ -19,7 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
-import ai.tock.bot.admin.model.BotSentenceGenerationConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotSentenceGenerationConfigurationDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector

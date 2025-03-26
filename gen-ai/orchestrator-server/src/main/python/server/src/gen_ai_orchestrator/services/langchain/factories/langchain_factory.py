@@ -301,16 +301,16 @@ def get_vector_store_factory(
     # Use the provided setting to determine the factory type
     if isinstance(setting, OpenSearchVectorStoreSetting):
         logger.debug(
-            'Creating Vector Store Factory based on RAG query - OpenSearchFactory'
+            'Creating Vector Store Factory based on RAG request - OpenSearchFactory'
         )
         return create_opensearch_factory(setting)
     elif isinstance(setting, PGVectorStoreSetting):
         logger.debug(
-            'Creating Vector Store Factory based on RAG query - PGVectorFactory'
+            'Creating Vector Store Factory based on RAG request - PGVectorFactory'
         )
         return create_pgvector_factory(setting)
 
-    logger.error('Unknown Vector Store provider setting in RAG query!')
+    logger.error('Unknown Vector Store provider setting in RAG request!')
     raise GenAIUnknownVectorStoreProviderSettingException()
 
 

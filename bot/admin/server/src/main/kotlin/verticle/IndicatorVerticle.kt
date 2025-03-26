@@ -169,7 +169,7 @@ class IndicatorVerticle {
  * @throws [UnauthorizedException] if context check is KO
  *
  */
-private fun <T> WebVerticle.checkNamespaceAndExecute(
+fun <T> WebVerticle.checkNamespaceAndExecute(
     context: RoutingContext,
     applicationDefinition: (RoutingContext) -> ApplicationDefinition?,
     block: (ApplicationDefinition) -> T

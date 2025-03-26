@@ -33,7 +33,7 @@ from gen_ai_orchestrator.models.rag.rag_models import Source
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.routers.requests.requests import QAQuery
+from gen_ai_orchestrator.routers.requests.requests import QARequest
 from gen_ai_orchestrator.routers.responses.responses import QAResponse
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
@@ -45,12 +45,12 @@ logger = logging.getLogger(__name__)
 
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-async def execute_qa_chain(query: QAQuery) -> QAResponse:
+async def execute_qa_chain(request: QARequest) -> QAResponse:
     """
-    Execute the QA chain using the specified embedding settings in the query.
+    Execute the QA chain using the specified embedding settings in the request.
 
     Args:
-        query (QAQuery): The QA query containing the necessary information for question-answering.
+        request (QARequest): The QA request containing the necessary information for question-answering.
 
     Returns:
         QAResponse: The QA response with the document sources.
@@ -59,9 +59,9 @@ async def execute_qa_chain(query: QAQuery) -> QAResponse:
     logger.info('QA chain - Start of execution...')
     start_time = time.time()
 
-    conversational_qa_chain = create_qa_chain(query)
+    conversational_qa_chain = create_qa_chain(request)
 
-    response = await conversational_qa_chain.ainvoke(query.user_query)
+    response = await conversational_qa_chain.ainvoke(request.user_query)
 
     qa_duration = '{:.2f}'.format(time.time() - start_time)
     logger.info('QA chain - End of execution. (Duration : %s seconds)', qa_duration)
@@ -92,24 +92,24 @@ def build_chain(retriever: BaseRetriever) -> Runnable:
     return retriever
 
 
-def create_qa_chain(query: QAQuery) -> Runnable:
+def create_qa_chain(request: QARequest) -> Runnable:
     """
-    Create the QA chain from QAQuery, using the Embedding settings specified in the query
+    Create the QA chain from QARequest, using the Embedding settings specified in the request
 
     Args:
-        query: The QA query
+        request: The QA request
     Returns:
         The QA chain.
     """
-    em_factory = get_em_factory(setting=query.embedding_question_em_setting)
+    em_factory = get_em_factory(setting=request.embedding_question_em_setting)
     vector_store = get_vector_store_factory(
         vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
         embedding_function=em_factory.get_embedding_model(),
-        index_name=query.document_index_name,
+        index_name=request.document_index_name,
     ).get_vector_store()
 
     retriever = vector_store.as_retriever(
-        search_kwargs=query.document_search_params.to_dict()
+        search_kwargs=request.document_search_params.to_dict()
     )
 
     logger.debug('QA chain - Create a QA chain')

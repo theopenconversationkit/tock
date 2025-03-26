@@ -45,12 +45,12 @@ class LangChainEMFactory(ABC, BaseModel):
         :return: True if the setting is valid.
         """
         logger.info('Invoke EM provider to check setting')
-        query = 'Hi, are you there?'
-        response = await self.embed_query(query)
+        text = 'Hi, are you there?'
+        response = await self.embed_query(text)
         logger.info('Embedding successful')
-        logger.debug('[query: %s], [response: %s]', query, response)
+        logger.debug('[text: %s], [response: %s]', text, response)
         return True
 
     async def embed_query(self, text: str) -> List[float]:
-        """Embed query text."""
+        """Embed text."""
         return await self.get_embedding_model().aembed_query(text)

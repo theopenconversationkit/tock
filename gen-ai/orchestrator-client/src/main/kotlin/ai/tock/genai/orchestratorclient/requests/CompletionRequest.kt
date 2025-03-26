@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.genai.orchestratorclient.requests
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
-import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
-
-data class BotSentenceGenerationInfoDTO(
-    val enabled: Boolean = false,
-    val nbSentences: Int? = null,
-    val llmTemperature: String? = null
-) {
-    constructor(configuration: BotSentenceGenerationConfiguration): this(
-        configuration.enabled,
-        configuration.nbSentences,
-        configuration.llmSetting.temperature
-    )
-}
-
-
-
+data class CompletionRequest(
+    val llmSetting: LLMSetting,
+    val prompt: PromptTemplate,
+    val observabilitySetting: ObservabilitySetting?
+)

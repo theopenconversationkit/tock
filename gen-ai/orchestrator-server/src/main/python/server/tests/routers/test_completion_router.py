@@ -22,7 +22,7 @@ client = TestClient(app)
 
 def test_generate_sentences():
     response = client.post(
-        '/completion/sentence-generation',
+        '/completion/sentences',
         json={
             'llm_setting': {
                 'provider': 'FakeLLM',
@@ -53,7 +53,7 @@ def test_generate_sentences():
 
 def test_generate_sentences_template_error():
     response = client.post(
-        '/completion/sentence-generation',
+        '/completion/sentences',
         json={
             'llm_setting': {
                 'provider': 'FakeLLM',
@@ -81,3 +81,29 @@ def test_generate_sentences_template_error():
     assert response.status_code == 400
     error = response.json()
     assert error['code'] == ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR.value
+
+def test_generate():
+    response = client.post(
+        '/completion/',
+        json={
+            'llm_setting': {
+                'provider': 'FakeLLM',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'model': 'dddddd',
+                'temperature': '0.0',
+                'responses': ['Hi! Im a fake LLM'],
+            },
+            'prompt': {
+                'formatter': 'jinja2',
+                'template': '',
+                'inputs': {},
+            },
+            'observability_setting': None
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {'answer': 'Hi! Im a fake LLM', 'observability_info': None}

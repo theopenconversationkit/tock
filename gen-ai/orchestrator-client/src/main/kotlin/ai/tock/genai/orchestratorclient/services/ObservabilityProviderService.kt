@@ -16,9 +16,9 @@
 
 package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 
 interface ObservabilityProviderService {
-    fun checkSetting(query: ObservabilityProviderSettingStatusQuery): ProviderSettingStatusResponse?
+    fun checkSetting(query: ObservabilityProviderSettingStatusRequest): ProviderSettingStatusResponse?
 }

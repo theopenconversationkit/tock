@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.model.genai
 
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
@@ -22,7 +22,6 @@ import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySettingDTO
 import ai.tock.genai.orchestratorcore.models.observability.toDTO
-import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 

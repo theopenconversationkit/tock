@@ -38,7 +38,7 @@ class ErrorCode(Enum):
 
     # AI Provider Errors
     AI_PROVIDER_UNKNOWN = 2000
-    AI_PROVIDER_BAD_QUERY = 2001
+    AI_PROVIDER_BAD_REQUEST = 2001
     AI_PROVIDER_API_ERROR = 2002
     AI_PROVIDER_API_RESOURCE_NOT_FOUND = 2003
     AI_PROVIDER_API_MODEL_NOT_FOUND = 2004
@@ -150,8 +150,8 @@ class ErrorMessages:
         ),
         # AI Provider Errors
         ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),
-        ErrorCode.AI_PROVIDER_BAD_QUERY: ErrorMessage(
-            message='Bad query.', detail='The request seems to be invalid.'
+        ErrorCode.AI_PROVIDER_BAD_REQUEST: ErrorMessage(
+            message='Bad request.', detail='The request seems to be invalid.'
         ),
         ErrorCode.AI_PROVIDER_API_ERROR: ErrorMessage(message='AI Provider API error.'),
         ErrorCode.AI_PROVIDER_API_RESOURCE_NOT_FOUND: ErrorMessage(

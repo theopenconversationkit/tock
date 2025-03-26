@@ -16,7 +16,7 @@
 
 package ai.tock.genai.orchestratorclient.api
 
-import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilityProvider
 import retrofit2.Call
@@ -27,7 +27,7 @@ import retrofit2.http.Path
 internal interface ObservabilityProviderApi {
     @POST("/observability-providers/{provider-id}/setting/status")
     fun checkObservabilitySetting(
-        @Body query: ObservabilityProviderSettingStatusQuery,
+        @Body query: ObservabilityProviderSettingStatusRequest,
         @Path("provider-id") providerId: ObservabilityProvider
     ): Call<ProviderSettingStatusResponse>
 

@@ -18,7 +18,7 @@ package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorclient.responses.ErrorInfo
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
