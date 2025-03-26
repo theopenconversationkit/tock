@@ -83,6 +83,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 it.score
                             )
                         }.toMutableList(),
+                        // modifiedObservabilityInfo includes the public langfuse URL if filled.
                         metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
                     )
                 )
@@ -98,10 +99,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         val config = botBus.botDefinition.observabilityConfiguration
         if (config?.enabled == true && config.setting is LangfuseObservabilitySetting<*>) {
             val setting = config.setting as LangfuseObservabilitySetting<*>
-            // Stockage dans une variable locale pour éviter le smart cast impossible sur une propriété déclarée dans un autre module
             val publicUrl = setting.publicUrl
             if (!publicUrl.isNullOrBlank()) {
-                // Remplace l'URL interne par l'URL publique configurée
                 return info.copy(traceUrl = info.traceUrl.replace(setting.url, publicUrl))
             }
         }
