@@ -72,33 +72,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             if (noAnswerStory == null && answer != null) {
                 logger.info { "Send RAG answer." }
 
-                val publicTraceUrl = observabilityInfo?.let {
-                    // Get observability configuration
-                    val observabilityConfig = botDefinition.observabilityConfiguration
-                    // If observability configuration exists and contain a public URL, replace the trace URL
-                    if (observabilityConfig?.enabled == true && observabilityConfig.setting is LangfuseObservabilitySetting<*>) {
-                        val publicUrl = (observabilityConfig.setting as LangfuseObservabilitySetting<*>).publicUrl
-                        if (!publicUrl.isNullOrBlank()) {
-                            it.traceUrl.replace(
-                                (observabilityConfig.setting as LangfuseObservabilitySetting<*>).url,
-                                publicUrl
-                            )
-                        } else {
-                            it.traceUrl
-                        }
-                    } else {
-                        it.traceUrl
-                    }
-                }
-
-                // Modified ObservabilityInfo
-                val modifiedObservabilityInfo = observabilityInfo?.let {
-                    ObservabilityInfo(
-                        traceId = it.traceId,
-                        traceName = it.traceName,
-                        traceUrl = publicTraceUrl ?: it.traceUrl
-                    )
-                }
+                val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
                 send(
                     SendSentenceWithFootnotes(
@@ -118,6 +92,20 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             noAnswerStory
         }
+    }
+
+    private fun updateObservabilityInfo(botBus: BotBus, info: ObservabilityInfo): ObservabilityInfo {
+        val config = botBus.botDefinition.observabilityConfiguration
+        if (config?.enabled == true && config.setting is LangfuseObservabilitySetting<*>) {
+            val setting = config.setting as LangfuseObservabilitySetting<*>
+            // Stockage dans une variable locale pour éviter le smart cast impossible sur une propriété déclarée dans un autre module
+            val publicUrl = setting.publicUrl
+            if (!publicUrl.isNullOrBlank()) {
+                // Remplace l'URL interne par l'URL publique configurée
+                return info.copy(traceUrl = info.traceUrl.replace(setting.url, publicUrl))
+            }
+        }
+        return info
     }
 
     /**

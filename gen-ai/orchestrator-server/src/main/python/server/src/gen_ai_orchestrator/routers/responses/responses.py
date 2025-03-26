@@ -118,9 +118,6 @@ class ObservabilityInfo(BaseModel):
     trace_url: str = Field(
         description='The observability trace url.'
     )
-    public_trace_url: Optional[str] = Field(
-        None, description="The public observability trace url."
-    )
 
 class RAGResponse(BaseModel):
     """The RAG response model"""
