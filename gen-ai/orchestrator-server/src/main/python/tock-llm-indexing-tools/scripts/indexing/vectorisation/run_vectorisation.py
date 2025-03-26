@@ -181,8 +181,10 @@ def main():
 
         em_factory = get_em_factory(input_config.em_setting)
 
-        # generating index name
-        index_name = normalize_index_name(input_config.vector_store_setting.provider, input_config.bot.namespace, input_config.bot.bot_id, session_uuid)
+        index_name = input_config.document_index_name
+        if index_name is None:
+            # generating index name
+            index_name = normalize_index_name(input_config.vector_store_setting.provider, input_config.bot.namespace, input_config.bot.bot_id, session_uuid)
 
         vector_store_factory = get_vector_store_factory(
             setting=input_config.vector_store_setting,

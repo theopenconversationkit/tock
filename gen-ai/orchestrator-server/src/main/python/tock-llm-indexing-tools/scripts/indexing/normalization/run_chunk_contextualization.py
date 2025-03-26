@@ -1,7 +1,8 @@
 """
+TODO MASS : à reécrire
 Run an evaluation on LangFuse dataset experiment.
 Usage:
-        run_chunk_contextualization.py [-v] <chunk_contextualization_input_file>
+        run_chunk_contextualization.py [-v] --json-config-file=<jcf>
         run_chunk_contextualization.py -h | --help
         run_chunk_contextualization.py --version
 
@@ -10,7 +11,10 @@ Options:
     -h --help   Show this screen
     --version   Show version
 """
+import json
 import os
+from itertools import islice
+
 from langchain_openai import ChatOpenAI
 from datetime import datetime
 from typing import List
@@ -19,33 +23,35 @@ from docopt import docopt
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
     create_observability_callback_handler
 from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langfuse import Langfuse
 
 from scripts.common.logging_config import configure_logging
 from langchain.prompts import ChatPromptTemplate, PromptTemplate, HumanMessagePromptTemplate
 
 from scripts.common.models import StatusWithReason, ActivityStatus
-from scripts.indexing.normalization.models import RunChunkContextualizationInput, RunChunkContextualizationOutput
+from scripts.indexing.normalization.models import RunChunkContextualizationInput, RunChunkContextualizationOutput, \
+    DocumentChunk
 
 
 def main():
     start_time = datetime.now()
+    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
     cli_args = docopt(__doc__, version='Run Chunk Contextualization 1.0.0')
     logger = configure_logging(cli_args)
 
-    chunks: List[str] = []
-    tested_chunks: List[str] = []
+    chunks: List[DocumentChunk]  = []
+    nb_tested_chunks: int = 0
     try:
         logger.info("Loading input data...")
-        chunk_contextualization_input = RunChunkContextualizationInput.from_json_file(cli_args["<chunk_contextualization_input_file>"])
-        logger.debug(f"\n{chunk_contextualization_input.format()}")
+        input_config = RunChunkContextualizationInput.from_json_file(cli_args["--json-config-file"])
+        logger.debug(f"\n{input_config.format()}")
 
-        chunks = chunk_contextualization_input.chunks
+        chunks = input_config.chunks
 
 
         # Define the prompt for generating contextual information
-        anthropic_contextual_retrieval_system_prompt = """<document>
+        contextual_retrieval_system_prompt = """<document>
                 {WHOLE_DOCUMENT}
         </document>
 
@@ -61,6 +67,7 @@ def main():
         2. **Locate the values** in the document that correspond to these references. Think about how the context in the document might help you find these values.
         3. **Replace the references** with their actual values. Think about the effect of this replacement on the clarity of the chunk.
         4. **Generate a succinct yet comprehensive context** for each chunk:
+            - Make sure that the chunk description begins directly with its content, without using an introduction such as 'This chunk'. Rephrase to make the description more natural and integrated into the text..
             - Clearly identify the financial product it belongs to. Think about how you can deduce the product name from the document.
             - Ensure that all relevant details needed to understand the chunk are included. Think about what is necessary to contextualize the chunk.
             - Resolve any references (e.g., dates, terms, or entities) explicitly by replacing them with their corresponding values from the document. Think about how to make these references clear for future searches.
@@ -81,43 +88,65 @@ def main():
         """
 
         # Create a PromptTemplate for WHOLE_DOCUMENT and CHUNK_CONTENT
-        anthropic_prompt_template = PromptTemplate(
+        prompt_template = PromptTemplate(
             input_variables=['WHOLE_DOCUMENT', 'CHUNKS'],
-            template=anthropic_contextual_retrieval_system_prompt
+            template=contextual_retrieval_system_prompt
         )
 
         # Wrap the prompt in a HumanMessagePromptTemplate
-        human_message_prompt = HumanMessagePromptTemplate(prompt=anthropic_prompt_template)
+        human_message_prompt = HumanMessagePromptTemplate(prompt=prompt_template)
         # Create the final ChatPromptTemplate
-        anthropic_contextual_retrieval_final_prompt = ChatPromptTemplate(
+        contextual_retrieval_final_prompt = ChatPromptTemplate(
             input_variables=['WHOLE_DOCUMENT', 'CHUNKS'],
             messages=[human_message_prompt]
         )
 
 
         observability_handler = create_observability_callback_handler(
-            observability_setting=chunk_contextualization_input.observability_setting,
+            observability_setting=input_config.observability_setting,
             trace_name="Chunk contextualization"
         )
-        llm_factory = get_llm_factory(setting=chunk_contextualization_input.llm_setting)
+        llm_factory = get_llm_factory(setting=input_config.llm_setting)
         llm_model_instance = llm_factory.get_language_model()
 
         # Chain the prompt with the model instance
-        contextual_chunk_creation = anthropic_contextual_retrieval_final_prompt | llm_model_instance | StrOutputParser()
+        contextual_chunk_creation = contextual_retrieval_final_prompt | llm_model_instance | JsonOutputParser()
 
-        # Process each chunk and generate contextual information
-        # for test_chunk in chunks:
-        formatted_chunks = "\n".join(
-            [f"<chunk id='{chunk.id}'>\n{chunk.content}\n</chunk>" for chunk in chunks]
-        )
-        res = contextual_chunk_creation.invoke({
-            "WHOLE_DOCUMENT": chunk_contextualization_input.document.content,
-            "CHUNKS": formatted_chunks
-        }, config={'callbacks': [observability_handler]})
+        location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}"
+        reference_document_path = f"{location}/input/{input_config.reference_document_name}"
 
-        logger.info(f"Result = {res}")
-        logger.info('--------------------')
-        tested_chunks.append("")
+        reference_document_content = input_config.reference_document_name
+
+        result = []
+
+
+        it = iter(chunks)
+        while chunks_group := list(islice(it, 5)):
+            formatted_chunks = "\n".join(
+                [f"<chunk id='{chunk.id}'>\n{chunk.content}\n</chunk>" for chunk in chunks_group]
+            )
+            result.append(contextual_chunk_creation.invoke({
+                "WHOLE_DOCUMENT": reference_document_content,
+                "CHUNKS": formatted_chunks
+            }, config={'callbacks': [observability_handler]}))
+            nb_tested_chunks += len(chunks_group)
+
+        json_filename = reference_document_path.rsplit('.', 1)[0] + f"-context-{formatted_datetime}.json"
+
+        # Fusionner tous les contexts en une seule liste
+        merged_contexts = []
+        for item in result:
+            merged_contexts.extend(item["contexts"])
+
+        # Résultat final
+        merged_data = {
+            "product_name": result[0]["product_name"],  # Prendre le product_name (ils sont identiques)
+            "contexts": merged_contexts
+        }
+
+        with open(json_filename, "w", encoding="utf-8") as json_file:
+            json.dump(merged_data, json_file, ensure_ascii=False, indent=2)
+
 
 
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
@@ -131,7 +160,7 @@ def main():
         status = activity_status,
         duration = datetime.now() - start_time,
         items_count=len_chunks,
-        success_rate=100 * (len(tested_chunks) / len_chunks) if len_chunks > 0 else 0
+        success_rate=100 * (nb_tested_chunks / len_chunks) if len_chunks > 0 else 0
     )
     logger.debug(f"\n{output.format()}")
 

@@ -55,6 +55,12 @@ def configure_logging(cli_args):
     httpx_logger.addHandler(console_handler)
     httpx_logger.propagate = False
 
+    openai_logger = logging.getLogger("openai")
+    openai_logger.setLevel(logging.INFO)
+    openai_logger.addHandler(file_handler)
+    openai_logger.addHandler(console_handler)
+    openai_logger.propagate = False
+
     def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         log_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))

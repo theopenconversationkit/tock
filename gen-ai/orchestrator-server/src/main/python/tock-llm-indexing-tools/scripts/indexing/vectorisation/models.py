@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
 import humanize
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
@@ -16,6 +17,7 @@ class RunVectorisationInput(FromJsonMixin):
     em_setting: EMSetting = Field(description='Embeddings setting')
     vector_store_setting: VectorStoreSetting = Field(description='The vector store settings.')
     data_csv_file: Path = Field(description='The csv file path.')
+    document_index_name: Optional[str] = Field(description='Index name to create.')
     chunk_size: int = Field(description='The chunk size (number of characters).', ge=500)
     embedding_bulk_size: int = Field(description='The embedding bulk size.', ge=1)
     ignore_source: bool = Field(description='Ignore source url if True.')

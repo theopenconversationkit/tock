@@ -107,7 +107,7 @@ def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem
         sheet[f"C{start_row}"] = items[0].runs[0].metadata["llm"]["model"]
         sheet[f"D{start_row}"] = items[0].runs[0].metadata["llm"]["temperature"]
         sheet[f"E{start_row}"] = items[0].runs[0].metadata["k"]
-        sheet[f"F{start_row}"] = items[0].runs[0].metadata["document_index_name"].split("-session-")[1]
+        sheet[f"F{start_row}"] = items[0].runs[0].metadata["document_index_name"]
 
     for i in range(len(items)):
         col_letter = get_column_letter(9 + i) # Column I (corresponds to index 9)
@@ -120,15 +120,16 @@ def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem
             sheet[f"{col_letter}{start_row}"] = items[i].runs[j].output["answer"]
             sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
                 [f'{doc["page_content"]}' for doc in items[i].runs[j].output["documents"]])
-            sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
-                f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
-                for s in items[i].runs[j].scores
-            )
             # sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
             #     f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
             #     for s in items[i].runs[j].scores
-            #     if s.name != "FactualCorrectness"
             # )
+            sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
+                f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
+                for s in items[i].runs[j].scores
+                if s.name != "FactualCorrectness"
+            )
+            # TODO MASS : scores à donner en input
 
     wb.save(output_file)
 

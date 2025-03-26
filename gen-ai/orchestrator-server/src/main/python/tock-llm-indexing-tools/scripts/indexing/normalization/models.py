@@ -8,21 +8,17 @@ from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from pydantic import BaseModel, Field
 
-from scripts.common.models import OutputStatus, ActivityOutput
+from scripts.common.models import ActivityOutput, FromJsonMixin, BotInfo
 
 
 class DocumentChunk(BaseModel):
     id: str = Field(description='The chunk id.')
     content: str = Field(description='The chunk content.')
 
-
-class ReferenceDocument(BaseModel):
-    name: str = Field(description='The document name.')
-    content: str = Field(description='The document content.')
-
-class RunChunkContextualizationInput(BaseModel):
-    document: ReferenceDocument = Field(
-        description='The document to use as a reference for chunks.'
+class RunChunkContextualizationInput(FromJsonMixin):
+    bot: BotInfo = Field(description='The bot information.')
+    reference_document_name: str = Field(
+        description='The document name to use as a reference for chunks.'
     )
     chunks: List[DocumentChunk] = Field(
         description='The list of chunks to contextualize.',
@@ -36,22 +32,11 @@ class RunChunkContextualizationInput(BaseModel):
         description='The Langfuse observability settings.'
     )
 
-    @classmethod
-    def from_json_file(cls, file_path: str):
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            return cls(**data)
-        except FileNotFoundError:
-            raise ValueError(f"The file '{file_path}' is not found!")
-        except json.JSONDecodeError:
-            raise ValueError(f"the file '{file_path}' is not a valid JSON!")
-
     def format(self):
         header_text = " RUN CHUNK CONTEXTUALIZATION INTPUT "
         details_str = f"""
             Langfuse environment   : {str(self.observability_setting.url)}
-            The reference document : {self.document.name}
+            The reference document : {self.reference_document_name}
             Number of chunks       : {len(self.chunks)}
             The LLM model          : {self.llm_setting.model} ({self.llm_setting.provider})
             The LLM temperature    : {self.llm_setting.temperature}
