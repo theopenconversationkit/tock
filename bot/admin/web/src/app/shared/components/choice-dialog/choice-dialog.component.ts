@@ -17,7 +17,7 @@ export class ChoiceDialogComponent implements OnInit {
   constructor(public dialogRef: NbDialogRef<ChoiceDialogComponent>) {}
 
   ngOnInit() {
-    this.actions.forEach((actionDef) => {
+    this.actions?.forEach((actionDef) => {
       if (!actionDef.buttonStatus) actionDef.buttonStatus = 'primary';
       if (actionDef.ghost == null) actionDef.ghost = false;
     });

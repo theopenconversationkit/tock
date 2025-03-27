@@ -200,8 +200,12 @@ export class ApplicationService implements OnDestroy {
     return this.rest.post(`/namespace/select/${namespace}`);
   }
 
-  deleteNamespace(userNamespace: UserNamespace): Observable<boolean> {
+  deleteNamespaceUser(userNamespace: UserNamespace): Observable<boolean> {
     return this.rest.delete(`/namespace/${userNamespace.login}/${userNamespace.namespace}`);
+  }
+
+  deleteNamespace(userNamespace: UserNamespace): Observable<boolean> {
+    return this.rest.delete(`/namespace/${userNamespace.namespace}`);
   }
 
   saveNamespaceConfiguration(configuration: NamespaceConfiguration): Observable<boolean> {

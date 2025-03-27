@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { NamespaceConfiguration, NamespaceSharingConfiguration, UserNamespace } from '../../model/application';
@@ -24,14 +24,17 @@ import { UserRole } from '../../model/auth';
 import { ApplicationConfig } from '../application.config';
 import { CreateNamespaceComponent } from './create-namespace/create-namespace.component';
 import { Subject, takeUntil } from 'rxjs';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-namespaces',
   templateUrl: 'namespaces.component.html',
   styleUrls: ['namespaces.component.scss']
 })
-export class NamespacesComponent implements OnDestroy {
+export class NamespacesComponent implements OnInit, OnDestroy {
   destroy = new Subject();
+
+  loading: boolean = true;
 
   managedNamespace: string;
   managedUsers: UserNamespace[];
@@ -42,7 +45,6 @@ export class NamespacesComponent implements OnDestroy {
   newLogin: string;
   newOwner: boolean;
 
-  c;
   constructor(
     private toastrService: NbToastrService,
     public state: StateService,
@@ -51,6 +53,10 @@ export class NamespacesComponent implements OnDestroy {
     private applicationConfig: ApplicationConfig,
     private nbDialogService: NbDialogService
   ) {}
+
+  ngOnInit() {
+    this.loading = false;
+  }
 
   selectNamespace(namespace: string): void {
     this.applicationService.selectNamespace(namespace).subscribe((_) =>
@@ -71,8 +77,10 @@ export class NamespacesComponent implements OnDestroy {
   createNamespace(): void {
     const modal = this.nbDialogService.open(CreateNamespaceComponent);
     const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
+      this.loading = true;
       this.applicationService.createNamespace(result.name.trim()).subscribe((b) => {
         this.applicationService.resetConfiguration();
+        this.loading = false;
       });
       this.closeEdition();
       modal.close();
@@ -87,20 +95,22 @@ export class NamespacesComponent implements OnDestroy {
   }
 
   manageUsers(namespace: string): void {
-    if (this.managedNamespace && this.managedUsers) {
+    if (this.managedNamespace === namespace && this.managedUsers) {
       this.closeEdition();
       return;
     }
 
+    this.loading = true;
     this.applicationService.getUsersForNamespace(namespace).subscribe((users) => {
       this.closeEdition();
       this.managedUsers = users;
       this.managedNamespace = namespace;
+      this.loading = false;
     });
   }
 
   deleteUserNamespace(userNamespace: UserNamespace): void {
-    this.applicationService.deleteNamespace(userNamespace).subscribe((_) => this.manageUsers(userNamespace.namespace));
+    this.applicationService.deleteNamespaceUser(userNamespace).subscribe((_) => this.manageUsers(userNamespace.namespace));
   }
 
   addUserNamespace(): void {
@@ -109,16 +119,20 @@ export class NamespacesComponent implements OnDestroy {
     } else {
       this.applicationService
         .saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false))
-        .subscribe((_) => this.manageUsers(this.managedNamespace));
+        .subscribe((_) => {
+          this.manageUsers(this.managedNamespace);
+          this.newLogin = '';
+        });
     }
   }
 
   manageSharingSettings(namespace: string): void {
-    if (this.managedNamespace && this.namespaceConfiguration) {
+    if (this.managedNamespace === namespace && this.namespaceConfiguration) {
       this.closeEdition();
       return;
     }
 
+    this.loading = true;
     this.applicationService.getNamespaceConfiguration(namespace).subscribe((config) => {
       this.closeEdition();
       this.namespaceConfiguration =
@@ -127,6 +141,7 @@ export class NamespacesComponent implements OnDestroy {
       this.importedNamespaces = Array.from(this.namespaceConfiguration.namespaceImportConfiguration.keys());
       this.applicationService.getSharableNamespaceConfiguration().subscribe((configs) => {
         this.sharableNamespaceConfigurations = configs.filter((n) => n.namespace !== namespace);
+        this.loading = false;
       });
     });
   }
@@ -136,6 +151,56 @@ export class NamespacesComponent implements OnDestroy {
       this.sharableNamespaceConfigurations.map((c) => [c.namespace, c.defaultSharingConfiguration])
     );
     this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => this.closeEdition());
+  }
+
+  confirmDeleteNamespace(namespace: UserNamespace): void {
+    this.loading = true;
+    this.applicationService.getApplicationsByNamespace(namespace.namespace).subscribe((apps) => {
+      if (apps.length) {
+        this.nbDialogService.open(ChoiceDialogComponent, {
+          closeOnEsc: true,
+          context: {
+            title: `Namespace cannot be deleted`,
+            subtitle: `This namespace contains ${apps.length} application${
+              apps.length > 1 ? 's' : ''
+            }. Only an empty namespace can be deleted.`,
+            modalStatus: 'warning',
+            actions: [{ actionName: 'close', buttonStatus: 'basic', ghost: true }]
+          }
+        });
+      } else {
+        const action = 'delete';
+        this.nbDialogService
+          .open(ChoiceDialogComponent, {
+            closeOnEsc: true,
+            context: {
+              title: `Delete namespace "${namespace.namespace}" ?`,
+              subtitle: `Are you sure you want to delete this namespace?`,
+              modalStatus: 'danger',
+              actions: [
+                { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+                { actionName: action, buttonStatus: 'danger' }
+              ]
+            }
+          })
+          .onClose.subscribe((result) => {
+            if (result === action) {
+              this.loading = true;
+              this.applicationService.deleteNamespace(namespace).subscribe((res) => {
+                if (namespace.current) {
+                  const nonCurrentNamespace = this.state.namespaces.find((ns) => !ns.current);
+                  if (nonCurrentNamespace) this.selectNamespace(nonCurrentNamespace.namespace);
+                } else {
+                  this.applicationService.resetConfiguration();
+                }
+                this.loading = false;
+              });
+            }
+          });
+      }
+
+      this.loading = false;
+    });
   }
 
   ngOnDestroy(): void {

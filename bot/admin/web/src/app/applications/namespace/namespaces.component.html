@@ -36,6 +36,7 @@
 <nb-card
   *ngFor="let n of state.namespaces"
   class="mb-2"
+  [nbSpinner]="loading"
 >
   <nb-card-body>
     <div class="d-flex gap-1 align-items-center">
@@ -86,6 +87,18 @@
       >
         <nb-icon icon="gear"></nb-icon>
       </button>
+
+      <button
+        *ngIf="n.owner && isAdmin()"
+        nbButton
+        ghost
+        shape="round"
+        status="danger"
+        (click)="confirmDeleteNamespace(n)"
+        nbTooltip="Delete this namespace"
+      >
+        <nb-icon icon="trash"></nb-icon>
+      </button>
     </div>
 
     <nb-card
@@ -98,10 +111,10 @@
         </span>
       </nb-card-header>
 
-      <nb-card-body>
+      <nb-card-body class="p-0">
         <div
           *ngFor="let u of managedUsers"
-          class="d-flex"
+          class="d-flex align-items-center border-bottom pl-4 pr-2 py-1 hover-highlight"
         >
           <b>{{ u.login }}</b>
 
@@ -119,7 +132,7 @@
             shape="round"
             status="danger"
             (click)="deleteUserNamespace(u)"
-            nbTooltip="Delete User"
+            nbTooltip="Delete User &quot;{{ u.login }}&quot;"
           >
             <nb-icon icon="trash"></nb-icon>
           </button>
