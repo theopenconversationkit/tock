@@ -21,6 +21,11 @@ Pour permettre à Tock de se connecter à un outil d'observabilité, un écran d
 
 ![LLM Observability](../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration de l'outil d'observation de l'IA")
 
+## Configuration d'URL Publique
+
+- Le champ **Public URL** permet de spécifier une URL accessible depuis l'extérieur pour les outils d'observabilité comme Langfuse.
+- Cette URL sera utilisée dans l'interface frontend pour rediriger les utilisateurs vers les traces d'observabilité, remplaçant l'URL interne qui pourrait ne pas être accessible publiquement.
+
 ## Utilisation
 
 - Voici la [liste des fournisseurs d'observabilité des LLM](../../../../user/studio/gen-ai/providers/gen-ai-provider-observability.md) qui sont pris en compte par Tock.

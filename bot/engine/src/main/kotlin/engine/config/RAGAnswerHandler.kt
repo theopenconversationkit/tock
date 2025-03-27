@@ -37,6 +37,7 @@ import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
@@ -70,6 +71,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Handle the RAG answer
             if (noAnswerStory == null && answer != null) {
                 logger.info { "Send RAG answer." }
+
+                val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
+
                 send(
                     SendSentenceWithFootnotes(
                         botId, connectorId, userId, text = answer.text, footnotes = answer.footnotes.map {
@@ -79,7 +83,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 it.score
                             )
                         }.toMutableList(),
-                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = observabilityInfo)
+                        // modifiedObservabilityInfo includes the public langfuse URL if filled.
+                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
                     )
                 )
             } else {
@@ -88,6 +93,18 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             noAnswerStory
         }
+    }
+
+    private fun updateObservabilityInfo(botBus: BotBus, info: ObservabilityInfo): ObservabilityInfo {
+        val config = botBus.botDefinition.observabilityConfiguration
+        if (config?.enabled == true && config.setting is LangfuseObservabilitySetting<*>) {
+            val setting = config.setting as LangfuseObservabilitySetting<*>
+            val publicUrl = setting.publicUrl
+            if (!publicUrl.isNullOrBlank()) {
+                return info.copy(traceUrl = info.traceUrl.replace(setting.url, publicUrl))
+            }
+        }
+        return info
     }
 
     /**
