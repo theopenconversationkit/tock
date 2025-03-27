@@ -18,6 +18,10 @@ export class AiSettingsEngineConfigParamInputComponent {
 
   inputVisible: boolean = false;
 
+  get isRequired(): boolean {
+    return this.configurationParam.required || typeof this.configurationParam.required === 'undefined';
+  }
+
   getFormControl(): FormControl {
     return this.form.get(this.parentGroup).get(this.configurationParam.key) as FormControl;
   }

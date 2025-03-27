@@ -12,6 +12,7 @@ export interface ProvidersConfigurationParam {
   step?: number;
   rows?: number;
   confirmExport?: boolean;
+  required?: boolean;
 }
 
 export enum AiEngineProvider {

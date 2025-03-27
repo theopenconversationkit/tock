@@ -17,7 +17,8 @@ export const ProvidersConfigurations: ObservabilityProvidersConfiguration[] = [
     params: [
       { key: 'publicKey', label: 'Public key', type: 'obfuscated' },
       { key: 'secretKey', label: 'Secret key', type: 'obfuscated', confirmExport: true },
-      { key: 'url', label: 'Url', type: 'obfuscated' }
+      { key: 'url', label: 'Url', type: 'obfuscated' },
+      { key: 'publicUrl', label: 'Public url', type: 'obfuscated', required: false }
     ]
   }
 ];
