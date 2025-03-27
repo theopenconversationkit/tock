@@ -29,7 +29,7 @@ import org.litote.kmongo.newId
  */
 abstract class Event(
     /**
-     * The TOCK application id.
+     * The TOCK connector id.
      *
      * This ID should match the connector identifier in TOCK Studio.
      *

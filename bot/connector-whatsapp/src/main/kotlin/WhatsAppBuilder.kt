@@ -62,11 +62,19 @@ private const val WHATS_APP_MAX_SECTIONS = 10
 /**
  * The WhatsApp connector type.
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudConnectorType", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType")
+)
 val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 
 /**
  * Sends an WhatsApp message only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("sendToWhatsAppCloud", "ai.tock.bot.connector.whatsapp.cloud.sendToWhatsAppCloud"),
+)
 fun <T : Bus<T>> T.sendToWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
     delay: Long = defaultDelay(currentAnswerIndex)
@@ -81,6 +89,10 @@ fun <T : Bus<T>> T.sendToWhatsApp(
 /**
  * Sends an WhatsApp message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("endForWhatsAppCloud", "ai.tock.bot.connector.whatsapp.cloud.endForWhatsAppCloud"),
+)
 fun <T : Bus<T>> T.endForWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
     delay: Long = defaultDelay(currentAnswerIndex)
@@ -96,6 +108,10 @@ fun <T : Bus<T>> T.endForWhatsApp(
  * Adds a WhatsApp [ConnectorMessage] if the current connector is WhatsApp.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("withWhatsAppCloud", "ai.tock.bot.connector.whatsapp.cloud.withWhatsAppCloud"),
+)
 fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T {
     return withMessage(whatsAppConnectorType, messageProvider)
 }
@@ -106,6 +122,10 @@ fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T {
  * @param text the text sent
  * @param previewUrl is preview mode is used?
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudText", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudText"),
+)
 fun BotBus.whatsAppText(
     text: CharSequence,
     previewUrl: Boolean = false
@@ -121,6 +141,10 @@ fun BotBus.whatsAppText(
 /**
  * Creates a [WhatsAppBotImageMessage].
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudImage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudImage"),
+)
 fun BotBus.whatsAppImage(
     byteImages: ByteArray,
     contentType: String = "image/png",
@@ -140,6 +164,10 @@ fun BotBus.whatsAppImage(
 /**
  * Creates a [WhatsAppBotInteractiveMessage]
  */
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudTemplateMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudTemplateMessage"),
+)
 fun BotBus.whatsAppInteractiveMessage(
     nameSpace: String,
     templateName: String,
@@ -152,11 +180,19 @@ fun BotBus.whatsAppInteractiveMessage(
         userId = userId.id
     )
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudReplyButtonMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudReplyButtonMessage"),
+)
 fun I18nTranslator.replyButtonMessage(
     text: CharSequence,
     vararg replies: QuickReply
 ) : WhatsAppBotMessageInteractiveMessage = replyButtonMessage(text, replies.toList())
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudReplyButtonMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudReplyButtonMessage"),
+)
 fun I18nTranslator.replyButtonMessage(
     text: CharSequence,
     replies: List<QuickReply>
@@ -178,12 +214,20 @@ fun I18nTranslator.replyButtonMessage(
     )
 )
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudListMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudListMessage"),
+)
 fun I18nTranslator.completeListMessage(
     text: CharSequence,
     button: CharSequence,
     vararg sections: WhatsAppBotActionSection
 ) : WhatsAppBotMessageInteractiveMessage = completeListMessage(text, button, sections.toList())
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudListMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudListMessage"),
+)
 fun I18nTranslator.completeListMessage(
     text: CharSequence,
     button: CharSequence,
@@ -221,6 +265,10 @@ fun I18nTranslator.completeListMessage(
     }
 }
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudListMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudListMessage"),
+)
 fun I18nTranslator.listMessage(
     text: CharSequence,
     button: CharSequence,
@@ -228,6 +276,10 @@ fun I18nTranslator.listMessage(
 ) : WhatsAppBotMessageInteractiveMessage =
         listMessage(text, button, replies.toList())
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudListMessage", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudListMessage"),
+)
 fun I18nTranslator.listMessage(
     text: CharSequence,
     button: CharSequence,
@@ -243,6 +295,10 @@ fun I18nTranslator.listMessage(
         })
     )
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudNlpQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudNlpQuickReply"),
+)
 fun I18nTranslator.nlpQuickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
@@ -253,6 +309,10 @@ fun I18nTranslator.nlpQuickReply(
         translate(subTitle).toString(),
 )
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
+)
 fun <T: Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
@@ -261,6 +321,10 @@ fun <T: Bus<T>> T.quickReply(
 ): QuickReply =
     quickReply(title, subTitle, targetIntent, stepName, parameters.toMap())
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
+)
 fun <T: Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
@@ -269,6 +333,10 @@ fun <T: Bus<T>> T.quickReply(
     vararg parameters: Pair<String, String>
 ) : QuickReply = quickReply(title, subTitle, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
+)
 fun <T: Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
@@ -280,6 +348,10 @@ fun <T: Bus<T>> T.quickReply(
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
 
+@Deprecated(
+    "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
+    ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
+)
 private fun I18nTranslator.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,

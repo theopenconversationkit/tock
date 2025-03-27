@@ -22,60 +22,35 @@ Cette page liste en fait :
 - Les [_connecteurs_](#integrations-via-le-connecteur-web) fournis avec la distribution Tock :
 
 ![logo messenger](../../img/messenger.png "whatsapp"){style="width:50px;"}
-
 ![Logo slack](../../img/slack.png "Slack"){style="width: 75px;"}
-
 ![Logo Google assistant](../../img/googelassist.png "google assisstant"){style="width: 70px;"}
-
 ![logo google home](../../img/googlehome.png "google home "){style="width:50px;"}
-
 ![Logo Alexa](../../img/alexa2.png "alexa"){style="width: 75px;"}
-
 ![logo Rocket rachat](../../img/rocketrachat.png "rocket rachat"){style="width:50px;"}
-
 ![logo whatsapp](../../img/whatsapp.png "whatsapp"){style="width:50px;"}
-
 ![logo teams](../../img/teams.png "teams"){style="width:50px;"}
-
 ![logo BusinessChat Logo](../../img/message.png "BusinessChat Logo"){style="width:50px;"}
-
 ![logo twitter](../../img/twitter.png "twitter"){style="width:50px;"}
-
- 
 ![logo google chat ](../../img/ggchat.png "google chat"){style="width:50px;"}
-
 ![logo mattermost](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
-
 ![logo web](../../img/web.png "web"){style="width:50px;"}
-
 ![logo test](../../img/test.jpeg "test"){style="width:50px;"}
 
 - Les [kits utilisant le _connecteur Web_](#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
 
 ![logo React](../../img/React.png "React"){style="width:50px;"}
-
 ![logo flutter](../../img/flutter.png "allo media"){style="width:50px;"}
-
-
 ![logo Sharepoint](../../img/sharepoint.png "Sharepopint"){style="width:50px;"}
 
 - Les [intégrations possibles pour le traitement de la voix](canaux.md#technologies-vocales) :  
 ![logo android](../../img/android.png "allo media"){style="width:50px;"}
-
 ![Logo Google assistant](../../img/googelassist.png "google assistant"){style="width: 70px;"}
-
 ![logo google home](../../img/googlehome.png "google home "){style="width:50px;"}
-
 ![logo teams](../../img/teams.png "teams"){style="width:50px;"}
-
 ![logo ios](../../img/ios.png "ios"){style="width:50px;"}
-
 ![logo BusinessChat Logo](../../img/message.png "BusinessChat Logo"){style="width:50px;"}
-
 ![Logo Alexa](../../img/alexa2.png "Alexa"){style="width: 75px;"}
-
- ![Logo voxygen](../../img/voxygen.png "Voxygen"){style="width: 100px;"}
-
+![Logo voxygen](../../img/voxygen.png "Voxygen"){style="width: 100px;"}
 ![Logo nuance](../../img/nuance.png "Nuance"){style="width: 75px;"}
 
 ## Connecteurs fournis avec Tock
@@ -162,12 +137,15 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 ![logo whatsapp](../../img/whatsapp.png "whatsapp"){style="width:100px;"}
 
-* **Canal** : [WhatsApp from Facebook](https://www.whatsapp.com/)
+* **Canal** : [WhatsApp from Meta](https://www.whatsapp.com/)
 * **Type** : texte
-* **Status** : connecteur Tock utilisé en production depuis 2019
+* **Status** :
+  * [*On-Premise API*](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) : connecteur Tock
+    utilisé en production depuis 2019, déprécié suite à la fin du support par Meta
+  * [*Cloud API*](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp-cloud) : connecteur Tock utilisé en production depuis 2024
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
-[connector-whatsapp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp) sur GitHub.
+[connector-whatsapp](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-whatsapp-cloud) sur GitHub.
 
 ### Teams
 
@@ -198,7 +176,7 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 * **Canal** : [Twitter](https://twitter.com/) (messages privés)
 * **Type** : texte
-* **Status** : connecteur Tock utilisé en production depuis 2019
+* **Status** : connecteur Tock précédemment utilisé en production, pas de support actif
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier 
 [connector-twitter](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-twitter) sur GitHub.

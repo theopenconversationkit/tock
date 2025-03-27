@@ -24,41 +24,39 @@ enum class ButtonSubType { QUICK_REPLY, URL, PHONE_NUMBER }
 data class WhatsAppCloudBotTemplate(
     val name: String,
     val language: Language,
-    val components: List<Component>
+    val components: List<WhatsappTemplateComponent>
 )
 
 data class Language(@JsonProperty("code") val code: String)
 
-// TODO (breaking) finish renaming Component to WhatsappTemplateComponent
-typealias WhatsappTemplateComponent = Component
-sealed class Component {
+sealed class WhatsappTemplateComponent {
     abstract val type: ComponentType
 
     data class Body(
         override val type: ComponentType = ComponentType.BODY,
         val parameters: List<TextParameter>
-    ) : Component()
+    ) : WhatsappTemplateComponent()
 
     data class Header(
         override val type: ComponentType = ComponentType.HEADER,
         val parameters: List<HeaderParameter>
-    ) : Component()
+    ) : WhatsappTemplateComponent()
 
     data class Button(
         override val type: ComponentType = ComponentType.BUTTON,
         @JsonProperty("sub_type") val subType: ButtonSubType,
         val index: String,
         val parameters: List<PayloadParameter>
-    ) : Component()
+    ) : WhatsappTemplateComponent()
 
     data class Carousel(
         override val type: ComponentType = ComponentType.CAROUSEL,
         val cards: List<Card>
-    ) : Component()
+    ) : WhatsappTemplateComponent()
 
     data class Card(
         @JsonProperty("card_index") val cardIndex: Int,
-        val components: List<Component>
+        val components: List<WhatsappTemplateComponent>
     )
 }
 

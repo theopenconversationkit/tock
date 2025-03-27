@@ -31,7 +31,6 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
     internal const val META_APPLICATION_ID = "metaApplicationId"
     internal const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
-    private const val MODE = "mode"
 
     override val connectorType: ConnectorType get() = whatsAppCloudConnectorType
 
@@ -43,12 +42,9 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 whatsAppBusinessAccountId = parameters.getValue(WHATSAPP_BUSINESS_ACCOUNT_ID),
                 metaApplicationId = parameters[META_APPLICATION_ID],
                 path = path,
-                token = parameters.getValue(TOKEN),
                 verifyToken = parameters[VERIFY_TOKEN],
-                mode = parameters.getValue(MODE),
+                requestFilter = createRequestFilter(connectorConfiguration),
                 client = createCloudApiClient(this),
-                requestFilter = createRequestFilter(connectorConfiguration)
-
             )
         }
     }
@@ -75,11 +71,6 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Call Token",
                     TOKEN,
-                    true
-                ),
-                ConnectorTypeConfigurationField(
-                    "Mode",
-                    MODE,
                     true
                 ),
                 ConnectorTypeConfigurationField(

@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -32,11 +33,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = WhatsAppCloudSendBotTemplateMessage::class, name = "template"),
         JsonSubTypes.Type(value = WhatsAppCloudSendBotImageMessage::class, name = "image"),
     )
-
+@JsonPropertyOrder("messaging_product")
 abstract class WhatsAppCloudSendBotMessage(val type: WhatsAppCloudBotMessageType) {
 
-    @get:JsonProperty("messaging_product")
-    abstract val messagingProduct:String
+    @Suppress("unused")
+    @JsonProperty("messaging_product")
+    val messagingProduct = "whatsapp"
 
     abstract val to: String?
 
