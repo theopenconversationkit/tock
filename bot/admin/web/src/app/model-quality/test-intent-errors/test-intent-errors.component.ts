@@ -78,7 +78,7 @@ export class TestIntentErrorsComponent implements OnInit, OnDestroy {
 
   change(error: IntentTestError) {
     this.qualityService.deleteIntentError(error).subscribe((e) => {
-      this.router.navigate(['/language-understanding/search'], { state: { searchIntent: '^' + escapeRegex(error.sentence.text) + '$' } });
+      this.router.navigate(['/language-understanding/search'], { state: { searchSentence: '^' + escapeRegex(error.sentence.text) + '$' } });
     });
   }
 

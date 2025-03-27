@@ -217,6 +217,23 @@
         </tock-form-control>
 
         <nb-alert
+          *ngIf="utterances.controls.length && showInboxSentencesWarning"
+          accent="warning"
+          closable
+          (close)="onCloseInboxSentencesWarning()"
+        >
+          <div class="font-size-small">
+            Only “validated” and “in model” sentences are listed here. To see the “inbox” sentences associated with this faq,
+            <a
+              href="javascript:void(0)"
+              (click)="sendToInbox()"
+            >
+              click here.
+            </a>
+          </div>
+        </nb-alert>
+
+        <nb-alert
           status="danger"
           *ngIf="existingUterranceInOtherintent"
           class="closable mt-2"
