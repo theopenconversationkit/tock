@@ -1080,7 +1080,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingDelete(
             "/namespace/:namespace",
-            technicalAdmin,
+            admin,
             simpleLogger("Delete Namespace", { it.path("namespace") })
         ) { context ->
             val ns = context.path("namespace").trim()
