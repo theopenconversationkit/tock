@@ -21,7 +21,7 @@ def configure_logging(cli_args):
 
     os.makedirs("logs", exist_ok=True)
     log_format = "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(message)s"
-    log_filename = f"logs/log_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
+    log_filename = f"logs/log_{datetime.now().strftime('%Y-%m-%d_%Hh%Mm%S')}.log"
 
     file_handler = logging.FileHandler(log_filename)
     file_handler.setFormatter(logging.Formatter(log_format))
@@ -60,6 +60,12 @@ def configure_logging(cli_args):
     openai_logger.addHandler(file_handler)
     openai_logger.addHandler(console_handler)
     openai_logger.propagate = False
+
+    langfuse_logger = logging.getLogger("backoff")
+    langfuse_logger.setLevel(log_level)
+    langfuse_logger.addHandler(file_handler)
+    langfuse_logger.addHandler(console_handler)
+    langfuse_logger.propagate = False
 
     def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)

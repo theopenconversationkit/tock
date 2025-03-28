@@ -32,6 +32,7 @@ rouge_score = "^0.1.2"
 python-pptx = "^1.0.2"
 python-magic = "^0.4.27"
 markdown-it-py= "^3.0.0"
+backoff = "^2.2.1"
 
 
 [build-system]

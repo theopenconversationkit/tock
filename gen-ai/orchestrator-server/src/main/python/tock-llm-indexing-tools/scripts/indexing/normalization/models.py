@@ -93,9 +93,6 @@ class RunImageContextualizationInput(FromJsonMixin):
     observability_setting: LangfuseObservabilitySetting = Field(
         description='The Langfuse observability settings.'
     )
-    rate_limit_delay: int = Field(
-        description='Waiting time (in seconds) to prevent the LLM rate limite.'
-    )
 
     def format(self):
         header_text = " RUN IMAGE CONTEXTUALIZATION INTPUT "
@@ -117,12 +114,13 @@ class RunImageContextualizationInput(FromJsonMixin):
         return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class RunImageContextualizationOutput(ActivityOutput):
-    duration: timedelta = Field(description='The evaluation time.')
+    output_filename: str = Field(description='The output filename.')
 
     def format(self):
         header_text = " RUN CHUNK CONTEXTUALIZATION OUTPUT "
         details_str = f"""
         Number of images               : {self.items_count}
+        Output filename                : {self.output_filename}
         Rate of successful evaluations : {self.success_rate:.2f}%
         Duration                       : {humanize.precisedelta(self.duration)}
         Date                           : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
