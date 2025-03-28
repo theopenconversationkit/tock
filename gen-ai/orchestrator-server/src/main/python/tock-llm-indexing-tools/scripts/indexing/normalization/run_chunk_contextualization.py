@@ -11,6 +11,7 @@ Options:
     -h --help   Show this screen
     --version   Show version
 """
+import csv
 import json
 import os
 from itertools import islice
@@ -36,7 +37,7 @@ from scripts.indexing.normalization.models import RunChunkContextualizationInput
 
 def main():
     start_time = datetime.now()
-    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
+    formatted_datetime = start_time.strftime('%Y-%m-%d_%Hh%Mm%S')
     cli_args = docopt(__doc__, version='Run Chunk Contextualization 1.0.0')
     logger = configure_logging(cli_args)
 
@@ -120,17 +121,36 @@ def main():
             reference_document_content = f.read()
 
         result = []
+        csv_rows = []
 
         it = iter(chunks)
         while chunks_group := list(islice(it, 5)):
             formatted_chunks = "\n".join(
                 [f"<chunk id='{chunk.id}'>\n{chunk.content}\n</chunk>" for chunk in chunks_group]
             )
-            result.append(contextual_chunk_creation.invoke({
+            response = contextual_chunk_creation.invoke({
                 "WHOLE_DOCUMENT": reference_document_content,
                 "CHUNKS": formatted_chunks
-            }, config={'callbacks': [observability_handler]}))
+            }, config={'callbacks': [observability_handler]})
+
+            # Create a dictionary for quick lookup of content by id
+            content_dict = {chunk.id: chunk.content for chunk in chunks_group}
+
+            # Merge content into contexts
+            for ctx in response["contexts"]:
+                if ctx["id"] in content_dict:
+                    ctx["content"] = content_dict[ctx["id"]]
+                    text = f"---\nproduct_name:{response['product_name']}\ncontext:{ctx['context']}\n---\n\n{content_dict[ctx['id']]}"
+                    csv_rows.append([response['product_name'], "", text])
+
+            result.append(response)
             nb_tested_chunks += len(chunks_group)
+
+        csv_filename = output_path.rsplit('.', 1)[0] + f"-{formatted_datetime}.csv"
+        with open(csv_filename, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file, delimiter='|')
+            writer.writerow(["title", "source", "text"])
+            writer.writerows(csv_rows)
 
         json_filename = output_path.rsplit('.', 1)[0] + f"-chunk-context-{formatted_datetime}.json"
 

@@ -117,7 +117,7 @@ def normalize_opensearch_index_name(namespace: str, bot_id: str, index_session_i
 
 def main():
     start_time = datetime.now()
-    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
+    formatted_datetime = start_time.strftime('%Y-%m-%d_%Hh%Mm%S')
     cli_args = docopt(__doc__, version='Run Vectorisation 1.0.0')
     logger = configure_logging(cli_args)
 

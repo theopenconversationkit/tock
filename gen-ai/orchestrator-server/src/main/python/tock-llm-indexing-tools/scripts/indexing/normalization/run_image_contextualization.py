@@ -155,7 +155,7 @@ def generate_image_description(llm, image):
 
     return invoke_llm().content
 
-
+# TODO MASS - langfuse
 def main():
     start_time = datetime.now()
     formatted_datetime = start_time.strftime('%Y-%m-%d_%Hh%Mm%S')
@@ -163,7 +163,7 @@ def main():
     logger = configure_logging(cli_args)
 
     nb_discovered_images: int = 0
-    nb_desribed_images: int = 0
+    nb_described_images: int = 0
     markdown_output: str = ""
     try:
         logger.info("Loading input data...")
@@ -194,7 +194,7 @@ def main():
             if image['name']:
                 logger.info(f"Processing image {i + 1}/{len(images)}: {image['name']}")
                 image['description'] = generate_image_description(llm_factory.get_language_model(), image)
-                nb_desribed_images += 1
+                nb_described_images += 1
 
         json_data = json.dumps(images, indent=4, ensure_ascii=False)
         with open(json_output_images_path, "w", encoding="utf-8") as f:
@@ -228,7 +228,7 @@ def main():
         output_filename=os.path.basename(markdown_output) if markdown_output else "",
         duration=datetime.now() - start_time,
         items_count=nb_discovered_images,
-        success_rate=100 * (nb_desribed_images / nb_discovered_images) if nb_discovered_images > 0 else 0
+        success_rate=100 * (nb_described_images / nb_discovered_images) if nb_discovered_images > 0 else 0
     )
     logger.debug(f"\n{output.format()}")
 
