@@ -217,9 +217,9 @@ def create_rag_chain(request: RAGRequest, vector_db_async_mode: Optional[bool] =
 
     # Log progress and validate prompt template
     logger.info('RAG chain - Validating LLM prompt template')
-    validate_prompt_template(query.question_answering_prompt, 'Question answering prompt')
-    if query.question_condensing_prompt is not None:
-        validate_prompt_template(query.question_condensing_prompt, 'Question condensing prompt')
+    validate_prompt_template(request.question_answering_prompt, 'Question answering prompt')
+    if request.question_condensing_prompt is not None:
+        validate_prompt_template(request.question_condensing_prompt, 'Question condensing prompt')
 
     question_condensing_llm_factory = None
     if request.question_condensing_llm_setting is not None:
@@ -400,11 +400,11 @@ def get_rag_debug_data(
     """RAG debug data assembly"""
 
     history = []
-    if query.dialog:
-        history = query.dialog.history
+    if request.dialog:
+        history = request.dialog.history
 
-    return RagDebugData(
-        user_question=query.question_answering_prompt.inputs['question'],
+    return RAGDebugData(
+        user_question=request.question_answering_prompt.inputs['question'],
         question_condensing_prompt=records_callback_handler.records['chat_prompt'],
         question_condensing_history=history,
         condensed_question=records_callback_handler.records['chat_chain_output'],
