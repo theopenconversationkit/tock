@@ -42,7 +42,9 @@ import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
 import ai.tock.bot.engine.dialog.DialogFlowDAO
+import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
+import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
