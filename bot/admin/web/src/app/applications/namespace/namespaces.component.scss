@@ -20,3 +20,9 @@
   align-items: center;
   justify-content: end;
 }
+
+.hover-highlight {
+  &:hover {
+    background-color: var(--background-basic-color-2);
+  }
+}
