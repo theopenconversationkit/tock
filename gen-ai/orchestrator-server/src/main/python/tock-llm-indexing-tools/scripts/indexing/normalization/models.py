@@ -80,11 +80,8 @@ class RunChunkContextualizationOutput(ActivityOutput):
 
 class RunImageContextualizationInput(FromJsonMixin):
     bot: BotInfo = Field(description='The bot information.')
-    reference_document_directory: str = Field(
-        description='The directory containing md document and images.'
-    )
-    reference_document_name: str = Field(
-        description='The document name to use as a reference for contextualization.'
+    document_directory: str = Field(
+        description='The directory name to use as a reference for contextualization.'
     )
     llm_setting: Optional[LLMSetting] = Field(
         description='LLM setting, used to contextualize chunks.',
@@ -98,7 +95,7 @@ class RunImageContextualizationInput(FromJsonMixin):
         header_text = " RUN IMAGE CONTEXTUALIZATION INTPUT "
         details_str = f"""
             Langfuse environment   : {str(self.observability_setting.url)}
-            The reference document : {self.reference_document_name}
+            The document directory : {self.document_directory}
             The LLM model          : {self.llm_setting.model} ({self.llm_setting.provider})
             The LLM temperature    : {self.llm_setting.temperature}
         """
