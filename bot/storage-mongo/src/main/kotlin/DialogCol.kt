@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.definition.Intent
@@ -147,7 +148,8 @@ internal data class DialogCol(
                                         a.toActionId(),
                                         a.state.intent,
                                         a.applicationId,
-                                        a.metadata
+                                        a.metadata,
+                                        a.annotation
                                 )
                             }
                         }
@@ -260,6 +262,7 @@ internal data class DialogCol(
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
         lateinit var applicationId: String
+        var annotation: BotAnnotation? = null
 
         fun assignFrom(action: Action) {
             id = action.toActionId()
@@ -269,6 +272,7 @@ internal data class DialogCol(
             playerId = action.playerId
             recipientId = action.recipientId
             applicationId = action.applicationId
+            annotation = action.annotation
         }
 
         abstract fun toAction(dialogId: Id<Dialog>): Action
@@ -278,7 +282,7 @@ internal data class DialogCol(
     data class SendSentenceMongoWrapper(
             val text: String?,
             val customMessage: Boolean = false,
-            val nlpStats: Boolean = false
+            val nlpStats: Boolean = false,
     ) : ActionMongoWrapper() {
 
         constructor(sentence: SendSentence) :
@@ -293,7 +297,7 @@ internal data class DialogCol(
         }
 
         override fun toAction(dialogId: Id<Dialog>): Action {
-            return if (customMessage || nlpStats) {
+            return if (customMessage || nlpStats || annotation != null) {
                 SendSentenceNotYetLoaded(
                         dialogId,
                         playerId,
@@ -305,7 +309,8 @@ internal data class DialogCol(
                         state,
                         botMetadata,
                         customMessage,
-                        nlpStats
+                        nlpStats,
+                        annotation
                 )
             } else {
                 SendSentence(
@@ -317,7 +322,7 @@ internal data class DialogCol(
                         id,
                         date,
                         state,
-                        botMetadata
+                        botMetadata,
                 )
             }
         }
@@ -348,7 +353,8 @@ internal data class DialogCol(
                     id,
                     date,
                     state,
-                    botMetadata
+                    botMetadata,
+                    annotation
                 )
         }
     }

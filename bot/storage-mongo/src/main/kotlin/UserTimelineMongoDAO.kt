@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.annotation.*
 import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.user.*
 import ai.tock.bot.connector.ConnectorMessage
@@ -23,10 +24,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.ArchivedEntityValue
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.dialog.EntityStateValue
-import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.dialog.*
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.nlp.NlpStats
 import ai.tock.bot.engine.user.PlayerId
@@ -46,6 +44,7 @@ import ai.tock.bot.mongo.DialogTextCol_.Companion.Text
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
+import ai.tock.bot.mongo.UserTimelineCol_.Companion.CreationDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUserActionDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
@@ -62,9 +61,6 @@ import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.MongoOperator.*
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
@@ -596,16 +592,45 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
                     if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
-                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null
+                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
+                    if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
+                    if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
+                    if (query.annotationReasons.isNotEmpty()) Stories.actions.annotation.reason `in` query.annotationReasons else null,
+                    if (annotationCreationDateFrom == null) null
+                    else Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant(),
+                    if (annotationCreationDateTo == null) null
+                    else Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant(),
+                    if (dialogCreationDateFrom == null) null
+                    else Stories.actions.date gt dialogCreationDateFrom?.toInstant(),
+                    if (dialogCreationDateTo == null) null
+                    else Stories.actions.date lt dialogCreationDateTo?.toInstant(),
                 )
                 logger.debug { "dialog search query: $filter" }
                 val c = dialogCol.withReadPreference(secondaryPreferred())
                 val count = c.countDocuments(filter, defaultCountOptions)
                 return if (count > start) {
+                    val sortBson = when {
+                        annotationSort != null -> {
+                            if (annotationSort == SortDirection.ASC)
+                                ascending(Stories.actions.annotation.lastUpdateDate)
+                            else
+                                descending(Stories.actions.annotation.lastUpdateDate)
+                        }
+
+                        dialogSort != null -> {
+                            if (dialogSort == SortDirection.ASC)
+                                orderBy(mapOf(Stories.actions.date to true))
+                            else
+                                orderBy(mapOf(Stories.actions.date to false))
+                        }
+
+                        // If no filter is specified, we keep default filtering
+                        else -> descending(LastUpdateDate)
+                    }
                     val list = c.find(filter)
                         .skip(start.toInt())
                         .limit(size)
-                        .descendingSort(LastUpdateDate)
+                        .sort(sortBson)
                         .run {
                             map { it.toDialogReport() }
                                 .toList()
@@ -724,6 +749,75 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.error(e)
             null
         }
+    }
+
+    override fun findAnnotation(dialogId: String, actionId: String): BotAnnotation? =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.firstNotNullOfOrNull { story -> story.actions.find { it.id.toString() == actionId }?.annotation }
+
+    override fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
+        dialogCol.findOneById(dialogId)?.takeIf { dialog ->
+            dialog.stories.any { story ->
+                story.actions.find { it.id.toString() == actionId }
+                    ?.also { it.annotation = annotation } != null
+            }
+        }?.let { dialogCol.save(it) }
+            ?: logger.warn("Action with ID $actionId not found in dialog $dialogId")
+    }
+
+    override fun annotationExists(dialogId: String, actionId: String): Boolean =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.any { story -> story.actions.any { it.id.toString() == actionId && it.annotation != null } }
+            ?: false
+
+    override fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.apply {
+                events.add(event)
+                lastUpdateDate = Instant.now()
+                dialogCol.save(dialog)
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
+    }
+
+    override fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent? =
+        dialogCol.findOneById(dialogId)
+            ?.stories
+            ?.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation?.events?.find { it.eventId.toString() == eventId }
+            }
+
+    override fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.let { annotation ->
+                annotation.events.indexOfFirst { it.eventId.toString() == eventId }
+                    .takeIf { it != -1 }
+                    ?.let { index ->
+                        annotation.events[index] = updatedEvent
+                        dialogCol.save(dialog)
+                    } ?: logger.warn("Event $eventId not found")
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
+    }
+
+    override fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String) {
+        dialogCol.findOneById(dialogId)?.let { dialog ->
+            dialog.stories.firstNotNullOfOrNull { story ->
+                story.actions.find { it.id.toString() == actionId }?.annotation
+            }?.let { annotation ->
+                if (annotation.events.removeIf { it.eventId.toString() == eventId && it.type == BotAnnotationEventType.COMMENT }) {
+                    dialogCol.save(dialog)
+                } else {
+                    logger.warn("Event $eventId not found or not a comment in annotation for action $actionId")
+                }
+            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+        } ?: logger.warn("Dialog with ID $dialogId not found")
     }
 
     override fun getArchivedEntityValues(

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.action
 
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.event.Event
@@ -37,9 +38,10 @@ abstract class Action(
     id: Id<Action>,
     date: Instant,
     state: EventState,
-    val metadata: ActionMetadata = ActionMetadata()
+    val metadata: ActionMetadata = ActionMetadata(),
+    open var annotation: BotAnnotation? = null
 ) : Event(connectorId, id, date, state) {
-    @Deprecated("Use constructor with connectorId", ReplaceWith("Action(playerId = playerId, recipientId = recipientId, connectorId = applicationId, id = id, date = date, state = state, metadata = metadata)"))
+    @Deprecated("Use constructor with connectorId", ReplaceWith("Action(playerId = playerId, recipientId = recipientId, connectorId = applicationId, id = id, date = date, state = state, metadata = metadata, annotation = annotation)"))
     constructor(
         playerId: PlayerId,
         recipientId: PlayerId,
@@ -48,8 +50,9 @@ abstract class Action(
         date: Instant = Instant.now(),
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
+        annotation: BotAnnotation? = null,
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, recipientId, applicationId, id, date, state, metadata)
+    ): this(playerId, recipientId, applicationId, id, date, state, metadata, annotation)
 
     abstract fun toMessage(): Message
 
