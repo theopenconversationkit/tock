@@ -93,6 +93,9 @@ class RunImageContextualizationInput(FromJsonMixin):
     observability_setting: LangfuseObservabilitySetting = Field(
         description='The Langfuse observability settings.'
     )
+    rate_limit_delay: int = Field(
+        description='Waiting time (in seconds) to prevent the LLM rate limite.'
+    )
 
     def format(self):
         header_text = " RUN IMAGE CONTEXTUALIZATION INTPUT "

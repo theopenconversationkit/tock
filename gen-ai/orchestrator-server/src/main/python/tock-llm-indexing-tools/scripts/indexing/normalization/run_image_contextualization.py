@@ -17,9 +17,13 @@ import base64
 import json
 import os
 import re
+import time
 from datetime import datetime
 
 from docopt import docopt
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory
+from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 from markdown_it import MarkdownIt
 
 from scripts.common.logging_config import configure_logging
@@ -105,7 +109,7 @@ def encode_image(image_path):
     with open(image_path, "rb") as img:
         return base64.b64encode(img.read()).decode('utf-8')
 
-def generate_image_description(client, base64_image, context):
+def generate_image_description(llm, base64_image, context):
     try:
         system_prompt = """You are an AI assistant specialized in analyzing financial and documentary images for accessibility.
         Your mission is twofold:
@@ -142,20 +146,23 @@ def generate_image_description(client, base64_image, context):
 
         Do not start your response with "L'image montre/représente/contient..." - go straight to the essential information."""
 
-        response = client.chat.completions.create(
-            model="AZURE_OPENAI_DEPLOYMENT",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": [
-                    {"type": "text", "text": user_prompt},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                ]}
-            ],
-            max_tokens=300,
-            temperature=0.1
-        )
+        def llm_invoke(retry):
+            try:
+                return llm.invoke([
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(
+                        content=[
+                            {"type": "text", "text": user_prompt},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                        ]
+                    )
+                ])
+            except Exception as e:
+                if retry > 0: # TODO MASS
+                    return llm_invoke(retry - 1)
 
-        return {"description": response.choices[0].message.content}
+        response = llm_invoke(3)
+        return {"description": response.content}
     except Exception as e:
         print(f"Error generating description: {str(e)}")
         return {"description": "Description non générée en raison d'une erreur."}
@@ -236,6 +243,8 @@ def main():
         images_with_context = extract_images_with_context_from_file(reference_document_path)
         nb_discovered_images = len(images_with_context)
 
+        llm_factory = get_llm_factory(setting=input_config.llm_setting)
+
         images_json_filename = f"{output_path}-image-context-{formatted_datetime}.json"
         json_data = json.dumps(images_with_context, indent=4, ensure_ascii=False)
         with open(images_json_filename, "w", encoding="utf-8") as f:
@@ -252,11 +261,14 @@ def main():
             base64_image = encode_image(image_path)
 
             print("Generating description")
-            description_result = "generate_image_description(client, base64_image, image_info)" # TODO MASS
-            description = 'description_result.get("description", "Description non générée.")'
+            description_result = generate_image_description(llm_factory.get_language_model(), base64_image, image_info) # TODO MASS
+            description = description_result.get("description", "Description non générée.")
 
             image_basename = os.path.basename(image_src)
             image_descriptions[image_basename] = description
+
+            print(f'Waiting for rate limit delay ({input_config.rate_limit_delay}s)...')
+            time.sleep(input_config.rate_limit_delay)
 
         # Save descriptions to JSON file
         desc_json_filename = f"{output_path}-image-desc-context-{formatted_datetime}.json"
