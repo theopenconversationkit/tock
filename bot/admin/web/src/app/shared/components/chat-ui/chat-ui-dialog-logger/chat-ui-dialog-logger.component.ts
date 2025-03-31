@@ -55,15 +55,6 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
     return getDialogMessageUserAvatar(action.isBot());
   }
 
-  jumpToDialog(dialogId: string, actionId: string) {
-    this.router.navigate(
-      [`analytics/dialogs/${this.state.currentApplication.namespace}/${this.state.currentApplication._id}/${dialogId}`],
-      {
-        fragment: actionId
-      }
-    );
-  }
-
   dialogConnector() {
     if (!this.allConfigurations) return;
     const firstAction = this.dialog.actions.find((action) => action.applicationId);

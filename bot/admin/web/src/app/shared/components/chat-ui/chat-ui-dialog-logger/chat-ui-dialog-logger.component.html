@@ -175,15 +175,17 @@
         >
           <div class="button-horizontal-separator mb-1"></div>
 
-          <button
+          <a
             nbButton
             ghost
             size="small"
             nbTooltip="Display this dialog alone"
-            (click)="jumpToDialog(dialog.id, action.id)"
+            href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}#{{
+              action.id
+            }}"
           >
             <nb-icon icon="link"></nb-icon>
-          </button>
+          </a>
 
           <div *ngIf="containsAnnotation(action); else does_not_contain_a_report">
             <button
