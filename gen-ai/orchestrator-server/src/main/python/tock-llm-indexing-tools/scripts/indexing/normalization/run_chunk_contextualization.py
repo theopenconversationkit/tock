@@ -25,7 +25,7 @@ from datetime import datetime
 
 from docopt import docopt
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
-    create_observability_callback_handler, get_callback_handler_factory
+    get_callback_handler_factory
 from langchain.prompts import ChatPromptTemplate, PromptTemplate, HumanMessagePromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from more_itertools.recipes import batched
