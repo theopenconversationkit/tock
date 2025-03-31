@@ -34,12 +34,14 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.withNamespace
 import ai.tock.shared.withoutNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.UserInterfaceType
+import java.time.Duration
 import java.util.Locale
 
 /**
@@ -55,7 +57,15 @@ interface BotDefinition : I18nKeyProvider {
          * Convenient default value in ms to wait before next answer sentence. 1s by default.
          */
         @Volatile
-        var defaultBreath: Long = 1000L
+        var defaultBreath: Long = longProperty("tock_bot_default_breath_ms", 1000L)
+
+        /**
+         * The minimum delay between two consecutive messages,
+         * in case a message takes longer than [defaultBreath] to prepare and send.
+         *
+         * 50ms by default.
+         */
+        val minBreath = Duration.ofMillis(longProperty("tock_bot_min_breath_ms", 50L))
 
         private val sendChoiceActivateBot = booleanProperty("tock_bot_send_choice_activate", true)
 
