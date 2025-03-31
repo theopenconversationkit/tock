@@ -1,31 +1,35 @@
 """
-TODO MASS : à reécrire
-Run an evaluation on LangFuse dataset experiment.
+Run image contextualization.
+
 Usage:
-        run_image_contextualization.py [-v] --json-config-file=<jcf>
-        run_image_contextualization.py -h | --help
-        run_image_contextualization.py --version
+    run_image_contextualization.py [-v] --json-config-file=<jcf>
+
+Description:
+    This script is used to contextualize the image within the document.
+    The aim is to replace the image on MD with its description.
+
+Arguments:
+    --json-config-file=<jcf>   Path to the input config file. This is a required argument.
 
 Options:
-    -v          Verbose output
-    -h --help   Show this screen
-    --version   Show version
+    -v                         Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                 Display this help message and exit.
+    --version                  Display the version of the script.
+
+Examples:
+    python run_image_contextualization.py --json-config-file=path/to/config-file.json
 """
 
 import json
-import base64
-import json
 import os
 import re
-import time
 from datetime import datetime
 
 import backoff
 from docopt import docopt
-from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
+    get_callback_handler_factory
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from markdown_it import MarkdownIt
 from openai import RateLimitError, APITimeoutError
 
@@ -99,7 +103,7 @@ def extract_images(md_file_path):
     return results
 
 
-def generate_image_description(llm, image):
+def generate_image_description(llm, observability_callback_handler, image):
     base64_image = encode_image(image["path"])
 
     system_prompt = """
@@ -151,11 +155,13 @@ def generate_image_description(llm, image):
                     {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                 ]
             )
-        ])
+        ], config={
+            "callbacks": [observability_callback_handler] if observability_callback_handler else []
+        })
 
     return invoke_llm().content
 
-# TODO MASS - langfuse
+
 def main():
     start_time = datetime.now()
     formatted_datetime = start_time.strftime('%Y-%m-%d_%Hh%Mm%S')
@@ -189,11 +195,17 @@ def main():
 
         llm_factory = get_llm_factory(setting=input_config.llm_setting)
 
+        observability_callback_handler = None
+        if input_config.observability_setting is not None:
+            observability_callback_handler = get_callback_handler_factory(
+                setting=input_config.observability_setting).get_callback_handler(
+                trace_name="Image contextualization")
+
         for i, image in enumerate(images):
             image['description'] = ''
             if image['name']:
                 logger.info(f"Processing image {i + 1}/{len(images)}: {image['name']}")
-                image['description'] = generate_image_description(llm_factory.get_language_model(), image)
+                image['description'] = generate_image_description(llm_factory.get_language_model(), observability_callback_handler, image)
                 nb_described_images += 1
 
         json_data = json.dumps(images, indent=4, ensure_ascii=False)

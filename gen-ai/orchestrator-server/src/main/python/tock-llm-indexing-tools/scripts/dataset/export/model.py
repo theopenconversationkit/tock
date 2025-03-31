@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 import humanize
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
@@ -51,6 +51,10 @@ class ExportExperimentsInput(FromJsonMixin):
         description='The dataset experiments to export.'
     )
     template: DatasetTemplate = Field(description='The export template.')
+    metric_names: List[str] = Field(
+        description='The list of RAGAS metric names to be exported.',
+        default=["SemanticSimilarity"]
+    )
 
     def format(self):
         header_text = " EXPORT EXPERIMENTS INPUT "

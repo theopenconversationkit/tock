@@ -44,10 +44,10 @@ async def check_llm_setting(query: LLMProviderSettingStatusQuery) -> bool:
     """
 
     logger.info('Get the LLM Factory, then check the LLM setting.')
-    langfuse_callback_handler = None
+    observability_callback_handler = None
     if query.observability_setting is not None:
-        langfuse_callback_handler = get_callback_handler_factory(
+        observability_callback_handler = get_callback_handler_factory(
             setting=query.observability_setting).get_callback_handler(
             trace_name=ObservabilityTrace.CHECK_LLM_SETTINGS.value)
 
-    return await get_llm_factory(query.setting).check_llm_setting(langfuse_callback_handler)
+    return await get_llm_factory(query.setting).check_llm_setting(observability_callback_handler)

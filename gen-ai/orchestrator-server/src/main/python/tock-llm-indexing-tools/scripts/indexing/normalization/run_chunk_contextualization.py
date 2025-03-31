@@ -1,35 +1,37 @@
 """
-TODO MASS : à reécrire
-Run an evaluation on LangFuse dataset experiment.
+Run chunk contextualization.
+
 Usage:
-        run_chunk_contextualization.py [-v] --json-config-file=<jcf>
-        run_chunk_contextualization.py -h | --help
-        run_chunk_contextualization.py --version
+    run_chunk_contextualization.py [-v] --json-config-file=<jcf>
+
+Description:
+    This script is used to contextualize a document extract within the document itself, giving it greater meaning.
+
+Arguments:
+    --json-config-file=<jcf>   Path to the input config file. This is a required argument.
 
 Options:
-    -v          Verbose output
-    -h --help   Show this screen
-    --version   Show version
+    -v                         Enable verbose output for debugging purposes. If not set, the script runs silently except for errors.
+    -h, --help                 Display this help message and exit.
+    --version                  Display the version of the script.
+
+Examples:
+    python run_chunk_contextualization.py --json-config-file=path/to/config-file.json
 """
+
 import csv
 import json
-import os
-from itertools import islice
-
-from langchain_openai import ChatOpenAI
 from datetime import datetime
+from itertools import islice
 from typing import List
 
 from docopt import docopt
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
     create_observability_callback_handler
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
-from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
-from langfuse import Langfuse
+from langchain.prompts import ChatPromptTemplate, PromptTemplate, HumanMessagePromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
 
 from scripts.common.logging_config import configure_logging
-from langchain.prompts import ChatPromptTemplate, PromptTemplate, HumanMessagePromptTemplate
-
 from scripts.common.models import StatusWithReason, ActivityStatus
 from scripts.indexing.normalization.models import RunChunkContextualizationInput, RunChunkContextualizationOutput, \
     DocumentChunk

@@ -87,8 +87,9 @@ class RunImageContextualizationInput(FromJsonMixin):
         description='LLM setting, used to contextualize chunks.',
         default=None
     )
-    observability_setting: LangfuseObservabilitySetting = Field(
-        description='The Langfuse observability settings.'
+    observability_setting: Optional[LangfuseObservabilitySetting] = Field(
+        description='The Langfuse observability settings.',
+        default=None
     )
 
     def format(self):

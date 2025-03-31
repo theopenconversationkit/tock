@@ -91,7 +91,7 @@ def append_runs_langfuse(client, dataset_experiments, dataset_item) -> DatasetEx
     )
 
 
-def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem], output_file):
+def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem], output_file: str, metric_names: list[str]):
 
     # Create a new workbook and sheet
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -120,19 +120,13 @@ def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem
             sheet[f"{col_letter}{start_row}"] = items[i].runs[j].output["answer"]
             sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
                 [f'{doc["page_content"]}' for doc in items[i].runs[j].output["documents"]])
-            # sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
-            #     f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
-            #     for s in items[i].runs[j].scores
-            # )
             sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
                 f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
                 for s in items[i].runs[j].scores
-                if s.name != "FactualCorrectness"
+                if s.name in metric_names
             )
-            # TODO MASS : scores à donner en input
 
     wb.save(output_file)
-
 
 def timestamped_filename(filename: str) -> str:
     base, ext = os.path.splitext(filename)
@@ -166,7 +160,12 @@ def main():
             items.append(append_runs_langfuse(client, input_config.dataset_experiments, item))
 
         if "xlsx" == input_config.template.type:
-            create_excel_output(input_config.dataset_experiments.experiment_names, items, output_file=template_file_path)
+            create_excel_output(
+                iterations=input_config.dataset_experiments.experiment_names,
+                items=items,
+                output_file=template_file_path,
+                metric_names=input_config.metric_names
+            )
         else:
             raise RuntimeError(f"The '{input_config.dataset.template.type}' dataset template is not yet supported!")
 
