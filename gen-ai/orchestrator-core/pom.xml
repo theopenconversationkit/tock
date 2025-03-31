@@ -22,10 +22,6 @@
             <!-- Not needed modules-->
             <exclusions>
                 <exclusion>
-                    <groupId>org.pac4j</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>io.vertx</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>

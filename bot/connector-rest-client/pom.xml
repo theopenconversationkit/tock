@@ -85,13 +85,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
-            <!-- Exclude not needed pac4j dependencies from tock-shared-->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.pac4j</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
     </dependencies>

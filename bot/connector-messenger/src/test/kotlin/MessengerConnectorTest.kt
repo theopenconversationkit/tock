@@ -156,7 +156,11 @@ internal class MessengerConnectorTest {
         connector.send(action1, callback)
         connector.send(action2, callback)
 
+        Thread.sleep(1000)
+
         verifyOrder {
+            connector.send(action1, any(), any())
+            connector.send(action2, any(), any())
             connector.sendEvent(action1, any(), any(), any(), any())
             connector.sendEvent(action2, any(), any(), any(), any())
         }

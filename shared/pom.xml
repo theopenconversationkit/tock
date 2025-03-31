@@ -178,14 +178,17 @@
         <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>pac4j-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>pac4j-cas</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>vertx-pac4j</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
