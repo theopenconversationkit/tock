@@ -19,7 +19,12 @@ package ai.tock.bot.connector.whatsapp.cloud
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache.createHashedId
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudMongoDAO
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.*
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudButtonMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudImageMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudLocationMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudTextMessage
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -38,8 +43,7 @@ internal object WebhookActionConverter {
     fun toEvent(
         message: WhatsAppCloudMessage,
         applicationId: String,
-        whatsAppCloudApiService: WhatsAppCloudApiService,
-        token: String
+        whatsAppCloudApiService: WhatsAppCloudApiService
     ): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
@@ -51,7 +55,7 @@ internal object WebhookActionConverter {
             )
 
             is WhatsAppCloudImageMessage -> {
-                val binaryImg = whatsAppCloudApiService.downloadImgByBinary(token, message.image.id, message.image.mimeType)
+                val binaryImg = whatsAppCloudApiService.downloadImgByBinary(message.image.id, message.image.mimeType)
                 SendAttachment(
                     PlayerId(senderId),
                     applicationId,

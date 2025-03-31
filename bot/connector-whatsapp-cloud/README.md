@@ -1,6 +1,7 @@
-> **This connector is still in alpha phase of development**
+> **This connector is in active development**
 > 
-> Breaking changes may occur.
+> Breaking changes may occur in the Bot API. Refer to [this issue](https://github.com/theopenconversationkit/tock/issues/1863)
+> for an outline of the changes to expect.
 
 ## Prerequisites
 
@@ -13,7 +14,6 @@
     * (Optional) **Meta Application id**: The id of the Meta application, only required for [template management](#template-management).
 
 * Then go to the *Configuration* -> *Bot Configurations* menu in Tock Studio, and create a new configuration with these parameters.
-  Set the `Mode` field to "subscribe".
 
 ## Bot API
 

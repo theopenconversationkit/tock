@@ -29,7 +29,7 @@ data class WhatsAppCloudBotInteractive(
     val header: WhatsAppCloudBotInteractiveHeader? = null,
     val body: WhatsAppCloudBotBody? = null, // optional for product type
     val footer: WhatsAppCloudBotFooter? = null,
-    val action: WhatsAppCloudBotAction? = null,
+    val action: WhatsAppCloudBotAction,
 )
 
 data class WhatsAppCloudBotInteractiveHeader(

@@ -24,14 +24,14 @@ import java.util.concurrent.Executor
 /**
  * Manage async tasks.
  */
-interface Executor {
+interface Executor : Executor {
 
     /**
      * Schedules a blocking task for execution on another thread.
      *
      * This method returns immediately, without waiting for the task to finish.
      *
-     * @delay delay the delay before run
+     * @param delay the time from now to delay execution
      * @param runnable the task to run
      */
     fun executeBlocking(delay: Duration, runnable: () -> Unit)
@@ -43,7 +43,7 @@ interface Executor {
      *
      * The returned future will schedule any followup async task on this executor.
      *
-     * @delay delay the delay before run
+     * @param delay the time from now to delay execution
      * @param task the task to run
      * @return a [CompletableFuture] that is asynchronously completed with the given [task]
      */
@@ -91,13 +91,15 @@ interface Executor {
      */
     fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long
 
+    override fun execute(command: Runnable) {
+        executeBlocking { command.run() }
+    }
+
     /**
      * Returns an incomplete [CompletableFuture] which uses this executor for async methods that do not specify
      * another executor
      */
-    fun <T> newIncompleteFuture(): CompletableFuture<T> = ExecutableFuture {
-        command -> executeBlocking { command.run() }
-    }
+    fun <T> newIncompleteFuture(): CompletableFuture<T> = ExecutableFuture(this)
 
     open class ExecutableFuture<T>(private val executor: Executor) : CompletableFuture<T>() {
         override fun <U : Any?> newIncompleteFuture(): CompletableFuture<U> {

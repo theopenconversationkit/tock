@@ -37,6 +37,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.IOException
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -58,7 +59,7 @@ private const val WHATSAPP_API_BASE_URL = "https://graph.facebook.com"
 private const val VERSION = "22.0"
 private const val WHATSAPP_API_URL = "$WHATSAPP_API_BASE_URL/v$VERSION"
 
-class WhatsAppCloudApiClient(val token: String, val businessAccountId: String, val phoneNumber: String) {
+class WhatsAppCloudApiClient(private val token: String, val businessAccountId: String, val phoneNumberId: String) {
 
     interface GraphApi {
 
@@ -136,7 +137,7 @@ class WhatsAppCloudApiClient(val token: String, val businessAccountId: String, v
     }
 
     private val logger = KotlinLogging.logger {}
-    val graphApi: GraphApi = retrofitBuilderWithTimeoutAndLogger(
+    private val graphApi: GraphApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_whatsappcloud_request_timeout_ms", 30000),
         logger,
         requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", false)
@@ -146,6 +147,17 @@ class WhatsAppCloudApiClient(val token: String, val businessAccountId: String, v
         .build()
         .create()
 
+    fun uploadMediaInWhatsAppAccount(file: RequestBody) = graphApi.uploadMediaInWhatsAppAccount(
+        phoneNumberId,
+        "Bearer $token",
+        MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart("file", "fileimage", file)
+            .addFormDataPart("messaging_product", "whatsapp")
+            .build()
+    )
+    fun retrieveMediaUrl(imgId: String) = graphApi.retrieveMediaUrl(imgId, token)
+    fun downloadMediaBinary(url: String) = graphApi.downloadMediaBinary(url, "Bearer $token")
+    fun sendMessage(phoneNumberId: String, messageRequest: WhatsAppCloudSendBotMessage) = graphApi.sendMessage(phoneNumberId, token, messageRequest)
     fun createMessageTemplate(template: WhatsappTemplate) = graphApi.createMessageTemplate(businessAccountId, token, template)
     fun deleteMessageTemplate(templateName: String) = graphApi.deleteMessageTemplate(businessAccountId, token, templateName)
     fun editMessageTemplate(templateId: String, updatedTemplate: WhatsappTemplate) = graphApi.editMessageTemplate(token, templateId, updatedTemplate)

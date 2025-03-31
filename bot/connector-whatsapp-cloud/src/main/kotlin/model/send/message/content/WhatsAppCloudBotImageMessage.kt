@@ -16,21 +16,23 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
-import ai.tock.bot.engine.config.UploadedFilesService.attachmentType
-import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotImageMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
 data class WhatsAppCloudBotImageMessage (
-        override val messagingProduct: String,
         val image: WhatsAppCloudBotImage,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
+        val uploadToWhatsapp: Boolean = true,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.image, userId) {
-    override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
+    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage =
             WhatsAppCloudSendBotImageMessage(
-                    messagingProduct,
-                    image,
+                    image.prepare(apiService),
                     recipientType,
                     recipientId
             )
@@ -38,6 +40,6 @@ data class WhatsAppCloudBotImageMessage (
     override fun toGenericMessage(): GenericMessage =
             GenericMessage(
                     texts = mapOf(GenericMessage.TEXT_PARAM to "image"),
-                    attachments = listOf(Attachment(image.id, attachmentType(image.id)))
+                    attachments = listOf(image.toGenericAttachment())
             )
 }

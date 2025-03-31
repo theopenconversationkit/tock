@@ -20,27 +20,19 @@ import ai.tock.bot.connector.ConnectorException
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudApiClient
 import ai.tock.bot.connector.whatsapp.cloud.database.model.PayloadWhatsAppCloud
 import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudDAO
-import ai.tock.bot.connector.whatsapp.cloud.database.repository.PayloadWhatsAppCloudMongoDAO
 import ai.tock.bot.connector.whatsapp.cloud.model.common.MetaUploadHandle
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotImageMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionSection
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveHeader
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotMediaImage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsappTemplateComponent
 import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
 import ai.tock.bot.connector.whatsapp.cloud.spi.AssetUploadingException
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.Executor
 import ai.tock.shared.TockProxyAuthenticator
 import ai.tock.shared.cache.getOrCache
-import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
@@ -49,231 +41,113 @@ import java.util.Base64
 import java.util.Date
 import java.util.UUID
 import mu.KotlinLogging
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import org.litote.kmongo.toId
 import retrofit2.Call
 import retrofit2.Response
 
-internal class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
+class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private val logger = KotlinLogging.logger {}
-    private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
-    private val executor: Executor = injector.provide()
+    private val payloadWhatsApp: PayloadWhatsAppCloudDAO get() = injector.provide()
+    private val executor: Executor get() = injector.provide()
     private val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
-
-    /**
-     * Processes a message request in preparation for sending it to the WhatsApp cloud API
-     */
-    fun prepareMessage(
-        phoneNumberId: String,
-        token: String,
-        messageRequest: WhatsAppCloudSendBotMessage
-    ): WhatsAppCloudSendBotMessage? {
-        try {
-            return when (messageRequest) {
-                is WhatsAppCloudSendBotImageMessage -> prepareImageMessage(phoneNumberId, token, messageRequest)
-
-                is WhatsAppCloudSendBotInteractiveMessage -> prepareInteractiveMessage(
-                    phoneNumberId,
-                    token,
-                    messageRequest
-                )
-
-                is WhatsAppCloudSendBotTemplateMessage -> prepareTemplateMessage(phoneNumberId, token, messageRequest)
-
-                else -> messageRequest
-            }
-        } catch (e: Exception) {
-            logger.error(e)
-            return null
-        }
-    }
-
-    private fun prepareImageMessage(
-        phoneNumberId: String,
-        token: String,
-        messageRequest: WhatsAppCloudSendBotImageMessage
-    ): WhatsAppCloudSendBotMessage {
-        return replaceWithRealMessageImageId(messageRequest, phoneNumberId, token)
-    }
 
     fun sendMessage(
         phoneNumberId: String,
-        token: String,
         messageRequest: WhatsAppCloudSendBotMessage
     ) {
         send(messageRequest) {
-            apiClient.graphApi.sendMessage(phoneNumberId, token, messageRequest).execute()
+            apiClient.sendMessage(phoneNumberId, messageRequest).execute()
         }
     }
 
-    fun downloadImgByBinary(token: String, imgId: String, mimeType: String): String {
+    fun downloadImgByBinary(imgId: String, mimeType: String): String {
 
         val url = send(imgId) {
-            apiClient.graphApi.retrieveMediaUrl(imgId, token).execute()
+            apiClient.retrieveMediaUrl(imgId).execute()
         }.url
 
         val base64Response = responseDownloadMedia(url, mimeType) {
-            apiClient.graphApi.downloadMediaBinary(url, "Bearer $token").execute()
+            apiClient.downloadMediaBinary(url).execute()
         }
         return base64Response
     }
 
-    private fun prepareInteractiveMessage(
-        phoneNumberId: String,
-        token: String,
-        messageRequest: WhatsAppCloudSendBotInteractiveMessage
-    ): WhatsAppCloudSendBotMessage? {
-        val action = messageRequest.interactive.action ?: return null
-        val updatedButtons = action.buttons.takeIf { !it.isNullOrEmpty() }?.map { btn ->
-            btn.copy(reply = btn.reply.copy(id = shortenPayload(btn.reply.id)))
-        }
-        val updatedSections = action.sections.takeIf { !it.isNullOrEmpty() }?.map { section ->
-            section.copy(rows = section.rows?.map { it.copy(id = shortenPayload(it.id)) })
-        }
-        val updatedHeader = messageRequest.interactive.header?.let { header ->
-            if (header.image != null) {
-                header.copy(
-                    image = WhatsAppCloudBotMediaImage(
-                        id = getRealIdImg(
-                            phoneNumberId,
-                            token,
-                            header.image.id
-                        )
-                    )
-                )
-            } else {
-                header
-            }
-        }
-        return if (updatedButtons != null || updatedSections != null) {
-            sendUpdatedInteractiveMessage(messageRequest, updatedButtons, updatedSections, updatedHeader)
-        } else {
-            messageRequest
-        }
-    }
-
-    private fun getRealIdImg(
-        phoneNumberId: String,
-        token: String,
-        headerImageId: String
-    ): String {
-        val res = sendMedia(phoneNumberId, token, headerImageId, FileType.PNG.type)
-
+    fun getUploadedImageId(imageUrl: String): String {
+        val res = sendMedia(imageUrl, FileType.PNG.type)
         return res.id
     }
 
-    private fun shortenPayload(payload: String): String {
-        if (payload.length >= 256) {
+    fun getUploadedImageId(
+        imageId: String,
+        imageBytes: ByteArray,
+        mimeType: String,
+    ): String {
+        val res = sendMedia(imageId, imageBytes, mimeType)
+        return res.id
+    }
+
+    fun shortenPayload(parameters: PayloadParameter): PayloadParameter {
+        return parameters.payload?.takeIf { it.length >= 128 }?.let {
             val uuidPayload = UUID.randomUUID().toString()
             executor.executeBlocking {
-                payloadWhatsApp.save(
-                    PayloadWhatsAppCloud(
-                        uuidPayload,
-                        payload,
-                        Date.from(Instant.now()),
-                    )
-                )
+                payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, it, Date.from(Instant.now())))
             }
-            return uuidPayload
+            parameters.copy(payload = uuidPayload)
+        } ?: parameters
+    }
+
+    fun shortenPayload(payload: String): String {
+        return if (payload.length >= 256) {
+            val uuidPayload = UUID.randomUUID().toString()
+            executor.executeBlocking {
+                payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, payload, Date.from(Instant.now())))
+            }
+            uuidPayload
         } else {
-            return payload
+            payload
         }
     }
-
-    private fun sendUpdatedInteractiveMessage(
-        messageRequest: WhatsAppCloudSendBotInteractiveMessage,
-        updatedButtons: List<WhatsAppCloudBotActionButton>?,
-        updatedSections: List<WhatsAppCloudBotActionSection>?,
-        updateHeader: WhatsAppCloudBotInteractiveHeader? = null
-    ): WhatsAppCloudSendBotInteractiveMessage {
-        val updateAction = messageRequest.interactive.action?.copy(
-            buttons = updatedButtons,
-            sections = updatedSections,
-        )
-        return messageRequest.copy(
-            interactive = messageRequest.interactive.copy(header = updateHeader, action = updateAction)
-        )
-    }
-
-    private fun prepareTemplateMessage(
-        phoneNumberId: String,
-        token: String,
-        messageRequest: WhatsAppCloudSendBotTemplateMessage
-    ): WhatsAppCloudSendBotMessage {
-        val updatedComponents = messageRequest.template.components.map { component ->
-            when (component) {
-                is Component.Carousel -> updateCarouselPayloads(component)
-                is Component.Button -> updateTemplateButton(component)
-                else -> component
-            }
-        }
-
-        val updatedMessageRequest = messageRequest.copy(
-            template = messageRequest.template.copy(
-                components = updatedComponents
-            )
-        )
-
-        replaceWithRealImageId(updatedMessageRequest, phoneNumberId, token)
-        return updatedMessageRequest
-    }
-
-    private fun updateCarouselPayloads(carousel: Component.Carousel): Component.Carousel {
-        val updatedCards = carousel.cards.map { card ->
-            val updatedComponents = card.components.map { component ->
-                if (component is Component.Button) {
-                    updateTemplateButton(component)
-                } else {
-                    component
-                }
-            }
-            card.copy(components = updatedComponents)
-        }
-        return carousel.copy(cards = updatedCards)
-    }
-
-    private fun updateTemplateButton(button: Component.Button): Component.Button =
-        button.copy(parameters = button.parameters.map { parameters ->
-            parameters.payload?.takeIf { it.length >= 128 }?.let {
-                val uuidPayload = UUID.randomUUID().toString()
-                executor.executeBlocking {
-                    payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, it, Date.from(Instant.now())))
-                }
-                parameters.copy(payload = uuidPayload)
-            } ?: parameters
-        })
 
     private fun sendMedia(
-        phoneNumberId: String,
-        token: String,
         fileUrl: String,
         fileType: String
     ): MediaResponse {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_media")
 
-        return getOrCache("$phoneNumberId-$fileUrl".toId(), IMAGE_ID_CACHE) {
+        return getOrCache("${apiClient.phoneNumberId}-$fileUrl".toId(), IMAGE_ID_CACHE) {
             try {
-                val file = retrieveMedia(fileUrl, fileType.toMediaTypeOrNull())
+                val file = retrieveMedia(fileUrl).toRequestBody(fileType.toMediaTypeOrNull())
 
-                val media = apiClient.graphApi.uploadMediaInWhatsAppAccount(
-                    phoneNumberId,
-                    "Bearer $token",
-                    MultipartBody.Builder().setType(MultipartBody.FORM)
-                        .addFormDataPart("file", "fileimage", file)
-                        .addFormDataPart("messaging_product", "whatsapp")
-                        .build()
-                )
+                apiClient.uploadMediaInWhatsAppAccount(file).execute().body()
+            } catch (e: Exception) {
+                BotRepository.requestTimer.throwable(e, requestTimerData)
+                throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
+            } finally {
+                BotRepository.requestTimer.end(requestTimerData)
+            }
+        } ?: throw ConnectorException("Error sending media")
+    }
 
-                media.execute().body()
+    private fun sendMedia(
+        fileId: String,
+        fileBytes: ByteArray,
+        fileType: String
+    ): MediaResponse {
+        val requestTimerData =
+            BotRepository.requestTimer.start("whatsapp_send_media_bytes")
+
+        return getOrCache("${apiClient.phoneNumberId}-$fileId".toId(), IMAGE_ID_CACHE) {
+            try {
+                val file = fileBytes.toRequestBody(fileType.toMediaTypeOrNull())
+
+                apiClient.uploadMediaInWhatsAppAccount(file).execute().body()
             } catch (e: Exception) {
                 BotRepository.requestTimer.throwable(e, requestTimerData)
                 throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
@@ -378,44 +252,22 @@ internal class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiCl
         }
     }
 
-    private fun replaceWithRealMessageImageId(
-        messageRequest: WhatsAppCloudSendBotImageMessage,
-        phoneNumberId: String,
-        token: String
-    ): WhatsAppCloudSendBotMessage {
-        val res = sendMedia(
-            phoneNumberId,
-            token,
-            messageRequest.image.id,
-            FileType.PNG.type
-        )
-
-        val image = messageRequest.image
-        val newImageId = res.id
-        image.id = newImageId
-        return messageRequest
-    }
-
-
-    private fun replaceWithRealImageId(
-        messageRequest: WhatsAppCloudSendBotTemplateMessage,
-        phoneNumberId: String,
-        token: String
+    fun replaceWithRealImageId(
+        components: List<WhatsappTemplateComponent>,
+        phoneNumberId: String
     ) {
-        messageRequest.template.components
+        components
             .asSequence()
-            .filterIsInstance<Component.Carousel>()
+            .filterIsInstance<WhatsappTemplateComponent.Carousel>()
             .flatMap { it.cards }
             .flatMap { it.components }
-            .filterIsInstance<Component.Header>()
+            .filterIsInstance<WhatsappTemplateComponent.Header>()
             .flatMap { it.parameters }
             .filterIsInstance<HeaderParameter.Image>()
             .filter { it.image.id != null }
             .map {
-                it to executor.executeBlockingTask<MediaResponse> {
+                it to executor.executeBlockingTask {
                     sendMedia(
-                        phoneNumberId,
-                        token,
                         it.image.id!!,
                         FileType.PNG.type
                     )
@@ -428,10 +280,6 @@ internal class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiCl
                 val newImageId = it.second.get().id
                 imageHeader.image.id = newImageId
             }
-    }
-
-    private fun retrieveMedia(fileUrl: String, mediaType: MediaType?): RequestBody {
-        return retrieveMedia(fileUrl).toRequestBody(mediaType)
     }
 
     private fun retrieveMedia(fileUrl: String): ByteArray {
