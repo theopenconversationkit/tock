@@ -22,7 +22,7 @@ pre-commit = "^4.2.0"
 aiometer = "^0.5.0"
 aiohttp = "^3.11.14"
 aiohttp-socks = "^0.10.1"
-pydantic = "^2.9.2"
+pydantic = "^2.11.1"
 humanize = "^4.12.2"
 langfuse = "^2.60.2"
 ragas = "^0.2.13"
@@ -33,7 +33,7 @@ python-pptx = "^1.0.2"
 python-magic = "^0.4.27"
 markdown-it-py= "^3.0.0"
 backoff = "^2.2.1"
-
+more-itertools = "^10.6.0"
 
 [build-system]
 requires = ["poetry-core"]
