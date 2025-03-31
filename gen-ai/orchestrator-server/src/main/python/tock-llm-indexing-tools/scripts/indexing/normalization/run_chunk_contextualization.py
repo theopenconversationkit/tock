@@ -25,7 +25,7 @@ from datetime import datetime
 
 from docopt import docopt
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
-    create_observability_callback_handler
+    create_observability_callback_handler, get_callback_handler_factory
 from langchain.prompts import ChatPromptTemplate, PromptTemplate, HumanMessagePromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from more_itertools.recipes import batched
@@ -102,7 +102,7 @@ def process_chunks(chunks, contextual_chunk_creation, reference_document_content
 
         response = contextual_chunk_creation.invoke(
             {"WHOLE_DOCUMENT": reference_document_content, "CHUNKS": formatted_chunks},
-            config={'callbacks': [observability_handler]}
+            config={'callbacks': [observability_handler] if observability_handler else []}
         )
 
         content_dict = {chunk.id: chunk.content for chunk in chunks_group}
@@ -161,18 +161,21 @@ def main():
         with open(reference_document_path, "r", encoding="utf-8") as f:
             reference_document_content = f.read()
 
-        observability_handler = create_observability_callback_handler(
-            observability_setting=input_config.observability_setting,
-            trace_name="Chunk contextualization"
-        )
         llm_model_instance = get_llm_factory(input_config.llm_setting).get_language_model()
+        observability_callback_handler = None
+        if input_config.observability_setting:
+            observability_callback_handler = get_callback_handler_factory(
+                setting=input_config.observability_setting
+            ).get_callback_handler(
+                trace_name="Chunk contextualization"
+            )
 
         contextual_chunk_creation = (
                 create_prompt() | llm_model_instance | JsonOutputParser()
         )
 
         result, csv_rows = process_chunks(
-            input_config.chunks, contextual_chunk_creation, reference_document_content, observability_handler
+            input_config.chunks, contextual_chunk_creation, reference_document_content, observability_callback_handler
         )
         total_processed_chunks = len(csv_rows)
         save_results(result, csv_rows, output_path, formatted_datetime)

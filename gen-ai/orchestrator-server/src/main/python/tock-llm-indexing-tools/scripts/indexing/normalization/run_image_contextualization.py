@@ -20,7 +20,6 @@ Examples:
     python run_image_contextualization.py --json-config-file=path/to/config-file.json
 """
 
-import json
 import os
 import re
 from datetime import datetime
@@ -36,6 +35,7 @@ from openai import RateLimitError, APITimeoutError
 from scripts.common.img_tools import encode_image
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import StatusWithReason, ActivityStatus
+from scripts.common.utils import save_json, read_file, write_file
 from scripts.indexing.normalization.models import RunImageContextualizationInput, RunImageContextualizationOutput
 
 
@@ -168,72 +168,71 @@ def main():
     cli_args = docopt(__doc__, version='Run Image Contextualization 1.0.0')
     logger = configure_logging(cli_args)
 
-    nb_discovered_images: int = 0
-    nb_described_images: int = 0
-    markdown_output: str = ""
+    nb_discovered_images = 0
+    nb_described_images = 0
+    markdown_output = ""
+
     try:
         logger.info("Loading input data...")
         input_config = RunImageContextualizationInput.from_json_file(cli_args["--json-config-file"])
         logger.debug(f"\n{input_config.format()}")
 
+        # Define file paths
         location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}"
-        os.makedirs(f'{location}/output/{input_config.document_directory}', exist_ok=True)
+        output_dir = f'{location}/output/{input_config.document_directory}'
+        os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
 
         md_input_file_path = f"{location}/input/{input_config.document_directory}/{input_config.document_directory}.md"
-        md_output_file_path = f"{location}/output/{input_config.document_directory}/{input_config.document_directory}.md"
+        md_output_file_path = f"{output_dir}/{input_config.document_directory}.md"
 
         md_input_filename = md_output_file_path.rsplit('.', 1)[0]
         json_output_images_path = f"{md_input_filename}-images-{formatted_datetime}.json"
         markdown_output = f"{md_input_filename}-enriched-{formatted_datetime}.md"
 
+        # Extract images from markdown
         images = extract_images(md_input_file_path)
         nb_discovered_images = len(images)
 
-        json_data = json.dumps(images, indent=4, ensure_ascii=False)
-        with open(json_output_images_path, "w", encoding="utf-8") as f:
-            f.write(json_data)
+        # Save extracted images data as JSON
+        save_json(json_output_images_path, images)
 
+        # Initialize LLM and Observability for image descriptions
         llm_factory = get_llm_factory(setting=input_config.llm_setting)
-
         observability_callback_handler = None
-        if input_config.observability_setting is not None:
+        if input_config.observability_setting:
             observability_callback_handler = get_callback_handler_factory(
-                setting=input_config.observability_setting).get_callback_handler(
-                trace_name="Image contextualization")
+                setting=input_config.observability_setting
+            ).get_callback_handler(
+                trace_name="Image contextualization"
+            )
 
+        # Process each image to generate a description
         for i, image in enumerate(images):
-            image['description'] = ''
+            image['description'] = ''  # Initialize description
             if image['name']:
                 logger.info(f"Processing image {i + 1}/{len(images)}: {image['name']}")
-                image['description'] = generate_image_description(llm_factory.get_language_model(), observability_callback_handler, image)
+                image['description'] = generate_image_description(
+                    llm_factory.get_language_model(), observability_callback_handler, image
+                )
                 nb_described_images += 1
 
-        json_data = json.dumps(images, indent=4, ensure_ascii=False)
-        with open(json_output_images_path, "w", encoding="utf-8") as f:
-            f.write(json_data)
+        # Save updated images data with descriptions
+        save_json(json_output_images_path, images)
 
-        with open(md_input_file_path, "r", encoding="utf-8") as md_file:
-            markdown_text = md_file.read()
+        # Read markdown content
+        markdown_text = read_file(md_input_file_path)
 
-        # Replace IMG placeholders in Markdown with generated descriptions
-        for image in images:
-            pattern = r'!\[\]\s*\n?\s*\(' + re.escape(image["name"]) + r'\)'
-            replacement = (
-                f'<!-- START - DESC IMG : {image["name"]} -->\n'
-                f'{image["description"]}\n'
-                f'<!-- END - DESC IMG : {image["name"]} -->'
-            )
-            markdown_text = re.sub(pattern, replacement, markdown_text)
+        # Replace image placeholders with generated descriptions
+        markdown_text = replace_image_descriptions(markdown_text, images)
 
-        with open(markdown_output, "w", encoding="utf-8") as md_out_file:
-            md_out_file.write(markdown_text)
+        # Save enriched markdown
+        write_file(markdown_output, markdown_text)
 
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
     except Exception as e:
         full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
         activity_status = StatusWithReason(status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}")
         logger.error(e, exc_info=True)
-
 
     output = RunImageContextualizationOutput(
         status=activity_status,
@@ -243,6 +242,19 @@ def main():
         success_rate=100 * (nb_described_images / nb_discovered_images) if nb_discovered_images > 0 else 0
     )
     logger.debug(f"\n{output.format()}")
+
+
+def replace_image_descriptions(markdown_text: str, images: list[dict]) -> str:
+    """Replace image placeholders in markdown with generated descriptions."""
+    for image in images:
+        pattern = r'!\[\]\s*\n?\s*\(' + re.escape(image["name"]) + r'\)'
+        replacement = (
+            f'<!-- START - DESC IMG : {image["name"]} -->\n'
+            f'{image.get("description", "Description non générée")}\n'
+            f'<!-- END - DESC IMG : {image["name"]} -->'
+        )
+        markdown_text = re.sub(pattern, replacement, markdown_text)
+    return markdown_text
 
 
 if __name__ == '__main__':
