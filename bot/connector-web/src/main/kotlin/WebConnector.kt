@@ -16,17 +16,14 @@
 
 package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.ConnectorBase
-import ai.tock.bot.connector.ConnectorCallback
-import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.*
 import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.web.channel.Channels
+import ai.tock.bot.connector.web.security.WebSecurityCookiesHandler
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
@@ -54,17 +51,10 @@ import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
-import ai.tock.shared.Dice
-import ai.tock.shared.Executor
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.injector
+import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.listProperty
-import ai.tock.shared.longProperty
-import ai.tock.shared.property
-import ai.tock.shared.propertyOrNull
-import ai.tock.shared.provide
+import ai.tock.shared.security.auth.spi.TOCK_USER_ID
+import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.sendSsePing
 import ai.tock.shared.vertx.setupSSE
@@ -72,23 +62,16 @@ import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.Future
-import io.vertx.core.http.Cookie
-import io.vertx.core.http.CookieSameSite
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
-import java.time.Duration
-import java.util.Locale
-import java.util.UUID
 import mu.KotlinLogging
+import java.time.Duration
+import java.util.*
 
 internal const val WEB_CONNECTOR_ID = "web"
-
-private const val TOCK_USER_ID = "tock_user_id"
-
 /**
  * The web (REST) connector type.
  */
@@ -98,9 +81,6 @@ private val corsPattern = property("tock_web_cors_pattern", ".*")
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
-private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
-private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
-private val cookieAuthPath = propertyOrNull("tock_web_cookie_auth_path")
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -110,7 +90,8 @@ val webConnectorUseExtraHeadersAsMetadata: Boolean =
 
 class WebConnector internal constructor(
     val connectorId: String,
-    val path: String
+    val path: String,
+    private val webSecurityHandler: WebSecurityHandler
 ) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
     @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
@@ -135,8 +116,6 @@ class WebConnector internal constructor(
 
     }
 
-    private val executor: Executor get() = injector.provide()
-
     override fun register(controller: ConnectorController) {
 
         controller.registerServices(path) { router ->
@@ -157,17 +136,15 @@ class WebConnector internal constructor(
                                 this.allowedHeader(it)
                             }
                         }
-                        .allowCredentials(cookieAuth) // browsers do not send or save cookies unless credentials are allowed
+                        // browsers do not send or save cookies unless credentials are allowed
+                        .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
                 )
             if (sseEnabled) {
                 router.route("$path/sse")
+                    .handler(webSecurityHandler)
                     .handler { context ->
                         try {
-                            val userId = if (cookieAuth) {
-                                getOrCreateUserIdCookie(context)
-                            } else {
-                                context.queryParams()["userId"]
-                            }
+                            val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
                             val response = context.response()
                             response.setupSSE()
                             val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
@@ -199,60 +176,22 @@ class WebConnector internal constructor(
                         }
                     }
             }
+
+            // Main connector endpoint
             router.post(path)
+                .handler(webSecurityHandler)
                 .handler { context ->
-                    try {
-                        executor.executeBlocking {
-                            val body = if (cookieAuth) {
-                                val jsonBody = context.body().asJsonObject() ?: JsonObject()
-                                val userId = getOrCreateUserIdCookie(context)
-                                jsonBody.put(
-                                    "userId",
-                                    userId
-                                )   // note: mutating jsonBody does not mutate the original buffer
-                                jsonBody.toString()
-                            } else {
-                                context.body().asString()
-                            }
-                            handleRequest(controller, context, body)
-                        }
-                    } catch (e: Throwable) {
-                        context.fail(e)
-                    }
+                    // Override the user on the request body
+                    val tockUserId = context.get<String>(TOCK_USER_ID)
+                    val body = tockUserId?.let{
+                        val jsonBody = context.body().asJsonObject() ?: JsonObject()
+                        jsonBody.put("userId", tockUserId)
+                        jsonBody.toString()
+                    } ?: context.body().asString()
+
+                    // Handle the request
+                    handleRequest(controller, context,  body)
                 }
-        }
-    }
-
-    /**
-     * Retrieves the value of the tock_user_id cookie or generates it if the user agent did not send such a cookie
-     *
-     * If the user agent does not have the cookie, or if a cookie Max-Age is specified, this method also instructs
-     * the user agent to create/refresh it.
-     */
-    private fun getOrCreateUserIdCookie(context: RoutingContext): String {
-        val existing = context.request().getCookie(TOCK_USER_ID)?.value
-
-        return if (existing != null && cookieAuthMaxAge < 0) {
-            existing // no need to refresh an existing session cookie, it would be a waste of bandwidth
-        } else {
-            val cookieValue = existing ?: UUID.randomUUID().toString()
-
-            val cookie = Cookie.cookie(TOCK_USER_ID, cookieValue)
-                .setHttpOnly(true)
-                .setSecure(true)
-                .setSameSite(CookieSameSite.NONE)   // bot backend may not be on the same domain as the website frontend
-
-            if (cookieAuthMaxAge >= 0) {
-                cookie.setMaxAge(cookieAuthMaxAge)
-            }
-
-            if (cookieAuthPath != null) {
-                cookie.setPath(cookieAuthPath)
-            }
-
-            context.response().addCookie(cookie)
-
-            cookieValue
         }
     }
 
