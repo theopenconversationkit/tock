@@ -288,7 +288,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
         return client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) error("Failed to download file: $fileUrl - ${response.message}")
-            response.body.byteStream().readBytes()
+            response.body?.byteStream()?.readBytes() ?: error("Empty body")
         }
     }
 

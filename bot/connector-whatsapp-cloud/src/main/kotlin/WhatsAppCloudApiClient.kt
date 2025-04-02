@@ -184,7 +184,7 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
             if (!response.isSuccessful) {
                 throw IOException("Unexpected code $response")
             }
-            return mapper.readValue<UploadAssetResponse>(response.body.string()).handle
+            return mapper.readValue<UploadAssetResponse>(response.body?.string() ?: error("empty body")).handle
         }
     }
 }

@@ -23,7 +23,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.internal.commonEmptyResponse
+import okhttp3.internal.EMPTY_RESPONSE
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -61,7 +61,7 @@ class TockProxyAuthenticatorTest {
             .protocol(Protocol.HTTP_1_1)
             .code(HttpURLConnection.HTTP_PROXY_AUTH)
             .message("Preemptive Authenticate")
-            .body(commonEmptyResponse)
+            .body(EMPTY_RESPONSE)
             .sentRequestAtMillis(-1L)
             .receivedResponseAtMillis(-1L)
             .header("Proxy-Authenticate", challenge)
