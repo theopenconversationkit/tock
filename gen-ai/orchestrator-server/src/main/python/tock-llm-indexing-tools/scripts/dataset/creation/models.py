@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Optional
 
 import humanize
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
@@ -15,7 +16,7 @@ class DatasetInfo(BaseModel):
     template: DatasetTemplate = Field(description='The dataset template.')
 
 class DatasetItemInfo(BaseModel):
-    topic: str = Field(description='The question topic.')
+    topic: Optional[str] = Field(description='The question topic.', default=None)
     question: str = Field(description='The question.')
     answer: str = Field(description='The expected answer.')
 
