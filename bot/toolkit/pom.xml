@@ -79,11 +79,19 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-mattermost</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-businesschat</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-alcmeon</artifactId>
         </dependency>
 
         <!-- force okhttp dependencies -->
