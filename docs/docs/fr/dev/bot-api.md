@@ -54,14 +54,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>24.9.8</version>
+            <version>25.3.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-websocket:24.9.8'
+      compile 'ai.tock:tock-bot-api-websocket:25.3.1'
 ```
 
 ### Activer le mode WebHook
@@ -74,14 +74,14 @@ Par exemple dans un projet [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>24.9.8</version>
+            <version>25.3.1</version>
         </dependency>
 ```
 
 Ou dans un projet [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-webhook:24.9.8'
+      compile 'ai.tock:tock-bot-api-webhook:25.3.1'
 ```
 
 Dans ce cas, contrairement au mode _WebSocket_, il faut que l'application/bot démarrée soit joignable par la 
