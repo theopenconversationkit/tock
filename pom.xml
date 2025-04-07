@@ -621,6 +621,11 @@
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
+                <artifactId>sagemaker</artifactId>
+                <version>${aws-sagemaker}</version>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
                 <artifactId>sts</artifactId>
                 <version>${aws-sagemaker}</version>
             </dependency>

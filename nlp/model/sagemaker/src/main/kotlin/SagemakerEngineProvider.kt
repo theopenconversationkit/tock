@@ -16,17 +16,10 @@
 
 package ai.tock.nlp.sagemaker
 
+import NlpHealthcheckResult
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.model.TokenizerContext
-import ai.tock.nlp.model.service.engine.EntityClassifier
-import ai.tock.nlp.model.service.engine.EntityModelHolder
-import ai.tock.nlp.model.service.engine.IntentClassifier
-import ai.tock.nlp.model.service.engine.IntentModelHolder
-import ai.tock.nlp.model.service.engine.NlpEngineModelBuilder
-import ai.tock.nlp.model.service.engine.NlpEngineModelIo
-import ai.tock.nlp.model.service.engine.NlpEngineProvider
-import ai.tock.nlp.model.service.engine.Tokenizer
-import ai.tock.nlp.model.service.engine.TokenizerModelHolder
+import ai.tock.nlp.model.service.engine.*
 
 class SagemakerEngineProvider : NlpEngineProvider {
 
@@ -56,4 +49,13 @@ class SagemakerEngineProvider : NlpEngineProvider {
         // do not tokenize anything at this stage
         override fun tokenize(context: TokenizerContext, text: String): Array<String> = arrayOf(text)
     }
+
+    override fun healthcheck(): () -> NlpHealthcheckResult = {
+        val grouped = SagemakerClientProvider.getAllClient().groupBy { it.name }.withDefault { emptyList() }
+        NlpHealthcheckResult(
+            entityClassifier = grouped.getValue(SagemakerEntityClassifier.CLIENT_NAME).all { it.healthcheck() },
+            intentClassifier = grouped.getValue(SagemakerIntentClassifier.CLIENT_NAME).all { it.healthcheck() },
+        )
+    }
 }
+

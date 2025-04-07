@@ -16,32 +16,18 @@
 
 package ai.tock.nlp.core.service
 
-import ai.tock.nlp.core.CallContext
-import ai.tock.nlp.core.Entity
-import ai.tock.nlp.core.EntityRecognition
-import ai.tock.nlp.core.EntityType
-import ai.tock.nlp.core.Intent
+import ai.tock.nlp.core.*
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
-import ai.tock.nlp.core.IntentClassification
-import ai.tock.nlp.core.IntentSelector
-import ai.tock.nlp.core.NlpCore
-import ai.tock.nlp.core.NlpEngineType
-import ai.tock.nlp.core.ParsingResult
 import ai.tock.nlp.core.merge.ValueDescriptor
 import ai.tock.nlp.core.quality.TestContext
 import ai.tock.nlp.core.service.entity.EntityCore
 import ai.tock.nlp.core.service.entity.EntityCoreService
 import ai.tock.nlp.core.service.entity.EntityMerge
-import ai.tock.nlp.model.EntityCallContextForEntity
-import ai.tock.nlp.model.EntityCallContextForIntent
-import ai.tock.nlp.model.IntentContext
-import ai.tock.nlp.model.ModelHolder
-import ai.tock.nlp.model.ModelNotInitializedException
-import ai.tock.nlp.model.NlpClassifier
+import ai.tock.nlp.model.*
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.error
-import ai.tock.shared.normalize
 import ai.tock.shared.injector
+import ai.tock.shared.normalize
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
