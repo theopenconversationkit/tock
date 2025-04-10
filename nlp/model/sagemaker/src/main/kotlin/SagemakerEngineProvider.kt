@@ -59,11 +59,22 @@ class SagemakerEngineProvider : NlpEngineProvider {
     }
 
     override fun healthcheck(): () -> NlpHealthcheckResult = {
-        val grouped = SagemakerClientProvider.getAllClient().groupBy { it.name }.withDefault { emptyList() }
-        NlpHealthcheckResult(
-            entityClassifier = grouped.getValue(SagemakerEntityClassifier.CLIENT_TYPE.clientName).all { it.healthcheck() },
-            intentClassifier = grouped.getValue(SagemakerIntentClassifier.CLIENT_TYPE.clientName).all { it.healthcheck() },
-        )
+        val clients = SagemakerClientProvider.getAllClient()
+        if (clients.isEmpty()) {
+            NlpHealthcheckResult(
+                entityClassifier = false,
+                intentClassifier = false
+            )
+        } else {
+            val grouped = clients.groupBy { it.name }.withDefault { emptyList() }
+            val entityClients = grouped.getValue(SagemakerEntityClassifier.CLIENT_TYPE.clientName)
+            val intentClients = grouped.getValue(SagemakerIntentClassifier.CLIENT_TYPE.clientName)
+
+            NlpHealthcheckResult(
+                entityClassifier = entityClients.isNotEmpty() && entityClients.all { it.healthcheck() },
+                intentClassifier = intentClients.isNotEmpty() && intentClients.all { it.healthcheck() }
+            )
+        }
     }
 }
 
