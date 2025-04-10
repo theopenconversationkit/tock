@@ -29,7 +29,7 @@ import software.amazon.awssdk.regions.Region
 
 internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
     companion object {
-        val CLIENT_NAME = "entity-classification"
+        val CLIENT_TYPE = SagemakerClientType.ENTITY_CLASSIFICATION
     }
 
     override fun classifyEntities(
@@ -39,7 +39,7 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
     ): List<EntityRecognition> {
         SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
-                CLIENT_NAME,
+                CLIENT_TYPE.clientName,
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
                 property("tock_sagemaker_aws_entities_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),

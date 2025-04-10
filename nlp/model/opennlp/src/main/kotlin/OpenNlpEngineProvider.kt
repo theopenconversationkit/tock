@@ -17,7 +17,15 @@
 package ai.tock.nlp.opennlp
 
 import ai.tock.nlp.core.NlpEngineType
-import ai.tock.nlp.model.service.engine.*
+import ai.tock.nlp.model.service.engine.EntityClassifier
+import ai.tock.nlp.model.service.engine.EntityModelHolder
+import ai.tock.nlp.model.service.engine.IntentClassifier
+import ai.tock.nlp.model.service.engine.IntentModelHolder
+import ai.tock.nlp.model.service.engine.NlpEngineModelBuilder
+import ai.tock.nlp.model.service.engine.NlpEngineModelIo
+import ai.tock.nlp.model.service.engine.NlpEngineProvider
+import ai.tock.nlp.model.service.engine.Tokenizer
+import ai.tock.nlp.model.service.engine.TokenizerModelHolder
 
 /**
  *

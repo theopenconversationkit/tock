@@ -16,16 +16,32 @@
 
 package ai.tock.nlp.model.service
 
-import ai.tock.nlp.core.*
+import ai.tock.nlp.core.Application
+import ai.tock.nlp.core.EntityRecognition
+import ai.tock.nlp.core.EntityType
+import ai.tock.nlp.core.Intent
+import ai.tock.nlp.core.IntentClassification
+import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.core.sample.SampleExpression
-import ai.tock.nlp.model.*
+import ai.tock.nlp.model.EntityBuildContext
+import ai.tock.nlp.model.EntityCallContext
+import ai.tock.nlp.model.EntityCallContextForSubEntities
+import ai.tock.nlp.model.EntityContextKey
+import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.IntentContext.IntentContextKey
-import ai.tock.nlp.model.service.engine.*
+import ai.tock.nlp.model.ModelHolder
+import ai.tock.nlp.model.NlpClassifier
+import ai.tock.nlp.model.TokenizerContext
+import ai.tock.nlp.model.service.engine.EntityClassifier
+import ai.tock.nlp.model.service.engine.EntityModelHolder
+import ai.tock.nlp.model.service.engine.IntentModelHolder
+import ai.tock.nlp.model.service.engine.NlpEngineRepository
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.getModelBuilder
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.getModelIo
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.getProvider
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.registeredNlpEngineTypes
+import ai.tock.nlp.model.service.engine.NlpModelRepository
 import ai.tock.nlp.model.service.engine.NlpModelRepository.saveEntityModel
 import ai.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
 import ai.tock.nlp.model.service.storage.NlpApplicationConfigurationDAO

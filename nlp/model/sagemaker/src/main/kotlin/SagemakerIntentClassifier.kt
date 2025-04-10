@@ -26,13 +26,13 @@ import software.amazon.awssdk.regions.Region
 
 internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfiguration) : IntentClassifier {
     companion object {
-        const val CLIENT_NAME = "intent-classification"
+        val CLIENT_TYPE = SagemakerClientType.INTENT_CLASSIFICATION
     }
 
     override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
         return SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
-                CLIENT_NAME,
+                CLIENT_TYPE.clientName,
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
                 property("tock_sagemaker_aws_intent_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),

@@ -17,7 +17,12 @@
 package ai.tock.nlp.model.service.engine
 
 import ai.tock.nlp.core.NlpEngineType
-import ai.tock.nlp.model.*
+import ai.tock.nlp.model.ClassifierContext
+import ai.tock.nlp.model.ClassifierContextKey
+import ai.tock.nlp.model.EntityCallContext
+import ai.tock.nlp.model.EntityContext
+import ai.tock.nlp.model.IntentContext
+import ai.tock.nlp.model.TokenizerContext
 import ai.tock.shared.ThreadSafe
 
 /**

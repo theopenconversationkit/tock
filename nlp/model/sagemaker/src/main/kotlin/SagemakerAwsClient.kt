@@ -17,10 +17,11 @@ package ai.tock.nlp.sagemaker
 
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.core.SdkBytes
-import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemaker.SageMakerClient
 import software.amazon.awssdk.services.sagemaker.model.DescribeEndpointRequest
+import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
 import java.nio.charset.Charset
 
@@ -58,12 +59,12 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
 
     private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
         .region(configuration.region)
-        .credentialsProvider(software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider.create())
+        .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     private val sagemakerClient: SageMakerClient = SageMakerClient.builder()
         .region(configuration.region)
-        .credentialsProvider(software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider.create())
+        .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
