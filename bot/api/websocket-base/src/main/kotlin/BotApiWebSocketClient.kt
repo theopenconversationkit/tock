@@ -102,7 +102,7 @@ fun start(
     }
 
     val options = WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
-        .setURI("/${botDefinition.apiKey}")
+        .setURI("/${botDefinition.apiKey}".trim())
 
     logger.info { "start web socket client: ${options.toJson()}" }
     val client = vertx.createHttpClient()

@@ -172,9 +172,9 @@ internal class BotVerticle(
                 try {
                     val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
 
-                    if (WebSocketController.isAuthorizedKey(key)) {
+                    if (key !=null && WebSocketController.isAuthorizedKey(key)) {
                         logger.info { "Install WebSocket push handler for ${context.path()}" }
-                        WebSocketController.setPushHandler(key!!) {
+                        WebSocketController.setPushHandler(key) {
                             try {
                                 logger.debug { "send: $it" }
                                 context.writeTextMessage(it)

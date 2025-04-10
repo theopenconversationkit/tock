@@ -17,7 +17,6 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
@@ -25,8 +24,7 @@ import ai.tock.bot.definition.BotProviderId
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotRepository
 import ai.tock.nlp.api.client.NlpClient
-import ai.tock.nlp.front.client.FrontClient
-import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.api.client.model.dump.ApplicationDump
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -39,6 +37,7 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
 
     @Volatile
     private var lastConfiguration: ClientConfiguration? = null
+
     @Volatile
     private var bot: BotDefinition
     private val handler: BotApiHandler = BotApiHandler(this, configuration)
@@ -47,14 +46,21 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
     private val nlpClient: NlpClient get() = injector.provide()
 
     init {
-        lastConfiguration = handler.configuration()
         bot = BotApiDefinition(configuration, lastConfiguration, handler)
+        handler.configuration {
+            if (it != null) {
+                updateIfConfigurationChange(it)
+            }
+            lastConfiguration = it
+        }
     }
 
     fun updateIfConfigurationChange(conf: ClientConfiguration) {
         logger.debug { "check conf $conf" }
         if (conf != lastConfiguration) {
+            logger.debug { "reload configuration" }
             this.lastConfiguration = conf
+            logger.info { "configuration version :${lastConfiguration?.version}" }
             bot = BotApiDefinition(configuration, conf, handler)
             configurationUpdated = true
             registerBuiltinStoryIntents()
@@ -66,15 +72,25 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
     private fun registerBuiltinStoryIntents() {
         executor.executeBlocking {
             with(botDefinition()) {
-                val applicationId = FrontClient.getApplicationByNamespaceAndName(namespace, nlpModelName)!!._id
-                val intents = nlpClient.getIntentsByNamespaceAndName(namespace, botId)
-                this.stories.filter { it.mainIntent() != Intent.unknown }.map { it.mainIntent().name.withoutNamespace() }.forEach {
-                    if (intents?.firstOrNull { intent -> intent.name.withoutNamespace() == it } == null) {
-                        logger.debug { "Intent $it not found, creating it..." }
-                        FrontClient.save(
-                            IntentDefinition(
-                                it, namespace, setOf(applicationId),
-                                emptySet(), description = "Intent created automatically for built-in story.", category = "builtin"
+                val application = nlpClient.getApplicationByNamespaceAndName(namespace, nlpModelName)
+                if (application != null) {
+                    val applicationId = application._id
+                    val intents = nlpClient.getIntentsByNamespaceAndName(namespace, botId)
+                    if (!intents.isNullOrEmpty()) {
+                        logger.info { "import builtin story intents for application $applicationId :$intents" }
+                        nlpClient.importNlpPlainDump(
+                            ApplicationDump(
+                                application = application,
+                                intents = intents.filter { it.name.withoutNamespace() != Intent.unknown.name.withoutNamespace() }
+                                    .map {
+                                        it.copy(
+                                            name = it.name.withoutNamespace(),
+                                            namespace = namespace,
+                                            applications = it.applications.toMutableSet().apply { add(applicationId) },
+                                            description = "Intent created automatically for built-in story.",
+                                            category = "builtin"
+                                        )
+                                    }
                             )
                         )
                     }

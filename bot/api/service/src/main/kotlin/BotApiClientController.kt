@@ -19,35 +19,26 @@ package ai.tock.bot.api.service
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.api.model.configuration.ResponseContextVersion.V2
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
-import ai.tock.bot.connector.web.WebConnectorRequest
-import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.engine.WebSocketController
-import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
-import ai.tock.shared.debug
 import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
+import ai.tock.shared.provide
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import com.launchdarkly.eventsource.ConnectStrategy
-import com.launchdarkly.eventsource.EventSource
-import com.launchdarkly.eventsource.MessageEvent
-import com.launchdarkly.eventsource.background.BackgroundEventHandler
-import com.launchdarkly.eventsource.background.BackgroundEventSource
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit.SECONDS
 import mu.KotlinLogging
-import java.net.URI
 import java.time.Instant
-import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit.SECONDS
 
 private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
 private val oldWebhookBehaviour: Boolean = booleanProperty("tock_api_old_webhook_behaviour", false)
@@ -90,6 +81,10 @@ internal class BotApiClientController(
 
     private val apiKey: String = configuration.apiKey
     private val webhookUrl: String? = configuration.webhookUrl
+    private val executor: Executor get() = injector.provide()
+
+    @Volatile
+    private var lastConfiguration: ClientConfiguration? = null
 
     private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
         try {
@@ -116,6 +111,7 @@ internal class BotApiClientController(
                             }
                             holder?.receive(response)
                         } else {
+                            lastConfiguration = conf
                             provider.updateIfConfigurationChange(conf)
                         }
                     } else {
@@ -128,9 +124,21 @@ internal class BotApiClientController(
         }
     }
 
-    fun configuration(): ClientConfiguration? =
-        client?.send(RequestData(configuration = true))?.botConfiguration
-            ?: sendWithWebSocket(RequestData(configuration = true))?.botConfiguration
+    private fun loadConfiguration(conf: ClientConfiguration?, handler: (ClientConfiguration?) -> Unit) {
+        logger.debug { "load configuration :$conf" }
+        logger.info { "configuration version :${conf?.version}" }
+        lastConfiguration = conf
+        handler(conf)
+    }
+
+    fun configuration(handler: (ClientConfiguration?) -> Unit): Unit {
+        client?.send(RequestData(configuration = true))?.apply {
+            loadConfiguration(botConfiguration, handler)
+        }
+            ?: sendWithWebSocket(RequestData(configuration = true), {
+                loadConfiguration(it?.botConfiguration, handler)
+            })
+    }
 
     fun send(userRequest: UserRequest, sendResponse: (ResponseData?) -> Unit) {
         val request = RequestData(userRequest)
@@ -143,7 +151,7 @@ internal class BotApiClientController(
 
     private fun sendWithWebhook(request: RequestData, sendResponse: (ResponseData?) -> Unit) {
         client?.apply {
-            if (request.configuration == true || oldWebhookBehaviour) {
+            if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.version != V2) {
                 send(request).apply {
                     sendResponse(this)
                 }
@@ -153,25 +161,29 @@ internal class BotApiClientController(
         }
     }
 
-    private fun sendWithWebSocket(request: RequestData, sendResponse: (ResponseData?) -> Unit = {}): ResponseData? {
+    private fun sendWithWebSocket(request: RequestData, sendResponse: (ResponseData?) -> Unit = {}): Unit {
         val pushHandler = WebSocketController.getPushHandler(apiKey)
-        return if (pushHandler != null) {
+        if (pushHandler != null) {
             val holder = WSHolder()
             wsRepository.put(request.requestId, holder)
             logger.debug { "send request ${request.requestId}" }
             pushHandler.invoke(mapper.writeValueAsString(request))
-            var response: ResponseData?
-            do {
-                val responses = holder.wait()
-                response = responses.lastOrNull()
-                responses.forEach {
-                    sendResponse(it)
-                }
-            } while (response?.botResponse?.context?.lastResponse == false)
-            response
-        } else {
-            null
+            executor.executeBlocking {
+                holder.waitResponse(sendResponse)
+            }
         }
+    }
+
+    private fun WSHolder.waitResponse(sendResponse: (ResponseData?) -> Unit = {}): ResponseData? {
+        var response: ResponseData?
+        do {
+            val responses = wait()
+            response = responses.lastOrNull()
+            responses.forEach {
+                sendResponse(it)
+            }
+        } while (response?.botResponse?.context?.lastResponse == false)
+        return response
     }
 
 }

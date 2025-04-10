@@ -17,14 +17,16 @@
 package ai.tock.bot.api.client
 
 import ai.tock.bot.api.model.configuration.ClientConfiguration
+import ai.tock.bot.api.model.configuration.ResponseContextVersion
 import ai.tock.bot.api.model.configuration.StepConfiguration
 import ai.tock.bot.api.model.configuration.StoryConfiguration
 
 fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
     ClientConfiguration(
-        stories.map {
+        stories = stories.map {
             it.mapToStoryConfiguration()
         },
+        version = ResponseContextVersion.V2
     )
 
 private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration {

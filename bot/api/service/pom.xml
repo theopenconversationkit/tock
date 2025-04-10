@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-nlp-front-client</artifactId>
+            <artifactId>nlp-api-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.launchdarkly</groupId>

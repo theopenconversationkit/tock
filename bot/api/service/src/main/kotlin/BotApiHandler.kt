@@ -64,7 +64,7 @@ internal class BotApiHandler(
     private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
-    fun configuration(): ClientConfiguration? = clientController.configuration()
+    fun configuration(handler: (ClientConfiguration?) -> Unit): Unit = clientController.configuration(handler)
 
     fun send(bus: BotBus) {
         val request = bus.toUserRequest()
