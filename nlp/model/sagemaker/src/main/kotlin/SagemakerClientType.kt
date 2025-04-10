@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2024 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package ai.tock.nlp.model.service.engine
-
-import ai.tock.shared.ThreadSafe
+package ai.tock.nlp.sagemaker
 
 /**
- *
+ * Enum representing the different types of Sagemaker clients.
  */
-@ThreadSafe
-abstract class NlpEntityClassifier(val model: EntityModelHolder) : EntityClassifier {
+enum class SagemakerClientType(val clientName: String) {
+    INTENT_CLASSIFICATION("intent-classification"),
+    ENTITY_CLASSIFICATION("entity-classification");
+
+    override fun toString(): String = clientName
 }

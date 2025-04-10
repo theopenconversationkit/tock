@@ -39,6 +39,8 @@ import ai.tock.nlp.model.service.engine.IntentModelHolder
 import ai.tock.nlp.model.service.engine.NlpEngineRepository
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.getModelBuilder
 import ai.tock.nlp.model.service.engine.NlpEngineRepository.getModelIo
+import ai.tock.nlp.model.service.engine.NlpEngineRepository.getProvider
+import ai.tock.nlp.model.service.engine.NlpEngineRepository.registeredNlpEngineTypes
 import ai.tock.nlp.model.service.engine.NlpModelRepository
 import ai.tock.nlp.model.service.engine.NlpModelRepository.saveEntityModel
 import ai.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
@@ -234,5 +236,15 @@ object NlpClassifierService : NlpClassifier {
         configuration: NlpApplicationConfiguration
     ) {
         nlpApplicationConfigurationDAO.saveNewConfiguration(applicationName, engineType, configuration)
+    }
+
+    fun healthcheck(): List<Pair<String, () -> Boolean>> {
+        return registeredNlpEngineTypes().flatMap {
+            val healthcheck = getProvider(it).healthcheck()
+            listOf(
+                "${it.name}-entity" to { healthcheck().entityClassifier },
+                "${it.name}-intent" to { healthcheck().intentClassifier },
+            )
+        }
     }
 }

@@ -21,6 +21,7 @@ import software.amazon.awssdk.regions.Region
 internal fun String.unescapeSagemakerName(): String = replace("___", ":")
 
 data class SagemakerAwsClientProperties(
+    val name: String,
     val region: Region,
     val endpointName: String,
     val contentType: String,

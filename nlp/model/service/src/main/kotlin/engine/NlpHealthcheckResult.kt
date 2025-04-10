@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.model.service.engine
-
-import ai.tock.shared.ThreadSafe
-
-/**
- *
- */
-@ThreadSafe
-abstract class NlpEntityClassifier(val model: EntityModelHolder) : EntityClassifier {
+data class NlpHealthcheckResult(val entityClassifier: Boolean, val intentClassifier: Boolean) {
+    companion object {
+        val ALL_OK = NlpHealthcheckResult(entityClassifier = true, intentClassifier = true)
+    }
 }
