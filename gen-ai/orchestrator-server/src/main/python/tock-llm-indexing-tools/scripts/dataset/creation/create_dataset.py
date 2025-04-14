@@ -50,7 +50,7 @@ def extract_dataset_items(template_file_path: str) -> list[DatasetItemInfo]:
             dataset_items.append(DatasetItemInfo(
                 topic=topic,
                 question=question,
-                answer=answer
+                answer=answer if answer else ""
             ))
 
     return dataset_items
