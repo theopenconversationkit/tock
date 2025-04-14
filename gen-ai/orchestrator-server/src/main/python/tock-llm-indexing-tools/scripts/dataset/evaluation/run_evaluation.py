@@ -71,14 +71,13 @@ def main():
         experiment_name=dataset_experiment.experiment_name
         dataset = client.get_dataset(name=dataset_name)
         dataset_items = dataset.items
-
         for item in dataset_items:
             dataset_run = client.get_dataset_run(
                 dataset_name=dataset_name,
                 dataset_run_name=experiment_name
             )
             run_item, run_trace_details = get_trace_if_exists(logger, client, dataset_name, experiment_name, dataset_run.dataset_run_items, item)
-            if run_trace_details and run_trace_details.output and isinstance(run_trace_details.output, dict):
+            if run_trace_details and len(run_trace_details.scores) == 0 and run_trace_details.output and isinstance(run_trace_details.output, dict):
                 metric_scores = ragas_evaluator.score_with_ragas(
                     item=item,
                     run_trace_details=run_trace_details,
@@ -93,7 +92,6 @@ def main():
                 )
             else:
                 logger.warn(f"Impossible to evaluate item '{item.id}' of dataset '{dataset_name}' in experiment '{experiment_name}'!")
-
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
     except Exception as e:
         full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
