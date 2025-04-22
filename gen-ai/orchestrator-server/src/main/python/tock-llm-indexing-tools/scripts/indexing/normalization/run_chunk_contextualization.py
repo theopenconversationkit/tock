@@ -49,28 +49,49 @@ def create_prompt():
     """Create and configure the prompt template."""
 
     contextual_retrieval_system_prompt = """
-<document>
+[DOCUMENT START]
 {WHOLE_DOCUMENT_WITH_PAGE_MARKERS}
-</document>
+[DOCUMENT END]
 
 The full document above describes a single financial product.
 
 Now, focus only on **page {N_PAGE}**, which is delimited in the document using this marker: `{N_PAGE}------------------------------------------------`.
 
-From this page:
-- **Extract key information** and express it in the form of **small, standalone, contextualized chunks**.
-- Each chunk must be **autonomous**, meaning it should contain **all the information needed to understand it without referring to other parts of the document**.
-- You can and should use the rest of the document to **resolve references**, like:
-  - Footnotes (e.g., "(1)", "(2)", etc.).
-  - Terms like "see above", "the level", "the observation date", etc.
-  - Any abbreviation or terminology that appears earlier or is explained elsewhere in the document.
+Your task is to extract well-structured, standalone information from **page {N_PAGE}**.  
+You must analyze the entire document for context and terminology, but only extract and chunk content from the specified page.
+Decompose the "Content" into clear and simple propositions, ensuring they are interpretable out of context.
+1. Split compound sentence into simple sentences. Maintain the original phrasing from the input whenever possible.
+2. For any named entity that is accompanied by additional descriptive information, separate this information into its own distinct proposition.
+3. Decontextualize the proposition by adding necessary modifier to nouns or entire sentences and replacing pronouns (e.g., "it", "he", "she", "they", "this", "that") with the full name of the entities they refer to.
 
-Follow this reasoning for each chunk:
-1. Identify ambiguous terms or references.
-2. Resolve them using the rest of the document if needed.
-3. Rewrite the chunk clearly, explicitly, and naturally.
-4. Mention the financial product name in each chunk if it can be inferred.
-5. Maintain the language of the document (French).
+There are two possible layouts for a page:
+
+---
+
+### 1. If the page contains regular text:
+
+- Split the content into **small, self-contained chunks** (phrases or short paragraphs).
+- Each chunk must be:
+  - **Fully understandable on its own**, without referring to the rest of the page or document.
+  - **Contextualized**: mention the product name (if detected), clarify dates or financial terms, avoid vague expressions like "see above".
+  - **Rewritten clearly**, using information from the entire document to resolve references or footnotes (e.g. "(1)", "(2)").
+  - **Formulated in the same language** as the document (French).
+
+---
+
+### 2. If the page contains a table:
+
+- Extract **each row** of the table as a **distinct, contextualized sentence**.
+- For each row, write:
+  - A **full sentence** describing the meaning of that row.
+  - Mention the **financial product name** if available.
+  - Make sure the sentence is **autonomous** and includes both the row label and its value, reformulated naturally.
+
+> Example:  
+> If the row is `Durée de placement | 6 ans`, write:  
+> *Le produit [Nom du produit] propose une durée de placement de 6 ans.*
+
+---
 
 Return your response in the following format:
 
@@ -103,27 +124,23 @@ def process_chunks(chunks, contextual_chunk_creation, reference_document_content
     page_numbers = extraire_page_numbers(reference_document_content)
     print(f"Detected pages: {page_numbers}")
 
-    # for page in page_numbers:
-    for page in [8, 9 , 10]:
+    for page in page_numbers:
+    # for page in [10]:
 
+        print(f"Page: {page} - Detected pages: {page_numbers}")
         response = contextual_chunk_creation.invoke(
             {"WHOLE_DOCUMENT_WITH_PAGE_MARKERS": reference_document_content, "N_PAGE": page},
             config={'callbacks': [observability_handler] if observability_handler else []}
         )
-        print(response["chunks"])
 
-        # content_dict = {chunk.id: chunk.content for chunk in chunks_group}
-        #
-        # for ctx in response["contexts"]:
-        #     if ctx["id"] in content_dict:
-        #         ctx["content"] = content_dict[ctx["id"]]
-        #         csv_rows.append([
-        #             response['product_name'],
-        #             "",
-        #             f"---\nproduct_name:{response['product_name']}\ncontext:{ctx['context']}\n---\n\n{content_dict[ctx['id']]}"
-        #         ])
-        #
-        # result.append(response)
+        for chunk in response["chunks"]:
+            csv_rows.append([
+                response['product_name'],
+                "",
+                f"---\nProduct Name: {response['product_name']}\nPage: {response['page']}\n---\n\n{chunk['text']}"
+            ])
+
+        result.append(response)
 
     return result, csv_rows
 
@@ -140,7 +157,7 @@ def save_results(result, csv_rows, output_path, formatted_datetime):
 
     merged_data = {
         "product_name": result[0]["product_name"] if result else "Unknown",
-        "contexts": [ctx for item in result for ctx in item["contexts"]]
+        "chunks": [chunk for item in result for chunk in item["chunks"]]
     }
 
     with open(json_filename, "w", encoding="utf-8") as json_file:
