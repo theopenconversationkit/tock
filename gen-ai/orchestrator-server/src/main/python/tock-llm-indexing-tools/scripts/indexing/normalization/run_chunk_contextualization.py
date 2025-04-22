@@ -21,6 +21,7 @@ Examples:
 
 import csv
 import json
+import re
 from datetime import datetime
 
 from docopt import docopt
@@ -47,76 +48,82 @@ def load_input_data(cli_args, logger):
 def create_prompt():
     """Create and configure the prompt template."""
 
-    contextual_retrieval_system_prompt = """<document>
-                    {WHOLE_DOCUMENT}
-            </document>
+    contextual_retrieval_system_prompt = """
+<document>
+{WHOLE_DOCUMENT_WITH_PAGE_MARKERS}
+</document>
 
-            The following are key extracted chunks from the document:
-            <chunks>
-            {CHUNKS}
-            </chunks>
+The full document above describes a single financial product.
 
-            From the document content, determine the name of the financial product it describes.
+Now, focus only on **page {N_PAGE}**, which is delimited in the document using this marker: `{N_PAGE}------------------------------------------------`.
 
-            For each chunk, think through the following steps:
-            1. **Identify references to data** (e.g., "Niveau Initial(2)", "Date d'Observation Finale(1)"). Think about what each reference could be referring to.
-            2. **Locate the values** in the document that correspond to these references. Think about how the context in the document might help you find these values.
-            3. **Replace the references** with their actual values. Think about the effect of this replacement on the clarity of the chunk.
-            4. **Generate a succinct yet comprehensive context** for each chunk:
-                - Make sure that the chunk description begins directly with its content, without using an introduction such as 'This chunk'. Rephrase to make the description more natural and integrated into the text..
-                - Clearly identify the financial product it belongs to. Think about how you can deduce the product name from the document.
-                - Ensure that all relevant details needed to understand the chunk are included. Think about what is necessary to contextualize the chunk.
-                - Resolve any references (e.g., dates, terms, or entities) explicitly by replacing them with their corresponding values from the document. Think about how to make these references clear for future searches.
-                - Maintain clarity and conciseness while preserving critical information. Think about how to summarize the chunk without losing important details.
-                - Ensure that the response is in the language of the original document. If the document is in French, respond in French. If it is in English, respond in English. Think about which language the document is written in before responding.
-                - Use the correct chunk Id as provided. Think about how to ensure each chunk’s context is correctly mapped to its Id.
+From this page:
+- **Extract key information** and express it in the form of **small, standalone, contextualized chunks**.
+- Each chunk must be **autonomous**, meaning it should contain **all the information needed to understand it without referring to other parts of the document**.
+- You can and should use the rest of the document to **resolve references**, like:
+  - Footnotes (e.g., "(1)", "(2)", etc.).
+  - Terms like "see above", "the level", "the observation date", etc.
+  - Any abbreviation or terminology that appears earlier or is explained elsewhere in the document.
 
-            Now, respond with the context for each chunk in the following JSON format. Be sure to use the same chunk Id as provided:
+Follow this reasoning for each chunk:
+1. Identify ambiguous terms or references.
+2. Resolve them using the rest of the document if needed.
+3. Rewrite the chunk clearly, explicitly, and naturally.
+4. Mention the financial product name in each chunk if it can be inferred.
+5. Maintain the language of the document (French).
 
-            ```json
-            {{
-                \"product_name\": \"DETECTED_PRODUCT_NAME\",
-                \"contexts\": [
-                    {{\"id\": \"1\", \"context\": \"Generated context for chunk 1\"}},
-                    {{\"id\": \"2\", \"context\": \"Generated context for chunk 2\"}}
-                ]
-            }}
+Return your response in the following format:
+
+```json
+{{
+  \"product_name\": \"DETECTED_PRODUCT_NAME\",
+  \"page\": {N_PAGE},
+  \"chunks\": [
+    {{\"id\": \"1\", \"text": \"First autonomous and contextualized chunk from page {N_PAGE}.\"}},
+    {{\"id\": \"2\", \"text": \"Second autonomous and contextualized chunk from page {N_PAGE}.\"}}
+  ]
+}}
             """
 
     prompt_template = PromptTemplate(
-        input_variables=['WHOLE_DOCUMENT', 'CHUNKS'],
+        input_variables=['WHOLE_DOCUMENT_WITH_PAGE_MARKERS', 'N_PAGE'],
         template=contextual_retrieval_system_prompt
     )
     human_message_prompt = HumanMessagePromptTemplate(prompt=prompt_template)
-    return ChatPromptTemplate(input_variables=['WHOLE_DOCUMENT', 'CHUNKS'], messages=[human_message_prompt])
+    return ChatPromptTemplate(input_variables=['WHOLE_DOCUMENT_WITH_PAGE_MARKERS', 'N_PAGE'], messages=[human_message_prompt])
 
+def extraire_page_numbers(document_content: str):
+    pattern = r"\{(\d+)\}-+"
+    return [int(num) for num in re.findall(pattern, document_content)]
 
 def process_chunks(chunks, contextual_chunk_creation, reference_document_content, observability_handler):
     """Processes chunks in batches and applies contextualization."""
     result, csv_rows = [], []
 
-    for chunks_group in batched(chunks, 5):
-        formatted_chunks = "\n".join(
-            [f"<chunk id='{chunk.id}'>\n{chunk.content}\n</chunk>" for chunk in chunks_group]
-        )
+    page_numbers = extraire_page_numbers(reference_document_content)
+    print(f"Detected pages: {page_numbers}")
+
+    # for page in page_numbers:
+    for page in [8, 9 , 10]:
 
         response = contextual_chunk_creation.invoke(
-            {"WHOLE_DOCUMENT": reference_document_content, "CHUNKS": formatted_chunks},
+            {"WHOLE_DOCUMENT_WITH_PAGE_MARKERS": reference_document_content, "N_PAGE": page},
             config={'callbacks': [observability_handler] if observability_handler else []}
         )
+        print(response["chunks"])
 
-        content_dict = {chunk.id: chunk.content for chunk in chunks_group}
-
-        for ctx in response["contexts"]:
-            if ctx["id"] in content_dict:
-                ctx["content"] = content_dict[ctx["id"]]
-                csv_rows.append([
-                    response['product_name'],
-                    "",
-                    f"---\nproduct_name:{response['product_name']}\ncontext:{ctx['context']}\n---\n\n{content_dict[ctx['id']]}"
-                ])
-
-        result.append(response)
+        # content_dict = {chunk.id: chunk.content for chunk in chunks_group}
+        #
+        # for ctx in response["contexts"]:
+        #     if ctx["id"] in content_dict:
+        #         ctx["content"] = content_dict[ctx["id"]]
+        #         csv_rows.append([
+        #             response['product_name'],
+        #             "",
+        #             f"---\nproduct_name:{response['product_name']}\ncontext:{ctx['context']}\n---\n\n{content_dict[ctx['id']]}"
+        #         ])
+        #
+        # result.append(response)
 
     return result, csv_rows
 
