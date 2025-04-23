@@ -59,12 +59,10 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
 
     private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
         .region(configuration.region)
-        .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     private val sagemakerClient: SageMakerClient = SageMakerClient.builder()
         .region(configuration.region)
-        .credentialsProvider(DefaultCredentialsProvider.create())
         .build()
 
     fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
