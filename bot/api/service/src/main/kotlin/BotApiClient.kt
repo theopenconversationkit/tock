@@ -58,14 +58,18 @@ internal class BotApiClient(baseUrl: String) {
             service.send(request).execute().body()
         } catch (e: Exception) {
             logger.error(e)
-            null
+            if (request.configuration != true) {
+                throw e
+            } else {
+                null
+            }
         }
 
     fun sendWithSse(request: RequestData, sendResponse: (ResponseData?) -> Unit): Unit =
         try {
 
             val closeListener = CloseListener()
-            val eventSource = BackgroundEventSource
+            BackgroundEventSource
                 .Builder(
                     object : BackgroundEventHandler {
 
@@ -116,6 +120,7 @@ internal class BotApiClient(baseUrl: String) {
                     closeListener.source = this
                     start()
                 }
+            Unit
         } catch (e: Exception) {
             logger.error(e)
         }

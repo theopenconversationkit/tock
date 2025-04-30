@@ -131,7 +131,7 @@ internal class BotApiClientController(
         handler(conf)
     }
 
-    fun configuration(handler: (ClientConfiguration?) -> Unit): Unit {
+    fun configuration(handler: (ClientConfiguration?) -> Unit) {
         client?.send(RequestData(configuration = true))?.apply {
             loadConfiguration(botConfiguration, handler)
         }
@@ -170,6 +170,10 @@ internal class BotApiClientController(
             pushHandler.invoke(mapper.writeValueAsString(request))
             executor.executeBlocking {
                 holder.waitResponse(sendResponse)
+            }
+        } else {
+            if (request.configuration != true) {
+                error("no websocket handler for $apiKey")
             }
         }
     }
