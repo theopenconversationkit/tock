@@ -32,7 +32,7 @@ import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertNull
 
-class MediaConverterTest {
+class MessengerMediaConverterTest {
 
     @Test
     fun `MediaCard does not generate generic template with empty buttons`() {
@@ -53,7 +53,7 @@ class MediaConverterTest {
             MediaFile("https://a/image.png", "image", description = "description File"),
             listOf(MediaAction("Test"))
         )
-        val result = MediaConverter.toConnectorMessage(mediaCard).invoke(bus)
+        val result = MessengerMediaConverter.toConnectorMessage(mediaCard).invoke(bus)
         assertNull(((result.first() as AttachmentMessage).attachment.payload as GenericPayload).elements.first().buttons)
     }
 }

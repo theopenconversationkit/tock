@@ -20,9 +20,12 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.connector.messenger.MessengerMediaConverter
 import ai.tock.bot.connector.messenger.messengerConnectorType
 import ai.tock.bot.connector.messenger.text
 import ai.tock.bot.connector.whatsapp.UserHashedIdCache
+import ai.tock.bot.connector.whatsapp.WhatsAppMediaConverter
 import ai.tock.bot.connector.whatsapp.listMessage
 import ai.tock.bot.connector.whatsapp.replyButtonMessage
 import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
@@ -42,7 +45,6 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
-
 import ai.tock.bot.connector.messenger.nlpQuickReply as messengerNlpQuickReply
 import ai.tock.bot.connector.whatsapp.nlpQuickReply as whatsappNlpQuickReply
 
@@ -156,5 +158,13 @@ class AlcmeonConnector(
         PlayerId(connectorId, PlayerType.bot),
         text
     )
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        when ((connectorData.callback as? AlcmeonConnectorCallback)?.backend ) {
+            AlcmeonBackend.WHATSAPP -> WhatsAppMediaConverter.toConnectorMessage(message)(this)
+            AlcmeonBackend.FACEBOOK -> MessengerMediaConverter.toConnectorMessage(message)(this)
+            else -> emptyList()
+        }
+    }
 
 }
