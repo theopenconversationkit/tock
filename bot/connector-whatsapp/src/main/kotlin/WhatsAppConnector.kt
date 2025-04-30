@@ -18,9 +18,12 @@ package ai.tock.bot.connector.whatsapp
 
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.group
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
@@ -107,5 +110,9 @@ class WhatsAppConnector(
                     }
                 }
         }
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> {
+        return WhatsAppMediaConverter.toConnectorMessage(message)
     }
 }

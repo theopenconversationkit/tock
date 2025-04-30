@@ -35,7 +35,7 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.video
 
 private typealias MessengerAttachmentType = ai.tock.bot.connector.messenger.model.send.AttachmentType
 
-internal object MediaConverter {
+object MessengerMediaConverter {
 
     private fun BotBus.toButton(action: MediaAction): Button =
         if (action.url != null) urlButton(action.title, action.url!!)

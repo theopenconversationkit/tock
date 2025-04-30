@@ -622,5 +622,5 @@ class MessengerConnector internal constructor(
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
-        MediaConverter.toConnectorMessage(message)
+        MessengerMediaConverter.toConnectorMessage(message)
 }
