@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.core.service
 
+
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
@@ -40,8 +41,8 @@ import ai.tock.nlp.model.ModelNotInitializedException
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.error
-import ai.tock.shared.normalize
 import ai.tock.shared.injector
+import ai.tock.shared.normalize
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 

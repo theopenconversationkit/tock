@@ -22,4 +22,7 @@ internal object SagemakerClientProvider {
 
     fun getClient(conf: SagemakerAwsClientProperties): SagemakerAwsClient =
         clientMap.getOrPut(conf) { SagemakerAwsClient(conf) }
+
+    fun getAllClient(): MutableCollection<SagemakerAwsClient> =
+        clientMap.values
 }

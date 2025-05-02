@@ -17,12 +17,17 @@ package ai.tock.nlp.sagemaker
 
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.core.SdkBytes
+import software.amazon.awssdk.services.sagemaker.SageMakerClient
+import software.amazon.awssdk.services.sagemaker.model.DescribeEndpointRequest
 import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
 import java.nio.charset.Charset
 
 class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties) {
+
+    val name = configuration.name
 
     // for intentions and entities
     data class ParsedRequest(
@@ -56,6 +61,10 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
         .region(configuration.region)
         .build()
 
+    private val sagemakerClient: SageMakerClient = SageMakerClient.builder()
+        .region(configuration.region)
+        .build()
+
     fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
 
     fun parseEntities(request: ParsedRequest): ParsedEntitiesResponse = invokeSageMakerEntitiesEndpoint(request.text)
@@ -83,5 +92,13 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
         val response = runtimeClient.invokeEndpoint(endpointRequest)
         val entities = mapper.readValue<List<ParsedEntity>>(response.body().asInputStream())
         return ParsedEntitiesResponse(entities)
+    }
+
+    fun healthcheck(): Boolean {
+        val endpointRequest = DescribeEndpointRequest.builder()
+            .endpointName(configuration.endpointName)
+            .build()
+        val response = sagemakerClient.describeEndpoint(endpointRequest)
+       return response.endpointStatus() == software.amazon.awssdk.services.sagemaker.model.EndpointStatus.IN_SERVICE
     }
 }

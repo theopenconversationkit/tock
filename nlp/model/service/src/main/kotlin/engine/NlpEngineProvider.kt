@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.model.service.engine
 
+import NlpHealthcheckResult
 import ai.tock.nlp.core.NlpEngineType
 
 /**
@@ -53,4 +54,10 @@ interface NlpEngineProvider {
      * Returns the tokenizer from this [TokenizerModelHolder].
      */
     fun getTokenizer(model: TokenizerModelHolder): Tokenizer
+
+    /**
+     * Check if the NLP engine is healthy.
+     * @return true if the engine is healthy, false otherwise
+     */
+    fun healthcheck(): () -> NlpHealthcheckResult = { NlpHealthcheckResult.ALL_OK }
 }

@@ -16,6 +16,10 @@
 
 package ai.tock.nlp.api
 
+/**
+ *
+ */
+// Add this import at the top with the other imports
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.UnknownApplicationException
 import ai.tock.nlp.front.shared.codec.ApplicationDump
@@ -28,6 +32,7 @@ import ai.tock.nlp.front.shared.merge.ValuesMergeQuery
 import ai.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
 import ai.tock.nlp.front.shared.parser.ParseQuery
+import ai.tock.nlp.model.service.NlpClassifierService
 import ai.tock.shared.Executor
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.TOCK_MODEL_DATABASE
@@ -46,9 +51,6 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.util.Locale
 
-/**
- *
- */
 class NlpVerticle : WebVerticle() {
 
     private val protectPath = verticleBooleanProperty("tock_nlp_protect_path", false)
@@ -58,6 +60,9 @@ class NlpVerticle : WebVerticle() {
     override val rootPath: String = property("tock_nlp_root", "/rest/nlp")
 
     private val executor: Executor by injector.instance()
+
+    // Add this line to access NlpClassifierService
+    private val nlpClassifierService = NlpClassifierService
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -232,7 +237,7 @@ class NlpVerticle : WebVerticle() {
             Pair("duckling_service", { FrontClient.healthcheck() }),
             Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
             Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) })
-        )
+        ) + NlpClassifierService.healthcheck()
     )
 }
 
