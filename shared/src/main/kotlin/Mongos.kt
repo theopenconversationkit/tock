@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import com.fasterxml.jackson.datatype.jsr310.DecimalUtils
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
@@ -63,6 +62,7 @@ import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
 import org.litote.kmongo.util.KMongoUtil
+import java.math.BigDecimal
 import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
@@ -81,6 +81,8 @@ internal val collectionBuilder: (KClass<*>) -> String = {
             else "$s$t"
         }
 }
+
+private val ONE_BILLION = BigDecimal(1000000000L)
 
 internal object TockKMongoConfiguration {
     init {
@@ -121,7 +123,7 @@ internal object TockKMongoConfiguration {
                                 is Decimal128 -> {
                                     val b = e.bigDecimalValue()
                                     val seconds = b.toLong()
-                                    val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
+                                    val nanoseconds = b.subtract(BigDecimal.valueOf(seconds)).multiply(ONE_BILLION).toInt()
                                     Duration.ofSeconds(seconds, nanoseconds.toLong())
                                 }
 

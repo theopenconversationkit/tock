@@ -32,7 +32,7 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <kotlin>2.1.20</kotlin>
-        <coroutine>1.10.1</coroutine>
+        <coroutine>1.10.2</coroutine>
 
         <slf4j>2.0.17</slf4j>
         <logback>1.5.18</logback>
@@ -41,9 +41,9 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>5.2.1</kmongo>
-        <jackson>2.18.3</jackson>
-        <jackson-databind>2.18.3</jackson-databind>
-        <jackson-module>2.18.3</jackson-module>
+        <jackson>2.19.0</jackson>
+        <jackson-databind>2.19.0</jackson-databind>
+        <jackson-module>2.19.0</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -54,13 +54,13 @@
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>33.4.6-jre</guava>
+        <guava>33.4.8-jre</guava>
         <google-auth>1.39.0</google-auth>
-        <google-http-client>1.46.3</google-http-client>
+        <google-http-client>1.47.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.14.0</commons-csv>
-        <commons-io>2.18.0</commons-io>
-        <commons-text>1.13.0</commons-text>
+        <commons-io>2.19.0</commons-io>
+        <commons-text>1.13.1</commons-text>
         <emoji>5.1.1</emoji>
         <commons-codec>1.18.0</commons-codec>
         <commons-lang>3.17.0</commons-lang>
@@ -70,24 +70,24 @@
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.58.0</google>
-        <aws-sdk>1.12.782</aws-sdk>
-        <aws-sagemaker>2.31.11</aws-sagemaker>
+        <google>26.59.0</google>
+        <aws-sdk>1.12.783</aws-sdk>
+        <aws-sagemaker>2.31.34</aws-sagemaker>
         <pac4j>5.7.7</pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <vertx-pac4j>6.0.3</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
         <junit-jupiter>5.11.4</junit-jupiter>
-        <testcontainer>1.20.6</testcontainer>
+        <testcontainer>1.21.0</testcontainer>
 
-        <mockk>1.13.17</mockk>
+        <mockk>1.14.2</mockk>
         <assertj>3.22.0</assertj>
         <byte-buddy>1.17.5</byte-buddy>
         <atrium>0.15.0</atrium>
         <serialization>1.6.2</serialization>
 
-        <plugin.surefire>3.5.2</plugin.surefire>
+        <plugin.surefire>3.5.3</plugin.surefire>
         <plugin.source>3.3.1</plugin.source>
         <plugin.release>3.1.1</plugin.release>
         <plugin.gpg>3.2.7</plugin.gpg>

@@ -47,7 +47,7 @@ class SagemakerAwsClientIntegrationTest {
     @Test
     @Disabled
     fun testParseIntents() {
-        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "default", "application/json", "default")
+        val config = SagemakerAwsClientProperties("test", Region.EU_WEST_3, "default", "application/json", "default")
         val client = SagemakerAwsClient(config)
         val response = client.parseIntent(SagemakerAwsClient.ParsedRequest("je veux un TGV Paris Marseille demain à 18h"))
         assertEquals(response.intent?.name, "evoyageurs:search_by_od")
@@ -57,7 +57,7 @@ class SagemakerAwsClientIntegrationTest {
     @Test
     @Disabled
     fun testParseEntities() {
-        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "default", "application/json", "default")
+        val config = SagemakerAwsClientProperties("test", Region.EU_WEST_3, "default", "application/json", "default")
         val client = SagemakerAwsClient(config)
         val response = client.parseEntities(SagemakerAwsClient.ParsedRequest("Est-ce que mon TGV 8536 de Cannes à Montpellier a du retard ?"))
         println(response)
@@ -94,7 +94,7 @@ class SagemakerAwsClientIntegrationTest {
     @Test
     @Disabled
     fun testParseEntitiesEnglishRequest() {
-        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "default", "application/json", "default")
+        val config = SagemakerAwsClientProperties("test", Region.EU_WEST_3, "default", "application/json", "default")
         val client = SagemakerAwsClient(config)
         val response = client.parseEntities(SagemakerAwsClient.ParsedRequest("Is my TGV 8536 from Cannes to Montpellier delayed?"))
         println(response)

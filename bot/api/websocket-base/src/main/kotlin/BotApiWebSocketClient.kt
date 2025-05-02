@@ -136,7 +136,7 @@ fun start(
                             }
                             bus.handle()
                         } else if (data.configuration == true) {
-                            logger.debug { "send configuration " }
+                            logger.debug { "send configuration" }
                             it.complete(
                                 mapper.writeValueAsString(
                                     ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
