@@ -48,6 +48,16 @@ class DucklingClientIntegrationTest {
     }
 
     @Test
+    fun testSimpleNlCall() {
+        val result = DucklingClient.parse("nl", listOf("time"), now(), systemDefault(), "08/10/2055")
+        println(result)
+        assertEquals(
+            LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(),
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+        )
+    }
+
+    @Test
     fun testCallWithSpecialQuote() {
         val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "Aujourd’hui")
         println(result)
