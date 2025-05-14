@@ -170,15 +170,17 @@ open class AdminVerticle : WebVerticle() {
 
         // Retrieve all applications of the selected namespace
         blockingJsonGet("/applications/:namespace", admin) { context ->
-            if (allowAccessToAllNamespaces) {
-                val namespace: String = context.path("namespace")
+            val namespace: String = context.path("namespace")
+            val user: String = context.userLogin
+
+            if (allowAccessToAllNamespaces || front.hasNamespace(user, namespace)) {
                 front.getApplications().filter {
                     it.namespace == namespace
                 }.map {
                     service.getApplicationWithIntents(it)
                 }
             } else {
-                badRequest("The synchronization is disabled - ask your administrator to set the tock_namespace_open_access property")
+                badRequest("Unauthorized access to namespace '$namespace'")
             }
         }
 
