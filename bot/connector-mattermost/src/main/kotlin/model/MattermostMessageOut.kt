@@ -17,15 +17,36 @@
 package ai.tock.bot.connector.mattermost.model
 
 import ai.tock.bot.engine.message.GenericMessage
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class MattermostMessageOut(
     val text: String,
-    val channel: String? = null
-
+    val channel: String? = null,
+    val username: String? = null,
+    val links: List<Link> = emptyList(),
+    val footnotes: List<Footnote> = emptyList(),
 ) : MattermostConnectorMessage() {
+
+    @JsonProperty("text")
+    fun getFullText(): String {
+        var t = text
+        if (links.isNotEmpty()) {
+            val linksMd = links.joinToString("\n") {
+                "[${it.name}](${it.url})"
+            }
+            t += "\n\n$linksMd"
+        }
+        if (footnotes.isNotEmpty()) {
+            val footnotesMd = footnotes.joinToString("  \n") { it ->
+                "[${it.title}](${it.url})" + if (it.content != null) "\n${it.content}" else ""
+            }
+            t += "\n\n:information_source:\n$footnotesMd"
+        }
+        return t
+    }
 
     override fun toGenericMessage(): GenericMessage =
         GenericMessage(
-            texts = mapOf(GenericMessage.TEXT_PARAM to text)
+            texts = mapOf(GenericMessage.TEXT_PARAM to text),
         )
 }

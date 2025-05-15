@@ -34,7 +34,7 @@ import retrofit2.http.Path
 internal class MattermostClient(
     mattermostUrl: String,
     private val mattermostToken: String,
-    ) {
+) {
     private interface MattermostApi {
         @Headers("Content-Type: application/json")
         @POST("hooks/{token}")
