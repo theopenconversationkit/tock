@@ -16,12 +16,7 @@
 
 package ai.tock.bot.connector.mattermost
 
-import ai.tock.bot.connector.Connector
-import ai.tock.bot.connector.ConnectorConfiguration
-import ai.tock.bot.connector.ConnectorProvider
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.ConnectorTypeConfiguration
-import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.*
 import ai.tock.shared.resourceAsString
 
 /**
@@ -33,7 +28,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
     private const val TOKEN = "_token_"
     private const val DEDICATED_CHANNEL_ID = "_dedicated_room_id_"
     private const val OUTGOING_TOKEN = "_outgoing_token_"
-    // todo add user tock
+    private const val TOCK_USERNAME = "_tock_username_"
 
     override val connectorType: ConnectorType get() = mattermostConnectorType
 
@@ -46,6 +41,7 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 parameters.getValue(TOKEN),
                 parameters[DEDICATED_CHANNEL_ID]?.run { if (isBlank()) null else trim() },
                 parameters.getValue(OUTGOING_TOKEN),
+                parameters[TOCK_USERNAME]?.run { if (isBlank()) null else trim() },
             )
         }
     }
@@ -74,8 +70,12 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                     OUTGOING_TOKEN,
                     true
                 ),
-
+                ConnectorTypeConfigurationField(
+                    "Optional Tock Username",
+                    TOCK_USERNAME,
+                    false
                 ),
+            ),
             resourceAsString("/mattermost.svg")
         )
 }

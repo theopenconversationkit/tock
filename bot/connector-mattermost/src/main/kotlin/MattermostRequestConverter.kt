@@ -30,7 +30,7 @@ internal object MattermostRequestConverter {
 
         return SendSentence(
             playerId = PlayerId(message.userId),
-            applicationId = applicationId,
+            connectorId = applicationId,
             recipientId = PlayerId(applicationId, bot),
             text = safeMessage.text,
             messages = mutableListOf(safeMessage)

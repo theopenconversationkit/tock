@@ -18,11 +18,16 @@ package ai.tock.bot.connector.mattermost
 
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.mattermost.model.MattermostConnectorMessage
 import ai.tock.bot.connector.mattermost.model.MattermostMessageIn
 import ai.tock.bot.connector.mattermost.model.MattermostMessageOut
+import ai.tock.bot.connector.media.MediaCard
+import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
-import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.shared.Executor
@@ -42,7 +47,8 @@ class MattermostConnector(
     private val url: String,
     private val token: String,
     private val channelId: String? = null,
-    private val outgoingToken: String
+    private val outgoingToken: String,
+    private val tockUsername: String? = null,
 ) : ConnectorBase(mattermostConnectorType) {
 
     companion object {
@@ -60,7 +66,7 @@ class MattermostConnector(
                 // see https://developers.mattermost.com/integrate/webhooks/outgoing/
                 val requestTimerData = BotRepository.requestTimer.start("mattermost_webhook")
                 try {
-                    val body = when(context.request().getHeader("Content-Type")) {
+                    val body = when (context.request().getHeader("Content-Type")) {
                         "application/x-www-form-urlencoded" -> {
                             val metadata: JsonObject = JsonObject()
                             for ((key, value) in context.request().formAttributes().entries()) {
@@ -100,15 +106,41 @@ class MattermostConnector(
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        if (event is SendSentence && event.text != null) {
-            sendMessage(event.stringText!!, delayInMs)
+        logger.debug { "event: $event" }
+        if (event is Action) {
+            val message = MattermostMessageConverter.toMessageOut(event, channelId, tockUsername)
+            if (message != null) {
+                sendMessage(message, delayInMs)
+            }
         }
     }
 
-    private fun sendMessage(message: String, delayInMs: Long) {
+    private fun sendMessage(message: MattermostConnectorMessage, delayInMs: Long) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            val mattermostMessage = MattermostMessageOut(message, channelId)
-            client.sendMessage(mattermostMessage)
+            client.sendMessage(message as MattermostMessageOut)
         }
+    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
+        val messages = mutableListOf<ConnectorMessage>()
+        if (message is MediaCard) {
+            val title = message.title
+            val subTitle = message.subTitle
+            if (message.actions.isEmpty()) {
+                if (title != null && subTitle != null) {
+                    messages.add(textMessage(title, channelId, tockUsername))
+                }
+            } else {
+                messages.add(
+                    textMessageLinks(
+                        subTitle ?: title ?: "",
+                        channelId,
+                        tockUsername,
+                        message.actions.filterNot { it.url == null }.map { mattermostLink(it.title, it.url ?: "") }
+                    )
+                )
+            }
+        }
+        messages
     }
 }
