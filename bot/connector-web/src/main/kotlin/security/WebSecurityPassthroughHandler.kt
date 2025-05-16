@@ -16,15 +16,21 @@
 
 package ai.tock.bot.connector.web.security
 
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.provide
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 
 class WebSecurityPassthroughHandler : WebSecurityHandler {
     private val logger = KotlinLogging.logger {}
+    private val executor: Executor get() = injector.provide()
 
     override fun handle(routingContext: RoutingContext) {
-        logger.debug { "Nothing to do." }
-        routingContext.next()
+        executor.executeBlocking {
+            logger.debug { "Nothing to do." }
+            routingContext.next()
+        }
     }
 }

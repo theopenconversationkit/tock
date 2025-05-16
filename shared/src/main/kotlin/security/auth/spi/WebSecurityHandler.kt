@@ -21,4 +21,9 @@ import io.vertx.ext.web.RoutingContext
 
 const val TOCK_USER_ID = "tock_user_id"
 
+/**
+ * Handler to manage authentication.
+ * All implementations MUST call routingContext.next() in a blocking thread.
+ *
+ */
 interface WebSecurityHandler : Handler<RoutingContext>
