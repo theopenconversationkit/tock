@@ -1,18 +1,5 @@
-import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageIn
-import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageInteractiveEvent
-import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageTextEvent
-import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
-import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractive
-import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractiveButtonReply
-import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractiveListReply
-import ai.tock.shared.jackson.mapper
-import ai.tock.shared.resource
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +13,19 @@ import kotlin.test.assertEquals
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageIn
+import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageInteractiveEvent
+import ai.tock.bot.connector.alcmeon.AlcmeonConnectorWhatsappMessageTextEvent
+import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractive
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractiveButtonReply
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractiveListReply
+import ai.tock.shared.jackson.mapper
+import ai.tock.shared.resource
+import com.fasterxml.jackson.module.kotlin.readValue
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class AlcmeonConnectorMessageInSerializationTest {
 

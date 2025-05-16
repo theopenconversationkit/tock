@@ -1,10 +1,5 @@
-import ai.tock.bot.connector.web.WebMarkdown
-import ai.tock.bot.connector.web.WebMarkdown.regex
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test
-
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +13,11 @@ import org.junit.jupiter.api.Test
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import ai.tock.bot.connector.web.WebMarkdown
+import ai.tock.bot.connector.web.WebMarkdown.regex
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
 
 class WebMarkdownTest {
 
