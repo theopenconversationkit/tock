@@ -48,8 +48,8 @@
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>4.5.13</vertx>
-        <retrofit>2.11.0</retrofit>
+        <vertx>4.5.14</vertx>
+        <retrofit>2.12.0</retrofit>
         <okhttp>4.12.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
@@ -70,9 +70,9 @@
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.59.0</google>
+        <google>26.60.0</google>
         <aws-sdk>1.12.783</aws-sdk>
-        <aws-sagemaker>2.31.34</aws-sagemaker>
+        <aws-sagemaker>2.31.44</aws-sagemaker>
         <pac4j>5.7.7</pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <vertx-pac4j>6.0.3</vertx-pac4j>
