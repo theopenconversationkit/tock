@@ -22,12 +22,7 @@ Examples:
     python export_experiments.py --json-config-file=path/to/config-file.json
 """
 
-import csv
-import json
-import logging
 import os
-import sys
-import time
 from datetime import datetime
 
 import requests
@@ -90,40 +85,50 @@ def append_runs_langfuse(client, dataset_experiments, dataset_item) -> DatasetEx
         runs=runs
     )
 
-
 def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem], output_file: str, metric_names: list[str]):
-
-    # Create a new workbook and sheet
     script_dir = os.path.dirname(os.path.abspath(__file__))
     wb = load_workbook(os.path.join(script_dir, "../../../examples/generate_dataset_input.example.xlsx"))
-
     sheet = wb['Template_Suivi_Recette']
+
+    # Prepare NO_RAG stat if asked
+    no_rag_percentages = {}
+    if "NoRagStat" in metric_names:
+        for run_idx, run_name in enumerate(iterations):
+            no_rag_count = 0
+            for item in items:
+                answer = item.runs[run_idx].output.get("answer")
+                if answer == "NO_RAG_ANSWER":
+                    no_rag_count += 1
+            if items:
+                no_rag_percentages[run_idx] = f"{round(no_rag_count / len(items) * 100)}%"
+            else:
+                no_rag_percentages[run_idx] = "0%"
 
     for i in range(len(iterations)):
         start_row = 7 + 6 * i
-        # Merge cells (example 6B:11B)
         sheet.merge_cells(start_row=start_row, start_column=2, end_row=12+6*i, end_column=2)
         sheet[f"B{start_row}"] = iterations[i]
-        sheet[f"C{start_row}"] = items[0].runs[0].metadata["llm"]["model"]
-        sheet[f"D{start_row}"] = items[0].runs[0].metadata["llm"]["temperature"]
-        sheet[f"E{start_row}"] = items[0].runs[0].metadata["k"]
-        sheet[f"F{start_row}"] = items[0].runs[0].metadata["document_index_name"]
+        sheet[f"C{start_row}"] = items[0].runs[i].metadata["llm"]["model"]
+        sheet[f"D{start_row}"] = items[0].runs[i].metadata["llm"]["temperature"]
+        sheet[f"E{start_row}"] = no_rag_percentages.get(i, "N/A") if "NoRagStat" in metric_names else ""
+        sheet[f"F{start_row}"] = items[0].runs[0].metadata["k"]
+        sheet[f"G{start_row}"] = items[0].runs[i].metadata["document_index_name"]
 
     for i in range(len(items)):
-        col_letter = get_column_letter(9 + i) # Column I (corresponds to index 9)
-        sheet[f"{col_letter}3"] = items[i].metadata["topic"]
-        sheet[f"{col_letter}4"] = items[i].input["question"]
-        sheet[f"{col_letter}5"] = items[i].expected_output["answer"]
-
+        col_letter = get_column_letter(9 + i)
+        sheet[f"{col_letter}3"] = items[i].metadata.get("topic", "")
+        sheet[f"{col_letter}4"] = items[i].input.get("question", "")
+        sheet[f"{col_letter}5"] = items[i].expected_output.get("answer", "")
         for j in range(len(iterations)):
             start_row = 7 + 6 * j
-            sheet[f"{col_letter}{start_row}"] = items[i].runs[j].output["answer"]
+            sheet[f"{col_letter}{start_row}"] = items[i].runs[j].output.get("answer", "")
             sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
-                [f'{doc["page_content"]}' for doc in items[i].runs[j].output["documents"]])
+                [f'{doc.get("page_content", "")}' for doc in items[i].runs[j].output.get("documents", []) if isinstance(doc, dict)]
+            )
             sheet[f"{col_letter}{start_row + 5}"] = "\n\n".join(
                 f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})" if ':' in s.comment else f"{s.name} : {s.value:.2f}"
                 for s in items[i].runs[j].scores
-                if s.name in metric_names
+                if s.name in metric_names and s.name != "NoRagStat"
             )
 
     wb.save(output_file)
