@@ -115,7 +115,7 @@ def create_excel_output(iterations: list[str], items: list[DatasetExperimentItem
         sheet[f"G{start_row}"] = items[0].runs[i].metadata["document_index_name"]
 
     for i in range(len(items)):
-        col_letter = get_column_letter(9 + i)
+        col_letter = get_column_letter(10 + i)
         sheet[f"{col_letter}3"] = items[i].metadata.get("topic", "")
         sheet[f"{col_letter}4"] = items[i].input.get("question", "")
         sheet[f"{col_letter}5"] = items[i].expected_output.get("answer", "")
