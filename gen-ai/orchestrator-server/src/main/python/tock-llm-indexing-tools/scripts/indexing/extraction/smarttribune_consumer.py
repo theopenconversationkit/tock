@@ -60,7 +60,7 @@ async def _get_number_page(row, token):
 
         body = dict(knowledgeType=['question'], channel='faq')
         if cli_args.get('--tag_title') is not None:
-            body['filters'] = [{'name': cli_args.get('--tag_title'), 'type': 'tag'}]
+            body['filters'] = [{'title': cli_args.get('--tag_title'), 'type': 'tag'}]
         params = dict(limit=200)
 
         async with session.post(
@@ -86,7 +86,7 @@ async def _get_question(token, row, current_page):
         url = f'{url_base_api}knowledge-bases/{row.iloc[0]}/search'
         body = dict(knowledgeType=['question'], channel='faq')
         if cli_args.get('--tag_title') is not None:
-            body['filters'] = [{'name': cli_args.get('--tag_title'), 'type': 'tag'}]
+            body['filters'] = [{'title': cli_args.get('--tag_title'), 'type': 'tag'}]
         params = dict(limit=200, page=current_page)
 
         async with session.post(
