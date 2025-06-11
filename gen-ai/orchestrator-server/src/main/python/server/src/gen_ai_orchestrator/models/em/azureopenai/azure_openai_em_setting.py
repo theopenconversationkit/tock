@@ -38,7 +38,7 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     )
     api_key: SecretKey = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(secret='ab7-************-A1IV4B')]
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',
@@ -54,4 +54,8 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     api_version: str = Field(
         description='The API version to use for this operation.',
         examples=['2023-05-15'],
+    )
+    number_of_chunk_per_request: int = Field(
+        description='The number of chunks sent per request, take care of your rate limits. Default value is 50',
+        default=50,
     )
