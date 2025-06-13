@@ -33,13 +33,13 @@ import io.vertx.core.VertxOptions.DEFAULT_WORKER_POOL_SIZE
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
+import java.time.Duration
+import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.slf4j.MDCContextMap
 import mu.KotlinLogging
 import mu.withLoggingContext
-import java.time.Duration
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
 
 private val logger = KotlinLogging.logger {}
 
@@ -225,6 +225,7 @@ fun HttpServerResponse.setupSSE(): CompositeFuture {
         add("Content-Type", "text/event-stream;charset=UTF-8")
         add("Connection", "keep-alive")
         add("Cache-Control", "no-cache")
+        add("X-Accel-Buffering", "no")
     }
     return sendSsePing()
 }
