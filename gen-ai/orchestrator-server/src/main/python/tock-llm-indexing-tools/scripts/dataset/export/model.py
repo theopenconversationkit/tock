@@ -1,14 +1,36 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 import humanize
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.routers.requests.requests import RagQuery
-from pydantic import Field, BaseModel
-
-from scripts.common.models import FromJsonMixin, BotInfo, ActivityOutput, DatasetTemplate
+from pydantic import BaseModel, Field
+from scripts.common.models import (
+    ActivityOutput,
+    BotInfo,
+    DatasetTemplate,
+    FromJsonMixin,
+)
 from scripts.dataset.creation.models import DatasetInfo
 from scripts.dataset.evaluation.models import DatasetExperiment
+
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.routers.requests.requests import RAGRequest
+
 
 class DatasetExperimentScore(BaseModel):
     name: str = Field(description='The score name.')
@@ -16,9 +38,12 @@ class DatasetExperimentScore(BaseModel):
     comment: Optional[str] = Field(description='The score comment.')
     trace_id: str = Field(description='The trace id of score.')
 
+
 class DatasetExperimentItemRun(BaseModel):
     output: Optional[dict] = Field(description='The output.')
-    scores: list[DatasetExperimentScore] = Field(description='The list of calculated scores.')
+    scores: list[DatasetExperimentScore] = Field(
+        description='The list of calculated scores.'
+    )
     trace_id: str = Field(description='The trace id of the item run.')
     metadata: dict = Field(description='The run metadata.')
 
@@ -29,18 +54,27 @@ class DatasetExperimentItem(BaseModel):
     metadata: dict = Field(description='The item metadata.')
     runs: list[DatasetExperimentItemRun] = Field(description='The item runs.')
 
+
 class DatasetExperimentData(BaseModel):
-    name: str = Field(description='The name of the dataset experiment.', default='UNKNOWN')
+    name: str = Field(
+        description='The name of the dataset experiment.', default='UNKNOWN'
+    )
     items: DatasetExperimentItem = Field(description='The dataset information.')
+
 
 class DatasetExperimentsData(BaseModel):
     dataset: DatasetInfo = Field(description='The dataset information.')
-    experiments: list[DatasetExperimentData] = Field(description='Names of experiments in the dataset.', default=[])
+    experiments: list[DatasetExperimentData] = Field(
+        description='Names of experiments in the dataset.', default=[]
+    )
 
 
 class DatasetExperiments(BaseModel):
     dataset_name: str = Field(description='The dataset name.', default='UNKNOWN')
-    experiment_names: list[str] = Field(description='Names of experiments in the dataset.', default=[])
+    experiment_names: list[str] = Field(
+        description='Names of experiments in the dataset.', default=[]
+    )
+
 
 class ExportExperimentsInput(FromJsonMixin):
     bot: BotInfo = Field(description='The bot information.')
@@ -53,11 +87,11 @@ class ExportExperimentsInput(FromJsonMixin):
     template: DatasetTemplate = Field(description='The export template.')
     metric_names: List[str] = Field(
         description='The list of RAGAS metric names to be exported.',
-        default=["SemanticSimilarity"]
+        default=['SemanticSimilarity'],
     )
 
     def format(self):
-        header_text = " EXPORT EXPERIMENTS INPUT "
+        header_text = ' EXPORT EXPERIMENTS INPUT '
         details_str = f"""
                 Langfuse environment    : {str(self.observability_setting.url)}
                 The dataset name        : {self.dataset_experiments.dataset_name}
@@ -71,14 +105,17 @@ class ExportExperimentsInput(FromJsonMixin):
         header_line = header_text.center(max_detail_length, '-')
         separator = '-' * max_detail_length
 
-        to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        to_string = f'{header_line}\n{details_str}\n{separator}'
+        return '\n'.join(
+            line.strip() for line in to_string.splitlines() if line.strip()
+        )
+
 
 class ExportExperimentsOutput(ActivityOutput):
     dataset_name: str = Field(description='The dataset name.')
 
     def format(self):
-        header_text = " EXPORT EXPERIMENTS OUTPUT "
+        header_text = ' EXPORT EXPERIMENTS OUTPUT '
         details_str = f"""
         The dataset name               : {self.dataset_name}
         Number of items in dataset     : {self.items_count}
@@ -97,5 +134,9 @@ class ExportExperimentsOutput(ActivityOutput):
         header_line = header_text.center(max_detail_length, '-')
         separator = '-' * max_detail_length
 
-        to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        to_string = (
+            f'{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}'
+        )
+        return '\n'.join(
+            line.strip() for line in to_string.splitlines() if line.strip()
+        )
