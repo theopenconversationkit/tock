@@ -27,7 +27,7 @@ import {
   PromptDefinitionFormatter
 } from '../../../shared/model/ai-settings';
 
-export const QuestionCondensingDefaultPrompt: string = `Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be nderstood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is.`;
+export const QuestionCondensingDefaultPrompt: string = `Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is.`;
 
 export const QuestionAnsweringDefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
 
