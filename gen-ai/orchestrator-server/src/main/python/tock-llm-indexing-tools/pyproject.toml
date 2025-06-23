@@ -5,7 +5,10 @@ description = "Tools to index data from different sources to TOCK RAG vector DB"
 authors = ["Pierre Guirriec <pierre.guirriec@partnre.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-package-mode = false
+package-mode = true
+packages = [
+    { include = "scripts" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -13,19 +16,27 @@ docopt-ng = "^0.9.0"
 pandas = "^2.2.3"
 openpyxl = "^3.1.5"
 beautifulsoup4 = "^4.12.2"
-langchain = "^0.3.7"
-langsmith = "^0.1.143"
-python-dotenv = "^1.0.1"
+langchain = "^0.3.21"
+python-dotenv = "^1.1.0"
 opensearch-py = "^2.7.1"
 gen_ai_orchestrator = {path = "../server", develop=true}
-langchain-community = "^0.3.7"
-pre-commit = "^4.0.1"
+langchain-community = "^0.3.20"
+pre-commit = "^4.2.0"
 aiometer = "^0.5.0"
-aiohttp = "^3.11.6"
-aiohttp-socks = "^0.9.0"
-pydantic = "^2.9.2"
-humanize = "^4.11.0"
-langfuse = "^2.54.0"
+aiohttp = "^3.11.14"
+aiohttp-socks = "^0.10.1"
+pydantic = "^2.11.1"
+humanize = "^4.12.2"
+langfuse = "^2.60.2"
+ragas = "^0.2.13"
+rapidfuzz = "^3.12.2"
+sacrebleu = "^2.5.1"
+rouge_score = "^0.1.2"
+python-pptx = "^1.0.2"
+python-magic = "^0.4.27"
+markdown-it-py= "^3.0.0"
+backoff = "^2.2.1"
+more-itertools = "^10.6.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,18 @@
+{
+  "export_settings": {
+    "rag_exclude_keys": [
+      "apiKey",
+      "apiVersion",
+      // Global exclusion: any key named exactly like this will be removed wherever it appears
+
+      "questionAnsweringPrompt.formatter",
+      // Specific exclusion: this targets a precise path only, not all "formatter" keys
+
+      "deploymentName",
+      "apiBase"
+    ],
+    "compressor_exclude_keys": [
+      "endpoint"
+    ]
+  }
+}
