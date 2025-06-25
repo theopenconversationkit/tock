@@ -165,6 +165,7 @@ class GenConfigApp(App):
             Button("Write to JSON", id="save"),
             id="buttons"
         )
+        yield Button("Load EM settings from RAG Settings", id="load-em-settings")
 
     def on_mount(self) -> None:
         self.current_page = 0
@@ -260,6 +261,67 @@ class GenConfigApp(App):
                 return cleaned
         return data
 
+    def load_em_settings_from_file(self, config_file_path):
+        """Load EM settings from a RAG config file."""
+        if os.path.exists(config_file_path):
+            try:
+                with open(config_file_path, "r") as f:
+                    rag_settings = json.load(f)
+                # Load EM settings into the form
+                em_settings = rag_settings.get("emSetting", {})
+                if em_settings:
+                    self.form["em_setting"]["api_key"]["type"]["data"] = "Raw"
+                    self.form["em_setting"]["api_key"]["secret"]["data"] = em_settings.get("apiKey")
+                    self.form["em_setting"]["api_base"]["data"] = em_settings.get("baseUrl")
+                    self.form["em_setting"]["model"]["data"] = em_settings.get("model")
+                    self.form["em_setting"]["provider"]["data"] = em_settings.get("provider")
+                    # Update existing widgets if we're on the EM settings page
+                    if self.current_page == 1:  # EM settings is the second page (index 1)
+                        self.update_current_page_widgets()
+            except (json.JSONDecodeError, KeyError) as e:
+                # Handle file reading errors silently or show a message
+                pass
+
+    def update_current_page_widgets(self):
+        """Update the values of widgets on the current page without recreating them."""
+        form_container = self.query_one("#form", Vertical)
+        
+        # Update Input widgets
+        for widget in form_container.query(Input):
+            widget_id = widget.id.split("__")
+            form_value = self.form
+            for part in widget_id:
+                if part != "":
+                    form_value = form_value[part]
+            if form_value.get("data") is not None:
+                widget.value = str(form_value["data"])
+        
+        # Update Checkbox widgets
+        for widget in form_container.query(Checkbox):
+            widget_id = widget.id.split("__")
+            form_value = self.form
+            for part in widget_id:
+                if part != "":
+                    form_value = form_value[part]
+            if form_value.get("data") is not None:
+                widget.value = bool(form_value["data"])
+
+    def get_em_config_file(self):
+        """Open file browser specifically for EM settings config file."""
+        class ConfigFileInput:
+            def __init__(self, app):
+                self.app = app
+                self.value = None
+            
+            def __setattr__(self, name, value):
+                if name == "value" and value:
+                    self.app.load_em_settings_from_file(value)
+                super().__setattr__(name, value)
+        
+        dummy_input = ConfigFileInput(self)
+        file_browser = FileBrowserScreen(initial_path="./", target_input=dummy_input)
+        self.push_screen(file_browser)
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "next":
             self.save_current_page_data()
@@ -289,6 +351,10 @@ class GenConfigApp(App):
             input_id = event.button.id.replace("browse__", "")
             input_widget = self.query_one(f"#{input_id}", Input)
             self.get_path_from_directory_tree_in_widget(input_widget)
+        elif event.button.id == "load-em-settings":
+            self.save_current_page_data()
+            self.get_em_config_file()
+
 
 if __name__ == "__main__":
     app = GenConfigApp()
