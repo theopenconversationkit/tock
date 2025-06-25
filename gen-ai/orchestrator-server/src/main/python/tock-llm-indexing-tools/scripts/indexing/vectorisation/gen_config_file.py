@@ -75,6 +75,18 @@ class GenConfigApp(App):
     Input {
         margin: 1 0;
     }
+    .path-container {
+        height: auto;
+        margin: 1 0;
+    }
+    .path-input {
+        width: 1fr;
+        margin: 0 1 0 0;
+    }
+    .path-button {
+        width: auto;
+        margin: 0;
+    }
     .subsection {
         border: solid $primary;
         margin: 1 0;
@@ -191,10 +203,13 @@ class GenConfigApp(App):
                 widget = Checkbox(label=self.labelize(key), value=value.get("data") if value.get("data") is not None else False, id=f"{dict_id}__{key}")
                 container.mount(widget)
             elif data_type == "path":
-                widget = Input(value=value.get("data"), type="text", placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}")
-                button = Button("Browse", id=f"browse__{dict_id}__{key}")
-                container.mount(widget)
-                container.mount(button)
+                # Create horizontal container for path input and browse button
+                path_container = Horizontal(classes="path-container")
+                container.mount(path_container)
+                widget = Input(value=value.get("data"), type="text", placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}", classes="path-input")
+                button = Button("Browse", id=f"browse__{dict_id}__{key}", classes="path-button")
+                path_container.mount(widget)
+                path_container.mount(button)
             else:
                 widget = Input(value=value.get("data"), type=data_type, placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}")
                 container.mount(widget)
