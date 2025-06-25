@@ -97,16 +97,16 @@ class GenConfigApp(App):
             if data_type is None and self.current_page == self.len_pages - 1:
                 continue
             if data_type is None:
-                subsection = Vertical(classes="subsection", id=f"{dict_id}_{key}")
+                subsection = Vertical(classes="subsection", id=f"{dict_id}__{key}")
                 container.mount(subsection) 
                 title = Static(self.labelize(key), classes="subsection-title")
                 subsection.mount(title) 
-                self.gen_widgets(subsection, value, dict_id=f"{dict_id}_{key}")
+                self.gen_widgets(subsection, value, dict_id=f"{dict_id}__{key}")
                 continue
             elif data_type == "bool":
-                widget = Checkbox(label=self.labelize(key), value=value.get("data"), id=f"{dict_id}_{key}")
+                widget = Checkbox(label=self.labelize(key), value=value.get("data") if value.get("data") is not None else False, id=f"{dict_id}__{key}")
             else:
-                widget = Input(value=value.get("data"), type=data_type, placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}_{key}")
+                widget = Input(value=value.get("data"), type=data_type, placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}")
             container.mount(widget)
 
     def load_form_page(self):
@@ -121,12 +121,39 @@ class GenConfigApp(App):
             current_dict = self.form
             title = "Other Settings"
         
-        self.gen_widgets(form_container, current_dict, dict_id=form_keys[self.current_page])
+        dict_id = form_keys[self.current_page] if (self.current_page != self.len_pages - 1) else ""
+        self.gen_widgets(form_container, current_dict, dict_id=dict_id)
 
         self.query_one("#title", Static).update(f" [b]{title}[/b] {self.current_page + 1}/{self.len_pages}")
 
     def save_current_page_data(self):
-        pass
+        """Save the current page data to the form dictionary."""
+        form_container = self.query_one("#form", Vertical)
+        widgets = list(form_container.query(Input)) + list(form_container.query(Checkbox))
+        for widget in widgets:
+            widget_id = widget.id.split("__")
+            form_value = self.form
+            for part in widget_id:
+                if part != "":
+                    form_value = form_value[part]
+            if widget.value is None or widget.value == "":
+                continue
+            elif form_value["data_type"] == "integer":
+                form_value["data"] = int(widget.value)
+            else :
+                form_value["data"] = widget.value
+
+    def clean_form_data(self, data):
+        """Remove data_type fields and extract only the data values."""
+        if isinstance(data, dict):
+            if "data_type" in data and "data" in data:
+                return data["data"]
+            else:
+                cleaned = {}
+                for key, value in data.items():
+                    cleaned[key] = self.clean_form_data(value)
+                return cleaned
+        return data
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "next":
@@ -140,6 +167,17 @@ class GenConfigApp(App):
                 self.current_page -= 1
                 self.load_form_page()
         elif event.button.id == "save":
+            self.save_current_page_data()
+            # Clean and save the form data to a JSON file
+            cleaned_data = self.clean_form_data(self.form)
+            config_file = "config_file.json"
+            i = 0
+            while os.path.exists(config_file):
+                i += 1
+                config_file = f"config_file_{i}.json"
+            
+            with open(config_file, "w") as f:
+                json.dump(cleaned_data, f, indent=2)
             exit(0)
                          
 
