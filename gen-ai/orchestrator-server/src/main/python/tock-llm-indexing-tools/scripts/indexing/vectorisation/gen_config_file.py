@@ -1,8 +1,66 @@
 from textual.app import App, ComposeResult
 from textual.containers import Vertical, Horizontal
-from textual.widgets import Button, Input, Static, Checkbox
+from textual.widgets import Button, Input, Static, Checkbox, DirectoryTree
+from textual.screen import ModalScreen
 import json
 import os
+
+class FileBrowserScreen(ModalScreen):
+    """A modal screen for browsing and selecting files."""
+    
+    def __init__(self, initial_path="./", target_input=None):
+        super().__init__()
+        self.initial_path = os.path.abspath(initial_path)
+        self.target_input = target_input
+        self.selected_path = None
+    
+    def compose(self) -> ComposeResult:
+        yield Vertical(
+            Static("Select a file or directory", id="browser-title"),
+            Button("..", id="parent-dir", variant="default"),
+            DirectoryTree(self.initial_path, id="file-tree"),
+            Horizontal(
+                Button("Select", id="select-btn", variant="primary"),
+                Button("Cancel", id="cancel-btn"),
+                id="browser-buttons"
+            ),
+            id="browser-container"
+        )
+    
+    def on_mount(self) -> None:
+        """Configure the directory tree to show parent directories."""
+        tree = self.query_one("#file-tree", DirectoryTree)
+        tree.show_root = True
+        tree.show_guides = True
+    
+    def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
+        """Handle file selection - just store the path, don't dismiss."""
+        self.selected_path = str(event.path)
+    
+    def on_directory_tree_directory_selected(self, event: DirectoryTree.DirectorySelected) -> None:
+        """Handle directory selection - just store the path, don't dismiss."""
+        self.selected_path = str(event.path)
+    
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "select-btn":
+            # Use selected path or currently highlighted path
+            if self.selected_path and self.target_input:
+                self.target_input.value = self.selected_path
+            elif self.target_input:
+                tree = self.query_one("#file-tree", DirectoryTree)
+                if tree.cursor_node:
+                    self.target_input.value = str(tree.cursor_node.data.path)
+            self.dismiss()
+        elif event.button.id == "cancel-btn":
+            self.dismiss()
+        elif event.button.id == "parent-dir":
+            # Navigate to parent directory
+            current_path = self.query_one("#file-tree", DirectoryTree).path
+            parent_path = os.path.dirname(current_path)
+            if parent_path != current_path:  # Avoid infinite loop at root
+                tree = self.query_one("#file-tree", DirectoryTree)
+                tree.path = parent_path
+                tree.reload()
 
 class GenConfigApp(App):
     CSS = """
@@ -28,13 +86,33 @@ class GenConfigApp(App):
         color: $primary;
         margin: 0 0 1 0;
     }
+    #browser-container {
+        width: 80%;
+        height: 80%;
+        border: thick $primary;
+        background: $surface;
+    }
+    #browser-title {
+        text-align: center;
+        text-style: bold;
+        margin: 1;
+    }
+    #file-tree {
+        height: 1fr;
+        margin: 1;
+    }
+    #browser-buttons {
+        height: auto;
+        align: center middle;
+        margin: 1;
+    }
     """
 
     form = {
         "bot": {
             "namespace": {"data_type": "text", "data": None},
             "bot_id": {"data_type": "text", "data": None},
-            "file_location": {"data_type": "text", "data": None}
+            "file_location": {"data_type": "path", "data": None}
         },
         "em_setting": {
             "provider": {"data_type": "text", "data": None},
@@ -58,7 +136,7 @@ class GenConfigApp(App):
             },
             "database": {"data_type": "text", "data": None}
         },
-        "data_csv_file": {"data_type": "text", "data": None},
+        "data_csv_file": {"data_type": "path", "data": None},
         "document_index_name": {"data_type": "text", "data": None},
         "chunk_size": {"data_type": "integer", "data": None},
         "embedding_bulk_size": {"data_type": "integer", "data": None},
@@ -91,6 +169,12 @@ class GenConfigApp(App):
         text = text.capitalize()
         return text
 
+    def get_path_from_directory_tree_in_widget(self, widget: Input):
+        """Open a fullscreen file browser to select a path."""
+        initial_path = widget.value if widget.value else "./"
+        file_browser = FileBrowserScreen(initial_path, widget)
+        self.push_screen(file_browser)
+
     def gen_widgets(self, container, dict, dict_id=""):
         for key, value in dict.items():
             data_type = value.get("data_type")
@@ -105,9 +189,15 @@ class GenConfigApp(App):
                 continue
             elif data_type == "bool":
                 widget = Checkbox(label=self.labelize(key), value=value.get("data") if value.get("data") is not None else False, id=f"{dict_id}__{key}")
+                container.mount(widget)
+            elif data_type == "path":
+                widget = Input(value=value.get("data"), type="text", placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}")
+                button = Button("Browse", id=f"browse__{dict_id}__{key}")
+                container.mount(widget)
+                container.mount(button)
             else:
                 widget = Input(value=value.get("data"), type=data_type, placeholder=f"{self.labelize(key)} ({self.labelize(data_type)})", id=f"{dict_id}__{key}")
-            container.mount(widget)
+                container.mount(widget)
 
     def load_form_page(self):
         """Load inputs for the current page."""
@@ -179,7 +269,11 @@ class GenConfigApp(App):
             with open(config_file, "w") as f:
                 json.dump(cleaned_data, f, indent=2)
             exit(0)
-                         
+        elif event.button.id.startswith("browse__"):
+            # Handle browse button clicks for path inputs
+            input_id = event.button.id.replace("browse__", "")
+            input_widget = self.query_one(f"#{input_id}", Input)
+            self.get_path_from_directory_tree_in_widget(input_widget)
 
 if __name__ == "__main__":
     app = GenConfigApp()
