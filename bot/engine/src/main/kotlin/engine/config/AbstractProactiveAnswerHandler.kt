@@ -40,19 +40,21 @@ interface AbstractProactiveAnswerHandler {
             executor.executeBlocking {
                 val noAnswerStory = handleProactiveAnswer(this)
 
-                // Switch to the noAnswerStory if returned
-                if(noAnswerStory != null){
-                    logger.info { "The no-answer story is returned, which means we'll have to move on to this one." }
-                    // flush optional messages
-                    flushProactiveConversation()
+                if (noAnswerStory != null) {
+                    logger.info { "No-answer story detected → switching without flushing (already handled in handleAndSwitchStory)" }
+
+                    // Mark the conversation as closed
+                    setBusContextValue(PROACTIVE_CONVERSATION_STATUS, CLOSED)
 
                     // Switch to the story
                     logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
                     handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
+                } else {
+                    // Standard case : flush & clean properly
+                    logger.info { "Handling standard proactive answer : flush + end" }
+                    flushProactiveConversation()
+                    endProactiveConversation()
                 }
-
-                // Ending proactive conversation
-                endProactiveConversation()
 
                 // Save the dialog
                 if (connectorData.saveTimeline) {
@@ -81,8 +83,7 @@ interface AbstractProactiveAnswerHandler {
         if(getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, CLOSED)
             underlyingConnector.endProactiveConversation(connectorData.callback, connectorData.metadata)
-        }
-        else {
+        } else {
             end()
         }
     }
