@@ -93,7 +93,9 @@ class GoogleChatConnector(
                     chatService.spaces().messages().create(
                         callback.spaceName,
                         message.toGoogleMessage().setThread(Thread().setName(callback.threadName))
-                    ).execute()
+                    )
+                        .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                        .execute()
                 }
             }
         }

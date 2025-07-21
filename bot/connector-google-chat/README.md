@@ -1,25 +1,47 @@
 ## Prerequisites
 
-* You need to create and publish a Google  Chat bot :  https://developers.google.com/hangouts/chat/how-tos/bots-publish
+1. **Create and publish a Google Chat bot**  
+   Follow the instructions here:  
+   https://developers.google.com/hangouts/chat/how-tos/bots-publish
 
-* You need to retrieve from Google API these elements:
+2. **IAM Google Cloud Permissions**  
+    - `chat.bots.get`
+    - `chat.bots.update`
 
-    * **Bot project number** : The Google identifier of your bot.  
-    * **Json Credential** : The json credential page generated when you added the service accunt with Project Owner role.
-    
-* Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
- and create a new Hangout Chat configuration with these parameters : inquire either serviceCredentialPath if you added json credential to your integrated bot resources or serviceCredentialContent with json credential file content. 
- 
-## Bot API 
- 
-* TO BE IMPLEMENTED AND TESTED
- 
-## Integrated mode
+3. **Retrieve the following elements from the Google Cloud Console**:
+    - **Bot project number**  
+      Example: `37564789203`
+    - **JSON credentials**  
+      Downloaded when you create a service account with the `Project Owner` role.
 
-In order to connect your bot with a google chat bot application, you need to configure your bot url in Google API. It should match your local bot url with path specified in configuration 
+4. **Configurate Google Chat API for your project**:
+    - `HTTP endpoint URL`: Your ngrok URL + TOCK Relative REST path. (Example : https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat)
+    - `Authentification Audience`: Select 'Project Number'.
 
-* On your local machine, you can configure a secure ssl tunnel (for example [ngrok](https://ngrok.com/)) is required to test the bot in dev mode:
 
-```sh 
-    ngrok http 8080
-``` 
+## Tock Configuration
+
+1. Go to **Settings > Configuration > New Configuration** in the Tock admin interface.
+
+2. Create a new Google Chat configuration specifying the following options:
+    - `Connector type`: google_chat.
+    - `Application base URL`: Your ngrok URL (Example : https://area-simple-teal.ngrok-free.app).
+    - `Bot project number`: Bot project number (Example : 37564789203).
+    - `Service account credential json content`: raw JSON content pasted from the credential file.
+
+## Bot API
+
+To be implemented and tested.
+
+## Integrated Mode (Local Development)
+
+To connect your bot to a Google Chat bot application in local development:
+
+1. Set your bot's URL in the Google Cloud Console.  
+   This URL must match the path configured in the Tock configuration.
+
+2. Use a secure tunnel to expose your local bot endpoint.  
+   Example using [ngrok](https://ngrok.com/):
+
+   ```sh
+   ngrok http 8080

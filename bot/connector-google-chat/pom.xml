@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-chat</artifactId>
-            <version>v1-rev132-1.25.0</version>
+            <version>v1-rev20250706-2.0.0</version>
         </dependency>
 
         <dependency>

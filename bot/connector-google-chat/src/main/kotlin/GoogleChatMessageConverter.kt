@@ -16,7 +16,9 @@
 package ai.tock.bot.connector.googlechat
 
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import mu.KotlinLogging
 
 internal object GoogleChatMessageConverter {
@@ -31,10 +33,33 @@ internal object GoogleChatMessageConverter {
                 } else {
                     action.stringText?.takeUnless { it.isBlank() }?.let { GoogleChatConnectorTextMessageOut(it) }
                 }
+
+            is SendSentenceWithFootnotes -> {
+                val fullText = formatFootnotesWithText(action.text, action.footnotes)
+                GoogleChatConnectorTextMessageOut(fullText)
+            }
+
             else -> {
                 logger.warn { "Action $action not supported" }
                 null
             }
         }
+    }
+
+    private fun formatFootnotesWithText(text: CharSequence, footnotes: List<Footnote>): String {
+        if (footnotes.isEmpty()) return text.toString()
+
+        val formattedFootnotes = footnotes.joinToString(separator = "\n") { footnote ->
+            val title = footnote.title.trim()
+            val url = footnote.url?.trim()
+
+            when {
+                !url.isNullOrBlank() && title.isNotBlank() -> "<$url|$title>"
+                !url.isNullOrBlank() -> "<$url>"
+                else -> title
+            }
+        }
+
+        return "$text\n\n$formattedFootnotes"
     }
 }
