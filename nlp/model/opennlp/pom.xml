@@ -29,7 +29,7 @@
     <description>OpenNlp implementation of Tock NLP Model</description>
 
     <properties>
-        <opennlp>2.5.4</opennlp>
+        <opennlp>2.5.5</opennlp>
     </properties>
 
     <dependencies>

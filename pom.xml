@@ -41,9 +41,9 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>5.2.1</kmongo>
-        <jackson>2.19.0</jackson>
-        <jackson-databind>2.19.0</jackson-databind>
-        <jackson-module>2.19.0</jackson-module>
+        <jackson>2.19.2</jackson>
+        <jackson-databind>2.19.2</jackson-databind>
+        <jackson-module>2.19.2</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -56,34 +56,34 @@
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>33.4.8-jre</guava>
         <google-auth>1.39.0</google-auth>
-        <google-http-client>1.47.0</google-http-client>
+        <google-http-client>1.47.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.14.0</commons-csv>
-        <commons-io>2.19.0</commons-io>
+        <commons-io>2.20.0</commons-io>
         <commons-text>1.13.1</commons-text>
         <emoji>5.1.1</emoji>
-        <commons-codec>1.18.0</commons-codec>
-        <commons-lang>3.17.0</commons-lang>
+        <commons-codec>1.19.0</commons-codec>
+        <commons-lang>3.18.0</commons-lang>
         <commons-logging>1.3.5</commons-logging>
-        <commonmark>0.24.0</commonmark>
-        <json>20250107</json>
+        <commonmark>0.25.0</commonmark>
+        <json>20250517</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.60.0</google>
-        <aws-sdk>1.12.783</aws-sdk>
-        <aws-sagemaker>2.31.44</aws-sagemaker>
+        <google>26.64.0</google>
+        <aws-sdk>1.12.788</aws-sdk>
+        <aws-sagemaker>2.32.6</aws-sagemaker>
         <pac4j>5.7.7</pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <vertx-pac4j>6.0.3</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
         <junit-jupiter>5.11.4</junit-jupiter>
-        <testcontainer>1.21.0</testcontainer>
+        <testcontainer>1.21.3</testcontainer>
 
-        <mockk>1.14.2</mockk>
+        <mockk>1.14.5</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.17.5</byte-buddy>
+        <byte-buddy>1.17.6</byte-buddy>
         <atrium>0.15.0</atrium>
         <serialization>1.6.2</serialization>
 
