@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -24,41 +25,41 @@
         <version>25.3.7-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-nlp-duckling-service</artifactId>
-    <name>Tock Duckling Entities Service</name>
-    <description>Services for Duckling Entities</description>
+    <artifactId>tock-nlp-duckling-duckling</artifactId>
+    <name>Tock Duckling Lib</name>
+    <description>Duckling lib</description>
 
-
-    <dependencies>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-nlp-duckling-duckling</artifactId>
-            <classifier>jar-dependencies</classifier>
-        </dependency>
-    </dependencies>
+    <properties>
+        <duckling>0.4.23</duckling>
+        <duckling.basedir>${project.basedir}</duckling.basedir>
+    </properties>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
+                        <phase>process-resources</phase> <!-- ou autre phase -->
                         <goals>
-                            <goal>single</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/assembly.xml</descriptor>
-                            </descriptors>
+                            <target>
+                                <mkdir dir="${project.build.directory}/unzipped"/>
+                                <unzip src="${project.basedir}/lib/duckling-${duckling}-standalone.jar"
+                                       dest="${project.build.directory}/unzipped"/>
+                            </target>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
                     <execution>
                         <id>make-assembly-jar</id>
                         <phase>package</phase>
@@ -66,13 +67,6 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>
-                                        ai.tock.duckling.service.StartServerKt
-                                    </mainClass>
-                                </manifest>
-                            </archive>
                             <descriptors>
                                 <descriptor>src/main/assembly/assembly_jar.xml</descriptor>
                             </descriptors>

@@ -237,6 +237,12 @@
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-nlp-duckling-duckling</artifactId>
+                <classifier>jar-dependencies</classifier>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-xray-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>

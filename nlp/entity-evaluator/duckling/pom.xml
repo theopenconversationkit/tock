@@ -30,6 +30,7 @@
     <description>Root project for Duckling Entities</description>
 
     <modules>
+        <module>duckling</module>
         <module>service</module>
         <module>client</module>
     </modules>
