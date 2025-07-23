@@ -15,14 +15,13 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-duckling</artifactId>
-        <version>25.3.7-SNAPSHOT</version>
+        <version>25.3.7</version>
     </parent>
 
     <artifactId>tock-nlp-duckling-duckling</artifactId>
@@ -49,9 +48,8 @@
                         </goals>
                         <configuration>
                             <target>
-                                <mkdir dir="${project.build.directory}/unzipped"/>
-                                <unzip src="${project.basedir}/lib/duckling-${duckling}-standalone.jar"
-                                       dest="${project.build.directory}/unzipped"/>
+                                <mkdir dir="${project.build.directory}/unzipped" />
+                                <unzip src="${project.basedir}/lib/duckling-${duckling}-standalone.jar" dest="${project.build.directory}/unzipped" />
                             </target>
                         </configuration>
                     </execution>
