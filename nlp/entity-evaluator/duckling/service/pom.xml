@@ -38,13 +38,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>wit</groupId>
-            <artifactId>duckling</artifactId>
-            <scope>system</scope>
-            <version>${duckling}</version>
-            <systemPath>${duckling.basedir}/lib/duckling-${duckling}-standalone.jar</systemPath>
-        </dependency>
     </dependencies>
 
     <build>

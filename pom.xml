@@ -955,16 +955,6 @@
         <url>git@github.com:theopenconversationkit/tock.git</url>
         <tag>tock-${project.version}</tag>
     </scm>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <profiles>
         <profile>
@@ -1027,24 +1017,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>milestone</id>
-            <activation>
-                <property>
-                    <name>milestone</name>
-                </property>
-            </activation>
-            <properties>
-                <gpg.skip>false</gpg.skip>
-            </properties>
-            <distributionManagement>
-                <repository>
-                    <id>bintray-tock</id>
-                    <name>tock-build</name>
-                    <url>https://api.bintray.com/maven/tock/tock/tock/;publish=1;override=1</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 

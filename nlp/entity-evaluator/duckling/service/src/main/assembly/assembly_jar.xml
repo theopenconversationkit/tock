@@ -29,13 +29,11 @@
             <unpack>true</unpack>
             <scope>runtime</scope>
         </dependencySet>
-        <dependencySet>
-            <scope>system</scope>
-            <includes>
-                <include>wit:duckling:jar</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-            <unpack>true</unpack>
-        </dependencySet>
     </dependencySets>
+    <files>
+        <file>
+            <source>lib/duckling-${duckling}-standalone.jar</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+    </files>
 </assembly>
