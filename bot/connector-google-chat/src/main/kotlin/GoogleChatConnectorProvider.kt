@@ -40,6 +40,7 @@ private const val CHAT_SCOPE = "https://www.googleapis.com/auth/chat.bot"
 private const val SERVICE_CREDENTIAL_PATH_PARAMETER = "serviceCredentialPath"
 private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialContent"
 private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
+private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 
 internal object GoogleChatConnectorProvider : ConnectorProvider {
 
@@ -58,6 +59,9 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             val requestInitializer: HttpRequestInitializer =
                 HttpCredentialsAdapter(loadCredentials(credentialInputStream))
 
+            val useCondensedFootnotes =
+                connectorConfiguration.parameters[CONDENSED_FOOTNOTES_PARAMETER] == "1"
+
             val chatService = HangoutsChat.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(),
@@ -75,7 +79,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 connectorId,
                 path,
                 chatService,
-                authorisationHandler
+                authorisationHandler,
+                useCondensedFootnotes
             )
         }
     }
@@ -102,6 +107,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Service account credential json content",
                     SERVICE_CREDENTIAL_CONTENT_PARAMETER,
+                    false
+                ),
+                ConnectorTypeConfigurationField(
+                    "Use condensed footnotes (true = 1, false = 0)",
+                    CONDENSED_FOOTNOTES_PARAMETER,
                     false
                 )
             ),

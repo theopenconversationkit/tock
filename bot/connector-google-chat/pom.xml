@@ -104,6 +104,10 @@
             <version>${vertx}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

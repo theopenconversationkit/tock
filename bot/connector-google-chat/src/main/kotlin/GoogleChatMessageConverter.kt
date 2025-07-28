@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,43 +23,38 @@ import mu.KotlinLogging
 
 internal object GoogleChatMessageConverter {
 
-    val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
-    fun toMessageOut(action: Action): GoogleChatConnectorMessage? {
-        return when (action) {
-            is SendSentence ->
-                if (action.hasMessage(GoogleChatConnectorProvider.connectorType)) {
-                    action.message(GoogleChatConnectorProvider.connectorType) as GoogleChatConnectorMessage
-                } else {
-                    action.stringText?.takeUnless { it.isBlank() }?.let { GoogleChatConnectorTextMessageOut(it) }
-                }
-
-            is SendSentenceWithFootnotes -> {
-                val fullText = formatFootnotesWithText(action.text, action.footnotes)
-                GoogleChatConnectorTextMessageOut(fullText)
-            }
-
-            else -> {
-                logger.warn { "Action $action not supported" }
-                null
-            }
+    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false): GoogleChatConnectorMessage? = when (action) {
+        is SendSentence -> sendSentence(action)
+        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
+        else -> {
+            logger.warn { "Action $action not supported" }
+            null
         }
     }
 
-    private fun formatFootnotesWithText(text: CharSequence, footnotes: List<Footnote>): String {
-        if (footnotes.isEmpty()) return text.toString()
-
-        val formattedFootnotes = footnotes.joinToString(separator = "\n") { footnote ->
-            val title = footnote.title.trim()
-            val url = footnote.url?.trim()
-
-            when {
-                !url.isNullOrBlank() && title.isNotBlank() -> "<$url|$title>"
-                !url.isNullOrBlank() -> "<$url>"
-                else -> title
-            }
+    private fun sendSentence(action: SendSentence): GoogleChatConnectorMessage? {
+        return if (action.hasMessage(GoogleChatConnectorProvider.connectorType)) {
+            action.message(GoogleChatConnectorProvider.connectorType) as GoogleChatConnectorMessage
+        } else {
+            action.stringText
+                ?.takeUnless { it.isBlank() }
+                ?.let { GoogleChatMarkdown.toGoogleChat(it.toString()) }
+                ?.let(::GoogleChatConnectorTextMessageOut)
         }
+    }
 
-        return "$text\n\n$formattedFootnotes"
+    private fun sendSentenceWithFootnotes(
+        action: SendSentenceWithFootnotes,
+        condensedFootnotes: Boolean
+    ): GoogleChatConnectorMessage {
+        val formatted = FootnoteFormatter.format(
+            action.text,
+            action.footnotes,
+            condensed = condensedFootnotes
+        )
+        val parsed = GoogleChatMarkdown.toGoogleChat(formatted)
+        return GoogleChatConnectorTextMessageOut(parsed)
     }
 }
