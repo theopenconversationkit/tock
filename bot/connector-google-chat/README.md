@@ -18,7 +18,8 @@
     - `HTTP endpoint URL`: Your ngrok URL + TOCK Relative REST path. (Example : https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat)
     - `Authentification Audience`: Select 'Project Number'.
 
-
+⚠️ For now, dialogs will reset every 24 hours as stated in the variable dialogMaxValidityInSeconds of `UserTimelineMongoDAO.kt`
+   
 ## Tock Configuration
 
 1. Go to **Settings > Configuration > New Configuration** in the Tock admin interface.
@@ -28,6 +29,7 @@
     - `Application base URL`: Your ngrok URL (Example : https://area-simple-teal.ngrok-free.app).
     - `Bot project number`: Bot project number (Example : 37564789203).
     - `Service account credential json content`: raw JSON content pasted from the credential file.
+    - `Use condensed footnotes`: If activated, sources will be shown as [1] [2] [3]... True = 1, False = 0.
 
 ## Bot API
 
