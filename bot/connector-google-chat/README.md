@@ -7,6 +7,8 @@
 2. **IAM Google Cloud Permissions**  
     - `chat.bots.get`
     - `chat.bots.update`
+ 
+ We recommend creating a specific role with those permissions. This role will then be associated to the service account.
 
 3. **Retrieve the following elements from the Google Cloud Console**:
     - **Bot project number** , this is the Google Cloud Project number (numerical one, not the project ID). 
