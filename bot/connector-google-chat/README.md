@@ -9,7 +9,7 @@
     - `chat.bots.update`
 
 3. **Retrieve the following elements from the Google Cloud Console**:
-    - **Bot project number**  
+    - **Bot project number** , this is the Google Cloud Project number (numerical one, not the project ID). 
       Example: `37564789203`
     - **JSON credentials**  
       Downloaded when you create a service account with the `Project Owner` role.
