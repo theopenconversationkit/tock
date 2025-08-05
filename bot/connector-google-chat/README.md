@@ -15,7 +15,7 @@
       Example: `37564789203`
     - **JSON credentials**, create a service account with the earlier mentioned permissions / role then download the credential file.
 
-4. **Configurate Google Chat API for your project**:
+4. **Configure Google Chat API for your project**, go to ["Google Chat API" (Marketplace)](https://console.cloud.google.com/marketplace/product/google/chat.googleapis.com), then **Manage** > [Configuration (tab)](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
     - `HTTP endpoint URL`: Your ngrok URL + TOCK Relative REST path. (Example : https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat)
     - `Authentification Audience`: Select 'Project Number'.
 
