@@ -19,7 +19,7 @@
     - `HTTP endpoint URL`: Your ngrok URL + TOCK Relative REST path. (Example : https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat)
     - `Authentification Audience`: Select 'Project Number'.
 
-⚠️ For now, dialogs will reset every 24 hours as stated in the variable dialogMaxValidityInSeconds of `UserTimelineMongoDAO.kt`
+⚠️ For now, dialogs will reset every 24 hours as stated in the variable dialogMaxValidityInSeconds of (`UserTimelineMongoDAO.kt#L77`)[https://github.com/theopenconversationkit/tock/blob/tock-25.3.9/bot/storage-mongo/src/main/kotlin/UserTimelineMongoDAO.kt#L77], as the database filter only search for dialogs in the last 24 hours.
    
 ## Tock Configuration
 
