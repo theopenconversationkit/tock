@@ -14,7 +14,6 @@
     - **Bot project number** , this is the Google Cloud Project number (numerical one, not the project ID). 
       Example: `37564789203`
     - **JSON credentials**, create a service account with the earlier mentioned permissions / role then download the credential file.
-      Downloaded when you create a service account with the `Project Owner` role.
 
 4. **Configurate Google Chat API for your project**:
     - `HTTP endpoint URL`: Your ngrok URL + TOCK Relative REST path. (Example : https://area-simple-teal.ngrok-free.app/io/app/assistant/google_chat)
