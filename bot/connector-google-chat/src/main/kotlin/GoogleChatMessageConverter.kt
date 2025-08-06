@@ -16,18 +16,18 @@
 package ai.tock.bot.connector.googlechat
 
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
+import io.grpc.lb.v1.FallbackResponse
 import mu.KotlinLogging
 
 internal object GoogleChatMessageConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false): GoogleChatConnectorMessage? = when (action) {
+    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false, truncateUrls: Boolean = false): GoogleChatConnectorMessage? = when (action) {
         is SendSentence -> sendSentence(action)
-        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
+        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes, truncateUrls)
         else -> {
             logger.warn { "Action $action not supported" }
             null
@@ -47,12 +47,14 @@ internal object GoogleChatMessageConverter {
 
     private fun sendSentenceWithFootnotes(
         action: SendSentenceWithFootnotes,
-        condensedFootnotes: Boolean
+        condensedFootnotes: Boolean,
+        truncateUrls: Boolean
     ): GoogleChatConnectorMessage {
-        val formatted = FootnoteFormatter.format(
+        val formatted = GoogleChatFootnoteFormatter.format(
             action.text,
             action.footnotes,
-            condensed = condensedFootnotes
+            condensed = condensedFootnotes,
+            truncateUrls
         )
         val parsed = GoogleChatMarkdown.toGoogleChat(formatted)
         return GoogleChatConnectorTextMessageOut(parsed)

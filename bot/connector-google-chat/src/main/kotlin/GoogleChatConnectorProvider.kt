@@ -41,6 +41,7 @@ private const val SERVICE_CREDENTIAL_PATH_PARAMETER = "serviceCredentialPath"
 private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialContent"
 private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
+private const val TRUNCATE_URLS_PARAMETER = "truncateUrls"
 
 internal object GoogleChatConnectorProvider : ConnectorProvider {
 
@@ -62,6 +63,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             val useCondensedFootnotes =
                 connectorConfiguration.parameters[CONDENSED_FOOTNOTES_PARAMETER] == "1"
 
+            val truncateUrls = connectorConfiguration.parameters[TRUNCATE_URLS_PARAMETER] == "1"
+
             val chatService = HangoutsChat.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(),
@@ -80,7 +83,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 path,
                 chatService,
                 authorisationHandler,
-                useCondensedFootnotes
+                useCondensedFootnotes,
+                truncateUrls
             )
         }
     }
@@ -112,6 +116,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Use condensed footnotes (true = 1, false = 0)",
                     CONDENSED_FOOTNOTES_PARAMETER,
+                    false
+                ),
+                ConnectorTypeConfigurationField(
+                    "Truncate long URLs (true = 1, false = 0)",
+                    TRUNCATE_URLS_PARAMETER,
                     false
                 )
             ),
