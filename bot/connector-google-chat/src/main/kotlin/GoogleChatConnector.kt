@@ -95,7 +95,7 @@ class GoogleChatConnector(
                         callback.spaceName,
                         message.toGoogleMessage().setThread(Thread().setName(callback.threadName))
                     )
-                        .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                        .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD") // Creates the message as a reply to the thread specified by [thread ID] If it fails, the message starts a new thread instead. 
                         .execute()
                 }
             }
