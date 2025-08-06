@@ -45,8 +45,7 @@ class GoogleChatConnector(
     private val path: String,
     private val chatService: HangoutsChat,
     private val authorisationHandler: GoogleChatAuthorisationHandler,
-    private val useCondensedFootnotes: Boolean,
-    private val truncateUrls: Boolean,
+    private val useCondensedFootnotes: Boolean
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger {}
@@ -88,7 +87,7 @@ class GoogleChatConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         logger.debug { "event: $event" }
         if (event is Action) {
-            val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, truncateUrls)
+            val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
             if (message != null) {
                 callback as GoogleChatConnectorCallback
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {

@@ -25,9 +25,9 @@ internal object GoogleChatMessageConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false, truncateUrls: Boolean = false): GoogleChatConnectorMessage? = when (action) {
+    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false): GoogleChatConnectorMessage? = when (action) {
         is SendSentence -> sendSentence(action)
-        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes, truncateUrls)
+        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
         else -> {
             logger.warn { "Action $action not supported" }
             null
@@ -47,14 +47,12 @@ internal object GoogleChatMessageConverter {
 
     private fun sendSentenceWithFootnotes(
         action: SendSentenceWithFootnotes,
-        condensedFootnotes: Boolean,
-        truncateUrls: Boolean
+        condensedFootnotes: Boolean
     ): GoogleChatConnectorMessage {
         val formatted = GoogleChatFootnoteFormatter.format(
             action.text,
             action.footnotes,
-            condensed = condensedFootnotes,
-            truncateUrls
+            condensed = condensedFootnotes
         )
         val parsed = GoogleChatMarkdown.toGoogleChat(formatted)
         return GoogleChatConnectorTextMessageOut(parsed)

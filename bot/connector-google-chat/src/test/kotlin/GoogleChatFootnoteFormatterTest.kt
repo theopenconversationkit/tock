@@ -133,31 +133,4 @@ class GoogleChatFootnoteFormatterTest {
             result
         )
     }
-
-    @Test
-    fun `formatCondensed truncates long URLs when enabled`() {
-        val text = "Reference"
-        val longUrl = "https://example.com/documents/reports/2025/q3/summary.pdf"
-        val footnotes = listOf(
-            Footnote("id1", "Q3 Report", longUrl, null, null)
-        )
-
-        val result = GoogleChatFootnoteFormatter.format(
-            text,
-            footnotes,
-            condensed = true,
-            truncateUrl = true
-        )
-
-        assertEquals(
-            """
-        Reference
-
-        *Source:* [[1]](https://.../q3/summary.pdf)
-        """.trimIndent(),
-            result
-        )
-    }
-
-
 }
