@@ -3,7 +3,7 @@
 ### Create and publish a Google Chat bot
 
 Follow the official instructions:  
-👉 **[Google Chat Bot Publishing Guide](https://developers.google.com/hangouts/chat/how-tos/bots-publish)**
+**[Google Chat Bot Publishing Guide](https://developers.google.com/hangouts/chat/how-tos/bots-publish)**
 
 > ⚠️ **Important**: Each connector requires its own Google Cloud Project, as Chat API settings (bot avatar, display name, endpoint) are project-specific.
 
@@ -102,10 +102,10 @@ The connector includes a converter that transforms standard Markdown into a simp
 
 ### Configuration for Local Testing
 
-1. ** URL Configuration**: Set your bot's URL in the Google Cloud Console
+1. **URL Configuration**: Set your bot's URL in the Google Cloud Console
    - The URL must match the path configured in Tock
 
-2. ** Secure Exposure**: Use a tunnel to expose your local endpoint securely
+2. **Secure Exposure**: Use a tunnel to expose your local endpoint securely
 
 #### Example with ngrok
 
@@ -126,4 +126,4 @@ Web Interface    http://127.0.0.1:4040
 Forwarding       https://area-simple-teal.ngrok-free.app -> http://localhost:8080
 ```
 
-3. ** Update Configuration**: Use the generated ngrok URL in your Google Cloud Console configuration
+3. **Update Configuration**: Use the generated ngrok URL in your Google Cloud Console configuration
