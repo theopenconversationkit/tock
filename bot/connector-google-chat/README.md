@@ -95,7 +95,9 @@ The connector includes a converter that transforms standard Markdown into a simp
 - **In a room**: The bot replies in the **same thread** as the user message
 - **Direct message or system event**: The bot starts a **new thread**
 - **Fallback mechanism**: Uses `REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD` to ensure delivery
+### Dialogs life cycle
 
+ For now, dialogs will reset every 24 hours as stated in the variable dialogMaxValidityInSeconds of (`UserTimelineMongoDAO.kt#L77`)[https://github.com/theopenconversationkit/tock/blob/tock-25.3.9/bot/storage-mongo/src/main/kotlin/UserTimelineMongoDAO.kt#L77], as the database filter only search for dialogs in the last 24 hours.
 ---
 
 ##  Local Development (Integrated Mode)
