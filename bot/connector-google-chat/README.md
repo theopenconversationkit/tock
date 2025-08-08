@@ -1,25 +1,131 @@
-## Prerequisites
+##  Prerequisites
 
-* You need to create and publish a Google  Chat bot :  https://developers.google.com/hangouts/chat/how-tos/bots-publish
+### Create and publish a Google Chat bot
 
-* You need to retrieve from Google API these elements:
+Follow the official instructions:  
+**[Google Chat Bot Publishing Guide](https://developers.google.com/hangouts/chat/how-tos/bots-publish)**
 
-    * **Bot project number** : The Google identifier of your bot.  
-    * **Json Credential** : The json credential page generated when you added the service accunt with Project Owner role.
-    
-* Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
- and create a new Hangout Chat configuration with these parameters : inquire either serviceCredentialPath if you added json credential to your integrated bot resources or serviceCredentialContent with json credential file content. 
- 
-## Bot API 
- 
-* TO BE IMPLEMENTED AND TESTED
- 
-## Integrated mode
+> ⚠️ **Important**: Each connector requires its own Google Cloud Project, as Chat API settings (bot avatar, display name, endpoint) are project-specific.
 
-In order to connect your bot with a google chat bot application, you need to configure your bot url in Google API. It should match your local bot url with path specified in configuration 
+### IAM Google Cloud Permissions
 
-* On your local machine, you can configure a secure ssl tunnel (for example [ngrok](https://ngrok.com/)) is required to test the bot in dev mode:
+Grant the following permissions:
+- `chat.bots.get`
+- `chat.bots.update`
 
-```sh 
-    ngrok http 8080
-``` 
+> 💡 **Recommendation**: Create a specific role with these permissions and assign it to a service account.
+
+### Retrieve information from Google Cloud Console
+
+|  Required Element |  Description |
+|---------------------|-----------------|
+| **Bot project number** | The numeric ID of your project (e.g., `37564789203`) |
+| **JSON credentials** | Service account credentials file |
+
+### Configure Google Chat API
+
+1.  Go to **[Google Chat API](https://console.cloud.google.com/marketplace/product/google/chat.googleapis.com)**
+2. Click **Manage**, then go to the **[Configuration tab](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat)**
+3. Configure the following settings:
+
+```
+HTTP endpoint URL       → https://your-ngrok-url.ngrok-free.app/io/app/assistant/google_chat
+Authentication Audience → Project Number
+```
+
+---
+
+##  Tock Configuration
+
+### Configuration Steps
+
+1.  In Tock admin UI: **Settings > Configuration > New Configuration**
+2.  Create a Google Chat configuration with the following values:
+
+|  Field |  Example |
+|-----------|-------------|
+| **Connector type** | `google_chat` |
+| **Application base URL** | `https://area-simple-teal.ngrok-free.app` |
+| **Bot project number** | `37564789203` |
+| **Service account credential json content** | `{"type": "service_account", ...}` |
+| **Use condensed footnotes** | `1` = condensed, `0` = detailed |
+
+---
+
+##  Footnote Display Examples
+
+###  Condensed mode (`useCondensedFootnotes = 1`)
+
+<img src="docs/condensed_mode.png" alt="Condensed mode"/>
+
+---
+
+###  Detailed mode (`useCondensedFootnotes = 0`)
+
+<img src="docs/detailed_mode.png" alt="Detailed mode"/>
+
+---
+
+##  Markdown Support
+
+The connector includes a converter that transforms standard Markdown into a simplified format compatible with Google Chat.
+
+###  Supported Conversions
+
+|  Markdown Input |  Google Chat Output |  Status |
+|-------------------|------------------------|-----------|
+| `**bold**` | `*bold*` | ✅ |
+| `_italic_` | `_italic_` | ✅ |
+| `~~strikethrough~~` | `~~strikethrough~~` | ✅ |
+| `` `inline code` `` | `` `inline code` `` | ✅ |
+| ```` ```code block``` ```` | ```` ```code block``` ```` | ✅ |
+| `# Heading` | `*Heading*` | ✅ |
+| `* list item` | `* list item` | ✅ |
+| `[Label](https://link.com)` | `<https://link.com\|Label>` | ✅ |
+| `[](https://link.com)` | `<https://link.com\|https://link.com>` | ✅ |
+
+> ⚠️ **Limitation**: Google Chat does not support full Markdown. Formatting is automatically simplified.
+
+---
+
+##  Bot Behavior
+
+###  Conversation Management
+
+- **In a room**: The bot replies in the **same thread** as the user message
+- **Direct message or system event**: The bot starts a **new thread**
+- **Fallback mechanism**: Uses `REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD` to ensure delivery
+### Dialogs life cycle
+
+ For now, dialogs will reset every 24 hours as stated in the variable dialogMaxValidityInSeconds of (`UserTimelineMongoDAO.kt#L77`)[https://github.com/theopenconversationkit/tock/blob/tock-25.3.9/bot/storage-mongo/src/main/kotlin/UserTimelineMongoDAO.kt#L77], as the database filter only search for dialogs in the last 24 hours.
+---
+
+##  Local Development (Integrated Mode)
+
+### Configuration for Local Testing
+
+1. **URL Configuration**: Set your bot's URL in the Google Cloud Console
+   - The URL must match the path configured in Tock
+
+2. **Secure Exposure**: Use a tunnel to expose your local endpoint securely
+
+#### Example with ngrok
+
+```bash
+# Installation (if needed)
+npm install -g ngrok
+
+# Expose local port
+ngrok http 8080
+```
+
+**Expected output:**
+```
+Session Status    online
+Version          2.3.40
+Region           United States (us)
+Web Interface    http://127.0.0.1:4040
+Forwarding       https://area-simple-teal.ngrok-free.app -> http://localhost:8080
+```
+
+3. **Update Configuration**: Use the generated ngrok URL in your Google Cloud Console configuration

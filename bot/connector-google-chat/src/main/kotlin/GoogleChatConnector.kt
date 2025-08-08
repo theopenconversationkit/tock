@@ -44,7 +44,8 @@ class GoogleChatConnector(
     private val connectorId: String,
     private val path: String,
     private val chatService: HangoutsChat,
-    private val authorisationHandler: GoogleChatAuthorisationHandler
+    private val authorisationHandler: GoogleChatAuthorisationHandler,
+    private val useCondensedFootnotes: Boolean
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger {}
@@ -86,14 +87,16 @@ class GoogleChatConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         logger.debug { "event: $event" }
         if (event is Action) {
-            val message = GoogleChatMessageConverter.toMessageOut(event)
+            val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
             if (message != null) {
                 callback as GoogleChatConnectorCallback
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {
                     chatService.spaces().messages().create(
                         callback.spaceName,
                         message.toGoogleMessage().setThread(Thread().setName(callback.threadName))
-                    ).execute()
+                    )
+                        .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD") // Creates the message as a reply to the thread specified by [thread ID] If it fails, the message starts a new thread instead. 
+                        .execute()
                 }
             }
         }
