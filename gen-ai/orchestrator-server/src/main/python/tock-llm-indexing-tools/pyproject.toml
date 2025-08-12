@@ -37,6 +37,7 @@ python-magic = "^0.4.27"
 markdown-it-py= "^3.0.0"
 backoff = "^2.2.1"
 more-itertools = "^10.6.0"
+textual = "^3.5.0"
 
 [build-system]
 requires = ["poetry-core"]
