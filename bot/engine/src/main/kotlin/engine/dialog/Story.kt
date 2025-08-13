@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.dialog
 
+import ai.tock.bot.definition.AsyncStoryHandler
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
@@ -28,7 +29,9 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -150,14 +153,32 @@ data class Story(
      * Handles a request.
      */
     fun handle(bus: BotBus) {
-        definition.storyHandler.apply {
-            try {
-                if (sendStartEvent(bus)) {
-                    handle(bus)
-                }
-            } finally {
-                sendEndEvent(bus)
+        @OptIn(ExperimentalTockCoroutines::class)
+        if (definition.storyHandler is AsyncStoryHandler) {
+            runBlocking {
+                handleAsync(bus)
             }
+        } else {
+            definition.storyHandler.withEvents(bus) {
+                it.handle(bus)
+            }
+        }
+    }
+
+    @ExperimentalTockCoroutines
+    suspend fun handleAsync(bus: BotBus) {
+        (definition.storyHandler as? AsyncStoryHandler)?.withEvents(bus) {
+            it.handleAsync(bus)
+        } ?: handle(bus)
+    }
+
+    private inline fun <T : StoryHandler> T.withEvents(bus: BotBus, op: (T) -> Unit) {
+        try {
+            if (sendStartEvent(bus)) {
+                op(this)
+            }
+        } finally {
+            sendEndEvent(bus)
         }
     }
 

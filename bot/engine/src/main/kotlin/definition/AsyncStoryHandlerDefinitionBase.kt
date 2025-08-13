@@ -20,17 +20,15 @@ import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.ConnectorIdHandlers
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import com.github.salomonbrys.kodein.KodeinInjector
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 import mu.KotlinLogging
 
-/**
- * Base implementation of [StoryHandlerDefinition].
- */
-abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) :
-    BotBus by bus,
-    StoryHandlerDefinition {
+@ExperimentalTockCoroutines
+abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) : AsyncStoryHandlerDefinition, BotBus by bus {
 
     companion object {
 
@@ -40,7 +38,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
             get() =
                 try {
                     injector.provide()
-                } catch (e: Throwable) {
+                } catch (_: KodeinInjector.UninjectedException) {
                     DefaultConnectorHandlerProvider
                 }
     }
@@ -49,12 +47,12 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
      * The method to implement if there is no [StoryStep] in the [StoryDefinition]
      * or when current [StoryStep] is null
      */
-    open fun answer() {}
+    protected abstract suspend fun answer()
 
     /**
      * Default implementation redirect to answer.
      */
-    override fun handle() {
+    override suspend fun handleAsync() {
         answer()
     }
 
@@ -81,7 +79,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
 
     private val cachedConnector: T? by lazy(PUBLICATION) {
         (findConnector(connectorId) ?: findConnector(connectorType))
-            .also { if (it == null) logger.warn { "unsupported connector type $connectorId or $connectorType for ${this::class}" } }
+            .also { if (it == null) logger.warn { "unsupported connector type $connectorType/$connectorId for ${this::class}" } }
     }
 
     /**

@@ -27,8 +27,8 @@ import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.audio
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
@@ -36,6 +36,8 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import ai.tock.shared.coroutines.launchCoroutine
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
@@ -44,10 +46,10 @@ import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
-import mu.KotlinLogging
 import java.net.URL
-import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.delay
+import mu.KotlinLogging
 
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
 private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
@@ -101,6 +103,7 @@ internal class TockConnectorController(
 
     fun getBaseUrl(): String = configuration.getBaseUrl()
 
+    @OptIn(ExperimentalTockCoroutines::class)
     override fun handle(event: Event, data: ConnectorData) {
         if (event.state.sourceConnectorType == null) {
             event.state.sourceConnectorType = connector.connectorType
@@ -113,7 +116,9 @@ internal class TockConnectorController(
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
                 when (event) {
-                    is Action -> handleAction(event, 0, data)
+                    is Action -> executor.launchCoroutine {
+                        handleAction(event, 0, data)
+                    }
                     else -> callback.eventSkipped(event)
                 }
             } else {
@@ -143,7 +148,8 @@ internal class TockConnectorController(
         return action
     }
 
-    private fun handleAction(action: Action, nbAttempts: Int, data: ConnectorData) {
+    @ExperimentalTockCoroutines
+    private suspend fun handleAction(action: Action, nbAttempts: Int, data: ConnectorData) {
         val callback = data.callback
         try {
             val playerId = action.playerId
@@ -165,7 +171,7 @@ internal class TockConnectorController(
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 
-                    bot.handle(transformedAction, userTimeline, this, data)
+                    bot.handleAction(transformedAction, userTimeline, this, data)
 
                     if (synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
@@ -179,9 +185,8 @@ internal class TockConnectorController(
                 }
             } else if (nbAttempts < maxLockedAttempts) {
                 logger.debug { "$playerId locked - wait" }
-                executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
-                    handleAction(action, nbAttempts + 1, data)
-                }
+                delay(lockedAttemptsWaitInMs)
+                handleAction(action, nbAttempts + 1, data)
             } else {
                 logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
                 callback.eventSkipped(action)
