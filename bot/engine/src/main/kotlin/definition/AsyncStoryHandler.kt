@@ -32,7 +32,7 @@ interface AsyncStoryHandler : StoryHandler {
      *
      * @param bus the bus used to get the message and send the answer
      */
-    @Deprecated("Use coroutines to call this interface")
+    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handleAsync(bus)"))
     override fun handle(bus: BotBus)
 
     suspend fun handleAsync(bus: BotBus)

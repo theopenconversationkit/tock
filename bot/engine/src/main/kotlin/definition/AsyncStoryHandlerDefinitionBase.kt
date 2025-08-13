@@ -66,7 +66,7 @@ abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorType: ConnectorType): T? =
+    protected open fun findConnector(connectorType: ConnectorType): T? =
         connectorProvider.provide(this, connectorType) as? T?
 
     /**
@@ -74,7 +74,7 @@ abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorId: String): T? =
+    protected open fun findConnector(connectorId: String): T? =
         connectorProvider.provide(this, connectorId) as? T?
 
     private val cachedConnector: T? by lazy(PUBLICATION) {
