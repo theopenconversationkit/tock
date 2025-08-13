@@ -21,7 +21,7 @@ import kotlinx.coroutines.runBlocking
 
 @ExperimentalTockCoroutines
 interface AsyncStoryHandlerDefinition : StoryHandlerDefinition {
-    @Deprecated("Use coroutines to call this interface")
+    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handleAsync()"))
     override fun handle() {
         runBlocking {
             handleAsync()
