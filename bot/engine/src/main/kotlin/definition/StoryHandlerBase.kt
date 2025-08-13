@@ -108,6 +108,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     final override fun handle(bus: BotBus) {
+        handle0(bus) { it.handle() }
+    }
+
+    internal inline fun handle0(bus: BotBus, op: (T) -> Unit) {
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
@@ -143,7 +147,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                     }
                 }
                 if (!isEndCalled(bus)) {
-                    handler.handle()
+                    op(handler)
 
                     if (!bus.connectorData.skipAnswer &&
                         !bus.hasCurrentSwitchStoryProcess &&
