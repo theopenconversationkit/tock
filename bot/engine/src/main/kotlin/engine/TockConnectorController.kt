@@ -49,6 +49,9 @@ import java.net.URL
 import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
 
+private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
+private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
+
 /**
  *
  */
@@ -164,11 +167,11 @@ internal class TockConnectorController constructor(
 
                     bot.handle(transformedAction, userTimeline, this, data)
 
-                    if (data.saveTimeline) {
+                    if (synchronousMode && data.saveTimeline) {
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
                     }
                 } catch (t: Throwable) {
-                    send(data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
+                    send(null, data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
                     callback.exceptionThrown(action, t)
                 } finally {
                     userLock.releaseLock(id)
@@ -223,7 +226,7 @@ internal class TockConnectorController constructor(
         serviceInstallers.forEach { verticle.unregisterServices(it) }
     }
 
-    internal fun send(data: ConnectorData, userAction: Action, action: Action, delay: Long = 0) {
+    internal fun send(userTimeline: UserTimeline?, data: ConnectorData, userAction: Action, action: Action, delay: Long = 0) {
         try {
             logger.debug { "message sent to connector: $action" }
             connector.send(action, data.callback, delay)
@@ -231,6 +234,9 @@ internal class TockConnectorController constructor(
             logger.error(t)
         } finally {
             if (action.metadata.lastAnswer) {
+                if (asynchronousMode && data.saveTimeline && userTimeline != null) {
+                    userTimelineDAO.save(userTimeline, bot.botDefinition)
+                }
                 data.callback.eventAnswered(userAction)
             }
         }

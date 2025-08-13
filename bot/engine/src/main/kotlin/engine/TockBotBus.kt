@@ -145,7 +145,7 @@ internal class TockBotBus(
         // to receive the corresponding messages
         if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
             // If the action is not a SendDebug, or it is, but the source connector is the rest connector
-            connector.send(connectorData, action, actionToSent, context.currentDelay)
+            connector.send(userTimeline, connectorData, action, actionToSent, context.currentDelay)
         }
 
         return this
