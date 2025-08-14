@@ -35,7 +35,9 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                     .also { (intent, prob) ->
                         // intents with modifiers are always supported
                         val modifier = data.getModifierForIntent(intent)
-
+                        if(prob >= data.application.knownIntentThreshold) {
+                            originalIntents[intent.name] = prob
+                        }
                         if (modifier != null) {
                             if (prob >= data.application.knownIntentThreshold) {
                                 otherIntents[intent.name] = prob
@@ -49,7 +51,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
             return if (qualifiedIntents.isEmpty()) {
                 null
             } else {
-                val result = qualifiedIntents.entries.sortedByDescending { it.value }.first()
+                val result = qualifiedIntents.entries.maxByOrNull { it.value } ?: error("no intent found")
                 // remove selected from other intents
                 otherIntents.remove(result.key.name)
                 result.key to (intentsProbabilities[result.key.name] ?: 0.0)

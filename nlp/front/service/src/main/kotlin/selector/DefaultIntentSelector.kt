@@ -31,8 +31,13 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
             var result: Pair<Intent, Double>? = null
             while (hasNext() && result == null) {
                 next().apply {
+                    val p = probability()
+                    if(p >= data.application.knownIntentThreshold) {
+                        originalIntents[name] = p
+                    }
+
                     if (data.isStateSupportedByIntent(this)) {
-                        result = this to probability()
+                        result = this to p
                     }
                 }
             }
@@ -40,10 +45,14 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
             // and take all other intents where probability is greater than the application knownIntentThreshold
             while (hasNext()) {
                 next().run {
+                    val p = probability()
+                    if(p >= data.application.knownIntentThreshold) {
+                        originalIntents[name] = p
+                    }
                     if (data.isStateSupportedByIntent(this)) {
-                        (this to probability())
+                        (this to p)
                             .takeIf { (_, prob) -> prob >= data.application.knownIntentThreshold }
-                            ?.also { (intent, prob) -> otherIntents.put(intent.name, prob) }
+                            ?.also { (intent, prob) -> otherIntents[intent.name] = prob }
                     } else {
                         // continue
                     }

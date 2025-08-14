@@ -296,7 +296,8 @@ object ParserService : Parser {
                         entitiesProbability,
                         q,
                         // Sort the other real intentions in descending order of probability.
-                        realOtherIntents.toList().sortedByDescending { it.second }.toMap()
+                        realOtherIntents.toList().sortedByDescending { it.second }.toMap(),
+                        intentSelector.originalIntents.toList().sortedByDescending { it.second }.toMap()
                     )
                 }
 

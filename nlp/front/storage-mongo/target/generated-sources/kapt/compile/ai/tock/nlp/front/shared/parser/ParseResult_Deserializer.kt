@@ -43,6 +43,8 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
             var _retainedQuery_set : Boolean = false
             var _otherIntentsProbabilities_: MutableMap<String, Double>? = null
             var _otherIntentsProbabilities_set : Boolean = false
+            var _originalIntentsProbabilities_: MutableMap<String, Double>? = null
+            var _originalIntentsProbabilities_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -98,6 +100,12 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
                              else p.readValueAs(_otherIntentsProbabilities__reference);
                             _otherIntentsProbabilities_set = true
                             }
+                    "originalIntentsProbabilities" -> {
+                            _originalIntentsProbabilities_ = if(_token_ == JsonToken.VALUE_NULL)
+                                    null
+                             else p.readValueAs(_originalIntentsProbabilities__reference);
+                            _originalIntentsProbabilities_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -108,13 +116,15 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
                         } 
             return if(_intent_set && _intentNamespace_set && _language_set && _entities_set &&
                     _notRetainedEntities_set && _intentProbability_set && _entitiesProbability_set
-                    && _retainedQuery_set && _otherIntentsProbabilities_set)
+                    && _retainedQuery_set && _otherIntentsProbabilities_set &&
+                    _originalIntentsProbabilities_set)
                     ParseResult(intent = _intent_!!, intentNamespace = _intentNamespace_!!, language
                             = _language_!!, entities = _entities_!!, notRetainedEntities =
                             _notRetainedEntities_!!, intentProbability = _intentProbability_!!,
                             entitiesProbability = _entitiesProbability_!!, retainedQuery =
                             _retainedQuery_!!, otherIntentsProbabilities =
-                            _otherIntentsProbabilities_!!)
+                            _otherIntentsProbabilities_!!, originalIntentsProbabilities =
+                            _originalIntentsProbabilities_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_intent_set)
@@ -135,7 +145,10 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
                     map[parameters.getValue("retainedQuery")] = _retainedQuery_
                     if(_otherIntentsProbabilities_set)
                     map[parameters.getValue("otherIntentsProbabilities")] =
-                            _otherIntentsProbabilities_ 
+                            _otherIntentsProbabilities_
+                    if(_originalIntentsProbabilities_set)
+                    map[parameters.getValue("originalIntentsProbabilities")] =
+                            _originalIntentsProbabilities_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -157,7 +170,9 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
                 primaryConstructor.findParameterByName("entitiesProbability")!!, "retainedQuery" to
                 primaryConstructor.findParameterByName("retainedQuery")!!,
                 "otherIntentsProbabilities" to
-                primaryConstructor.findParameterByName("otherIntentsProbabilities")!!) }
+                primaryConstructor.findParameterByName("otherIntentsProbabilities")!!,
+                "originalIntentsProbabilities" to
+                primaryConstructor.findParameterByName("originalIntentsProbabilities")!!) }
 
         private val _entities__reference: TypeReference<List<ParsedEntityValue>> = object :
                 TypeReference<List<ParsedEntityValue>>() {}
@@ -166,6 +181,9 @@ internal class ParseResult_Deserializer : JsonDeserializer<ParseResult>(),
                 : TypeReference<List<ParsedEntityValue>>() {}
 
         private val _otherIntentsProbabilities__reference: TypeReference<Map<String, Double>> =
+                object : TypeReference<Map<String, Double>>() {}
+
+        private val _originalIntentsProbabilities__reference: TypeReference<Map<String, Double>> =
                 object : TypeReference<Map<String, Double>>() {}
     }
 }

@@ -360,7 +360,7 @@ internal class Nlp : NlpController {
         private fun parse(request: NlpQuery): NlpResult? {
             logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
             val intentsQualifiers = dialog.state.nextActionState?.intentsQualifiers
-            val useQualifiers = intentsQualifiers != null && intentsQualifiers.isNotEmpty()
+            val useQualifiers = !intentsQualifiers.isNullOrEmpty()
             val result = if (!useQualifiers) {
                 nlpClient.parse(request)
             } else {

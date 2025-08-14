@@ -68,6 +68,18 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
                 null
                 )
                 .serialize(_otherIntentsProbabilities_, gen, serializers)
+        gen.writeFieldName("originalIntentsProbabilities")
+        val _originalIntentsProbabilities_ = value.originalIntentsProbabilities
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Double::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_originalIntentsProbabilities_, gen, serializers)
         gen.writeEndObject()
     }
 }

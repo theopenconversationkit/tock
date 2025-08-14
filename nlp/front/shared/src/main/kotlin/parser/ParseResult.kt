@@ -58,7 +58,11 @@ data class ParseResult(
     /**
      * Other intents with significant probabilities.
      */
-    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
+    /**
+     * Original intents (without qualifier) with significant probabilities.
+     */
+    val originalIntentsProbabilities: Map<String, Double> = emptyMap()
 ) {
 
     /**

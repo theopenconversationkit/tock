@@ -55,7 +55,7 @@ private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynch
 /**
  *
  */
-internal class TockConnectorController constructor(
+internal class TockConnectorController(
     val bot: Bot,
     override val connector: Connector,
     private val verticle: BotVerticle,
