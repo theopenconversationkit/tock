@@ -47,11 +47,14 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
 
     init {
         bot = BotApiDefinition(configuration, lastConfiguration, handler)
-        handler.configuration {
-            if (it != null) {
-                updateIfConfigurationChange(it)
+        lastConfiguration = null
+        executor.executeBlocking {
+            handler.configuration {
+                if (it != null) {
+                    updateIfConfigurationChange(it)
+                }
+                lastConfiguration = it
             }
-            lastConfiguration = it
         }
     }
 
