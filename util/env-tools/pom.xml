@@ -19,7 +19,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-util</artifactId>
-        <version>25.3.10-SNAPSHOT</version>
+        <version>25.3.10</version>
     </parent>
 
     <artifactId>tock-env-tools</artifactId>
