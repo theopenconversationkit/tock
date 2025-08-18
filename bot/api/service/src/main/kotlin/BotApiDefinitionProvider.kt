@@ -31,7 +31,8 @@ import ai.tock.shared.provide
 import ai.tock.shared.withoutNamespace
 import mu.KotlinLogging
 
-internal class BotApiDefinitionProvider(private val configuration: BotConfiguration) : BotProvider {
+internal class BotApiDefinitionProvider(
+    private val configuration: BotConfiguration) : BotProvider {
 
     private val logger = KotlinLogging.logger {}
 
@@ -53,7 +54,6 @@ internal class BotApiDefinitionProvider(private val configuration: BotConfigurat
                 if (it != null) {
                     updateIfConfigurationChange(it)
                 }
-                lastConfiguration = it
             }
         }
     }
