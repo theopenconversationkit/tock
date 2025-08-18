@@ -17,12 +17,28 @@
 package ai.tock.shared.coroutines
 
 import ai.tock.shared.Executor
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
+/**
+ * Launches a new coroutine without blocking the current thread and returns a reference to the coroutine as a [Job].
+ * The coroutine is cancelled when the resulting job is [cancelled][Job.cancel].
+ *
+ * The coroutine and its suspensions will be dispatched using this executor.
+ *
+ * @see CoroutineScope.launch
+ */
 @ExperimentalTockCoroutines
-fun Executor.launchCoroutine(block: suspend CoroutineScope.() -> Unit): Job {
-    return CoroutineScope(asCoroutineDispatcher()).launch(block = block)
+fun Executor.launchCoroutine(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
 }
