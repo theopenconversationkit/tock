@@ -103,6 +103,15 @@ internal class TockConnectorController(
 
     fun getBaseUrl(): String = configuration.getBaseUrl()
 
+    /**
+     * Handles an event sent by the connector.
+     *
+     * If [event] is an [Action], the processing is done asynchronously using the shared [Executor],
+     * with this method returning immediately.
+     *
+     * @param event the event to handle
+     * @param data the optional additional data from the connector
+     */
     @OptIn(ExperimentalTockCoroutines::class)
     override fun handle(event: Event, data: ConnectorData) {
         if (event.state.sourceConnectorType == null) {
