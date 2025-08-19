@@ -16,11 +16,11 @@
 
 package ai.tock.bot.mongo
 
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 /**
  *
@@ -37,23 +37,23 @@ class MongoUserLockTest : AbstractTest() {
 
     @Test
     fun `take lock on a not locked user is ok`() {
-        assertTrue(MongoUserLock.lock(userId))
+        assertTrue(MongoUserLock.tryLock(userId))
     }
 
     @Test
     fun `take lock on a recent locked user is ko`() {
-        MongoUserLock.lock(userId)
-        assertFalse(MongoUserLock.lock(userId))
+        MongoUserLock.tryLock(userId)
+        assertFalse(MongoUserLock.tryLock(userId))
 
         MongoUserLock.releaseLock(userId)
-        assertTrue(MongoUserLock.lock(userId))
+        assertTrue(MongoUserLock.tryLock(userId))
     }
 
     @Test
     fun `take lock on a old locked user is ok`() {
-        MongoUserLock.lock(userId)
-        assertFalse(MongoUserLock.lock(userId))
+        MongoUserLock.tryLock(userId)
+        assertFalse(MongoUserLock.tryLock(userId))
         Thread.sleep(5100L)
-        assertTrue(MongoUserLock.lock(userId))
+        assertTrue(MongoUserLock.tryLock(userId))
     }
 }

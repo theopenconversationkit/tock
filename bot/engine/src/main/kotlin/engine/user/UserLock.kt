@@ -21,7 +21,18 @@ package ai.tock.bot.engine.user
  */
 interface UserLock {
 
-    fun lock(userId: String): Boolean
+    @Deprecated("Use more appropriately named tryLock", ReplaceWith("tryLock()"))
+    fun lock(userId: String): Boolean = tryLock(userId)
+
+    /**
+     * Acquires the user lock only if it is free at the time of invocation
+     *
+     * Acquires the lock for the given [userId] if it is available and returns immediately
+     * with the value `true`.
+     * If the lock is not available then this method will return
+     * immediately with the value `false`.
+     */
+    fun tryLock(userId: String): Boolean
 
     fun releaseLock(userId: String)
 }

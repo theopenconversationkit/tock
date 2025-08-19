@@ -165,7 +165,7 @@ internal class TockConnectorController(
             val id = playerId.id
 
             logger.debug { "try to lock $playerId" }
-            if (userLock.lock(id)) {
+            if (userLock.tryLock(id)) {
                 try {
                     callback.userLocked(action)
 
