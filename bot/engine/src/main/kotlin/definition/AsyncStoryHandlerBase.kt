@@ -28,7 +28,15 @@ abstract class AsyncStoryHandlerBase<out T : AsyncStoryHandlerDefinition>(
     breath: Long = defaultBreath,
 ) : StoryHandlerBase<T>(mainIntentName, i18nNamespace, breath), AsyncStoryHandler {
     final override suspend fun handleAsync(bus: BotBus) {
-        handle0(bus) {
+        handle0(bus, handleStep = { handler, step, data ->
+            @Suppress("UNCHECKED_CAST")
+            when (step) {
+                is AsyncStoryStep -> (step as AsyncStoryStep<T>).answerAsync().invoke(handler)
+                is AsyncStoryDataStep<*, *, *> -> (step as AsyncStoryDataStep<T, Any, Any>).asyncHandler().invoke(handler, data)
+                is StoryDataStep<*, *, *> -> (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
+                else -> (step as? StoryStep<T>)?.answer()?.invoke(handler)
+            }
+        }) {
             it.handleAsync()
         }
     }
