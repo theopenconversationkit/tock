@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+export enum IndicatorType {
+  PREDEFINED = 'PREDEFINED',
+  CUSTOM = 'CUSTOM'
+}
+
 export interface IndicatorDefinition {
   name: string;
   label: string;
   description: string;
   values: IndicatorValueDefinition[];
   dimensions: string[];
+  type: IndicatorType;
 }
 
 export interface IndicatorValueDefinition {

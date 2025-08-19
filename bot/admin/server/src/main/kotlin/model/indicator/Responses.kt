@@ -16,8 +16,11 @@
 
 package ai.tock.bot.admin.model.indicator
 
+import ai.tock.bot.admin.indicators.IndicatorType
+
 data class IndicatorResponse(
     val id: String,
+    val type: IndicatorType,
     val name: String,
     val label: String,
     val description: String? = null,

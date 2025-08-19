@@ -105,8 +105,9 @@ export class DialogsListFiltersComponent implements OnInit, OnDestroy {
       this.lastEmittedValue = { ...this.form.value };
     }
 
-    this.form.valueChanges.pipe(debounceTime(800), takeUntil(this.destroy$)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(() => {
       this.submitFiltersChange();
+      this.persisteDisplayTests();
     });
   }
 
@@ -139,10 +140,15 @@ export class DialogsListFiltersComponent implements OnInit, OnDestroy {
 
   submitFiltersChange(): void {
     const formValue = this.form.value;
-    if (JSON.stringify(formValue) !== JSON.stringify(this.lastEmittedValue)) {
-      this.onFilter.emit(formValue);
-      this.lastEmittedValue = { ...formValue };
-    }
+    this.onFilter.emit(formValue);
+  }
+
+  persisteDisplayTests(): void {
+    const displayTests = this.getFormControl('displayTests')?.value;
+    this.botSharedService.session_storage = {
+      ...this.botSharedService.session_storage,
+      ...{ dialogs: { ...this.botSharedService.session_storage?.dialogs, displayTests } }
+    };
   }
 
   resetControl(ctrl: FormControl, input?: HTMLInputElement): void {

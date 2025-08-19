@@ -73,6 +73,10 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
+    if (this.botSharedService.session_storage?.dialogs?.displayTests) {
+      this.filters.displayTests = this.botSharedService.session_storage.dialogs.displayTests;
+    }
+
     this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.refresh();
     });

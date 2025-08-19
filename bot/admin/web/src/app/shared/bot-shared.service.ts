@@ -25,6 +25,7 @@ import { AdminConfiguration } from './model/conf';
 
 export interface TockSimpleSessionStorage {
   test: { debug: boolean; sourceWithContent?: boolean };
+  dialogs: { displayTests: boolean };
 }
 
 @Injectable({
