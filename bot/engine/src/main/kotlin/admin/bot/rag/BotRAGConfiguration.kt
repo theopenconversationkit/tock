@@ -36,6 +36,7 @@ data class BotRAGConfiguration(
     val llmSetting: LLMSetting? = null,
     val emSetting: EMSetting,
     val indexSessionId: String? = null,
+    @Deprecated("Replaced by LLM answer status")
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
     val documentsRequired: Boolean = true,
