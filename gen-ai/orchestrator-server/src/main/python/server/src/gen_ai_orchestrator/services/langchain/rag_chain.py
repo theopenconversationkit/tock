@@ -17,6 +17,7 @@ Module for the RAG Chain
 It uses LangChain to perform a Conversational Retrieval Chain
 """
 
+import json
 import logging
 import time
 from functools import partial
@@ -32,7 +33,7 @@ from langchain.retrievers.contextual_compression import (
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.documents import Document
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 from langchain_core.runnables import (
@@ -68,7 +69,7 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     RAGDebugData,
     RAGDocument,
     RAGDocumentMetadata,
-    TextWithFootnotes,
+    LLMAnswer,
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import (
@@ -94,7 +95,6 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 )
 
 logger = logging.getLogger(__name__)
-
 
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -171,16 +171,17 @@ async def execute_rag_chain(
         input=inputs,
         config={'callbacks': callback_handlers},
     )
+    llm_answer = LLMAnswer(**response['answer'])
 
     # RAG Guard
-    rag_guard(inputs, response, request.documents_required)
+    rag_guard(inputs, llm_answer, response, request.documents_required)
 
     # Guardrail
     if request.guardrail_setting:
         guardrail = get_guardrail_factory(
             setting=request.guardrail_setting
         ).get_parser()
-        guardrail_output = guardrail.parse(response['answer'])
+        guardrail_output = guardrail.parse(llm_answer.answer)
         check_guardrail_output(guardrail_output)
 
     # Calculation of RAG processing time
@@ -189,21 +190,18 @@ async def execute_rag_chain(
 
     # Returning RAG response
     return RAGResponse(
-        answer=TextWithFootnotes(
-            text=response['answer'],
-            footnotes=set(
-                map(
-                    lambda doc: Footnote(
-                        identifier=doc.metadata['id'],
-                        title=doc.metadata['title'],
-                        url=doc.metadata['source'],
-                        content=get_source_content(doc),
-                        score=doc.metadata.get('retriever_score', None),
-                    ),
-                    response['documents'],
-                )
-            ),
-        ),
+        answer=llm_answer,
+        footnotes={
+            Footnote(
+                identifier=doc.metadata['id'],
+                title=doc.metadata['title'],
+                url=doc.metadata['source'],
+                content=get_source_content(doc),
+                score=doc.metadata.get('retriever_score', None),
+            )
+            for doc, ctx in zip(response["documents"], llm_answer.context)
+            if ctx.sentences
+        },
         observability_info=get_observability_info(observability_handler),
         debug=get_rag_debug_data(request, records_callback_handler, rag_duration)
         if debug
@@ -332,10 +330,10 @@ def construct_rag_chain(llm, rag_prompt):
         }
         | rag_prompt
         | llm
-        | StrOutputParser(name='rag_chain_output')
+        | JsonOutputParser(pydantic_object=LLMAnswer, name='rag_chain_output')
     )
-
-
+# TODO MASS
+# https://medium.com/@saurabhzodex/memory-enhanced-rag-chatbot-with-langchain-integrating-chat-history-for-context-aware-845100184c4f
 def build_question_condensation_chain(
     llm, prompt: Optional[PromptTemplate]
 ) -> ChatPromptTemplate:
@@ -351,6 +349,21 @@ def build_question_condensation_chain(
 the chat history, formulate a standalone question which can be understood without the chat history. \
 Do NOT answer the question, just reformulate it if needed and otherwise return it as is.',
         )
+
+    # TODO MASS: a mettre ds la default config
+        prompt.template = """You are an assistant whose sole task is to STRICTLY REFORMULATE the user's latest message into a single standalone phrase, in the same language, while respecting the STYLE (register, tone, capitalization, level of formality). Apply the following rules:
+
+        1) Question detection: treat the message as a question if it ends with a question mark, or contains an interrogative word (e.g. who, what, which, how, why, where, when, how much), or has an interrogative construction (e.g. "is it", "can you", "could you", "would you").  
+           - IF it is a question → REFORMULATE it AS A QUESTION. Preserve tone, register (formal/informal, you vs. thou, etc.), capitalization. Add a single "?" at the end if necessary. Do not add any new information.
+
+        2) IF the message is NOT a question (greeting, statement, command, fragment) → REFORMULATE WITHOUT TURNING IT INTO A QUESTION. Do not rephrase it into interrogative form.
+
+        3) Do not guess: if the message is short, vague, or incomplete (e.g. "to understand", "the rate"), DO NOT invent missing meaning. Return it as is or make minimal grammatical adjustments — but do not add content.
+
+        4) References to context: if the message is anaphoric (e.g. "and the rate?") AND the provided chat history clearly contains the antecedent, you may replace the anaphor with a minimal standalone version (e.g. "What is the interest rate?"). If the antecedent is absent or unclear → leave the message unchanged.
+
+        5) Do not answer the message. Do not provide explanations, labels, or metadata. Return **only** the reformulated phrase (a single line).
+        """
 
     return (
         ChatPromptTemplate.from_messages(
@@ -374,50 +387,39 @@ def contextualize_question(inputs: dict, chat_chain) -> str:
     return inputs['question']
 
 
-def rag_guard(inputs, response, documents_required):
+def rag_guard(question, answer, response, documents_required):
     """
     Validates the RAG system's response based on the presence or absence of source documents
     and the `documentsRequired` setting.
 
     Args:
-        inputs: question answering prompt inputs
+        question: user question
+        answer: the LLM answer
         response: the RAG response
         documents_required (bool): Specifies whether documents are mandatory for the response.
     """
 
-    no_docs_retrieved = response['documents'] == []
-    no_docs_but_required = no_docs_retrieved and documents_required
-    chain_can_give_no_answer_reply = 'no_answer' in inputs
-    chain_reply_no_answer = False
-
-    if chain_can_give_no_answer_reply:
-        chain_reply_no_answer = response['answer'] == inputs['no_answer']
-
-    if no_docs_but_required:
-        if chain_can_give_no_answer_reply and chain_reply_no_answer:
-            # We expect the chain to use its non-response value, and it has done so, which is the expected behavior.
-            return
-        # Everything else isn't expected
-        message = 'The RAG system cannot provide an answer when no documents are found and documents are required'
-        rag_log(level=ERROR, message=message, inputs=inputs, response=response)
+    if documents_required and answer.status == "found_in_context" and len(response['documents']) == 0:
+        message = 'No documents were retrieved, yet an answer was attempted.'
+        rag_log(level=ERROR, message=message, question=question, answer=answer.answer, response=response)
         raise GenAIGuardCheckException(ErrorInfo(cause=message))
 
-    if chain_reply_no_answer and not no_docs_retrieved:
-        # If the chain responds with its non-response value and the documents are retrieved,
-        # so we remove them from the RAG response.
-        message = 'The RAG gives no answer for user question, but some documents has been found!'
-        rag_log(level=WARNING, message=message, inputs=inputs, response=response)
+    if answer.status == "not_found_in_context" and len(response['documents']) > 0:
+        # If the answer is not found in context and some documents are retrieved, so we remove them from the RAG response.
+        message = 'No answer found in the retrieved context. The documents are therefore removed from the RAG response.'
+        rag_log(level=WARNING, message=message, question=question, answer=answer.answer, response=response)
         response['documents'] = []
 
 
-def rag_log(level, message, inputs, response):
+def rag_log(level, message, question, answer, response):
     """
     RAG logging
 
     Args:
         level: logging level
         message: message to log
-        inputs: question answering prompt inputs
+        question: question answering prompt inputs
+        answer: LLM answer
         response: the RAG response
     """
 
@@ -427,9 +429,9 @@ def rag_log(level, message, inputs, response):
         'RAG chain - question="%(question)s", answer="%(answer)s", documents="%(documents)s"',
         {
             'message': message,
-            'question': inputs['question'],
-            'answer': response['answer'],
-            'documents': response['documents'],
+            'question': question,
+            'answer': answer,
+            'documents': len(response['documents']),
         },
     )
 
@@ -451,6 +453,8 @@ def get_rag_documents(handler: RAGCallbackHandler) -> List[RAGDocument]:
         for doc in handler.records['documents']
     ]
 
+def get_llm_answer(rag_chain_output) -> LLMAnswer:
+    return LLMAnswer(**json.loads(rag_chain_output.strip().removeprefix("```json").removesuffix("```").strip()))
 
 def get_rag_debug_data(
     request: RAGRequest, records_callback_handler: RAGCallbackHandler, rag_duration
@@ -470,7 +474,7 @@ def get_rag_debug_data(
         documents=get_rag_documents(records_callback_handler),
         document_index_name=request.document_index_name,
         document_search_params=request.document_search_params,
-        answer=records_callback_handler.records['rag_chain_output'],
+        answer=get_llm_answer(records_callback_handler.records['rag_chain_output']),
         duration=rag_duration,
     )
 
