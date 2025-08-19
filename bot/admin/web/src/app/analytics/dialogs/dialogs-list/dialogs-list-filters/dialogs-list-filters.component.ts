@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ConnectorType } from '../../../../core/model/configuration';
 import { Subject, debounceTime, take, takeUntil } from 'rxjs';
@@ -67,7 +67,7 @@ export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
   templateUrl: './dialogs-list-filters.component.html',
   styleUrl: './dialogs-list-filters.component.scss'
 })
-export class DialogsListFiltersComponent implements OnInit {
+export class DialogsListFiltersComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
   private lastEmittedValue: Partial<DialogListFilters> | null = null;
 
@@ -109,8 +109,9 @@ export class DialogsListFiltersComponent implements OnInit {
       this.lastEmittedValue = { ...this.form.value };
     }
 
-    this.form.valueChanges.pipe(debounceTime(800), takeUntil(this.destroy$)).subscribe(() => {
+    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(() => {
       this.submitFiltersChange();
+      this.persisteDisplayTests();
     });
   }
 
@@ -143,10 +144,15 @@ export class DialogsListFiltersComponent implements OnInit {
 
   submitFiltersChange(): void {
     const formValue = this.form.value;
-    if (JSON.stringify(formValue) !== JSON.stringify(this.lastEmittedValue)) {
-      this.onFilter.emit(formValue);
-      this.lastEmittedValue = { ...formValue };
-    }
+    this.onFilter.emit(formValue);
+  }
+
+  persisteDisplayTests(): void {
+    const displayTests = this.getFormControl('displayTests')?.value;
+    this.botSharedService.session_storage = {
+      ...this.botSharedService.session_storage,
+      ...{ dialogs: { ...this.botSharedService.session_storage?.dialogs, displayTests } }
+    };
   }
 
   resetControl(ctrl: FormControl, input?: HTMLInputElement): void {

@@ -33,31 +33,43 @@
   *ngIf="parentKey"
   (click)="switchDeployed()"
   class="parent-title"
-  [ngClass]="{ isPrimitive: isPrimitive(data), ellipsis: !isPrimitive(data), pointer: !isPrimitive(data) }"
+  [ngClass]="{ pointer: isExpandable() }"
 >
-  <nb-icon
-    icon="caret-right-fill"
-    class="align-middle"
-    *ngIf="!isDeployed && !isPrimitive(data)"
-  ></nb-icon>
-  <nb-icon
-    icon="caret-down-fill"
-    class="align-middle"
-    *ngIf="isDeployed && !isPrimitive(data)"
-  ></nb-icon>
-  <strong> {{ parentKey }} : </strong>
+  <div class="d-flex">
+    <div class="caret-holder">
+      <nb-icon
+        icon="caret-right-fill"
+        class="align-middle"
+        *ngIf="!isDeployed && isExpandable()"
+      ></nb-icon>
+      <nb-icon
+        icon="caret-down-fill"
+        class="align-middle"
+        *ngIf="isDeployed && isExpandable()"
+      ></nb-icon>
+    </div>
+    <div class="grow-1 ellipsis">
+      <strong> {{ parentKey }} : </strong>
 
-  <pre
-    class="pre-format text-primary pl-2"
-    *ngIf="isPrimitive(data)"
-  >
+      <span
+        class="text-primary pl-2"
+        *ngIf="isPrimitive(data) && !isDeployed"
+        >"{{ data }}"</span
+      >
+      <pre
+        class="pre-format text-primary pl-2"
+        *ngIf="isPrimitive(data) && isDeployed"
+      >
 "{{ data }}"</pre
-  >
-  <span
-    class="text-muted pl-2"
-    *ngIf="!isPrimitive(data)"
-    >{{ data | json }}</span
-  >
+      >
+
+      <span
+        class="text-muted pl-2"
+        *ngIf="!isPrimitive(data)"
+        >{{ data | json }}</span
+      >
+    </div>
+  </div>
 </div>
 
 <div
@@ -65,7 +77,7 @@
   class="entry-block"
   [class.isRoot]="isRoot"
 >
-  <ng-container *ngFor="let list of data | keyvalue">
+  <ng-container *ngFor="let list of data | keyvalue: customSort">
     <tock-json-iterator
       [data]="list.value"
       [parentKey]="list.key"

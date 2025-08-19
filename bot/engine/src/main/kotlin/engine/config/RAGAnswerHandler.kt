@@ -16,11 +16,11 @@
 
 package ai.tock.bot.engine.config
 
-import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.indicators.IndicatorValues
 import ai.tock.bot.admin.indicators.Indicators
 import ai.tock.bot.admin.indicators.metric.MetricType
-import ai.tock.bot.definition.RAGStoryDefinition
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.RAGStoryDefinition.Companion.RAG_STORY_NAME
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
@@ -34,10 +34,11 @@ import ai.tock.genai.orchestratorclient.requests.ChatMessage
 import ai.tock.genai.orchestratorclient.requests.ChatMessageType
 import ai.tock.genai.orchestratorclient.requests.DialogDetails
 import ai.tock.genai.orchestratorclient.requests.RAGRequest
+import ai.tock.genai.orchestratorclient.responses.LLMAnswer
 import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
-import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorParsingError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
 import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
@@ -54,6 +55,8 @@ private val technicalErrorMessage =
         defaultValue = "Technical error :( sorry!",
     )
 
+private const val UNKNOWN_INTENT = "unknown"
+
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private val logger = KotlinLogging.logger {}
     private val ragService: RAGService get() = injector.provide()
@@ -64,7 +67,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
 
             // Call RAG Api - Gen AI Orchestrator
-            val (answer, debug, noAnswerStory, observabilityInfo) = rag(this)
+            val (answer, footnotes, debug, redirectStory, observabilityInfo) = rag(this)
 
             // Add debug data if available and if debugging is enabled
             if (debug != null) {
@@ -72,37 +75,42 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 sendDebugData("RAG", debug)
             }
 
-            // Handle the RAG answer
-            if (noAnswerStory == null && answer != null) {
-                logger.info { "Send RAG answer." }
+            val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
-                val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
+            // Footnotes building
+            val preparedFootnotes =
+                footnotes?.map {
+                    Footnote(
+                        it.identifier,
+                        it.title,
+                        it.url,
+                        if (action.metadata.sourceWithContent) it.content else null,
+                        it.score,
+                    )
+                }?.toMutableList() ?: mutableListOf()
 
-                send(
+            // Identifying text to be sent
+            val textToSend = if (answer?.displayAnswer == true) answer.answer.orEmpty() else ""
+
+            // Send SendSentenceWithFootnotes
+            logger.info { "Send RAG answer." }
+            send(
+                action =
                     SendSentenceWithFootnotes(
-                        botId,
-                        connectorId,
-                        userId,
-                        text = answer.text,
-                        footnotes =
-                            answer.footnotes.map {
-                                Footnote(
-                                    it.identifier,
-                                    it.title,
-                                    it.url,
-                                    if (action.metadata.sourceWithContent) it.content else null,
-                                    it.score,
-                                )
-                            }.toMutableList(),
-                        // modifiedObservabilityInfo includes the public langfuse URL if filled.
-                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo),
+                        playerId = botId,
+                        applicationId = connectorId,
+                        recipientId = userId,
+                        text = textToSend,
+                        footnotes = preparedFootnotes,
+                        metadata =
+                            ActionMetadata(
+                                isGenAiRagAnswer = true,
+                                observabilityInfo = modifiedObservabilityInfo,
+                            ),
                     ),
-                )
-            } else {
-                logger.info { "No RAG answer to send, because a noAnswerStory is returned." }
-            }
+            )
 
-            noAnswerStory
+            redirectStory
         }
     }
 
@@ -122,70 +130,42 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     }
 
     /**
-     * Manage story redirection when no answer redirection is filled
+     * Manage story redirection
      * Use the handler of the configured story otherwise launch default unknown story
-     * @param botBus the bot Bus
+     * @param botDefinition the bot definition
      * @param response the RAG response
      */
     private fun ragStoryRedirection(
-        botBus: BotBus,
+        botDefinition: BotDefinition,
         response: RAGResponse?,
     ): StoryDefinition? {
-        return with(botBus) {
-            botDefinition.ragConfiguration?.let { ragConfig ->
-                if (response?.answer?.text.equals(ragConfig.noAnswerSentence, ignoreCase = true)) {
-                    // Save no answer metric
-                    saveRagMetric(IndicatorValues.NO_ANSWER)
-
-                    // Switch to no answer story if configured
-                    if (!ragConfig.noAnswerStoryId.isNullOrBlank()) {
-                        logger.info { "The RAG response is equal to the configured no-answer sentence, so switch to the no-answer story." }
-                        getNoAnswerRAGStory(ragConfig)
-                    } else {
-                        null
-                    }
-                } else {
-                    // Save success metric
-                    saveRagMetric(IndicatorValues.SUCCESS)
-                    null
-                }
+        return response?.answer?.redirectionIntent?.let {
+            if (UNKNOWN_INTENT == it) {
+                throw GenAIOrchestratorParsingError(
+                    message = "RAG - Story redirection failed",
+                    detail = "Unknown story cannot be used.",
+                )
             }
-        }
-    }
 
-    /**
-     * Switch to the configured no-answer story if exists.
-     * Switch to the default unknown story otherwise.
-     * @param ragConfig: The RAG configuration
-     */
-    private fun BotBus.getNoAnswerRAGStory(ragConfig: BotRAGConfiguration): StoryDefinition {
-        val noAnswerStory: StoryDefinition
-        val noAnswerStoryId = ragConfig.noAnswerStoryId
-        if (!noAnswerStoryId.isNullOrBlank()) {
-            logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
-            noAnswerStory =
-                botDefinition.findStoryDefinitionById(noAnswerStoryId, connectorId).let {
-                    // Prevent infinite loop when the noAnswerStory is removed or disabled
-                    if (it.id == RAGStoryDefinition.RAG_STORY_NAME) {
-                        logger.info { "The no-answer story is removed or disabled, so run the default unknown story." }
-                        botDefinition.unknownStory
-                    } else {
-                        it
-                    }
-                }
-        } else {
-            logger.info { "No no-answer story is configured, so run the default unknown story." }
-            noAnswerStory = botDefinition.unknownStory
-        }
+            val targetStory = botDefinition.findStoryDefinition(it, "")
 
-        return noAnswerStory
+            if (RAG_STORY_NAME == targetStory.id) {
+                throw GenAIOrchestratorParsingError(
+                    message = "RAG - Story redirection failed",
+                    detail = "No story found for intent=$it",
+                )
+            }
+
+            targetStory
+        }
     }
 
     /**
      * Call RAG API
      * @param botBus
      *
-     * @return RAGResult. The answer is given if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
+     * @return RAGResult. The answer is given if it needs to be handled, null otherwise
+     * (already handled by a switch for instance in case of no response)
      */
     private fun rag(botBus: BotBus): RAGResult {
         logger.info { "Call Generative AI Orchestrator - RAG API" }
@@ -211,6 +191,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 ragConfiguration.questionAnsweringPrompt
                     ?: ragConfiguration.initQuestionAnsweringPrompt()
 
+            var debug: Any? = null
             try {
                 val response =
                     ragService.rag(
@@ -235,7 +216,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                             mapOf(
                                                 "question" to action.toString(),
                                                 "locale" to userPreferences.locale.displayLanguage,
-                                                "no_answer" to ragConfiguration.noAnswerSentence,
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,
@@ -249,27 +229,42 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
                     )
 
+                debug = response?.debug
+                if (response?.answer?.status.equals("not_found_in_context", ignoreCase = true)) {
+                    // Save no answer metric
+                    saveRagMetric(IndicatorValues.NO_ANSWER)
+                } else {
+                    // Save success metric
+                    saveRagMetric(IndicatorValues.SUCCESS)
+                }
+
                 // Handle RAG response
-                return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response), response?.observabilityInfo)
+                return RAGResult(
+                    answer = response?.answer,
+                    footnotes = response?.footnotes,
+                    debug = debug,
+                    redirectStory = ragStoryRedirection(this.botDefinition, response),
+                    observabilityInfo = response?.observabilityInfo,
+                )
             } catch (exc: Exception) {
                 logger.error { exc }
                 // Save failure metric
                 saveRagMetric(IndicatorValues.FAILURE)
 
-                return if (exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError") {
-                    logger.info { "The APITimeoutError is raised, so switch to the no-answer story." }
-                    RAGResult(noAnswerStory = getNoAnswerRAGStory(ragConfiguration))
-                } else {
-                    RAGResult(
-                        answer = TextWithFootnotes(text = technicalErrorMessage),
-                        debug =
-                            when (exc) {
-                                is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
-                                is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
-                                else -> RAGError(errorMessage = exc.message)
-                            },
-                    )
-                }
+                val ragError =
+                    when (exc) {
+                        is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
+                        is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
+                        is GenAIOrchestratorParsingError -> RAGError(exc.message, exc.detail)
+                        else -> RAGError(errorMessage = exc.message)
+                    }
+
+                (debug as MutableMap<String, Any?>)["error"] = ragError
+
+                return RAGResult(
+                    answer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage),
+                    debug = debug,
+                )
             }
         }
     }
@@ -330,10 +325,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
  * Aggregation of RAG answer, debug and the no answer Story.
  */
 data class RAGResult(
-    val answer: TextWithFootnotes? = null,
+    val answer: LLMAnswer? = null,
+    val footnotes: List<ai.tock.genai.orchestratorclient.responses.Footnote>? = null,
     val debug: Any? = null,
-    val noAnswerStory: StoryDefinition? = null,
+    val redirectStory: StoryDefinition? = null,
     val observabilityInfo: ObservabilityInfo? = null,
+    val error: Any? = null,
 )
 
 /**

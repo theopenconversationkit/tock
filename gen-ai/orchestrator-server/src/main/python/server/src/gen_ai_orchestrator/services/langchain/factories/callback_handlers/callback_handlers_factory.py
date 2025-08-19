@@ -49,5 +49,3 @@ class LangChainCallbackHandlerFactory(ABC, BaseModel):
         :raises BusinessException: For incorrect setting
         """
         pass
-
-

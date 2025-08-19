@@ -24,9 +24,6 @@ export interface RagSettings {
 
   debugEnabled: boolean;
 
-  noAnswerSentence: string;
-  noAnswerStoryId: string | null;
-
   questionCondensingLlmSetting: llmSetting;
   questionCondensingPrompt: PromptDefinition;
   maxMessagesFromHistory: number;
@@ -40,6 +37,4 @@ export interface RagSettings {
   indexName: string;
 
   maxDocumentsRetrieved: number;
-
-  documentsRequired: boolean;
 }

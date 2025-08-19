@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
-import { Debug } from '../../../../model/dialog-data';
+import { Debug, RagAnswerStatus, RagAnswerStatusLabels } from '../../../../model/dialog-data';
 import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-viewer-dialog.component';
+import { getContrastYIQ, getInterpolatedColor } from '../../../../utils';
 
 @Component({
   selector: 'tock-chat-ui-message-debug',
@@ -34,5 +35,43 @@ export class ChatUiMessageDebugComponent {
         debug: this.message.data
       }
     });
+  }
+
+  getStatusClassName(): string {
+    const status = this.message.data.answer?.status;
+    if (!status) {
+      return '';
+    }
+
+    switch (status.toLowerCase()) {
+      case RagAnswerStatus.FOUND_IN_CONTEXT:
+        return 'status-success';
+      case RagAnswerStatus.NOT_FOUND_IN_CONTEXT:
+        return 'status-warning';
+      case RagAnswerStatus.SMALL_TALK:
+        return 'status-info';
+      case RagAnswerStatus.OUT_OF_SCOPE:
+        return 'status-danger';
+      default:
+        return '';
+    }
+  }
+
+  getStatusLabel(): string {
+    const status = this.message.data.answer?.status;
+    if (status) {
+      return RagAnswerStatusLabels[status.toLowerCase()] || status.replace(/_/g, ' ').replace(/^(.)|\s+(.)/g, (c) => c.toUpperCase());
+    }
+    return '';
+  }
+
+  getConfidenceBgColor(): { bg: string; fg: string } {
+    const score = this.message.data.answer?.confidence_score;
+    if (score != null) {
+      const bg = getInterpolatedColor(score);
+      const fg = getContrastYIQ(bg);
+      return { bg, fg };
+    }
+    return { bg: '', fg: '' };
   }
 }

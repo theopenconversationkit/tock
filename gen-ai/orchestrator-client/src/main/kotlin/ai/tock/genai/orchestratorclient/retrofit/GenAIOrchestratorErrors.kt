@@ -31,3 +31,8 @@ class GenAIOrchestratorValidationError(
     override val message: String = "Generative AI Orchestrator validation error",
     val detail: List<HTTPValidationError> = emptyList(),
 ) : Exception(message)
+
+class GenAIOrchestratorParsingError(
+    override val message: String = "Generative AI Orchestrator parsing error",
+    val detail: String,
+) : Exception(message)

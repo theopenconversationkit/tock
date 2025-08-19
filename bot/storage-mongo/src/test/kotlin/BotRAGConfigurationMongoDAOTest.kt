@@ -59,7 +59,6 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                         model = "modelName1",
                         baseUrl = "https://api.openai.com/v1",
                     ),
-                noAnswerSentence = "no answer sentence",
             )
 
         BotRAGConfigurationMongoDAO.save(config)
@@ -90,7 +89,6 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                         baseUrl = "https://api.openai.com/v1",
                         model = "modelName1",
                     ),
-                noAnswerSentence = "no answer sentence1",
             )
 
         val config2 =
@@ -113,7 +111,6 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                         baseUrl = "https://api.openai.com/v1",
                         model = "modelName1",
                     ),
-                noAnswerSentence = "no answer sentence1",
             )
 
         assertNotEquals(config1, config2)
@@ -121,11 +118,11 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
         BotRAGConfigurationMongoDAO.save(config1)
         BotRAGConfigurationMongoDAO.save(config2)
 
-        BotRAGConfigurationMongoDAO.save(config1.copy(noAnswerSentence = "New no answer sentence"))
+        BotRAGConfigurationMongoDAO.save(config1.copy(documentsRequired = true))
 
         val configBDD = BotRAGConfigurationMongoDAO.findByNamespaceAndBotId("namespace1", "botId1")
 
-        assertEquals(config1.copy(noAnswerSentence = "New no answer sentence"), configBDD)
+        assertEquals(config1.copy(documentsRequired = true), configBDD)
     }
 
     @Test
@@ -150,7 +147,6 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                         baseUrl = "https://api.openai.com/v1",
                         model = "modelName1",
                     ),
-                noAnswerSentence = "no answer sentence",
             )
 
         BotRAGConfigurationMongoDAO.save(config)
