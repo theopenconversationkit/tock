@@ -66,6 +66,10 @@ object IndicatorService {
         request: Valid<UpdateIndicatorRequest>,
     ) = request.data.let {
         findIndicatorAndMap(indicatorName, namespace, botId) { it }.let { indicator ->
+            if (!indicator.isCustom()) {
+                throw IndicatorError.IndicatorUnauthorizedUpdate(indicator.name, namespace, botId)
+            }
+
             dao.save(
                 indicator.copy(
                     label = it.label,

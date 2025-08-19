@@ -97,7 +97,6 @@ class RAGServiceTest : AbstractTest() {
                         model = "model",
                         apiBase = "url",
                     ),
-                noAnswerSentence = "No answer sentence",
                 documentsRequired = true,
                 debugEnabled = false,
                 maxDocumentsRetrieved = 2,
@@ -211,7 +210,6 @@ class RAGServiceTest : AbstractTest() {
             Assertions.assertEquals(PROVIDER, captured.questionAnsweringLlmSetting!!.provider.name)
             Assertions.assertEquals(TEMPERATURE, captured.questionAnsweringLlmSetting!!.temperature)
             Assertions.assertEquals(PROMPT, captured.questionAnsweringPrompt!!.template)
-            Assertions.assertEquals(null, captured.noAnswerStoryId)
         }
 
         TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet").given(

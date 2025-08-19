@@ -97,7 +97,7 @@ class IndicatorVerticle {
                     val name = context.path(PATH_PARAM_NAME)
                     tryExecute(context) {
                         logger.info { "updating indicator $name" }
-                        IndicatorService.update(it.name, it.namespace, name, Valid(request))
+                        IndicatorService.update(it.namespace, it.name, name, Valid(request))
                     }
                 }
                 return@blockingJsonPut request

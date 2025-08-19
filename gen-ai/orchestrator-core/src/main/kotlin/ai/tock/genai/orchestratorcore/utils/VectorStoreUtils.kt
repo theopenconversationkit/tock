@@ -26,7 +26,7 @@ import ai.tock.shared.property
 private val vectorStore =
     property(
         name = "tock_gen_ai_orchestrator_vector_store_provider",
-        defaultValue = VectorStoreProvider.OpenSearch.name,
+        defaultValue = VectorStoreProvider.PGVector.name,
     )
 
 typealias DocumentIndexName = String

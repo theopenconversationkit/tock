@@ -14,10 +14,55 @@
   ~ limitations under the License.
   -->
 
-<div
-  (click)="showDebug()"
-  class="debug text-center w-100 mx-1"
-  nbTooltip="Show debug infos"
->
-  <span>{{ message.text }} DEBUG</span>
+<div class="debug d-flex flex-wrap justify-content-end pr-5 gap-05">
+  <div
+    class="tag"
+    [ngClass]="getStatusClassName()"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Status | <strong class="ml-1">{{ getStatusLabel() }}</strong>
+  </div>
+
+  <div
+    class="tag topic"
+    *ngIf="message.data.answer?.topic && message.data.answer?.topic !== 'unknown'"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Topic | <strong class="ml-1">{{ message.data.answer?.topic }}</strong>
+  </div>
+
+  <div
+    class="tag suggested-topics"
+    *ngIf="message.data.answer?.suggested_topics?.length"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Suggested topics |
+    <strong class="ml-1">
+      <span *ngFor="let suggestion of message.data.answer.suggested_topics">
+        {{ suggestion }}
+      </span>
+    </strong>
+  </div>
+
+  <div
+    class="tag"
+    *ngIf="message.data.answer?.redirection_intent"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Redirection intent | <strong class="ml-1">{{ message.data.answer?.redirection_intent }}</strong>
+  </div>
+
+  <div
+    class="tag"
+    *ngIf="message.data.answer?.confidence_score"
+    [ngStyle]="{ 'background-color': getConfidenceBgColor().bg, color: getConfidenceBgColor().fg }"
+    (click)="showDebug()"
+    nbTooltip="Show details"
+  >
+    Confidence | <strong class="ml-1">{{ message.data.answer?.confidence_score }}</strong>
+  </div>
 </div>

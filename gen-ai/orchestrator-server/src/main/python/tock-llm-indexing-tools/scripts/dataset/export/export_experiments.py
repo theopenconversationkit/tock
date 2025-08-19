@@ -36,9 +36,11 @@ Examples:
     python export_experiments.py --json-config-file=path/to/config-file.json
 """
 
+import json
 import os
 import re
 from datetime import datetime
+from typing import Any
 
 from docopt import docopt
 from langfuse import Langfuse
@@ -138,7 +140,7 @@ def create_excel_output(
         for run_idx, run_name in enumerate(iterations):
             no_rag_count = 0
             for item in items:
-                answer = item.runs[run_idx].output.get('answer')
+                answer = extract_answer_text(item.runs[run_idx].output)
                 if answer == 'NO_RAG_ANSWER':
                     no_rag_count += 1
             if items:
@@ -166,18 +168,19 @@ def create_excel_output(
         col_letter = get_column_letter(
             10 + i
         )  # Start at col J (index 9 as indexes starts at 0 for letter A)
-        sheet[f"{col_letter}3"] = items[i].metadata.get('topic', '')
-        sheet[f"{col_letter}4"] = items[i].input.get('question', '')
-        sheet[f"{col_letter}5"] = items[i].expected_output.get('answer', '')
+        sheet[f"{col_letter}3"] = to_excel_text(items[i].metadata.get('topic', ''))
+        sheet[f"{col_letter}4"] = to_excel_text(items[i].input.get('question', ''))
+        sheet[f"{col_letter}5"] = to_excel_text(
+            items[i].expected_output.get('answer', '')
+        )
         for j in range(len(iterations)):
             start_row = 7 + 6 * j
-            sheet[f"{col_letter}{start_row}"] = (
-                items[i].runs[j].output.get('answer', '')
-            )
+            run_output = items[i].runs[j].output or {}
+            sheet[f"{col_letter}{start_row}"] = extract_answer_text(run_output)
             sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
                 [
                     format_document_for_excel(doc)
-                    for doc in items[i].runs[j].output.get('documents', [])
+                    for doc in run_output.get('documents', [])
                     if isinstance(doc, dict)
                 ]
             )
@@ -204,6 +207,31 @@ def sanitize_for_excel(text: str) -> str:
     text = ILLEGAL_EXCEL_CHARS.sub('', text)
 
     return text
+
+
+def to_excel_text(value: Any) -> str:
+    # openpyxl only accepts scalar values in a cell.
+    if value is None:
+        return ''
+    if isinstance(value, str):
+        return sanitize_for_excel(value)
+    if isinstance(value, (dict, list)):
+        return sanitize_for_excel(json.dumps(value, ensure_ascii=False))
+    return sanitize_for_excel(str(value))
+
+
+def extract_answer_text(output: dict | None) -> str:
+    if not isinstance(output, dict):
+        return to_excel_text(output)
+
+    answer = output.get('answer', '')
+    # In structured outputs, "answer" itself can be a JSON object.
+    if isinstance(answer, dict):
+        nested_answer = answer.get('answer')
+        if isinstance(nested_answer, str):
+            return to_excel_text(nested_answer)
+
+    return to_excel_text(answer)
 
 
 def format_document_for_excel(doc: dict) -> str:

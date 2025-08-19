@@ -30,6 +30,7 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { heuristicValueColorDetection } from '../commons/utils';
 import {
   IndicatorDefinition,
+  IndicatorType,
   IndicatorValueDefinition,
   MetricGroupResult,
   MetricResult,
@@ -39,8 +40,10 @@ import {
 } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
-import { roundMinutesToNextTen, toISOStringWithoutOffset } from '../../shared/utils';
+import { RagAnswerStatusLabels, roundMinutesToNextTen, snakeCaseToDisplayLabel, toISOStringWithoutOffset } from '../../shared/utils';
 import { DialogStats as DialogStats, DialogStatsQueryResult, DialogStatsGroupResult, DialogCounts } from 'src/app/shared/model/dialog-data';
+import { BotSharedService } from '../../shared/bot-shared.service';
+import { MetricsIndicatorDetailsComponent } from './metrics-indicator-details/metrics-indicator-details.component';
 
 export enum TimeRanges {
   day = 1,
@@ -84,7 +87,13 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   stories: StorySummary[];
   dialogStats: DialogStats;
   ragStats: RagStats;
+  storiesHits: MetricGroupResult;
   storiesFilterType = StoriesFilterType;
+  lastLoadedDimensionMetrics: MetricGroupResult;
+
+  indicatorType = IndicatorType;
+
+  displayTests: boolean = false;
 
   constructor(
     private stateService: StateService,
@@ -93,7 +102,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private rest: RestService,
     private nbDialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private botSharedService: BotSharedService
   ) {
     effect(
       () => {
@@ -123,6 +133,9 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
+
+    this.displayTests = this.botSharedService.session_storage?.dialogs?.displayTests;
+
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
       this.configurations = confs;
       if (confs.length) {
@@ -165,6 +178,23 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       start: this.dateService.addDay(this.dateService.today(), -timeRange),
       end: roundMinutesToNextTen(this.dateService.today())
     });
+  }
+
+  onToggleDisplayTests() {
+    this.displayTests = !this.displayTests;
+
+    // persist displayTests value in session storage to keep it consistent across the app and page reloads
+    this.botSharedService.session_storage = {
+      ...this.botSharedService.session_storage,
+      ...{ dialogs: { ...this.botSharedService.session_storage?.dialogs, displayTests: this.displayTests } }
+    };
+
+    // refresh stories metrics with or without test data according to the new displayTests value
+    this.storiesMetrics = this.accumulateStoryMetrics(this.getMergedMetricsData(this.storiesHits));
+    this.initStoriesHitsChart();
+
+    // refresh current dimension metrics with or without test data according to the new displayTests value
+    this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(this.getMergedMetricsData(this.lastLoadedDimensionMetrics)));
   }
 
   private loadIndicatorsAndStories(): void {
@@ -309,14 +339,23 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         DialogStatsGroupResult
       ]) => {
         this.initMessagesChart(messages);
-        this.storiesMetrics = this.accumulateStoryMetrics(storiesHits.prod); // Only prod data
+        this.storiesHits = storiesHits;
+        this.storiesMetrics = this.accumulateStoryMetrics(this.getMergedMetricsData(this.storiesHits));
         this.ragStats = this.accumulateRagStats(ragStats);
         this.dialogStats = this.accumulateDialogStats(dialogStats);
         this.initStoriesHitsChart();
-        this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(dimensionMetrics.prod)); // Only prod data
+        this.lastLoadedDimensionMetrics = dimensionMetrics;
+        this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(this.getMergedMetricsData(this.lastLoadedDimensionMetrics)));
         this.loading = false;
       }
     );
+  }
+
+  private getMergedMetricsData(set: MetricGroupResult): MetricResult[] {
+    if (this.displayTests) {
+      return [...set.prod, ...set.test];
+    }
+    return set.prod;
   }
 
   private loadCurrentDimensionMetrics(): void {
@@ -325,7 +364,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     this.getCurrentDimensionMetricsQuery()
       .pipe(take(1))
       .subscribe((dimensionMetrics) => {
-        this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(dimensionMetrics.prod)); // Only prod data
+        this.lastLoadedDimensionMetrics = dimensionMetrics;
+        this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(this.getMergedMetricsData(this.lastLoadedDimensionMetrics)));
         this.loading = false;
       });
   }
@@ -548,10 +588,11 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         let indicatorValue = this.getIndicatorValueByName(imr.row.indicatorName, imr.row.indicatorValueName);
         if (indicatorValue) {
           const valueLabel = this.getIndicatorValueLabelByName(imr.row.indicatorName, imr.row.indicatorValueName);
+          const displayLabel = RagAnswerStatusLabels[valueLabel.toLowerCase()] || snakeCaseToDisplayLabel(valueLabel);
 
           entries.push({
             value: imr.count,
-            name: valueLabel,
+            name: displayLabel,
             itemStyle: { color: heuristicValueColorDetection(valueLabel) }
           });
         }
@@ -573,6 +614,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       this.currentDimensionCharts.push({
         name: indicatorLabel,
         indicatorName: indicator.name,
+        indicatorType: indicator.type,
         tooltip: {
           trigger: 'item',
           formatter: function (params) {
@@ -592,6 +634,19 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
           }
         ]
       });
+    });
+  }
+
+  displayPredefinedIndicatorMetrics(indicatorName: string) {
+    const data = this.accumulateDimensionMetrics(this.getMergedMetricsData(this.lastLoadedDimensionMetrics)).filter(
+      (metric) => metric.row.indicatorName === indicatorName
+    );
+
+    this.nbDialogService.open(MetricsIndicatorDetailsComponent, {
+      context: {
+        indicatorName: indicatorName,
+        metrics: data
+      }
     });
   }
 
