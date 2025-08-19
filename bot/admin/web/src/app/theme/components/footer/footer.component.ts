@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { tock_info } from '../../../../environments/manifest';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { AdminConfiguration } from '../../../shared/model/conf';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'tock-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent {
+export class FooterComponent implements OnInit {
   constructor(private botSharedService: BotSharedService) {}
 
   tock_info = tock_info;
 
-  configuration = this.botSharedService.getConfiguration()
+  globalMessage = '';
+
+  ngOnInit() {
+    this.botSharedService
+      .getConfiguration()
+      .pipe(take(1))
+      .subscribe((conf: AdminConfiguration) => {
+        if (conf.globalMessage) {
+          this.globalMessage = conf.globalMessage;
+        }
+      });
+  }
 }

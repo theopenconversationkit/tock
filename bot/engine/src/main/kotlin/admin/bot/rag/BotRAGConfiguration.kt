@@ -35,8 +35,6 @@ data class BotRAGConfiguration(
     val llmSetting: LLMSetting? = null,
     val emSetting: EMSetting,
     val indexSessionId: String? = null,
-    val noAnswerSentence: String,
-    val noAnswerStoryId: String? = null,
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean = false,
     val maxDocumentsRetrieved: Int = 4,

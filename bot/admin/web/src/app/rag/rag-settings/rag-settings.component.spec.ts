@@ -18,8 +18,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbToastrService } from '@nebular/theme';
 import { of } from 'rxjs';
-import { BotService } from '../../bot/bot-service';
-import { StoryDefinitionConfigurationSummary } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
@@ -27,22 +25,6 @@ import { deepCopy } from '../../shared/utils';
 import { RagSettings } from './models';
 
 import { RagSettingsComponent } from './rag-settings.component';
-
-const stories = [
-  {
-    _id: '123456789abcdefghijkl',
-    storyId: 'teststory',
-    botId: 'new_assistant',
-    intent: {
-      name: 'testintent'
-    },
-    currentType: 'simple',
-    name: 'Test story',
-    category: 'faq',
-    description: '',
-    lastEdited: '2023-07-31T14:48:21.291Z'
-  } as unknown as StoryDefinitionConfigurationSummary
-];
 
 const settings = {
   id: 'abcdefghijkl123456789',
@@ -64,9 +46,7 @@ const settings = {
     embeddingModelName: 'text-embedding-ada-002',
     embeddingApiKey: 'Embedding OpenAI API Key',
     embeddingApiVersion: '2023-03-15-preview'
-  },
-  noAnswerSentence: 'No answer sentence',
-  noAnswerStoryId: 'null'
+  }
 } as unknown as RagSettings;
 
 describe('RagSettingsComponent', () => {
@@ -77,12 +57,6 @@ describe('RagSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [RagSettingsComponent],
       providers: [
-        {
-          provide: BotService,
-          useValue: {
-            searchStories: () => of(stories)
-          }
-        },
         {
           provide: StateService,
           useValue: {
@@ -118,10 +92,6 @@ describe('RagSettingsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load stories', () => {
-    expect(component.availableStories).toEqual(stories);
-  });
-
   it('should load settings', () => {
     expect(component.settingsBackup).toEqual(settings);
 
@@ -130,7 +100,7 @@ describe('RagSettingsComponent', () => {
     delete cleanedSettings['botId'];
 
     const cleanedFormValue = deepCopy(component.form.getRawValue());
-    delete cleanedFormValue.params.apiKey;
+    delete cleanedFormValue.questionAnsweringLlmSetting.apiKey;
 
     expect(cleanedFormValue as unknown).toEqual(cleanedSettings as unknown);
   });

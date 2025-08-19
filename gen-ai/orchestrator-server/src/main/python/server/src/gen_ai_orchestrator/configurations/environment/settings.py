@@ -60,6 +60,7 @@ class _Settings(BaseSettings):
     llm_provider_max_retries: int = 0
     """ Enable or not the rate limit for the LLM call"""
     llm_rate_limits: bool = True
+    llm_reasoning_effort: str = 'minimal'
     em_provider_timeout: int = 4
 
     vector_store_provider: Optional[
