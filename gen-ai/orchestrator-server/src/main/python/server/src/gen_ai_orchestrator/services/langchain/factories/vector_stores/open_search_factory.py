@@ -61,7 +61,7 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
             # By default, is the same as host. If set to False, it will not verify hostname on certificate
             ssl_assert_hostname=self.setting.host if is_prod_environment else False,
             ssl_show_warn=is_prod_environment,
-            index_name=self.index_name,
+            index_name="ns-salledesmarchs-bot-sdm-session-f13384dd-084c-4414-bfbf-ad1f51e81490",
             embedding_function=self.embedding_function,
             timeout=application_settings.vector_store_timeout,
         )
