@@ -416,14 +416,13 @@
                 [controls]="documentsRequired"
                 [required]="false"
                 [boldLabel]="false"
-                information="Allow the LLM to respond even if no documents were retrieved. Allows to make small talk and answer more general questions."
+                information="Prohibits LLM from responding if no document could be retrieved. Prevents the bot from engaging in informal conversation and responding to more general questions."
               >
                 <nb-toggle
                   formControlName="documentsRequired"
                   class="nb-toggle-small mt-1"
                 >
-                  <span *ngIf="documentsRequired.value">Don't allow undocumented answers</span>
-                  <span *ngIf="!documentsRequired.value">Allow undocumented answers</span>
+                  Don't allow undocumented answers
                 </nb-toggle>
               </tock-form-control>
             </div>

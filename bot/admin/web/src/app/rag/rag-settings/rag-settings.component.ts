@@ -393,7 +393,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   setFormDefaultValues(): void {
     this.form.patchValue({
-      documentsRequired: true,
+      documentsRequired: false,
       debugEnabled: false,
       maxMessagesFromHistory: 5,
       maxDocumentsRetrieved: 4
