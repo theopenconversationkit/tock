@@ -108,6 +108,16 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     final override fun handle(bus: BotBus) {
+        handle0(bus, handleStep = { handler, step, data ->
+            @Suppress("UNCHECKED_CAST")
+            when (step) {
+                is StoryDataStep<*, *, *> -> (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
+                else -> (step as StoryStep<T>).answer().invoke(handler)
+            }
+        }) { it.handle() }
+    }
+
+    internal inline fun handle0(bus: BotBus, handleStep: (T, StoryStep<*>, Any?) -> Unit, op: (T) -> Unit) {
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
@@ -134,16 +144,11 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                         ?.takeUnless { it is Unit }
                         ?: mainData
                     if (!isEndCalled(bus)) {
-                        @Suppress("UNCHECKED_CAST")
-                        if (step is StoryDataStep<*, *, *>) {
-                            (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
-                        } else {
-                            (step as? StoryStep<T>)?.answer()?.invoke(handler)
-                        }
+                        handleStep(handler, step, data)
                     }
                 }
                 if (!isEndCalled(bus)) {
-                    handler.handle()
+                    op(handler)
 
                     if (!bus.connectorData.skipAnswer &&
                         !bus.hasCurrentSwitchStoryProcess &&
