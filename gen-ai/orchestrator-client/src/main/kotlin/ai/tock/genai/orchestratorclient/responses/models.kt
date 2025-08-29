@@ -18,8 +18,8 @@ package ai.tock.genai.orchestratorclient.responses
 
 
 data class ChunkSentences(
-    val chunk: Int,
-    val sentences: List<String> = emptyList(),
+    val chunk: String? = null,
+    val sentences: List<String>? = emptyList(),
     val reason: String? = null,
 )
 

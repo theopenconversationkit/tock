@@ -53,8 +53,8 @@ class Footnote(Source):
     identifier: str = Field(description='Footnote identifier', examples=['1'])
 
 class ChunkSentences(BaseModel):
-    chunk: int
-    sentences: List[str] = []
+    chunk: Optional[str] = None
+    sentences: Optional[List[str]] = None
     reason: Optional[str] = None
 
 class LLMAnswer(BaseModel):
