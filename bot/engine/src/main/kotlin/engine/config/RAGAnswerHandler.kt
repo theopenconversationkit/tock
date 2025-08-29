@@ -47,8 +47,6 @@ private val technicalErrorMessage = property(
     name = "tock_gen_ai_orchestrator_technical_error",
     defaultValue = "Technical error :( sorry!")
 
-// TODO MASS: Doit on enlever le champ NO_RAG_SENTENCE et la story associée de la config RAG (sudio Tock)?
-// TODO MASS: Il faudra changer tout les prompts
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 

@@ -22,6 +22,7 @@ import logging
 import time
 from functools import partial
 from logging import ERROR, WARNING
+from operator import itemgetter
 from typing import List, Optional
 
 from langchain.chains.conversational_retrieval.base import (
@@ -33,17 +34,18 @@ from langchain.retrievers.contextual_compression import (
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 from langchain_core.runnables import (
     RunnableParallel,
     RunnablePassthrough,
-    RunnableSerializable,
+    RunnableSerializable, RunnableConfig, RunnableBranch, RunnableLambda,
 )
 from langchain_core.vectorstores import VectorStoreRetriever
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
-from typing_extensions import Any
+from typing_extensions import Any, deprecated
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -96,6 +98,7 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 
 logger = logging.getLogger(__name__)
 
+
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def execute_rag_chain(
@@ -120,22 +123,26 @@ async def execute_rag_chain(
     conversational_retrieval_chain = create_rag_chain(request=request)
 
     message_history = ChatMessageHistory()
-    session_id = None
-    user_id = None
-    tags = []
     if request.dialog:
         for msg in request.dialog.history:
             if ChatMessageType.HUMAN == msg.type:
                 message_history.add_user_message(msg.text)
             else:
                 message_history.add_ai_message(msg.text)
-        session_id = (request.dialog.dialog_id,)
-        user_id = (request.dialog.user_id,)
-        tags = (request.dialog.tags,)
 
-    logger.debug(
-        'RAG chain - Use chat history: %s',
-        'Yes' if len(message_history.messages) > 0 else 'No',
+    logger.debug('RAG chain - Use chat history: %s', len(message_history.messages) > 0)
+    logger.debug('RAG chain - Use RAGCallbackHandler for debugging : %s', debug)
+
+    callback_handlers = get_callback_handlers(request, custom_observability_handler, debug)
+    records_callback_handler = None
+    if debug:
+        records_callback_handler = next(
+            (x for x in callback_handlers if isinstance(x, RAGCallbackHandler)),
+            None
+        )
+    observability_handler = next(
+        (x for x in callback_handlers if isinstance(x, LangfuseCallbackHandler)),
+        None
     )
 
     inputs = {
@@ -143,33 +150,9 @@ async def execute_rag_chain(
         'chat_history': message_history.messages,
     }
 
-    logger.debug(
-        'RAG chain - Use RAGCallbackHandler for debugging : %s',
-        debug,
-    )
-
-    callback_handlers = []
-    records_callback_handler = RAGCallbackHandler()
-    observability_handler = None
-    if debug:
-        # Debug callback handler
-        callback_handlers.append(records_callback_handler)
-    if custom_observability_handler is not None:
-        callback_handlers.append(custom_observability_handler)
-    if request.observability_setting is not None:
-        # Langfuse callback handler
-        observability_handler = create_observability_callback_handler(
-            observability_setting=request.observability_setting,
-            trace_name=ObservabilityTrace.RAG.value,
-            session_id=session_id,
-            user_id=user_id,
-            tags=tags,
-        )
-        callback_handlers.append(observability_handler)
-
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
-        config={'callbacks': callback_handlers},
+        config=RunnableConfig(callbacks=callback_handlers)
     )
     llm_answer = LLMAnswer(**response['answer'])
 
@@ -188,6 +171,13 @@ async def execute_rag_chain(
     rag_duration = '{:.2f}'.format(time.time() - start_time)
     logger.info('RAG chain - End of execution. (Duration : %s seconds)', rag_duration)
 
+    # Group contexts by chunk id
+    contexts_by_chunk = {
+        ctx.chunk: ctx
+        for ctx in (llm_answer.context or [])
+        if ctx.sentences
+    }
+
     # Returning RAG response
     return RAGResponse(
         answer=llm_answer,
@@ -199,8 +189,8 @@ async def execute_rag_chain(
                 content=get_source_content(doc),
                 score=doc.metadata.get('retriever_score', None),
             )
-            for doc, ctx in zip(response["documents"], llm_answer.context)
-            if ctx.sentences
+            for doc in response["documents"]
+            if doc.metadata['id'] in contexts_by_chunk
         },
         observability_info=get_observability_info(observability_handler),
         debug=get_rag_debug_data(request, records_callback_handler, rag_duration)
@@ -208,6 +198,34 @@ async def execute_rag_chain(
         else None,
     )
 
+def get_callback_handlers(request, custom_observability_handler, debug):
+    callback_handlers = []
+    records_callback_handler = RAGCallbackHandler()
+    if debug:
+        # Debug callback handler
+        callback_handlers.append(records_callback_handler)
+    if custom_observability_handler is not None:
+        callback_handlers.append(custom_observability_handler)
+    if request.observability_setting is not None:
+        if request.dialog:
+            session_id = request.dialog.dialog_id
+            user_id = request.dialog.user_id
+            tags = request.dialog.tags
+        else:
+            session_id = None
+            user_id = None
+            tags = None
+        # Langfuse callback handler
+        observability_handler = create_observability_callback_handler(
+            observability_setting=request.observability_setting,
+            trace_name=ObservabilityTrace.RAG.value,
+            session_id=session_id,
+            user_id=user_id,
+            tags=tags,
+        )
+        callback_handlers.append(observability_handler)
+
+    return callback_handlers
 
 def get_source_content(doc: Document) -> str:
     """
@@ -277,31 +295,61 @@ def create_rag_chain(
     if question_condensing_llm_factory is not None:
         question_condensing_llm = question_condensing_llm_factory.get_language_model()
     question_answering_llm = question_answering_llm_factory.get_language_model()
-    rag_prompt = build_rag_prompt(request)
 
-    # Construct the RAG chain using the prompt and LLM,
-    # This chain will consume the documents retrieved by the retriever as input.
-    rag_chain = construct_rag_chain(question_answering_llm, rag_prompt)
+    if question_condensing_llm is not None:
+        condensing_llm = question_condensing_llm
+    else :
+        condensing_llm = question_answering_llm
 
     # Build the chat chain for question contextualization
-    chat_chain = build_question_condensation_chain(
-        question_condensing_llm
-        if question_condensing_llm is not None
-        else question_answering_llm,
-        request.question_condensing_prompt,
-    )
+    chat_chain = build_question_condensation_chain(condensing_llm, request.question_condensing_prompt)
+    rag_prompt = build_rag_prompt(request)
 
     # Function to contextualize the question based on chat history
     contextualize_question_fn = partial(contextualize_question, chat_chain=chat_chain)
 
-    # Final RAG chain with retriever and source documents
-    rag_chain_with_retriever = (
-        contextualize_question_fn
-        | RunnableParallel({'documents': retriever, 'question': RunnablePassthrough()})
-        | RunnablePassthrough.assign(answer=rag_chain)
-    )
+    # Calculate the condensed question
+    with_condensed_question = RunnableParallel({
+        "condensed_question": contextualize_question_fn,
+        "question": itemgetter("question"),
+        "chat_history": itemgetter("chat_history"),
+    })
 
-    return rag_chain_with_retriever
+    def retrieve_with_variants(inputs):
+        variants = [
+            # inputs["question"], Deactivated. It's an example to prove the multi retriever process
+            inputs["condensed_question"]
+        ]
+        docs = []
+        for v in variants:
+            docs.extend(retriever.invoke(v))
+        # Deduplicate docs
+        unique_docs = {d.metadata['id']: d for d in docs}
+
+        # TODO [DERCBOT-1649] Apply the RRF Algo on unique_docs.
+        return list(unique_docs.values())
+
+    # Build the RAG inputs
+    rag_inputs = with_condensed_question | RunnableParallel({
+        "question": itemgetter("condensed_question"),
+        "chat_history": itemgetter("chat_history"),
+        "documents": RunnableLambda(retrieve_with_variants),
+    })
+
+    return rag_inputs | RunnablePassthrough.assign(answer=(
+            {
+                "context": lambda x: json.dumps([
+                    {
+                        "chunk_id": doc.metadata['id'],
+                        "chunk_text": doc.page_content,
+                    }
+                    for doc in x["documents"]
+                ], ensure_ascii=False, indent=2),
+                "chat_history": format_chat_history,
+            }
+            | rag_prompt
+            | question_answering_llm
+            | JsonOutputParser(pydantic_object=LLMAnswer, name="rag_chain_output")))
 
 
 def build_rag_prompt(request: RAGRequest) -> LangChainPromptTemplate:
@@ -314,56 +362,60 @@ def build_rag_prompt(request: RAGRequest) -> LangChainPromptTemplate:
         partial_variables=request.question_answering_prompt.inputs,
     )
 
+def format_chat_history(x):
+    messages = []
+    for msg in x["chat_history"]:
+        if isinstance(msg, HumanMessage):
+            messages.append({"user": msg.content})
+        elif isinstance(msg, AIMessage):
+            messages.append({"assistant": msg.content})
+    return json.dumps(messages, ensure_ascii=False, indent=2)
 
 def construct_rag_chain(llm, rag_prompt):
-    """
-    Construct the RAG chain from LLM and prompt.
-    """
     return (
         {
-            'context': lambda inputs: '\n\n'.join(
-                doc.page_content for doc in inputs['documents']
-            ),
-            'question': lambda inputs: inputs[
-                'question'
-            ],  # Override the user's original question with the condensed one
+            "context": lambda x: json.dumps([
+                {
+                    "chunk_id": doc.metadata['id'],
+                    "chunk_text": doc.page_content,
+                }
+                for doc in x["documents"]
+            ], ensure_ascii=False, indent=2),
+            "chat_history": format_chat_history,
         }
         | rag_prompt
         | llm
-        | JsonOutputParser(pydantic_object=LLMAnswer, name='rag_chain_output')
+        | JsonOutputParser(pydantic_object=LLMAnswer, name="rag_chain_output")
     )
-# TODO MASS
-# https://medium.com/@saurabhzodex/memory-enhanced-rag-chatbot-with-langchain-integrating-chat-history-for-context-aware-845100184c4f
+
 def build_question_condensation_chain(
     llm, prompt: Optional[PromptTemplate]
 ) -> ChatPromptTemplate:
     """
     Build the chat chain for contextualizing questions.
     """
+    # TODO deprecated : All Gen configurations are supposed to have this prompt now. It is mandatory in the RAG configuration.
     if prompt is None:
         # Default prompt
         prompt = PromptTemplate(
             formatter=PromptFormatter.F_STRING,
             inputs={},
-            template='Given a chat history and the latest user question which might reference context in \
-the chat history, formulate a standalone question which can be understood without the chat history. \
-Do NOT answer the question, just reformulate it if needed and otherwise return it as is.',
+            template="""
+You are a helpful assistant that reformulates questions.
+
+You are given:
+- The conversation history between the user and the assistant
+- The most recent user question
+
+Your task:
+- Reformulate the user’s latest question into a clear, standalone query.
+- Incorporate relevant context from the conversation history.
+- Do NOT answer the question.
+- If the history does not provide additional context, keep the question as is.
+
+Return only the reformulated question.
+"""
         )
-
-    # TODO MASS: a mettre ds la default config
-        prompt.template = """You are an assistant whose sole task is to STRICTLY REFORMULATE the user's latest message into a single standalone phrase, in the same language, while respecting the STYLE (register, tone, capitalization, level of formality). Apply the following rules:
-
-        1) Question detection: treat the message as a question if it ends with a question mark, or contains an interrogative word (e.g. who, what, which, how, why, where, when, how much), or has an interrogative construction (e.g. "is it", "can you", "could you", "would you").  
-           - IF it is a question → REFORMULATE it AS A QUESTION. Preserve tone, register (formal/informal, you vs. thou, etc.), capitalization. Add a single "?" at the end if necessary. Do not add any new information.
-
-        2) IF the message is NOT a question (greeting, statement, command, fragment) → REFORMULATE WITHOUT TURNING IT INTO A QUESTION. Do not rephrase it into interrogative form.
-
-        3) Do not guess: if the message is short, vague, or incomplete (e.g. "to understand", "the rate"), DO NOT invent missing meaning. Return it as is or make minimal grammatical adjustments — but do not add content.
-
-        4) References to context: if the message is anaphoric (e.g. "and the rate?") AND the provided chat history clearly contains the antecedent, you may replace the anaphor with a minimal standalone version (e.g. "What is the interest rate?"). If the antecedent is absent or unclear → leave the message unchanged.
-
-        5) Do not answer the message. Do not provide explanations, labels, or metadata. Return **only** the reformulated phrase (a single line).
-        """
 
     return (
         ChatPromptTemplate.from_messages(
@@ -385,7 +437,6 @@ def contextualize_question(inputs: dict, chat_chain) -> str:
     if inputs.get('chat_history') and len(inputs['chat_history']) > 0:
         return chat_chain
     return inputs['question']
-
 
 def rag_guard(question, answer, response, documents_required):
     """
