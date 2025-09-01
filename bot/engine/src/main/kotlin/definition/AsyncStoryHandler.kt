@@ -16,8 +16,12 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.AsyncBotBus
+import ai.tock.bot.engine.AsyncBus
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.CoroutineBridgeBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import kotlinx.coroutines.runBlocking
 
 /**
  * Receive a sentence or action, and send the answer asynchronously.
@@ -27,13 +31,18 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 @ExperimentalTockCoroutines
 interface AsyncStoryHandler : StoryHandler {
 
+    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
+    override fun handle(bus: BotBus) {
+        if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this)) {
+            // This should only happen in automated tests
+            runBlocking { handle(AsyncBotBus(bus)) }
+        }
+    }
+
     /**
      * Receive a message from the bus.
      *
      * @param bus the bus used to get the message and send the answer
      */
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handleAsync(bus)"))
-    override fun handle(bus: BotBus)
-
-    suspend fun handleAsync(bus: BotBus)
+    suspend fun handle(bus: AsyncBus)
 }

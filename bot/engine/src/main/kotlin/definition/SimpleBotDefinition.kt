@@ -17,6 +17,7 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.engine.action.Action
+import ai.tock.shared.InternalTockApi
 
 /**
  * A simple [BotDefinition].
@@ -74,7 +75,8 @@ class SimpleBotDefinition(
                     keywordStory
                 )
             ).forEach {
-            (it.storyHandler as? StoryHandlerBase<*>)?.apply {
+            @OptIn(InternalTockApi::class)
+            (it.storyHandler as? I18nStoryHandler)?.apply {
                 i18nNamespace = namespace
             }
         }

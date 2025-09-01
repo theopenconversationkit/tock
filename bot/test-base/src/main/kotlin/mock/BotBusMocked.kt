@@ -27,8 +27,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinitionBase
 import ai.tock.bot.definition.StoryHandlerBase
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionQuote
@@ -184,13 +183,13 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
 
     mockkObject(SendChoice.Companion)
     every {
-        SendChoice.encodeChoiceId(bus, any(), any<StoryStep<*>>(), any())
+        SendChoice.encodeChoiceId(bus, any(), any<StoryStepDef>(), any())
     } answers {
         @Suppress("UNCHECKED_CAST")
         SendChoice.encodeChoiceId(
-            (args[1] as IntentAware).wrappedIntent(),
-            args[2] as? StoryStep<out StoryHandlerDefinition>,
-            (args[3] as? Map<String, String>) ?: emptyMap(),
+            arg<IntentAware>(1).wrappedIntent(),
+            arg<StoryStepDef?>(2),
+            arg<Map<String, String>>(3),
             null,
             null,
             bus.connectorId

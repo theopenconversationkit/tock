@@ -25,8 +25,8 @@ import ai.tock.bot.connector.ga.model.response.GARichResponse
 import ai.tock.bot.connector.ga.model.response.GASuggestion
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.translator.raw
@@ -169,7 +169,7 @@ fun <T : Bus<T>> T.listItem(
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     parameters: Parameters
 ): GAListItem = listItem(title, targetIntent, step, null, null, parameters)
 
@@ -179,7 +179,7 @@ fun <T : Bus<T>> T.listItem(
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     vararg parameters: Pair<String, String>
 ): GAListItem = listItem<T>(title, targetIntent, step, null, null, *parameters)
 
@@ -189,7 +189,7 @@ fun <T : Bus<T>> T.listItem(
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     description: CharSequence? = null,
     imageUrl: String? = null,
     parameters: Parameters
@@ -201,7 +201,7 @@ fun <T : Bus<T>> T.listItem(
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     description: CharSequence? = null,
     imageUrl: String? = null,
     vararg parameters: Pair<String, String>

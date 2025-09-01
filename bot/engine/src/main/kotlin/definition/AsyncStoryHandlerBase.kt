@@ -16,28 +16,100 @@
 
 package ai.tock.bot.definition
 
-import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
-import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.AsyncBotBus
+import ai.tock.bot.engine.AsyncBus
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultNamespace
+import ai.tock.translator.I18nKeyProvider.Companion.generateKey
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.I18nLocalizedLabel
+import mu.KotlinLogging
 
+/**
+ * An [AsyncStoryHandler] with a base `handleAsync` implementation and i18n utilities
+ */
 @ExperimentalTockCoroutines
-abstract class AsyncStoryHandlerBase<out T : AsyncStoryHandlerDefinition>(
-    mainIntentName: String? = null,
-    i18nNamespace: String = defaultNamespace,
-    breath: Long = defaultBreath,
-) : StoryHandlerBase<T>(mainIntentName, i18nNamespace, breath), AsyncStoryHandler {
-    final override suspend fun handleAsync(bus: BotBus) {
-        handle0(bus, handleStep = { handler, step, data ->
-            @Suppress("UNCHECKED_CAST")
-            when (step) {
-                is AsyncStoryStep -> (step as AsyncStoryStep<T>).answerAsync().invoke(handler)
-                is AsyncStoryDataStep<*, *, *> -> (step as AsyncStoryDataStep<T, Any, Any>).asyncHandler().invoke(handler, data)
-                is StoryDataStep<*, *, *> -> (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
-                else -> (step as? StoryStep<T>)?.answer()?.invoke(handler)
+abstract class AsyncStoryHandlerBase(
+    private val mainIntent: Intent?,
+) : AsyncStoryHandler, I18nStoryHandler, IntentAware {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    @Volatile
+    override var i18nNamespace: String = defaultNamespace
+        @InternalTockApi set
+
+    override suspend fun handle(bus: AsyncBus) {
+        val baseBus = (bus as AsyncBotBus).botBus
+        val storyDefinition = findStoryDefinition(bus)
+        // if not supported user interface, use unknown
+        if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
+            baseBus.botDefinition.unknownStory.storyHandler.handle(baseBus)
+        } else {
+            // set current i18n provider
+            baseBus.i18nProvider = this
+
+            action(bus)
+
+            if (!bus.isEndCalled() && !baseBus.connectorData.skipAnswer) {
+                logger.warn {
+                    "Bus.end not called for story ${baseBus.story.definition.id}, user ${bus.userId.id} and connector ${baseBus.targetConnectorType}"
+                }
             }
-        }) {
-            it.handleAsync()
         }
+    }
+
+    protected abstract suspend fun action(bus: AsyncBus)
+
+    protected fun AsyncBus.isEndCalled() = StoryHandlerBase.isEndCalled((this as AsyncBotBus).botBus)
+
+    /**
+     * Finds the story definition of this handler.
+     */
+    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? =
+        (bus as AsyncBotBus).botBus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
+
+    /**
+     * Story i18n category.
+     */
+    protected open fun i18nKeyCategory(): String = mainIntent?.name ?: i18nNamespace
+
+    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+        val category = i18nKeyCategory()
+        return I18nLabelValue(
+            generateKey(i18nNamespace, category, defaultLabel),
+            i18nNamespace,
+            category,
+            defaultLabel,
+            args
+        )
+    }
+
+    /**
+     * Gets an i18n label with the specified key. Current namespace is used for the categorization.
+     */
+    override fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+        return i18nKey(key, defaultLabel, emptySet(), *args)
+    }
+
+    /**
+     * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
+     */
+    override fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
+        val category = i18nKeyCategory()
+        return I18nLabelValue(
+            key,
+            i18nNamespace,
+            category,
+            defaultLabel,
+            args.toList(),
+            defaultI18n,
+        )
+    }
+
+    override fun wrappedIntent(): Intent {
+        return mainIntent ?: error("unknown main intent name")
     }
 }

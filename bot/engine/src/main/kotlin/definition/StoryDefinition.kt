@@ -63,7 +63,7 @@ interface StoryDefinition : IntentAware {
     /**
      * The root steps of the story.
      */
-    val steps: Set<StoryStep<*>>
+    val steps: Set<StoryStepDef>
 
     /**
      * True if the story handle metrics and is not a main tracked story
@@ -99,10 +99,10 @@ interface StoryDefinition : IntentAware {
     /**
      * Returns all steps of the story.
      */
-    fun allSteps(): Set<StoryStep<*>> =
-        mutableSetOf<StoryStep<*>>().apply { steps.forEach { allStep(this, it) } }
+    fun allSteps(): Set<StoryStepDef> =
+        mutableSetOf<StoryStepDef>().apply { steps.forEach { allStep(this, it) } }
 
-    private fun allStep(result: MutableSet<StoryStep<*>>, step: StoryStep<*>) {
+    private fun allStep(result: MutableSet<StoryStepDef>, step: StoryStepDef) {
         result.add(step)
         step.children.forEach { allStep(result, it) }
     }

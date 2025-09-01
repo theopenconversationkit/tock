@@ -16,12 +16,17 @@
 
 package ai.tock.bot.connector
 
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import kotlin.annotation.AnnotationTarget.ANNOTATION_CLASS
 
 /**
- * Annotation used to annotate [StoryHandlerDefinitionBase] implementation,
- * in order to provide [ConnectorStoryHandler] for each connector.
- * Used only by connector implementation.
+ * `@ConnectorHandler` is a meta-annotation for annotation classes that are used
+ * to provide a [ConnectorSpecificHandling] for a specific connector type.
+ *
+ * The annotated class must have a single property
+ * with the name `value` and the type `KClass<out ConnectorSpecificHandling>`.
+ *
+ * This annotation is only supposed to be used by connector implementations, not by regular user code.
  */
 @Target(ANNOTATION_CLASS)
 @MustBeDocumented

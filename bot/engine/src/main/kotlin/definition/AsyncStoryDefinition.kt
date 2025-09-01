@@ -17,16 +17,13 @@
 package ai.tock.bot.definition
 
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import kotlinx.coroutines.runBlocking
 
+/**
+ * Story definitions should usually not directly extend this class,
+ * but instead extend [AsyncStoryDefinitionBase].
+ */
 @ExperimentalTockCoroutines
-interface AsyncStoryHandlerDefinition : StoryHandlerDefinition {
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handleAsync()"))
-    override fun handle() {
-        runBlocking {
-            handleAsync()
-        }
-    }
-
-    suspend fun handleAsync()
+interface AsyncStoryDefinition : StoryDefinition {
+    override val steps: Set<AsyncStoryStep<*>>
+    override val storyHandler: AsyncStoryHandler
 }

@@ -19,7 +19,7 @@ package ai.tock.bot.definition
 import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.ConnectorIdHandlers
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.AsyncBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -28,7 +28,7 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 import mu.KotlinLogging
 
 @ExperimentalTockCoroutines
-abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) : AsyncStoryHandlerDefinition, BotBus by bus {
+abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryHandlingBase<T>>>(val bus: AsyncBus) : AsyncStoryHandling, AsyncBus by bus {
 
     companion object {
 
@@ -52,14 +52,14 @@ abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>
     /**
      * Default implementation redirect to answer.
      */
-    override suspend fun handleAsync() {
+    override suspend fun handle() {
         answer()
     }
 
     /**
-     * Shortcut for [BotBus.targetConnectorType].
+     * Shortcut for [AsyncBus.targetConnectorType].
      */
-    val connectorType: ConnectorType = bus.targetConnectorType
+    val connectorType: ConnectorType get() = bus.targetConnectorType
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
@@ -77,15 +77,13 @@ abstract class AsyncStoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>
     protected open fun findConnector(connectorId: String): T? =
         connectorProvider.provide(this, connectorId) as? T?
 
-    private val cachedConnector: T? by lazy(PUBLICATION) {
-        (findConnector(connectorId) ?: findConnector(connectorType))
-            .also { if (it == null) logger.warn { "unsupported connector type $connectorType/$connectorId for ${this::class}" } }
-    }
-
     /**
      * Provides the current [ConnectorStoryHandler] using [findConnector].
      */
-    override val connector: T? get() = cachedConnector
+    val connector: T? by lazy(PUBLICATION) {
+        (findConnector(connectorId) ?: findConnector(connectorType))
+            .also { if (it == null) logger.warn { "unsupported connector type $connectorType/$connectorId for ${this::class}" } }
+    }
 
     /**
      * Provides a not null [connector]. Throws NPE if [connector] is null.

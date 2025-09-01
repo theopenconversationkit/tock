@@ -16,16 +16,36 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.AsyncBus
+import ai.tock.bot.engine.BotBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalTockCoroutines::class)
-interface AsyncStoryDataStep<T : AsyncStoryHandlerDefinition, TD, D> : StoryDataStep<T, TD, D> {
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("asyncHandler()"))
-    override fun handler(): T.(D?) -> Any? = {
-        val story = this
-        runBlocking { asyncHandler().invoke(story, null) }
+@ExperimentalTockCoroutines
+interface AsyncStoryDataStep<in T : AsyncStoryHandling, TD, D> : AsyncStoryStep<T> {
+    override suspend fun T.answer() {
+        answer(checkPreconditions(null))
     }
 
-    fun asyncHandler(): suspend T.(D?) -> Unit
+    /**
+     * Does this Step have to be selected for the current context and data?
+     *
+     * This method is called if [AsyncDelegatingStoryHandlerBase.checkPreconditions] does not call [AsyncBus.end].
+     * If this method returns true, the step is selected and remaining steps are not tested.
+     * This method is called even if [selectFromAction] previously returned `false`.
+     *
+     * Returning `true` causes the step to be selected even if another step got previously selected.
+     * Returning `false` does not deselect the step if it was already selected.
+     *
+     * @see selectFromAction
+     */
+    fun T.selectFromContextAndData(mainData: TD?): Boolean = false
+
+    /**
+     * Checks preconditions - if [BotBus.end] is called,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     * Returned data is used in subsequent call of [answer]
+     */
+    suspend fun T.checkPreconditions(mainData: TD?): D
+
+    suspend fun T.answer(data: D)
 }

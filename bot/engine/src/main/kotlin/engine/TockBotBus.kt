@@ -20,8 +20,10 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.AsyncStoryHandler
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
@@ -34,14 +36,18 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CoroutineScope
 
 /**
  *
  */
+@OptIn(ExperimentalTockCoroutines::class)
 internal class TockBotBus(
     val connector: TockConnectorController,
     override val userTimeline: UserTimeline,
@@ -49,7 +55,7 @@ internal class TockBotBus(
     override val action: Action,
     override val connectorData: ConnectorData,
     override var i18nProvider: I18nKeyProvider
-) : BotBus {
+) : BotBus, CoroutineBridgeBus {
 
     private val bot = connector.bot
 
@@ -90,6 +96,9 @@ internal class TockBotBus(
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
 
+    override val customActionSender = AtomicReference<((Action, Long) -> Unit)?>()
+    override val coroutineScope = AtomicReference<CoroutineScope>()
+
     private fun findSupportedLocale(locale: Locale): Locale {
         val supp = bot.supportedLocales
         return when {
@@ -124,6 +133,20 @@ internal class TockBotBus(
         }
     }
 
+    @OptIn(ExperimentalTockCoroutines::class)
+    override fun handleAndSwitchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent
+    ) {
+        switchStory(storyDefinition, starterIntent)
+        hasCurrentSwitchStoryProcess = false
+        val storyHandler = storyDefinition.storyHandler
+
+        if (storyHandler !is AsyncStoryHandler || !handleAsyncStory(storyHandler)) {
+            storyHandler.handle(this)
+        }
+    }
+
     private fun answer(a: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
         a.metadata.priority = context.priority
@@ -145,10 +168,15 @@ internal class TockBotBus(
         // to receive the corresponding messages
         if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
             // If the action is not a SendDebug, or it is, but the source connector is the rest connector
-            connector.send(userTimeline, connectorData, action, actionToSent, context.currentDelay)
+            customActionSender.get()?.invoke(actionToSent, context.currentDelay)
+                ?: doSend(actionToSent, context.currentDelay)
         }
 
         return this
+    }
+
+    override fun doSend(actionToSend: Action, delay: Long) {
+        connector.send(userTimeline, connectorData, action, actionToSend, delay)
     }
 
     /**

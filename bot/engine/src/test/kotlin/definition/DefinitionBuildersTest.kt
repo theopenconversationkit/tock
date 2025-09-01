@@ -19,9 +19,9 @@ package ai.tock.bot.definition
 import ai.tock.bot.engine.BotEngineTest
 import ai.tock.bot.engine.TestStoryDefinition
 import ai.tock.nlp.entity.date.DateEntityRange
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import org.junit.jupiter.api.Test
 
 /**
  *
@@ -89,6 +89,16 @@ class DefinitionBuildersTest : BotEngineTest() {
                 entityText("entity") == null -> end("For which destination?")
             }
         }
+        assertNotNull(s)
+    }
+
+    @Test
+    fun `async story is ok`() {
+        val s = storyDef<AsyncDefWithData, StoryData>(
+            "yah",
+            handlerDefCreator = { bus, data -> AsyncDefWithData(bus, data) },
+            preconditionsChecker = { StoryData() },
+        )
         assertNotNull(s)
     }
 }

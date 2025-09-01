@@ -20,18 +20,19 @@ import ai.tock.bot.definition.AsyncStoryHandler
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
+import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.CoroutineBridgeBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -62,14 +63,14 @@ data class Story(
     /**
      * The current step of the story.
      */
-    val currentStep: StoryStep<*>? get() = definition.steps.asSequence().mapNotNull { findStep(it) }.firstOrNull()
+    val currentStep: StoryStepDef? get() = definition.steps.asSequence().mapNotNull { findStep(it) }.firstOrNull()
 
     /**
      * True if the story handle metrics and is not a main tracked story
      */
     val metricStory get() = definition.metricStory
 
-    private fun findStep(step: StoryStep<*>): StoryStep<*>? {
+    private fun findStep(step: StoryStepDef): StoryStepDef? {
         if (step.name == this.step) {
             return step
         } else {
@@ -78,12 +79,12 @@ data class Story(
     }
 
     private fun findStep(
-        steps: Collection<StoryStep<*>>,
+        steps: Collection<StoryStepDef>,
         userTimeline: UserTimeline,
         dialog: Dialog,
         action: Action,
         intent: Intent?
-    ): StoryStep<*>? {
+    ): StoryStepDef? {
         // first level
         findStepInTree(steps, userTimeline, dialog, action, intent)?.also {
             return it
@@ -99,12 +100,12 @@ data class Story(
     }
 
     private fun findStepInTree(
-        steps: Collection<StoryStep<*>>,
+        steps: Collection<StoryStepDef>,
         userTimeline: UserTimeline,
         dialog: Dialog,
         action: Action,
         intent: Intent?
-    ): StoryStep<*>? {
+    ): StoryStepDef? {
         // first level
         steps.forEach { s ->
             if (s.selectFromAction(userTimeline, dialog, action, intent)) {
@@ -120,10 +121,10 @@ data class Story(
         return null
     }
 
-    private fun findParentStep(child: StoryStep<*>): StoryStep<*>? =
+    private fun findParentStep(child: StoryStepDef): StoryStepDef? =
         definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
-    private fun findParentStep(current: StoryStep<*>, child: StoryStep<*>): StoryStep<*>? =
+    private fun findParentStep(current: StoryStepDef, child: StoryStepDef): StoryStepDef? =
         current.takeIf { current.children.any { child.name == it.name } }
             ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
@@ -153,23 +154,25 @@ data class Story(
      * Handles a request.
      */
     fun handle(bus: BotBus) {
+        val storyHandler = definition.storyHandler
         @OptIn(ExperimentalTockCoroutines::class)
-        if (definition.storyHandler is AsyncStoryHandler) {
-            runBlocking {
-                handleAsync(bus)
+        if (storyHandler is AsyncStoryHandler) {
+            // This path can only occur if this method was called from user code (TOCK always calls handleAsync)
+            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this::handleAsync)) {
+                error("Do not call Story.handle on an async story (${definition.id}), use handleAsync instead")
             }
         } else {
-            definition.storyHandler.withEvents(bus) {
+            storyHandler.withEvents(bus) {
                 it.handle(bus)
             }
         }
     }
 
     @ExperimentalTockCoroutines
-    suspend fun handleAsync(bus: BotBus) {
-        (definition.storyHandler as? AsyncStoryHandler)?.withEvents(bus) {
-            it.handleAsync(bus)
-        } ?: handle(bus)
+    suspend fun handleAsync(bus: AsyncBotBus) {
+        (definition.storyHandler as? AsyncStoryHandler)?.withEvents(bus.botBus) {
+            it.handle(bus)
+        } ?: handle(bus.botBus)
     }
 
     private inline fun <T : StoryHandler> T.withEvents(bus: BotBus, op: (T) -> Unit) {
@@ -259,7 +262,7 @@ data class Story(
         if (!forced && this.step == null) {
 
             if (s != null) {
-                var parent: StoryStep<*>? = s
+                var parent: StoryStepDef? = s
                 do {
                     parent = parent?.let { findParentStep(it) }
                     parent?.children?.let { findStepInTree(it, userTimeline, dialog, action, newIntent) }?.apply {

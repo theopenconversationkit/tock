@@ -54,7 +54,7 @@ class TockCoroutinesTest {
         assertNotNull(timestamp1)
         assertNotNull(timestamp2)
         assertTrue { Duration.between(timestamp2, timestamp1) >= Duration.ofSeconds(1) }
-        // 3 tasks should have been executed: launchCoroutines, launch, and the instructions after delay
+        // 3 tasks should have been executed: launchCoroutine, launch, and the instructions after delay
         verify(exactly = 3) { executor.execute(any()) }
         for (threadName in threadNames) {
             assertEquals(

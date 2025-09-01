@@ -16,15 +16,30 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.AsyncBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalTockCoroutines::class)
-interface AsyncStoryStep<T : AsyncStoryHandlerDefinition> : StoryStep<T> {
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("answerAsync()"))
-    override fun answer(): T.() -> Any? = {
-        runBlocking { answerAsync()() }
-    }
+@ExperimentalTockCoroutines
+interface AsyncStoryStep<in T : AsyncStoryHandling> : StoryStepDef {
+    override val name: String
 
-    fun answerAsync(): suspend T.() -> Unit
+    /**
+     * Does this Step have to be selected for the current context?
+     *
+     * This method is called if [AsyncDelegatingStoryHandlerBase.checkPreconditions] does not call [AsyncBus.end].
+     * If this method returns true, the step is selected and remaining steps are not tested.
+     * This method is called even if [selectFromAction] previously returned `false`.
+     *
+     * Returning `true` causes the step to be selected even if another step got previously selected.
+     * Returning `false` does not deselect the step if it was already selected.
+     *
+     * Prefer implementing [selectFromAction] to avoid overriding default step selection mechanisms.
+     *
+     * @see selectFromAction
+     */
+    fun T.selectFromContext(): Boolean = false
+
+    suspend fun T.answer() {}
+
+    override val children: Set<AsyncStoryStep<T>> get() = emptySet()
 }

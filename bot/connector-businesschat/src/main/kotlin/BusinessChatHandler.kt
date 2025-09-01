@@ -17,18 +17,18 @@
 package ai.tock.bot.connector.businesschat
 
 import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.AsyncStoryHandling
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
-import kotlin.annotation.AnnotationTarget
-import kotlin.annotation.MustBeDocumented
-import kotlin.annotation.Target
+import ai.tock.bot.definition.StoryHandlerDefinitionBase
 import kotlin.reflect.KClass
 
 /**
  * To specify [ConnectorStoryHandler] for BusinessChat connector.
  * [KClass] passed as [value] of this annotation must have a primary constructor
- * with a single not optional [StoryHandlerDefinitionBase] argument.
+ * with a single not optional [StoryHandlerDefinitionBase] or [AsyncStoryHandling] argument.
  */
 @ConnectorHandler(connectorTypeId = BUSINESS_CHAT_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class BusinessChatHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class BusinessChatHandler(val value: KClass<out ConnectorSpecificHandling>)

@@ -24,7 +24,7 @@ import ai.tock.bot.engine.message.MessagesList.Companion.toMessageList
  *
  * Implementations should usually use [StoryHandlerDefinitionBase].
  */
-interface StoryHandlerDefinition : BotBus {
+interface StoryHandlerDefinition : BotBus, StepExecutionContext {
 
     /**
      * The [ConnectorStoryHandler] provided for the current [BotBus.targetConnectorType] - null if it does not exist.

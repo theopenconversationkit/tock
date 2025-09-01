@@ -17,12 +17,18 @@
 package ai.tock.bot.connector.whatsapp.cloud
 
 import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.AsyncStoryHandling
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
+import ai.tock.bot.definition.StoryHandlerDefinitionBase
 import kotlin.reflect.KClass
 
+/**
+ * To specify [ConnectorStoryHandler] for WhatsApp connector.
+ * [KClass] passed as [value] of this annotation must have a primary constructor
+ * with a single not optional [StoryHandlerDefinitionBase] or [AsyncStoryHandling] argument.
+ */
 @ConnectorHandler(connectorTypeId = "whatsapp_cloud")
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class WhatsAppCloudHandler(
-        val value: KClass<out ConnectorStoryHandler<*>>
-)
+annotation class WhatsAppCloudHandler(val value: KClass<out ConnectorSpecificHandling>)

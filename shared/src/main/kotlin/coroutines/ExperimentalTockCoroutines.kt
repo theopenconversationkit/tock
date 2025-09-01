@@ -21,6 +21,8 @@ import kotlin.RequiresOptIn.Level.WARNING
 /**
  * The experimental TOCK Coroutine API marker.
  *
+ * *Implementation note:* TOCK coroutines are executed by default in a Vert.x Worker thread.
+ *
  * Any usage of a declaration annotated with `@ExperimentalTockCoroutines` must be accepted either by
  * annotating that usage with the [OptIn] annotation, e.g. `@OptIn(ExperimentalTockCoroutines::class)`,
  * or by using the compiler argument `-opt-in=ai.tock.bot.engine.ExperimentalTockCoroutines`.

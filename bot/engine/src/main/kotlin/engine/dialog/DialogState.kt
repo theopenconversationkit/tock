@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.dialog
 
+import ai.tock.bot.definition.DialogContextKey
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.nlp.api.client.model.Entity
@@ -112,6 +113,22 @@ data class DialogState(
                 error("Storing collection or map is dialog context is unsupported, use plain objects or typed arrays")
             }
             context[name] = value
+        }
+    }
+
+    /**
+     * Updates persistent context value.
+     * Do not store generic objects like Collection or Map in the context, only plain objects or typed arrays.
+     */
+    fun <T : Any> setContextValue(key: DialogContextKey<T>, value: Any?) {
+        require(key.type.typeParameters.isEmpty()) {
+            "Generic type parameters cannot be safely preserved in a dialog context"
+        }
+
+        if (value == null) {
+            context.remove(key.name)
+        } else {
+            context[key.name] = value
         }
     }
 

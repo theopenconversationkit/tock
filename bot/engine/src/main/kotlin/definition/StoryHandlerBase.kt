@@ -20,6 +20,7 @@ import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.hasCurrentSwitchStoryProcess
+import ai.tock.shared.InternalTockApi
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
@@ -40,12 +41,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * The namespace for [I18nKeyProvider] implementation.
      */
     @Volatile
-    internal var i18nNamespace: String = defaultNamespace,
+    @set:InternalTockApi
+    override var i18nNamespace: String = defaultNamespace,
     /**
      * Convenient value to wait before next answer sentence.
      */
     val breath: Long = defaultBreath
-) : StoryHandler, I18nKeyProvider, IntentAware {
+) : I18nStoryHandler, IntentAware {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -93,8 +95,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     ): StoryStep<*>? {
         storyDefinition?.steps?.also { steps ->
             for (s in steps) {
+                s as StoryStep<*>
+
                 @Suppress("UNCHECKED_CAST") val selected = if (s is StoryDataStep<*, *, *>) {
-                    (s as? StoryDataStep<T, Any, *>)?.selectFromBusAndData()?.invoke(def, data) ?: false
+                    (s as? StoryDataStep<in T, Any, *>)?.selectFromBusAndData()?.invoke(def, data) ?: false
                 } else {
                     s.selectFromBus().invoke(def)
                 }
@@ -108,16 +112,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     final override fun handle(bus: BotBus) {
-        handle0(bus, handleStep = { handler, step, data ->
-            @Suppress("UNCHECKED_CAST")
-            when (step) {
-                is StoryDataStep<*, *, *> -> (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
-                else -> (step as StoryStep<T>).answer().invoke(handler)
-            }
-        }) { it.handle() }
-    }
-
-    internal inline fun handle0(bus: BotBus, handleStep: (T, StoryStep<*>, Any?) -> Unit, op: (T) -> Unit) {
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
@@ -144,17 +138,22 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                         ?.takeUnless { it is Unit }
                         ?: mainData
                     if (!isEndCalled(bus)) {
-                        handleStep(handler, step, data)
+                        @Suppress("UNCHECKED_CAST")
+                        if (step is StoryDataStep<*, *, *>) {
+                            (step as StoryDataStep<T, Any, Any>).handler().invoke(handler, data)
+                        } else {
+                            (step as? StoryStep<T>)?.answer()?.invoke(handler)
+                        }
                     }
                 }
                 if (!isEndCalled(bus)) {
-                    op(handler)
+                    handler.handle()
 
                     if (!bus.connectorData.skipAnswer &&
                         !bus.hasCurrentSwitchStoryProcess &&
                         !isEndCalled(bus)
                     ) {
-                        logger.warn { "Bus.end not called for story ${bus.story.definition.id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
+                        logger.warn { "Bus.end not called for story ${(storyDefinition ?: bus.story.definition).id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
                     }
                 }
             }
@@ -206,14 +205,14 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Gets an i18n label with the specified key. Current namespace is used for the categorization.
      */
-    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
         return i18nKey(key, defaultLabel, emptySet(), *args)
     }
 
     /**
      * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
      */
-    fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             key,

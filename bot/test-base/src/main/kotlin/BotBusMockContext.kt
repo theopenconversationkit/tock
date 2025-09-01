@@ -22,8 +22,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
 import ai.tock.bot.definition.StoryDefinition
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendChoice.Companion.decodeChoiceId
@@ -244,7 +243,7 @@ data class BotBusMockContext(
      */
     fun choice(
         intentName: String,
-        step: StoryStep<out StoryHandlerDefinition>,
+        step: StoryStepDef,
         vararg parameters: Pair<String, String>
     ): SendChoice = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
 
@@ -253,7 +252,7 @@ data class BotBusMockContext(
      */
     fun choice(
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>,
+        step: StoryStepDef,
         parameters: Parameters
     ): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
 
