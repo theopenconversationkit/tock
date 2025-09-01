@@ -21,29 +21,52 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.shared.Executor
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 
 @ExperimentalTockCoroutines
-internal interface CoroutineBridgeBus: BotBus {
-    val customActionSender: AtomicReference<((Action, Long) -> Unit)?>
-    val coroutineScope: AtomicReference<CoroutineScope>
-
-    fun handleAsyncStory(storyHandler: AsyncStoryHandler): Boolean {
-        return handleAsyncStory(storyHandler::handle)
+internal abstract class CoroutineBridgeBus: BotBus {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        private val defaultMaxWaitMillis = longProperty("tock_bot_story_switch_max_wait_ms", 5000L)
     }
 
-    fun handleAsyncStory(op: suspend (AsyncBotBus) -> Unit): Boolean {
+    val coroutineScope = AtomicReference<CoroutineScope>()
+    protected val customActionSender = AtomicReference<((Action, Long) -> Unit)?>()
+    internal var maxWaitMillis = defaultMaxWaitMillis
+
+    fun handleAsyncStory(storyHandler: AsyncStoryHandler, callingStoryId: String): Boolean {
+        return handleAsyncStory(callingStoryId, storyHandler::handle)
+    }
+
+    fun handleAsyncStory(callingStoryId: String, op: suspend (AsyncBotBus) -> Unit): Boolean {
         coroutineScope.get()?.run {
             val asyncBus = coroutineContext[AsyncBotBus.Ref]?.bus
             if (asyncBus != null) {
+                val o = Object()
+                val done = AtomicBoolean()
                 launch {
                     op(asyncBus)
+                    synchronized(o) {
+                        done.set(true)
+                        o.notify()
+                    }
+                }
+                synchronized(o) {
+                    // Relinquish the thread if we are waiting too long
+                    // (we take the risk of race conditions over the risk of deadlock)
+                    o.wait(maxWaitMillis)
+                    if (!done.get()) {
+                        logger.warn { "Timed out waiting for async story ${story.definition.id} from $callingStoryId" }
+                    }
                 }
             }
             return true
@@ -51,7 +74,7 @@ internal interface CoroutineBridgeBus: BotBus {
         return false
     }
 
-    fun doSend(actionToSend: Action, delay: Long)
+    abstract fun doSend(actionToSend: Action, delay: Long)
 
     /**
      * @return a callback to force-close the message queue

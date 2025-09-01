@@ -26,12 +26,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.spyk
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalTockCoroutines::class)
-abstract class AsyncBotEngineTest : BotEngineTest() {
-    val executor = spyk(SimpleExecutor(4))
+abstract class AsyncBotEngineTest(nbThreads: Int = 4) : BotEngineTest() {
+    val executor = spyk(SimpleExecutor(nbThreads))
 
     override fun baseModule(): Kodein.Module {
         return Kodein.Module {
@@ -40,8 +41,8 @@ abstract class AsyncBotEngineTest : BotEngineTest() {
         }
     }
 
-    suspend fun AsyncStoryDefinition.handle(asyncBus: AsyncBotBus) {
-        withContext(executor.asCoroutineDispatcher()) {
+    suspend fun AsyncStoryDefinition.handle(asyncBus: AsyncBotBus, dispatcher: CoroutineDispatcher = executor.asCoroutineDispatcher()) {
+        withContext(dispatcher) {
             (asyncBus.botBus as CoroutineBridgeBus).deferMessageSending(this)
             storyHandler.handle(asyncBus)
         }

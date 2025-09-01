@@ -33,7 +33,7 @@ interface AsyncStoryHandler : StoryHandler {
 
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
     override fun handle(bus: BotBus) {
-        if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this)) {
+        if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this, bus.story.definition.id)) {
             // This should only happen in automated tests
             runBlocking { handle(AsyncBotBus(bus)) }
         }

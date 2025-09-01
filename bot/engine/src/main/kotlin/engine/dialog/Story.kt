@@ -158,7 +158,7 @@ data class Story(
         @OptIn(ExperimentalTockCoroutines::class)
         if (storyHandler is AsyncStoryHandler) {
             // This path can only occur if this method was called from user code (TOCK always calls handleAsync)
-            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this::handleAsync)) {
+            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(bus.story.definition.id, this::handleAsync)) {
                 error("Do not call Story.handle on an async story (${definition.id}), use handleAsync instead")
             }
         } else {

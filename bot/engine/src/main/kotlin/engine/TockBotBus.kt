@@ -41,8 +41,6 @@ import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
 import java.util.Locale
-import java.util.concurrent.atomic.AtomicReference
-import kotlinx.coroutines.CoroutineScope
 
 /**
  *
@@ -55,7 +53,7 @@ internal class TockBotBus(
     override val action: Action,
     override val connectorData: ConnectorData,
     override var i18nProvider: I18nKeyProvider
-) : BotBus, CoroutineBridgeBus {
+) : CoroutineBridgeBus(), BotBus {
 
     private val bot = connector.bot
 
@@ -67,7 +65,7 @@ internal class TockBotBus(
             currentDialog.stories.add(value)
         }
     override val botDefinition: BotDefinition = bot.botDefinition
-    override val connectorId = action.applicationId
+    override val connectorId = action.connectorId
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
@@ -95,9 +93,6 @@ internal class TockBotBus(
 
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
-
-    override val customActionSender = AtomicReference<((Action, Long) -> Unit)?>()
-    override val coroutineScope = AtomicReference<CoroutineScope>()
 
     private fun findSupportedLocale(locale: Locale): Locale {
         val supp = bot.supportedLocales
@@ -138,11 +133,12 @@ internal class TockBotBus(
         storyDefinition: StoryDefinition,
         starterIntent: Intent
     ) {
+        val currentStoryId = story.definition.id
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false
         val storyHandler = storyDefinition.storyHandler
 
-        if (storyHandler !is AsyncStoryHandler || !handleAsyncStory(storyHandler)) {
+        if (storyHandler !is AsyncStoryHandler || !handleAsyncStory(storyHandler, currentStoryId)) {
             storyHandler.handle(this)
         }
     }
