@@ -158,7 +158,7 @@ data class Story(
         @OptIn(ExperimentalTockCoroutines::class)
         if (storyHandler is AsyncStoryHandler) {
             // This path can only occur if this method was called from user code (TOCK always calls handleAsync)
-            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(bus.story.definition.id, this::handleAsync)) {
+            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(bus.story.definition.id, this::handle)) {
                 error("Do not call Story.handle on an async story (${definition.id}), use handleAsync instead")
             }
         } else {
@@ -168,11 +168,20 @@ data class Story(
         }
     }
 
+    /**
+     * Handles a request using coroutines.
+     */
     @ExperimentalTockCoroutines
-    suspend fun handleAsync(bus: AsyncBotBus) {
-        (definition.storyHandler as? AsyncStoryHandler)?.withEvents(bus.botBus) {
-            it.handle(bus)
-        } ?: handle(bus.botBus)
+    suspend fun handle(bus: AsyncBotBus) {
+        definition.storyHandler.withEvents(bus.botBus) {
+            if (it is AsyncStoryHandler) {
+                it.handle(bus)
+            } else {
+                bus.trackCoroutineScope {
+                    it.handle(bus.botBus)
+                }
+            }
+        }
     }
 
     private inline fun <T : StoryHandler> T.withEvents(bus: BotBus, op: (T) -> Unit) {

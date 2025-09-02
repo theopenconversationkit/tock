@@ -36,7 +36,7 @@ import mu.KotlinLogging
 internal abstract class CoroutineBridgeBus: BotBus {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val defaultMaxWaitMillis = longProperty("tock_bot_story_switch_max_wait_ms", 5000L)
+        private val defaultMaxWaitMillis = longProperty("tock_bot_story_switch_max_wait_ms", 9000L)
     }
 
     val coroutineScope = AtomicReference<CoroutineScope>()
@@ -51,19 +51,19 @@ internal abstract class CoroutineBridgeBus: BotBus {
         coroutineScope.get()?.run {
             val asyncBus = coroutineContext[AsyncBotBus.Ref]?.bus
             if (asyncBus != null) {
-                val o = Object()
+                val lock = Object()
                 val done = AtomicBoolean()
                 launch {
                     op(asyncBus)
-                    synchronized(o) {
+                    synchronized(lock) {
                         done.set(true)
-                        o.notify()
+                        lock.notify()
                     }
                 }
-                synchronized(o) {
+                synchronized(lock) {
                     // Relinquish the thread if we are waiting too long
                     // (we take the risk of race conditions over the risk of deadlock)
-                    o.wait(maxWaitMillis)
+                    lock.wait(maxWaitMillis)
                     if (!done.get()) {
                         logger.warn { "Timed out waiting for async story ${story.definition.id} from $callingStoryId" }
                     }

@@ -108,46 +108,56 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     }
 
     override fun hasActionEntity(role: String): Boolean {
-        return botBus.hasActionEntity(role)
+        return synchronized(botBus) { botBus.hasActionEntity(role) }
     }
 
     override fun <T : Value> entityValue(
         role: String,
         valueTransformer: (EntityValue) -> T?
     ): T? {
-        return botBus.entityValue(role, valueTransformer)
+        return synchronized(botBus) { botBus.entityValue(role, valueTransformer) }
     }
 
     override fun entityValueDetails(role: String): EntityValue? {
-        return botBus.entityValueDetails(role)
+        return synchronized(botBus) { botBus.entityValueDetails(role) }
     }
 
     override fun changeEntityValue(role: String, newValue: EntityValue?) {
-        return botBus.changeEntityValue(role, newValue)
+        synchronized(botBus) { botBus.changeEntityValue(role, newValue) }
     }
 
     override fun changeEntityValue(entity: Entity, newValue: Value?) {
-        return botBus.changeEntityValue(entity, newValue)
+        return synchronized (botBus) { botBus.changeEntityValue(entity, newValue) }
     }
 
     override fun removeAllEntityValues() {
-        return botBus.removeAllEntityValues()
+        synchronized(botBus) {
+            botBus.removeAllEntityValues()
+        }
     }
 
     override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? {
-        return botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
+        return synchronized(botBus) {
+            botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
+        }
     }
 
     override fun <T : Any> setContextValue(key: DialogContextKey<T>, value: T?) {
-        botBus.dialog.state.setContextValue(key, value)
+        synchronized(botBus) {
+            botBus.dialog.state.setContextValue(key, value)
+        }
     }
 
     override fun <T : Any> setBusContextValue(key: DialogContextKey<T>, value: T?) {
-        botBus.setBusContextValue(key.name, value)
+        synchronized(botBus) {
+            botBus.setBusContextValue(key.name, value)
+        }
     }
 
     override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return botBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
+        return synchronized(botBus) {
+            botBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
+        }
     }
 
     override suspend fun isFeatureEnabled(
@@ -165,20 +175,24 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         starterIntent: Intent,
         step: StoryStepDef?,
     ) {
-        botBus.setStep(step)
-        botBus.switchStory(storyDefinition, starterIntent)
-        botBus.hasCurrentSwitchStoryProcess = false
+        synchronized(botBus) {
+            botBus.setStep(step)
+            botBus.switchStory(storyDefinition, starterIntent)
+            botBus.hasCurrentSwitchStoryProcess = false
+        }
         (storyDefinition.storyHandler as? AsyncStoryHandler)?.handle(this)
-            ?: withContext(Ref(this)) {
-                coroutineScope {
-                    val oldScope = (botBus as? TockBotBus)?.coroutineScope?.getAndSet(this)
-                    try {
-                        storyDefinition.storyHandler.handle(botBus)
-                    } finally {
-                        (botBus as? CoroutineBridgeBus)?.coroutineScope?.set(oldScope)
-                    }
-                }
+            ?: trackCoroutineScope { storyDefinition.storyHandler.handle(botBus) }
+    }
+
+    internal suspend fun trackCoroutineScope(op: suspend () -> Unit) {
+        coroutineScope {
+            val oldScope = (botBus as? TockBotBus)?.coroutineScope?.getAndSet(this)
+            try {
+                op()
+            } finally {
+                (botBus as? CoroutineBridgeBus)?.coroutineScope?.set(oldScope)
             }
+        }
     }
 
     override fun i18nWithKey(
@@ -207,43 +221,55 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
 
     override suspend fun send(i18nText: CharSequence, delay: Long) {
         withContext(executor.asCoroutineDispatcher()) {
-            botBus.send(i18nText, delay = delay)
+            synchronized(botBus) {
+                botBus.send(i18nText, delay = delay)
+            }
         }
     }
 
     override suspend fun send(i18nText: String, vararg i18nArgs: Any?) {
         withContext(executor.asCoroutineDispatcher()) {
-            botBus.send(i18nText, *i18nArgs)
+            synchronized(botBus) {
+                botBus.send(i18nText, *i18nArgs)
+            }
         }
     }
 
     override suspend fun end(i18nText: CharSequence, delay: Long) {
         withContext(executor.asCoroutineDispatcher()) {
-            botBus.end(i18nText, delay = delay)
+            synchronized(botBus) {
+                botBus.end(i18nText, delay = delay)
+            }
         }
     }
 
     override suspend fun end(i18nText: String, vararg i18nArgs: Any?) {
         withContext(executor.asCoroutineDispatcher()) {
-            botBus.end(i18nText, *i18nArgs)
+            synchronized(botBus) {
+                botBus.end(i18nText, *i18nArgs)
+            }
         }
     }
 
     override suspend fun send(delay: Long, messageProvider: Bus<*>.() -> Any?) {
         val messages = toMessageList(messageProvider)
-        if (messages.messages.isEmpty()) {
-            botBus.send(delay)
-        } else {
-            botBus.send(messages, delay)
+        synchronized(botBus) {
+            if (messages.messages.isEmpty()) {
+                botBus.send(delay)
+            } else {
+                botBus.send(messages, delay)
+            }
         }
     }
 
     override suspend fun end(delay: Long, messageProvider: Bus<*>.() -> Any?) {
         val messages = toMessageList(messageProvider)
-        if (messages.messages.isEmpty()) {
-            botBus.end(delay)
-        } else {
-            botBus.end(messages, delay)
+        synchronized(botBus) {
+            if (messages.messages.isEmpty()) {
+                botBus.end(delay)
+            } else {
+                botBus.end(messages, delay)
+            }
         }
     }
 
