@@ -467,7 +467,6 @@ interface BotBus : Bus<BotBus>, DialogEntityManager {
     /**
      * Handles the action and switches the context to the specified story definition.
      */
-    @OptIn(ExperimentalTockCoroutines::class)
     fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false
