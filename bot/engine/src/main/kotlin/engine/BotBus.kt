@@ -23,6 +23,7 @@ import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.AsyncStoryDefinition
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.I18nStoryHandler
 import ai.tock.bot.definition.Intent
@@ -54,6 +55,7 @@ import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
@@ -465,10 +467,17 @@ interface BotBus : Bus<BotBus>, DialogEntityManager {
     /**
      * Handles the action and switches the context to the specified story definition.
      */
+    @OptIn(ExperimentalTockCoroutines::class)
     fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false
         storyDefinition.storyHandler.handle(this)
+    }
+
+    @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story")
+    @ExperimentalTockCoroutines
+    fun handleAndSwitchStory(storyDefinition: AsyncStoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+        handleAndSwitchStory(storyDefinition as StoryDefinition, starterIntent)
     }
 
     /**

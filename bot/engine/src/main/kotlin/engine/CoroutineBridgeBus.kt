@@ -16,7 +16,10 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.bot.definition.AsyncStoryDefinition
 import ai.tock.bot.definition.AsyncStoryHandler
+import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.shared.Executor
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
@@ -45,6 +48,35 @@ internal abstract class CoroutineBridgeBus: BotBus {
 
     fun handleAsyncStory(storyHandler: AsyncStoryHandler, callingStoryId: String): Boolean {
         return handleAsyncStory(callingStoryId, storyHandler::handle)
+    }
+
+    @Suppress("DEPRECATION")
+    override fun handleAndSwitchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent
+    ) {
+        if (storyDefinition is AsyncStoryDefinition) {
+            handleAndSwitchStory(storyDefinition, starterIntent)
+        } else {
+            super.handleAndSwitchStory(storyDefinition, starterIntent)
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story")
+    @ExperimentalTockCoroutines
+    override fun handleAndSwitchStory(
+        storyDefinition: AsyncStoryDefinition,
+        starterIntent: Intent
+    ) {
+        val currentStoryId = story.definition.id
+        switchStory(storyDefinition, starterIntent)
+        hasCurrentSwitchStoryProcess = false
+        val storyHandler = storyDefinition.storyHandler
+
+        if (!handleAsyncStory(storyHandler, currentStoryId)) {
+            storyHandler.handle(this)
+        }
     }
 
     fun handleAsyncStory(callingStoryId: String, op: suspend (AsyncBotBus) -> Unit): Boolean {

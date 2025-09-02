@@ -27,6 +27,7 @@ import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.NextUserActionState
+import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.engine.message.MessagesList
@@ -81,29 +82,36 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     override val currentIntent: IntentAware?
         get() = botBus.currentIntent
     override val currentStoryDefinition: StoryDefinition
-        get() = botBus.story.definition
+        get() = story.definition
     override var step: AsyncStoryStep<*>?
-        get() = botBus.story.currentStep as? AsyncStoryStep<*>
+        get() = synchronized(botBus) { story.currentStep as? AsyncStoryStep<*> }
         set(step) {
-            botBus.story.step = step?.name
+            synchronized(botBus) {
+                story.step = step?.name
+            }
         }
     override val userInfo: UserPreferences
         get() = botBus.userPreferences
     override val userState: UserState
         get() = botBus.userTimeline.userState
     override var nextUserActionState: NextUserActionState?
-        get() = botBus.nextUserActionState
+        get() = synchronized(botBus) { botBus.nextUserActionState }
         set(value) {
-            botBus.nextUserActionState = value
+            synchronized(botBus) {
+                botBus.nextUserActionState = value
+            }
         }
+    val story: Story get() = synchronized(botBus) { botBus.story }
 
     override fun defaultAnswerDelay() = botBus.defaultDelay(botBus.currentAnswerIndex)
 
     override fun choice(key: ParameterKey): String? {
+        // Not synchronized - action is immutable
         return botBus.choice(key)
     }
 
     override fun booleanChoice(key: ParameterKey): Boolean {
+        // Not synchronized - action is immutable
         return botBus.booleanChoice(key)
     }
 
@@ -186,7 +194,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
 
     internal suspend fun trackCoroutineScope(op: suspend () -> Unit) {
         coroutineScope {
-            val oldScope = (botBus as? TockBotBus)?.coroutineScope?.getAndSet(this)
+            val oldScope = (botBus as? CoroutineBridgeBus)?.coroutineScope?.getAndSet(this)
             try {
                 op()
             } finally {

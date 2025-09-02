@@ -20,10 +20,8 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.definition.AsyncStoryHandler
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
@@ -125,21 +123,6 @@ internal class TockBotBus(
             context.contextMap.remove(key)
         } else {
             context.contextMap[key] = value
-        }
-    }
-
-    @OptIn(ExperimentalTockCoroutines::class)
-    override fun handleAndSwitchStory(
-        storyDefinition: StoryDefinition,
-        starterIntent: Intent
-    ) {
-        val currentStoryId = story.definition.id
-        switchStory(storyDefinition, starterIntent)
-        hasCurrentSwitchStoryProcess = false
-        val storyHandler = storyDefinition.storyHandler
-
-        if (storyHandler !is AsyncStoryHandler || !handleAsyncStory(storyHandler, currentStoryId)) {
-            storyHandler.handle(this)
         }
     }
 
