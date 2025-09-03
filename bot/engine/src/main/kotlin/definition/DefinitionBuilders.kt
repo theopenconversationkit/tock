@@ -565,7 +565,7 @@ fun notify(
     botId: String,
     recipientId: PlayerId,
     intent: IntentAware,
-    step: StoryStep<*>? = null,
+    step: StoryStepDef? = null,
     parameters: Parameters = Parameters.EMPTY,
     stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
     notificationType: ActionNotificationType? = null,

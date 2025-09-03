@@ -25,7 +25,7 @@ import kotlin.RequiresOptIn.Level.WARNING
  *
  * Any usage of a declaration annotated with `@ExperimentalTockCoroutines` must be accepted either by
  * annotating that usage with the [OptIn] annotation, e.g. `@OptIn(ExperimentalTockCoroutines::class)`,
- * or by using the compiler argument `-opt-in=ai.tock.bot.engine.ExperimentalTockCoroutines`.
+ * or by using the compiler argument `-opt-in=ai.tock.shared.coroutines.ExperimentalTockCoroutines`.
  */
 @RequiresOptIn(level = WARNING)
 @MustBeDocumented
