@@ -19,15 +19,16 @@ package ai.tock.bot.definition
 import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.ConnectorIdHandlers
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.engine.BotBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.mapNotNullValues
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSupertypeOf
+import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.full.starProjectedType
 import kotlin.reflect.full.superclasses
+import kotlin.reflect.typeOf
 
 internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
 
@@ -77,25 +78,25 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private inline fun <reified C: ConnectorSpecificHandling> provideConnectorStoryHandler(storyDef: StepExecutionContext, connectorDefClass: KClass<*>?): C? {
+    private inline fun <reified C: ConnectorSpecificHandling, reified T> provideConnectorStoryHandler(storyDef: StepExecutionContext, connectorDefClass: KClass<*>?): C? {
         val p = connectorDefClass?.primaryConstructor
         return p?.callBy(
             mapOf(
-                p.parameters.first {
-                    it.type.isSupertypeOf(storyDef::class.starProjectedType)
-                } to storyDef
+                (p.parameters.firstOrNull {
+                    it.type.isSubtypeOf(typeOf<T>())
+                } ?: throw NoSuchElementException("Primary constructor of $connectorDefClass is missing its context parameter")) to storyDef
             )
         ) as C?
     }
 
     override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? {
         val connectorDef = getConnectorHandlerMap(storyDef)[connectorType.id]
-        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>>(storyDef, connectorDef)
+        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>, BotBus>(storyDef, connectorDef)
     }
 
     override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? {
         val connectorDef = getConnectorIdHandlerMap(storyDef)[connectorId]
-        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>>(storyDef, connectorDef) as ConnectorStoryHandlerBase<*>?
+        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>, BotBus>(storyDef, connectorDef) as ConnectorStoryHandlerBase<*>?
     }
 
     @ExperimentalTockCoroutines
@@ -104,7 +105,7 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         connectorType: ConnectorType
     ): AsyncConnectorHandlingBase<*>? {
         val connectorDef = getConnectorHandlerMap(storyDef)[connectorType.id]
-        return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>>(storyDef, connectorDef)
+        return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>, AsyncStoryHandling>(storyDef, connectorDef)
     }
 
     @ExperimentalTockCoroutines
@@ -113,6 +114,6 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         connectorId: String
     ): AsyncConnectorHandlingBase<*>? {
         val connectorDef = getConnectorIdHandlerMap(storyDef)[connectorId]
-        return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>>(storyDef, connectorDef)
+        return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>, AsyncStoryHandling>(storyDef, connectorDef)
     }
 }

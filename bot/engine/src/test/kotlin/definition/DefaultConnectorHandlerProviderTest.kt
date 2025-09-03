@@ -18,11 +18,14 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.AsyncBus
+import ai.tock.bot.engine.BotBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertInstanceOf
+import org.junit.jupiter.api.assertThrows
 
 @OptIn(ExperimentalTockCoroutines::class)
 class DefaultConnectorHandlerProviderTest {
@@ -33,4 +36,28 @@ class DefaultConnectorHandlerProviderTest {
         assertInstanceOf<AsyncConn>(c)
         assertEquals(context, c.context)
     }
+
+    @Test
+    fun `ConnectorStoryHandlerBase creation is ok`() {
+        val context = TestDef(mockk<BotBus> { every { targetConnectorType } returns ConnectorType.none })
+        val c = DefaultConnectorHandlerProvider.provide(context, ConnectorType.none)
+        assertInstanceOf<TestConnDef<*>>(c)
+        assertEquals(context, c.context)
+    }
+
+    @Test
+    fun `ConnectorStoryHandlerBase creation without a context parameter is ko`() {
+        val context = InvalidTestDef(mockk<BotBus> { every { targetConnectorType } returns ConnectorType.none })
+        assertThrows<NoSuchElementException> {
+            DefaultConnectorHandlerProvider.provide(context, ConnectorType.none)
+        }
+    }
+
+    @TestHandler(TestConnDef::class)
+    class TestDef(bus: BotBus) : HandlerDef<TestConnDef<HandlerDef<*>>>(bus)
+    class TestConnDef<out T : StoryHandlerDefinition>(context: T) : ConnectorStoryHandlerBase<T>(context)
+
+    class InvalidTestConnDef(provider: () -> TestDef) : ConnectorStoryHandlerBase<TestDef>(provider())
+    @TestHandler(InvalidTestConnDef::class)
+    class InvalidTestDef(bus: BotBus) : HandlerDef<InvalidTestConnDef>(bus)
 }
