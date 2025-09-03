@@ -55,7 +55,7 @@ class AsyncStoryHandlerBaseTest : AsyncBotEngineTest() {
 
         val storyDef = storyDef<AsyncDefWithData, StoryData>(
             "async",
-            handlerDefCreator = { _, _ -> storyHandling },
+            handling = { _, _ -> storyHandling },
             preconditionsChecker = { testData },
         )
         val totalStoryTime = measureTimeMillis {

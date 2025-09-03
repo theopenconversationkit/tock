@@ -54,16 +54,16 @@ inline fun <reified T : AsyncStoryHandling, D> storyDef(
     /**
      * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    handlerDefCreator: AsyncStoryHandlingCreator<T, D>,
+    handling: AsyncStoryHandlingCreator<T, D>,
     /**
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: suspend AsyncBus.() -> D
-): AsyncStoryDefinitionBase<T, AsyncStoryStep<T>> =
+): AsyncStoryDefinitionBase<AsyncStoryStep<T>> =
     AsyncStoryDefinitionBase(
         intentName,
-        AsyncConfigurableStoryHandler(Intent(intentName), handlerDefCreator, preconditionsChecker),
+        AsyncConfigurableStoryHandler(Intent(intentName), handling, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         steps + simpleSteps.onEach { check(it !is AsyncStoryDataStep<*, *, *>) {
@@ -101,16 +101,16 @@ inline fun <reified T : AsyncStoryHandling> storyDef(
     /**
      * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    handlerDefCreator: SimpleAsyncStoryHandlingCreator<T>,
+    handling: SimpleAsyncStoryHandlingCreator<T>,
     /**
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {}
-): AsyncStoryDefinitionBase<T, AsyncStoryStep<T>> =
+): AsyncStoryDefinitionBase<AsyncStoryStep<T>> =
     AsyncStoryDefinitionBase(
         intentName,
-        AsyncConfigurableStoryHandler(Intent(intentName), handlerDefCreator, preconditionsChecker),
+        AsyncConfigurableStoryHandler(Intent(intentName), handling, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         steps,
@@ -142,17 +142,17 @@ inline fun <reified T : AsyncStoryHandling, reified S, D> storyDefWithSteps(
     /**
      * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    handlerDefCreator: AsyncStoryHandlingCreator<T, D>,
+    handling: AsyncStoryHandlingCreator<T, D>,
     /**
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: suspend AsyncBus.() -> D
-): AsyncStoryDefinitionBase<T, S> where S : Enum<S>, S : AsyncStoryStep<T> =
+): AsyncStoryDefinitionBase<S> where S : Enum<S>, S : AsyncStoryStep<T> =
     AsyncStoryDefinitionBase(
         name = intentName,
         storyHandler = AsyncConfigurableStoryHandler(
-            Intent(intentName), handlerDefCreator,
+            Intent(intentName), handling,
             preconditionsChecker
         ),
         otherStarterIntents = otherStarterIntents,
@@ -186,17 +186,17 @@ inline fun <reified T : AsyncStoryHandling, reified S> storyDefWithSteps(
     /**
      * The [HandlerDef] creator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    handlerDefCreator: SimpleAsyncStoryHandlingCreator<T>,
+    handling: SimpleAsyncStoryHandlingCreator<T>,
     /**
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {}
-): AsyncStoryDefinitionBase<T, S> where S : Enum<S>, S : AsyncStoryStep<T> =
+): AsyncStoryDefinitionBase<S> where S : Enum<S>, S : AsyncStoryStep<T> =
     AsyncStoryDefinitionBase(
         name = intentName,
         storyHandler = AsyncConfigurableStoryHandler(
-            Intent(intentName), handlerDefCreator,
+            Intent(intentName), handling,
             preconditionsChecker
         ),
         otherStarterIntents = otherStarterIntents,

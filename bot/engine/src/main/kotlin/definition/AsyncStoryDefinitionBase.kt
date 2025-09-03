@@ -23,9 +23,9 @@ import ai.tock.translator.UserInterfaceType
  * Default [AsyncStoryDefinition] implementation.
  */
 @OptIn(ExperimentalTockCoroutines::class)
-open class AsyncStoryDefinitionBase<T : AsyncStoryHandling, S : AsyncStoryStep<T>>(
+open class AsyncStoryDefinitionBase<S : AsyncStoryStep<*>>(
     val name: String,
-    override val storyHandler: AsyncDelegatingStoryHandlerBase<T, *>,
+    override val storyHandler: AsyncStoryHandlerBase,
     otherStarterIntents: Set<IntentAware> = emptySet(),
     secondaryIntents: Set<IntentAware> = emptySet(),
     stepsList: List<S> = emptyList(),

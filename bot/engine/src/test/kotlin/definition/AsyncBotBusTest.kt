@@ -36,7 +36,7 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
     fun retrieveCurrentBus() = runBlocking {
         val story = storyDef<AsyncDef>(
             "async",
-            handlerDefCreator = ::AsyncDef,
+            handling = ::AsyncDef,
             preconditionsChecker = {
                 AsyncBotBus.retrieveCurrentBus()?.end("Hello")
             },
@@ -62,7 +62,7 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
 
         val async2 = storyDef<AsyncDef>(
             "async2",
-            handlerDefCreator = ::AsyncDef,
+            handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync2"
                 delay(100)
@@ -80,7 +80,7 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
         )
         val async1 = storyDef<AsyncDef>(
             "async1",
-            handlerDefCreator = ::AsyncDef,
+            handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync1"
                 handleAndSwitchStory(sync1)
@@ -105,7 +105,7 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
 
         val async2 = storyDef<AsyncDef>(
             "async2",
-            handlerDefCreator = ::AsyncDef,
+            handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync2"
                 delay(100)
@@ -123,7 +123,7 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
         )
         val async1 = storyDef<AsyncDef>(
             "async1",
-            handlerDefCreator = ::AsyncDef,
+            handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync1"
                 handleAndSwitchStory(sync1)

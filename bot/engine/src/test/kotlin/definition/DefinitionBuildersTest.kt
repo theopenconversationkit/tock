@@ -96,7 +96,7 @@ class DefinitionBuildersTest : BotEngineTest() {
     fun `async story is ok`() {
         val s = storyDef<AsyncDefWithData, StoryData>(
             "yah",
-            handlerDefCreator = { bus, data -> AsyncDefWithData(bus, data) },
+            handling = { bus, data -> AsyncDefWithData(bus, data) },
             preconditionsChecker = { StoryData() },
         )
         assertNotNull(s)
