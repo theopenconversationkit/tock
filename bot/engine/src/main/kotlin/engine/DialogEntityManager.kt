@@ -106,5 +106,5 @@ interface DialogEntityManager {
     fun removeAllEntityValues()
 }
 
-inline fun <reified T : Value> DialogEntityManager.entityValue(role: String) = entityValue(role, T::class::safeCast)
-inline fun <reified T : Value> DialogEntityManager.entityValue(type: Entity) = entityValue(type, T::class::safeCast)
+inline fun <reified T : Value> DialogEntityManager.entityValue(role: String) = entityValue(role) { T::class.safeCast(it.value) }
+inline fun <reified T : Value> DialogEntityManager.entityValue(type: Entity) = entityValue(type) { T::class.safeCast(it.value) }
