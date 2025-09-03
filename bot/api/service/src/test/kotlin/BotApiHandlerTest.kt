@@ -25,8 +25,8 @@ import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.bot.api.service.BotApiClientController
 import ai.tock.bot.api.service.BotApiDefinitionProvider
 import ai.tock.bot.api.service.BotApiHandler
-import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.api.service.toUserRequest
+import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.ActionMetadata
@@ -34,8 +34,8 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.NextUserActionState
-import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
@@ -47,11 +47,11 @@ import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 
 class BotApiHandlerTest {
@@ -140,7 +140,7 @@ class BotApiHandlerTest {
         handler.send(bus)
 
         verify { bus.setBusContextValue("_viewed_stories_tock_switch", any()) }
-        verify { bus.handleAndSwitchStory(any(), any()) }
+        verify { bus.handleAndSwitchStory(any<StoryDefinition>(), any()) }
     }
 
     @Test

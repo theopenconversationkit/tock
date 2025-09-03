@@ -34,6 +34,7 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
@@ -42,6 +43,7 @@ import java.util.Locale
 /**
  *
  */
+@OptIn(ExperimentalTockCoroutines::class)
 internal class TockBotBus(
     val connector: TockConnectorController,
     override val userTimeline: UserTimeline,
@@ -49,7 +51,7 @@ internal class TockBotBus(
     override val action: Action,
     override val connectorData: ConnectorData,
     override var i18nProvider: I18nKeyProvider
-) : BotBus {
+) : CoroutineBridgeBus(), BotBus {
 
     private val bot = connector.bot
 
@@ -61,7 +63,7 @@ internal class TockBotBus(
             currentDialog.stories.add(value)
         }
     override val botDefinition: BotDefinition = bot.botDefinition
-    override val connectorId = action.applicationId
+    override val connectorId = action.connectorId
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
@@ -145,10 +147,15 @@ internal class TockBotBus(
         // to receive the corresponding messages
         if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
             // If the action is not a SendDebug, or it is, but the source connector is the rest connector
-            connector.send(userTimeline, connectorData, action, actionToSent, context.currentDelay)
+            customActionSender.get()?.invoke(actionToSent, context.currentDelay)
+                ?: doSend(actionToSent, context.currentDelay)
         }
 
         return this
+    }
+
+    override fun doSend(actionToSend: Action, delay: Long) {
+        connector.send(userTimeline, connectorData, action, actionToSend, delay)
     }
 
     /**

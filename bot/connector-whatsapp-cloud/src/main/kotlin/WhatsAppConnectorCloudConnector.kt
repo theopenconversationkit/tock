@@ -32,8 +32,7 @@ import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateGenerationContext
 import ai.tock.bot.connector.whatsapp.cloud.spi.TemplateManagementContext
 import ai.tock.bot.connector.whatsapp.cloud.spi.WhatsappTemplateProvider
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
@@ -247,7 +246,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit

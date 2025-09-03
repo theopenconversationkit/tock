@@ -26,6 +26,9 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import com.mongodb.MongoWriteException
 import com.mongodb.client.model.IndexOptions
+import java.time.Instant
+import java.time.Instant.now
+import java.util.concurrent.TimeUnit.HOURS
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -41,9 +44,6 @@ import org.litote.kmongo.toId
 import org.litote.kmongo.updateOne
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
-import java.time.Instant
-import java.time.Instant.now
-import java.util.concurrent.TimeUnit.HOURS
 
 /**
  *
@@ -75,7 +75,7 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    override fun lock(userId: String): Boolean {
+    override fun tryLock(userId: String): Boolean {
         val lock = UserLock(userId.toId())
         val validLockDatesLimit = now().minusMillis(lockTimeout)
 

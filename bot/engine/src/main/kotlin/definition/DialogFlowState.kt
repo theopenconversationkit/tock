@@ -19,5 +19,5 @@ package ai.tock.bot.definition
 data class DialogFlowState(
     val storyDefinition: StoryDefinition,
     val intent: IntentAware = storyDefinition.mainIntent(),
-    val step: StoryStep<*>? = null
+    val step: StoryStepDef? = null
 )

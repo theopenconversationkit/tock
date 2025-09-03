@@ -33,8 +33,8 @@ interface StoryDefinitionExtended : StoryDefinition {
     /**
      * StoryStep implementation could be an enum
      */
-    val stepsArray: Array<out StoryStep<out StoryHandlerDefinition>> get() = emptyArray()
-    override val steps: Set<StoryStep<out StoryHandlerDefinition>> get() = stepsArray.toSet()
+    val stepsArray: Array<out StoryStepDef> get() = emptyArray()
+    override val steps: Set<StoryStepDef> get() = stepsArray.toSet()
 
     val unsupportedUserInterface: UserInterfaceType? get() = null
     override val unsupportedUserInterfaces: Set<UserInterfaceType> get() = listOfNotNull(unsupportedUserInterface).toSet()

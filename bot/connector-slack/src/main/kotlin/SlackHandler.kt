@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.slack
 
 import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
 import kotlin.reflect.KClass
 
@@ -28,4 +29,4 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = SLACK_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class SlackHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class SlackHandler(val value: KClass<out ConnectorSpecificHandling>)
