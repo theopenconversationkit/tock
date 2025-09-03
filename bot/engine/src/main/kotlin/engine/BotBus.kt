@@ -155,14 +155,16 @@ interface BotBus : Bus<BotBus>, DialogEntityManager {
     var nextUserActionState: NextUserActionState?
 
     var step: StoryStep<out StoryHandlerDefinition>?
-        get() = story.currentStep as? StoryStep<out StoryHandlerDefinition>
+        get() = stepDef as? StoryStep<out StoryHandlerDefinition>
         set(step) {
-            setStep(step)
+            stepDef = step
         }
 
-    fun setStep(step: StoryStepDef?) {
-        story.step = step?.name
-    }
+    var stepDef: StoryStepDef?
+        get() = story.currentStep
+        set(step) {
+            story.step = step?.name
+        }
 
     override val stepName: String? get() = step?.name
 

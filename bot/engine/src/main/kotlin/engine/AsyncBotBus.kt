@@ -184,7 +184,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         step: StoryStepDef?,
     ) {
         synchronized(botBus) {
-            botBus.setStep(step)
+            botBus.stepDef = step
             botBus.switchStory(storyDefinition, starterIntent)
             botBus.hasCurrentSwitchStoryProcess = false
         }
