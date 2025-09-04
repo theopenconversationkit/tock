@@ -52,16 +52,17 @@ class Footnote(Source):
 
     identifier: str = Field(description='Footnote identifier', examples=['1'])
 
+class ChunkSentences(BaseModel):
+    chunk: Optional[str] = None
+    sentences: Optional[List[str]] = None
+    reason: Optional[str] = None
 
-class TextWithFootnotes(BaseModel):
-    """Text with its footnotes. Used for RAG response"""
-
-    text: str = Field(
-        description='Text with footnotes used to list outside sources',
-        examples=['This is page content [1], and this is more content [2]'],
-    )
-    footnotes: set[Footnote] = Field(description='Set of footnotes')
-
+class LLMAnswer(BaseModel):
+    status: Optional[str] = None
+    answer: Optional[str] = None
+    topic: Optional[str] = None
+    suggested_topics: Optional[List[str]] = None
+    context: Optional[List[ChunkSentences]] = None
 
 @unique
 class ChatMessageType(str, Enum):
@@ -154,4 +155,4 @@ class RAGDebugData(QADebugData):
             'Question: Hello, how to plan a trip to Morocco ?. Answer in French.'
         ],
     )
-    answer: str = Field(description='The RAG answer.')
+    answer: LLMAnswer = Field(description='The RAG answer.')

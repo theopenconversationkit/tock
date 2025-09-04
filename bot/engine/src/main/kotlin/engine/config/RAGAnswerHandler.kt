@@ -31,9 +31,9 @@ import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.genai.orchestratorclient.requests.*
+import ai.tock.genai.orchestratorclient.responses.LLMAnswer
 import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
-import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
@@ -60,7 +60,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
 
             // Call RAG Api - Gen AI Orchestrator
-            val (answer, debug, noAnswerStory, observabilityInfo) = rag(this)
+            val (answer, footnotes, debug, noAnswerStory, observabilityInfo) = rag(this)
 
             // Add debug data if available and if debugging is enabled
             if (debug != null) {
@@ -75,14 +75,18 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
                 send(
-                    SendSentenceWithFootnotes(
-                        botId, connectorId, userId, text = answer.text, footnotes = answer.footnotes.map {
+                    action = SendSentenceWithFootnotes(
+                        playerId = botId,
+                        applicationId = connectorId,
+                        recipientId = userId,
+                        text = answer.answer,
+                        footnotes = footnotes?.map {
                             Footnote(
                                 it.identifier, it.title, it.url,
                                 if(action.metadata.sourceWithContent) it.content else null,
                                 it.score
                             )
-                        }.toMutableList(),
+                        }?.toMutableList() ?: mutableListOf<Footnote>(),
                         // modifiedObservabilityInfo includes the public langfuse URL if filled.
                         metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
                     )
@@ -116,13 +120,13 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private fun ragStoryRedirection(botBus: BotBus, response: RAGResponse?): StoryDefinition? {
         return with(botBus) {
             botDefinition.ragConfiguration?.let { ragConfig ->
-                if (response?.answer?.text.equals(ragConfig.noAnswerSentence, ignoreCase = true)) {
+                if (response?.answer?.status.equals("not_found_in_context", ignoreCase = true)) {
                     // Save no answer metric
                     saveRagMetric(IndicatorValues.NO_ANSWER)
 
                     // Switch to no answer story if configured
                     if (!ragConfig.noAnswerStoryId.isNullOrBlank()) {
-                        logger.info { "The RAG response is equal to the configured no-answer sentence, so switch to the no-answer story." }
+                        logger.info { "Switch to the no-answer RAG story." }
                         getNoAnswerRAGStory(ragConfig)
                     } else null
                 } else {
@@ -221,7 +225,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
 
                 // Handle RAG response
-                return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response), response?.observabilityInfo)
+                return RAGResult(response?.answer, response?.footnotes, response?.debug, ragStoryRedirection(this, response), response?.observabilityInfo)
             } catch (exc: Exception) {
                 logger.error { exc }
                 // Save failure metric
@@ -232,7 +236,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     RAGResult(noAnswerStory = getNoAnswerRAGStory(ragConfiguration))
                 }
                 else RAGResult(
-                    answer = TextWithFootnotes(text = technicalErrorMessage),
+                    answer = LLMAnswer(status="error", answer = technicalErrorMessage),
                     debug = when(exc) {
                         is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
                         is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
@@ -282,7 +286,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
  * Aggregation of RAG answer, debug and the no answer Story.
  */
 data class RAGResult(
-    val answer: TextWithFootnotes? = null,
+    val answer: LLMAnswer? = null,
+    val footnotes: List<ai.tock.genai.orchestratorclient.responses.Footnote>? = null,
     val debug: Any? = null,
     val noAnswerStory: StoryDefinition? = null,
     val observabilityInfo: ObservabilityInfo? = null,
