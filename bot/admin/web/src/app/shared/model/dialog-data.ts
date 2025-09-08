@@ -430,3 +430,37 @@ export interface ActionNlpStats {
   date: string;
   stats: NlpCallStats;
 }
+
+export interface CountResult {
+  applicationId: string;
+  total: number;
+}
+
+
+export class DialogStatsQuery {
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public from: Date,
+    public to: Date
+  ) {}
+}
+
+export class DialogStatsQueryResult {
+  constructor(
+    public allUserActions: CountResult[],
+    public allUserActionsExceptRag: CountResult[],
+    public ragBotActions: CountResult[],
+    public knownIntentUserActions: CountResult[],
+    public unknownIntentUserActions: CountResult[],
+    public unknownIntentUserActionsExceptRag: CountResult[]
+  ) {}
+
+  static fromJSON(json?: any): DialogStatsQueryResult {
+    const value = Object.create(DialogStatsQueryResult.prototype);
+
+    const result = Object.assign(value, json);
+
+    return result;
+  }
+}

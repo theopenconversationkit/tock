@@ -21,15 +21,17 @@ import ai.tock.bot.admin.indicators.IndicatorValue
 
 /**
  * Map a [request][SaveIndicatorRequest] to [Indicator]
+ * @param namespace the namespace
  * @param botId the application name
  * @param request [SaveIndicatorRequest]
  * @return [Indicator]
  */
-fun toIndicator(botId: String, request: SaveIndicatorRequest): Indicator {
+fun toIndicator(namespace: String, botId: String, request: SaveIndicatorRequest): Indicator {
     return Indicator(
         name = request.name,
         label = request.label,
         description = request.description,
+        namespace = namespace,
         botId = botId,
         dimensions = request.dimensions,
         values = request.values.map { IndicatorValue(it.name, it.label) }.toSet()

@@ -21,7 +21,7 @@ import { UserAnalyticsQueryResult, UserReportQueryResult, UserSearchQuery } from
 import { Observable } from 'rxjs';
 import { DialogReportQuery, DialogReportQueryResult } from './dialogs/dialogs';
 import { TestPlan } from '../test/model/test';
-import { DialogReport } from '../shared/model/dialog-data';
+import { DialogReport, DialogStatsQuery, DialogStatsQueryResult } from '../shared/model/dialog-data';
 import { ApplicationDialogFlow, DialogFlowRequest } from './flow/flow';
 import { UserAnalyticsPreferences } from './preferences/UserAnalyticsPreferences';
 import { StorySearchQuery } from '../bot/model/story';
@@ -97,6 +97,10 @@ export class AnalyticsService {
 
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {
     return this.rest.post('/dialogs/search', query, DialogReportQueryResult.fromJSON);
+  }
+
+  dialogStats(query: DialogStatsQuery): Observable<DialogStatsQueryResult> {
+    return this.rest.post('/dialogs/stats', query, DialogStatsQueryResult.fromJSON);
   }
 
   dialog(applicationId: string, dialogId: string): Observable<DialogReport> {

@@ -27,6 +27,11 @@
 </nb-card>
 
 <div [nbSpinner]="loading">
+  <div>
+    <span class="font-size-small">
+      <pre>{{ stats | json }}</pre>
+    </span>
+  </div>
   <tock-no-data-found
     *ngIf="!loading && pagination.total === 0"
     title="No dialogs found"
