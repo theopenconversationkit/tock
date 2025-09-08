@@ -34,6 +34,7 @@ import java.time.Instant
  * @param dialogId mandatory dialog id
  * @param creationDate the creation date
  * @param botId the application name
+ * @param namespace the namespace
  */
 data class Metric(
     val _id: Id<Metric> = newId(),
@@ -45,5 +46,7 @@ data class Metric(
     val playerIds: Set<PlayerId>,
     val dialogId: Id<Dialog>,
     val creationDate: Instant = Instant.now(),
-    val botId: String
+    val applicationId: String,
+    val botId: String,
+    val namespace: String,
 )

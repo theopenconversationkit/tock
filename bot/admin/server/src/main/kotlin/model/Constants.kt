@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.indicators.metric
+package ai.tock.bot.admin.model
 
-/**
- * Custom Metric
- */
-data class CustomMetric(
-    val id: String?,
-    val type: MetricType?,
-    val indicatorName: String?,
-    val indicatorValueName: String?,
-    val emitterStoryId: String?,
-    val trackedStoryId: String?,
-    val applicationId: String?,
-    val count: Int = 0
-)
-
+const val APP_CONFIG_PROD_TYPE: String = "prod"
+const val APP_CONFIG_TEST_TYPE: String = "test"

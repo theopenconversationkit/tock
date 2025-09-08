@@ -19,6 +19,14 @@ package model.indicator.metric
 /**
  * Custom Metric Response
  */
+data class CustomMetricGroupResponse(
+    val test: List<CustomMetricResponse>,
+    val prod: List<CustomMetricResponse>
+)
+
+/**
+ * Custom Metric Response
+ */
 data class CustomMetricResponse(
     val row: Row, val count: Int
 )
@@ -28,6 +36,7 @@ data class CustomMetricResponse(
  */
 data class Row(
     val id: String?,
+    val applicationId: String?,
     val type: String?,
     val emitterStoryId: String?,
     val trackedStoryId: String?,

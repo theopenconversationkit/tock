@@ -29,22 +29,25 @@ interface IndicatorDAO {
     /**
      * Check if an indicator exists.
      * @param name the indicator name
+     * @param namespace the namespace
      * @param botId the bot id
      */
-    fun existByNameAndBotId(name: String, botId: String): Boolean
+    fun existByNameAndBotId(name: String, namespace: String, botId: String): Boolean
 
     /**
-     * Find an indicator by its name and bot id.
+     * Find an indicator by its name, namespace and bot id.
      * @param name the indicator name
+     * @param namespace the namespace
      * @param botId the bot id
      */
-    fun findByNameAndBotId(name: String, botId: String): Indicator?
+    fun findByNameAndBotId(name: String, namespace: String, botId: String): Indicator?
 
     /**
-     * Find all indicators by bot id
+     * Find all indicators by namespace and bot id
+     * @param namespace the namespace
      * @param botId the bot id
      */
-    fun findAllByBotId(botId: String): List<Indicator>
+    fun findAllByBotId(namespace: String, botId: String): List<Indicator>
 
     /**
      * Find all indicators
@@ -58,9 +61,12 @@ interface IndicatorDAO {
     fun delete(id: Id<Indicator>): Boolean
 
     /**
-     * Delete an indicator by its name and its application name
+     * Delete an indicator by its name, namespace and its application name
      * @param name indicator name
-     * @param applicationName application name
+     * @param namespace the namespace
+     * @param botId the application name
      */
-    fun deleteByNameAndApplicationName(name: String, applicationName: String): Boolean
+    fun deleteByNameAndApplicationName(name: String, namespace: String, botId: String): Boolean
+    fun deleteByApplicationName(namespace: String, botId: String): Boolean
+
 }

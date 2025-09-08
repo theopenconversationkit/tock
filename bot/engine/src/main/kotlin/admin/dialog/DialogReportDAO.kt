@@ -37,6 +37,7 @@ interface DialogReportDAO {
     fun getDialog(id: Id<Dialog>): DialogReport?
     fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
     fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
+    fun calculateDialogStats(query: DialogStatsQuery): DialogStatsQueryResult
 
     // ANNOTATION FUNCTIONS
     fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
