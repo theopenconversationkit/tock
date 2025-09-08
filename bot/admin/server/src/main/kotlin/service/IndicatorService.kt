@@ -36,26 +36,28 @@ object IndicatorService {
 
     /**
      * Save an indicator
+     * @param namespace the namespace
      * @param botId the name of the application which the indicator is linked to
      * @param request the save request
      * @throws [IndicatorError.IndicatorAlreadyExists]
      */
-    fun save(botId: String, request: Valid<SaveIndicatorRequest>) = request.data.let {
-        if (!PredefinedIndicators.has(it.name) && dao.existByNameAndBotId(it.name, botId)) {
-            throw IndicatorError.IndicatorAlreadyExists(it.name, it.label, botId)
+    fun save(namespace: String, botId: String, request: Valid<SaveIndicatorRequest>) = request.data.let {
+        if (!PredefinedIndicators.has(it.name) && dao.existByNameAndBotId(it.name, namespace, botId)) {
+            throw IndicatorError.IndicatorAlreadyExists(it.name, it.label, namespace, botId)
         }
-        dao.save(toIndicator(botId, it))
+        dao.save(toIndicator(namespace, botId, it))
     }
 
     /**
      * Update an indicator
+     * @param namespace the namespace
      * @param botId the name of the application which the indicator is linked to
      * @param indicatorName the name of indicator to update
      * @param request the update request
      * @throws [IndicatorError.IndicatorNotFound]
      */
-    fun update(botId: String, indicatorName: String, request: Valid<UpdateIndicatorRequest>) = request.data.let {
-        findIndicatorAndMap(indicatorName, botId) { it }.let { indicator ->
+    fun update(namespace: String, botId: String, indicatorName: String, request: Valid<UpdateIndicatorRequest>) = request.data.let {
+        findIndicatorAndMap(indicatorName, namespace, botId) { it }.let { indicator ->
             dao.save(
                 indicator.copy(
                     label = it.label,
@@ -70,21 +72,23 @@ object IndicatorService {
     /**
      * Retrieve an indicator with a given name and application name
      * @param indicatorName the expected indicator name
+     * @param namespace the namespace
      * @param botId the name of the application which the indicator is linked to
      * @throws [IndicatorError.IndicatorNotFound]
      * @return [IndicatorResponse]
      */
-    fun findByNameAndBotId(indicatorName: String, botId: String): IndicatorResponse =
-        findIndicatorAndMap(indicatorName, botId) {
+    fun findByNameAndBotId(indicatorName: String, namespace: String, botId: String): IndicatorResponse =
+        findIndicatorAndMap(indicatorName, namespace, botId) {
             toResponse(it)
         }
 
     /**
      * Retrieve all indicators with a given application name
+     * @param namespace the namespace
      * @param botId the name of the application which the indicator is linked to
      * @return List<[IndicatorResponse]>
      */
-    fun findAllByBotId(botId: String): List<IndicatorResponse> = dao.findAllByBotId(botId).map {
+    fun findAllByBotId(namespace: String, botId: String): List<IndicatorResponse> = dao.findAllByBotId(namespace, botId).map {
         toResponse(it)
     }
 
@@ -99,26 +103,29 @@ object IndicatorService {
     /**
      * Delete an indicator
      * @param name the indicator name to delete
-     * @param applicationName the application name associated to the indicator
+     * @param namespace the namespace
+     * @param botId the application name associated to the indicator
      * @throws [IndicatorError.IndicatorDeletionFailed]
      * @return [Boolean]
      */
-    fun deleteByNameAndApplicationName(name: String, applicationName: String): Boolean =
-        dao.deleteByNameAndApplicationName(name, applicationName)
-            .also { if (!it) throw IndicatorError.IndicatorDeletionFailed(name, applicationName) }
+    fun deleteByNameAndApplicationName(name: String, namespace: String, botId: String): Boolean =
+        dao.deleteByNameAndApplicationName(name, namespace, botId)
+            .also { if (!it) throw IndicatorError.IndicatorDeletionFailed(name, namespace, botId) }
 
     /**
      * Find an indicator with a given name and application name and map it into a desired type
      * @param name the indicator name
+     * @param namespace the namespace
      * @param botId the application name
      * @param mapper the indicator's mapping function
      * @throws [IndicatorError.IndicatorNotFound] in case indicator is not found
      */
     private fun <T> findIndicatorAndMap(
         name: String,
+        namespace: String,
         botId: String,
         mapper: (Indicator) -> T
     ): T =
-        dao.findByNameAndBotId(name, botId)?.let { mapper(it) } ?: throw IndicatorError.IndicatorNotFound(name, botId)
+        dao.findByNameAndBotId(name, namespace, botId)?.let { mapper(it) } ?: throw IndicatorError.IndicatorNotFound(name, namespace, botId)
 
 }

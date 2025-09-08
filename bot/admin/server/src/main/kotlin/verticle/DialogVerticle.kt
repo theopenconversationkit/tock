@@ -21,6 +21,7 @@ import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
+import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.CsvCodec
@@ -47,6 +48,7 @@ class DialogVerticle {
         private const val PATH_DIALOG = "/dialog/:applicationId/:dialogId"
         private const val PATH_DIALOG_SATISFACTION = "/dialog/:applicationId/:dialogId/satisfaction"
         private const val PATH_DIALOGS_SEARCH = "/dialogs/search"
+        private const val PATH_DIALOGS_STATS = "/dialogs/stats"
         private const val PATH_DIALOGS_INTENTS = "/dialogs/intents/:applicationId"
 
         // ANNOTATION ENDPOINTS
@@ -164,6 +166,14 @@ class DialogVerticle {
             blockingJsonPost(PATH_DIALOGS_SEARCH, setOf(TockUserRole.botUser)) { context, query: DialogsSearchQuery ->
                 if (context.organization == query.namespace) {
                     BotAdminService.searchWithCommentRights(query, context.userLogin)
+                } else {
+                    unauthorized()
+                }
+            }
+
+            blockingJsonPost(PATH_DIALOGS_STATS, setOf(TockUserRole.botUser)) { context, query: DialogStatsQuery ->
+                if (context.organization == query.namespace) {
+                    BotAdminService.getDialogStats(query = query)
                 } else {
                     unauthorized()
                 }

@@ -90,45 +90,93 @@
   <nb-card-body class="main-card-body">
     <div class="row mt-3">
       <div class="col-12 mb-3">
-        <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Number of user inputs
-          <div>{{ userMessagesSum }}</div>
-        </div>
-        <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Number of answers
-          <div>{{ answeredQuestions }}</div>
-        </div>
-        <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Number of questions not understood
-          <small
-            class="stats-line-value text-danger pointer"
-            *ngIf="!hasUnknownStory()"
-            (click)="displayHelpModal(unknownStoryHelpModal)"
-            >No unknown story defined <span class="help-badge">?</span></small
-          >
 
-          <div
-            class="stats-line-value font-weight-bold"
-            *ngIf="hasUnknownStory()"
-          >
-            {{ notUnderstoodQuestions }}
-          </div>
-        </div>
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          <strong>Bot response rate</strong>
-          <small
-            class="stats-line-value text-danger pointer"
-            *ngIf="!hasUnknownStory()"
-            (click)="displayHelpModal(unknownStoryHelpModal)"
-            >No unknown story defined <span class="help-badge">?</span></small
-          >
-          <div
-            *ngIf="hasUnknownStory()"
-            class="stats-line-value font-weight-bold"
-          >
-            {{ responseRate }}%
+          <strong>&nbsp;</strong>
+          <div>
+            <span class="stats-value">End-user</span>
+            <span class="stats-value test">Sandbox</span>
           </div>
         </div>
+
+        <h6 class="mt-3 mb-2">Bot (Global) Activitiy</h6>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Total user messages:
+          <div>
+            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserActions || 0 }}</strong></span>
+            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserActions || 0 }}</strong></span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Unknown user messages:
+          <div>
+            <span class="stats-value"><strong>{{ dialogStats?.prod?.unknownIntentUserActions || 0 }}</strong></span>
+            <span class="stats-value test"><strong>{{ dialogStats?.test?.unknownIntentUserActions || 0 }}</strong></span>
+          </div>
+        </div>
+
+        <h6 class="mt-3 mb-2">Bot (NLP) Statistics</h6>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Total NLP messages:
+          <div>
+            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserActionsExceptRag || 0 }}</strong></span>
+            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserActionsExceptRag || 0 }}</strong></span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          User messages with known Intent:
+          <div>
+            <span class="stats-value">{{ dialogStats?.prod?.knownIntentUserActions || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.knownIntentUserActions || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          User messages classified as Unknown:
+          <div>
+            <span class="stats-value">{{ dialogStats?.prod?.unknownIntentUserActionsExceptRag || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.unknownIntentUserActionsExceptRag || 0 }}</span>
+          </div>
+        </div>
+
+        <h6 class="mt-3 mb-2">Gen AI (RAG) Statistics</h6>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Total user messages sent to RAG:
+          <div>
+            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserRagActions || 0 }}</strong></span>
+            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserRagActions || 0 }}</strong></span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Success RAG Responses:
+          <div>
+            <span class="stats-value">{{ ragStats?.prod?.success || 0 }}</span>
+            <span class="stats-value test">{{ ragStats?.test?.success || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          No Answer RAG Responses:
+          <div>
+            <span class="stats-value">{{ ragStats?.prod?.noAnswer || 0 }}</span>
+            <span class="stats-value test">{{ ragStats?.test?.noAnswer || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          Failed RAG Responses:
+          <div>
+            <span class="stats-value">{{ ragStats?.prod?.failure || 0 }}</span>
+            <span class="stats-value test">{{ ragStats?.test?.failure || 0 }}</span>
+          </div>
+        </div>
+
       </div>
     </div>
 

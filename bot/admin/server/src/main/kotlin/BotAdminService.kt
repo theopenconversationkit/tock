@@ -37,24 +37,22 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.*
+import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.*
-import ai.tock.bot.admin.service.ObservabilityService
-import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.story.*
 import ai.tock.bot.admin.story.dump.*
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
-import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.config.SatisfactionIntent
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.core.Intent
@@ -64,13 +62,13 @@ import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import ai.tock.shared.*
-import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.security.key.HasSecretKey
 import ai.tock.shared.security.key.SecretKey
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.*
 import com.github.salomonbrys.kodein.instance
+import model.DialogStatsGroupResponse
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -96,6 +94,8 @@ object BotAdminService {
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
     private val i18n: I18nDAO by injector.instance()
+    private val indicatorDAO: IndicatorDAO by injector.instance()
+    private val metricDAO: MetricDAO get() = injector.provide()
 
 
     private class BotStoryDefinitionConfigurationDumpController(
@@ -497,6 +497,40 @@ object BotAdminService {
 
     fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? {
         return dialogReportDAO.findBotDialogStats(query.toDialogReportQuery())
+    }
+
+    // Group by test/prod
+    private fun groupByAppConfigType(results: List<CountResult>): Map<String, List<CountResult>> {
+        val grouped: Map<String, List<CountResult>> = results.groupBy { stat ->
+            // At the moment, we rely on the `test-` prefix to distinguish test configurations
+            if (stat.applicationId.startsWith("test-")) APP_CONFIG_TEST_TYPE else APP_CONFIG_PROD_TYPE
+        }
+        return grouped
+    }
+
+    fun getDialogStats(query: DialogStatsQuery): DialogStatsGroupResponse {
+        val stats = dialogReportDAO.calculateDialogStats(query)
+
+        val allUserActionsGroup = groupByAppConfigType(stats.allUserActions)
+        val allUserActionsExceptRagGroup = groupByAppConfigType(stats.allUserActionsExceptRag)
+        val allUserRagActionsGroup = groupByAppConfigType(stats.allUserRagActions)
+        val knownIntentUserActionsGroup = groupByAppConfigType(stats.knownIntentUserActions)
+        val unknownIntentUserActionsGroup = groupByAppConfigType(stats.unknownIntentUserActions)
+        val unknownIntentUserActionsExceptRagGroup = groupByAppConfigType(stats.unknownIntentUserActionsExceptRag)
+
+        fun buildResult(env: String) = DialogStatsQueryResult(
+            allUserActions = allUserActionsGroup[env] ?: emptyList(),
+            allUserActionsExceptRag = allUserActionsExceptRagGroup[env] ?: emptyList(),
+            allUserRagActions = allUserRagActionsGroup[env] ?: emptyList(),
+            knownIntentUserActions = knownIntentUserActionsGroup[env] ?: emptyList(),
+            unknownIntentUserActions = unknownIntentUserActionsGroup[env] ?: emptyList(),
+            unknownIntentUserActionsExceptRag = unknownIntentUserActionsExceptRagGroup[env] ?: emptyList(),
+        )
+
+        return DialogStatsGroupResponse(
+            test = buildResult(APP_CONFIG_TEST_TYPE),
+            prod = buildResult(APP_CONFIG_PROD_TYPE),
+        )
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {
@@ -1444,6 +1478,10 @@ object BotAdminService {
             vectorStoreConfigurationDAO.delete(config._id)
             SecurityUtils.deleteSecret(config.setting.password)
         }
+
+        // delete Indicators and Metrics
+        indicatorDAO.deleteByApplicationName(app.namespace, app.name)
+        metricDAO.deleteByApplicationName(app.namespace, app.name)
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
