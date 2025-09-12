@@ -25,6 +25,7 @@ import org.litote.kmongo.newId
  * @param name mandatory indicator name
  * @param label mandatory indicator label
  * @param description optional description
+ * @param namespace the namespace
  * @param botId the application name
  * @param dimensions mandatory indicator dimensions
  * @param values set of [IndicatorValue]
@@ -34,6 +35,7 @@ data class Indicator(
     val name: String,
     val label: String,
     val description: String? = null,
+    val namespace: String,
     val botId: String,
     val dimensions: Set<String> = mutableSetOf(),
     val values: Set<IndicatorValue>

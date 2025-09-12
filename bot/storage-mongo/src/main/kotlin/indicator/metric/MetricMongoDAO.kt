@@ -22,11 +22,14 @@ import ai.tock.bot.admin.indicators.metric.MetricGroupBy
 import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.mongo.MongoBotConfiguration
+import com.mongodb.client.result.UpdateResult
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
+import org.litote.kmongo.deleteMany
 import org.litote.kmongo.eq
+import org.litote.kmongo.exists
 import org.litote.kmongo.first
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.group
@@ -34,6 +37,7 @@ import org.litote.kmongo.gte
 import org.litote.kmongo.`in`
 import org.litote.kmongo.lte
 import org.litote.kmongo.match
+import org.litote.kmongo.setValue
 import org.litote.kmongo.sum
 
 object MetricMongoDAO : MetricDAO {
@@ -48,7 +52,12 @@ object MetricMongoDAO : MetricDAO {
         col.insertMany(metrics)
     }
 
-    override fun findAllByBotId(botId: String): List<Metric> = col.find(Metric::botId eq botId).toList()
+    override fun findAllByBotId(namespace: String, botId: String): List<Metric> = col.find(
+        and(
+            Metric::namespace eq namespace,
+            Metric::botId eq botId
+        )
+    ).toList()
 
     override fun filterAndGroupBy(
         filter: MetricFilter, groupBy: List<MetricGroupBy>
@@ -89,6 +98,7 @@ object MetricMongoDAO : MetricDAO {
      */
     private fun MetricFilter.listOfNotNull(): List<Bson> =
         listOfNotNull(
+            namespace?.let { Metric::namespace eq it },
             botId?.let { Metric::botId eq it },
             types?.let { Metric::type `in` it },
             emitterStoryIds?.let { Metric::emitterStoryId `in` it },
@@ -99,4 +109,30 @@ object MetricMongoDAO : MetricDAO {
             creationDateUntil?.let { Metric::creationDate lte it },
         )
 
+    override fun deleteByApplicationName(namespace: String, botId: String): Boolean =
+        col.deleteMany(
+            Metric::namespace eq namespace,
+            Metric::botId eq botId
+        ).deletedCount > 0
+
+
+    override fun updateNamespaceForBot(botId: String, namespace: String): Long {
+         val result: UpdateResult = col.updateMany(
+             and(
+                 Metric::botId eq botId,
+                 Metric::namespace exists false
+             ),
+             setValue(Metric::namespace, namespace)
+         )
+
+        return result.modifiedCount
+    }
+
+    override fun updateUnknownNamespace(): Long {
+        val result: UpdateResult =  col.updateMany(
+            Metric::namespace exists false,
+            setValue(Metric::namespace, "unknown")
+        )
+        return result.modifiedCount
+    }
 }

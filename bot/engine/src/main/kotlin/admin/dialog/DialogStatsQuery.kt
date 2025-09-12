@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.indicators.metric
+package ai.tock.bot.admin.dialog
 
-import java.time.Instant
+import java.time.ZonedDateTime
 
 /**
- * Metric filter
+ * The dialog stats Query
  */
-data class MetricFilter(
-    val namespace: String? = null,
-    val botId: String? = null,
-    val types: List<MetricType>? = null,
-    val emitterStoryIds: List<String>? = null,
-    val trackedStoryIds: List<String>? = null,
-    val indicatorNames: List<String>? = null,
-    val indicatorValueNames: List<String>? = null,
-    val creationDateSince: Instant? = null,
-    val creationDateUntil: Instant? = null,
+data class DialogStatsQuery(
+    val namespace: String,
+    val applicationName: String,
+    val from: ZonedDateTime? = null,
+    val to: ZonedDateTime? = null
 )
 
+/**
+ * The Intent type Enum
+ */
+enum class IntentTypeEnum {
+    ALL,
+    KNOWN,
+    UNKNOWN
+}

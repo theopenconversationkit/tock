@@ -15,7 +15,7 @@
  */
 
 import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { DialogReport } from '../../../shared/model/dialog-data';
+import { DialogReport, DialogStatsQuery, DialogStatsQueryResult } from '../../../shared/model/dialog-data';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
 import { AnalyticsService } from '../../analytics.service';
@@ -41,6 +41,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   loading: boolean = false;
 
   data: DialogReport[] = [];
+  stats: DialogStatsQueryResult;
 
   filters: Partial<DialogListFilters> = {
     exactMatch: false,
@@ -111,6 +112,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
   refresh() {
     this.data = [];
+    this.stats = null
     this.search();
   }
 
@@ -195,8 +197,28 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
           }
         }, 300);
       }
+
+      this.loadStats()
     });
   }
+
+  loadStats() {
+      if (this.loading) return;
+
+      const query = this.state.createPaginatedQuery(0, 9999);
+
+      const dialogStatsQuery = new DialogStatsQuery(
+        query.namespace,
+        query.applicationName,
+        this.filters.annotationCreationDateFrom,
+        this.filters.annotationCreationDateTo
+      );
+
+      this.analytics.dialogStats(dialogStatsQuery).subscribe((result) => {
+        this.stats = result
+        this.loading = false;
+      });
+    }
 
   scrollToTop(): void {
     const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
