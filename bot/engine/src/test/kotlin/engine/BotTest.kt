@@ -16,16 +16,20 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.StepTest.s4
 import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.TestStoryDefinition.unknown
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Sentence
+import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.spyk
@@ -34,12 +38,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 /**
  *
  */
 class BotTest : BotEngineTest() {
+    private fun Bot.handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+        @OptIn(ExperimentalTockCoroutines::class)
+        runBlocking {
+            handleAction(action, userTimeline, connector, connectorData)
+        }
+    }
 
     @Test
     fun handleSendSentence_whenNotWaitingRawInput_shouldSendNlpQuery() {

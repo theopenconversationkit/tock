@@ -24,7 +24,7 @@ import ai.tock.bot.engine.BotBus
  *
  * Implementations should usually use [ConnectorStoryHandlerBase].
  */
-interface ConnectorStoryHandler<out T : StoryHandlerDefinition> : BotBus {
+interface ConnectorStoryHandler<out T : StoryHandlerDefinition> : ConnectorSpecificHandling, BotBus {
 
     /**
      * The [StoryHandlerDefinition] of this connector handler.

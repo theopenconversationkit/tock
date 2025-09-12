@@ -31,15 +31,17 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.vertx.core.Vertx
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.KFlapdoodle
-import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.atomic.AtomicInteger
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.KFlapdoodle
+import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
 
 private val logger = KotlinLogging.logger {}
 
@@ -130,9 +132,22 @@ private object NoOpCache : TockCache {
 /**
  * A simple executor that uses [nbThreads] - useful for concurrency tests.
  */
-class SimpleExecutor(private val nbThreads: Int) : Executor {
+class SimpleExecutor(private val nbThreads: Int, private val threadPoolName: String? = "test-pool-${threadPoolId.getAndIncrement()}") : Executor {
+    companion object {
+        private val threadPoolId = AtomicInteger(1)
+    }
 
-    private val executor = Executors.newScheduledThreadPool(nbThreads)
+    private val executor = Executors.newScheduledThreadPool(nbThreads, object : ThreadFactory {
+        private val group = Thread.currentThread().threadGroup
+        private val threadNumber = AtomicInteger(1)
+
+        override fun newThread(r: Runnable): Thread {
+            return Thread(group, r, "${threadPoolName}-thread-${threadNumber.getAndIncrement()}").apply {
+                if (isDaemon) setDaemon(false)
+                if (priority != Thread.NORM_PRIORITY) setPriority(Thread.NORM_PRIORITY)
+            }
+        }
+    })
 
     override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
         executor.schedule(runnable, delay.toMillis(), MILLISECONDS)

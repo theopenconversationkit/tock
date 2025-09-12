@@ -35,8 +35,7 @@ import ai.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import ai.tock.bot.connector.twitter.model.outcoming.Tweet
 import ai.tock.bot.connector.twitter.model.toMediaCategory
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
@@ -59,9 +58,9 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.translator.raw
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import java.time.ZoneOffset
 import mu.KotlinLogging
 import org.apache.commons.lang3.LocaleUtils
-import java.time.ZoneOffset
 
 internal class TwitterConnector internal constructor(
     val applicationId: String,
@@ -252,7 +251,7 @@ internal class TwitterConnector internal constructor(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit

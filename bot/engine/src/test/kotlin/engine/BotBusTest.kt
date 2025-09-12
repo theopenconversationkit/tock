@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotAnswerInterceptor
@@ -32,6 +33,8 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
@@ -41,6 +44,7 @@ import java.util.Locale
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -49,6 +53,12 @@ import org.junit.jupiter.api.Test
  *
  */
 class BotBusTest : BotEngineTest() {
+    private fun Bot.handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+        @OptIn(ExperimentalTockCoroutines::class)
+        runBlocking {
+            handleAction(action, userTimeline, connector, connectorData)
+        }
+    }
 
     @BeforeTest
     fun init() {

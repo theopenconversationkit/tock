@@ -23,8 +23,8 @@ import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.SimpleStoryStep
-import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.translator.I18nLabelValue
 
@@ -96,7 +96,7 @@ data class StoryDefinitionConfigurationStep(
 
         override fun hashCode(): Int = name.hashCode()
 
-        override val children: Set<StoryStep<StoryHandlerDefinition>>
+        override val children: Set<SimpleStoryStep>
             get() = configuration.children.map { it.toStoryStep(storyConfiguration) }.toSet()
 
         override val hasNoChildren: Boolean get() = children.isEmpty()
@@ -109,7 +109,7 @@ data class StoryDefinitionConfigurationStep(
 
     val hasNoChildren: Boolean get() = children.isEmpty()
 
-    constructor(step: StoryStep<*>) :
+    constructor(step: StoryStepDef) :
         this(
             step.name,
             step.intent?.intentWithoutNamespace(),
@@ -118,7 +118,7 @@ data class StoryDefinitionConfigurationStep(
             builtin
         )
 
-    fun toStoryStep(story: StoryDefinitionConfiguration): StoryStep<StoryHandlerDefinition> = Step(this, story)
+    fun toStoryStep(story: StoryDefinitionConfiguration): SimpleStoryStep = Step(this, story)
 
     override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
         children.map { it.userSentenceLabel ?: it.userSentence }

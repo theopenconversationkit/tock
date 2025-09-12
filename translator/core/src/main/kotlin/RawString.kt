@@ -25,6 +25,8 @@ val EMPTY_TRANSLATED_STRING: TranslatedSequence = RawString("")
 
 /**
  * A raw string is a string that should not be translated.
+ *
+ * @see CharSequence.raw
  */
 data class RawString(private val wrapped: CharSequence) :
     CharSequence by wrapped, TranslatedSequence {

@@ -23,10 +23,6 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import kotlin.LazyThreadSafetyMode.PUBLICATION
-import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.full.starProjectedType
 import mu.KotlinLogging
 
 /**
@@ -66,17 +62,6 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
      * Shortcut for [BotBus.targetConnectorType].
      */
     val connectorType: ConnectorType = bus.targetConnectorType
-
-    @Suppress("UNCHECKED_CAST")
-    private fun provideConnectorStoryHandler(connectorDef: KClass<*>?): T? {
-        return connectorDef?.primaryConstructor?.callBy(
-            mapOf(
-                connectorDef.primaryConstructor!!.parameters.first {
-                    it.type.isSubtypeOf(BotBus::class.starProjectedType)
-                } to this
-            )
-        ) as T?
-    }
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
