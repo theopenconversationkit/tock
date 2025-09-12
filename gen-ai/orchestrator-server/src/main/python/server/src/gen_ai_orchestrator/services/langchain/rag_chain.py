@@ -23,11 +23,8 @@ import time
 from functools import partial
 from logging import ERROR, WARNING
 from operator import itemgetter
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
-from langchain.chains.conversational_retrieval.base import (
-    ConversationalRetrievalChain,
-)
 from langchain.retrievers.contextual_compression import (
     ContextualCompressionRetriever,
 )
@@ -41,11 +38,10 @@ from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 from langchain_core.runnables import (
     RunnableParallel,
     RunnablePassthrough,
-    RunnableSerializable, RunnableConfig, RunnableBranch, RunnableLambda,
+    RunnableSerializable, RunnableConfig, RunnableLambda,
 )
 from langchain_core.vectorstores import VectorStoreRetriever
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
-from typing_extensions import Any, deprecated
+from typing_extensions import Any
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -75,7 +71,6 @@ from gen_ai_orchestrator.models.rag.rag_models import (
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import (
-    ObservabilityInfo,
     RAGResponse,
 )
 from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
@@ -112,7 +107,7 @@ async def execute_rag_chain(
     Args:
         request: The RAG request
         debug: True if RAG data debug should be returned with the response.
-        custom_observability_handler: Custom observability handler
+        custom_observability_handler: Custom observability handler (Used in the tooling run_experiment.py script)
     Returns:
         The RAG response (Answer and document sources)
     """
@@ -133,17 +128,13 @@ async def execute_rag_chain(
     logger.debug('RAG chain - Use chat history: %s', len(message_history.messages) > 0)
     logger.debug('RAG chain - Use RAGCallbackHandler for debugging : %s', debug)
 
-    callback_handlers = get_callback_handlers(request, custom_observability_handler, debug)
-    records_callback_handler = None
-    if debug:
-        records_callback_handler = next(
-            (x for x in callback_handlers if isinstance(x, RAGCallbackHandler)),
-            None
-        )
-    observability_handler = next(
-        (x for x in callback_handlers if isinstance(x, LangfuseCallbackHandler)),
-        None
-    )
+    records_handler, observability_handler = get_callback_handlers(request, debug)
+
+    callbacks = [
+        handler
+        for handler in (records_handler, observability_handler, custom_observability_handler)
+        if handler is not None
+    ]
 
     inputs = {
         **request.question_answering_prompt.inputs,
@@ -152,7 +143,7 @@ async def execute_rag_chain(
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
-        config=RunnableConfig(callbacks=callback_handlers)
+        config=RunnableConfig(callbacks=callbacks)
     )
     llm_answer = LLMAnswer(**response['answer'])
 
@@ -193,19 +184,18 @@ async def execute_rag_chain(
             if doc.metadata['id'] in contexts_by_chunk
         },
         observability_info=get_observability_info(observability_handler),
-        debug=get_rag_debug_data(request, records_callback_handler, rag_duration)
+        debug=get_rag_debug_data(request, records_handler, rag_duration)
         if debug
         else None,
     )
 
-def get_callback_handlers(request, custom_observability_handler, debug):
-    callback_handlers = []
-    records_callback_handler = RAGCallbackHandler()
-    if debug:
-        # Debug callback handler
-        callback_handlers.append(records_callback_handler)
-    if custom_observability_handler is not None:
-        callback_handlers.append(custom_observability_handler)
+def get_callback_handlers(request, debug) -> Tuple[
+    Optional[RAGCallbackHandler],
+    Optional[object],
+]:
+    records_handler = RAGCallbackHandler() if debug else None
+    observability_handler = None
+
     if request.observability_setting is not None:
         if request.dialog:
             session_id = request.dialog.dialog_id
@@ -215,7 +205,6 @@ def get_callback_handlers(request, custom_observability_handler, debug):
             session_id = None
             user_id = None
             tags = None
-        # Langfuse callback handler
         observability_handler = create_observability_callback_handler(
             observability_setting=request.observability_setting,
             trace_name=ObservabilityTrace.RAG.value,
@@ -223,9 +212,11 @@ def get_callback_handlers(request, custom_observability_handler, debug):
             user_id=user_id,
             tags=tags,
         )
-        callback_handlers.append(observability_handler)
 
-    return callback_handlers
+    return (
+        records_handler,
+        observability_handler,
+    )
 
 def get_source_content(doc: Document) -> str:
     """
@@ -296,6 +287,7 @@ def create_rag_chain(
         question_condensing_llm = question_condensing_llm_factory.get_language_model()
     question_answering_llm = question_answering_llm_factory.get_language_model()
 
+    # Fallback in case of missing condensing LLM setting using the answering LLM setting.
     if question_condensing_llm is not None:
         condensing_llm = question_condensing_llm
     else :
@@ -370,23 +362,6 @@ def format_chat_history(x):
         elif isinstance(msg, AIMessage):
             messages.append({"assistant": msg.content})
     return json.dumps(messages, ensure_ascii=False, indent=2)
-
-def construct_rag_chain(llm, rag_prompt):
-    return (
-        {
-            "context": lambda x: json.dumps([
-                {
-                    "chunk_id": doc.metadata['id'],
-                    "chunk_text": doc.page_content,
-                }
-                for doc in x["documents"]
-            ], ensure_ascii=False, indent=2),
-            "chat_history": format_chat_history,
-        }
-        | rag_prompt
-        | llm
-        | JsonOutputParser(pydantic_object=LLMAnswer, name="rag_chain_output")
-    )
 
 def build_question_condensation_chain(
     llm, prompt: Optional[PromptTemplate]
