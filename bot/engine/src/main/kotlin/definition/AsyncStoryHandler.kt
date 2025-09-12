@@ -19,7 +19,6 @@ package ai.tock.bot.definition
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.AsyncBus
 import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.CoroutineBridgeBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import kotlinx.coroutines.runBlocking
 
@@ -33,10 +32,8 @@ interface AsyncStoryHandler : StoryHandler {
 
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
     override fun handle(bus: BotBus) {
-        if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(this, bus.story.definition.id)) {
-            // This should only happen in automated tests
-            runBlocking { handle(AsyncBotBus(bus)) }
-        }
+        // This should only happen in automated tests
+        runBlocking { handle(AsyncBotBus(bus)) }
     }
 
     /**

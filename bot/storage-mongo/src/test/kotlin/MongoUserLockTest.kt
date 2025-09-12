@@ -37,23 +37,23 @@ class MongoUserLockTest : AbstractTest() {
 
     @Test
     fun `take lock on a not locked user is ok`() {
-        assertTrue(MongoUserLock.tryLock(userId))
+        assertTrue(MongoUserLock.lock(userId))
     }
 
     @Test
     fun `take lock on a recent locked user is ko`() {
-        MongoUserLock.tryLock(userId)
-        assertFalse(MongoUserLock.tryLock(userId))
+        MongoUserLock.lock(userId)
+        assertFalse(MongoUserLock.lock(userId))
 
         MongoUserLock.releaseLock(userId)
-        assertTrue(MongoUserLock.tryLock(userId))
+        assertTrue(MongoUserLock.lock(userId))
     }
 
     @Test
     fun `take lock on a old locked user is ok`() {
-        MongoUserLock.tryLock(userId)
-        assertFalse(MongoUserLock.tryLock(userId))
+        MongoUserLock.lock(userId)
+        assertFalse(MongoUserLock.lock(userId))
         Thread.sleep(5100L)
-        assertTrue(MongoUserLock.tryLock(userId))
+        assertTrue(MongoUserLock.lock(userId))
     }
 }

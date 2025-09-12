@@ -17,14 +17,13 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.engine.AsyncBotBus
-import ai.tock.bot.engine.CoroutineBridgeBus
-import ai.tock.shared.SimpleExecutor
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import io.mockk.Ordering
 import io.mockk.coVerify
 import io.mockk.spyk
+import io.mockk.verify
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.assertEquals
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -55,27 +54,27 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
 
     @Test
     fun `handleAndSwitchStory preserves structured concurrency`() = runBlocking {
-        val bus = spyk(bus as CoroutineBridgeBus)
-        bus.maxWaitMillis = 200L
+        val bus = spyk(bus)
         val asyncBus = spyk(AsyncBotBus(bus))
         val done = CopyOnWriteArrayList<String>()
 
+        val sync = storyDef<SimpleDef>(
+            "sync1",
+            preconditionsChecker = {
+                done += "startSync"
+                end("Bye")
+                done += "endSync"
+            },
+        )
         val async2 = storyDef<AsyncDef>(
             "async2",
             handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync2"
                 delay(100)
-                end("Hi")
+                send("Hi")
+                handleAndSwitchStory(sync)
                 done += "endAsync2"
-            },
-        )
-        val sync1 = storyDef<SimpleDef>(
-            "sync1",
-            preconditionsChecker = {
-                done += "startSync"
-                handleAndSwitchStory(async2)
-                done += "endSync"
             },
         )
         val async1 = storyDef<AsyncDef>(
@@ -83,59 +82,20 @@ class AsyncBotBusTest : AsyncBotEngineTest() {
             handling = ::AsyncDef,
             preconditionsChecker = {
                 done += "startAsync1"
-                handleAndSwitchStory(sync1)
+                handleAndSwitchStory(async2)
                 done += "endAsync1"
             },
         )
-        (botDefinition.stories as MutableList).addAll(listOf(async1, sync1, async2))
+        (botDefinition.stories as MutableList).addAll(listOf(sync, async1, async2))
 
         async1.handle(asyncBus)
         assertEquals(
-            listOf("startAsync1", "startSync", "startAsync2", "endAsync2", "endSync", "endAsync1"),
+            listOf("startAsync1", "startAsync2", "startSync", "endSync", "endAsync2", "endAsync1"),
             done
         )
-    }
-
-    @Test
-    fun `handleAndSwitchStory does not deadlock`() = runBlocking {
-        val bus = spyk(bus as CoroutineBridgeBus)
-        bus.maxWaitMillis = 100L
-        val asyncBus = spyk(AsyncBotBus(bus))
-        val done = CopyOnWriteArrayList<String>()
-
-        val async2 = storyDef<AsyncDef>(
-            "async2",
-            handling = ::AsyncDef,
-            preconditionsChecker = {
-                done += "startAsync2"
-                delay(100)
-                end("Hi")
-                done += "endAsync2"
-            },
-        )
-        val sync1 = storyDef<SimpleDef>(
-            "sync1",
-            preconditionsChecker = {
-                done += "startSync"
-                handleAndSwitchStory(async2)
-                done += "endSync"
-            },
-        )
-        val async1 = storyDef<AsyncDef>(
-            "async1",
-            handling = ::AsyncDef,
-            preconditionsChecker = {
-                done += "startAsync1"
-                handleAndSwitchStory(sync1)
-                done += "endAsync1"
-            },
-        )
-        (botDefinition.stories as MutableList).addAll(listOf(async1, sync1, async2))
-
-        async1.handle(asyncBus, SimpleExecutor(1).asCoroutineDispatcher())
-        assertEquals(
-            listOf("startAsync1", "startSync", "endSync", "startAsync2", "endAsync2", "endAsync1"),
-            done
-        )
+        verify(ordering = Ordering.ORDERED) {
+            bus.send("Hi")
+            bus.end("Bye")
+        }
     }
 }

@@ -48,7 +48,6 @@ import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.safeCast
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
 
@@ -94,16 +93,15 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         get() = botBus.userPreferences
     override val userState: UserState
         get() = botBus.userTimeline.userState
-    override var nextUserActionState: NextUserActionState?
-        get() = synchronized(botBus) { botBus.nextUserActionState }
-        set(value) {
-            synchronized(botBus) {
-                botBus.nextUserActionState = value
-            }
-        }
     val story: Story get() = synchronized(botBus) { botBus.story }
 
     override fun defaultAnswerDelay() = botBus.defaultDelay(botBus.currentAnswerIndex)
+
+    override suspend fun constrainNlp(nextActionState: NextUserActionState) {
+        synchronized(botBus) {
+            botBus.nextUserActionState = nextActionState
+        }
+    }
 
     override fun choice(key: ParameterKey): String? {
         // Not synchronized - action is immutable
@@ -189,18 +187,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
             botBus.hasCurrentSwitchStoryProcess = false
         }
         (storyDefinition.storyHandler as? AsyncStoryHandler)?.handle(this)
-            ?: trackCoroutineScope { storyDefinition.storyHandler.handle(botBus) }
-    }
-
-    internal suspend fun trackCoroutineScope(op: suspend () -> Unit) {
-        coroutineScope {
-            val oldScope = (botBus as? CoroutineBridgeBus)?.coroutineScope?.getAndSet(this)
-            try {
-                op()
-            } finally {
-                (botBus as? CoroutineBridgeBus)?.coroutineScope?.set(oldScope)
-            }
-        }
+            ?: storyDefinition.storyHandler.handle(botBus)
     }
 
     override fun i18nWithKey(

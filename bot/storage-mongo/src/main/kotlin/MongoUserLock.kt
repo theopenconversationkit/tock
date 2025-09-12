@@ -75,7 +75,7 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    override fun tryLock(userId: String): Boolean {
+    override fun lock(userId: String): Boolean {
         val lock = UserLock(userId.toId())
         val validLockDatesLimit = now().minusMillis(lockTimeout)
 

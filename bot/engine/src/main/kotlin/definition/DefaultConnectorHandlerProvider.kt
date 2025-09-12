@@ -36,10 +36,9 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
 
     private val connectorIdHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
 
-    private fun getConnectorHandlerMap(storyDef: StepExecutionContext): Map<String, KClass<*>> {
-        val kclass = storyDef.javaClass.kotlin
-        return connectorHandlerMap.getOrPut(kclass) {
-            getAllAnnotations(kclass)
+    private fun getConnectorHandlerMap(connectorClass: KClass<*>): Map<String, KClass<*>> {
+        return connectorHandlerMap.getOrPut(connectorClass) {
+            getAllAnnotations(connectorClass)
                 .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
                 .mapNotNullValues { a: Annotation ->
                     a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (
@@ -52,10 +51,9 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         }
     }
 
-    private fun getConnectorIdHandlerMap(storyDef: StepExecutionContext): Map<String, KClass<*>> {
-        val kclass = storyDef.javaClass.kotlin
-        return connectorIdHandlerMap.getOrPut(kclass) {
-            kclass.findAnnotation<ConnectorIdHandlers>()?.handlers?.associate { connectorIdHandler ->
+    private fun getConnectorIdHandlerMap(connectorClass: KClass<*>): Map<String, KClass<*>> {
+        return connectorIdHandlerMap.getOrPut(connectorClass) {
+            connectorClass.findAnnotation<ConnectorIdHandlers>()?.handlers?.associate { connectorIdHandler ->
                 connectorIdHandler.connectorId to connectorIdHandler.value
             } ?: mapOf()
         }
@@ -78,7 +76,7 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private inline fun <reified C: ConnectorSpecificHandling, reified T> provideConnectorStoryHandler(storyDef: StepExecutionContext, connectorDefClass: KClass<*>?): C? {
+    private inline fun <reified C: ConnectorSpecificHandling, reified T> provideConnectorStoryHandler(storyDef: T, connectorDefClass: KClass<*>?): C? {
         val p = connectorDefClass?.primaryConstructor
         return p?.callBy(
             mapOf(
@@ -90,13 +88,13 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
     }
 
     override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? {
-        val connectorDef = getConnectorHandlerMap(storyDef)[connectorType.id]
+        val connectorDef = getConnectorHandlerMap(storyDef.javaClass.kotlin)[connectorType.id]
         return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>, BotBus>(storyDef, connectorDef)
     }
 
     override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? {
-        val connectorDef = getConnectorIdHandlerMap(storyDef)[connectorId]
-        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>, BotBus>(storyDef, connectorDef) as ConnectorStoryHandlerBase<*>?
+        val connectorDef = getConnectorIdHandlerMap(storyDef.javaClass.kotlin)[connectorId]
+        return provideConnectorStoryHandler<ConnectorStoryHandlerBase<*>, BotBus>(storyDef, connectorDef)
     }
 
     @ExperimentalTockCoroutines
@@ -104,7 +102,7 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         storyDef: AsyncStoryHandling,
         connectorType: ConnectorType
     ): AsyncConnectorHandlingBase<*>? {
-        val connectorDef = getConnectorHandlerMap(storyDef)[connectorType.id]
+        val connectorDef = getConnectorHandlerMap(storyDef.javaClass.kotlin)[connectorType.id]
         return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>, AsyncStoryHandling>(storyDef, connectorDef)
     }
 
@@ -113,7 +111,7 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         storyDef: AsyncStoryHandling,
         connectorId: String
     ): AsyncConnectorHandlingBase<*>? {
-        val connectorDef = getConnectorIdHandlerMap(storyDef)[connectorId]
+        val connectorDef = getConnectorIdHandlerMap(storyDef.javaClass.kotlin)[connectorId]
         return provideConnectorStoryHandler<AsyncConnectorHandlingBase<*>, AsyncStoryHandling>(storyDef, connectorDef)
     }
 }

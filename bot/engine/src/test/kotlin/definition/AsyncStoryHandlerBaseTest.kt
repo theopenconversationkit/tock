@@ -17,7 +17,7 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.engine.AsyncBotBus
-import ai.tock.bot.engine.CoroutineBridgeBus
+import ai.tock.bot.engine.TockBotBus
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import io.mockk.coEvery
@@ -38,7 +38,7 @@ class AsyncStoryHandlerBaseTest : AsyncBotEngineTest() {
         val totalConnectorWaitTime = connectorWaitTime * 3
         val testData = StoryData("", ZonedDateTime.now())
 
-        val bus = spyk(bus as CoroutineBridgeBus)
+        val bus = spyk(bus as TockBotBus)
         every { bus.doSend(any(), any()) } answers {
             Thread.sleep(connectorWaitTime)
         }

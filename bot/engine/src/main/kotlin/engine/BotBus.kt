@@ -475,7 +475,7 @@ interface BotBus : Bus<BotBus>, DialogEntityManager {
         storyDefinition.storyHandler.handle(this)
     }
 
-    @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story")
+    @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story", level = DeprecationLevel.ERROR)
     @ExperimentalTockCoroutines
     fun handleAndSwitchStory(storyDefinition: AsyncStoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         handleAndSwitchStory(storyDefinition as StoryDefinition, starterIntent)

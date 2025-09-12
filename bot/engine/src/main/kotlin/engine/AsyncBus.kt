@@ -78,8 +78,6 @@ interface AsyncBus : DialogEntityManager, I18nKeyProvider {
 
     val userState: UserState
 
-    var nextUserActionState: NextUserActionState?
-
     /**
      * The current intent of the dialog at Bus (ie request) initialization.
      */
@@ -93,6 +91,8 @@ interface AsyncBus : DialogEntityManager, I18nKeyProvider {
     val currentStoryDefinition: StoryDefinition
 
     var step: AsyncStoryStep<*>?
+
+    suspend fun constrainNlp(nextActionState: NextUserActionState)
 
     /**
      * Returns true if the current action has the specified entity role.

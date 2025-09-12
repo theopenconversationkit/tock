@@ -19,7 +19,7 @@ package ai.tock.bot.definition
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 
 @ExperimentalTockCoroutines
-interface AsyncStoryHandling : StepExecutionContext {
+interface AsyncStoryHandling {
     /**
      * The main method to implement.
      */

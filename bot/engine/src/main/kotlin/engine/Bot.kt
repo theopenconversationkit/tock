@@ -125,7 +125,6 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
                     logger.info { "bot is disabled for the application" }
                     asyncBus.end("Bot is disabled")
                 } else {
-                    bus.coroutineScope.set(this)
                     story.handle(asyncBus)
                     if (shouldRespondBeforeDisabling) {
                         userTimeline.userState.botDisabled = true

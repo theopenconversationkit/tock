@@ -18,7 +18,7 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.BotEngineTest
-import ai.tock.bot.engine.CoroutineBridgeBus
+import ai.tock.bot.engine.TockBotBus
 import ai.tock.shared.Executor
 import ai.tock.shared.SimpleExecutor
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
@@ -43,7 +43,7 @@ abstract class AsyncBotEngineTest(nbThreads: Int = 4) : BotEngineTest() {
 
     suspend fun AsyncStoryDefinition.handle(asyncBus: AsyncBotBus, dispatcher: CoroutineDispatcher = executor.asCoroutineDispatcher()) {
         withContext(dispatcher + AsyncBotBus.Ref(asyncBus)) {
-            (asyncBus.botBus as CoroutineBridgeBus).deferMessageSending(this)
+            (asyncBus.botBus as TockBotBus).deferMessageSending(this)
             storyHandler.handle(asyncBus)
         }
     }

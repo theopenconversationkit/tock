@@ -21,8 +21,7 @@ package ai.tock.bot.engine.user
  */
 interface UserLock {
 
-    @Deprecated("Use more appropriately named tryLock", ReplaceWith("tryLock()"))
-    fun lock(userId: String): Boolean = tryLock(userId)
+    fun lock(userId: String): Boolean
 
     /**
      * Acquires the user lock only if it is free at the time of invocation
@@ -32,7 +31,8 @@ interface UserLock {
      * If the lock is not available then this method will return
      * immediately with the value `false`.
      */
-    fun tryLock(userId: String): Boolean
+    // TODO implement using mongo-coroutines
+    suspend fun tryLock(userId: String): Boolean = lock(userId)
 
     fun releaseLock(userId: String)
 }

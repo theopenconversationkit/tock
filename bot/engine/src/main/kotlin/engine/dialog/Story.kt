@@ -26,7 +26,6 @@ import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
-import ai.tock.bot.engine.CoroutineBridgeBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.user.PlayerType
@@ -157,10 +156,8 @@ data class Story(
         val storyHandler = definition.storyHandler
         @OptIn(ExperimentalTockCoroutines::class)
         if (storyHandler is AsyncStoryHandler) {
-            // This path can only occur if this method was called from user code (TOCK always calls handleAsync)
-            if (bus !is CoroutineBridgeBus || !bus.handleAsyncStory(bus.story.definition.id, this::handle)) {
-                error("Do not call Story.handle on an async story (${definition.id}), use handleAsync instead")
-            }
+            // This path can only occur if this method was called from user code (TOCK always calls the suspending overload)
+            error("Do not call Story.handle on an async story (${definition.id}), use handle(AsyncBotBus) instead")
         } else {
             storyHandler.withEvents(bus) {
                 it.handle(bus)
@@ -177,9 +174,7 @@ data class Story(
             if (it is AsyncStoryHandler) {
                 it.handle(bus)
             } else {
-                bus.trackCoroutineScope {
-                    it.handle(bus.botBus)
-                }
+                it.handle(bus.botBus)
             }
         }
     }
