@@ -36,9 +36,9 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
 
     private val connectorIdHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
 
-    private fun getConnectorHandlerMap(connectorClass: KClass<*>): Map<String, KClass<*>> {
-        return connectorHandlerMap.getOrPut(connectorClass) {
-            getAllAnnotations(connectorClass)
+    private fun getConnectorHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> {
+        return connectorHandlerMap.getOrPut(contextClass) {
+            getAllAnnotations(contextClass)
                 .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
                 .mapNotNullValues { a: Annotation ->
                     a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (
@@ -51,9 +51,9 @@ internal object DefaultConnectorHandlerProvider : ConnectorHandlerProvider {
         }
     }
 
-    private fun getConnectorIdHandlerMap(connectorClass: KClass<*>): Map<String, KClass<*>> {
-        return connectorIdHandlerMap.getOrPut(connectorClass) {
-            connectorClass.findAnnotation<ConnectorIdHandlers>()?.handlers?.associate { connectorIdHandler ->
+    private fun getConnectorIdHandlerMap(contextClass: KClass<*>): Map<String, KClass<*>> {
+        return connectorIdHandlerMap.getOrPut(contextClass) {
+            contextClass.findAnnotation<ConnectorIdHandlers>()?.handlers?.associate { connectorIdHandler ->
                 connectorIdHandler.connectorId to connectorIdHandler.value
             } ?: mapOf()
         }
