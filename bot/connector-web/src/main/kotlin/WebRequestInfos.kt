@@ -32,11 +32,11 @@ object WebRequestInfosByEvent {
 
 data class WebRequestInfos(
     private val headers: MultiMap,
-    private val cookies: Map<String, Cookie>,
+    private val cookies: Set<Cookie>,
 ) {
-    internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookieMap())
+    internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookies())
 
     fun firstHeader(name: String): String? = headers.get(name)
     fun headers(name: String): List<String> = headers.getAll(name) ?: emptyList()
-    fun firstCookie(name: String): String? = cookies[name]?.value
+    fun firstCookie(name: String): String? = cookies.firstOrNull { it.name == name }?.value
 }

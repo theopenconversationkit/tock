@@ -130,7 +130,7 @@ class SlackConnector(
                     val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
                     if (message.user_id != "USLACKBOT") {
                         vertx.executeBlocking(
-                            { it: Promise<Void> ->
+                            {
                                 try {
                                     val event = SlackRequestConverter.toEvent(message, applicationId)
                                     if (event != null) {
@@ -142,7 +142,7 @@ class SlackConnector(
                                     logger.logError(e, requestTimerData)
                                 }
                             },
-                            false, {}
+                            false
                         )
                     }
                 } catch (e: Throwable) {
@@ -182,7 +182,10 @@ class SlackConnector(
         )
     }
 
-    override fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
         if (message is SlackMessageOut) {
             val attachment = message.attachments.lastOrNull()
             if (attachment == null) {
@@ -190,7 +193,9 @@ class SlackConnector(
             } else if (attachment.actions.isEmpty()) {
                 message.copy(
                     attachments =
-                    message.attachments.take(message.attachments.size - 1) + slackAttachment(null, suggestions.map { slackButton(it) })
+                        message.attachments.take(message.attachments.size - 1) + slackAttachment(
+                            null,
+                            suggestions.map { slackButton(it) })
                 )
             } else {
                 null

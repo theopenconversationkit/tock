@@ -124,7 +124,7 @@ class WebConnector internal constructor(
             router.route(path)
                 .handler(
                     CorsHandler.create()
-                        .addRelativeOrigin(corsPattern)
+                        .addOriginWithRegex(corsPattern)
                         .allowedMethod(HttpMethod.POST)
                         .run {
                             if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this

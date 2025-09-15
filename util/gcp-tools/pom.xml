@@ -29,7 +29,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <gcp-secretmanager>2.68.0</gcp-secretmanager>
+        <gcp-secretmanager>2.74.0</gcp-secretmanager>
     </properties>
 
     <build>

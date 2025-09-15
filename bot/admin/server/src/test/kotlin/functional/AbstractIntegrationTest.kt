@@ -22,8 +22,6 @@ import ai.tock.nlp.front.ioc.FrontIoc
 import ai.tock.shared.injector
 import ai.tock.shared.vertx.vertx
 import com.github.salomonbrys.kodein.Kodein
-import io.vertx.core.impl.logging.Logger
-import io.vertx.core.impl.logging.LoggerFactory
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.client.WebClient
 import io.vertx.ext.web.client.WebClientOptions

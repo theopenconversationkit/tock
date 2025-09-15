@@ -31,9 +31,9 @@ internal class Channels {
 
     init {
         channelDAO.listenChanges { (appId, recipientId, response) ->
-            Future.all((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+            Future.all<Unit>((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
                 channel.onAction(response)
-            }).map { it.list<Unit?>().isNotEmpty() }
+            }).map { it.list<Unit>().isNotEmpty() }
         }
     }
 

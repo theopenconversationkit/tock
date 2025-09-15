@@ -24,7 +24,7 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy.INSTANCE
 import mu.KotlinLogging
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
@@ -49,24 +49,28 @@ class JWKHandler {
         Level.BASIC
     }
 
-    private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(
+        INSTANCE
+    )
     private lateinit var jwkTimerTask: Timer
 
     companion object {
         private var OPENID_METADATA_LOCATION: String = "https://login.botframework.com/v1/"
         private var JKS_BASE_LOCATION: String = "https://login.botframework.com/v1/.well-known/keys/"
-        private var OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR = "https://login.microsoftonline.com/botframework.com/v2.0/"
+        private var OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR =
+            "https://login.microsoftonline.com/botframework.com/v2.0/"
     }
 
-    private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
-        longProperty("tock_microsoft_request_timeout", 5000),
-        this.logger,
-        logLevel
-    )
-        .baseUrl(OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR)
-        .addJacksonConverter(teamsMapper)
-        .build()
-        .create()
+    private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi =
+        retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_microsoft_request_timeout", 5000),
+            this.logger,
+            logLevel
+        )
+            .baseUrl(OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR)
+            .addJacksonConverter(teamsMapper)
+            .build()
+            .create()
 
     private var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
@@ -114,7 +118,8 @@ class JWKHandler {
         val listOfKeys: MutableList<MicrosoftValidSigningKey> = keysForBotConnectorService.keys.toMutableList()
 
         if (devEnvironment) {
-            val microsoftOpenidMetadataBotFwkEmulator = microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
+            val microsoftOpenidMetadataBotFwkEmulator =
+                microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
             val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
             tokenIds?.addAll(
                 nextResponse?.idTokenSigningAlgValuesSupported

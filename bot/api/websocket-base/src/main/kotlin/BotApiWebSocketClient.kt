@@ -31,6 +31,7 @@ import ai.tock.shared.vertx.blocking
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpClient
+import io.vertx.core.http.WebSocketClient
 import io.vertx.core.http.WebSocketConnectOptions
 import mu.KotlinLogging
 import java.net.URL
@@ -77,7 +78,7 @@ fun start(
     // State to indicate the current client is currently restarting, meaning a new client start is already scheduled
     var websocketIsRestarting = false
 
-    fun restart(client: HttpClient, delay: Long) {
+    fun restart(client: WebSocketClient, delay: Long) {
         // guard prevent multiples concurrent restart that would lead to multiple client at each restarts
         // As restart is also called from the close handler
         if(websocketIsRestarting) return
@@ -105,11 +106,10 @@ fun start(
         .setURI("/${botDefinition.apiKey}".trim())
 
     logger.info { "start web socket client: ${options.toJson()}" }
-    val client = vertx.createHttpClient()
+    val client = vertx.createWebSocketClient()
 
-    client.webSocket(options) { context ->
+    client.connect(options).onSuccess { socket ->
         try {
-            val socket = context.result()
             // send bot configuration
             val conf = mapper.writeValueAsString(
                 ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration())

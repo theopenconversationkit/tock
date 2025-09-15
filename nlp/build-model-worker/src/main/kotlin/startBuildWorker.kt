@@ -31,6 +31,7 @@ import ai.tock.shared.property
 import ai.tock.shared.propertyExists
 import ai.tock.shared.vertx.vertx
 import io.vertx.core.DeploymentOptions
+import io.vertx.core.ThreadingModel
 import mu.KotlinLogging
 import kotlin.system.exitProcess
 
@@ -63,8 +64,8 @@ fun startBuildWorker(buildMode: BuildMode, buildType: BuildType) {
 private fun startVerticle(buildMode: BuildMode) {
     FrontIoc.setup()
     val buildModelWorkerVerticle = BuildModelWorkerVerticle()
-    vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
-    vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
+    vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setThreadingModel(ThreadingModel.WORKER))
+    vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setThreadingModel(ThreadingModel.WORKER))
     if (buildMode != DEV) {
         vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
     }
@@ -92,15 +93,15 @@ private fun startOnDemandVerticle() {
     )
     vertx.deployVerticle(
         cleanupOnDemandVerticle,
-        DeploymentOptions().setWorker(true)
+        DeploymentOptions().setThreadingModel(ThreadingModel.WORKER)
     )
     vertx.deployVerticle(
         rebuildDiffOnDemandVerticle,
-        DeploymentOptions().setWorker(true)
+        DeploymentOptions().setThreadingModel(ThreadingModel.WORKER)
     )
     vertx.deployVerticle(
         testOnDemandVerticle,
-        DeploymentOptions().setWorker(true)
+        DeploymentOptions().setThreadingModel(ThreadingModel.WORKER)
     )
 
     vertx.deployVerticle(

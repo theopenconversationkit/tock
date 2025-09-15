@@ -25,20 +25,19 @@ import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.exception.rest.UnauthorizedException
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
-import ai.tock.shared.security.auth.OAuth2Provider
 import ai.tock.shared.security.auth.KeycloakOAuth2Provider
+import ai.tock.shared.security.auth.OAuth2Provider
 import ai.tock.shared.security.auth.PropertyBasedAuthProvider
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
@@ -62,6 +61,10 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
+import mu.KLogger
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -69,11 +72,6 @@ import java.nio.file.Paths
 import java.util.Locale
 import java.util.ServiceLoader
 import kotlin.LazyThreadSafetyMode.PUBLICATION
-import mu.KLogger
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
-import ai.tock.shared.listProperty
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -168,12 +166,12 @@ abstract class WebVerticle : AbstractVerticle() {
     /**
      * Provide basic health information: mainly through HTTP status code
      */
-    open fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
+    open fun defaultHealthcheck(): (RoutingContext) -> Unit = { rc -> rc.response().end() }
 
     /**
      * Provide basic readiness information: indicates whether the container is ready to respond to requests
      */
-    open fun readinesscheck(): (RoutingContext) -> Unit = { it.response().end() }
+    open fun readinesscheck(): (RoutingContext) -> Unit = { rc -> rc.response().end() }
 
     /**
      * Provide basic liveness information: indicates whether the verticle is running
@@ -203,47 +201,46 @@ abstract class WebVerticle : AbstractVerticle() {
     override fun start(promise: Promise<Void>) {
         // Handle server started event by emitting an eventbus message to address 'server.started'
         promise.future()
-            .onComplete {
-                vertx.eventBus().request<Void>(ServerStatus.SERVER_STARTED, it.succeeded())
+            .onComplete { ar ->
+                vertx.eventBus().publish(ServerStatus.SERVER_STARTED, ar.succeeded())
             }
 
-        vertx.executeBlocking(
-            { it: Promise<Unit> ->
+        vertx.blocking<Unit>(
+            { p: Promise<Unit> ->
                 try {
                     router.route().handler(bodyHandler())
                     addDevCorsHandler()
-                    cachedAuthProvider?.also { p ->
-                        addAuth(p)
-                    }
+                    cachedAuthProvider?.also { pvd -> addAuth(pvd) }
 
-                    healthcheckPath?.let { router.get(it).handler(healthcheck()) }
-                    livenesscheckPath?.let { router.get(it).handler(livenesscheck()) }
-                    readinesscheckPath?.let { router.get(it).handler(readinesscheck()) }
+                    healthcheckPath?.let { path -> router.get(path).handler(healthcheck()) }
+                    livenesscheckPath?.let { path -> router.get(path).handler(livenesscheck()) }
+                    readinesscheckPath?.let { path -> router.get(path).handler(readinesscheck()) }
+
                     configure()
-
-                    it.complete()
-                } catch (t: MissingKotlinParameterException) {
-                    logger.error(t)
-                    it.fail(BadRequestException(t.message ?: ""))
+                    p.complete()
                 } catch (t: JsonProcessingException) {
                     logger.error(t)
-                    it.fail(BadRequestException(t.message ?: ""))
+                    p.fail(BadRequestException(t.message ?: ""))
                 } catch (t: Throwable) {
                     logger.error(t)
-                    it.fail(t)
+                    p.fail(t)
+                } finally {
+                    p.tryFail("call not completed")
                 }
             },
-            false,
-            {
-                if (it.succeeded()) {
+            { ar ->
+                if (ar.succeeded()) {
                     startServer(promise)
+                } else {
+                    promise.fail(ar.cause())
                 }
             }
         )
     }
 
-    override fun stop(stopFuture: Promise<Void>?) {
-        server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
+    override fun stop() {
+        server.close()
+            .onComplete { ar -> logger.info { "$verticleName stopped result : ${ar.succeeded()}" } }
     }
 
     fun addAuth(
@@ -302,15 +299,14 @@ abstract class WebVerticle : AbstractVerticle() {
 
     protected open fun startServer(promise: Promise<Void>, port: Int) {
         server.requestHandler { r -> router.handle(r) }
-            .listen(
-                port
-            ) { r ->
-                if (r.succeeded()) {
+            .listen(port)
+            .onComplete { ar ->
+                if (ar.succeeded()) {
                     logger.info { "$verticleName started on port $port" }
                     promise.complete()
                 } else {
                     logger.error { "$verticleName NOT started on port $port" }
-                    promise.fail(r.cause())
+                    promise.fail(ar.cause())
                 }
             }
     }
@@ -338,12 +334,12 @@ abstract class WebVerticle : AbstractVerticle() {
     ) {
         router.route(method, "$basePath$path")
             .handler { context ->
-                val user = context.user()
-                if (user == null || roles.isNullOrEmpty()) {
+                val u = context.user()
+                if (u == null || roles.isNullOrEmpty()) {
                     handler.invoke(context)
                 } else {
-                    context.areAuthorized(roles) {
-                        if (it.result() == true) {
+                    context.areAuthorized(roles) { ar ->
+                        if (ar.succeeded() && ar.result() == true) {
                             handler.invoke(context)
                         } else {
                             context.fail(401)
@@ -370,29 +366,36 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        register(method, path, roles, basePath) { it.executeBlocking(handler) }
+        register(method, path, roles, basePath) { rc -> rc.executeBlocking(handler) }
     }
 
     fun RoutingContext.isAuthorized(
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
-    ) = user()?.isAuthorized(role.name, resultHandler)
-        ?: resultHandler.invoke(Future.failedFuture("No user set"))
+    ) {
+        val u = user() as? TockUser
+        if (u == null) {
+            resultHandler.invoke(Future.failedFuture("No user set"))
+        } else {
+            resultHandler.invoke(Future.succeededFuture(u.roles.contains(role.name)))
+        }
+    }
 
     /**
      * Check the user has any authorized role
-     *
      */
     private fun RoutingContext.areAuthorized(
         roles: Set<TockUserRole?>,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) {
-        val tockUser = user() as TockUser
-        val tockUserRoles = tockUser.roles
-        // if any of the role are in the profile then you can invoke the handler
-        if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles }) {
-            val aRole = roles.first { it?.name in tockUserRoles }?.name
-            user()?.isAuthorized(aRole, resultHandler)
+        val tockUser = user() as? TockUser
+        if (tockUser == null) {
+            resultHandler.invoke(Future.failedFuture("No user set"))
+            return
+        }
+        val hasAny = roles.any { r -> r?.name in tockUser.roles }
+        if (hasAny) {
+            resultHandler.invoke(Future.succeededFuture(true))
         } else {
             resultHandler.invoke(Future.failedFuture("Not authorized for user"))
         }
@@ -464,7 +467,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path, roles, logger, basePath, success = successEmpty, handler)
+        blockingPost(path, roles, logger, basePath, successEmpty, handler)
     }
 
     protected fun blockingPost(
@@ -732,7 +735,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole>? = defaultRoles(),
         crossinline handler: (RoutingContext, I, Handler<O>) -> Unit
     ) {
-        withBodyJson(POST, path, roles, handler)
+        withBodyJson<I, O>(POST, path, roles, handler)
     }
 
     // extension & utility methods
@@ -741,10 +744,8 @@ abstract class WebVerticle : AbstractVerticle() {
         if (useDefaultCorsHandler) {
             router.route().handler(
                 corsHandler(
-                    property(
-                        "tock_web_use_default_cors_handler_url",
-                        defaultCorsOrigin
-                    ).run { if (this == "*") emptyList() else split("|") },
+                    property("tock_web_use_default_cors_handler_url", defaultCorsOrigin)
+                        .run { if (this == "*") emptyList() else split("|") },
                     booleanProperty("tock_web_use_default_cors_handler_with_credentials", defaultCorsWithCredentials)
                 )
             )
@@ -797,63 +798,66 @@ abstract class WebVerticle : AbstractVerticle() {
                 )
             .toSet()
     ): CorsHandler =
-        (if (origins.isEmpty()) CorsHandler.create("*") else CorsHandler.create().addOrigins(origins))
-            .allowedMethods(allowedMethods)
-            .allowedHeaders(allowedHeaders)
-            .allowCredentials(allowCredentials)
+        CorsHandler.create().run {
+            (if (origins.isEmpty()) addOrigin("*") else addOrigins(origins))
+                .allowedMethods(allowedMethods)
+                .allowedHeaders(allowedHeaders)
+                .allowCredentials(allowCredentials)
+        }
 
     protected fun bodyHandler(): BodyHandler {
-        return BodyHandler.create(fileUploadDirectory).setBodyLimit(verticleLongProperty("body_limit", 1000000L))
+        return BodyHandler
+            .create()
+            .setUploadsDirectory(fileUploadDirectory)
+            .setBodyLimit(verticleLongProperty("body_limit", 1_000_000L))
             .setMergeFormAttributes(false)
     }
 
-    inline fun <reified T : Any> RoutingContext.readJson(): T {
-        return mapper.readValue(this.body().asString())
-    }
+    inline fun <reified T : Any> RoutingContext.readJson(): T =
+        mapper.readValue(this.body().asString())
 
-    inline fun <reified T : Any> readJson(upload: FileUpload): T {
-        return mapper.readValue(File(upload.uploadedFileName()))
-    }
+    inline fun <reified T : Any> readJson(upload: FileUpload): T =
+        mapper.readValue(File(upload.uploadedFileName()))
 
-    fun readBytes(upload: FileUpload): ByteArray = Files.readAllBytes(Paths.get(upload.uploadedFileName()))
+    fun readBytes(upload: FileUpload): ByteArray =
+        Files.readAllBytes(Paths.get(upload.uploadedFileName()))
 
-    fun readString(upload: FileUpload): String {
-        return String(readBytes(upload), StandardCharsets.UTF_8)
-    }
+    fun readString(upload: FileUpload): String =
+        String(readBytes(upload), StandardCharsets.UTF_8)
 
     /**
      * Execute blocking code using [Vertx.executeBlocking].
      */
     protected fun RoutingContext.executeBlocking(handler: (RoutingContext) -> Unit) {
-        sharedVertx.executeBlocking(
-            { it: Promise<Unit> ->
+        sharedVertx.blocking<Unit>(
+            { p ->
                 try {
                     handler.invoke(this)
-                    it.tryComplete()
+                    p.tryComplete()
                 } catch (t: Throwable) {
-                    it.tryFail(t)
+                    p.tryFail(t)
+                } finally {
+                    p.tryFail("call not completed")
                 }
             },
-            false,
-            {
-                if (it.failed()) {
-                    it.cause().apply {
-                        when {
-                            this is RestException -> {
-                                response().statusCode = httpResponseStatus.code()
-                                response().statusMessage = message
-                                response().endJson(httpResponseBody)
-                            }
+            { ar ->
+                if (ar.failed()) {
+                    val cause = ar.cause()
+                    when (cause) {
+                        is RestException -> {
+                            response().statusCode = cause.httpResponseStatus.code()
+                            response().statusMessage = cause.message
+                            response().endJson(cause.httpResponseBody)
+                        }
 
-                            this != null -> {
-                                logger.error(this)
-                                fail(this)
-                            }
+                        null -> {
+                            logger.error { "unknown error" }
+                            fail(500)
+                        }
 
-                            else -> {
-                                logger.error { "unknown error" }
-                                fail(500)
-                            }
+                        else -> {
+                            logger.error(cause)
+                            fail(cause)
                         }
                     }
                 }
@@ -927,8 +931,9 @@ abstract class WebVerticle : AbstractVerticle() {
      * The error handler for match failures.
      * See https://vertx.io/docs/vertx-web/java/#_route_match_failures
      */
-    open fun defaultErrorHandler(statusCode: Int): Handler<RoutingContext> = Handler<RoutingContext> { event ->
-        logger.info { "Error $statusCode: ${event.request().path()}" }
-        tockErrorHandler.handle(event)
-    }
+    open fun defaultErrorHandler(statusCode: Int): Handler<RoutingContext> =
+        Handler<RoutingContext> { event ->
+            logger.info { "Error $statusCode: ${event.request().path()}" }
+            tockErrorHandler.handle(event)
+        }
 }

@@ -33,13 +33,13 @@ import io.vertx.core.VertxOptions.DEFAULT_WORKER_POOL_SIZE
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
-import java.time.Duration
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.slf4j.MDCContextMap
 import mu.KotlinLogging
 import mu.withLoggingContext
+import java.time.Duration
+import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
 
 private val logger = KotlinLogging.logger {}
 
@@ -55,15 +55,13 @@ var defaultVertxOptions = VertxOptions().apply {
 }
 
 internal interface VertxProvider {
-
     fun vertx(): Vertx
 }
 
 internal object TockVertxProvider : VertxProvider {
-
     override fun vertx(): Vertx = Vertx.vertx(defaultVertxOptions).apply {
-        exceptionHandler {
-            logger.error(it)
+        exceptionHandler { t ->
+            logger.error(t)
         }
     }
 }
@@ -83,48 +81,58 @@ val vertx: Vertx get() = internalVertx
 /**
  * Execute a blocking task (with ordered false).
  */
-fun <T> Vertx.blocking(blockingHandler: (Promise<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
-    this.executeBlocking(
-        { future: Promise<T> ->
-            try {
-                blockingHandler.invoke(future)
-            } catch (throwable: Throwable) {
-                logger.error(throwable) { throwable.message }
-                future.fail(throwable)
-            } finally {
-                future.tryFail("call not completed")
-            }
-        },
-        false,
+fun <T> Vertx.blocking(
+    blockingHandler: (Promise<T>) -> Unit,
+    resultHandler: (AsyncResult<T>) -> Unit
+) {
+    val p: Promise<T> = Promise.promise()
+    var res: T? = null
+    var err: Throwable? = null
+    p.future().onComplete { ar ->
+        if (ar.succeeded()) {
+            res = ar.result()
+        } else {
+            err = ar.cause()
+        }
+    }
+    this.executeBlocking<T>(
         {
             try {
-                resultHandler.invoke(it)
-            } catch (e: Throwable) {
-                logger.error(e) { e.message }
+                blockingHandler.invoke(p)
+            } catch (throwable: Throwable) {
+                logger.error(throwable) { throwable.message }
+                p.fail(throwable)
+            } finally {
+                p.tryFail("call not completed")
             }
+            err?.let { throw it }
+            res
+        }, false
+    ).onComplete { ar ->
+        try {
+            resultHandler.invoke(ar)
+        } catch (e: Throwable) {
+            logger.error(e) { e.message }
         }
-    )
+    }
 }
 
 /**
- * Execute a blocking handler on route (with ordered false).
+ * Execute a blocking handler on route (with ordered = false).
  */
 fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
-    blockingHandler(
-        {
+    blockingHandler({ rc ->
+        try {
+            handler(rc)
+        } catch (t: Throwable) {
             try {
-                handler(it)
-            } catch (t: Throwable) {
-                try {
-                    logger.error(t)
-                    it.fail(t)
-                } catch (e: Throwable) {
-                    logger.debug(e)
-                }
+                logger.error(t)
+                rc.fail(t)
+            } catch (e: Throwable) {
+                logger.debug(e)
             }
-        },
-        false
-    )
+        }
+    }, false)
 
 private val VERTX_MIN_DELAY = Duration.ofMillis(1)
 
@@ -152,31 +160,34 @@ internal fun vertxExecutor(): Executor {
         override fun executeBlocking(runnable: () -> Unit) {
             val loggingContext = MDCContext().contextMap
             vertx.blocking<Unit>(
-                {
+                { promise ->
                     invokeWithLoggingContext(loggingContext) {
                         catchableRunnable(runnable).invoke()
-                        it.tryComplete()
+                        promise.tryComplete()
                     }
                 },
-                {}
+                { _: AsyncResult<Unit> -> }
             )
         }
 
         override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
             val loggingContext = MDCContext().contextMap
             vertx.blocking<T>(
-                {
+                { promise ->
                     invokeWithLoggingContext(loggingContext) {
                         try {
-                            blocking.call()
+                            val v = blocking.call()
+                            promise.complete(v)
+                        } catch (e: Throwable) {
+                            promise.fail(e)
                         } finally {
-                            it.tryFail("call not completed")
+                            promise.tryFail("call not completed")
                         }
                     }
                 },
-                {
-                    if (it.succeeded()) {
-                        result.invoke(it.result())
+                { ar: AsyncResult<T> ->
+                    if (ar.succeeded()) {
+                        result.invoke(ar.result())
                     } else {
                         result.invoke(null)
                     }
@@ -231,12 +242,13 @@ fun HttpServerResponse.setupSSE(): CompositeFuture {
 }
 
 fun HttpServerResponse.sendSsePing(): CompositeFuture =
-    Future.all(listOf(write("event: ping\n"), write("data: 1\n\n")))
+    Future.all(
+        write("event: ping\n"),
+        write("data: 1\n\n")
+    )
 
 fun HttpServerResponse.sendSseMessage(data: String): CompositeFuture =
     Future.all(
-        listOf(
-            write("event: message\n"),
-            write("data: $data\n\n")
-        )
+        write("event: message\n"),
+        write("data: $data\n\n")
     )

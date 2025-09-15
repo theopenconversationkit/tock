@@ -27,12 +27,11 @@ import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.vertx.WebVerticle
-import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.User
+import io.vertx.ext.auth.authentication.Credentials
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.BodyHandler
@@ -40,7 +39,6 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KotlinLogging
 import org.pac4j.core.config.Config
-import org.pac4j.vertx.auth.Pac4jAuthProvider
 import org.pac4j.vertx.auth.Pac4jUser
 import org.pac4j.vertx.context.session.VertxSessionStore
 import org.pac4j.vertx.handler.impl.CallbackHandler
@@ -64,9 +62,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         val cause: Throwable?,
         val code: Int
     ) {
-        fun succeeded(): Boolean {
-            return code / 100 == 2
-        }
+        fun succeeded(): Boolean = code / 100 == 2
     }
 
     init {
@@ -95,50 +91,27 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     open val enabledPacAuthorizers: String get() = "isAuthenticated" // TODO: Make csrf authorizer work
 
 
-    /**
-     * Handle failures in 'Pac4J user to Tock User' upgrade process
-     */
-    open fun handleUpgradeFailure(rc: RoutingContext, code: Int, cause: Throwable?) {
-        if (null == cause) {
-            logger.error("Caught by default CAS mapping exception handler: $code")
-            rc.fail(code)
-        } else {
-            logger.error("Caught by default CAS mapping exception handler", cause)
-            rc.fail(code, cause)
-        }
-    }
-
-    /**
-     * Get customer specific Pac4J Config
-     */
+    /** Get customer specific Pac4J Config */
     abstract fun getConfig(): Config
 
-
-    /**
-     * Read Toc Login from CAS user info
-     */
+    /** Read Tock Login from CAS user info */
     abstract fun readCasLogin(user: Pac4jUser): String
 
-    /**
-     * Read Toc Namespace from CAS user infos
-     */
+    /** Read roles grouped by namespace from CAS user infos */
     abstract fun readRolesByNamespace(user: Pac4jUser): Map<String, Set<String>>
 
     override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
         val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
         options.authorizers = enabledPacAuthorizers
-
-        return SecurityHandler(vertx, sessionStore, getConfig(), Pac4jAuthProvider(), options)
+        return SecurityHandler(vertx, sessionStore, getConfig(),  options)
     }
 
-    override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
+    override fun authenticate(credentials: Credentials): Future<User> =
         // Actual authentication is performed by pac4j-cas not CASAuthProvider
-        resultHandler.handle(Future.failedFuture("Unauthorized"))
-    }
+        Future.failedFuture("Unauthorized")
 
     protected fun registerTockUser(username: String, rolesByNamespace: Map<String, Set<String>>): TockUser {
         var user: TockUser? = null
-
         // NOTE: Currently registering same user multiple times is the only way to save multiple namespaces
         for ((namespace, roles) in rolesByNamespace) {
             user = injector.provide<TockUserListener>().registerUser(
@@ -169,6 +142,20 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         }
     }
 
+    /**
+     * Handle failures in 'Pac4J user to Tock User' upgrade process (Vert.x 5).
+     */
+    open fun handleUpgradeFailure(rc: RoutingContext, code: Int, cause: Throwable?) {
+        if (cause == null) {
+            logger.error("Caught by default CAS mapping exception handler: $code")
+            rc.fail(code)
+        } else {
+            logger.error("Caught by default CAS mapping exception handler", cause)
+            rc.response().setStatusCode(code)
+            rc.fail(cause)
+        }
+    }
+
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
@@ -184,16 +171,18 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
             val user = rc.user()
             if (user != null && user !is TockUser) {
                 executor.executeBlocking {
-                    upgradeToTockUser(user as Pac4jUser) {
-                        if (it.succeeded()) {
-                            rc.setUser(it.result)
-                            rc.next()
+                    upgradeToTockUser(user as Pac4jUser) { hr ->
+                        if (hr.succeeded()) {
+                            vertx.runOnContext {
+                                sessionHandler
+                                    .setUser(rc, hr.result)
+                                    .onSuccess { rc.next() }
+                                    .onFailure { err -> rc.fail(err) }
+                            }
                         } else {
-                            rc.clearUser()
-                            rc.session().destroy()
+                            rc.userContext().clear()
                             // note: below method has ability to redirect to custom error pages
-                            logger.error("Upgrade to TockUser failed", it.cause)
-                            handleUpgradeFailure(rc, it.code, it.cause)
+                            this@CASAuthProvider.handleUpgradeFailure(rc, hr.code, hr.cause)
                         }
                     }
                 }
