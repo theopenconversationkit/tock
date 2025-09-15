@@ -197,9 +197,8 @@ class BotRepositoryTest : BotEngineTest() {
         })
 
         val verticleSlot: CapturingSlot<BotVerticle> = slot()
-        val completionHandlerSlot: CapturingSlot<Handler<AsyncResult<String>>> = slot()
-        every { mockedVertx.deployVerticle(capture(verticleSlot), capture(completionHandlerSlot)) } answers {
-            completionHandlerSlot.captured.handle(Future.succeededFuture())
+        every { mockedVertx.deployVerticle(capture(verticleSlot) ) } answers {
+            Future.succeededFuture()
         }
 
         val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()

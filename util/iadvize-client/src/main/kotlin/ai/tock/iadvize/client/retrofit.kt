@@ -60,11 +60,14 @@ private class LoggingInterceptor(val logger: KLogger) : Interceptor {
                     writeTo(buffer)
 
                     if (isPlaintext(buffer)) {
+                        val charset = contentType()?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8
+                        var bodyString = buffer.readString(charset)
 
-                        (contentType()?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8).let {
-                            logger.debug(buffer.readString(it))
-                        }
+                        // Mask sensitive data
+                        bodyString = bodyString
+                            .replace(Regex("(?i)(password=)[^&]+"), "$1****") // mask password
 
+                        logger.debug(bodyString)
                         logger.info("--> END ${request.method} (${contentLength()}-byte body)")
 
                     } else {
@@ -108,10 +111,17 @@ private class LoggingInterceptor(val logger: KLogger) : Interceptor {
                         return response
                     }
 
-                    val charset = contentType()?.charset(StandardCharsets.UTF_8)
+                    val charset = contentType()?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8
                     if (contentLength() != 0L) {
                         logger.info("")
-                        logger.debug(buffer.clone().readString(charset!!))
+
+                        // Mask sensitive data
+                        var responseString = buffer.clone().readString(charset)
+                        responseString = responseString
+                            .replace(Regex("(?i)(\"access_token\"\\s*:\\s*\").*?(\")"), "$1****$2")
+                            .replace(Regex("(?i)(\"refresh_token\"\\s*:\\s*\").*?(\")"), "$1****$2")
+
+                        logger.debug(responseString)
                     }
 
                     logger.info("<-- END HTTP (${buffer.size}-byte body)")

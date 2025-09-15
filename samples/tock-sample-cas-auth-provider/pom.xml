@@ -48,9 +48,9 @@
             <version>${pac4j}</version>
         </dependency>
         <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>vertx-pac4j</artifactId>
-            <version>${vertx-pac4j}</version>
+            <groupId>ai.tock</groupId>
+            <artifactId>pac4j</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

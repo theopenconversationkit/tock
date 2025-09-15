@@ -25,7 +25,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.vertx.core.VertxOptions
-import io.vertx.core.impl.VertxInternal
+import io.vertx.core.internal.VertxInternal
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,6 +56,6 @@ class VertxTest {
     fun testThatVertxOptionCouldBeOverrided() {
         defaultVertxOptions = VertxOptions(defaultVertxOptions)
         defaultVertxOptions.workerPoolSize = 100
-        assertEquals(100, ((vertx as VertxInternal).workerPool.executor() as ThreadPoolExecutor).maximumPoolSize)
+        assertEquals(100, ((vertx as VertxInternal).workerPool().executor() as ThreadPoolExecutor).maximumPoolSize)
     }
 }

@@ -66,6 +66,10 @@ internal class ConnectorQueueTest {
         }
     }
 
+    private class ActionPreparer : (Action) -> Action {
+        override fun invoke(p1: Action): Action = p1
+    }
+
     @Test
     fun `preserve the order in which messages are sent when the first action preparation is slower than the following`() {
         val queue = ConnectorQueue(executor)
@@ -77,7 +81,7 @@ internal class ConnectorQueueTest {
         val action3b = `given action`("user1")
 
         val send = spyk(ActionSender())
-        val prepare = spyk<(Action) -> Action>({ it }, name = "prepare")
+        val prepare = spyk<ActionPreparer>(ActionPreparer(), name = "prepare")
         send.send(prepare(action1a))
         queue.add(action1b, 0, { Thread.sleep(1000); prepare(it) }, send::send)
         send.send(prepare(action2a))

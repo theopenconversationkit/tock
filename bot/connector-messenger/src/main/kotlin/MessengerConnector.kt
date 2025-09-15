@@ -169,19 +169,17 @@ class MessengerConnector internal constructor(
                         try {
                             logger.debug { "Facebook request input : $body" }
                             val request = mapper.readValue<CallbackRequest>(body)
-                            vertx.executeBlocking<Void>(
-                                { response ->
+                            vertx.executeBlocking(
+                                {
                                     try {
                                         MessengerConnectorHandler(
                                             applicationId, controller, request, requestTimerData
                                         ).handleRequest()
                                     } catch (e: Throwable) {
                                         logger.logError(e, requestTimerData)
-                                    } finally {
-                                        response.complete()
                                     }
                                 },
-                                false, {}
+                                false
                             )
                         } catch (t: Throwable) {
                             logger.logError(t, requestTimerData)
@@ -397,14 +395,17 @@ class MessengerConnector internal constructor(
                 getToken(event),
                 transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on, personaId))
             )
+
             is TypingOffEvent -> client.sendAction(
                 getToken(event),
                 transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off, personaId))
             )
+
             is MarkSeenEvent -> client.sendAction(
                 getToken(event),
                 transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen))
             )
+
             else -> {
                 logger.warn { "unsupported event $event" }
                 null
@@ -445,17 +446,17 @@ class MessengerConnector internal constructor(
                         }
                     },
                     postMessage =
-                    { token ->
-                        if (messengerCallback?.notificationType == null && action.recipientId.type != temporary) {
-                            val recipient = Recipient(action.recipientId.id)
-                            if (action.metadata.lastAnswer) {
-                                client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
-                                client.sendAction(token, ActionRequest(recipient, mark_seen, personaId))
-                            } else {
-                                client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
+                        { token ->
+                            if (messengerCallback?.notificationType == null && action.recipientId.type != temporary) {
+                                val recipient = Recipient(action.recipientId.id)
+                                if (action.metadata.lastAnswer) {
+                                    client.sendAction(token, ActionRequest(recipient, typing_off, personaId))
+                                    client.sendAction(token, ActionRequest(recipient, mark_seen, personaId))
+                                } else {
+                                    client.sendAction(token, ActionRequest(recipient, typing_on, personaId))
+                                }
                             }
-                        }
-                    },
+                        },
                     errorListener = messengerCallback?.errorListener ?: {}
                 )
             }
@@ -519,7 +520,7 @@ class MessengerConnector internal constructor(
 
     private fun getToken(connectorId: String): String =
         connectorIdTokenMap[connectorId]
-            // TODO remove this when backward compatibility is no more assured (20.3)
+        // TODO remove this when backward compatibility is no more assured (20.3)
             ?: pageIdConnectorIdMap[connectorId]?.takeUnless { it.isEmpty() }?.let {
                 logger.warn { "use pageId as connectorId for $connectorId" }
                 connectorIdTokenMap[it.first()]

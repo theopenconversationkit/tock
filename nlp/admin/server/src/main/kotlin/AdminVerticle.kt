@@ -84,7 +84,9 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.FileSystemAccess
 import io.vertx.ext.web.handler.StaticHandler
+import io.vertx.ext.web.impl.UserContextInternal
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -1116,7 +1118,7 @@ open class AdminVerticle : WebVerticle() {
             val n = context.path("namespace").trim()
             if (front.hasNamespace(context.userLogin, n)) {
                 front.setCurrentNamespace(context.userLogin, n)
-                context.setUser(context.user!!.copy(namespace = n))
+                (context as UserContextInternal).setUser(context.user!!.copy(namespace = n))
             } else {
                 unauthorized()
             }
@@ -1176,21 +1178,22 @@ open class AdminVerticle : WebVerticle() {
             val webRoot = verticleProperty("content_path", "/maven/dist")
             // swagger yaml
             router.get("${baseHref}doc/nlp.yaml").handler { context ->
-                context.vertx().fileSystem().readFile("$webRoot/doc/nlp.yaml") {
-                    if (it.succeeded()) {
-                        context.response().end(
-                            it.result().toString(UTF_8).replace(
-                                "_HOST_",
-                                verticleProperty("nlp_external_host", "localhost:8888")
+                context.vertx().fileSystem().readFile("$webRoot/doc/nlp.yaml")
+                    .onComplete {
+                        if (it.succeeded()) {
+                            context.response().end(
+                                it.result().toString(UTF_8).replace(
+                                    "_HOST_",
+                                    verticleProperty("nlp_external_host", "localhost:8888")
+                                )
                             )
-                        )
-                    } else {
-                        context.fail(it.cause())
+                        } else {
+                            context.fail(it.cause())
+                        }
                     }
-                }
             }
             router.get("${baseHref}doc/admin.yaml").handler { context ->
-                context.vertx().fileSystem().readFile("$webRoot/doc/admin.yaml") {
+                context.vertx().fileSystem().readFile("$webRoot/doc/admin.yaml").onComplete {
                     if (it.succeeded()) {
                         context.response().end(it.result().toString(UTF_8))
                     } else {
@@ -1205,7 +1208,7 @@ open class AdminVerticle : WebVerticle() {
                         .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
                         .end(indexContent)
                 } else {
-                    context.vertx().fileSystem().readFile("$webRoot/index.html") {
+                    context.vertx().fileSystem().readFile("$webRoot/index.html").onComplete {
                         if (it.succeeded()) {
                             logger.info { "base href: $baseHref" }
                             val content = it.result()
@@ -1237,7 +1240,7 @@ open class AdminVerticle : WebVerticle() {
             router.route(GET, "${baseHref}index.html").handler(indexContentHandler)
 
             router.route(GET, "$baseHref*")
-                .handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
+                .handler(StaticHandler.create(FileSystemAccess.ROOT, webRoot))
                 .handler(indexContentHandler)
         }
     }

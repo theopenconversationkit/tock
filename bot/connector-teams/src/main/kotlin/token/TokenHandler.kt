@@ -24,7 +24,7 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy.INSTANCE
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -51,7 +51,7 @@ class TokenHandler(private val appId: String, private val password: String) {
         Level.BASIC
     }
 
-    val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(INSTANCE)
 
     @Volatile
     private lateinit var tokenTimerTask: Timer

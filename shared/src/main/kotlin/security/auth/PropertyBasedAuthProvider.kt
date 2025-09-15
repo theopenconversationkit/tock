@@ -35,11 +35,11 @@ import ai.tock.shared.security.TockUserRole.technicalAdmin
 import ai.tock.shared.security.TockUserRole.values
 import ai.tock.shared.vertx.WebVerticle
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.AsyncResult
 import io.vertx.core.Future
-import io.vertx.core.Handler
-import io.vertx.core.json.JsonObject
+import io.vertx.core.Promise
 import io.vertx.ext.auth.User
+import io.vertx.ext.auth.authentication.Credentials
+import io.vertx.ext.auth.authentication.UsernamePasswordCredentials
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.BasicAuthHandler
 import io.vertx.ext.web.handler.SessionHandler
@@ -87,43 +87,36 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
 
             router.post(authenticatePath).handler { context ->
                 val request = mapper.readValue<AuthenticateRequest>(context.body().asString())
-                val authInfo = JsonObject().put("username", request.email).put("password", request.password)
-                authenticate(authInfo) {
-                    if (it.succeeded()) {
-                        val user = it.result()
-                        context.setUser(user)
-                        context.isAuthorized(nlpUser) { nlpUserResult ->
-                            context.isAuthorized((faqNlpUser)) { faqNlpUserResult ->
-                                context.isAuthorized((faqBotUser)) { faqBotUserResult ->
-                                    context.isAuthorized(botUser) { botUserResult ->
-                                        context.isAuthorized(admin) { adminResult ->
-                                            context.isAuthorized(technicalAdmin) { technicalAdminResult ->
-                                                context.endJson(
-                                                    // if any of the role is detected for the user
-                                                    // add the role to the response
-                                                    AuthenticateResponse(
-                                                        true,
-                                                        request.email,
-                                                        (user as TockUser).namespace,
-                                                        setOfNotNull(
-                                                            if (nlpUserResult.result()) nlpUser else null,
-                                                            if (faqNlpUserResult.result()) nlpUser else null,
-                                                            if (faqBotUserResult.result()) botUser else null,
-                                                            if (botUserResult.result()) botUser else null,
-                                                            if (adminResult.result()) admin else null,
-                                                            if (technicalAdminResult.result()) technicalAdmin else null
-                                                        )
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
+                val creds = UsernamePasswordCredentials(request.email, request.password)
+                authenticate(creds).onSuccess { u ->
+                    val user = u as TockUser
+                    sessionHandler
+                        .setUser(context, user)
+                        .onSuccess {
+                            val rs = user.roles
+                            val respRoles = buildSet<TockUserRole> {
+                                if (rs.contains(nlpUser.name)) add(nlpUser)
+                                if (rs.contains(faqNlpUser.name)) add(nlpUser) // historique
+                                if (rs.contains(faqBotUser.name)) add(botUser) // historique
+                                if (rs.contains(botUser.name)) add(botUser)
+                                if (rs.contains(admin.name)) add(admin)
+                                if (rs.contains(technicalAdmin.name)) add(technicalAdmin)
                             }
+                            context.endJson(
+                                AuthenticateResponse(
+                                    authenticated = true,
+                                    email = request.email,
+                                    organization = user.namespace,
+                                    roles = respRoles
+                                )
+                            )
                         }
-                    } else {
-                        context.endJson(AuthenticateResponse(false))
-                    }
+                        .onFailure { err ->
+                            logger.error("Failed to bind user to session", err)
+                            context.endJson(AuthenticateResponse(false))
+                        }
+                }.onFailure {
+                    context.endJson(AuthenticateResponse(false))
                 }
             }
 
@@ -134,7 +127,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             }
 
             router.post(logoutPath).handler {
-                it.clearUser()
+                it.userContext().clear()
                 it.success()
             }
         }
@@ -142,28 +135,34 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         return authHandler
     }
 
-    override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
-        val username = authInfo.getString("username")
-        val password = authInfo.getString("password")
-        users
-            .indexOfFirst { it == username }
-            .takeIf { it != -1 }
-            ?.takeIf { passwords[it] == password }
-            ?.also { index ->
-                executor.executeBlocking {
-                    val tockUser = injector.provide<TockUserListener>().registerUser(
-                        TockUser(
-                            username,
-                            organizations[index],
-                            roles.getOrNull(index)
-                                ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
-                                ?: allRoles
-                        ),
-                        true
-                    )
-                    resultHandler.handle(Future.succeededFuture(tockUser))
-                }
+    override fun authenticate(credentials: Credentials): Future<User> {
+        val promise = Promise.promise<User>()
+
+        val up = credentials as? UsernamePasswordCredentials
+            ?: return Future.failedFuture("unsupported credentials type")
+
+        val username = up.username
+        val password = up.password
+
+        val idx = users.indexOfFirst { it == username }
+        if (idx != -1 && passwords[idx] == password) {
+            executor.executeBlocking {
+                val tockUser = injector.provide<TockUserListener>().registerUser(
+                    TockUser(
+                        username,
+                        organizations[idx],
+                        roles.getOrNull(idx)
+                            ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
+                            ?: allRoles
+                    ),
+                    true
+                )
+                promise.complete(tockUser)
             }
-            ?: resultHandler.handle(Future.failedFuture<User>("invalid credentials"))
+        } else {
+            promise.fail("invalid credentials")
+        }
+
+        return promise.future()
     }
 }

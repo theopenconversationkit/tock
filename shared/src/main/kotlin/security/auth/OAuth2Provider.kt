@@ -20,6 +20,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.listProperty
 import ai.tock.shared.mapProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
@@ -32,13 +33,12 @@ import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.core.net.ProxyOptions
 import io.vertx.ext.auth.oauth2.OAuth2Auth
-import io.vertx.ext.auth.oauth2.OAuth2FlowType
 import io.vertx.ext.auth.oauth2.OAuth2Options
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
-import java.util.Base64
 import mu.KotlinLogging
+import java.util.Base64
 
 /**
  *
@@ -47,7 +47,11 @@ internal class OAuth2Provider(
     vertx: Vertx,
     private val oauth2: OAuth2Auth = OAuth2Auth.create(
         vertx, OAuth2Options()
-            .setFlow(OAuth2FlowType.AUTH_CODE)
+            .setSupportedGrantTypes(
+                listProperty(
+                    "tock_oauth2_supported_grant_types",
+                    emptyList()
+                ).takeUnless { it.isEmpty() })
             .setClientId(
                 property("tock_oauth2_client_id", "")
             )
@@ -110,8 +114,15 @@ internal class OAuth2Provider(
                 val user = context.user()
                 if (user?.containsKey("access_token") == true) {
                     user.also { u ->
-                        val data = if(u.containsKey("email")) u.principal()
-                            else JsonObject(String(Base64.getDecoder().decode(user.get<String>("id_token").split(".")[1])))
+                        val data =
+                            if (u.containsKey("email")) u.principal()
+                            else JsonObject(
+                                String(
+                                    Base64.getDecoder()
+                                        .decode(user.get<String>("id_token").split(".")[1])
+                                )
+                            )
+
                         val login: String = data.getString("email").lowercase(defaultLocale)
                         val customRoles: String = data.getString(userRoleAttribute)
                         val roles = parseUserRoles(customRoles)
@@ -128,8 +139,13 @@ internal class OAuth2Provider(
                                     val tockUser = injector.provide<TockUserListener>().registerUser(
                                         TockUser(login, namespace, roles), true
                                     )
-                                    context.setUser(tockUser)
-                                    context.next()
+
+                                    vertx.runOnContext {
+                                        sessionHandler
+                                            .setUser(context, tockUser)
+                                            .onSuccess { context.next() }
+                                            .onFailure { err -> context.fail(err) }
+                                    }
                                 }
                             }
                         }
@@ -162,6 +178,4 @@ internal class OAuth2Provider(
         super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
-
 }
-

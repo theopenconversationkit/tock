@@ -100,7 +100,7 @@ open class BotDefinitionBase(
             )
 
         val defaultRagStory =
-           RAGStoryDefinition(
+            RAGStoryDefinition(
                 object : SimpleStoryHandlerBase() {
                     override fun action(bus: BotBus) {
                         bus.markAsUnknown()
@@ -189,16 +189,14 @@ open class BotDefinitionBase(
             // run later to avoid the lock effect :)
             vertx.setTimer(1000) {
                 vertx.executeBlocking(
-                    { it: Promise<Unit> ->
+                    {
                         try {
                             userTimelineDao.remove(botDefinition.namespace, userId)
                         } catch (e: Exception) {
                             logger.error(e)
-                        } finally {
-                            it.complete()
                         }
                     },
-                    false, {}
+                    false
                 )
             }
         }

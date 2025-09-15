@@ -168,34 +168,41 @@ internal class BotVerticle(
     override fun startServer(promise: Promise<Void>, port: Int) {
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
-            server.webSocketHandler { context ->
+            server.webSocketHandshakeHandler { context ->
                 try {
                     val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
 
-                    if (key !=null && WebSocketController.isAuthorizedKey(key)) {
-                        logger.info { "Install WebSocket push handler for ${context.path()}" }
-                        WebSocketController.setPushHandler(key) {
-                            try {
-                                logger.debug { "send: $it" }
-                                context.writeTextMessage(it)
-                            } catch (e: Exception) {
-                                logger.error(e)
-                            }
-                        }
-
-                        context.textMessageHandler { json ->
-                            try {
-                                logger.debug { "receive $json" }
-                                WebSocketController.getReceiveHandler(key)?.invoke(json)
-                            } catch (e: Exception) {
-                                logger.error(e)
-                            }
-                        }.closeHandler {
-                            WebSocketController.removePushHandler(key)
-                        }
-                    } else {
+                    if (key == null || !WebSocketController.isAuthorizedKey(key)) {
                         logger.warn { "unknown key: $key" }
                         context.reject()
+                    }
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
+            server.webSocketHandler { context ->
+                try {
+                    val key = context.path().let { if (it.startsWith("/")) it.substring(1) else error("invalid key") }
+
+                    logger.info { "Install WebSocket push handler for ${context.path()}" }
+                    WebSocketController.setPushHandler(key) {
+                        try {
+                            logger.debug { "send: $it" }
+                            context.writeTextMessage(it)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                        }
+                    }
+
+                    context.textMessageHandler { json ->
+                        try {
+                            logger.debug { "receive $json" }
+                            WebSocketController.getReceiveHandler(key)?.invoke(json)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                        }
+                    }.closeHandler {
+                        WebSocketController.removePushHandler(key)
                     }
                 } catch (e: Exception) {
                     logger.error(e)

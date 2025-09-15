@@ -60,6 +60,8 @@ import ai.tock.shared.jackson.addConstrainedTypes
 import ai.tock.shared.listProperty
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
+import io.vertx.core.Deployable
+import io.vertx.core.DeploymentOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import java.util.ServiceLoader
@@ -390,7 +392,7 @@ object BotRepository {
                 false
             }
             if (lockFree) {
-                vertx.deployVerticle(verticle) {
+                vertx.deployVerticle(verticle).onComplete {
                     if (it.succeeded()) {
                         logger.info { "Bots installed" }
                         botsInstalled = true
