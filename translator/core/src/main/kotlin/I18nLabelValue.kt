@@ -81,6 +81,12 @@ class I18nLabelValue constructor(
     fun withArgs(newArgs: List<Any?>): I18nLabelValue =
         I18nLabelValue(key, namespace, category, defaultLabel, newArgs, defaultI18n)
 
+    /**
+     * Returns the value with the given args.
+     */
+    fun withArgs(vararg newArgs: Any?): I18nLabelValue =
+        withArgs(listOf(*newArgs))
+
     override fun toString(): String {
         return defaultLabel.toString()
     }

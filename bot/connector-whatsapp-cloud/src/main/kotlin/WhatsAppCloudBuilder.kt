@@ -52,8 +52,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppC
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsappTemplateComponent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
@@ -126,7 +125,7 @@ fun <T : Bus<T>> T.withWhatsAppCloud(messageProvider: () -> WhatsAppCloudConnect
  * @param text the text sent
  * @param previewUrl if set to `true`, WhatsApp will render a preview of the first URL in the message's [text]
  */
-fun BotBus.whatsAppCloudText(
+fun Bus<*>.whatsAppCloudText(
     text: CharSequence,
     previewUrl: Boolean = false
 ): WhatsAppCloudBotTextMessage =
@@ -144,7 +143,7 @@ fun BotBus.whatsAppCloudText(
  * @param caption a caption to display below the image
  * @param uploadToWhatsapp if `true`, the image will be uploaded to Meta's servers (recommended)
  */
-fun BotBus.whatsAppCloudImage(
+fun Bus<*>.whatsAppCloudImage(
     url: String,
     caption: CharSequence? = null,
     uploadToWhatsapp: Boolean = uploadImagesToWhatsapp,
@@ -166,7 +165,7 @@ fun BotBus.whatsAppCloudImage(
  * @param imageBytes a byte array containing the image data
  * @param caption a caption to display below the image
  */
-fun BotBus.whatsAppCloudImage(
+fun Bus<*>.whatsAppCloudImage(
     id: String,
     imageBytes: ByteArray,
     caption: CharSequence? = null,
@@ -583,7 +582,7 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
 fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     vararg parameters: Pair<String, String>
 ): QuickReply = whatsAppCloudQuickReply(title, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
 
@@ -609,7 +608,7 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
 fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<*>? = null,
+    step: StoryStepDef? = null,
     parameters: Map<String, String> = mapOf()
 ): QuickReply =
     whatsAppCloudQuickReply(title, null, targetIntent, step?.name, parameters) { intent, s, params ->
@@ -640,7 +639,7 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
-    step: StoryStep<*>? = null,
+    step: StoryStepDef? = null,
     parameters: Map<String, String> = mapOf()
 ): QuickReply =
     whatsAppCloudQuickReply(title,subTitle, targetIntent, step?.name, parameters) { intent, s, params ->
@@ -815,7 +814,7 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: String,
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     parameters: Parameters = Parameters()
 ) = whatsAppCloudPostbackButton(index.toInt(), title, targetIntent, step, parameters)
 
@@ -823,7 +822,7 @@ fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: Int,
     title: CharSequence,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     parameters: Parameters = Parameters()
 ): WhatsappTemplateComponent.Button = whatsAppCloudPostbackButton(
     index = index,

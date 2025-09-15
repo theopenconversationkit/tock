@@ -16,8 +16,12 @@
 
 package ai.tock.bot.connector.web
 
-import ai.tock.bot.connector.*
+import ai.tock.bot.connector.ConnectorBase
+import ai.tock.bot.connector.ConnectorCallback
+import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
@@ -29,8 +33,7 @@ import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
@@ -51,8 +54,14 @@ import ai.tock.bot.orchestration.shared.AskEligibilityToOrchestratedBotRequest
 import ai.tock.bot.orchestration.shared.OrchestrationMetaData
 import ai.tock.bot.orchestration.shared.ResumeOrchestrationRequest
 import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
-import ai.tock.shared.*
+import ai.tock.shared.Dice
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.propertyOrNull
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.sendSseMessage
@@ -67,9 +76,10 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
-import mu.KotlinLogging
 import java.time.Duration
-import java.util.*
+import java.util.Locale
+import java.util.UUID
+import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
 /**
@@ -266,7 +276,7 @@ class WebConnector internal constructor(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit

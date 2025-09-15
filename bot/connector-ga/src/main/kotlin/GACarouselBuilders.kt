@@ -24,8 +24,8 @@ import ai.tock.bot.connector.ga.model.response.GAExpectedIntent
 import ai.tock.bot.connector.ga.model.response.GAImage
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.translator.raw
@@ -163,7 +163,7 @@ fun <T : Bus<T>> T.carouselItem(
  */
 fun <T : Bus<T>> T.carouselItem(
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
@@ -176,7 +176,7 @@ fun <T : Bus<T>> T.carouselItem(
  */
 fun <T : Bus<T>> T.carouselItem(
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>?,
+    step: StoryStepDef?,
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,

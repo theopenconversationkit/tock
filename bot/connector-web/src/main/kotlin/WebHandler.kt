@@ -17,15 +17,18 @@
 package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.AsyncStoryHandling
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
+import ai.tock.bot.definition.StoryHandlerDefinitionBase
 import kotlin.reflect.KClass
 
 /**
  * To specify [ConnectorStoryHandler] for Web connector.
  * [KClass] passed as [value] of this annotation must have a primary constructor
- * with a single not optional [StoryHandlerDefinitionBase] argument.
+ * with a single not optional [StoryHandlerDefinitionBase] or [AsyncStoryHandling] argument.
  */
 @ConnectorHandler(connectorTypeId = WEB_CONNECTOR_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class WebHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class WebHandler(val value: KClass<out ConnectorSpecificHandling>)

@@ -26,8 +26,7 @@ import ai.tock.bot.connector.slack.model.SlackMessageAttachment
 import ai.tock.bot.connector.slack.model.SlackMessageOut
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendChoice
@@ -142,7 +141,7 @@ fun <T : Bus<T>> T.slackButton(
 fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
     targetIntent: IntentAware?,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
     name: String = "default"
 ): Button =
@@ -154,7 +153,7 @@ fun <T : Bus<T>> T.slackButton(
 fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
     targetIntent: IntentAware?,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     vararg parameters: Pair<String, String>,
     name: String = "default"
 ): Button {

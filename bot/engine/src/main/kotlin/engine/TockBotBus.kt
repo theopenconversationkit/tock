@@ -34,14 +34,25 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.injector
+import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 
 /**
  *
  */
+@OptIn(ExperimentalTockCoroutines::class)
 internal class TockBotBus(
     val connector: TockConnectorController,
     override val userTimeline: UserTimeline,
@@ -61,7 +72,7 @@ internal class TockBotBus(
             currentDialog.stories.add(value)
         }
     override val botDefinition: BotDefinition = bot.botDefinition
-    override val connectorId = action.applicationId
+    override val connectorId = action.connectorId
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
@@ -89,6 +100,8 @@ internal class TockBotBus(
 
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
+
+    private val customActionSender = AtomicReference<((Action, Long) -> Unit)?>()
 
     private fun findSupportedLocale(locale: Locale): Locale {
         val supp = bot.supportedLocales
@@ -145,10 +158,15 @@ internal class TockBotBus(
         // to receive the corresponding messages
         if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
             // If the action is not a SendDebug, or it is, but the source connector is the rest connector
-            connector.send(userTimeline, connectorData, action, actionToSent, context.currentDelay)
+            customActionSender.get()?.invoke(actionToSent, context.currentDelay)
+                ?: doSend(actionToSent, context.currentDelay)
         }
 
         return this
+    }
+
+    fun doSend(actionToSend: Action, delay: Long) {
+        connector.send(userTimeline, connectorData, action, actionToSend, delay)
     }
 
     /**
@@ -221,5 +239,30 @@ internal class TockBotBus(
         if (action is SendSentence) {
             bot.markAsUnknown(action, userTimeline)
         }
+    }
+
+    /**
+     * @return a callback to force-close the message queue
+     */
+    fun deferMessageSending(scope: CoroutineScope): () -> Unit {
+        data class QueuedAction(val action: Action, val delay: Long)
+
+        val messageChannel = Channel<QueuedAction>(Channel.BUFFERED)
+        customActionSender.set { action, delay ->
+            // we queue in the current thread to preserve message ordering
+            scope.launch(start = CoroutineStart.UNDISPATCHED) {
+                messageChannel.send(QueuedAction(action, delay))
+                // the following code may happen in a different thread if the channel's buffer was full
+                if (action.metadata.lastAnswer) {
+                    messageChannel.close()
+                }
+            }
+        }
+        scope.launch(injector.provide<Executor>().asCoroutineDispatcher()) {
+            for ((action, delay) in messageChannel) {
+                doSend(action, delay)
+            }
+        }
+        return { messageChannel.close() }
     }
 }
