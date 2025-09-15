@@ -83,38 +83,32 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     override val currentStoryDefinition: StoryDefinition
         get() = story.definition
     override var step: AsyncStoryStep<*>?
-        get() = synchronized(botBus) { story.currentStep as? AsyncStoryStep<*> }
+        get() = story.currentStep as? AsyncStoryStep<*>
         set(step) {
-            synchronized(botBus) {
-                story.step = step?.name
-            }
+            story.step = step?.name
         }
     override val userInfo: UserPreferences
         get() = botBus.userPreferences
     override val userState: UserState
         get() = botBus.userTimeline.userState
-    val story: Story get() = synchronized(botBus) { botBus.story }
+    val story: Story get() = botBus.story
 
     override fun defaultAnswerDelay() = botBus.defaultDelay(botBus.currentAnswerIndex)
 
     override suspend fun constrainNlp(nextActionState: NextUserActionState) {
-        synchronized(botBus) {
-            botBus.nextUserActionState = nextActionState
-        }
+        botBus.nextUserActionState = nextActionState
     }
 
     override fun choice(key: ParameterKey): String? {
-        // Not synchronized - action is immutable
         return botBus.choice(key)
     }
 
     override fun booleanChoice(key: ParameterKey): Boolean {
-        // Not synchronized - action is immutable
         return botBus.booleanChoice(key)
     }
 
     override fun hasActionEntity(role: String): Boolean {
-        return synchronized(botBus) { botBus.hasActionEntity(role) }
+        return botBus.hasActionEntity(role)
     }
 
     override fun <T : Value> entityValue(
@@ -137,33 +131,26 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     }
 
     override fun removeAllEntityValues() {
+        // Synchronized to avoid ConcurrentModificationException with other entity setters
         synchronized(botBus) {
             botBus.removeAllEntityValues()
         }
     }
 
     override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? {
-        return synchronized(botBus) {
-            botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
-        }
+        return botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
     }
 
     override fun <T : Any> setContextValue(key: DialogContextKey<T>, value: T?) {
-        synchronized(botBus) {
-            botBus.dialog.state.setContextValue(key, value)
-        }
+        botBus.dialog.state.setContextValue(key, value)
     }
 
     override fun <T : Any> setBusContextValue(key: DialogContextKey<T>, value: T?) {
-        synchronized(botBus) {
-            botBus.setBusContextValue(key.name, value)
-        }
+        botBus.setBusContextValue(key.name, value)
     }
 
     override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return synchronized(botBus) {
-            botBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
-        }
+        return botBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
     }
 
     override suspend fun isFeatureEnabled(
