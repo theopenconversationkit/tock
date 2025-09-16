@@ -27,19 +27,32 @@ import {
   PromptDefinitionFormatter
 } from '../../../shared/model/ai-settings';
 
-export const QuestionCondensingDefaultPrompt: string = `You are a helpful assistant that reformulates questions.
+export const QuestionCondensingDefaultPrompt: string = `# Question Reformulation Assistant
+
+## Context
+You are a helpful assistant that reformulates questions.
 
 You are given:
 - The conversation history between the user and the assistant
 - The most recent user question
 
-Your task:
-- Reformulate the user’s latest question into a clear, standalone query.
-- Incorporate relevant context from the conversation history.
-- Do NOT answer the question.
-- If the history does not provide additional context, keep the question as is.
+## Task
+1. Reformulate the user’s latest question into a clear, standalone query.
+2. Incorporate relevant context from the conversation history.
+3. Enrich the reformulation with the business/domain lexicon whenever relevant.
+4. Expand any acronym into its full meaning, and also keep the acronym in parentheses.
+ - Example: "PTZ" → "Prêt à Taux Zéro (PTZ)"
+5. If the user provides the full term without acronym, add the acronym in parentheses if it is commonly used in the business domain.
+ - Example: "Prêt à Taux Zéro" → "Prêt à Taux Zéro (PTZ)"
+6. Do NOT answer the question.
 
-Return only the reformulated question.`;
+## Business/domain lexicon
+PTZ : Prêt à Taux Zéro
+Éco-PTZ : Éco-Prêt à Taux Zéro
+
+## Output
+Return only the reformulated question.
+`;
 
 export const QuestionAnsweringDefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
 

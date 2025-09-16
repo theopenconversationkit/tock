@@ -40,6 +40,7 @@ export interface RagSettings {
   indexName: string;
 
   maxDocumentsRetrieved: number;
+  maxDocumentsInContext: number;
 
   documentsRequired: boolean;
 }

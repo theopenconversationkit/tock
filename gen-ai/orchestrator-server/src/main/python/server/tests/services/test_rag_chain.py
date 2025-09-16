@@ -143,6 +143,7 @@ Answer in {locale}:""",
             'endpoint': 'http://test-rerank.com',
         },
         'documents_required': True,
+        'max_documents_in_context': 4,
     }
     request = RAGRequest(**query_dict)
     inputs = {
@@ -457,7 +458,7 @@ def test_rag_guard_accepts_no_answer_even_with_docs(mocked_log):
             'answer': 'Sorry, I don t know.',
             'context': [
                 {
-                    'chunk': 1,
+                    'chunk': '1',
                     'sentences': ["str1"],
                 }
             ]

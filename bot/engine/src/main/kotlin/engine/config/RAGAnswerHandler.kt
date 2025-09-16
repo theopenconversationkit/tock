@@ -82,11 +82,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         text = answer.answer,
                         footnotes = footnotes?.map {
                             Footnote(
-                                it.identifier, it.title, it.url,
+                                it.identifier,
+                                it.title,
+                                it.url,
                                 if(action.metadata.sourceWithContent) it.content else null,
-                                it.score
+                                it.score,
+                                it.rrfScore
                             )
-                        }?.toMutableList() ?: mutableListOf<Footnote>(),
+                        }?.toMutableList() ?: mutableListOf(),
                         // modifiedObservabilityInfo includes the public langfuse URL if filled.
                         metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
                     )
@@ -221,6 +224,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         vectorStoreSetting = vectorStoreSetting,
                         observabilitySetting = botDefinition.observabilityConfiguration?.setting,
                         documentsRequired = ragConfiguration.documentsRequired,
+                        maxDocumentsInContext = ragConfiguration.maxDocumentsInContext
                     ), debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled
                 )
 

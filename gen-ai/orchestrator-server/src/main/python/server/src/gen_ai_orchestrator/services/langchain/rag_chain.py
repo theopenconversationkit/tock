@@ -29,7 +29,7 @@ from langchain.retrievers.contextual_compression import (
     ContextualCompressionRetriever,
 )
 from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.callbacks import BaseCallbackHandler, Callbacks
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
@@ -115,8 +115,6 @@ async def execute_rag_chain(
     logger.info('RAG chain - Start of execution...')
     start_time = time.time()
 
-    conversational_retrieval_chain = create_rag_chain(request=request)
-
     message_history = ChatMessageHistory()
     if request.dialog:
         for msg in request.dialog.history:
@@ -140,6 +138,8 @@ async def execute_rag_chain(
         **request.question_answering_prompt.inputs,
         'chat_history': message_history.messages,
     }
+
+    conversational_retrieval_chain = create_rag_chain(request=request)
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -179,6 +179,7 @@ async def execute_rag_chain(
                 url=doc.metadata['source'],
                 content=get_source_content(doc),
                 score=doc.metadata.get('retriever_score', None),
+                rrf_score=doc.metadata.get('rrf_score', None),
             )
             for doc in response["documents"]
             if doc.metadata['id'] in contexts_by_chunk
@@ -297,35 +298,27 @@ def create_rag_chain(
     chat_chain = build_question_condensation_chain(condensing_llm, request.question_condensing_prompt)
     rag_prompt = build_rag_prompt(request)
 
-    # Function to contextualize the question based on chat history
-    contextualize_question_fn = partial(contextualize_question, chat_chain=chat_chain)
-
     # Calculate the condensed question
     with_condensed_question = RunnableParallel({
-        "condensed_question": contextualize_question_fn,
+        "condensed_question": chat_chain,
         "question": itemgetter("question"),
         "chat_history": itemgetter("chat_history"),
     })
 
-    def retrieve_with_variants(inputs):
-        variants = [
-            # inputs["question"], Deactivated. It's an example to prove the multi retriever process
-            inputs["condensed_question"]
-        ]
-        docs = []
-        for v in variants:
-            docs.extend(retriever.invoke(v))
-        # Deduplicate docs
-        unique_docs = {d.metadata['id']: d for d in docs}
-
-        # TODO [DERCBOT-1649] Apply the RRF Algo on unique_docs.
-        return list(unique_docs.values())
+    def multi_query_retrieve(inputs) -> list[Document]:
+        """Multi-query retrieval.
+        Retrieve documents from the vector database for each variant of the user's question,
+        then apply fusion (e.g., RRF) to produce a ranked list of results.
+        """
+        variants = [inputs["question"], inputs["condensed_question"]]
+        results = [retriever.invoke(input=v) for v in variants]
+        return apply_rrf_ranking(results, k=60, top_n=request.max_documents_in_context)
 
     # Build the RAG inputs
     rag_inputs = with_condensed_question | RunnableParallel({
-        "question": itemgetter("condensed_question"),
+        "condensed_question": itemgetter("condensed_question"),
         "chat_history": itemgetter("chat_history"),
-        "documents": RunnableLambda(retrieve_with_variants),
+        "documents": RunnableLambda(name="multi_query_retrieve", func=multi_query_retrieve),
     })
 
     return rag_inputs | RunnablePassthrough.assign(answer=(
@@ -338,11 +331,63 @@ def create_rag_chain(
                     for doc in x["documents"]
                 ], ensure_ascii=False, indent=2),
                 "chat_history": format_chat_history,
+                "condensed_question": itemgetter("condensed_question"),
             }
             | rag_prompt
             | question_answering_llm
             | JsonOutputParser(pydantic_object=LLMAnswer, name="rag_chain_output")))
 
+
+def apply_rrf_ranking(ranked_results: list[list[Document]], k: int, top_n: int) -> list[Document]:
+    """Apply Reciprocal Rank Fusion (RRF) on multiple ranked result lists.
+
+    Each document is assigned an RRF score based on its rank in the individual lists:
+        score(d) = Σ (1 / (k + rank_q(d)))
+    where rank_q(d) is the 1-based position of the document d in the result list for query q.
+
+    Documents appearing in multiple lists are boosted. Results are deduplicated and
+    sorted by their final RRF score in descending order.
+
+    The fusion effect of RRF is : A doc appearing in several lists (even slightly lower ranked)
+    will usually score higher than one appearing at the very top of only one list.
+    Here’s why:
+        - Suppose docA is ranked 5th for question and 3rd for condensed_question.
+        - Suppose docB is ranked 1st for question but doesn’t appear at all for condensed_question.
+    docA gets: 1/(60+5) + 1/(60+3) ≈ 0.032 + 0.033 ≈ 0.065
+    docB gets: 1/(60+1) ≈ 0.016
+    Even though docB was “better” for one query, docA wins overall because it’s consistently relevant across variants.
+
+    Args:
+        ranked_results (list[list[Document]]): Lists of ranked documents per query variant.
+        k (int): RRF dampening parameter (default 60).
+        top_n (int): Number of top documents to return.
+
+    Returns:
+        list[Document]: The top-N fused and ranked documents.
+    """
+
+    # Assign RRF scores
+    scores = {}
+    for results in ranked_results:
+        for rank, doc in enumerate(results, start=1):  # 1-based rank
+            doc_id = doc.metadata["id"]
+            score = 1.0 / (k + rank)
+            scores[doc_id] = scores.get(doc_id, 0) + score
+
+    # Sort by RRF score
+    unique_docs = {}
+    for results in ranked_results:
+        for doc in results:
+            unique_docs[doc.metadata["id"]] = doc  # keep doc object
+
+    ranked_docs = sorted(unique_docs.values(), key=lambda d: scores[d.metadata["id"]], reverse=True)
+
+    # Storing RRF score
+    for doc in ranked_docs:
+        doc.metadata["rrf_score"] = scores[doc.metadata["id"]]
+
+    # Return only the top N docs back.
+    return ranked_docs[:top_n]
 
 def build_rag_prompt(request: RAGRequest) -> LangChainPromptTemplate:
     """
@@ -369,29 +414,6 @@ def build_question_condensation_chain(
     """
     Build the chat chain for contextualizing questions.
     """
-    # TODO deprecated : All Gen configurations are supposed to have this prompt now. It is mandatory in the RAG configuration.
-    if prompt is None:
-        # Default prompt
-        prompt = PromptTemplate(
-            formatter=PromptFormatter.F_STRING,
-            inputs={},
-            template="""
-You are a helpful assistant that reformulates questions.
-
-You are given:
-- The conversation history between the user and the assistant
-- The most recent user question
-
-Your task:
-- Reformulate the user’s latest question into a clear, standalone query.
-- Incorporate relevant context from the conversation history.
-- Do NOT answer the question.
-- If the history does not provide additional context, keep the question as is.
-
-Return only the reformulated question.
-"""
-        )
-
     return (
         ChatPromptTemplate.from_messages(
             [

@@ -67,6 +67,7 @@ async def test_qa_chain(
             'k': 4,
         },
         'documents_required': True,
+        'max_documents_in_context': 4,
     }
     request = QARequest(**query_dict)
 

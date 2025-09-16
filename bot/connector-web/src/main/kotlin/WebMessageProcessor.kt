@@ -44,7 +44,8 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                             footnote.title,
                             footnote.url,
                             footnote.content?.let { postProcess(it) },
-                            footnote.score
+                            footnote.score,
+                            footnote.rrfScore
                         )
                     })
             }

@@ -89,6 +89,11 @@ class BaseRequest(BaseModel):
         description='Compressor settings, to rerank relevant documents returned by retriever.',
         default=None,
     )
+    max_documents_in_context: int = Field(
+        description='Max documents used in LLM context.',
+        examples=[3],
+        default=4,
+    )
 
 
 class QARequest(BaseRequest):
@@ -121,6 +126,7 @@ class QARequest(BaseRequest):
                         ],
                         'k': 4,
                     },
+                    'max_documents_in_context': 4,
                 }
             ]
         }
@@ -258,6 +264,7 @@ Answer in {locale}:""",
                         'label': 'entailment',
                         'endpoint': 'https://*********',
                     },
+                    'max_documents_in_context': 4,
                 }
             ]
         }

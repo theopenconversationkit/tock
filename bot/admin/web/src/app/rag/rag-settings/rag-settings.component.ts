@@ -54,6 +54,7 @@ interface RagSettingsForm {
   indexName: FormControl<string>;
 
   maxDocumentsRetrieved: FormControl<number>;
+  maxDocumentsInContext: FormControl<number>;
 
   documentsRequired: FormControl<boolean>;
 
@@ -217,6 +218,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
     documentsRequired: new FormControl(undefined),
     maxDocumentsRetrieved: new FormControl(undefined),
+    maxDocumentsInContext: new FormControl(undefined),
 
     questionCondensingLlmProvider: new FormControl(undefined, [Validators.required]),
     questionCondensingLlmSetting: new FormGroup({}),
@@ -273,6 +275,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   get maxDocumentsRetrieved(): FormControl {
     return this.form.get('maxDocumentsRetrieved') as FormControl;
+  }
+
+  get maxDocumentsInContext(): FormControl {
+    return this.form.get('maxDocumentsInContext') as FormControl;
   }
 
   get indexName(): FormControl {
@@ -396,7 +402,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       documentsRequired: true,
       debugEnabled: false,
       maxMessagesFromHistory: 5,
-      maxDocumentsRetrieved: 4
+      maxDocumentsRetrieved: 4,
+      maxDocumentsInContext: 4,
     });
   }
 

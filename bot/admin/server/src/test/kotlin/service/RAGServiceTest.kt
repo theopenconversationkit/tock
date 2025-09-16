@@ -66,7 +66,7 @@ class RAGServiceTest : AbstractTest() {
         const val INDEX_SESSION_ID = "1010101"
 
         private val DEFAULT_RAG_CONFIG = BotRAGConfigurationDTO(
-             id = "ragId",
+            id = "ragId",
             namespace = NAMESPACE,
             botId = BOT_ID,
             enabled = false,
@@ -95,6 +95,7 @@ class RAGServiceTest : AbstractTest() {
             documentsRequired = true,
             debugEnabled = false,
             maxDocumentsRetrieved = 2,
+            maxDocumentsInContext = 3,
             maxMessagesFromHistory = 2,
         )
 

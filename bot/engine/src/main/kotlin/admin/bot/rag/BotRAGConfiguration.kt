@@ -41,7 +41,8 @@ data class BotRAGConfiguration(
     val noAnswerStoryId: String? = null,
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean = false,
-    val maxDocumentsRetrieved: Int = 4,
+    val maxDocumentsRetrieved: Int = 4, // Max documents retrieved from vector db per query
+    val maxDocumentsInContext: Int = 4, // Max documents used in LLM context
     val maxMessagesFromHistory: Int = 5,
 ) {
     @Deprecated("use BotRAGConfiguration#questionAnsweringLlmSetting")

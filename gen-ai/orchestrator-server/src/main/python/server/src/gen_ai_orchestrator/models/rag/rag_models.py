@@ -29,6 +29,7 @@ class Source(BaseModel):
     url: Optional[AnyUrl] = Field(description='Source url', examples=['https://doc.tock.ai/tock/'], default=None)
     content: str = Field(description='Source content', examples=['Tock: The Open Conversation Kit'])
     score: Optional[float] = Field(description='The compressor score', examples=[0.9149009585380554], default=None)
+    rrf_score: Optional[float] = Field(description='The Reciprocal Rank Fusion (RRF) score', examples=[0.075], default=None)
 
     def __eq__(self, other):
         """
