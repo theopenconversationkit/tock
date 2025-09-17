@@ -63,8 +63,8 @@ class GoogleChatFootnoteFormatterTest {
                 "keeps footnotes with same URL but different titles",
                 "Check this out",
                 listOf(
-                    Footnote("id1", "Title A", "https://example.com", null, null),
-                    Footnote("id2", "Title B", "https://example.com", null, null)
+                    Footnote("id1", "Title A", "https://example.com", null, null,null),
+                    Footnote("id2", "Title B", "https://example.com", null, null,null)
                 ),
                 """
                 Check this out
@@ -78,8 +78,8 @@ class GoogleChatFootnoteFormatterTest {
                 "formats mix of footnotes with and without URL",
                 "Here's some info",
                 listOf(
-                    Footnote("id1", "Google", "https://google.com", null, null),
-                    Footnote("id2", "Just text", null, null, null)
+                    Footnote("id1", "Google", "https://google.com", null,null, null),
+                    Footnote("id2", "Just text", null, null, null,null)
                 ),
                 """
                 Here's some info
@@ -93,8 +93,8 @@ class GoogleChatFootnoteFormatterTest {
                 "does not deduplicate footnotes with same title and different URLs",
                 "Interesting links",
                 listOf(
-                    Footnote("id1", "Duplicate", "https://a.com", null, null),
-                    Footnote("id2", "Duplicate", "https://b.com", null, null)
+                    Footnote("id1", "Duplicate", "https://a.com", null, null,null),
+                    Footnote("id2", "Duplicate", "https://b.com", null, null,null)
                 ),
                 """
                 Interesting links
@@ -108,8 +108,8 @@ class GoogleChatFootnoteFormatterTest {
                 "deduplicates footnotes based only on url and title ignoring other fields",
                 "References",
                 listOf(
-                    Footnote("id1", "Doc", "https://doc.com", "Content A", 0.9f),
-                    Footnote("id2", "Doc", "https://doc.com", "Content B", 0.2f)
+                    Footnote("id1", "Doc", "https://doc.com", "Content A", 0.9f,null),
+                    Footnote("id2", "Doc", "https://doc.com", "Content B", 0.2f,null)
                 ),
                 """
                 References
@@ -126,8 +126,8 @@ class GoogleChatFootnoteFormatterTest {
                 "generates numbered links with and without URLs",
                 "Sources below",
                 listOf(
-                    Footnote("id1", "Tock", "https://tock.ai", null, null),
-                    Footnote("id2", "Offline doc", null, null, null)
+                    Footnote("id1", "Tock", "https://tock.ai", null, null,null),
+                    Footnote("id2", "Offline doc", null, null, null,null)
                 ),
                 """
                 Sources below

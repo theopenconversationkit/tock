@@ -25,9 +25,8 @@ from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorInfo,
 )
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
-from gen_ai_orchestrator.models.rag.rag_models import Source, TextWithFootnotes
+from gen_ai_orchestrator.models.rag.rag_models import Source, LLMAnswer, Footnote
 from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.rag.rag_models import TextWithFootnotes
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
 
 
@@ -122,9 +121,10 @@ class ObservabilityInfo(BaseModel):
 class RAGResponse(BaseModel):
     """The RAG response model"""
 
-    answer: TextWithFootnotes = Field(
-        description='The RAG answer, with outside sources.'
+    answer: Optional[LLMAnswer] = Field(
+        description='The RAG answer'
     )
+    footnotes: set[Footnote] = Field(description='Set of footnotes')
     debug: Optional[Any] = Field(
         description='Debug data',
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],

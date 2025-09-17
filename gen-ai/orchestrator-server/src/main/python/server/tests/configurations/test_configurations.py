@@ -88,6 +88,7 @@ def test_fetch_gcp_secret_credentials(mock_get_credentials, mock_gcp_secretmanag
     mock_get_credentials.return_value = my_credentials
 
     # Call the function to fetch the credentials of the default vector store
+    fetch_default_vector_store_credentials.cache_clear()
     credentials = fetch_default_vector_store_credentials()
 
     # Check test results
@@ -111,6 +112,7 @@ def test_fetch_gcp_secret_credentials(mock_get_credentials, mock_gcp_secretmanag
        ))
 def test_fetch_default_credentials(mock_get_credentials, mock_boto3_client):
         # Call the function to fetch the credentials of the default vector store
+        fetch_default_vector_store_credentials.cache_clear()
         credentials = fetch_default_vector_store_credentials()
 
         # Check test results
@@ -143,6 +145,7 @@ def test_fetch_bad_credentials(mock_get_credentials, mock_boto3_client):
     mock_get_credentials.return_value = open_search_credentials
 
     # Call the function to fetch the credentials of the default vector store
+    fetch_default_vector_store_credentials.cache_clear()
     credentials = fetch_default_vector_store_credentials()
 
     # Check test results

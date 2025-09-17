@@ -50,10 +50,12 @@
       </span>
 
       <nb-icon
-        *ngIf="footNote.score"
+        *ngIf="footNote.score != null || footNote.rrfScore != null"
         icon="trophy"
         class="font-size-xsmall align-center ml-2"
-        nbTooltip="Compressor score : {{ footNote.score.toFixed(2) }}"
+        [nbTooltip]="(footNote.score != null ? 'Compressor score : ' + footNote.score.toFixed(3) : '') +
+                     (footNote.score != null && footNote.rrfScore != null ? ' | ' : '') +
+                     (footNote.rrfScore != null ? 'RRF score : ' + footNote.rrfScore.toFixed(3) : '')"
       ></nb-icon>
     </span>
 

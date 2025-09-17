@@ -88,6 +88,7 @@ class RAGValidationServiceTest {
         documentsRequired = true,
         debugEnabled = false,
         maxDocumentsRetrieved = 2,
+        maxDocumentsInContext = 3,
         maxMessagesFromHistory = 2,
     )
 
