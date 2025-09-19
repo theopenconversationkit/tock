@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.indicators.metric
+package ai.tock.bot.admin.dialog
+
+import java.time.ZonedDateTime
 
 /**
- * Custom Metric
+ * The dialog stats Query
  */
-data class CustomMetric(
-    val id: String?,
-    val type: MetricType?,
-    val indicatorName: String?,
-    val indicatorValueName: String?,
-    val emitterStoryId: String?,
-    val trackedStoryId: String?,
-    val applicationId: String?,
-    val count: Int = 0
+data class DialogStatsQuery(
+    val namespace: String,
+    val applicationName: String,
+    val from: ZonedDateTime? = null,
+    val to: ZonedDateTime? = null
 )
 
+/**
+ * The Intent type Enum
+ */
+enum class IntentTypeEnum {
+    ALL,
+    KNOWN,
+    UNKNOWN
+}

@@ -17,5 +17,9 @@
 package ai.tock.bot.admin.constants
 
 object Properties {
+    @Deprecated("Flag & code to delete. Migration is already done.")
     const val FAQ_MIGRATION_ENABLED = "tock_faq_migration_enabled"
+
+    @Deprecated("Flag & code to delete. (Next release)")
+    const val UPDATING_CUSTOM_METRIC_ENABLED = "tock_updating_custom_metric_enabled"
 }

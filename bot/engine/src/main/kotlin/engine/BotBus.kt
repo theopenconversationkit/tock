@@ -477,7 +477,9 @@ interface BotBus : Bus<BotBus> {
             trackedStoryId = getTrackedStoryId(),
             playerIds = dialog.playerIds,
             dialogId = dialog.id,
-            botId = botDefinition.botId
+            applicationId = dialog.stories.first().actions.first().applicationId,
+            botId = botDefinition.botId,
+            namespace = botDefinition.namespace
         )
 
     /**

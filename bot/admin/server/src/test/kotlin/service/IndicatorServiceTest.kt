@@ -55,6 +55,7 @@ class IndicatorServiceTest {
 
     companion object {
 
+        const val NAMESPACE= "myNS"
         const val BOT_ID = "app"
         const val NAME = "Satisfaction"
         const val LABEL = "Satisfaction label"
@@ -100,11 +101,11 @@ class IndicatorServiceTest {
     fun `Save valid indicator that does not exist yet`() {
 
         val entry: TSupplier<SaveFnEntry> = {
-            BOT_ID to saveIndicatorRequest()
+            Triple(NAMESPACE, BOT_ID,saveIndicatorRequest())
         }
 
         val similarIndicatorNotExist: TRunnable = {
-            every { dao.existByNameAndBotId(any(), any()) } returns false
+            every { dao.existByNameAndBotId(any(), any(), any()) } returns false
         }
 
         val captureIndicatorToSave: TRunnable = {
@@ -113,11 +114,11 @@ class IndicatorServiceTest {
 
         val callServiceSave: TFunction<SaveFnEntry?, Unit> = {
             assertNotNull(it)
-            IndicatorService.save(it!!.first, Valid(it.second))
+            IndicatorService.save(it!!.first, it.second, Valid(it.third))
         }
 
         val daoExistByFnIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { dao.existByNameAndBotId(NAME, BOT_ID) }
+            verify(exactly = 1) { dao.existByNameAndBotId(NAME, NAMESPACE, BOT_ID) }
         }
         val checkIndicatorToPersist: TRunnable = {
             assertTrue(slot.isCaptured)
@@ -153,22 +154,22 @@ class IndicatorServiceTest {
     fun `Try to save valid indicator that already exist`() {
 
         val entry: TSupplier<SaveFnEntry> = {
-            BOT_ID to saveIndicatorRequest()
+            Triple(NAMESPACE, BOT_ID,saveIndicatorRequest())
         }
 
         val similarIndicatorNotExist: TRunnable = {
-            every { dao.existByNameAndBotId(any(), any()) } returns true
+            every { dao.existByNameAndBotId(any(), any(), any()) } returns true
         }
 
         val callServiceSave: TFunction<SaveFnEntry?, IndicatorError> = {
             assertNotNull(it)
             assertThrows {
-                IndicatorService.save(it!!.first, Valid(it.second))
+                IndicatorService.save(it!!.first, it.second, Valid(it.third))
             }
         }
 
         val daoExistByFnIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { dao.existByNameAndBotId(NAME, BOT_ID) }
+            verify(exactly = 1) { dao.existByNameAndBotId(NAME, NAMESPACE, BOT_ID) }
         }
 
         val daoSaveByFnIsNotCalled: TRunnable = {
@@ -183,7 +184,8 @@ class IndicatorServiceTest {
 
             assertEquals(NAME, it.name)
             assertEquals(LABEL, it.label)
-            assertEquals(BOT_ID, it.applicationName)
+            assertEquals(NAMESPACE, it.namespace)
+            assertEquals(BOT_ID, it.botId)
 
         }
 
@@ -206,11 +208,16 @@ class IndicatorServiceTest {
     fun `Update existing indicator`() {
 
         val entry: TSupplier<UpdateFnEntry> = {
-            Triple(BOT_ID, NAME, updateIndicatorRequest())
+            UpdateFnEntry(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                name = NAME,
+                request = updateIndicatorRequest()
+            )
         }
 
         val indicatorExist: TRunnable = {
-            every { dao.findByNameAndBotId(any(), any()) } returns indicator()
+            every { dao.findByNameAndBotId(any(), any(), any()) } returns indicator()
         }
 
         val captureIndicatorToSave: TRunnable = {
@@ -219,11 +226,16 @@ class IndicatorServiceTest {
 
         val callServiceUpdate: TFunction<UpdateFnEntry?, Unit> = {
             assertNotNull(it)
-            IndicatorService.update(it!!.first, it.second, Valid(it.third))
+            IndicatorService.update(
+                namespace = it!!.namespace,
+                botId = it.botId,
+                indicatorName = it.name,
+                request = Valid(it.request)
+            )
         }
 
         val daoFindByNameAndBotIdIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { dao.findByNameAndBotId(NAME, BOT_ID) }
+            verify(exactly = 1) { dao.findByNameAndBotId(NAME, NAMESPACE,BOT_ID) }
         }
 
         val checkIndicatorToPersist: TRunnable = {
@@ -257,22 +269,32 @@ class IndicatorServiceTest {
     fun `Try to update non existing indicator`() {
 
         val entry: TSupplier<UpdateFnEntry> = {
-            Triple(BOT_ID, NAME, updateIndicatorRequest())
+            UpdateFnEntry(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                name = NAME,
+                request = updateIndicatorRequest()
+            )
         }
 
         val indicatorDoNotExist: TRunnable = {
-            every { dao.findByNameAndBotId(any(), any()) } returns null
+            every { dao.findByNameAndBotId(any(), any(), any()) } returns null
         }
 
         val callServiceUpdate: TFunction<UpdateFnEntry?, IndicatorError> = {
             assertNotNull(it)
             assertThrows {
-                IndicatorService.update(it!!.first, it.second, Valid(it.third))
+                IndicatorService.update(
+                    namespace = it!!.namespace,
+                    botId = it.botId,
+                    indicatorName = it.name,
+                    request = Valid(it.request)
+                )
             }
         }
 
         val daoFindByNameAndBotIdIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { dao.findByNameAndBotId(NAME, BOT_ID) }
+            verify(exactly = 1) { dao.findByNameAndBotId(NAME, NAMESPACE, BOT_ID) }
         }
 
         val daoSaveByFnIsNotCalled: TRunnable = {
@@ -286,7 +308,8 @@ class IndicatorServiceTest {
             it as IndicatorError.IndicatorNotFound
 
             assertEquals(NAME, it.name)
-            assertEquals(BOT_ID, it.applicationName)
+            assertEquals(NAMESPACE, it.namespace)
+            assertEquals(BOT_ID, it.botId)
 
         }
 
@@ -308,17 +331,17 @@ class IndicatorServiceTest {
     @Test
     fun `Find indicator by name and bot id`() {
 
-        val entries: TSupplier<Pair<String, String>> = {
-            NAME to BOT_ID
+        val entries: TSupplier<Triple<String, String, String>> = {
+            Triple(NAME, NAMESPACE,BOT_ID)
         }
 
         val indicatorExist: TRunnable = {
-            every { dao.findByNameAndBotId(any(), any()) } returns indicator()
+            every { dao.findByNameAndBotId(any(), any(), any()) } returns indicator()
         }
 
-        val callServiceFindByNameAndBotId: TFunction<Pair<String, String>?, IndicatorResponse?> = {
+        val callServiceFindByNameAndBotId: TFunction<Triple<String, String, String>?, IndicatorResponse?> = {
             assertNotNull(it)
-            IndicatorService.findByNameAndBotId(it!!.first, it.second)
+            IndicatorService.findByNameAndBotId(it!!.first, it.second, it.third)
         }
 
         val checkResponse: TConsumer<IndicatorResponse?> = {
@@ -330,7 +353,7 @@ class IndicatorServiceTest {
             assertEquals(VALUES.map { value -> IndicatorValueResponse(value.first, value.second) }.toSet(), it.values)
         }
 
-        TestCase<Pair<String, String>, IndicatorResponse>("Find indicator by name and bot id")
+        TestCase<Triple<String, String, String>, IndicatorResponse>("Find indicator by name and bot id")
             .given("A given name and application name", entries)
             .and("An indicator exists with the given entries", indicatorExist)
             .`when`("The IndicatorService findByNameAndBotId method is called", callServiceFindByNameAndBotId)
@@ -349,12 +372,12 @@ class IndicatorServiceTest {
         val indicatorName: TSupplier<String> = { NAME }
 
         val deleteSucceed: TRunnable = {
-            every { dao.deleteByNameAndApplicationName(any(),any()) } returns true
+            every { dao.deleteByNameAndApplicationName(any(),any(),any()) } returns true
         }
 
         val callServiceDelete: TFunction<String?, Boolean> = {
             assertNotNull(it)
-            IndicatorService.deleteByNameAndApplicationName(NAME, BOT_ID)
+            IndicatorService.deleteByNameAndApplicationName(NAME, NAMESPACE, BOT_ID)
         }
 
         val checkResponse: TConsumer<Boolean?> = {
@@ -374,13 +397,13 @@ class IndicatorServiceTest {
         val indicatorName: TSupplier<String> = { NAME }
 
         val deleteFails: TRunnable = {
-            every { dao.deleteByNameAndApplicationName(any(),any()) } returns false
+            every { dao.deleteByNameAndApplicationName(any(),any(), any()) } returns false
         }
 
         val callServiceDelete: TFunction<String?, IndicatorError> = {
             assertNotNull(it)
             assertThrows {
-                IndicatorService.deleteByNameAndApplicationName(NAME, BOT_ID)
+                IndicatorService.deleteByNameAndApplicationName(NAME, NAMESPACE, BOT_ID)
             }
         }
 
@@ -401,6 +424,7 @@ class IndicatorServiceTest {
         NAME,
         LABEL,
         DESCRIPTION,
+        NAMESPACE,
         BOT_ID,
         DIMENSIONS,
         VALUES.map { IndicatorValue(it.first, it.second) }.toSet()
@@ -426,5 +450,11 @@ class IndicatorServiceTest {
     )
 }
 
-typealias SaveFnEntry = Pair<String, SaveIndicatorRequest>
-typealias UpdateFnEntry = Triple<String, String, UpdateIndicatorRequest>
+typealias SaveFnEntry = Triple<String, String, SaveIndicatorRequest>
+
+data class UpdateFnEntry(
+    val namespace: String,
+    val botId: String,
+    val name: String,
+    val request: UpdateIndicatorRequest
+)
