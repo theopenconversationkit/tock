@@ -33,6 +33,7 @@ import java.time.Instant
  * @param playerIds mandatory player ids - set of [PlayerId]
  * @param dialogId mandatory dialog id
  * @param creationDate the creation date
+ * @param applicationId the configuration name
  * @param botId the application name
  * @param namespace the namespace
  */

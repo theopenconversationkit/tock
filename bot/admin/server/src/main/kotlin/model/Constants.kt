@@ -16,5 +16,6 @@
 
 package ai.tock.bot.admin.model
 
+// Configuration/Connector Type
 const val APP_CONFIG_PROD_TYPE: String = "prod"
 const val APP_CONFIG_TEST_TYPE: String = "test"

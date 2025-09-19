@@ -17,7 +17,7 @@
 package model.indicator.metric
 
 /**
- * Custom Metric Response
+ * Custom Metric Response, grouped by config type
  */
 data class CustomMetricGroupResponse(
     val test: List<CustomMetricResponse>,

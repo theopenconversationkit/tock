@@ -16,11 +16,26 @@
 
 package indicator.metric
 
-import ai.tock.bot.admin.indicators.metric.*
+import ai.tock.bot.admin.indicators.metric.CustomMetric
+import ai.tock.bot.admin.indicators.metric.MetricFilter
+import ai.tock.bot.admin.indicators.metric.MetricGroupBy
+import ai.tock.bot.admin.indicators.metric.Metric
+import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.mongo.MongoBotConfiguration
 import org.bson.Document
 import org.bson.conversions.Bson
-import org.litote.kmongo.*
+import org.litote.kmongo.aggregate
+import org.litote.kmongo.and
+import org.litote.kmongo.deleteMany
+import org.litote.kmongo.eq
+import org.litote.kmongo.first
+import org.litote.kmongo.getCollectionOfName
+import org.litote.kmongo.group
+import org.litote.kmongo.gte
+import org.litote.kmongo.`in`
+import org.litote.kmongo.lte
+import org.litote.kmongo.match
+import org.litote.kmongo.sum
 
 object MetricMongoDAO : MetricDAO {
 

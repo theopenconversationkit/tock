@@ -19,7 +19,7 @@ package model
 import ai.tock.bot.admin.dialog.DialogStatsQueryResult
 
 /**
- * Dialog Stats Response
+ * Dialog Stats Response, grouped by configuration type
  */
 data class DialogStatsGroupResponse(
     val test: DialogStatsQueryResult,

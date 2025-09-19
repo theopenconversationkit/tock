@@ -15,7 +15,7 @@
  */
 
 import { Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { DialogReport} from '../../../shared/model/dialog-data';
+import { DialogReport } from '../../../shared/model/dialog-data';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
 import { AnalyticsService } from '../../analytics.service';

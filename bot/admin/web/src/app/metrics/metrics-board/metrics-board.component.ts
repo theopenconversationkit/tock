@@ -96,10 +96,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   }
 
   private loadIndicatorsAndStories(): void {
-    const loaders = [
-      this.getIndicatorsQuery().pipe(take(1)),
-      this.getStoriesSummaryQuery().pipe(take(1))
-    ];
+    const loaders = [this.getIndicatorsQuery().pipe(take(1)), this.getStoriesSummaryQuery().pipe(take(1))];
 
     forkJoin(loaders).subscribe(([indicators, stories]: [IndicatorDefinition[], StorySummary[]]) => {
       this.indicators = indicators;
@@ -110,7 +107,33 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
+  private getDialogStatsQuery(): Observable<DialogStatsGroupResult> {
+    const url = `/dialogs/stats`;
+    const payload = {
+      namespace: this.stateService.currentApplication.namespace,
+      applicationName: this.stateService.currentApplication.name,
+      from: this.range.start,
+      to: this.range.end
+    };
+
+    return this.rest.post(url, payload);
+  }
+
+  private getIndicatorsQuery(): Observable<IndicatorDefinition[]> {
+    const url = `/bot/${this.stateService.currentApplication.name}/indicators`;
+    return this.rest.get(url, (indicators) => indicators);
+  }
+
+  private getStoriesSummaryQuery(): Observable<StorySummary[]> {
+    const url = `/bot/story/search/summary`;
+    const payload = {
+      applicationName: this.stateService.currentApplication.name,
+      namespace: this.stateService.currentApplication.namespace
+    };
+    return this.rest.post(url, payload);
+  }
+
+private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
     return {
       test : this.buildDialogStats(stats.test),
       prod : this.buildDialogStats(stats.prod)
@@ -180,42 +203,16 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   private accumulateStoryMetrics(items: MetricResult[]): MetricResult[] {
     const resultMap: Record<string, number> = {};
-  
+
     for (const item of items) {
       const key = item.row.trackedStoryId;
       resultMap[key] = (resultMap[key] ?? 0) + item.count;
     }
-  
+
     return Object.entries(resultMap).map(([trackedStoryId, count]) => ({
       row: { trackedStoryId },
       count,
     }));
-  }
-
-  private getDialogStatsQuery(): Observable<DialogStatsGroupResult> {
-    const url = `/dialogs/stats`;
-    const payload = {
-      namespace: this.stateService.currentApplication.namespace,
-      applicationName: this.stateService.currentApplication.name,
-      from: this.range.start,
-      to: this.range.end
-    };
-
-    return this.rest.post(url, payload);
-  }
-
-  private getIndicatorsQuery(): Observable<IndicatorDefinition[]> {
-    const url = `/bot/${this.stateService.currentApplication.name}/indicators`;
-    return this.rest.get(url, (indicators) => indicators);
-  }
-
-  private getStoriesSummaryQuery(): Observable<StorySummary[]> {
-    const url = `/bot/story/search/summary`;
-    const payload = {
-      applicationName: this.stateService.currentApplication.name,
-      namespace: this.stateService.currentApplication.namespace
-    };
-    return this.rest.post(url, payload);
   }
 
   private loadMetrics(): void {
@@ -429,6 +426,14 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     return this.indicators.filter((indicator) => indicator.dimensions.includes(this.currentDimension));
   }
 
+  private getCurrentDimensionMetricsQuery(): Observable<MetricGroupResult> {
+    return this.getDimensionMetricsQuery(this.currentDimensionIndicators.map((indicator) => indicator.name));
+  }
+
+  private getRagDimensionMetricsQuery(): Observable<MetricGroupResult> {
+    return this.getDimensionMetricsQuery(["rag"]);
+  }
+
   private getDimensionMetricsQuery(indicatorNames: string[]): Observable<MetricGroupResult> {
     const query = {
       filter: {
@@ -438,17 +443,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       },
       groupBy: ['APPLICATION_ID', 'TYPE', 'INDICATOR_NAME', 'INDICATOR_VALUE_NAME']
     };
-  
     const url = `/bot/${this.stateService.currentApplication.name}/metrics`;
     return this.rest.post(url, query);
-  }
-
-  private getCurrentDimensionMetricsQuery(): Observable<MetricGroupResult> {
-    return this.getDimensionMetricsQuery(this.currentDimensionIndicators.map((indicator) => indicator.name));
-  }
-
-  private getRagDimensionMetricsQuery(): Observable<MetricGroupResult> {
-    return this.getDimensionMetricsQuery(["rag"]);
   }
 
   currentDimensionCharts: EChartsOption[];
@@ -553,13 +549,6 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     return this.getIndicatorValueByName(indicatorname, indicatorValueName).label;
   }
 
-  hasUnknownStory(): boolean {
-    if (!this.stories?.length) return false;
-    return this.stories.some((story) => {
-      return story.intent.name === unknownIntentName;
-    });
-  }
-
   get indicatorsDimensions(): string[] {
     return [
       ...new Set(
@@ -617,7 +606,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   }
 
   doesStoriesHitsEcxeed(nb: number): boolean {
-    return this.storiesMetrics.length > nb;
+    return this.storiesMetrics?.length > nb;
   }
 
   helpModalRef;
