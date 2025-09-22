@@ -96,3 +96,16 @@ fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", 
         .replace("n", "[nñ]", ignoreCase = true)
         .replace(" ", "['-_ ]")
         .replace("c", "[cç]", ignoreCase = true)
+
+/**
+ * Escapes all special characters in a string so that it can be safely used
+ * inside a regular expression as a literal match.
+ *
+ * This function replaces regex metacharacters (such as `. ^ $ | ? * + ( ) [ ] { } \`)
+ * with their escaped form (e.g., `?` → `\?`, `.` → `\.`).
+ *
+ * @param s the input string that may contain regex metacharacters
+ * @return a new string where all regex metacharacters are escaped
+ */
+fun escapeForRegex(s: String): String =
+    s.replace(Regex("([\\\\.^$|?*+()\\[\\]{}])")) { "\\${it.value}" }
