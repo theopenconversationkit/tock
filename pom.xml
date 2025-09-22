@@ -76,6 +76,7 @@
         <aws-sdk>1.12.791</aws-sdk>
         <aws-sagemaker>2.33.8</aws-sagemaker>
         <pac4j>6.2.1</pac4j>
+        <vertx-pac4j>7.0.0</vertx-pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
@@ -662,6 +663,11 @@
                 <groupId>org.pac4j</groupId>
                 <artifactId>pac4j-oidc</artifactId>
                 <version>${pac4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>vertx-pac4j</artifactId>
+                <version>${vertx-pac4j}</version>
             </dependency>
 
             <dependency>

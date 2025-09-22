@@ -40,6 +40,5 @@
         <module>aws-tools</module>
         <module>gcp-tools</module>
         <module>iadvize-client</module>
-        <module>pac4j</module>
     </modules>
 </project>

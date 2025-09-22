@@ -118,10 +118,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>pac4j</artifactId>
+            <groupId>org.pac4j</groupId>
+            <artifactId>vertx-pac4j</artifactId>
             <scope>provided</scope>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.salomonbrys.kodein</groupId>
