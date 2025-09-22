@@ -42,7 +42,7 @@ import ai.tock.translator.UserInterfaceType
 import java.util.Locale
 
 @ExperimentalTockCoroutines
-interface AsyncBus : DialogEntityManager, I18nKeyProvider {
+interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
     /**
      * The connector ID.
      */
@@ -91,6 +91,11 @@ interface AsyncBus : DialogEntityManager, I18nKeyProvider {
     val currentStoryDefinition: StoryDefinition
 
     var step: AsyncStoryStep<*>?
+
+    /**
+     * Checks if the [currentIntent] and [checked] match
+     */
+    fun matchesIntent(checked: IntentAware): Boolean = checked.wrap(currentIntent?.wrappedIntent())
 
     suspend fun constrainNlp(nextActionState: NextUserActionState)
 

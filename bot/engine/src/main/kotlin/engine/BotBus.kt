@@ -66,7 +66,7 @@ import java.util.Locale
 /**
  * Bus implementation for Tock integrated mode.
  */
-interface BotBus : Bus<BotBus>, DialogEntityManager {
+interface BotBus : Bus<BotBus>, DialogEntityAccess {
 
     companion object {
         /**

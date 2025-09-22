@@ -88,7 +88,6 @@ abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryH
     /**
      * Provides a not null [connector]. Throws NPE if [connector] is null.
      */
-    @Suppress("UNCHECKED_CAST")
     val c: T
-        get() = connector as T
+        get() = connector!!
 }

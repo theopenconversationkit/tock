@@ -227,13 +227,13 @@ Par exemple voici le code utilisé pour récupérer l'entité `destination` :
 
 val destinationEntity = openBot.entity("location", "destination") 
 
-var BotBus.destination: Place?
+var DialogEntityManager.destination: Place?
     get() = place(destinationEntity)
     set(value) = setPlace(destinationEntity, value)
     
-private fun BotBus.place(entity: Entity): Place? = entityValue(entity, ::placeValue)?.place
+private fun DialogEntityManager.place(entity: Entity): Place? = entityValue(entity, ::placeValue)?.place
 
-private fun BotBus.setPlace(entity: Entity, place: Place?) = changeEntityValue(entity, place?.let { PlaceValue(place) })
+private fun DialogEntityManager.setPlace(entity: Entity, place: Place?) = changeEntityValue(entity, place?.let { PlaceValue(place) })
     
 ```
 

@@ -21,7 +21,7 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
 import kotlin.reflect.safeCast
 
-interface DialogEntityManager {
+interface DialogEntityAccess {
     /**
      * Returns the current value for the specified entity role.
      */
@@ -106,5 +106,5 @@ interface DialogEntityManager {
     fun removeAllEntityValues()
 }
 
-inline fun <reified T : Value> DialogEntityManager.entityValue(role: String) = entityValue(role) { T::class.safeCast(it.value) }
-inline fun <reified T : Value> DialogEntityManager.entityValue(type: Entity) = entityValue(type) { T::class.safeCast(it.value) }
+inline fun <reified T : Value> DialogEntityAccess.entityValue(role: String) = entityValue(role) { T::class.safeCast(it.value) }
+inline fun <reified T : Value> DialogEntityAccess.entityValue(type: Entity) = entityValue(type) { T::class.safeCast(it.value) }

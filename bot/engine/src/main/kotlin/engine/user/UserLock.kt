@@ -31,7 +31,6 @@ interface UserLock {
      * If the lock is not available then this method will return
      * immediately with the value `false`.
      */
-    // TODO implement using mongo-coroutines
     suspend fun tryLock(userId: String): Boolean = lock(userId)
 
     fun releaseLock(userId: String)
