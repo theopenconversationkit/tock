@@ -16,8 +16,7 @@
 
 package ai.tock.bot.engine.message
 
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.EventType
@@ -50,7 +49,7 @@ data class Choice(
 
     constructor(
         intentName: String,
-        step: StoryStep<out StoryHandlerDefinition>,
+        step: StoryStepDef,
         parameters: Map<String, String> = emptyMap(),
         delay: Long = 0
     ) :

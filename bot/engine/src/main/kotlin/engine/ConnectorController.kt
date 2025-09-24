@@ -24,8 +24,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
@@ -68,7 +67,7 @@ interface ConnectorController {
     fun notify(
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
+        step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {}
@@ -78,6 +77,8 @@ interface ConnectorController {
 
     /**
      * Handles an event sent by the connector. the primary goal of this controller.
+     *
+     * This method may return before the event is actually processed.
      *
      * @param event the event to handle
      * @param data the optional additional data from the connector

@@ -18,16 +18,16 @@ package ai.tock.bot.engine.message
 
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 
 data class Suggestion(
     val title: CharSequence,
     val intent: IntentAware? = null,
     val parameters: Parameters = Parameters(),
-    val step: StoryStep<*>? = null,
+    val step: StoryStepDef? = null,
     val attributes: Map<String, String> = emptyMap()
 ) {
 
-    constructor(title: CharSequence, intent: IntentAware, step: StoryStep<*>? = null, parameters: Parameters = Parameters()) :
+    constructor(title: CharSequence, intent: IntentAware, step: StoryStepDef? = null, parameters: Parameters = Parameters()) :
         this(title, intent, parameters, step)
 }

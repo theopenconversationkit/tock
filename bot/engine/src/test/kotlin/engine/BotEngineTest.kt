@@ -148,7 +148,7 @@ abstract class BotEngineTest {
         tockInternalInjector = KodeinInjector()
         injector.inject(
             Kodein {
-                import(baseModule())
+                import(baseModule(), allowOverride = true)
             }
         )
 

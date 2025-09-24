@@ -39,8 +39,7 @@ import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppLanguage
 import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTemplate
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
@@ -329,7 +328,7 @@ fun <T: Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     vararg parameters: Pair<String, String>
 ) : QuickReply = quickReply(title, subTitle, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
 

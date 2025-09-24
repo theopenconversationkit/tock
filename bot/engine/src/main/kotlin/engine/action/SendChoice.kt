@@ -18,8 +18,7 @@ package ai.tock.bot.engine.action
 
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.Choice
@@ -75,7 +74,7 @@ class SendChoice(
         connectorId: String,
         recipientId: PlayerId,
         intentName: String,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String> = emptyMap(),
         id: Id<Action> = newId(),
         date: Instant = Instant.now(),
@@ -110,7 +109,7 @@ class SendChoice(
         applicationId: String,
         recipientId: PlayerId,
         intentName: String,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String> = emptyMap(),
         id: Id<Action> = newId(),
         date: Instant = Instant.now(),
@@ -169,7 +168,7 @@ class SendChoice(
             /**
              * The target step.
              */
-            step: StoryStep<out StoryHandlerDefinition>? = null,
+            step: StoryStepDef? = null,
             /**
              * The custom parameters.
              */
@@ -227,7 +226,7 @@ class SendChoice(
             /**
              * The target step.
              */
-            step: StoryStep<out StoryHandlerDefinition>? = null,
+            step: StoryStepDef? = null,
             /**
              * The custom parameters.
              */
@@ -235,7 +234,7 @@ class SendChoice(
             /**
              * The current step of the bus.
              */
-            busStep: StoryStep<out StoryHandlerDefinition>? = null,
+            busStep: StoryStepDef? = null,
             /**
              * The current intent of the bus.
              */

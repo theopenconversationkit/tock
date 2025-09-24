@@ -151,7 +151,7 @@ fun story(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -185,7 +185,7 @@ fun story(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -225,7 +225,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -260,7 +260,7 @@ inline fun <reified T : StoryHandlerDefinition, D> storyDef(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -303,7 +303,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -357,7 +357,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S, D> storyDefWithSteps(
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: BotBus.() -> D
-): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where S : Enum<S>, S : StoryStep<*> =
     StoryDefinitionBase(
         intentName,
         ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
@@ -396,7 +396,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: BotBus.() -> Unit
-): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where S : Enum<S>, S : StoryStep<*> =
     StoryDefinitionBase(
         intentName,
         ConfigurableStoryHandler(intentName, handlerDefCreator, preconditionsChecker),
@@ -429,7 +429,7 @@ fun story(
     /**
      * The [StoryStep] of the story if any.
      */
-    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    steps: List<StoryStep<*>> = emptyList(),
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
@@ -465,7 +465,7 @@ inline fun <reified T> storyWithSteps(
      */
     unsupportedUserInterface: UserInterfaceType? = null
 ): StoryDefinitionBase
-        where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+        where T : Enum<T>, T : StoryStep<*> =
     story(
         handler,
         handler,
@@ -499,7 +499,7 @@ inline fun <reified T> storyWithSteps(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-): StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where T : Enum<T>, T : StoryStep<*> =
     story(
         intent,
         storyHandler,
@@ -533,7 +533,7 @@ inline fun <reified T> storyWithSteps(
      * The handler for the story.
      */
     noinline handler: (BotBus).() -> Unit
-): StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where T : Enum<T>, T : StoryStep<*> =
     story(
         intentName,
         otherStarterIntents,
@@ -565,7 +565,7 @@ fun notify(
     botId: String,
     recipientId: PlayerId,
     intent: IntentAware,
-    step: StoryStep<out StoryHandlerDefinition>? = null,
+    step: StoryStepDef? = null,
     parameters: Parameters = Parameters.EMPTY,
     stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
     notificationType: ActionNotificationType? = null,

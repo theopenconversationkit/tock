@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.teams
 
 import ai.tock.bot.connector.ConnectorHandler
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
 import kotlin.reflect.KClass
 
@@ -28,4 +29,4 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = TEAMS_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class TeamsHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class TeamsHandler(val value: KClass<out ConnectorSpecificHandling>)

@@ -19,16 +19,16 @@ package definition
 import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.ConnectorDef
-import ai.tock.bot.definition.ConnectorStoryHandler
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.HandlerDef
 import ai.tock.bot.definition.defaultHandlerStoryDefinitionCreator
 import ai.tock.bot.engine.BotBus
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 internal class StoryHandlerDefinitionBaseTest {
 
@@ -78,10 +78,10 @@ internal class StoryHandlerDefinitionBaseTest {
     @ConnectorHandler(connectorTypeId = "connectorType1")
     @Target(AnnotationTarget.CLASS)
     @MustBeDocumented
-    annotation class FirstConnectorHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+    annotation class FirstConnectorHandler(val value: KClass<out ConnectorSpecificHandling>)
 
     @ConnectorHandler(connectorTypeId = "connectorType2")
     @Target(AnnotationTarget.CLASS)
     @MustBeDocumented
-    annotation class SecondConnectorHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+    annotation class SecondConnectorHandler(val value: KClass<out ConnectorSpecificHandling>)
 }

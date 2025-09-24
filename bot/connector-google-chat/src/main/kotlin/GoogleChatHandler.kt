@@ -17,6 +17,7 @@ package ai.tock.bot.connector.googlechat
 
 import ai.tock.bot.connector.ConnectorHandler
 import ai.tock.bot.connector.googlechat.builder.GOOGLE_CHAT_CONNECTOR_TYPE_ID
+import ai.tock.bot.definition.ConnectorSpecificHandling
 import ai.tock.bot.definition.ConnectorStoryHandler
 import ai.tock.bot.definition.StoryHandlerDefinition
 import kotlin.reflect.KClass
@@ -29,4 +30,4 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = GOOGLE_CHAT_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class GoogleChatHandler(val value: KClass<out ConnectorStoryHandler<*>>)
+annotation class GoogleChatHandler(val value: KClass<out ConnectorSpecificHandling>)

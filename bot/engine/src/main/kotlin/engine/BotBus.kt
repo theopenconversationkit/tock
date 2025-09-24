@@ -23,14 +23,16 @@ import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.AsyncStoryDefinition
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.I18nStoryHandler
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.definition.StoryDefinition
-import ai.tock.bot.definition.StoryHandlerBase
 import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
@@ -53,6 +55,7 @@ import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
@@ -63,7 +66,7 @@ import java.util.Locale
 /**
  * Bus implementation for Tock integrated mode.
  */
-interface BotBus : Bus<BotBus> {
+interface BotBus : Bus<BotBus>, DialogEntityAccess {
 
     companion object {
         /**
@@ -152,6 +155,12 @@ interface BotBus : Bus<BotBus> {
     var nextUserActionState: NextUserActionState?
 
     var step: StoryStep<out StoryHandlerDefinition>?
+        get() = stepDef as? StoryStep<out StoryHandlerDefinition>
+        set(step) {
+            stepDef = step
+        }
+
+    var stepDef: StoryStepDef?
         get() = story.currentStep
         set(step) {
             story.step = step?.name
@@ -207,50 +216,54 @@ interface BotBus : Bus<BotBus> {
      */
     fun hasActionEntity(entity: Entity): Boolean = hasActionEntity(entity.role)
 
+    fun <T : Value> entityValue(role: String): T? = entityValue(role, @Suppress("UNCHECKED_CAST") { it.value as? T? })
+
     /**
      * Returns the current value for the specified entity role.
      */
-    fun <T : Value> entityValue(
+    override fun <T : Value> entityValue(
         role: String,
-        valueTransformer: (EntityValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+        valueTransformer: (EntityValue) -> T?
     ): T? {
         return entities[role]?.value?.let { valueTransformer.invoke(it) }
     }
 
+    fun <T : Value> entityValue(entity: Entity): T? = entityValue(entity, @Suppress("UNCHECKED_CAST") { it.value as? T? })
+
     /**
      * Returns the current value for the specified entity.
      */
-    fun <T : Value> entityValue(
+    override fun <T : Value> entityValue(
         entity: Entity,
-        valueTransformer: (EntityValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+        valueTransformer: (EntityValue) -> T?
     ): T? = entityValue(entity.role, valueTransformer)
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(entity: Entity): String? = entityValueDetails(entity)?.content
+    override fun entityText(entity: Entity): String? = entityValueDetails(entity)?.content
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(role: String): String? = entityValueDetails(role)?.content
+    override fun entityText(role: String): String? = entityValueDetails(role)?.content
 
     /**
      * Returns the current [EntityValue] for the specified entity.
      */
-    fun entityValueDetails(entity: Entity): EntityValue? = entityValueDetails(entity.role)
+    override fun entityValueDetails(entity: Entity): EntityValue? = entityValueDetails(entity.role)
 
     /**
      * Returns the current [EntityValue] for the specified role.
      */
-    fun entityValueDetails(role: String): EntityValue? = entities[role]?.value
+    override fun entityValueDetails(role: String): EntityValue? = entities[role]?.value
 
     /**
      * Updates the current entity value in the dialog.
      * @param role entity role
      * @param newValue the new entity value
      */
-    fun changeEntityValue(role: String, newValue: EntityValue?) {
+    override fun changeEntityValue(role: String, newValue: EntityValue?) {
         dialog.state.changeValue(role, newValue)
     }
 
@@ -259,7 +272,7 @@ interface BotBus : Bus<BotBus> {
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: Value?) {
+    override fun changeEntityValue(entity: Entity, newValue: Value?) {
         dialog.state.changeValue(entity, newValue)
     }
 
@@ -268,14 +281,14 @@ interface BotBus : Bus<BotBus> {
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: EntityValue) = changeEntityValue(entity.role, newValue)
+    override fun changeEntityValue(entity: Entity, newValue: EntityValue) = changeEntityValue(entity.role, newValue)
 
     /**
      * Updates the current entity text value in the dialog.
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    fun changeEntityText(entity: Entity, textContent: String?) =
+    override fun changeEntityText(entity: Entity, textContent: String?) =
         changeEntityValue(
             entity.role,
             EntityValue(entity, null, textContent)
@@ -284,19 +297,19 @@ interface BotBus : Bus<BotBus> {
     /**
      * Removes entity value for the specified role.
      */
-    fun removeEntityValue(role: String) {
+    override fun removeEntityValue(role: String) {
         dialog.state.resetValue(role)
     }
 
     /**
      * Removes entity value for the specified role.
      */
-    fun removeEntityValue(entity: Entity) = removeEntityValue(entity.role)
+    override fun removeEntityValue(entity: Entity) = removeEntityValue(entity.role)
 
     /**
      * Removes all current entity values.
      */
-    fun removeAllEntityValues() {
+    override fun removeAllEntityValues() {
         dialog.state.resetAllEntityValues()
     }
 
@@ -462,6 +475,12 @@ interface BotBus : Bus<BotBus> {
         storyDefinition.storyHandler.handle(this)
     }
 
+    @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story", level = DeprecationLevel.ERROR)
+    @ExperimentalTockCoroutines
+    fun handleAndSwitchStory(storyDefinition: AsyncStoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+        handleAndSwitchStory(storyDefinition as StoryDefinition, starterIntent)
+    }
+
     /**
      * Create one [Metric]
      * @param type mandatory type of [Metric]
@@ -520,7 +539,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue =
         story.definition.storyHandler.let {
-            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, *args)
+            (it as? I18nStoryHandler)?.i18nKey(key, defaultLabel, *args)
                 ?: I18nLabelValue(
                     key,
                     botDefinition.namespace,
@@ -535,7 +554,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, localizedDefaults: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue =
         story.definition.storyHandler.let {
-            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, defaultI18n = localizedDefaults, args = args)
+            (it as? I18nStoryHandler)?.i18nKey(key, defaultLabel, defaultI18n = localizedDefaults, args = args)
                 ?: I18nLabelValue(
                     key,
                     botDefinition.namespace,

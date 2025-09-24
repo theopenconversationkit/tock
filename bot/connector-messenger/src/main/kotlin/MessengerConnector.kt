@@ -46,8 +46,7 @@ import ai.tock.bot.connector.messenger.model.send.SenderAction.typing_on
 import ai.tock.bot.connector.messenger.model.send.UrlPayload
 import ai.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.StoryHandlerDefinition
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository.requestTimer
 import ai.tock.bot.engine.ConnectorController
@@ -73,9 +72,6 @@ import ai.tock.shared.property
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
 import java.time.ZoneOffset
 import java.util.Locale
@@ -83,6 +79,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import mu.KotlinLogging
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.lang3.LocaleUtils
 
 /**
  * Contains built-in checks to ensure that two [MessageRequest] for the same recipient are sent sequentially.
@@ -587,7 +586,7 @@ class MessengerConnector internal constructor(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit

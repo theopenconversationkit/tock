@@ -37,12 +37,11 @@ import ai.tock.bot.definition.BotProviderId
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
-import ai.tock.bot.definition.StoryHandlerDefinition
 import ai.tock.bot.definition.StoryHandlerListener
-import ai.tock.bot.definition.StoryStep
+import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.action.ActionNotificationType
-import ai.tock.bot.engine.config.BotObservabilityConfigurationMonitor
 import ai.tock.bot.engine.config.BotDocumentCompressorConfigurationMonitor
+import ai.tock.bot.engine.config.BotObservabilityConfigurationMonitor
 import ai.tock.bot.engine.config.BotRAGConfigurationMonitor
 import ai.tock.bot.engine.config.BotVectorStoreConfigurationMonitor
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
@@ -65,14 +64,14 @@ import io.vertx.core.Deployable
 import io.vertx.core.DeploymentOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import mu.KotlinLogging
-import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.locks.Lock
+import mu.KotlinLogging
+import org.litote.kmongo.Id
 
 /**
  * Advanced bot configuration.
@@ -190,7 +189,7 @@ object BotRepository {
         applicationId: String,
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
+        step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
         stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
         notificationType: ActionNotificationType? = null,
@@ -212,7 +211,7 @@ object BotRepository {
     private fun ConnectorController.notifyAndCheckState(
         recipientId: PlayerId,
         intent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
+        step: StoryStepDef?,
         parameters: Map<String, String>,
         stateModifier: NotifyBotStateModifier,
         notificationType: ActionNotificationType?,

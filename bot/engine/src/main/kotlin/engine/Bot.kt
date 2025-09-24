@@ -33,11 +33,13 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.feature.DefaultFeatureType
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import java.util.Locale
+import kotlinx.coroutines.asContextElement
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import kotlin.time.Duration
 
 /**
  *
@@ -80,7 +82,8 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
     /**
      * Handle the user action.
      */
-    fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+    @ExperimentalTockCoroutines
+    suspend fun handleAction(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
         connector as TockConnectorController
 
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
@@ -108,26 +111,28 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
 
         if (!userTimeline.userState.botDisabled) {
             dialog.state.currentIntent?.let { intent ->
-                connector.sendIntent(intent, action.applicationId, connectorData)
+                connector.sendIntent(intent, action.connectorId, connectorData)
             }
             connector.startTypingInAnswerTo(action, connectorData)
             val story = getStory(userTimeline, dialog, action)
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
+            val asyncBus = AsyncBotBus(bus)
 
-            if (bus.isFeatureEnabled(DefaultFeatureType.DISABLE_BOT)) {
-                logger.info { "bot is disabled for the application" }
-                bus.end("Bot is disabled")
-                return
-            }
+            withContext(AsyncBotBus.Ref(asyncBus) + currentBus.asContextElement(bus)) {
+                val closeMessageQueue = bus.deferMessageSending(this)
 
-            try {
-                currentBus.set(bus)
-                story.handle(bus)
-                if (shouldRespondBeforeDisabling) {
-                    userTimeline.userState.botDisabled = true
+                if (asyncBus.isFeatureEnabled(DefaultFeatureType.DISABLE_BOT)) {
+                    logger.info { "bot is disabled for the application" }
+                    asyncBus.end("Bot is disabled")
+                } else {
+                    story.handle(asyncBus)
+                    if (shouldRespondBeforeDisabling) {
+                        userTimeline.userState.botDisabled = true
+                    }
                 }
-            } finally {
-                currentBus.remove()
+
+                // Ensure we do not have a lingering message sending job
+                closeMessageQueue()
             }
         } else {
             // refresh intent flag
