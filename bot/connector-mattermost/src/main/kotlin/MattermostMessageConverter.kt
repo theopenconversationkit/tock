@@ -59,7 +59,8 @@ internal object MattermostMessageConverter {
                             footnote.title,
                             footnote.url,
                             footnote.content,
-                            footnote.score
+                            footnote.score,
+                            footnote.rrfScore
                         )
                     })
             }

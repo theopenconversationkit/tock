@@ -263,6 +263,7 @@ export interface Footnote {
   url: string;
   content?: string;
   score?: number;
+  rrfScore?: number;
   _showFullContent?: boolean;
   identifier: string;
 }

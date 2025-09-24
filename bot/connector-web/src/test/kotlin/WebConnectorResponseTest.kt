@@ -51,8 +51,8 @@ internal class WebConnectorResponseTest {
             responses = listOf(
                 WebMessageContent(
                     text = "Text with 2 footnotes", footnotes = listOf(
-                        Footnote("e122e97a5cc7", "title 1", url = "https://doc.tock.ai", content = "content 1", score = null),
-                        Footnote("fcad492fdb99", "title 2", url = "https://github.com/theopenconversationkit/tock", content = "content 2", score = null)
+                        Footnote("e122e97a5cc7", "title 1", url = "https://doc.tock.ai", content = "content 1", score = null, rrfScore = null),
+                        Footnote("fcad492fdb99", "title 2", url = "https://github.com/theopenconversationkit/tock", content = "content 2", score = null, rrfScore = null)
                     )
                 )
             )

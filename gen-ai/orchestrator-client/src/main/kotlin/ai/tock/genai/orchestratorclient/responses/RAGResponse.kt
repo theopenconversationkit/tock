@@ -17,7 +17,8 @@
 package ai.tock.genai.orchestratorclient.responses
 
 data class RAGResponse(
-    val answer: TextWithFootnotes,
+    val answer: LLMAnswer,
+    val footnotes: List<Footnote> = emptyList(),
     val debug: Any? = null,
     val observabilityInfo: ObservabilityInfo? = null,
 )
