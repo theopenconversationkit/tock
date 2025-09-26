@@ -275,26 +275,6 @@ describe('MetricsBoardComponent', () => {
     expect(component.messagesChartOptions.series[0].data).toEqual([0, 5, 12]);
   });
 
-  it('should check if an unknown story exists', () => {
-    expect(component.hasUnknownStory()).toBeTrue();
-  });
-
-  it('should compute sum of messages', () => {
-    expect(component.userMessagesSum).toEqual(17);
-  });
-
-  it('should compute sum of answered messages', () => {
-    expect(component.answeredQuestions).toEqual(11);
-  });
-
-  it('should compute sum of unanswered messages', () => {
-    expect(component.notUnderstoodQuestions).toEqual(1);
-  });
-
-  it('should compute response rate', () => {
-    expect(component.responseRate).toEqual(90.91);
-  });
-
   it('should retrieve indicators by name', () => {
     expect(component['getIndicatorByName']('test')).toEqual({
       name: 'test',

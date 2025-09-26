@@ -20,6 +20,7 @@ package ai.tock.bot.admin.indicators.metric
  * Metric group by attributes
  */
 enum class MetricGroupBy {
+    APPLICATION_ID,
     TYPE,
     EMITTER_STORY_ID,
     TRACKED_STORY_ID,

@@ -40,6 +40,8 @@ import kotlin.test.assertTrue
 
 class MetricAggregationMongoDAOTest : AbstractTest() {
 
+    private val namespace1 = "namespace1"
+    private val applicationId1 = "app1"
     private val botId1 = "botId1"
     private val botId2 = "botId2"
     private val storyId1 = "storyId1"
@@ -71,7 +73,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName1,
@@ -80,7 +84,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_REPLIED,
             indicatorName = indicatorName1,
@@ -90,7 +96,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 02--------------------------
         Metric(
@@ -100,7 +108,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName1,
@@ -109,7 +119,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_REPLIED,
             indicatorName = indicatorName1,
@@ -119,7 +131,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 03--------------------------
         Metric(
@@ -129,7 +143,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName1,
@@ -138,7 +154,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_REPLIED,
             indicatorName = indicatorName1,
@@ -148,7 +166,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 04--------------------------
         Metric(
@@ -158,7 +178,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName2,
@@ -167,7 +189,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_REPLIED,
             indicatorName = indicatorName2,
@@ -177,7 +201,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 05--------------------------
         Metric(
@@ -187,7 +213,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName1,
@@ -196,7 +224,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ), Metric(
             type = MetricType.QUESTION_ASKED,
             indicatorName = indicatorName1,
@@ -205,7 +235,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 06--------------------------
         Metric(
@@ -215,7 +247,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = next(),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 07--------------------------
         Metric(
@@ -225,7 +259,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = Instant.now().minus(5, ChronoUnit.DAYS),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         ),
         // --------------------CASE 08--------------------------
         Metric(
@@ -237,7 +273,9 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
             playerIds = playerIds,
             dialogId = dialogId,
             creationDate = Instant.now().plus(5, ChronoUnit.DAYS),
-            botId = botId1
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1
         )
     )
 
@@ -260,7 +298,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1, listOf(MetricType.STORY_HANDLED))
+        val filter = MetricFilter(namespace1, botId1, listOf(MetricType.STORY_HANDLED))
         val groupBy = emptyList<MetricGroupBy>()
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
@@ -278,7 +316,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
+        val filter = MetricFilter(namespace1, botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
         val groupBy = emptyList<MetricGroupBy>()
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
@@ -297,6 +335,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
 
         // WHEN
         val filter = MetricFilter(
+            namespace1,
             botId1,
             listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED),
             indicatorValueNames = listOf(indicatorValue1)
@@ -320,8 +359,8 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
 
         // WHEN
         val groupBy = emptyList<MetricGroupBy>()
-        val result1 = MetricMongoDAO.filterAndGroupBy(MetricFilter(botId1), groupBy)
-        val result2 = MetricMongoDAO.filterAndGroupBy(MetricFilter(botId2), groupBy)
+        val result1 = MetricMongoDAO.filterAndGroupBy(MetricFilter(namespace1, botId1), groupBy)
+        val result2 = MetricMongoDAO.filterAndGroupBy(MetricFilter(namespace1, botId2), groupBy)
 
         // THEN
         assertEquals(metrics.count { it.botId == botId1 }, result1.count())
@@ -338,7 +377,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1)
+        val filter = MetricFilter(namespace1, botId1)
         val groupBy = listOf(MetricGroupBy.TYPE)
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
@@ -355,7 +394,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1,
+        val filter = MetricFilter(namespace1, botId1,
             creationDateSince = creationDate.minus(2, ChronoUnit.DAYS),
             creationDateUntil = creationDate.plus(1, ChronoUnit.DAYS)
         )
@@ -375,7 +414,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
+        val filter = MetricFilter(namespace1, botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
         val groupBy = listOf(MetricGroupBy.TYPE)
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
@@ -392,7 +431,7 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
+        val filter = MetricFilter(namespace1, botId1, listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED))
         val groupBy = listOf(MetricGroupBy.TYPE, MetricGroupBy.TRACKED_STORY_ID)
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 

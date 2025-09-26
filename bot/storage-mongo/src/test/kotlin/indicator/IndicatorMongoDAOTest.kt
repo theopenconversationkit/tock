@@ -28,6 +28,7 @@ import kotlin.test.assertEquals
 
 class IndicatorMongoDAOTest : AbstractTest() {
 
+    private val namespace1 = "namespace1"
     private val botId1 = "botId1"
 
     private val indicatorSatisfaction = Indicator(
@@ -35,6 +36,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         label = "the satisfaction label",
         dimensions = setOf("satisfaction", "customer survey"),
         botId = botId1,
+        namespace = namespace1,
         values = setOf(IndicatorValue("ok", "Ok"), IndicatorValue("ko", "Ko"))
     )
 
@@ -58,7 +60,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(emptyList())
         // WHEN
-        val result = IndicatorMongoDAO.deleteByNameAndApplicationName(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.deleteByNameAndApplicationName(indicatorSatisfaction.name, namespace1, botId1)
         // THEN
         assertEquals(false, result)
     }
@@ -68,7 +70,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(listOf(indicatorSatisfaction))
         // WHEN
-        val result = IndicatorMongoDAO.deleteByNameAndApplicationName(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.deleteByNameAndApplicationName(indicatorSatisfaction.name,namespace1, botId1)
         // THEN
         assertEquals(true, result)
     }
@@ -78,7 +80,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(emptyList())
         // WHEN
-        val result = IndicatorMongoDAO.findByNameAndBotId(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.findByNameAndBotId(indicatorSatisfaction.name,namespace1, botId1)
         // THEN
         assertEquals(null, result)
     }
@@ -88,7 +90,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(listOf(indicatorSatisfaction))
         // WHEN
-        val result = IndicatorMongoDAO.findByNameAndBotId(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.findByNameAndBotId(indicatorSatisfaction.name,namespace1, botId1)
         // THEN
         assertEquals(indicatorSatisfaction, result)
     }
@@ -98,7 +100,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(listOf(indicatorSatisfaction))
         // WHEN
-        val result = IndicatorMongoDAO.existByNameAndBotId(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.existByNameAndBotId(indicatorSatisfaction.name,namespace1, botId1)
         // THEN
         assertEquals(true, result)
     }
@@ -108,7 +110,7 @@ class IndicatorMongoDAOTest : AbstractTest() {
         // GIVEN
         initDb(emptyList())
         // WHEN
-        val result = IndicatorMongoDAO.existByNameAndBotId(indicatorSatisfaction.name,botId1)
+        val result = IndicatorMongoDAO.existByNameAndBotId(indicatorSatisfaction.name,namespace1, botId1)
         // THEN
         assertEquals(false, result)
     }

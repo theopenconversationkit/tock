@@ -84,7 +84,7 @@ class IndicatorVerticle {
                 checkNamespaceAndExecute(context, currentContextApp) {
                     tryExecute(context) {
                         logger.info { "saving new indicator ${request.name}" }
-                        IndicatorService.save(it.name, Valid(request))
+                        IndicatorService.save(it.namespace, it.name, Valid(request))
                     }
                 }
                 return@blockingJsonPost request
@@ -98,7 +98,7 @@ class IndicatorVerticle {
                     val name = context.path(PATH_PARAM_NAME)
                     tryExecute(context) {
                         logger.info { "updating indicator $name" }
-                        IndicatorService.update(it.name, name, Valid(request))
+                        IndicatorService.update(it.name, it.namespace, name, Valid(request))
                     }
                 }
                 return@blockingJsonPut request
@@ -109,7 +109,7 @@ class IndicatorVerticle {
                     val name = context.path(PATH_PARAM_NAME)
                     tryExecute(context) {
                         logger.info { "deleting indicator $name" }
-                        IndicatorService.findByNameAndBotId(name, it.name)
+                        IndicatorService.findByNameAndBotId(name, it.namespace, it.name)
                     }
                 }
             }
@@ -118,7 +118,7 @@ class IndicatorVerticle {
                 checkNamespaceAndExecute(context, currentContextApp) {
                     tryExecute(context) {
                         logger.info { "retrieve indicators from ${it.name}" }
-                        IndicatorService.findAllByBotId(it.name) + PredefinedIndicators.indicators
+                        IndicatorService.findAllByBotId(it.namespace, it.name) + PredefinedIndicators.indicators
                     }
                 }
             }
@@ -132,7 +132,7 @@ class IndicatorVerticle {
                 val indicatorName = context.path(PATH_PARAM_NAME)
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     tryExecute(context) {
-                        IndicatorService.deleteByNameAndApplicationName(indicatorName, app.name)
+                        IndicatorService.deleteByNameAndApplicationName(indicatorName, app.namespace, app.name)
                     }
                 } ?: false
             }
@@ -140,7 +140,7 @@ class IndicatorVerticle {
             blockingJsonPost(METRICS_BY_APPLICATION_NAME_PATH, authorizedRoles) {
                     context: RoutingContext, request: Requests ->
                 checkNamespaceAndExecute(context, currentContextApp) {
-                    MetricService.filterAndGroupBy(createFilterMetric(it.name, request.filter), request.groupBy)
+                    MetricService.filterAndGroupBy(createFilterMetric(namespace = it.namespace, it.name, request.filter), request.groupBy)
                 }
             }
         }
@@ -153,12 +153,13 @@ class IndicatorVerticle {
     private fun getNamespace(context: RoutingContext) = (context.user() as TockUser).namespace
 
     /**
-     * Merge botId on requested [MetricFilter]
+     * Merge namespace and botId on requested [MetricFilter]
+     * @param namespace the namespace
      * @param botId the bot id
      * @param filter a given [MetricFilter]
      */
-    private fun createFilterMetric(botId: String, filter: MetricFilter?)
-            = filter?.copy(botId) ?: MetricFilter(botId)
+    private fun createFilterMetric(namespace: String, botId: String, filter: MetricFilter?)
+            = filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
 }
 
 /**

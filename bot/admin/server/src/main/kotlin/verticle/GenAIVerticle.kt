@@ -255,10 +255,12 @@ class GenAIVerticle {
     private fun getNamespace(context: RoutingContext) = (context.user() as TockUser).namespace
 
     /**
-     * Merge botId on requested [MetricFilter]
+     * Merge namespace and botId on requested [MetricFilter]
+     * @param namespace the namespace
      * @param botId the bot id
      * @param filter a given [MetricFilter]
      */
-    private fun createFilterMetric(botId: String, filter: MetricFilter?) = filter?.copy(botId) ?: MetricFilter(botId)
+    private fun createFilterMetric(namespace: String, botId: String, filter: MetricFilter?) =
+        filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
 }
 
