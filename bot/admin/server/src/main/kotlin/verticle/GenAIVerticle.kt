@@ -256,7 +256,7 @@ class GenAIVerticle {
 
     /**
      * Merge namespace and botId on requested [MetricFilter]
-     * @param namespace th namespace
+     * @param namespace the namespace
      * @param botId the bot id
      * @param filter a given [MetricFilter]
      */

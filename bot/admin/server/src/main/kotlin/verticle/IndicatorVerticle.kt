@@ -140,7 +140,7 @@ class IndicatorVerticle {
             blockingJsonPost(METRICS_BY_APPLICATION_NAME_PATH, authorizedRoles) {
                     context: RoutingContext, request: Requests ->
                 checkNamespaceAndExecute(context, currentContextApp) {
-                    MetricService.filterAndGroupBy(createFilterMetric(namespace = it.namespace,it.name, request.filter), request.groupBy)
+                    MetricService.filterAndGroupBy(createFilterMetric(namespace = it.namespace, it.name, request.filter), request.groupBy)
                 }
             }
         }
