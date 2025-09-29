@@ -46,6 +46,10 @@ fun Executor.launchCoroutine(
     return CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
 }
 
+/**
+ * fire and forget a suspend block in the [Dispatchers.IO] scope.
+ * Exceptions are logged.
+ */
 fun fireAndForget(block: suspend () -> Unit) =
     CoroutineScope(Dispatchers.IO).launch {
         try {
