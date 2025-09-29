@@ -24,6 +24,7 @@ import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.error
 import ai.tock.shared.internalDefaultZoneId
+import com.mongodb.reactivestreams.client.MongoCollection
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -47,7 +48,7 @@ internal data class Feature(
 
 internal class FeatureMongoDAO(
     private val cache: FeatureCache,
-    asyncCol: com.mongodb.reactivestreams.client.MongoCollection<Feature>,
+    asyncCol: MongoCollection<Feature>,
 ) : FeatureDAO {
 
     private val col = asyncCol.coroutine

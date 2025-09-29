@@ -745,9 +745,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     and(DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() })
                 )
                 .toList()
-                //TODO fix kmongo distinct nullable issue
-                .filterNotNull()
-                .toSet()
+                .filterNotNullTo(mutableSetOf())
         }
 
 
