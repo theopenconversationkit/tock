@@ -42,6 +42,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -110,7 +111,7 @@ class BotApiHandlerTest {
     }
 
     private val userTimelineDAO: UserTimelineDAO = mockk {
-        justRun { save(any(), any() as BotDefinition) }
+        coJustRun { save(any(), any() as BotDefinition) }
     }
 
     @BeforeEach

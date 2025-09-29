@@ -16,15 +16,31 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.annotation.*
-import ai.tock.bot.admin.dialog.*
-import ai.tock.bot.admin.user.*
+import ai.tock.bot.admin.annotation.BotAnnotation
+import ai.tock.bot.admin.annotation.BotAnnotationEvent
+import ai.tock.bot.admin.annotation.BotAnnotationEventType
+import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.DialogRating
+import ai.tock.bot.admin.dialog.DialogReport
+import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.DialogReportQuery
+import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.dialog.RatingReportQueryResult
+import ai.tock.bot.admin.user.AnalyticsQuery
+import ai.tock.bot.admin.user.UserAnalytics
+import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.admin.user.UserReportQuery
+import ai.tock.bot.admin.user.UserReportQueryResult
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.*
+import ai.tock.bot.engine.dialog.ArchivedEntityValue
+import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.EntityStateValue
+import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.dialog.SortDirection
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.nlp.NlpStats
 import ai.tock.bot.engine.user.PlayerId
@@ -41,30 +57,69 @@ import ai.tock.bot.mongo.DialogCol_.Companion._id
 import ai.tock.bot.mongo.DialogTextCol_.Companion.Date
 import ai.tock.bot.mongo.DialogTextCol_.Companion.DialogId
 import ai.tock.bot.mongo.DialogTextCol_.Companion.Text
-import ai.tock.bot.mongo.MongoBotConfiguration.database
+import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
-import ai.tock.bot.mongo.UserTimelineCol_.Companion.CreationDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUserActionDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
-import ai.tock.shared.*
-import ai.tock.shared.ensureIndex
-import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultCountOptions
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.sumByLong
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.ReplaceOptions
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import mu.KotlinLogging
-import org.litote.kmongo.*
-import org.litote.kmongo.MongoOperator.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.MongoOperator.and
+import org.litote.kmongo.MongoOperator.gt
+import org.litote.kmongo.MongoOperator.or
+import org.litote.kmongo.MongoOperator.type
+import org.litote.kmongo.addEachToSet
+import org.litote.kmongo.addToSet
+import org.litote.kmongo.and
+import org.litote.kmongo.ascending
+import org.litote.kmongo.avg
+import org.litote.kmongo.bson
+import org.litote.kmongo.contains
+import org.litote.kmongo.coroutine.aggregate
+import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.descending
+import org.litote.kmongo.div
+import org.litote.kmongo.eq
+import org.litote.kmongo.from
+import org.litote.kmongo.group
+import org.litote.kmongo.gt
+import org.litote.kmongo.`in`
+import org.litote.kmongo.json
+import org.litote.kmongo.limit
+import org.litote.kmongo.lt
+import org.litote.kmongo.match
+import org.litote.kmongo.orderBy
+import org.litote.kmongo.pull
+import org.litote.kmongo.regex
+import org.litote.kmongo.replaceUpsert
+import org.litote.kmongo.setValue
+import org.litote.kmongo.sort
+import org.litote.kmongo.sum
+import org.litote.kmongo.toId
+import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit.DAYS
+import kotlin.reflect.KProperty1
 
 /**
  *
@@ -78,106 +133,115 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     // wrapper to workaround the 1024 chars limit for String indexes
     private fun textKey(text: String): String =
-        if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
+        if (text.length > 512) text.take(512) else text
 
     private val logger = KotlinLogging.logger {}
 
     private val executor: Executor by injector.instance()
 
-    val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
-    val dialogCol = database.getCollection<DialogCol>("dialog")
-    private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
-    private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
-    private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
-    private val nlpStatsCol = database.getCollection<NlpStatsCol>("action_nlp_stats")
-    private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
-    private val archivedEntityValuesCol = database.getCollection<ArchivedEntityValuesCol>("archived_entity_values")
+    private val db = asyncDatabase.coroutine
+    val userTimelineCol = db.getCollection<UserTimelineCol>("user_timeline")
+    val dialogCol = db.getCollection<DialogCol>("dialog")
+    private val dialogTextCol = db.getCollection<DialogTextCol>("dialog_text")
+    private val clientIdCol = db.getCollection<ClientIdCol>("client_id")
+    private val connectorMessageCol = db.getCollection<ConnectorMessageCol>("connector_message")
+    private val nlpStatsCol = db.getCollection<NlpStatsCol>("action_nlp_stats")
+    private val snapshotCol = db.getCollection<SnapshotCol>("dialog_snapshot")
+    private val archivedEntityValuesCol = db.getCollection<ArchivedEntityValuesCol>("archived_entity_values")
 
     init {
-        try {
-            val ttlIndexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        runBlocking {
+            try {
+                val ttlIndexOptions =
+                    IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
 
-            if (addNamespaceToTimelineId) {
-                userTimelineCol.ensureUniqueIndex(PlayerId.id, Namespace)
-            } else {
-                userTimelineCol.ensureUniqueIndex(PlayerId.id)
-            }
+                if (addNamespaceToTimelineId) {
+                    userTimelineCol.ensureUniqueIndex(PlayerId.id, Namespace)
+                } else {
+                    userTimelineCol.ensureUniqueIndex(PlayerId.id)
+                }
 
-            userTimelineCol.ensureIndex(TemporaryIds)
-            userTimelineCol.ensureIndex(
-                LastUpdateDate,
-                indexOptions = IndexOptions()
-                    .expireAfter(longProperty("tock_bot_timeline_index_ttl_days", 365), DAYS)
-            )
-            userTimelineCol.ensureIndex(
-                Namespace,
-                ApplicationIds,
-                UserTimelineCol_.UserPreferences.test,
-                LastUpdateDate
-            )
-            dialogCol.ensureIndex(PlayerIds.id, Namespace)
-            dialogCol.ensureIndex(PlayerIds.clientId)
-            dialogCol.ensureIndex(ApplicationIds, Test, DialogCol_.LastUpdateDate)
-            dialogCol.ensureIndex(
-                DialogCol_.LastUpdateDate,
-                indexOptions = ttlIndexOptions
-            )
-            dialogCol.ensureIndex(
-                DialogCol_.ApplicationIds,
-                DialogCol_.Namespace,
-                DialogCol_.Rating,
-                Test
-            )
-            dialogCol.ensureIndex(
-                orderBy(
-                    mapOf(
-                        PlayerIds.id to true,
-                        LastUpdateDate to false
+                userTimelineCol.ensureIndex(TemporaryIds)
+                userTimelineCol.ensureIndex(
+                    LastUpdateDate,
+                    indexOptions = IndexOptions()
+                        .expireAfter(longProperty("tock_bot_timeline_index_ttl_days", 365), DAYS)
+                )
+                userTimelineCol.ensureIndex(
+                    Namespace,
+                    ApplicationIds,
+                    UserTimelineCol_.UserPreferences.test,
+                    LastUpdateDate
+                )
+                dialogCol.ensureIndex(PlayerIds.id, Namespace)
+                dialogCol.ensureIndex(PlayerIds.clientId)
+                dialogCol.ensureIndex(ApplicationIds, Test, DialogCol_.LastUpdateDate)
+                dialogCol.ensureIndex(
+                    DialogCol_.LastUpdateDate,
+                    indexOptions = ttlIndexOptions
+                )
+                dialogCol.ensureIndex(
+                    DialogCol_.ApplicationIds,
+                    DialogCol_.Namespace,
+                    DialogCol_.Rating,
+                    Test
+                )
+                dialogCol.ensureIndex(
+                    orderBy(
+                        mapOf(
+                            PlayerIds.id to true,
+                            LastUpdateDate to false
+                        )
                     )
                 )
-            )
-            dialogCol.ensureIndex(GroupId)
+                dialogCol.ensureIndex(GroupId)
 
-            dialogTextCol.ensureUniqueIndex(Text, DialogId)
-            dialogTextCol.ensureIndex(
-                Date,
-                indexOptions = ttlIndexOptions
-            )
-            connectorMessageCol.ensureIndex(
-                "{date:1}",
-                ttlIndexOptions
-            )
-            connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
-            nlpStatsCol.ensureIndex(
-                Date,
-                indexOptions = ttlIndexOptions
-            )
-            nlpStatsCol.ensureIndex(NlpStatsCol_._id.actionId, AppNamespace)
-            snapshotCol.ensureIndex(
-                SnapshotCol_.LastUpdateDate,
-                indexOptions = ttlIndexOptions
-            )
-            archivedEntityValuesCol.ensureIndex(
-                ArchivedEntityValuesCol_.LastUpdateDate,
-                indexOptions = ttlIndexOptions
-            )
-        } catch (e: Exception) {
-            logger.error(e)
+                dialogTextCol.ensureUniqueIndex(Text, DialogId)
+                dialogTextCol.ensureIndex(
+                    Date,
+                    indexOptions = ttlIndexOptions
+                )
+                connectorMessageCol.ensureIndex(
+                    "{date:1}",
+                    ttlIndexOptions
+                )
+                connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
+                nlpStatsCol.ensureIndex(
+                    Date,
+                    indexOptions = ttlIndexOptions
+                )
+                nlpStatsCol.ensureIndex(NlpStatsCol_._id.actionId, AppNamespace)
+                snapshotCol.ensureIndex(
+                    SnapshotCol_.LastUpdateDate,
+                    indexOptions = ttlIndexOptions
+                )
+                archivedEntityValuesCol.ensureIndex(
+                    ArchivedEntityValuesCol_.LastUpdateDate,
+                    indexOptions = ttlIndexOptions
+                )
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 
-    override fun save(userTimeline: UserTimeline, namespace: String) {
+    override suspend fun save(userTimeline: UserTimeline, namespace: String) {
         save(userTimeline, namespace, null)
     }
 
-    override fun save(userTimeline: UserTimeline, botDefinition: BotDefinition, asynchronousProcess: Boolean) {
+    override suspend fun save(userTimeline: UserTimeline, botDefinition: BotDefinition, asynchronousProcess: Boolean) {
         save(userTimeline, botDefinition.namespace, botDefinition, asynchronousProcess)
     }
 
     private fun timelineId(userId: String, namespace: String): String =
         if (addNamespaceToTimelineId) "_${namespace}_$userId" else userId
 
-    private fun save(userTimeline: UserTimeline, namespace: String, botDefinition: BotDefinition?, asynchronousProcess: Boolean = true) {
+    private suspend fun save(
+        userTimeline: UserTimeline,
+        namespace: String,
+        botDefinition: BotDefinition?,
+        asynchronousProcess: Boolean = true
+    ) {
         logger.debug { "start to save timeline $userTimeline" }
         val timelineId = timelineId(userTimeline.playerId.id, namespace)
         val oldTimeline = userTimelineCol.findOneById(timelineId)
@@ -203,7 +267,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.debug { "dialog saved $userTimeline" }
         }
 
-        val saveProcessing = {
+        val saveProcessing: suspend () -> Unit = {
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(
                     userTimeline.playerId.clientId!!,
@@ -247,12 +311,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
             val lastUserAction = lastDialog?.allActions()?.lastOrNull { it.playerId.type == PlayerType.user }
             lastUserAction?.let { action ->
-                if (action is SendSentence && action.stringText != null) {
-                    val text = textKey(action.stringText!!)
-                    dialogTextCol.replaceOneWithFilter(
+                val s = (action as? SendSentence)?.stringText
+                if (s != null) {
+                    val text = textKey(s)
+                    dialogTextCol.replaceOne(
                         and(Text eq text, DialogId eq lastDialog.id),
                         DialogTextCol(text, lastDialog.id),
-                        ReplaceOptions().upsert(true)
+                        replaceUpsert()
                     )
                 }
             }
@@ -261,8 +326,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
         }
 
-        if(asynchronousProcess) {
-            executor.executeBlocking { saveProcessing() }
+        if (asynchronousProcess) {
+            supervisorScope { async { saveProcessing() } }
         } else {
             saveProcessing()
         }
@@ -270,7 +335,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "end saving timeline $userTimeline" }
     }
 
-    override fun updatePlayerId(namespace: String, oldPlayerId: PlayerId, newPlayerId: PlayerId) {
+    override suspend fun updatePlayerId(namespace: String, oldPlayerId: PlayerId, newPlayerId: PlayerId) {
         val timelineId = timelineId(oldPlayerId.id, namespace)
         userTimelineCol.updateOneById(timelineId, setValue(PlayerId, newPlayerId))
         dialogCol.updateMany(
@@ -299,7 +364,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    private fun saveConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>, messages: List<ConnectorMessage>) {
+    private suspend fun saveConnectorMessage(
+        actionId: Id<Action>,
+        dialogId: Id<Dialog>,
+        messages: List<ConnectorMessage>
+    ) {
         connectorMessageCol.save(
             ConnectorMessageCol(
                 ConnectorMessageColId(actionId, dialogId),
@@ -308,7 +377,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         )
     }
 
-    internal fun loadConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>): List<ConnectorMessage> {
+    internal suspend fun loadConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>): List<ConnectorMessage> {
         return try {
             connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
                 ?.messages
@@ -320,14 +389,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    internal fun loadConnectorMessages(ids: List<ConnectorMessageColId>): Map<ConnectorMessageColId, List<ConnectorMessage>> {
+    internal suspend fun loadConnectorMessages(ids: List<ConnectorMessageColId>): Map<ConnectorMessageColId, List<ConnectorMessage>> {
         return try {
             if (ids.isEmpty()) {
                 emptyMap()
             } else {
                 connectorMessageCol.find(ConnectorMessageCol::_id `in` ids)
-                    .map { m -> m._id to m.messages.mapNotNull { it?.value as? ConnectorMessage } }
-                    .toMap()
+                    .toList()
+                    .associate { m -> m._id to m.messages.mapNotNull { it?.value as? ConnectorMessage } }
             }
         } catch (e: Exception) {
             logger.error(e)
@@ -335,7 +404,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    private fun saveNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>, nlpCallStats: NlpCallStats) {
+    private suspend fun saveNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>, nlpCallStats: NlpCallStats) {
         nlpStatsCol.save(
             NlpStatsCol(
                 NlpStatsColId(actionId, dialogId),
@@ -345,7 +414,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         )
     }
 
-    internal fun loadNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>): NlpCallStats? {
+    internal suspend fun loadNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>): NlpCallStats? {
         return try {
             nlpStatsCol.findOneById(NlpStatsColId(actionId, dialogId))?.stats
         } catch (e: Exception) {
@@ -355,24 +424,30 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats? {
-        return try {
-            nlpStatsCol.findOne(NlpStatsCol_._id.actionId eq actionId, AppNamespace eq namespace)?.stats
-        } catch (e: Exception) {
-            logger.error(e)
-            null
+        return runBlocking {
+            try {
+                nlpStatsCol.findOne(NlpStatsCol_._id.actionId eq actionId, AppNamespace eq namespace)?.stats
+            } catch (e: Exception) {
+                logger.error(e)
+                null
+            }
         }
     }
 
     override fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats> {
-        return nlpStatsCol.find(
-            and(
-                NlpStatsCol::appNamespace eq namespace,
-                NlpStatsCol::_id / NlpStatsColId::dialogId `in` dialogIds
+        return runBlocking {
+            nlpStatsCol.find(
+                and(
+                    NlpStatsCol::appNamespace eq namespace,
+                    NlpStatsCol::_id / NlpStatsColId::dialogId `in` dialogIds
+                )
             )
-        ).map { it.toNlpStats() }.toList()
+                .toList()
+                .map { it.toNlpStats() }
+        }
     }
 
-    override fun loadWithLastValidDialog(
+    override suspend fun loadWithLastValidDialog(
         namespace: String,
         userId: PlayerId,
         priorUserId: PlayerId?,
@@ -411,18 +486,18 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         return timeline
     }
 
-    override fun remove(namespace: String, playerId: PlayerId) {
+    override suspend fun remove(namespace: String, playerId: PlayerId) {
         dialogCol.deleteMany(and(PlayerIds.id eq playerId.id, Namespace eq namespace))
         userTimelineCol.deleteOne(and(PlayerId.id eq playerId.id, Namespace eq namespace))
         MongoUserLock.deleteLock(playerId.id)
     }
 
-    override fun removeClient(namespace: String, clientId: String) {
+    override suspend fun removeClient(namespace: String, clientId: String) {
         clientIdCol.findOneById(clientId)?.userIds?.forEach { remove(namespace, PlayerId(it)) }
         clientIdCol.deleteOneById(clientId)
     }
 
-    override fun loadWithoutDialogs(namespace: String, userId: PlayerId): UserTimeline {
+    override suspend fun loadWithoutDialogs(namespace: String, userId: PlayerId): UserTimeline {
         val timelineId = timelineId(userId.id, namespace)
         val timeline = userTimelineCol.findOneById(timelineId)?.copy(playerId = userId)
         return if (timeline == null) {
@@ -433,12 +508,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun loadByTemporaryIdsWithoutDialogs(namespace: String, temporaryIds: List<String>): List<UserTimeline> {
+    override suspend fun loadByTemporaryIdsWithoutDialogs(
+        namespace: String,
+        temporaryIds: List<String>
+    ): List<UserTimeline> {
         return userTimelineCol.find(TemporaryIds `in` (temporaryIds), Namespace eq namespace)
-            .map { it.toUserTimeline() }.toList()
+            .toList().map { it.toUserTimeline() }
     }
 
-    private fun loadLastValidGroupDialogCol(namespace: String, groupId: String): DialogCol? {
+    private suspend fun loadLastValidGroupDialogCol(namespace: String, groupId: String): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
             match(
                 Namespace eq namespace,
@@ -449,10 +527,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 descending(LastUpdateDate)
             ),
             limit(1)
-        ).firstOrNull()
+        ).first()
     }
 
-    private fun loadLastValidDialogCol(namespace: String, userId: PlayerId): DialogCol? {
+    private suspend fun loadLastValidDialogCol(namespace: String, userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
             match(
                 PlayerIds.id eq userId.id,
@@ -463,10 +541,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 descending(LastUpdateDate)
             ),
             limit(1)
-        ).firstOrNull()
+        ).first()
     }
 
-    private fun loadLastValidDialog(
+    private suspend fun loadLastValidDialog(
         namespace: String,
         userId: PlayerId,
         groupId: String? = null,
@@ -481,209 +559,232 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun search(query: UserReportQuery): UserReportQueryResult {
-        with(query) {
-            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
-            if (applicationsIds.isEmpty()) {
-                return UserReportQueryResult(0)
-            }
-            val filter =
-                and(
-                    ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
-                    Namespace eq query.namespace,
-                    if (name.isNullOrBlank()) null
-                    else UserTimelineCol_.UserPreferences.lastName.regex(name!!.trim(), "i"),
-                    if (from == null) null else LastUpdateDate gt from?.toInstant(),
-                    if (to == null) null else LastUpdateDate lt to?.toInstant(),
-                    if (flags.isEmpty()) null
-                    else flags.flatMap {
-                        "userState.flags.${it.key}".let { key ->
-                            listOfNotNull(
-                                if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
-                                "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
-                            )
-                        }
-                    }.joinToString(",", "{$and:[", "]}").bson,
-                    if (query.displayTests) null else UserTimelineCol_.UserPreferences.test eq false
-                )
-            logger.debug { "user search query: $filter" }
-            val c = userTimelineCol.withReadPreference(secondaryPreferred())
-            val count = c.countDocuments(filter, defaultCountOptions)
-            logger.debug { "count: $count" }
-            return if (count > start) {
-                val list = c.find(filter)
-                    .skip(start.toInt())
-                    .limit(size)
-                    .descendingSort(LastUpdateDate)
-                    .map { it.toUserReport() }
-                    .toList()
-                UserReportQueryResult(count, start, start + list.size, list)
-            } else {
-                UserReportQueryResult(0, 0, 0, emptyList())
-            }
-        }
-    }
-
-    override fun search(query: AnalyticsQuery): List<UserAnalytics> {
-        with(query) {
-            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
-            if (applicationsIds.isEmpty()) {
-                return emptyList()
-            }
-            val filter =
-                and(
-                    ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
-                    Namespace eq query.namespace,
-                    LastUpdateDate gt from.toInstant(ZoneOffset.UTC),
-                    LastUpdateDate lt to.toInstant(ZoneOffset.UTC)
-                )
-            logger.debug { "user analytics search query: $filter" }
-            val c = userTimelineCol.withReadPreference(secondaryPreferred())
-            return c.find(filter).ascendingSort(LastUserActionDate)
-                .map { it.toUserAnalytics() }.toList()
-        }
-    }
-
-    override fun search(query: DialogReportQuery): DialogReportQueryResult {
-        with(query) {
-            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel).filter { it.isNotEmpty() }
-            if (applicationsIds.isEmpty()) {
-                return DialogReportQueryResult(0)
-            }
-
-            if(dialogId != null){
-                // When a single dialog is requested, only the applicationId filter is applied
-                val dialog = dialogCol.findOne(
-                    and(
-                        DialogCol::_id eq dialogId!!.toId(),
-                        DialogCol::applicationIds `in` applicationsIds,
-                        DialogCol::namespace eq namespace,
-                    )
-                )?.toDialogReport()
-
-                return dialog?.let(::listOf).orEmpty().let {
-                    DialogReportQueryResult(1, 0, 1, it)
-                }
-            }else{
-                val dialogIds = if (query.text.isNullOrBlank()) {
-                    emptySet()
+    override fun search(query: UserReportQuery): UserReportQueryResult =
+        runBlocking {
+            with(query) {
+                val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
+                if (applicationsIds.isEmpty()) {
+                    UserReportQueryResult(0)
                 } else {
-                    if (query.exactMatch) {
-                        dialogTextCol.find(Text eq textKey(query.text!!.trim())).map { it.dialogId }.toSet()
+                    val filter =
+                        and(
+                            ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                            Namespace eq query.namespace,
+                            if (name.isNullOrBlank()) null
+                            else UserTimelineCol_.UserPreferences.lastName.regex(name!!.trim(), "i"),
+                            if (from == null) null else LastUpdateDate gt from?.toInstant(),
+                            if (to == null) null else LastUpdateDate lt to?.toInstant(),
+                            if (flags.isEmpty()) null
+                            else flags.flatMap {
+                                "userState.flags.${it.key}".let { key ->
+                                    listOfNotNull(
+                                        if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
+                                        "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
+                                    )
+                                }
+                            }.joinToString(",", "{$and:[", "]}").bson,
+                            if (query.displayTests) null else UserTimelineCol_.UserPreferences.test eq false
+                        )
+                    logger.debug { "user search query: $filter" }
+                    val c = userTimelineCol.withReadPreference(secondaryPreferred())
+                    val count = c.countDocuments(filter, defaultCountOptions)
+                    logger.debug { "count: $count" }
+                    if (count > start) {
+                        val list = c.find(filter)
+                            .skip(start.toInt())
+                            .limit(size)
+                            .descendingSort(LastUpdateDate)
+                            .toList()
+                            .map { it.toUserReport() }
+                        UserReportQueryResult(count, start, start + list.size, list)
                     } else {
-                        dialogTextCol
-                            .find(Text.regex(textKey(query.text!!.trim()), "i"))
-                            .map { it.dialogId }
-                            .toSet()
+                        UserReportQueryResult(0, 0, 0, emptyList())
                     }
-                }
-                if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
-                    return DialogReportQueryResult(0, 0, 0, emptyList())
-                }
-                val filter = and(
-                    DialogCol_.ApplicationIds `in` applicationsIds,
-                    Namespace eq query.namespace,
-                    if (query.playerId != null || query.displayTests) null else Test eq false,
-                    if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
-                    if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                    if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
-                    if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
-                    if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
-                    if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
-                    if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
-                    if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
-                    if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
-                    if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
-                    if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
-                    if (query.annotationReasons.isNotEmpty()) Stories.actions.annotation.reason `in` query.annotationReasons else null,
-                    if (annotationCreationDateFrom == null) null
-                    else Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant(),
-                    if (annotationCreationDateTo == null) null
-                    else Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant(),
-                    if (dialogCreationDateFrom == null) null
-                    else Stories.actions.date gt dialogCreationDateFrom?.toInstant(),
-                    if (dialogCreationDateTo == null) null
-                    else Stories.actions.date lt dialogCreationDateTo?.toInstant(),
-                )
-                logger.debug { "dialog search query: $filter" }
-                val c = dialogCol.withReadPreference(secondaryPreferred())
-                val count = c.countDocuments(filter, defaultCountOptions)
-                return if (count > start) {
-                    val sortBson = when {
-                        annotationSort != null -> {
-                            if (annotationSort == SortDirection.ASC)
-                                ascending(Stories.actions.annotation.lastUpdateDate)
-                            else
-                                descending(Stories.actions.annotation.lastUpdateDate)
-                        }
-
-                        dialogSort != null -> {
-                            if (dialogSort == SortDirection.ASC)
-                                orderBy(mapOf(Stories.actions.date to true))
-                            else
-                                orderBy(mapOf(Stories.actions.date to false))
-                        }
-
-                        // If no filter is specified, we keep default filtering
-                        else -> descending(LastUpdateDate)
-                    }
-                    val list = c.find(filter)
-                        .skip(start.toInt())
-                        .limit(size)
-                        .sort(sortBson)
-                        .run {
-                            map { it.toDialogReport() }
-                                .toList()
-                        }
-                    DialogReportQueryResult(count, start, start + list.size, list)
-                } else {
-                    DialogReportQueryResult(0, 0, 0, emptyList())
                 }
             }
         }
-    }
 
-    override fun intents(namespace: String,nlpModel : String): Set<String> {
-        val applicationsIds = getApplicationIds(namespace, nlpModel)
+    override fun search(query: AnalyticsQuery): List<UserAnalytics> =
+        runBlocking {
+            with(query) {
+                val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
+                if (applicationsIds.isEmpty()) {
+                    emptyList()
+                } else {
+                    val filter =
+                        and(
+                            ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                            Namespace eq query.namespace,
+                            LastUpdateDate gt from.toInstant(ZoneOffset.UTC),
+                            LastUpdateDate lt to.toInstant(ZoneOffset.UTC)
+                        )
+                    logger.debug { "user analytics search query: $filter" }
+                    val c = userTimelineCol.withReadPreference(secondaryPreferred())
+                    c.find(filter)
+                        .ascendingSort(LastUserActionDate)
+                        .toList()
+                        .map { it.toUserAnalytics() }
+                }
+            }
+        }
 
 
-        return dialogCol.distinct(
-             Stories.actions.state.intent,
-            and(DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() })
-        ).filterNotNull().toSet()
+    override fun search(query: DialogReportQuery): DialogReportQueryResult =
+        runBlocking {
+            with(query) {
+                val applicationsIds = getApplicationIds(query.namespace, query.nlpModel).filter { it.isNotEmpty() }
+                if (applicationsIds.isEmpty()) {
+                    DialogReportQueryResult(0)
+                } else {
 
-    }
+                    if (dialogId != null) {
+                        // When a single dialog is requested, only the applicationId filter is applied
+                        val dialog = dialogCol.findOne(
+                            and(
+                                DialogCol::_id eq dialogId!!.toId(),
+                                DialogCol::applicationIds `in` applicationsIds,
+                                DialogCol::namespace eq namespace,
+                            )
+                        )?.toDialogReport()
+
+                        dialog?.let(::listOf).orEmpty().let {
+                            DialogReportQueryResult(1, 0, 1, it)
+                        }
+                    } else {
+
+                        val dialogIds = if (query.text.isNullOrBlank()) {
+                            emptySet()
+                        } else {
+                            if (query.exactMatch) {
+                                dialogTextCol.find(Text eq textKey(query.text!!.trim())).toList().map { it.dialogId }
+                                    .toSet()
+                            } else {
+                                dialogTextCol
+                                    .find(Text.regex(textKey(query.text!!.trim()), "i"))
+                                    .toList()
+                                    .map { it.dialogId }
+                                    .toSet()
+                            }
+                        }
+                        if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
+                            DialogReportQueryResult(0, 0, 0, emptyList())
+                        } else {
+                            val filter = and(
+                                DialogCol_.ApplicationIds `in` applicationsIds,
+                                Namespace eq query.namespace,
+                                if (query.playerId != null || query.displayTests) null else Test eq false,
+                                if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
+                                if (dialogIds.isEmpty()) null else _id `in` dialogIds,
+                                if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
+                                if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
+                                if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
+                                if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
+                                if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
+                                if (query.applicationId.isNullOrBlank()) null else DialogCol_.ApplicationIds `in` setOf(
+                                    query.applicationId
+                                ),
+                                if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
+                                if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
+                                if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
+                                if (query.annotationReasons.isNotEmpty()) Stories.actions.annotation.reason `in` query.annotationReasons else null,
+                                if (annotationCreationDateFrom == null) null
+                                else Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant(),
+                                if (annotationCreationDateTo == null) null
+                                else Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant(),
+                                if (dialogCreationDateFrom == null) null
+                                else Stories.actions.date gt dialogCreationDateFrom?.toInstant(),
+                                if (dialogCreationDateTo == null) null
+                                else Stories.actions.date lt dialogCreationDateTo?.toInstant(),
+                            )
+                            logger.debug { "dialog search query: $filter" }
+                            val c = dialogCol.withReadPreference(secondaryPreferred())
+                            val count = c.countDocuments(filter, defaultCountOptions)
+                            if (count > start) {
+                                val sortBson = when {
+                                    annotationSort != null -> {
+                                        if (annotationSort == SortDirection.ASC)
+                                            ascending(Stories.actions.annotation.lastUpdateDate)
+                                        else
+                                            descending(Stories.actions.annotation.lastUpdateDate)
+                                    }
+
+                                    dialogSort != null -> {
+                                        if (dialogSort == SortDirection.ASC)
+                                            orderBy(mapOf(Stories.actions.date to true))
+                                        else
+                                            orderBy(mapOf(Stories.actions.date to false))
+                                    }
+
+                                    // If no filter is specified, we keep default filtering
+                                    else -> descending(LastUpdateDate)
+                                }
+                                val list = c.find(filter)
+                                    .skip(start.toInt())
+                                    .limit(size)
+                                    .sort(sortBson)
+                                    .toList()
+                                    .map { it.toDialogReport() }
+                                DialogReportQueryResult(count, start, start + list.size, list)
+                            } else {
+                                DialogReportQueryResult(0, 0, 0, emptyList())
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    override fun intents(namespace: String, nlpModel: String): Set<String> =
+        runBlocking {
+
+            val applicationsIds = getApplicationIds(namespace, nlpModel)
+
+            dialogCol
+                .distinct(
+                    Stories.actions.state.intent as KProperty1<DialogCol, String>,
+                    and(DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() })
+                )
+                .toList()
+                //TODO fix kmongo distinct nullable issue
+                .filterNotNull()
+                .toSet()
+        }
 
 
     override fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult? {
-        val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
-        val matchConditions = and(
-            DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
-            Namespace eq query.namespace,
-            Test eq false,
-            DialogCol_.Rating `in` setOf(1, 2, 3, 4, 5)
-        )
-        val dialogRatingGroup = group(
-            DialogCol_.Rating from DialogCol_.Rating,
-            ParseRequestSatisfactionStatCol_.Count sum 1,
-            ParseRequestSatisfactionStatCol_.Rating avg ParseRequestSatisfactionStatCol_.Rating
-        )
-        val dialogColAggregation =
-            dialogCol.aggregate<ParseRequestSatisfactionStatCol>(match(matchConditions), dialogRatingGroup)
-        val dialogRatings = dialogColAggregation.map { DialogRating(it.rating , it.count) }.toList()
-        if (dialogRatings.isNotEmpty()){
-            val nb = dialogRatings.sumByLong { it.nbUsers!!.toLong() }
-            val avg = dialogRatings.sumOf { it.nbUsers!! * it.rating!! } / nb
-            return RatingReportQueryResult(avg,nb.toInt(),dialogRatings)
+        return runBlocking {
+            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
+            val matchConditions = and(
+                DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                Namespace eq query.namespace,
+                Test eq false,
+                DialogCol_.Rating `in` setOf(1, 2, 3, 4, 5)
+            )
+            val dialogRatingGroup = group(
+                DialogCol_.Rating from DialogCol_.Rating,
+                ParseRequestSatisfactionStatCol_.Count sum 1,
+                ParseRequestSatisfactionStatCol_.Rating avg ParseRequestSatisfactionStatCol_.Rating
+            )
+            val dialogColAggregation =
+                dialogCol.aggregate<ParseRequestSatisfactionStatCol>(match(matchConditions), dialogRatingGroup)
+            val dialogRatings = dialogColAggregation.toList().map { DialogRating(it.rating, it.count) }
+            if (dialogRatings.isNotEmpty()) {
+                val nb = dialogRatings.sumByLong { it.nbUsers!!.toLong() }
+                val avg = dialogRatings.sumOf { it.nbUsers!! * it.rating!! } / nb
+                RatingReportQueryResult(avg, nb.toInt(), dialogRatings)
+            } else {
+                null
+            }
         }
-        return null
     }
 
     override fun getDialog(id: Id<Dialog>): DialogReport? {
-        return dialogCol.findOneById(id)?.toDialogReport()
+        return runBlocking {
+            dialogCol.findOneById(id)?.toDialogReport()
+        }
     }
 
-    override fun getClientDialogs(
+    override suspend fun getClientDialogs(
         namespace: String,
         clientId: String,
         storyDefinitionProvider: (String) -> StoryDefinition
@@ -695,23 +796,23 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             dialogCol
                 .find(PlayerIds.id `in` ids, Namespace eq namespace)
                 .descendingSort(LastUpdateDate)
-                .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
+                .map { it.toDialog(storyDefinitionProvider) }
         }
     }
 
-    override fun getDialogsUpdatedFrom(
+    override suspend fun getDialogsUpdatedFrom(
         namespace: String,
         from: Instant,
         storyDefinitionProvider: (String) -> StoryDefinition
     ): List<Dialog> {
         return dialogCol
             .find(and(LastUpdateDate gt from, Namespace eq namespace))
-            .map { it.toDialog(storyDefinitionProvider) }
             .toList()
+            .map { it.toDialog(storyDefinitionProvider) }
     }
 
-    private fun addSnapshot(dialog: Dialog): SnapshotCol {
+    private suspend fun addSnapshot(dialog: Dialog): SnapshotCol {
         val snapshot = Snapshot(dialog)
         val existingSnapshot = snapshotCol.findOneById(dialog.id)
         return if (existingSnapshot == null) {
@@ -725,7 +826,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    private fun addArchivedValues(dialog: Dialog) {
+    private suspend fun addArchivedValues(dialog: Dialog) {
         dialog.state.entityValues.values.filter { it.hasBeanUpdatedInBus }
             .forEach {
                 logger.debug { "save archived values for $it" }
@@ -733,7 +834,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
     }
 
-    override fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> {
+    override suspend fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> {
         return try {
             snapshotCol.findOneById(dialogId)?.snapshots ?: emptyList()
         } catch (e: Exception) {
@@ -742,7 +843,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun getLastStoryId(namespace: String, playerId: PlayerId): String? {
+    override suspend fun getLastStoryId(namespace: String, playerId: PlayerId): String? {
         return try {
             loadLastValidDialogCol(namespace, playerId)?.stories?.lastOrNull()?.storyDefinitionId
         } catch (e: Exception) {
@@ -751,76 +852,93 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun findAnnotation(dialogId: String, actionId: String): BotAnnotation? =
+    override fun findAnnotation(dialogId: String, actionId: String): BotAnnotation? = runBlocking {
         dialogCol.findOneById(dialogId)
             ?.stories
             ?.firstNotNullOfOrNull { story -> story.actions.find { it.id.toString() == actionId }?.annotation }
-
-    override fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
-        dialogCol.findOneById(dialogId)?.takeIf { dialog ->
-            dialog.stories.any { story ->
-                story.actions.find { it.id.toString() == actionId }
-                    ?.also { it.annotation = annotation } != null
-            }
-        }?.let { dialogCol.save(it) }
-            ?: logger.warn("Action with ID $actionId not found in dialog $dialogId")
     }
 
-    override fun annotationExists(dialogId: String, actionId: String): Boolean =
+    override fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation) {
+        runBlocking {
+            dialogCol.findOneById(dialogId)?.takeIf { dialog ->
+                dialog.stories.any { story ->
+                    story.actions.find { it.id.toString() == actionId }
+                        ?.also { it.annotation = annotation } != null
+                }
+            }?.let { dialogCol.save(it) }
+                ?: logger.warn("Action with ID $actionId not found in dialog $dialogId")
+        }
+    }
+
+    override fun annotationExists(dialogId: String, actionId: String): Boolean = runBlocking {
         dialogCol.findOneById(dialogId)
             ?.stories
             ?.any { story -> story.actions.any { it.id.toString() == actionId && it.annotation != null } }
             ?: false
+    }
 
     override fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent) {
-        dialogCol.findOneById(dialogId)?.let { dialog ->
-            dialog.stories.firstNotNullOfOrNull { story ->
-                story.actions.find { it.id.toString() == actionId }?.annotation
-            }?.apply {
-                events.add(event)
-                lastUpdateDate = Instant.now()
-                dialogCol.save(dialog)
-            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
-        } ?: logger.warn("Dialog with ID $dialogId not found")
+        runBlocking {
+            dialogCol.findOneById(dialogId)?.let { dialog ->
+                dialog.stories.firstNotNullOfOrNull { story ->
+                    story.actions.find { it.id.toString() == actionId }?.annotation
+                }?.apply {
+                    events.add(event)
+                    lastUpdateDate = Instant.now()
+                    dialogCol.save(dialog)
+                } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+            } ?: logger.warn("Dialog with ID $dialogId not found")
+        }
     }
 
     override fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent? =
-        dialogCol.findOneById(dialogId)
-            ?.stories
-            ?.firstNotNullOfOrNull { story ->
-                story.actions.find { it.id.toString() == actionId }?.annotation?.events?.find { it.eventId.toString() == eventId }
-            }
+        runBlocking {
+            dialogCol.findOneById(dialogId)
+                ?.stories
+                ?.firstNotNullOfOrNull { story ->
+                    story.actions.find { it.id.toString() == actionId }?.annotation?.events?.find { it.eventId.toString() == eventId }
+                }
+        }
 
-    override fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent) {
-        dialogCol.findOneById(dialogId)?.let { dialog ->
-            dialog.stories.firstNotNullOfOrNull { story ->
-                story.actions.find { it.id.toString() == actionId }?.annotation
-            }?.let { annotation ->
-                annotation.events.indexOfFirst { it.eventId.toString() == eventId }
-                    .takeIf { it != -1 }
-                    ?.let { index ->
-                        annotation.events[index] = updatedEvent
-                        dialogCol.save(dialog)
-                    } ?: logger.warn("Event $eventId not found")
-            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
-        } ?: logger.warn("Dialog with ID $dialogId not found")
+    override fun updateAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+        updatedEvent: BotAnnotationEvent
+    ) {
+        runBlocking {
+            dialogCol.findOneById(dialogId)?.let { dialog ->
+                dialog.stories.firstNotNullOfOrNull { story ->
+                    story.actions.find { it.id.toString() == actionId }?.annotation
+                }?.let { annotation ->
+                    annotation.events.indexOfFirst { it.eventId.toString() == eventId }
+                        .takeIf { it != -1 }
+                        ?.let { index ->
+                            annotation.events[index] = updatedEvent
+                            dialogCol.save(dialog)
+                        } ?: logger.warn("Event $eventId not found")
+                } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+            } ?: logger.warn("Dialog with ID $dialogId not found")
+        }
     }
 
     override fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String) {
-        dialogCol.findOneById(dialogId)?.let { dialog ->
-            dialog.stories.firstNotNullOfOrNull { story ->
-                story.actions.find { it.id.toString() == actionId }?.annotation
-            }?.let { annotation ->
-                if (annotation.events.removeIf { it.eventId.toString() == eventId && it.type == BotAnnotationEventType.COMMENT }) {
-                    dialogCol.save(dialog)
-                } else {
-                    logger.warn("Event $eventId not found or not a comment in annotation for action $actionId")
-                }
-            } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
-        } ?: logger.warn("Dialog with ID $dialogId not found")
+        runBlocking {
+            dialogCol.findOneById(dialogId)?.let { dialog ->
+                dialog.stories.firstNotNullOfOrNull { story ->
+                    story.actions.find { it.id.toString() == actionId }?.annotation
+                }?.let { annotation ->
+                    if (annotation.events.removeIf { it.eventId.toString() == eventId && it.type == BotAnnotationEventType.COMMENT }) {
+                        dialogCol.save(dialog)
+                    } else {
+                        logger.warn("Event $eventId not found or not a comment in annotation for action $actionId")
+                    }
+                } ?: logger.warn("Action $actionId or annotation not found in dialog $dialogId")
+            } ?: logger.warn("Dialog with ID $dialogId not found")
+        }
     }
 
-    override fun getArchivedEntityValues(
+    override suspend fun getArchivedEntityValues(
         stateValueId: Id<EntityStateValue>,
         oldActionsMap: Map<Id<Action>, Action>
     ): List<ArchivedEntityValue> {

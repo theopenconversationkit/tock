@@ -127,7 +127,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     }
 
     override fun changeEntityValue(entity: Entity, newValue: Value?) {
-        return synchronized (botBus) { botBus.changeEntityValue(entity, newValue) }
+        return synchronized(botBus) { botBus.changeEntityValue(entity, newValue) }
     }
 
     override fun removeAllEntityValues() {
@@ -156,12 +156,15 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     override suspend fun isFeatureEnabled(
         feature: FeatureType,
         default: Boolean
-    ): Boolean {
-        // TODO replace worker thread offloading with suspend variant of FeatureDao.isEnabled
-        return withContext(executor.asCoroutineDispatcher()) {
-            featureDao.isEnabled(botBus.botDefinition.botId, botBus.botDefinition.namespace, feature, connectorId, default, userId.id)
-        }
-    }
+    ): Boolean =
+        featureDao.isEnabled(
+            botBus.botDefinition.botId,
+            botBus.botDefinition.namespace,
+            feature,
+            connectorId,
+            default,
+            userId.id
+        )
 
     override suspend fun handleAndSwitchStory(
         storyDefinition: StoryDefinition,
@@ -256,13 +259,13 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     }
 
     protected open suspend fun toMessageList(messageProvider: Bus<*>.() -> Any?): MessagesList =
-        // calls to `translate` are blocking (database and possibly translator API),
+    // calls to `translate` are blocking (database and possibly translator API),
         // so we ensure they are done in a worker thread
         withContext(executor.asCoroutineDispatcher()) {
             toMessageList(null, botBus, messageProvider)
         }
 
-    data class Ref(val bus: AsyncBotBus): CoroutineContext.Element {
+    data class Ref(val bus: AsyncBotBus) : CoroutineContext.Element {
         companion object Key : CoroutineContext.Key<Ref>
 
         override val key = Key

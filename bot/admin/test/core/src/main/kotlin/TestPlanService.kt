@@ -36,6 +36,7 @@ import ai.tock.shared.provide
 import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.time.Duration
@@ -259,7 +260,9 @@ object TestPlanService {
             logger.error(e)
             DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {
-            userTimelineDAO.remove(testPlan.namespace, PlayerId(playerId, PlayerType.user))
+            runBlocking {
+                userTimelineDAO.remove(testPlan.namespace, PlayerId(playerId, PlayerType.user))
+            }
         }
     }
 

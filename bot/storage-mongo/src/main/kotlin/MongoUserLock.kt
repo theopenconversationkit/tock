@@ -17,33 +17,30 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.user.UserLock
-import ai.tock.bot.mongo.MongoBotConfiguration.database
+import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.UserLock_.Companion.Date
 import ai.tock.bot.mongo.UserLock_.Companion.Locked
 import ai.tock.bot.mongo.UserLock_.Companion._id
-import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import com.mongodb.MongoWriteException
 import com.mongodb.client.model.IndexOptions
-import java.time.Instant
-import java.time.Instant.now
-import java.util.concurrent.TimeUnit.HOURS
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
-import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
-import org.litote.kmongo.findOneById
-import org.litote.kmongo.getCollection
 import org.litote.kmongo.lt
 import org.litote.kmongo.or
+import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.toId
-import org.litote.kmongo.updateOne
-import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
+import java.time.Instant
+import java.time.Instant.now
+import java.util.concurrent.TimeUnit.HOURS
 
 /**
  *
@@ -56,26 +53,28 @@ internal object MongoUserLock : UserLock {
 
     private val logger = KotlinLogging.logger {}
 
-    private val col = database.getCollection<UserLock>()
+    private val col = asyncDatabase.getCollection<UserLock>().coroutine
 
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
 
     init {
         try {
-            col.ensureIndex(
-                Date,
-                indexOptions = IndexOptions()
-                    .expireAfter(
-                        longProperty("mongo_user_ttl_hours", 6),
-                        HOURS
-                    )
-            )
+            runBlocking {
+                col.ensureIndex(
+                    Date,
+                    indexOptions = IndexOptions()
+                        .expireAfter(
+                            longProperty("mongo_user_ttl_hours", 6),
+                            HOURS
+                        )
+                )
+            }
         } catch (e: Exception) {
             logger.error(e)
         }
     }
 
-    override fun lock(userId: String): Boolean {
+    override suspend fun lock(userId: String): Boolean {
         val lock = UserLock(userId.toId())
         val validLockDatesLimit = now().minusMillis(lockTimeout)
 
@@ -121,7 +120,7 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    override fun releaseLock(userId: String) {
+    override suspend fun releaseLock(userId: String) {
         try {
             logger.debug { "release lock for user : $userId" }
             val r = col.updateOneById(userId, org.litote.kmongo.setValue(Locked, false))
@@ -133,7 +132,7 @@ internal object MongoUserLock : UserLock {
         }
     }
 
-    fun deleteLock(userId: String) {
+    suspend fun deleteLock(userId: String) {
         try {
             col.deleteOneById(userId)
         } catch (e: Exception) {

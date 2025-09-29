@@ -32,16 +32,21 @@ import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.translator.I18nDAO
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.singleton
 import com.mongodb.client.MongoDatabase
 import indicator.IndicatorMongoDAO
 import indicator.metric.MetricMongoDAO
-import org.litote.kmongo.getCollection
+import org.litote.kmongo.reactivestreams.getCollection
 
 
 const val MONGO_DATABASE: String = TOCK_BOT_DATABASE
@@ -67,7 +72,7 @@ val botMongoModule = Kodein.Module {
     bind<TestPlanDAO>() with provider { TestPlanMongoDAO }
     bind<UserLock>() with provider { MongoUserLock }
     bind<FeatureCache>() with singleton { MongoFeatureCache() }
-    bind<FeatureDAO>() with singleton { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
+    bind<FeatureDAO>() with singleton { FeatureMongoDAO(instance(),asyncDatabase.getCollection()) }
     bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
     bind<IndicatorDAO>() with provider { IndicatorMongoDAO }
     bind<MetricDAO>() with provider { MetricMongoDAO }

@@ -49,6 +49,7 @@ import io.vertx.ext.web.Router
 import java.net.URL
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
@@ -210,7 +211,7 @@ internal class TockConnectorController(
             action.state.targetConnectorType = connector.connectorType
         }
         val callback = data.callback
-        return try {
+        return runBlocking { try {
             val userTimeline =
                 userTimelineDAO.loadWithLastValidDialog(
                     botDefinition.namespace,
@@ -219,11 +220,12 @@ internal class TockConnectorController(
                     data.groupId,
                     storyDefinitionLoader(action.applicationId)
                 )
-            bot.support(action, userTimeline, this, data)
+            bot.support(action, userTimeline, this@TockConnectorController, data)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)
             0.0
         }
+            }
     }
 
     override fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit) {
@@ -249,7 +251,9 @@ internal class TockConnectorController(
         } finally {
             if (action.metadata.lastAnswer) {
                 if (asynchronousMode && data.saveTimeline && userTimeline != null) {
-                    userTimelineDAO.save(userTimeline, bot.botDefinition)
+                    runBlocking {
+                        userTimelineDAO.save(userTimeline, bot.botDefinition)
+                    }
                 }
                 data.callback.eventAnswered(userAction)
             }

@@ -26,6 +26,8 @@ import ai.tock.bot.engine.user.PlayerType.user
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.resource
 import com.google.common.io.Resources
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -134,7 +136,7 @@ class GAConnectorTest {
     fun `GIVEN new connected user and login event THEN new time line is created`() {
         every { controller.connector } returns connector
         mockkObject(GAAccountLinking)
-        every {
+        coEvery {
             switchTimeLine(
                 "appId",
                 PlayerId("jarvisteam@yopmail.com", user),
@@ -155,7 +157,7 @@ class GAConnectorTest {
         val connectorData = slot<ConnectorData>()
         verify { controller.handle(any(), capture(connectorData)) }
         assertTrue { connectorData.captured.saveTimeline }
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             switchTimeLine(
                 "appId",
                 PlayerId("jarvisteam@yopmail.com", user),

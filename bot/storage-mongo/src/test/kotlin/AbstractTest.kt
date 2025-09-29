@@ -30,9 +30,10 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import io.mockk.spyk
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.deleteMany
-import org.litote.kmongo.getCollection
+import org.litote.kmongo.reactivestreams.getCollection
 
 /**
  *
@@ -60,11 +61,13 @@ abstract class AbstractTest(private val initDb: Boolean = true) {
                     }
                     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
                     bind<FeatureCache>() with provider { spyk(MongoFeatureCache()) }
-                    bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
+                    bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.asyncDatabase.getCollection<Feature>()) }
                 }
             )
-            UserTimelineMongoDAO.dialogCol.deleteMany()
-            UserTimelineMongoDAO.userTimelineCol.deleteMany()
+            runBlocking {
+                UserTimelineMongoDAO.dialogCol.deleteMany()
+                UserTimelineMongoDAO.userTimelineCol.deleteMany()
+            }
         } else {
             tockInternalInjector = KodeinInjector()
             tockInternalInjector.inject(

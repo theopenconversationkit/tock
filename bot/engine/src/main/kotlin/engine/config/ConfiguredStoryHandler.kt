@@ -48,6 +48,7 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -241,7 +242,9 @@ internal class ConfiguredStoryHandler(
                     ?.let {
                         // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
                         if (bus.connectorData.saveTimeline){
-                            userTimelineDAO.save(bus.userTimeline, bus.botDefinition, asynchronousProcess = false)
+                            runBlocking {
+                                userTimelineDAO.save(bus.userTimeline, bus.botDefinition, asynchronousProcess = false)
+                            }
                         }
 
                         bus.switchConfiguredStory(it, it.mainIntent().name)

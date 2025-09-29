@@ -24,6 +24,7 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 private const val PROACTIVE_CONVERSATION_STATUS: String = "PROACTIVE_CONVERSATION_STATUS"
@@ -58,7 +59,9 @@ interface AbstractProactiveAnswerHandler {
 
                 // Save the dialog
                 if (connectorData.saveTimeline) {
-                    userTimelineDAO.save(userTimeline, botDefinition)
+                    runBlocking {
+                        userTimelineDAO.save(userTimeline, botDefinition)
+                    }
                 }
             }
         }

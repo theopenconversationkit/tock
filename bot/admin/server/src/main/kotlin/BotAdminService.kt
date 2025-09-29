@@ -71,6 +71,7 @@ import ai.tock.shared.security.key.SecretKey
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.*
 import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -407,7 +408,8 @@ object BotAdminService {
                                 obfuscatedDialog = obfuscatedDialog || it.message != obfuscatedMessage
                                 it.copy(message = obfuscatedMessage)
                             }
-                            val reviewCommentAction = actions.findLast { it.intent == SatisfactionIntent.REVIEW_COMMENT.id }
+                            val reviewCommentAction =
+                                actions.findLast { it.intent == SatisfactionIntent.REVIEW_COMMENT.id }
                             val reviewMessage = reviewCommentAction?.message?.toPrettyString() ?: d.review
                             d.copy(
                                 actions = actions,
@@ -457,8 +459,8 @@ object BotAdminService {
         )
     }
 
-    fun getIntentsInDialogs(namespace: String,nlpModel : String) : Set<String>{
-        return dialogReportDAO.intents(namespace,nlpModel)
+    fun getIntentsInDialogs(namespace: String, nlpModel: String): Set<String> {
+        return dialogReportDAO.intents(namespace, nlpModel)
     }
 
     fun getDialogObfuscatedById(id: Id<Dialog>, intentsToHide: Set<String>): DialogReport? {
@@ -467,7 +469,10 @@ object BotAdminService {
     }
 
 
-    private fun filterIntentFromDialogActions(dialogs: List<DialogReport>, intentsToHide: Set<String>): List<DialogReport> {
+    private fun filterIntentFromDialogActions(
+        dialogs: List<DialogReport>,
+        intentsToHide: Set<String>
+    ): List<DialogReport> {
         return dialogs.map { dialog ->
             val groupedLists = dialog.actions.groupBy { it.playerId.type }
             var list = dialog.actions.toMutableList()
@@ -667,13 +672,13 @@ object BotAdminService {
         var storyToSave = manageExistingStory(botConf, storyToImport)
 
         // Manage the import of an unknown story, taking into account the RAG configuration
-        if(ragConfiguration?.enabled == true && Intent.UNKNOWN_INTENT.name.withoutNamespace() == storyToImport.intent.name) {
-            if(importMode == StoriesImportMode.RAG_OFF){
+        if (ragConfiguration?.enabled == true && Intent.UNKNOWN_INTENT.name.withoutNamespace() == storyToImport.intent.name) {
+            if (importMode == StoriesImportMode.RAG_OFF) {
                 ragConfigurationDAO.findByNamespaceAndBotId(namespace, botConf.botId)
                     ?.let {
                         ragConfigurationDAO.save(it.copy(enabled = false))
                     }
-            } else if(importMode == StoriesImportMode.RAG_ON){
+            } else if (importMode == StoriesImportMode.RAG_ON) {
                 storyToSave = storyToSave.copy(features = prepareEndingFeatures(storyToSave, false))
             }
         }
@@ -689,7 +694,10 @@ object BotAdminService {
      * @param botConf the [BotApplicationConfiguration]
      * @param storyToImport the [StoryDefinitionConfiguration]
      */
-    private fun manageExistingStory(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration): StoryDefinitionConfiguration {
+    private fun manageExistingStory(
+        botConf: BotApplicationConfiguration,
+        storyToImport: StoryDefinitionConfiguration
+    ): StoryDefinitionConfiguration {
         val existingStory1 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
             botConf.namespace,
             botConf.botId,
@@ -709,7 +717,11 @@ object BotAdminService {
         return storyToImport.copy(_id = existingStory1?._id ?: existingStory2?._id ?: storyToImport._id)
     }
 
-    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotStoryDefinitionConfigurationDumpController) {
+    private fun saveSentences(
+        botConf: BotApplicationConfiguration,
+        storyToImport: StoryDefinitionConfiguration,
+        controller: BotStoryDefinitionConfigurationDumpController
+    ) {
         val mainIntent = createOrGetIntent(
             botConf.namespace,
             storyToImport.intent.name,
@@ -1177,7 +1189,7 @@ object BotAdminService {
      * Manage unknown story when RAG is enabled
      */
     private fun manageUnknownStory(story: BotStoryDefinitionConfiguration) {
-        if(Intent.UNKNOWN_INTENT.name.withoutNamespace() == story.intent.name.withoutNamespace()) {
+        if (Intent.UNKNOWN_INTENT.name.withoutNamespace() == story.intent.name.withoutNamespace()) {
             ragConfigurationDAO.findByNamespaceAndBotId(story.namespace, story.botId)?.let {
                 if (it.enabled) {
                     badRequest("It is not allowed to create or update unknown story when RAG is enabled.")
@@ -1278,14 +1290,30 @@ object BotAdminService {
         return Translator.create(labelKey, request.locale)
     }
 
-    fun getFeatures(botId: String, namespace: String): List<FeatureState> {
-        return featureDAO.getFeatures(botId, namespace).sortedBy { it.category + it.name }
+    fun getFeatures(botId: String, namespace: String): List<FeatureState> = runBlocking {
+        featureDAO.getFeatures(botId, namespace).sortedBy { it.category + it.name }
     }
 
     fun toggleFeature(botId: String, namespace: String, feature: Feature) {
-        if (featureDAO.isEnabled(botId, namespace, feature.category, feature.name, feature.applicationId)) {
-            featureDAO.disable(botId, namespace, feature.category, feature.name, feature.applicationId)
-        } else {
+        runBlocking {
+            if (featureDAO.isEnabled(botId, namespace, feature.category, feature.name, feature.applicationId)) {
+                featureDAO.disable(botId, namespace, feature.category, feature.name, feature.applicationId)
+            } else {
+                featureDAO.enable(
+                    botId,
+                    namespace,
+                    feature.category,
+                    feature.name,
+                    feature.startDate,
+                    feature.endDate,
+                    feature.applicationId,
+                )
+            }
+        }
+    }
+
+    fun updateDateAndEnableFeature(botId: String, namespace: String, feature: Feature) {
+        runBlocking {
             featureDAO.enable(
                 botId,
                 namespace,
@@ -1294,39 +1322,31 @@ object BotAdminService {
                 feature.startDate,
                 feature.endDate,
                 feature.applicationId,
+                feature.graduation
             )
         }
     }
 
-    fun updateDateAndEnableFeature(botId: String, namespace: String, feature: Feature) {
-        featureDAO.enable(
-            botId,
-            namespace,
-            feature.category,
-            feature.name,
-            feature.startDate,
-            feature.endDate,
-            feature.applicationId,
-            feature.graduation
-        )
-    }
-
     fun addFeature(botId: String, namespace: String, feature: Feature) {
-        featureDAO.addFeature(
-            botId = botId,
-            namespace = namespace,
-            enabled = feature.enabled,
-            category = feature.category,
-            name = feature.name,
-            startDate = feature.startDate,
-            endDate = feature.endDate,
-            applicationId = feature.applicationId,
-            graduation = feature.graduation
-        )
+        runBlocking {
+            featureDAO.addFeature(
+                botId = botId,
+                namespace = namespace,
+                enabled = feature.enabled,
+                category = feature.category,
+                name = feature.name,
+                startDate = feature.startDate,
+                endDate = feature.endDate,
+                applicationId = feature.applicationId,
+                graduation = feature.graduation
+            )
+        }
     }
 
     fun deleteFeature(botId: String, namespace: String, category: String, name: String, applicationId: String?) {
-        featureDAO.deleteFeature(botId, namespace, category, name, applicationId)
+        runBlocking {
+            featureDAO.deleteFeature(botId, namespace, category, name, applicationId)
+        }
     }
 
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
@@ -1453,7 +1473,7 @@ object BotAdminService {
         }
     }
 
-    fun importLabels(labels: List<I18nLabel>, organization: String) : Int {
+    fun importLabels(labels: List<I18nLabel>, organization: String): Int {
         return labels
             .filter { it.i18n.any { i18n -> i18n.validated } }
             .map {

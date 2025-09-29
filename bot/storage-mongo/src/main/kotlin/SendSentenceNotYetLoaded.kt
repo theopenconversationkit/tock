@@ -25,6 +25,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -66,7 +67,7 @@ internal class SendSentenceNotYetLoaded(
             if (!messageLoaded) {
                 logger.debug { "load message for $id" }
                 messageLoaded = true
-                loadedMessages.addAll(UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId))
+                loadedMessages.addAll(runBlocking { UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId) } )
             }
             return loadedMessages
         }
@@ -79,7 +80,7 @@ internal class SendSentenceNotYetLoaded(
             if (!nlpStatsLoaded) {
                 logger.debug { "load nlpStats for $id" }
                 nlpStatsLoaded = true
-                loadedNlpStats = UserTimelineMongoDAO.loadNlpStats(toActionId(), dialogId)
+                loadedNlpStats = runBlocking { UserTimelineMongoDAO.loadNlpStats(toActionId(), dialogId) }
             }
             return loadedNlpStats
         }

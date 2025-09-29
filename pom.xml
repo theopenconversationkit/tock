@@ -345,6 +345,11 @@
             </dependency>
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-coroutine</artifactId>
+                <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo-id</artifactId>
                 <version>${kmongo}</version>
             </dependency>

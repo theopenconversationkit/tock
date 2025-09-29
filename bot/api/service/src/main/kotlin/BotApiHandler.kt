@@ -51,6 +51,7 @@ import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.raw
 import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 
 internal class BotApiHandler(
     provider: BotApiDefinitionProvider,
@@ -143,7 +144,9 @@ internal class BotApiHandler(
 
                 // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
                 if (connectorData.saveTimeline) {
-                    userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
+                   runBlocking {
+                       userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
+                   }
                 }
 
                 val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, connectorId)

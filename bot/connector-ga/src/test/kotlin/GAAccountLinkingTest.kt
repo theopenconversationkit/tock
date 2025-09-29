@@ -36,10 +36,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.time.Instant
 import kotlin.test.assertEquals
@@ -121,7 +124,7 @@ internal class GAAccountLinkingTest {
     }
 
     @Test
-    fun `GIVEN new userId THEN new timeline is created with previous params and dialog`() {
+    fun `GIVEN new userId THEN new timeline is created with previous params and dialog`() = runBlocking {
         val previousUserId = PlayerId("previousUserId")
         val previousUserPreferences = UserPreferences()
         val previousUserState = UserState(Instant.now())
@@ -138,7 +141,7 @@ internal class GAAccountLinkingTest {
 
         val newUserId = PlayerId("newUserId")
 
-        every {
+        coEvery {
             userTimelineDAO.loadWithLastValidDialog(
                 any(),
                 previousUserId,
@@ -147,7 +150,7 @@ internal class GAAccountLinkingTest {
         } returns previousTimeline
 
         val capturedTimeline = slot<UserTimeline>()
-        every {
+        coEvery {
             userTimelineDAO.save(any(), any<BotDefinition>())
         } answers {}
 
@@ -159,7 +162,7 @@ internal class GAAccountLinkingTest {
 
         switchTimeLine("appId", newUserId, previousUserId, controller)
 
-        verify { userTimelineDAO.save(capture(capturedTimeline), any<BotDefinition>()) }
+        coVerify { userTimelineDAO.save(capture(capturedTimeline), any<BotDefinition>()) }
         assertEquals(newUserId, capturedTimeline.captured.playerId)
         assertEquals(previousUserPreferences, capturedTimeline.captured.userPreferences)
         assertEquals(previousUserState, capturedTimeline.captured.userState)
