@@ -67,6 +67,7 @@ import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.coroutines.fireAndForget
 import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -77,9 +78,7 @@ import ai.tock.shared.sumByLong
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
-import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.supervisorScope
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
@@ -327,7 +326,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
 
         if (asynchronousProcess) {
-            supervisorScope { async { saveProcessing() } }
+            fireAndForget(saveProcessing)
         } else {
             saveProcessing()
         }

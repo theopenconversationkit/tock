@@ -28,6 +28,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.Duration.ofSeconds
 
 @OptIn(ExperimentalTockCoroutines::class)
 class TockCoroutinesTest {
@@ -53,7 +54,7 @@ class TockCoroutinesTest {
         }
         assertNotNull(timestamp1)
         assertNotNull(timestamp2)
-        assertTrue { Duration.between(timestamp2, timestamp1) >= Duration.ofSeconds(1) }
+        assertTrue { Duration.between(timestamp2, timestamp1) >= ofSeconds(1) }
         // 3 tasks should have been executed: launchCoroutine, launch, and the instructions after delay
         verify(exactly = 3) { executor.execute(any()) }
         for (threadName in threadNames) {
@@ -64,4 +65,18 @@ class TockCoroutinesTest {
             )
         }
     }
+
+    @Test
+    fun `fireAndForget does not wait to finish the task`() : Unit = runBlocking {
+        var finished = false
+        val time = Instant.now()
+        fireAndForget {
+            delay(1000)
+            finished = true
+        }
+        assertTrue { Instant.now() < time + ofSeconds(1) }
+        delay(1500)
+        assertTrue { finished }
+    }
+
 }
