@@ -68,7 +68,7 @@ import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.fireAndForget
-import ai.tock.shared.coroutines.waitForCoroutineIO
+import ai.tock.shared.coroutines.waitForIO
 import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -322,7 +322,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 }
             }
             if (dialogFlowStatEnabled && botDefinition != null && lastDialog != null && lastSnapshot != null && lastUserAction != null) {
-                waitForCoroutineIO {  DialogFlowMongoDAO.addFlowStat(userTimeline, botDefinition, lastUserAction, lastDialog, lastSnapshot) }
+                waitForIO {  DialogFlowMongoDAO.addFlowStat(userTimeline, botDefinition, lastUserAction, lastDialog, lastSnapshot) }
             }
         }
 

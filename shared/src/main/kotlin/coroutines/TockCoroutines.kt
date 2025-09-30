@@ -25,6 +25,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KLogger
 import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
@@ -76,7 +77,14 @@ fun fireAndForget(block: suspend () -> Unit) =
     }
 
 /**
+ * Starts a coroutine and block the thread for the result. [Dispatchers.IO] is used.
+ */
+fun <T> waitForCoroutineIO(block: suspend CoroutineScope.() -> T): T =
+    runBlocking(context = Dispatchers.IO, block = block)
+
+/**
  * Starts a coroutine and waits for the result. [Dispatchers.IO] is used.
  */
-fun <T> waitForCoroutineIO(block: suspend CoroutineScope.() -> T): T = runBlocking(context = Dispatchers.IO, block = block)
+suspend fun <T> waitForIO(block: suspend CoroutineScope.() -> T): T =
+    withContext(context = Dispatchers.IO, block = block)
 
