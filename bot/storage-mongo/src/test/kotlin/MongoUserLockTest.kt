@@ -16,6 +16,7 @@
 
 package ai.tock.bot.mongo
 
+import kotlinx.coroutines.runBlocking
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterEach
@@ -32,28 +33,36 @@ class MongoUserLockTest : AbstractTest() {
     @AfterEach
     @BeforeEach
     fun cleanup() {
-        MongoUserLock.deleteLock(userId)
+        runBlocking {
+            MongoUserLock.deleteLock(userId)
+        }
     }
 
     @Test
     fun `take lock on a not locked user is ok`() {
-        assertTrue(MongoUserLock.lock(userId))
+        runBlocking {
+            assertTrue(MongoUserLock.lock(userId))
+        }
     }
 
     @Test
     fun `take lock on a recent locked user is ko`() {
-        MongoUserLock.lock(userId)
-        assertFalse(MongoUserLock.lock(userId))
+        runBlocking {
+            MongoUserLock.lock(userId)
+            assertFalse(MongoUserLock.lock(userId))
 
-        MongoUserLock.releaseLock(userId)
-        assertTrue(MongoUserLock.lock(userId))
+            MongoUserLock.releaseLock(userId)
+            assertTrue(MongoUserLock.lock(userId))
+        }
     }
 
     @Test
     fun `take lock on a old locked user is ok`() {
-        MongoUserLock.lock(userId)
-        assertFalse(MongoUserLock.lock(userId))
-        Thread.sleep(5100L)
-        assertTrue(MongoUserLock.lock(userId))
+        runBlocking {
+            MongoUserLock.lock(userId)
+            assertFalse(MongoUserLock.lock(userId))
+            Thread.sleep(5100L)
+            assertTrue(MongoUserLock.lock(userId))
+        }
     }
 }

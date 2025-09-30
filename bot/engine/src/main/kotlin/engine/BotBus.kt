@@ -61,6 +61,7 @@ import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.I18nLocalizedLabel
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
 /**
@@ -522,8 +523,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param default the default value if the feature state is unknown
      */
     fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
-        injector.provide<FeatureDAO>()
-            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
+        runBlocking {
+            injector.provide<FeatureDAO>()
+                .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
+        }
 
     /**
      * Marks the current as not understood in the nlp model.

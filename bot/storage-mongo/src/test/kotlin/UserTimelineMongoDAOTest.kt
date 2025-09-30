@@ -22,6 +22,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.defaultNamespace
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -32,7 +33,7 @@ import kotlin.test.assertEquals
 internal class UserTimelineMongoDAOTest : AbstractTest() {
 
     @Test
-    fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() {
+    fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() = runBlocking{
         val id = PlayerId("id", PlayerType.user, "clientId")
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
         UserTimelineMongoDAO.save(u, "namespace")
@@ -55,7 +56,7 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `get userTimeLine with temporaryIds `() {
+    fun `get userTimeLine with temporaryIds `()  = runBlocking{
         val id = PlayerId("id", PlayerType.user, "clientId")
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))), temporaryIds = mutableSetOf("123456879", "1477854545"))
         UserTimelineMongoDAO.save(u, "namespace")
@@ -66,7 +67,7 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `updatePlayerId update timeline and dialog player id`() {
+    fun `updatePlayerId update timeline and dialog player id`()  = runBlocking {
         val id = PlayerId("id", PlayerType.user)
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
         UserTimelineMongoDAO.save(u, "namespace")

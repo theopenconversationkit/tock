@@ -53,6 +53,7 @@ import com.google.api.client.auth.openidconnect.IdToken
 import com.google.api.client.auth.openidconnect.IdTokenVerifier
 import com.google.api.client.json.jackson2.JacksonFactory
 import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
@@ -113,7 +114,7 @@ class GAConnector internal constructor(
 
                 when {
                     event is LoginEvent -> {
-                        switchTimeLine(applicationId, event.userId, event.previousUserId, controller)
+                        runBlocking { switchTimeLine(applicationId, event.userId, event.previousUserId, controller) }
                         sendRequest()
                     }
                     isUserAuthenticated(request) -> {

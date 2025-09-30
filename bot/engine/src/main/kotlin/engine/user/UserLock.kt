@@ -21,7 +21,7 @@ package ai.tock.bot.engine.user
  */
 interface UserLock {
 
-    fun lock(userId: String): Boolean
+    suspend fun lock(userId: String): Boolean
 
     /**
      * Acquires the user lock only if it is free at the time of invocation
@@ -33,5 +33,5 @@ interface UserLock {
      */
     suspend fun tryLock(userId: String): Boolean = lock(userId)
 
-    fun releaseLock(userId: String)
+    suspend fun releaseLock(userId: String)
 }

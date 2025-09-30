@@ -22,6 +22,7 @@ import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import kotlinx.coroutines.runBlocking
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
@@ -85,7 +86,7 @@ data class EntityStateValue(
             loaded = true
             val old =
                 stateValueId?.let {
-                    injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap)
+                    runBlocking { injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap) }
                 }
                     ?: emptyList()
             currentHistory.addAll(0, old)
@@ -138,7 +139,7 @@ data class EntityStateValue(
     val lastUpdate: Instant get() = updated
 
     /**
-     * Is this state has been updated in current [BotBus]?
+     * Is this state has been updated in current [ai.tock.bot.engine.BotBus]?
      */
     val hasBeanUpdatedInBus: Boolean get() = initialUpdate != updated
 

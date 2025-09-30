@@ -36,7 +36,7 @@ import ai.tock.shared.vertx.vertx
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
 import ai.tock.translator.I18nLabelValue
 import com.github.salomonbrys.kodein.instance
-import io.vertx.core.Promise
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -191,7 +191,9 @@ open class BotDefinitionBase(
                 vertx.executeBlocking(
                     {
                         try {
-                            userTimelineDao.remove(botDefinition.namespace, userId)
+                            runBlocking {
+                                userTimelineDao.remove(botDefinition.namespace, userId)
+                            }
                         } catch (e: Exception) {
                             logger.error(e)
                         }

@@ -17,14 +17,17 @@
 package ai.tock.shared.coroutines
 
 import ai.tock.shared.Executor
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import mu.KLogger
+import mu.KotlinLogging
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Launches a new coroutine without blocking the current thread and returns a reference to the coroutine as a [Job].
@@ -42,3 +45,17 @@ fun Executor.launchCoroutine(
 ): Job {
     return CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
 }
+
+/**
+ * fire and forget a suspend block in the [Dispatchers.IO] scope.
+ * Exceptions are logged.
+ */
+fun fireAndForget(block: suspend () -> Unit) =
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            block()
+        } catch (e: Exception) {
+            val logger: KLogger = KotlinLogging.logger { }
+            logger.error("Uncaught exception in a fire-and-forget-blocking-io coroutine", e)
+        }
+    }

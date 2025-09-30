@@ -21,6 +21,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -109,7 +110,7 @@ data class Dialog(
     /**
      * The [Snapshots] of the dialog.
      */
-    val snapshots: List<Snapshot> by lazy { injector.provide<UserTimelineDAO>().getSnapshots(id) }
+    val snapshots: List<Snapshot> by lazy { runBlocking { injector.provide<UserTimelineDAO>().getSnapshots(id) } }
 
     /**
      * Current number of actions in dialog history.

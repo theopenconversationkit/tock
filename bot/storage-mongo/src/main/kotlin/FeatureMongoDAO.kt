@@ -24,15 +24,12 @@ import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.bot.mongo.ai.tock.bot.mongo.FeatureCache
 import ai.tock.shared.error
 import ai.tock.shared.internalDefaultZoneId
-import com.mongodb.client.MongoCollection
+import com.mongodb.reactivestreams.client.MongoCollection
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
-import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
-import org.litote.kmongo.find
-import org.litote.kmongo.findOne
-import org.litote.kmongo.save
 import java.time.ZonedDateTime
 import kotlin.math.abs
 
@@ -49,14 +46,18 @@ internal data class Feature(
     val graduation: Int? = null,
 )
 
-internal class FeatureMongoDAO(private val cache: FeatureCache, private val col: MongoCollection<Feature>) :
-    FeatureDAO {
+internal class FeatureMongoDAO(
+    private val cache: FeatureCache,
+    asyncCol: MongoCollection<Feature>,
+) : FeatureDAO {
+
+    private val col = asyncCol.coroutine
     private val logger = KotlinLogging.logger {}
 
     private fun calculateId(botId: String, namespace: String, category: String, name: String, applicationId: String?) =
         "$botId,$namespace,$category,$name${applicationId?.let { "+$it" } ?: ""}"
 
-    override fun isEnabled(
+    override suspend fun isEnabled(
         botId: String,
         namespace: String,
         category: String,
@@ -106,7 +107,7 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         }
     }
 
-    private fun getValues(id: String, idWithoutApplicationId: String): Pair<Feature?, Feature?> {
+    private suspend fun getValues(id: String, idWithoutApplicationId: String): Pair<Feature?, Feature?> {
         val cacheForId = cache.stateOf(id)
         val cacheForIdWithoutApplicationId = cache.stateOf(idWithoutApplicationId)
         val pair = if (cacheForId == null && cacheForIdWithoutApplicationId == null) {
@@ -125,13 +126,13 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         return pair
     }
 
-    private fun cacheAllConnectorFeatureWithId(globalId: String) {
+    private suspend fun cacheAllConnectorFeatureWithId(globalId: String) {
         col.find("{\"_id\": /^$globalId\\+/}").toList().forEach {
             cache.setState(it._id, it)
         }
     }
 
-    override fun enable(
+    override suspend fun enable(
         botId: String,
         namespace: String,
         category: String,
@@ -147,7 +148,7 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         col.save(feature)
     }
 
-    override fun disable(
+    override suspend fun disable(
         botId: String,
         namespace: String,
         category: String,
@@ -159,8 +160,9 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         col.save(feature)
     }
 
-    override fun getFeatures(botId: String, namespace: String): List<FeatureState> =
+    override suspend fun getFeatures(botId: String, namespace: String): List<FeatureState> =
         col.find(BotId eq botId, Namespace eq namespace)
+            .toList()
             .mapNotNull {
                 try {
                     val index = it.key.lastIndexOf(',')
@@ -175,7 +177,7 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
                 }
             }
 
-    override fun addFeature(
+    override suspend fun addFeature(
         botId: String,
         namespace: String,
         enabled: Boolean,
@@ -191,7 +193,7 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         col.save(feature)
     }
 
-    override fun deleteFeature(
+    override suspend fun deleteFeature(
         botId: String,
         namespace: String,
         category: String,

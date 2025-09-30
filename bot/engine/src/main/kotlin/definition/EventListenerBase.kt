@@ -28,6 +28,7 @@ import ai.tock.bot.engine.event.StartConversationEvent
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -75,9 +76,11 @@ open class EventListenerBase : EventListener {
     ): Boolean {
         with(controller.botDefinition) {
             val userTimelineDAO: UserTimelineDAO by injector.instance()
-            val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
-            timeline.userState.botDisabled = false
-            userTimelineDAO.save(timeline, controller.botDefinition)
+            runBlocking {
+                val timeline = userTimelineDAO.loadWithoutDialogs(namespace, event.userId)
+                timeline.userState.botDisabled = false
+                userTimelineDAO.save(timeline, controller.botDefinition)
+            }
             return true
         }
     }

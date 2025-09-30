@@ -20,26 +20,28 @@ import ai.tock.bot.engine.feature.FeatureType
 import ai.tock.bot.mongo.FeatureMongoDAOTest.Feature.feature
 import ai.tock.bot.mongo.Feature_.Companion._id
 import ai.tock.shared.internalDefaultZoneId
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.result.DeleteResult
 import io.mockk.Runs
 import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.bson.conversions.Bson
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.coroutine.CoroutineCollection
+import org.litote.kmongo.coroutine.CoroutineFindPublisher
+import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
-import org.litote.kmongo.findOne
-import org.litote.kmongo.save
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import kotlin.test.assertFalse
@@ -56,7 +58,10 @@ internal class FeatureMongoDAOTest {
     private val namespace = "namespace"
     private val applicationId = "applicationId"
     private val id =
-        FeatureID("id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature", "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature")
+        FeatureID(
+            "id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature",
+            "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature"
+        )
     private val idWithApplicationId = FeatureID(
         "id,namespace,ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+applicationId",
         "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+applicationId"
@@ -66,25 +71,30 @@ internal class FeatureMongoDAOTest {
         "ai.tock.bot.mongo.FeatureMongoDAOTest\$Feature,feature+otherApplicationId"
     )
 
-    private val collection = mockk<MongoCollection<ai.tock.bot.mongo.Feature>>()
+    private val collection: CoroutineCollection<ai.tock.bot.mongo.Feature> = mockk()
+    private val col = mockk<com.mongodb.reactivestreams.client.MongoCollection<ai.tock.bot.mongo.Feature>>()
     private val cache = mockk<MongoFeatureCache>()
-    private val featureDAO = FeatureMongoDAO(cache, collection)
+    private val featureDAO by lazy { FeatureMongoDAO(cache, col) }
     private var features = mutableListOf<ai.tock.bot.mongo.Feature>()
 
     @AfterEach
     fun cleanupFeatures() {
         unmockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
-
-        clearMocks(collection, cache)
+        unmockkStatic("org.litote.kmongo.coroutine.CoroutineCollectionKt")
+        clearMocks(collection, col, cache)
     }
 
     @BeforeEach
     internal fun setUp() {
         mockkStatic("org.litote.kmongo.MongoCollectionsKt", "kotlin.collections.KMongoIterableKt")
-
+        mockkStatic("org.litote.kmongo.coroutine.CoroutineCollectionKt")
         features.clear()
-        every { collection.save(any()) } just Runs
+        every { col.coroutine } returns collection
+        coEvery { collection.save(any()) } returns mockk()
         every { cache.setState(any(), any()) } just Runs
+
+        every { col.find(any<Bson>()) } returns mockk(relaxed = true)
+        //every { col.find(any<String>()) } returns mockk(relaxed = true)
     }
 
     @Nested
@@ -100,7 +110,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `cache connector feature`() {
+            fun `cache connector feature`() = runBlocking {
                 `given no data persisted for`(id)
                 `given data persisted for`(idWithApplicationId, true)
 
@@ -110,7 +120,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `cache global feature`() {
+            fun `cache global feature`() = runBlocking {
                 `given data persisted for`(id, true)
                 `given no data persisted for`(idWithApplicationId)
 
@@ -120,7 +130,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `cache global and connector feature`() {
+            fun `cache global and connector feature`() = runBlocking {
                 `given data persisted for`(id, true)
                 `given data persisted for`(idWithApplicationId, true)
 
@@ -131,7 +141,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `cache global and all connector features`() {
+            fun `cache global and all connector features`() = runBlocking {
                 `given data persisted for`(id, true)
                 `given data persisted for`(idWithApplicationId, true)
                 `given data persisted for`(idWithOtherApplicationId, true)
@@ -139,7 +149,6 @@ internal class FeatureMongoDAOTest {
                 featureDAO.isEnabled(botId, namespace, feature, applicationId)
 
                 `assert that cache is set to`(id, true)
-                `assert that cache is set to`(idWithApplicationId, true)
                 `assert that cache is set to`(idWithApplicationId, true)
             }
 
@@ -152,14 +161,17 @@ internal class FeatureMongoDAOTest {
             }
 
             private fun `given no data persisted for`(featureID: FeatureID) {
-                every { collection.findOne(_id eq featureID.id) } returns null
+                coEvery { collection.findOne(_id eq featureID.id) } returns null
             }
 
             private fun `given data persisted for`(featureID: FeatureID, value: Boolean) {
                 val feature = Feature(featureID.id, featureID.key, value, botId, namespace)
-                every { collection.findOne(_id eq featureID.id) } returns feature
+                coEvery { collection.findOne(_id eq featureID.id) } returns feature
                 features.add(feature)
-                every { collection.find(any<Bson>()).toList() } returns features
+                val publisherList: CoroutineFindPublisher<ai.tock.bot.mongo.Feature> = mockk()
+                coEvery { publisherList.toList() } returns features
+                coEvery { collection.find(any<Bson>()) } returns publisherList
+                coEvery { collection.find(any<String>()) } returns publisherList
             }
         }
 
@@ -167,7 +179,7 @@ internal class FeatureMongoDAOTest {
         @DisplayName("Requesting for a global feature")
         inner class Global {
             @Test
-            fun `existing enabled global feature`() {
+            fun `existing enabled global feature`() = runBlocking {
                 `given data for`(id, true)
                 `given no data for`(idWithApplicationId)
 
@@ -175,7 +187,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `feature between activation period`() {
+            fun `feature between activation period`() = runBlocking {
                 `given data for`(
                     id,
                     true,
@@ -187,7 +199,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `disabled feature between activation period`() {
+            fun `disabled feature between activation period`() = runBlocking {
                 `given data for`(
                     id,
                     false,
@@ -199,7 +211,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `feature in activation period with no end date`() {
+            fun `feature in activation period with no end date`() = runBlocking {
                 `given data for`(
                     id,
                     true,
@@ -210,7 +222,7 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `feature before activation period`() {
+            fun `feature before activation period`() = runBlocking {
                 `given data for`(
                     id,
                     true,
@@ -222,14 +234,14 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
-            fun `feature with graduation for user with hash under 50`() {
+            fun `feature with graduation for user with hash under 50`() = runBlocking {
                 `given data for`(id, true, null, null, 50)
 
                 assertTrue(featureDAO.isEnabled(botId, namespace, feature, false, "f"))
             }
 
             @Test
-            fun `feature with graduation for user with hash over 50`() {
+            fun `feature with graduation for user with hash over 50`() = runBlocking {
                 `given data for`(id, true, null, null, 50)
 
                 assertFalse(featureDAO.isEnabled(botId, namespace, feature, false, "a"))
@@ -237,100 +249,120 @@ internal class FeatureMongoDAOTest {
 
             @Test
             fun `non existing enabled global feature but connector feature exists`() {
-                `given no data for`(id)
-                `given data for`(idWithApplicationId, true)
+                runBlocking {
+                    `given no data for`(id)
+                    `given data for`(idWithApplicationId, true)
 
-                assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
+                    assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
 
-                `assert that feature is persisted with`(id, false)
+                    `assert that feature is persisted with`(id, false)
+                }
             }
 
             @Test
             fun `non existing feature is disabled by default`() {
-                `given no data for`(id)
-                `given no data for`(idWithApplicationId)
+                runBlocking {
+                    `given no data for`(id)
+                    `given no data for`(idWithApplicationId)
 
-                assertFalse(featureDAO.isEnabled(botId, namespace, feature))
+                    assertFalse(featureDAO.isEnabled(botId, namespace, feature))
 
-                `assert that feature is persisted with`(id, false)
+                    `assert that feature is persisted with`(id, false)
+                }
             }
 
             @Test
             fun `non existing feature with enabled state by default`() {
-                `given no data for`(id)
-                `given no data for`(idWithApplicationId)
+                runBlocking {
+                    `given no data for`(id)
+                    `given no data for`(idWithApplicationId)
 
-                assertTrue(featureDAO.isEnabled(botId, namespace, feature, true))
+                    assertTrue(featureDAO.isEnabled(botId, namespace, feature, true))
 
-                `assert that feature is persisted with`(id, true)
+                    `assert that feature is persisted with`(id, true)
+                }
             }
 
             @Test
             fun `non existing feature with disabled state by default`() {
-                `given no data for`(id)
-                `given no data for`(idWithApplicationId)
+                runBlocking {
+                    `given no data for`(id)
+                    `given no data for`(idWithApplicationId)
 
-                assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
+                    assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
 
-                `assert that feature is persisted with`(id, false)
-            }
-
-            @Test
-            fun delete() {
-                every { collection.deleteOneById(id.id) } returns DeleteResult.acknowledged(1)
-
-                featureDAO.deleteFeature(botId, namespace, feature)
-
-                verify(exactly = 1) { collection.deleteOneById(id.id) }
+                    `assert that feature is persisted with`(id, false)
+                }
             }
         }
 
-        @Nested
-        @DisplayName("Requesting for a connector specific feature")
-        inner class Connector {
-            @Test
-            fun `existing enabled connector feature`() {
-                `given no data for`(id)
-                `given data for`(idWithApplicationId, true)
+        @Test
+        fun delete() = runBlocking {
+            coEvery { collection.deleteOneById(id.id) } returns DeleteResult.acknowledged(1)
 
-                assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
-            }
+            featureDAO.deleteFeature(botId, namespace, feature)
 
-            @Test
-            fun `non existing connector feature but existing global feature`() {
-                `given data for`(id, true)
-                `given no data for`(idWithApplicationId)
+            coVerify(exactly = 1) { collection.deleteOneById(id.id) }
+        }
+    }
 
-                assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
-            }
+    @Nested
+    @DisplayName("Requesting for a connector specific feature")
+    inner class Connector {
+        @Test
+        fun `existing enabled connector feature`() = runBlocking {
+            `given no data for`(id)
+            `given data for`(idWithApplicationId, true)
 
-            @Test
-            fun delete() {
-                every { collection.deleteOneById(idWithApplicationId.id) } returns DeleteResult.acknowledged(1)
+            assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
+        }
 
-                featureDAO.deleteFeature(botId, namespace, feature, applicationId)
+        @Test
+        fun `non existing connector feature but existing global feature`() = runBlocking {
+            `given data for`(id, true)
+            `given no data for`(idWithApplicationId)
 
-                verify(exactly = 1) { collection.deleteOneById(idWithApplicationId.id) }
-            }
+            assertTrue(featureDAO.isEnabled(botId, namespace, feature, applicationId, false))
+        }
+
+        @Test
+        fun delete() = runBlocking {
+            coEvery { collection.deleteOneById(idWithApplicationId.id) } returns DeleteResult.acknowledged(1)
+
+            featureDAO.deleteFeature(botId, namespace, feature, applicationId)
+
+            coVerify(exactly = 1) { collection.deleteOneById(idWithApplicationId.id) }
         }
     }
 
     private fun `assert that feature is persisted with`(featureID: FeatureID, enabled: Boolean) {
-        verify(exactly = 1) { collection.save(Feature(featureID.id, featureID.key, enabled, botId, namespace)) }
+        coVerify(exactly = 1) { collection.save(Feature(featureID.id, featureID.key, enabled, botId, namespace)) }
     }
 
     private fun `given no data for`(featureID: FeatureID) {
         mockRetrieveData(featureID, null)
     }
 
-    private fun `given data for`(featureID: FeatureID, enabled: Boolean, start: ZonedDateTime? = null, end: ZonedDateTime? = null, graduation: Int? = null) {
-        mockRetrieveData(featureID, Feature(featureID.id, featureID.key, enabled, botId, namespace, start, end, graduation))
+    private fun `given data for`(
+        featureID: FeatureID,
+        enabled: Boolean,
+        start: ZonedDateTime? = null,
+        end: ZonedDateTime? = null,
+        graduation: Int? = null
+    ) {
+        mockRetrieveData(
+            featureID,
+            Feature(featureID.id, featureID.key, enabled, botId, namespace, start, end, graduation)
+        )
     }
 
     private fun mockRetrieveData(featureID: FeatureID, feature: ai.tock.bot.mongo.Feature?) {
         every { cache.stateOf(featureID.id) } returns feature
-        every { collection.findOne(_id eq featureID.id) } returns feature
+        coEvery { collection.findOne(_id eq featureID.id) } returns feature
         feature?.also { features.add(it) }
-        every { collection.find(any<Bson>()).toList() } returns features
+        val publisherList: CoroutineFindPublisher<ai.tock.bot.mongo.Feature> = mockk()
+        coEvery { publisherList.toList() } returns features
+        coEvery { collection.find(any<Bson>()) } returns publisherList
+        coEvery { collection.find(any<String>()) } returns publisherList
     }
 }

@@ -18,6 +18,7 @@ package ai.tock.bot.test
 
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.KodeinInjector
+import io.mockk.coEvery
 import io.mockk.every
 
 /**
@@ -41,7 +42,7 @@ open class TestLifecycle<out T : TestContext>(val testContext: T) {
 
     open fun configureTestIoc() {
         with(testContext) {
-            every { mockedUserTimelineDAO.getSnapshots(any()) } returns botBusMockContext.snapshots
+            coEvery { mockedUserTimelineDAO.getSnapshots(any()) } returns botBusMockContext.snapshots
         }
     }
 }

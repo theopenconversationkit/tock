@@ -64,6 +64,7 @@ import io.vertx.core.Deployable
 import io.vertx.core.DeploymentOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import kotlinx.coroutines.runBlocking
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -217,24 +218,27 @@ object BotRepository {
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {}
     ) {
-        val userTimelineDAO: UserTimelineDAO = injector.provide()
-        val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-        val userState = userTimeline.userState
-        val currentState = userState.botDisabled
+        runBlocking {
+            val userTimelineDAO: UserTimelineDAO = injector.provide()
+            val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+            val userState = userTimeline.userState
+            val currentState = userState.botDisabled
 
-        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
-            stateModifier == NotifyBotStateModifier.REACTIVATE
-        ) {
-            userState.botDisabled = false
-            userTimelineDAO.save(userTimeline, botDefinition)
-        }
+            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
+                stateModifier == NotifyBotStateModifier.REACTIVATE
+            ) {
+                userState.botDisabled = false
+                userTimelineDAO.save(userTimeline, botDefinition)
+            }
 
-        notify(recipientId, intent, step, parameters, notificationType, errorListener)
+            notify(recipientId, intent, step, parameters, notificationType, errorListener)
 
-        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
-            val userTimelineAfterNotification = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-            userTimelineAfterNotification.userState.botDisabled = currentState
-            userTimelineDAO.save(userTimeline, botDefinition)
+            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
+                val userTimelineAfterNotification =
+                    userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+                userTimelineAfterNotification.userState.botDisabled = currentState
+                userTimelineDAO.save(userTimeline, botDefinition)
+            }
         }
     }
 
