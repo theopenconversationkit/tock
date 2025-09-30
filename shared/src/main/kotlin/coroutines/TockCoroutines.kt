@@ -24,6 +24,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KLogger
 import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
@@ -50,7 +51,7 @@ fun Executor.launchCoroutine(
  * fire and forget a suspend block in the [Dispatchers.IO] scope.
  * Exceptions are logged.
  */
-fun fireAndForget(block: suspend () -> Unit) =
+fun fireAndForgetIO(block: suspend () -> Unit) =
     CoroutineScope(Dispatchers.IO).launch {
         try {
             block()
@@ -59,3 +60,23 @@ fun fireAndForget(block: suspend () -> Unit) =
             logger.error("Uncaught exception in a fire-and-forget-blocking-io coroutine", e)
         }
     }
+
+/**
+ * fire and forget a suspend block in the current coroutine scope.
+ * Exceptions are logged.
+ */
+fun fireAndForget(block: suspend () -> Unit) =
+    CoroutineScope(EmptyCoroutineContext).launch {
+        try {
+            block()
+        } catch (e: Exception) {
+            val logger: KLogger = KotlinLogging.logger { }
+            logger.error("Uncaught exception in a fire-and-forget-blocking-io coroutine", e)
+        }
+    }
+
+/**
+ * Starts a coroutine and waits for the result. [Dispatchers.IO] is used.
+ */
+fun <T> waitForCoroutineIO(block: suspend CoroutineScope.() -> T): T = runBlocking(context = Dispatchers.IO, block = block)
+

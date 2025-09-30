@@ -22,10 +22,12 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.defaultNamespace
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  *
@@ -33,10 +35,15 @@ import kotlin.test.assertEquals
 internal class UserTimelineMongoDAOTest : AbstractTest() {
 
     @Test
-    fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() = runBlocking{
+    fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() = runBlocking {
         val id = PlayerId("id", PlayerType.user, "clientId")
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
         UserTimelineMongoDAO.save(u, "namespace")
+        assertNotEquals(
+            u.dialogs,
+            UserTimelineMongoDAO.getClientDialogs("namespace", id.clientId!!) { error("no story provided") }
+        )
+        delay(1000)
         assertEquals(
             u.dialogs,
             UserTimelineMongoDAO.getClientDialogs("namespace", id.clientId!!) { error("no story provided") }
