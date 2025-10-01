@@ -15,13 +15,12 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>25.3.11-SNAPSHOT</version>
+    <version>25.9.0</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -958,7 +957,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments/>
+            <comments />
         </license>
     </licenses>
 
@@ -966,7 +965,7 @@
         <connection>scm:git:git@github.com:theopenconversationkit/tock.git</connection>
         <developerConnection>scm:git:git@github.com:theopenconversationkit/tock.git</developerConnection>
         <url>git@github.com:theopenconversationkit/tock.git</url>
-        <tag>tock-${project.version}</tag>
+        <tag>tock-25.9.0</tag>
     </scm>
 
     <profiles>
