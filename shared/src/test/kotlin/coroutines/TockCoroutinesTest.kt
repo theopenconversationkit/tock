@@ -21,6 +21,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -91,7 +92,7 @@ class TockCoroutinesTest {
     fun `fireAndForgetIO does not wait to finish the task`(): Unit = runBlocking {
         var finished = false
         val time = Instant.now()
-        fireAndForget {
+        fireAndForgetIO {
             delay(1000)
             finished = true
         }
@@ -104,7 +105,7 @@ class TockCoroutinesTest {
     @Test
     fun `waitForIO does not block the caller thread`() {
         val ticks = AtomicInteger(0)
-        val result = waitForRouting(ticks) { f ->
+        val result = waitForIOCorouting(ticks) { f ->
             waitForIO {
                 f()
             }
@@ -116,11 +117,10 @@ class TockCoroutinesTest {
         assertEquals("OK", result)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun `waitForCoroutineIO does block the caller thread`() {
         val ticks = AtomicInteger(0)
-        val result = waitForRouting(ticks) { f ->
+        val result = waitForIOCorouting(ticks) { f ->
             waitForCoroutineIO {
                 f()
             }
@@ -132,8 +132,8 @@ class TockCoroutinesTest {
         assertEquals("OK", result)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun waitForRouting(ticks: AtomicInteger, f: suspend (suspend () -> String) -> String): String =
+    @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+    private fun waitForIOCorouting(ticks: AtomicInteger, f: suspend (suspend () -> String) -> String): String =
         runBlocking {
             // Single-thread dispatcher to make the test deterministic: if blocked, nothing else runs.
             val callerDispatcher = newSingleThreadContext("caller-thread")
@@ -144,8 +144,7 @@ class TockCoroutinesTest {
                     // Signal to stop the ticker after IO completes.
                     val stop = CompletableDeferred<Unit>()
 
-                    // Launch code BEFORE waitForIO; it starts working only when ioStarted is completed.
-                    // UNDISTPATCHED ensures the await is installed before IO completes ioStarted.
+                    // Launch code BEFORE the function call; it starts working only when ioStarted is completed.
                     val tickerJob = launch {
                         // Wait until the IO block signals it has started (and is sleeping on Dispatchers.IO).
                         ioStarted.await()
@@ -162,7 +161,7 @@ class TockCoroutinesTest {
                         // Signal that we've switched to IO and are about to simulate blocking work.
                         ioStarted.complete(Unit)
                         // Simulate blocking I/O (e.g., JDBC, network, file).
-                        Thread.sleep(500)
+                        Thread.sleep(200)
                         "OK"
                     }
 
