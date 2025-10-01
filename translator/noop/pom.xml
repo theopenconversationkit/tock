@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-translator</artifactId>
-        <version>25.9.0</version>
+        <version>25.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-translator-noop</artifactId>
