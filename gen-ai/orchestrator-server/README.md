@@ -15,3 +15,5 @@ Please follow these instructions:
 - For Linux, the path to this "poetry" script must be declared :
   + in the PATH defined in the ~/.profile configuration file.
   + or in a script that launches the maven build
+
+Tested with python 3.12.2 and poetry 1.8.3
