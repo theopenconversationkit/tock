@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-mvn clean deploy -Ddeploy -U
+mvn clean deploy -Ddeploy -U -T 20C
