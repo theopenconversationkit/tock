@@ -127,6 +127,11 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
     }
 
     every {
+        bus.entityValue<Value>(
+            any<Entity>()
+        )
+    } returns null
+    every {
         bus.entityValue(
             any<Entity>(),
             any<(EntityValue) -> Value?>()
