@@ -27,35 +27,115 @@ import {
   PromptDefinitionFormatter
 } from '../../../shared/model/ai-settings';
 
-export const QuestionCondensingDefaultPrompt: string = `Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is.`;
+export const QuestionCondensingDefaultPrompt: string = `# Question Reformulation Assistant
+
+## Context
+You are a helpful assistant that reformulates questions.
+
+You are given:
+- The conversation history between the user and the assistant
+- The most recent user question
+
+## Task
+1. Reformulate the user’s latest question into a clear, standalone query.
+2. Incorporate relevant context from the conversation history.
+3. Enrich the reformulation with the business/domain lexicon whenever relevant.
+4. Expand any acronym into its full meaning, and also keep the acronym in parentheses.
+ - Example: "PTZ" → "Prêt à Taux Zéro (PTZ)"
+5. If the user provides the full term without acronym, add the acronym in parentheses if it is commonly used in the business domain.
+ - Example: "Prêt à Taux Zéro" → "Prêt à Taux Zéro (PTZ)"
+6. Do NOT answer the question.
+
+## Business/domain lexicon
+PTZ : Prêt à Taux Zéro
+Éco-PTZ : Éco-Prêt à Taux Zéro
+
+## Output
+Return only the reformulated question.
+`;
 
 export const QuestionAnsweringDefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
 
-## General context
+## Instructions:
+You must answer STRICTLY in valid JSON format (no extra text, no explanations).
+Use only the following context and the rules below to answer the question.
 
-You are a chatbot designed to provide short conversational messages in response to user queries.
+### Rules for JSON output:
 
-## Guidelines
+- If the answer is found in the context:
+  - "status": "found_in_context"
 
-Incorporate any relevant details from the provided context into your answers, ensuring they are directly related to the user's query.
+- If the answer is NOT found in the context:
+  - "status": "not_found_in_context"
+  - "answer":
+    - The "answer" must not be a generic refusal. Instead, generate a helpful and intelligent response:
+        - If a similar or related element exists in the context (e.g., another product, service, or regulation with a close name, date, or wording), suggest it naturally in the answer.
+        - If no similar element exists, politely acknowledge the lack of information while encouraging clarification or rephrasing.
+    - Always ensure the response is phrased in a natural and user-friendly way, rather than a dry "not found in context".
 
-## Style and format
+- If the question matches a special case defined below:
+  - "status": "<the corresponding case code>"
 
-Your tone is empathetic, informative and polite.
+And for all cases (MANDATORY):
+  - "answer": "<the best possible answer in {{ locale }}>"
+  - "topic": "<exactly ONE topic chosen STRICTLY from the predefined list below. If no exact match is possible, set 'unknown'>"
+  - "suggested_topics": ["<zero or more free-form suggestions if topic is unknown>"]
 
-## Additional instructions
+Exception: If the question is small talk (only to conversational rituals such as greetings (e.g., “hello”, “hi”) and farewells or leave-takings (e.g., “goodbye”, “see you”) ), you may ignore the context and generate a natural small-talk response in the "answer". In this case:
+  - "status": "small_talk"
+  - "topic": "<e.g., greetings>"
+  - "suggested_topics": []
+  - "context": []
 
-Use the following pieces of retrieved context to answer the question.
-If you dont know the answer, answer (exactly) with "{{no_answer}}".
-Answer in {{locale}}.
+### Context tracing requirements (MANDATORY):
+- You MUST include **every** chunk from the input context in the "context" array, in the same order they appear. **No chunk may be omitted**.
+- If explicit chunk identifiers are present in the context, use them; otherwise assign sequential numbers starting at 1.
+- For each chunk object:
+  - "chunk": "<chunk_identifier_or_sequential_number>"
+  - "sentences": ["<verbatim sentence(s) from this chunk used to answer the question>"] — leave empty \`[]\` if none.
+  - "reason": null if the chunk contributed; otherwise a concise explanation of why this chunk is not relevant to the question (e.g., "general background only", "different product", "no data for the asked period", etc.).
+- If there are zero chunks in the context, return \`"context": []\`.
 
-## Context
+### Predefined list of topics (use EXACT spelling, no variations):
 
-{{context}}
+## Context:
+{{ context }}
 
-## Question
+## Conversation history
+{{ chat_history }}
 
-{{question}}
+## User question
+{{ question }}
+
+## Output format (JSON only):
+Return your response in the following format:
+
+{
+  "status": "found_on_context" | "not_in_context" | "small_talk",
+  "answer": "TEXTUAL_ANSWER",
+  "topic": "EXACT_TOPIC_FROM_LIST_OR_UNKNOWN",
+  "suggested_topics": [
+    "SUGGESTED_TOPIC_1",
+    "SUGGESTED_TOPIC_2"
+  ],
+  "context": [
+    {
+      "chunk": "1",
+      "sentences": ["SENTENCE_1", "SENTENCE_2"],
+      "reason": null
+    },
+    {
+      "chunk": "2",
+      "sentences": [],
+      "reason": "General description; no details related to the question."
+    },
+    {
+      "chunk": "3",
+      "sentences": ["SENTENCE_X"],
+      "reason": null
+    }
+  ]
+}
 `;
 
 export const QuestionCondensing_prompt: ProvidersConfigurationParam[] = [

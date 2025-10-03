@@ -36,11 +36,13 @@ data class BotRAGConfiguration(
     val llmSetting: LLMSetting? = null,
     val emSetting: EMSetting,
     val indexSessionId: String? = null,
+    @Deprecated("Replaced by LLM answer status")
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean = false,
-    val maxDocumentsRetrieved: Int = 4,
+    val maxDocumentsRetrieved: Int = 4, // Max documents retrieved from vector db per query
+    val maxDocumentsInContext: Int = 4, // Max documents used in LLM context
     val maxMessagesFromHistory: Int = 5,
 ) {
     @Deprecated("use BotRAGConfiguration#questionAnsweringLlmSetting")

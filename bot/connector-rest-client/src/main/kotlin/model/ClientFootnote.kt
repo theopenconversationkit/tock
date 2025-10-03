@@ -24,5 +24,6 @@ data class ClientFootnote(
     val title: String,
     val url: String?,
     val content: String?,
-    val score: Float?
+    val score: Float?,
+    val rrfScore: Float?
 )
