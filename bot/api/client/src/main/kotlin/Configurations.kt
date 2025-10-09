@@ -26,7 +26,7 @@ fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
         stories = stories.map {
             it.mapToStoryConfiguration()
         },
-        version = ResponseContextVersion.V2
+        version = ResponseContextVersion.V3
     )
 
 private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration {

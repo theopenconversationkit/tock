@@ -62,8 +62,8 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
             }
         }
 
-        blocking(HttpMethod.GET, "/webhook/sse") { context ->
-            val content = context.request().getHeader("message")
+        blocking(HttpMethod.POST, "/webhook/sse") { context ->
+            val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 context.response().setupSSE()

@@ -16,10 +16,9 @@
 
 package ai.tock.bot.api.service
 
+import ai.tock.bot.api.model.configuration.ResponseContextVersion
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
-import ai.tock.bot.connector.web.WebConnectorResponseContent
-import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
 import ai.tock.shared.error
@@ -33,6 +32,7 @@ import com.launchdarkly.eventsource.MessageEvent
 import com.launchdarkly.eventsource.background.BackgroundEventHandler
 import com.launchdarkly.eventsource.background.BackgroundEventSource
 import mu.KotlinLogging
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
@@ -65,7 +65,11 @@ internal class BotApiClient(baseUrl: String) {
             }
         }
 
-    fun sendWithSse(request: RequestData, sendResponse: (ResponseData?) -> Unit): Unit =
+    fun sendWithSse(
+        request: RequestData,
+        version: ResponseContextVersion?,
+        sendResponse: (ResponseData?) -> Unit
+    ): Unit =
         try {
 
             val closeListener = CloseListener()
@@ -105,11 +109,16 @@ internal class BotApiClient(baseUrl: String) {
                     EventSource.Builder(
                         ConnectStrategy
                             .http(URI.create("${formattedBaseUrl}webhook/sse").toURL())
-                            // Specifying custom request headers
-                            .header(
-                                "message",
-                                mapper.writeValueAsString(request)
-                            )
+                            .run {
+                                if (version == ResponseContextVersion.V2) {
+                                    header(
+                                        "message",
+                                        mapper.writeValueAsString(request)
+                                    )
+                                } else {
+                                    methodAndBody("POST", mapper.writeValueAsString(request).toRequestBody())
+                                }
+                            }
                             .connectTimeout(connectionTimeoutInMs, TimeUnit.MILLISECONDS)
                             .readTimeout(timeoutInMs, TimeUnit.MILLISECONDS)
                     )

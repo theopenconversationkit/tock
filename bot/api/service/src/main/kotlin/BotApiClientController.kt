@@ -145,18 +145,19 @@ internal class BotApiClientController(
         if (client != null) {
             sendWithWebhook(request, sendResponse)
         } else {
-            sendWithWebSocket(request, sendResponse) ?: error("no webhook set and no response from websocket")
+            sendWithWebSocket(request, sendResponse)
         }
     }
 
     private fun sendWithWebhook(request: RequestData, sendResponse: (ResponseData?) -> Unit) {
         client?.apply {
-            if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.version != V2) {
+            if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.supportSSE != true) {
+                logger.debug { "sse not used for webhook" }
                 send(request).apply {
                     sendResponse(this)
                 }
             } else {
-                sendWithSse(request, sendResponse)
+                sendWithSse(request, lastConfiguration?.version, sendResponse)
             }
         }
     }

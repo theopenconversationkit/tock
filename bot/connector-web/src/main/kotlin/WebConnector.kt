@@ -76,10 +76,10 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
+import mu.KotlinLogging
 import java.time.Duration
 import java.util.Locale
 import java.util.UUID
-import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
 /**
@@ -177,7 +177,7 @@ class WebConnector internal constructor(
                     .handler { context ->
                         try {
                             val body = context.request().getHeader("message")
-                                ?: error("message header is mandatory and is missing")
+                                ?: context.body().asString() ?: error("message is mandatory and is missing")
                             context.response().setupSSE()
 
                             handleRequest(controller, context, body)
