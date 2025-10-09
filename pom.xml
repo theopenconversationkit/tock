@@ -35,7 +35,7 @@
         <coroutine>1.10.2</coroutine>
 
         <slf4j>2.0.17</slf4j>
-        <logback>1.5.18</logback>
+        <logback>1.5.19</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
@@ -51,7 +51,7 @@
         <klaxon>5.6</klaxon>
         <vertx>5.0.4</vertx>
         <retrofit>3.0.0</retrofit>
-        <okhttp>5.1.0</okhttp>
+        <okhttp>5.2.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
@@ -72,19 +72,19 @@
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
         <google>26.69.0</google>
-        <aws-sdk>1.12.791</aws-sdk>
-        <aws-sagemaker>2.34.6</aws-sagemaker>
+        <aws-sdk>1.12.792</aws-sdk>
+        <aws-sagemaker>2.35.3</aws-sagemaker>
         <pac4j>6.2.2</pac4j>
         <vertx-pac4j>7.0.1</vertx-pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
-        <junit-jupiter>5.14.0</junit-jupiter>
+        <junit-jupiter>6.0.0</junit-jupiter>
         <testcontainer>1.21.3</testcontainer>
 
-        <mockk>1.14.5</mockk>
+        <mockk>1.14.6</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.17.7</byte-buddy>
+        <byte-buddy>1.17.8</byte-buddy>
         <atrium>0.15.0</atrium>
         <serialization>1.6.2</serialization>
 
