@@ -38,16 +38,21 @@ import ai.tock.shared.Executor
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
+import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
-import java.util.Locale
-import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
+import java.time.Duration
+import java.util.Locale
+import java.util.concurrent.atomic.AtomicReference
+
+private val cleanupTimeoutProperty = longProperty("tock_cleanup_delay_seconds", 60)
 
 /**
  *
@@ -156,7 +161,7 @@ internal class TockBotBus(
         // The test connector is a rest connector (source),
         // but it invokes the engine with a target connector,
         // to receive the corresponding messages
-        if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
+        if (actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
             // If the action is not a SendDebug, or it is, but the source connector is the rest connector
             customActionSender.get()?.invoke(actionToSent, context.currentDelay)
                 ?: doSend(actionToSent, context.currentDelay)
@@ -217,7 +222,11 @@ internal class TockBotBus(
         return this
     }
 
-    override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(
+        connectorType: ConnectorType,
+        connectorId: String,
+        messageProvider: () -> ConnectorMessage
+    ): BotBus {
         if (this.connectorId == connectorId && isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
         }
@@ -241,19 +250,25 @@ internal class TockBotBus(
         }
     }
 
+    internal data class QueuedAction(val action: Action, val delay: Long)
+
     /**
      * @return a callback to force-close the message queue
      */
-    fun deferMessageSending(scope: CoroutineScope): () -> Unit {
-        data class QueuedAction(val action: Action, val delay: Long)
+    fun deferMessageSending(
+        scope: CoroutineScope,
+        messageChannel: Channel<QueuedAction> = Channel(Channel.BUFFERED),
+        timeout: Duration = Duration.ofSeconds(cleanupTimeoutProperty)
+    ): () -> Unit {
 
-        val messageChannel = Channel<QueuedAction>(Channel.BUFFERED)
+        var closed = false
         customActionSender.set { action, delay ->
             // we queue in the current thread to preserve message ordering
             scope.launch(start = CoroutineStart.UNDISPATCHED) {
                 messageChannel.send(QueuedAction(action, delay))
                 // the following code may happen in a different thread if the channel's buffer was full
                 if (action.metadata.lastAnswer) {
+                    closed = true
                     messageChannel.close()
                 }
             }
@@ -263,6 +278,16 @@ internal class TockBotBus(
                 doSend(action, delay)
             }
         }
-        return { messageChannel.close() }
+        return {
+            if (!closed) {
+                injector.provide<Executor>().executeBlockingTask(timeout) {
+                    logger.info("force-closing message channel")
+                    messageChannel.close()
+                }
+
+            }
+        }
     }
 }
+
+private val logger = KotlinLogging.logger {}
