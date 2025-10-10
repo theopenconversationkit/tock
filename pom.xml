@@ -945,9 +945,9 @@
     </organization>
     <developers>
         <developer>
-            <id>jburet_vsct</id>
+            <id>jburet</id>
             <name>Julien Buret</name>
-            <email>jburet@voyages-sncf.com</email>
+            <email>zigzago@litote.org</email>
             <organization>theopenconversationkit</organization>
             <organizationUrl>https://doc.tock.ai</organizationUrl>
         </developer>
