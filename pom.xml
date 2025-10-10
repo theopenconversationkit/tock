@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>25.9.1</version>
+    <version>25.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -965,7 +965,7 @@
         <connection>scm:git:git@github.com:theopenconversationkit/tock.git</connection>
         <developerConnection>scm:git:git@github.com:theopenconversationkit/tock.git</developerConnection>
         <url>git@github.com:theopenconversationkit/tock.git</url>
-        <tag>tock-25.9.1</tag>
+        <tag>tock-${project.version}</tag>
     </scm>
 
     <profiles>
