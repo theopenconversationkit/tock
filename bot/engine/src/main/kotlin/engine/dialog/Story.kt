@@ -20,9 +20,11 @@ import ai.tock.bot.definition.AsyncStoryHandler
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
+import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
+import ai.tock.bot.definition.definition.AsyncStoryHandlerListener
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
@@ -127,11 +129,11 @@ data class Story(
         current.takeIf { current.children.any { child.name == it.name } }
             ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
-    private fun StoryHandler.sendStartEvent(bus: BotBus): Boolean {
+    private inline fun sendStartEvent(startAction: StoryHandlerListener.() -> Boolean): Boolean {
         // stops immediately if any startAction returns false
         return BotRepository.storyHandlerListeners.all {
             try {
-                it.startAction(bus, this)
+                it.startAction()
             } catch (throwable: Throwable) {
                 logger.error(throwable)
                 true
@@ -139,10 +141,10 @@ data class Story(
         }
     }
 
-    private fun StoryHandler.sendEndEvent(bus: BotBus) {
+    private inline fun sendEndEvent(endAction: StoryHandlerListener.() -> Unit) {
         BotRepository.storyHandlerListeners.forEach {
             try {
-                it.endAction(bus, this)
+                it.endAction()
             } catch (throwable: Throwable) {
                 logger.error(throwable)
             }
@@ -159,7 +161,7 @@ data class Story(
             // This path can only occur if this method was called from user code (TOCK always calls the suspending overload)
             error("Do not call Story.handle on an async story (${definition.id}), use handle(AsyncBotBus) instead")
         } else {
-            storyHandler.withEvents(bus) {
+            withEvents(storyHandler, bus) {
                 it.handle(bus)
             }
         }
@@ -170,7 +172,7 @@ data class Story(
      */
     @ExperimentalTockCoroutines
     suspend fun handle(bus: AsyncBotBus) {
-        definition.storyHandler.withEvents(bus.botBus) {
+        withEvents(definition.storyHandler, bus) {
             if (it is AsyncStoryHandler) {
                 it.handle(bus)
             } else {
@@ -179,13 +181,25 @@ data class Story(
         }
     }
 
-    private inline fun <T : StoryHandler> T.withEvents(bus: BotBus, op: (T) -> Unit) {
+    private inline fun <T : StoryHandler> withEvents(handler: T, bus: BotBus, op: (T) -> Unit) {
         try {
-            if (sendStartEvent(bus)) {
-                op(this)
+            if (sendStartEvent { startAction(bus, handler) }) {
+                op(handler)
             }
         } finally {
-            sendEndEvent(bus)
+            sendEndEvent { endAction(bus, handler) }
+        }
+    }
+
+    @ExperimentalTockCoroutines
+    private suspend inline fun <T : StoryHandler> withEvents(handler: T, bus: AsyncBotBus, op: (T) -> Unit) {
+        try {
+            if (sendStartEvent { this is AsyncStoryHandlerListener && startAction(bus, handler)
+                        || startAction(bus.botBus, handler) }) {
+                op(handler)
+            }
+        } finally {
+            sendEndEvent { if (this is AsyncStoryHandlerListener) endAction(bus, handler) else endAction(bus.botBus, handler) }
         }
     }
 
