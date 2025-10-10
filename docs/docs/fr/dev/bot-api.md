@@ -12,7 +12,7 @@ base de données serait un problème.
 
 > Seul le mode _Bot API_ est disponible sur la [plateforme de démonstration](https://demo.tock.ai/)
 > publique Tock.
-<!-->prblm lien complet mais surtout # inexsitant <!-->
+
 Cette page présente le développement de bots Tock en mode _Bot API_ en [Kotlin]( #developper-en-kotlin). 
 Des clients sont aussi disponibles pour [Javascript/Node](#developper-en-javascript) et [Python](#developper-en-python).
 Il est possible de développer des parcours Tock dans n'importe quel langage via la [_Bot API_](#developper-via-lapi).
