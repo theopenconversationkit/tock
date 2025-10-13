@@ -27,6 +27,7 @@ import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
+import ai.tock.bot.admin.service.DataMigrationService
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
@@ -96,8 +97,15 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override fun configureServices() {
         vertx.eventBus().consumer<Boolean>(ServerStatus.SERVER_STARTED) {
-            if (it.body() && booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
-                FaqAdminService.makeMigration()
+            if (it.body()){
+                if (booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
+                    FaqAdminService.makeMigration()
+                }
+
+                if (booleanProperty(Properties.UPDATING_CUSTOM_METRIC_ENABLED, false)) {
+                    DataMigrationService.migrateMetrics()
+                    DataMigrationService.migrateIndicators()
+                }
             }
         }
         initTranslator()

@@ -62,3 +62,13 @@
 .height-250 {
   height: 250px !important;
 }
+
+.stats-value {
+  display: inline-block;
+  width: 80px;
+  text-align: center;
+  margin-left: 10px;
+}
+.stats-value.test {
+  color: #6c757d;
+}

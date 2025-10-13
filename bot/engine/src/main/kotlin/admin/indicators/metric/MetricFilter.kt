@@ -22,6 +22,7 @@ import java.time.Instant
  * Metric filter
  */
 data class MetricFilter(
+    val namespace: String? = null,
     val botId: String? = null,
     val types: List<MetricType>? = null,
     val emitterStoryIds: List<String>? = null,

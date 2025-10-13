@@ -430,3 +430,44 @@ export interface ActionNlpStats {
   date: string;
   stats: NlpCallStats;
 }
+
+export interface DialogStatsQuery {
+  namespace: string;
+  applicationName: string;
+  from: Date;
+  to: Date;
+}
+
+export interface DialogStatsGroupResult {
+  test: DialogStatsQueryResult;
+  prod: DialogStatsQueryResult;
+}
+
+export interface DialogStatsQueryResult {
+  allUserActions: CountResult[];
+  allUserActionsExceptRag: CountResult[];
+  allUserRagActions: CountResult[];
+  knownIntentUserActions: CountResult[];
+  unknownIntentUserActions: CountResult[];
+  unknownIntentUserActionsExceptRag: CountResult[];
+}
+
+export interface CountResult {
+  _id: string; // applicationName
+  total: number;
+}
+
+export interface DialogStats {
+  test: DialogCounts;
+  prod: DialogCounts;
+}
+
+export interface DialogCounts {
+  allUserActions: number;
+  allUserActionsExceptRag: number;
+  allUserRagActions: number;
+  knownIntentUserActions: number;
+  unknownIntentUserActions: number;
+  unknownIntentUserActionsExceptRag: number;
+}
+

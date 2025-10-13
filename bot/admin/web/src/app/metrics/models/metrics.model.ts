@@ -17,9 +17,26 @@
 export interface MetricResult {
   count: number;
   row: {
+    applicationId?: string;
     trackedStoryId?: string;
     indicatorName?: string;
     indicatorValueName?: string;
     type?: string;
   };
+}
+
+export interface MetricGroupResult {
+  test: MetricResult[];
+  prod: MetricResult[];
+}
+
+export interface RagStats {
+  test: RagCounts;
+  prod: RagCounts;
+}
+
+export interface RagCounts {
+  failure: number;
+  success: number;
+  noAnswer: number;
 }

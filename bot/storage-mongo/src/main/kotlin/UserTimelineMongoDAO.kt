@@ -20,11 +20,15 @@ import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogRating
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.dialog.DialogStatsQuery
+import ai.tock.bot.admin.dialog.DialogStatsQueryResult
+import ai.tock.bot.admin.dialog.IntentTypeEnum
 import ai.tock.bot.admin.dialog.RatingReportQueryResult
 import ai.tock.bot.admin.user.AnalyticsQuery
 import ai.tock.bot.admin.user.UserAnalytics
@@ -33,6 +37,7 @@ import ai.tock.bot.admin.user.UserReportQuery
 import ai.tock.bot.admin.user.UserReportQueryResult
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.RAGStoryDefinition.Companion.RAG_STORY_NAME
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
@@ -48,6 +53,7 @@ import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getApplicationIds
+import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getConfigurationsByNamespaceAndNlpModel
 import ai.tock.bot.mongo.ClientIdCol_.Companion.UserIds
 import ai.tock.bot.mongo.DialogCol_.Companion.GroupId
 import ai.tock.bot.mongo.DialogCol_.Companion.PlayerIds
@@ -78,9 +84,14 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.sumByLong
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
+import com.mongodb.client.model.Accumulators.sum
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.Filters.gte
+import com.mongodb.client.model.Filters.lte
 import com.mongodb.client.model.IndexOptions
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.gt
@@ -88,6 +99,7 @@ import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.type
 import org.litote.kmongo.addEachToSet
 import org.litote.kmongo.addToSet
+import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.avg
@@ -106,6 +118,7 @@ import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
 import org.litote.kmongo.match
+import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
 import org.litote.kmongo.pull
 import org.litote.kmongo.regex
@@ -114,10 +127,12 @@ import org.litote.kmongo.setValue
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
+import org.litote.kmongo.unwind
 import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.DAYS
 import kotlin.reflect.KProperty1
 
@@ -136,8 +151,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         if (text.length > 512) text.take(512) else text
 
     private val logger = KotlinLogging.logger {}
-
-    private val executor: Executor by injector.instance()
 
     private val db = asyncDatabase.coroutine
     val userTimelineCol = db.getCollection<UserTimelineCol>("user_timeline")
@@ -949,5 +962,196 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.error(e)
             emptyList()
         }
+    }
+
+    /**
+     * Counts user actions within dialogs for a given namespace and set of applications.
+     *
+     * @param namespace the namespace
+     * @param applicationIds the set of application configuration.
+     * @param fromDate optional start date (inclusive).
+     * @param toDate optional end date (inclusive).
+     * @param intentType the type of intents to count.
+     * @param includeGenAIRag whether to include GenAI RAG user actions in the count.
+     *
+     * @return Counts grouped by applicationId
+     */
+    fun countUserActions(
+        namespace: String,
+        applicationIds: Set<String>,
+        fromDate: ZonedDateTime? = null,
+        toDate: ZonedDateTime? = null,
+        intentType: IntentTypeEnum,
+        includeGenAIRag: Boolean
+    ): List<CountResult> {
+
+        val filters = mutableListOf<Bson>(
+            eq("stories.actions.playerId.type", "user")
+        )
+        applyDateFilters(filters, fromDate, toDate)
+
+        if (!includeGenAIRag) {
+            filters += not(eq("stories.storyDefinitionId", RAG_STORY_NAME))
+        }
+
+        when (intentType) {
+            IntentTypeEnum.UNKNOWN -> filters += eq("stories.actions.state.intent", "unknown")
+            IntentTypeEnum.KNOWN  -> filters += not(eq("stories.actions.state.intent", "unknown"))
+            else -> {}
+        }
+
+        return runBlocking { buildAndExecuteCountPipeline(namespace, applicationIds, filters) }
+    }
+
+    /**
+     * Counts a user RAG actions within dialogs for a given namespace and set of applications.
+     *
+     * @param namespace the namespace
+     * @param applicationIds the set of application configuration.
+     * @param fromDate optional start date (inclusive).
+     * @param toDate optional end date (inclusive).
+     *
+     * @return Counts grouped by applicationId
+     */
+    fun countUserRAGActions(
+        namespace: String,
+        applicationIds: Set<String>,
+        fromDate: ZonedDateTime? = null,
+        toDate: ZonedDateTime? = null
+    ): List<CountResult> {
+
+        val filters = mutableListOf<Bson>(
+            eq("stories.actions.playerId.type", "user"),
+            eq("stories.storyDefinitionId", RAG_STORY_NAME)
+        )
+        applyDateFilters(filters, fromDate, toDate)
+
+        return runBlocking { buildAndExecuteCountPipeline(namespace, applicationIds, filters) }
+    }
+
+    private fun buildCountPipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>
+    ): List<Bson> =
+        listOf(
+            match(
+                and(
+                    DialogCol::namespace eq namespace,
+                    DialogCol::applicationIds `in` applicationIds
+                )
+            ),
+            unwind("\$stories"),
+            unwind("\$stories.actions"),
+            match(and(filters)),
+            group("\$stories.actions.applicationId", sum("total", 1L)),
+        )
+
+    private suspend fun buildAndExecuteCountPipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>
+    ): List<CountResult> {
+        val pipeline = buildCountPipeline(namespace, applicationIds, filters)
+        val result = dialogCol.aggregate<CountResult>(pipeline).toList()
+        val resultByAppId = applicationIds.map { appId ->
+            result.find { it.applicationId == appId } ?: CountResult(appId, 0)
+        }
+        return resultByAppId
+    }
+
+    private fun applyDateFilters(
+        filters: MutableList<Bson>,
+        fromDate: ZonedDateTime?,
+        toDate: ZonedDateTime?
+    ) {
+        fromDate?.let { filters += gte("stories.actions.date", it.toInstant()) }
+        toDate?.let { filters += lte("stories.actions.date", it.toInstant()) }
+    }
+
+    /**
+     * Calculates dialog statistics for a given [DialogStatsQuery].
+     *
+     * This method aggregates user and bot actions over a time range and returns
+     * them in a structured [DialogStatsQueryResult].
+     *
+     * **RAG (Retrieval-Augmented Generation)** is treated separately to distinguish
+     * classical intent-based dialog from LLM-based dialog generation.
+     *
+     */
+    override fun calculateDialogStats(query: DialogStatsQuery): DialogStatsQueryResult {
+
+        // Get all applicationId matching the query namespace and application name.
+        val applicationIds = getConfigurationsByNamespaceAndNlpModel(
+            namespace = query.namespace,
+            nlpModel = query.applicationName
+        ).map { it.applicationId }.toSet()
+
+        // Get all user actions, including GenAI RAG interactions.
+        val allUserActions = countUserActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to,
+            intentType = IntentTypeEnum.ALL,
+            includeGenAIRag = true
+        )
+
+        // Get all user actions, excluding GenAI RAG interactions.
+        val allUserActionsExceptRag = countUserActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to,
+            intentType = IntentTypeEnum.ALL,
+            includeGenAIRag = false
+        )
+
+        // Get all user action sent to AI RAG.
+        val allUserRagActions = countUserRAGActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to
+        )
+
+        // Get user actions with a known intent, excluding RAG.
+        val allUserActionsOnlyKnownIntent = countUserActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to,
+            intentType = IntentTypeEnum.KNOWN,
+            includeGenAIRag = false
+        )
+
+        // Get user actions with unknown intent, including RAG.
+        val allUserActionsOnlyUnknownIntentWithAIGenRag = countUserActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to,
+            intentType = IntentTypeEnum.UNKNOWN,
+            includeGenAIRag = true
+        )
+
+        // Get user actions with unknown intent, excluding RAG.
+        val allUserActionsOnlyUnknownIntentExceptAIGenRag = countUserActions(
+            namespace = query.namespace,
+            applicationIds = applicationIds,
+            fromDate = query.from,
+            toDate = query.to,
+            intentType = IntentTypeEnum.UNKNOWN,
+            includeGenAIRag = false
+        )
+
+        return DialogStatsQueryResult(
+            allUserActions = allUserActions,
+            allUserActionsExceptRag = allUserActionsExceptRag,
+            allUserRagActions = allUserRagActions,
+            knownIntentUserActions = allUserActionsOnlyKnownIntent,
+            unknownIntentUserActions = allUserActionsOnlyUnknownIntentWithAIGenRag,
+            unknownIntentUserActionsExceptRag = allUserActionsOnlyUnknownIntentExceptAIGenRag,
+        )
     }
 }

@@ -28,6 +28,7 @@ import model.indicator.metric.Row
 fun toMetricResponse(customMetric: CustomMetric) = CustomMetricResponse(
     Row(
         customMetric.id,
+        customMetric.applicationId,
         customMetric.type?.name,
         customMetric.emitterStoryId,
         customMetric.trackedStoryId,

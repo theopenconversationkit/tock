@@ -22,6 +22,8 @@ import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -71,6 +73,8 @@ abstract class AbstractTest {
                 bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
                 bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
                 bind<BotDocumentCompressorConfigurationDAO>() with provider { mockk<BotDocumentCompressorConfigurationDAO>(relaxed = true) }
+                bind<IndicatorDAO>() with provider { mockk<IndicatorDAO>(relaxed = true) }
+                bind<MetricDAO>() with provider { mockk<MetricDAO>(relaxed = true) }
             }
             return module
         }

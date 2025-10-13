@@ -32,7 +32,8 @@ enum class Indicators(val value: Indicator) {
             name = "rag",
             label = "RAG",
             description = "Predefined indicator for the RAG Story.",
-            botId = "",
+            namespace = "", // A predefined indicator does not have a namespace.
+            botId = "", // A predefined indicator does not have a botId.
             dimensions = setOf(Dimensions.GEN_AI.value),
             values = setOf(
                 IndicatorValues.SUCCESS.value, IndicatorValues.FAILURE.value, IndicatorValues.NO_ANSWER.value
