@@ -280,7 +280,7 @@ internal class TockBotBus(
         }
         return {
             if (!closed) {
-                injector.provide<Executor>().executeBlockingTask(timeout) {
+                injector.provide<Executor>().executeBlocking(timeout) {
                     logger.info("force-closing message channel")
                     messageChannel.close()
                 }

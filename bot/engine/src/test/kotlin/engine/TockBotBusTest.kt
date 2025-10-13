@@ -17,22 +17,38 @@
 package ai.tock.bot.engine
 
 import ai.tock.bot.engine.TockBotBus.QueuedAction
+import ai.tock.shared.TestExecutorRecorder
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.BeforeEach
 import java.time.Duration
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class TockBotBusTest : BotEngineTest() {
 
+    @BeforeEach
+    fun beforeTest() {
+        TestExecutorRecorder.clear()
+    }
+
     @Test
-    fun `deferMessageSending close messageChanel`() = runBlocking {
+    fun `deferMessageSending close messageChanel asynchronously WHERE not closed before`() = runBlocking {
         val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
         val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
         close.invoke()
+        assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 1 }
+    }
+
+    @Test
+    fun `deferMessageSending does not close messageChanel asynchronously WHERE closed before`() = runBlocking {
+        val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
+        val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
+        bus.end()
         delay(100)
-        verify { messageChannel.close() }
+        close.invoke()
+        assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 0 }
     }
 }

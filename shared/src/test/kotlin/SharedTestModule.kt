@@ -42,6 +42,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodle
 import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
+import java.util.concurrent.CopyOnWriteArrayList
 
 private val logger = KotlinLogging.logger {}
 
@@ -132,7 +133,10 @@ private object NoOpCache : TockCache {
 /**
  * A simple executor that uses [nbThreads] - useful for concurrency tests.
  */
-class SimpleExecutor(private val nbThreads: Int, private val threadPoolName: String? = "test-pool-${threadPoolId.getAndIncrement()}") : Executor {
+class SimpleExecutor(
+    private val nbThreads: Int,
+    private val threadPoolName: String? = "test-pool-${threadPoolId.getAndIncrement()}"
+) : Executor {
     companion object {
         private val threadPoolId = AtomicInteger(1)
     }
@@ -176,17 +180,43 @@ class SimpleExecutor(private val nbThreads: Int, private val threadPoolName: Str
     }
 }
 
+/**
+ * In order to track test executor calls.
+ */
+object TestExecutorRecorder {
+
+    val executeBlocking = CopyOnWriteArrayList<() -> Unit>()
+    val executeBlockingDuration = CopyOnWriteArrayList<Pair<Duration, () -> Unit>>()
+
+    fun clear() {
+        executeBlocking.clear()
+        executeBlockingDuration.clear()
+    }
+
+    fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        executeBlockingDuration.add(delay to runnable)
+    }
+
+    fun executeBlocking(runnable: () -> Unit) {
+        executeBlocking.add(runnable)
+    }
+
+}
+
 private object TestExecutor : Executor {
 
     override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        TestExecutorRecorder.executeBlocking(delay, runnable)
         runnable.invoke()
     }
 
-    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> = CompletableFuture.completedFuture(
-        task.invoke()
-    )
+    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> =
+        CompletableFuture.completedFuture(
+            task.invoke()
+        )
 
     override fun executeBlocking(runnable: () -> Unit) {
+        TestExecutorRecorder.executeBlocking(runnable)
         runnable.invoke()
     }
 
