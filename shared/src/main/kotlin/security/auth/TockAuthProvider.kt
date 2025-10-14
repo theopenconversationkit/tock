@@ -58,5 +58,7 @@ interface TockAuthProvider : AuthenticationProvider {
     /**
      * Gets a [TockUser] from current vert.x state.
      */
-    fun toTockUser(context: RoutingContext): TockUser? = context.user() as? TockUser
+    fun toTockUser(context: RoutingContext): TockUser? {
+        return context.user() as? TockUser ?: context.session().get("tockUser") as? TockUser
+    }
 }
