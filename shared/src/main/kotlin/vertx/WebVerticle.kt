@@ -334,7 +334,7 @@ abstract class WebVerticle : AbstractVerticle() {
     ) {
         router.route(method, "$basePath$path")
             .handler { context ->
-                val u = context.user()
+                val u: TockUser? = context.user() as? TockUser ?: context.session().get("tockUser") as? TockUser
                 if (u == null || roles.isNullOrEmpty()) {
                     handler.invoke(context)
                 } else {
@@ -373,7 +373,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) {
-        val u = user() as? TockUser
+        val u: TockUser? = user() as? TockUser ?: session().get("tockUser")
         if (u == null) {
             resultHandler.invoke(Future.failedFuture("No user set"))
         } else {
@@ -388,7 +388,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole?>,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) {
-        val tockUser = user() as? TockUser
+        val tockUser: TockUser? = user() as? TockUser ?: session().get("tockUser") as? TockUser
         if (tockUser == null) {
             resultHandler.invoke(Future.failedFuture("No user set"))
             return

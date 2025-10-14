@@ -36,10 +36,14 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.SessionHandler
+import io.vertx.ext.web.impl.UserContextInternal
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KotlinLogging
+import org.pac4j.cas.profile.CasProfile
 import org.pac4j.core.config.Config
-import org.pac4j.vertx.auth.Pac4jUser
+import org.pac4j.core.profile.ProfileManager
+import org.pac4j.vertx.VertxProfileManager
+import org.pac4j.vertx.VertxWebContext
 import org.pac4j.vertx.context.session.VertxSessionStore
 import org.pac4j.vertx.handler.impl.CallbackHandler
 import org.pac4j.vertx.handler.impl.CallbackHandlerOptions
@@ -95,10 +99,10 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     abstract fun getConfig(): Config
 
     /** Read Tock Login from CAS user info */
-    abstract fun readCasLogin(user: Pac4jUser): String
+    abstract fun readCasLogin(userCASProfile: CasProfile): String
 
     /** Read roles grouped by namespace from CAS user infos */
-    abstract fun readRolesByNamespace(user: Pac4jUser): Map<String, Set<String>>
+    abstract fun readRolesByNamespace(userCASProfile: CasProfile): Map<String, Set<String>>
 
     override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
         val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
@@ -121,10 +125,19 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         return user!! // !! is because user is already guaranteed to be not null
     }
 
-    protected open fun upgradeToTockUser(user: Pac4jUser, resultHandler: Handler<HttpResult<TockUser>>) {
+    /**
+     * https://github.com/pac4j/vertx-pac4j/wiki/Get-the-authenticated-user-profiles
+     */
+    fun getUserCasProfile(rc: RoutingContext): CasProfile {
+        val profileManager: ProfileManager =
+            VertxProfileManager(VertxWebContext(rc), sessionStore)
+        return profileManager.getProfile(CasProfile::class.java).get()
+    }
+
+    protected open fun upgradeToTockUser(userCASProfile: CasProfile, resultHandler: Handler<HttpResult<TockUser>>) {
         try {
-            val username = readCasLogin(user)
-            val rolesByNamespace = readRolesByNamespace(user)
+            val username = readCasLogin(userCASProfile)
+            val rolesByNamespace = readRolesByNamespace(userCASProfile)
             logger.debug { "authenticate $username/$rolesByNamespace" }
 
             if (rolesByNamespace.keys.isEmpty()) {
@@ -169,15 +182,19 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
 
         verticle.router.route("/*").handler(WithExcludedPathHandler(excluded) { rc ->
             val user = rc.user()
-            if (user != null && user !is TockUser) {
+            if (user != null && user !is TockUser) { // user is Pac4jUser
                 executor.executeBlocking {
-                    upgradeToTockUser(user as Pac4jUser) { hr ->
+                    upgradeToTockUser(getUserCasProfile(rc)) { hr ->
                         if (hr.succeeded()) {
                             vertx.runOnContext {
-                                sessionHandler
-                                    .setUser(rc, hr.result)
-                                    .onSuccess { rc.next() }
-                                    .onFailure { err -> rc.fail(err) }
+                                // TODO : setUser problem (*): This assignment (adding the user to the context) is not maintained for the next vertx handler (rc.next()).
+                                (rc.userContext() as UserContextInternal).setUser(hr.result)
+                                // TODO : we are therefore temporarily using the session to store tockUser.
+                                rc.session().put(
+                                    "tockUser",
+                                    hr.result
+                                )
+                                rc.next()
                             }
                         } else {
                             rc.userContext().clear()

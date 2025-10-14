@@ -252,7 +252,7 @@ class GenAIVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) = (context.user() as TockUser).namespace
+    private fun getNamespace(context: RoutingContext) = ((context.user() ?: context.session().get("tockUser")) as TockUser).namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]

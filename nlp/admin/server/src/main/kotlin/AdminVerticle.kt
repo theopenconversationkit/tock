@@ -1174,6 +1174,7 @@ open class AdminVerticle : WebVerticle() {
 
     fun configureStaticHandling() {
         if (!devEnvironment) {
+            logger.info { "Running in production: static content enabled." }
             // serve statics in docker image
             val webRoot = verticleProperty("content_path", "/maven/dist")
             // swagger yaml
@@ -1216,9 +1217,8 @@ open class AdminVerticle : WebVerticle() {
                                 .replace("<base href=\"/\"", "<base href=\"$baseHref\"")
                             logger.debug { "content: $content" }
                             val result = Buffer.buffer(content)
-                            if (!devEnvironment) {
-                                indexContent = result
-                            }
+                            indexContent = result
+
                             context.response()
                                 .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
                                 .end(result)
@@ -1242,6 +1242,8 @@ open class AdminVerticle : WebVerticle() {
             router.route(GET, "$baseHref*")
                 .handler(StaticHandler.create(FileSystemAccess.ROOT, webRoot))
                 .handler(indexContentHandler)
+        }else{
+            logger.info { "Running in development: static content disabled." }
         }
     }
 
