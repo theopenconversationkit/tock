@@ -408,6 +408,27 @@
                 />
               </tock-form-control>
             </div>
+            <div class="col-6 px-3">
+              <tock-form-control
+                label="Max documents in LLM context"
+                name="maxDocumentsInContext"
+                [controls]="maxDocumentsInContext"
+                [required]="false"
+                [boldLabel]="false"
+                information="Maximum number of documents to be provided as context to the LLM."
+              >
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="50"
+                  nbInput
+                  fieldSize="small"
+                  fullWidth
+                  formControlName="maxDocumentsInContext"
+                />
+              </tock-form-control>
+            </div>
 
             <div class="col-6 px-3">
               <tock-form-control

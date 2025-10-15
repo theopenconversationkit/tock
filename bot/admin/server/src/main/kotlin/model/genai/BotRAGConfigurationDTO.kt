@@ -47,6 +47,7 @@ data class BotRAGConfigurationDTO(
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean,
     val maxDocumentsRetrieved: Int,
+    val maxDocumentsInContext: Int,
     val maxMessagesFromHistory: Int,
 ) {
     constructor(configuration: BotRAGConfiguration) : this(
@@ -67,6 +68,7 @@ data class BotRAGConfigurationDTO(
         documentsRequired = configuration.documentsRequired,
         debugEnabled = configuration.debugEnabled,
         maxDocumentsRetrieved = configuration.maxDocumentsRetrieved,
+        maxDocumentsInContext = configuration.maxDocumentsInContext,
         maxMessagesFromHistory = configuration.maxMessagesFromHistory,
     )
 
@@ -102,6 +104,7 @@ data class BotRAGConfigurationDTO(
             documentsRequired = documentsRequired,
             debugEnabled = debugEnabled,
             maxDocumentsRetrieved = maxDocumentsRetrieved,
+            maxDocumentsInContext = maxDocumentsInContext,
             maxMessagesFromHistory = maxMessagesFromHistory,
         )
 }

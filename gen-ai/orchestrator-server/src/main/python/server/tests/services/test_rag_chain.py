@@ -28,9 +28,9 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
 )
+from gen_ai_orchestrator.models.rag.rag_models import LLMAnswer
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain import rag_chain
-
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_guardrail_factory,
 )
@@ -48,19 +48,19 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGCallbackHandler')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_guard')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGResponse')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGDebugData')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_answer')
 @pytest.mark.asyncio
 async def test_rag_chain(
-    mocked_rag_debug_data,
-    mocked_text_with_footnotes,
-    mocked_rag_response,
-    mocked_rag_guard,
-    mocked_callback_init,
-    mocked_create_rag_chain,
-    mocked_get_callback_handler_factory,
-    mocked_get_document_compressor_factory,
-    mocked_guardrail_parse,
+        mocked_get_llm_answer,
+        mocked_rag_debug_data,
+        mocked_rag_response,
+        mocked_rag_guard,
+        mocked_callback_init,
+        mocked_create_rag_chain,
+        mocked_get_callback_handler_factory,
+        mocked_get_document_compressor_factory,
+        mocked_guardrail_parse,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RAGRequest
@@ -90,7 +90,7 @@ Question:
 {question}
 
 Answer in {locale}:""",
-            'inputs' : {
+            'inputs': {
                 'question': 'How to get started playing guitar ?',
                 'no_answer': 'Sorry, I don t know.',
                 'locale': 'French',
@@ -143,6 +143,7 @@ Answer in {locale}:""",
             'endpoint': 'http://test-rerank.com',
         },
         'documents_required': True,
+        'max_documents_in_context': 4,
     }
     request = RAGRequest(**query_dict)
     inputs = {
@@ -154,9 +155,19 @@ Answer in {locale}:""",
     }
     docs = [Document(
         page_content='some page content',
-        metadata={'id':'123-abc', 'title':'my-title', 'source': None},
+        metadata={'id': '123-abc', 'title': 'my-title', 'source': None},
     )]
-    response = {'answer': 'an answer from llm', 'documents': docs}
+    response = {
+        'answer': {
+            'status': '',
+            'answer': 'an answer from llm',
+            'topic': None,
+            'suggested_topics': None,
+            'context': []
+        },
+        'documents': docs
+    }
+    llm_answer = LLMAnswer(**response['answer'])
 
     # Setup mock factories/init return value
     observability_factory_instance = mocked_get_callback_handler_factory.return_value
@@ -186,10 +197,8 @@ Answer in {locale}:""",
     )
     # Assert the response is build using the expected settings
     mocked_rag_response.assert_called_once_with(
-        # TextWithFootnotes must be mocked or mapping the footnotes will fail
-        answer=mocked_text_with_footnotes(
-            text=mocked_rag_answer['answer'], footnotes=[]
-        ),
+        answer=llm_answer,
+        footnotes=set(),
         debug=mocked_rag_debug_data(request, mocked_rag_answer, mocked_callback, 1),
         observability_info=None
     )
@@ -199,23 +208,32 @@ Answer in {locale}:""",
     # Assert the rag guardrail is called
     mocked_guardrail_parse.assert_called_once_with(
         os.path.join(request.guardrail_setting.api_base, 'guardrail'),
-        json={'text': [mocked_rag_answer['answer']]},
+        json={'text': [mocked_rag_answer['answer']['answer']]},
     )
     # Assert the rag guard is called
     mocked_rag_guard.assert_called_once_with(
-        inputs, response, request.documents_required
+        inputs, llm_answer, response, request.documents_required
     )
+
 
 @patch('gen_ai_orchestrator.services.langchain.impls.guardrail.bloomz_guardrail.requests.post')
 def test_guardrail_parse_succeed_with_toxicities_encountered(
-    mocked_guardrail_response,
+        mocked_guardrail_response,
 ):
     guardrail = get_guardrail_factory(
         BloomzGuardrailSetting(
             provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
         )
     ).get_parser()
-    rag_response = {'answer': 'This is a sample text.'}
+    rag_response = {
+        'answer': {
+            'status': '',
+            'answer': 'This is a sample text.',
+            'topic': None,
+            'suggested_topics': None,
+            'context': []
+        }
+    }
 
     mocked_response = MagicMock()
     mocked_response.status_code = 200
@@ -231,11 +249,11 @@ def test_guardrail_parse_succeed_with_toxicities_encountered(
     }
 
     mocked_guardrail_response.return_value = mocked_response
-    guardrail_output = guardrail.parse(rag_response['answer'])
+    guardrail_output = guardrail.parse(rag_response['answer']['answer'])
 
     mocked_guardrail_response.assert_called_once_with(
         os.path.join(guardrail.endpoint, 'guardrail'),
-        json={'text': [rag_response['answer']]},
+        json={'text': [rag_response['answer']['answer']]},
     )
     assert guardrail_output == {
         'content': 'This is a sample text.',
@@ -251,21 +269,29 @@ def test_guardrail_parse_fail(mocked_guardrail_response):
             provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
         )
     ).get_parser()
-    rag_response = {'answer': 'This is a sample text.'}
+    rag_response = {
+        'answer': {
+            'status': '',
+            'answer': 'This is a sample text.',
+            'topic': None,
+            'suggested_topics': None,
+            'context': []
+        }
+    }
 
     mocked_response = MagicMock()
     mocked_response.status_code = 500
     mocked_guardrail_response.return_value = mocked_response
 
     with pytest.raises(
-        HTTPError,
-        match=f"Error {mocked_response.status_code}. Bloomz guardrail didn't respond as expected.",
+            HTTPError,
+            match=f"Error {mocked_response.status_code}. Bloomz guardrail didn't respond as expected.",
     ):
-        guardrail.parse(rag_response['answer'])
+        guardrail.parse(rag_response['answer']['answer'])
 
     mocked_guardrail_response.assert_called_once_with(
         os.path.join(guardrail.endpoint, 'guardrail'),
-        json={'text': [rag_response['answer']]},
+        json={'text': [rag_response['answer']['answer']]},
     )
 
 
@@ -409,58 +435,82 @@ def test_check_guardrail_output_is_ok():
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_fails_if_no_docs_in_valid_answer(mocked_log):
-    inputs = {'no_answer': "Sorry, I don't know."}
+    question = 'Hi!'
     response = {
-        'answer': 'a valid answer',
+        'answer': {
+            'status': 'found_in_context',
+            'answer': 'a valid answer'
+        },
         'documents': [],
     }
     try:
-        rag_chain.rag_guard(inputs, response,documents_required=True)
+        rag_chain.rag_guard(question, LLMAnswer(**response['answer']), response, documents_required=True)
     except Exception as e:
         assert isinstance(e, GenAIGuardCheckException)
 
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_accepts_no_answer_even_with_docs(mocked_log):
-    inputs = {'no_answer': "Sorry, I don't know."}
+    question = 'Hi!'
     response = {
-        'answer': "Sorry, I don't know.",
+        'answer': {
+            'status': 'not_found_in_context',
+            'answer': 'Sorry, I don t know.',
+            'context': [
+                {
+                    'chunk': '1',
+                    'sentences': ["str1"],
+                }
+            ]
+        },
         'documents': ['a doc as a string'],
     }
-    rag_chain.rag_guard(inputs, response, documents_required=True)
-    assert response['documents'] == ['a doc as a string']
+    rag_chain.rag_guard(question, LLMAnswer(**response['answer']), response, documents_required=True)
+    # No answer found in the retrieved context. The documents are therefore removed from the RAG response.
+    assert response['documents'] == []
 
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_valid_answer_with_docs(mocked_log):
-    inputs = {'no_answer': "Sorry, I don't know."}
+    question = 'Hi!'
     response = {
-        'answer': 'a valid answer',
+        'answer': {
+            'status': 'found_in_context',
+            'answer': 'a valid answer',
+        },
         'documents': ['doc1', 'doc2'],
     }
-    rag_chain.rag_guard(inputs, response, documents_required=True)
+    rag_chain.rag_guard(question, LLMAnswer(**response['answer']), response, documents_required=True)
     assert response['documents'] == ['doc1', 'doc2']
+
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_no_answer_with_no_docs(mocked_log):
-    inputs = {'no_answer': "Sorry, I don't know."}
+    question = 'Hi!'
     response = {
-        'answer': "Sorry, I don't know.",
+        'answer': {
+            'status': 'not_found_in_context',
+            'answer': 'Sorry, I don t know.'
+        },
         'documents': [],
     }
-    rag_chain.rag_guard(inputs, response, documents_required=True)
+    rag_chain.rag_guard(question, LLMAnswer(**response['answer']), response, documents_required=True)
     assert response['documents'] == []
+
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
 def test_rag_guard_without_no_answer_input(mocked_log):
     """Test that __rag_guard handles missing no_answer input correctly."""
-    inputs = {}  # No 'no_answer' key
+    question = 'Hi!'
     response = {
-        'answer': 'some answer',
+        'answer': {
+            'status': 'found_in_context',
+            'answer': 'a valid answer',
+        },
         'documents': [],
     }
     with pytest.raises(GenAIGuardCheckException) as exc:
-        rag_chain.rag_guard(inputs, response, documents_required=True)
+        rag_chain.rag_guard(question, LLMAnswer(**response['answer']), response, documents_required=True)
 
     mocked_log.assert_called_once()
 

@@ -34,7 +34,8 @@ data class RAGRequest(
     val compressorSetting: DocumentCompressorSetting?,
     val vectorStoreSetting: VectorStoreSetting?,
     val observabilitySetting: ObservabilitySetting?,
-    val documentsRequired: Boolean = true,
+    val documentsRequired: Boolean,
+    val maxDocumentsInContext: Int,
 )
 
 

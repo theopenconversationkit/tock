@@ -41,7 +41,7 @@ def fetch_default_vector_store_credentials() -> Optional[Credentials]:
         logger.info("A default Vector Store Credentials have been successfully retrieved.")
         logger.debug(
             'A default Vector Store Credentials have been defined [Credentials=(user:%s, password:%s)] for [Provider=%s]',
-            application_settings.vector_store_provider.value,
+            application_settings.vector_store_provider,
             credentials.username,
             obfuscate(credentials.password),
         )
