@@ -28,4 +28,3 @@ data class OllamaLLMSetting<T>(
     }
 }
 
-// TODO MASS : Check Compile + TU (car dernier commit)
