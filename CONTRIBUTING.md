@@ -16,20 +16,11 @@ To submit a feature or bugfix:
     - Recommended format for the commit(s) message(s):
         - `resolves #ISSUEID Component: title` for features
         - `fixes #ISSUEID Component: title` for fixes
-3. To be merged, a _pull request_ must pass the tests and be reviewed by at least two of these developers:
-    - [@vsct-jburet](https://github.com/vsct-jburet),
-    [@francoisno](https://github.com/francoisno),
-    [@NainJaune](https://github.com/NainJaune),
-    [@elebescond](https://github.com/elebescond),
-    [@SarukaUsagi](https://github.com/SarukaUsagi),
-    [@MaximeLeFrancois](https://github.com/MaximeLeFrancois),
-    [@bakic](https://github.com/bakic),
-    [@broxmik](https://github.com/broxmik),
-    [@mrboizo](https://github.com/mrboizo)
+3. To be merged, a _pull request_ must pass the tests and be reviewed by at least two approvers
         
 ## Code conventions
 
-[Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html) are used
+[Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html) are used for kotlin code.
 
 ## Unit tests
 
