@@ -82,6 +82,7 @@ import java.util.Locale
 import java.util.UUID
 
 internal const val WEB_CONNECTOR_ID = "web"
+
 /**
  * The web (REST) connector type.
  */
@@ -131,26 +132,25 @@ class WebConnector internal constructor(
         controller.registerServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
-            router.route(path)
-                .handler(
-                    CorsHandler.create()
-                        .addOriginWithRegex(corsPattern)
-                        .allowedMethod(HttpMethod.POST)
-                        .run {
-                            if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
-                        }
-                        .allowedHeader("Access-Control-Allow-Origin")
-                        .allowedHeader("Content-Type")
-                        .allowedHeader("X-Requested-With").apply {
-                            webConnectorExtraHeaders.forEach {
-                                this.allowedHeader(it)
-                            }
-                        }
-                        // browsers do not send or save cookies unless credentials are allowed
-                        .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
-                )
+            val corsHandler = CorsHandler.create()
+                .addOriginWithRegex(corsPattern)
+                .allowedMethod(HttpMethod.POST)
+                .run {
+                    if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
+                }
+                .allowedHeader("Access-Control-Allow-Origin")
+                .allowedHeader("Content-Type")
+                .allowedHeader("X-Requested-With").apply {
+                    webConnectorExtraHeaders.forEach {
+                        this.allowedHeader(it)
+                    }
+                }
+                // browsers do not send or save cookies unless credentials are allowed
+                .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
+
             if (sseEnabled) {
                 router.route("$path/sse")
+                    .handler(corsHandler)
                     .handler(webSecurityHandler)
                     .handler { context ->
                         try {
@@ -189,18 +189,19 @@ class WebConnector internal constructor(
 
             // Main connector endpoint
             router.post(path)
+                .handler(corsHandler)
                 .handler(webSecurityHandler)
                 .handler { context ->
                     // Override the user on the request body
                     val tockUserId = context.get<String>(TOCK_USER_ID)
-                    val body = tockUserId?.let{
+                    val body = tockUserId?.let {
                         val jsonBody = context.body().asJsonObject() ?: JsonObject()
                         jsonBody.put("userId", tockUserId)
                         jsonBody.toString()
                     } ?: context.body().asString()
 
                     // Handle the request
-                    handleRequest(controller, context,  body)
+                    handleRequest(controller, context, body)
                 }
         }
     }
