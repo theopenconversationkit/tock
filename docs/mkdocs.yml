@@ -37,11 +37,6 @@ hooks:
 
 plugins:
   - tags
-  - git-authors
-  - git-committers:
-      repository: theopenconversationkit/tock
-      branch: master
-      token: !ENV MKDOCS_GIT_COMMITTERS_APIKEY
 
   - search
   - i18n:
