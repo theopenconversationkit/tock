@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,13 +19,17 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain.callbacks.base import BaseCallbackHandler as LangchainBaseCallbackHandler
+from langchain.callbacks.base import (
+    BaseCallbackHandler as LangchainBaseCallbackHandler,
+)
 from langchain_core.rate_limiters import BaseRateLimiter, InMemoryRateLimiter
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
 from pydantic import BaseModel
 
-from gen_ai_orchestrator.configurations.environment.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 logger = logging.getLogger(__name__)
@@ -60,7 +64,7 @@ class LangChainLLMFactory(ABC, BaseModel):
         logger.info('Invoke LLM provider to check setting')
         text = 'Hi, are you there?'
         response = await self.invoke(text, config={
-            "callbacks": [observability_callback_handler] if observability_callback_handler else []
+            'callbacks': [observability_callback_handler] if observability_callback_handler else []
         })
         logger.info('Invocation successful')
         logger.debug('[text: %s], [response: %s]', text, response)

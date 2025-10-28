@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,12 +23,19 @@ from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
 from pydantic import BaseModel, ConfigDict
 
-from gen_ai_orchestrator.configurations.environment.settings import application_settings
-from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import \
-    GenAIVectorStoreNoDocumentRetrievedException
-from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import opensearch_exception_handler
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
+    GenAIVectorStoreNoDocumentRetrievedException,
+)
+from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
+    opensearch_exception_handler,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
+from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
+    BaseVectorStoreSetting,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -42,7 +42,6 @@ from datetime import datetime
 import requests
 from docopt import docopt
 from dotenv import load_dotenv
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
 from langfuse import Langfuse
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter

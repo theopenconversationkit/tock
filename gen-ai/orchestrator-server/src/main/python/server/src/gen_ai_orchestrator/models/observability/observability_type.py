@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ from typing import Annotated, Union
 
 from fastapi import Body
 
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
 
 ObservabilitySetting = Annotated[
     Union[LangfuseObservabilitySetting],

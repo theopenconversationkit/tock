@@ -1,3 +1,17 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 import logging
 import os
 import sys
@@ -19,8 +33,8 @@ def configure_logging(cli_args):
     app_logger.setLevel(log_level)
     app_logger.propagate = False
 
-    os.makedirs("logs", exist_ok=True)
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(message)s"
+    os.makedirs('logs', exist_ok=True)
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(message)s'
     log_filename = f"logs/log_{datetime.now().strftime('%Y-%m-%d_%Hh%Mm%S')}.log"
 
     file_handler = logging.FileHandler(log_filename)
@@ -31,37 +45,37 @@ def configure_logging(cli_args):
     console_handler.setFormatter(colorlog.ColoredFormatter(f"%(log_color)s{log_format}"))
     app_logger.addHandler(console_handler)
 
-    langfuse_logger = logging.getLogger("langfuse")
+    langfuse_logger = logging.getLogger('langfuse')
     langfuse_logger.setLevel(log_level)
     langfuse_logger.addHandler(file_handler)
     langfuse_logger.addHandler(console_handler)
     langfuse_logger.propagate = False
 
-    opensearch_logger = logging.getLogger("opensearch")
+    opensearch_logger = logging.getLogger('opensearch')
     opensearch_logger.setLevel(logging.INFO)
     opensearch_logger.addHandler(file_handler)
     opensearch_logger.addHandler(console_handler)
     opensearch_logger.propagate = False
 
-    gen_ai_orchestrator_logger = logging.getLogger("gen_ai_orchestrator")
+    gen_ai_orchestrator_logger = logging.getLogger('gen_ai_orchestrator')
     gen_ai_orchestrator_logger.setLevel(log_level)
     gen_ai_orchestrator_logger.addHandler(file_handler)
     gen_ai_orchestrator_logger.addHandler(console_handler)
     gen_ai_orchestrator_logger.propagate = False
 
-    httpx_logger = logging.getLogger("httpx")
+    httpx_logger = logging.getLogger('httpx')
     httpx_logger.setLevel(log_level)
     httpx_logger.addHandler(file_handler)
     httpx_logger.addHandler(console_handler)
     httpx_logger.propagate = False
 
-    openai_logger = logging.getLogger("openai")
+    openai_logger = logging.getLogger('openai')
     openai_logger.setLevel(logging.INFO)
     openai_logger.addHandler(file_handler)
     openai_logger.addHandler(console_handler)
     openai_logger.propagate = False
 
-    langfuse_logger = logging.getLogger("backoff")
+    langfuse_logger = logging.getLogger('backoff')
     langfuse_logger.setLevel(log_level)
     langfuse_logger.addHandler(file_handler)
     langfuse_logger.addHandler(console_handler)
@@ -69,8 +83,8 @@ def configure_logging(cli_args):
 
     def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        log_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
-        app_logger.error("Unhandled exception:\n%s", log_message)
+        log_message = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        app_logger.error('Unhandled exception:\n%s', log_message)
 
     def log_warning(message, category, filename, lineno, file=None, line=None):
         app_logger.warning(f"{category.__name__}: {message} (from {filename}, line {lineno})")

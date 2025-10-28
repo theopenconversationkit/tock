@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -26,16 +26,30 @@ from langfuse import Langfuse
 from langfuse.api.core import ApiError
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
-from gen_ai_orchestrator.configurations.environment.settings import application_settings
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIObservabilityErrorException
-from gen_ai_orchestrator.errors.handlers.langfuse.langfuse_exception_handler import create_error_info_langfuse
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
-from gen_ai_orchestrator.models.security.proxy_server_type import ProxyServerType
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import \
-    LangChainCallbackHandlerFactory
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIObservabilityErrorException,
+)
+from gen_ai_orchestrator.errors.handlers.langfuse.langfuse_exception_handler import (
+    create_error_info_langfuse,
+)
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
+from gen_ai_orchestrator.models.security.proxy_server_type import (
+    ProxyServerType,
+)
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
+    LangChainCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +68,7 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
         try:
             self.get_callback_handler().auth_check()
             Langfuse(**self._fetch_settings(), httpx_client=self._get_httpx_client()).trace(
-                name=ObservabilityTrace.CHECK_OBSERVABILITY_SETTINGS.value, output="Check observability setting trace")
+                name=ObservabilityTrace.CHECK_OBSERVABILITY_SETTINGS.value, output='Check observability setting trace')
         except ApiError as exc:
             logger.error(exc)
             raise GenAIObservabilityErrorException(
@@ -88,7 +102,7 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
                 access_key=aws_credentials.access_key,
                 secret_key=aws_credentials.secret_key,
                 token=aws_credentials.token,
-                service="lambda",
+                service='lambda',
                 region=aws_session.region_name,
             )
 

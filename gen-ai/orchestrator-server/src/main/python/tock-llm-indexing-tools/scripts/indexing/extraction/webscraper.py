@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ URL with scraped contents - this file will be created at execution time, along w
 <base URL netloc>/ sub-dir in the same directory, containing debug info).
 """
 
-import time
 import logging
 import mimetypes
 import sys
+import time
 from pathlib import Path
 from urllib import request
 from urllib.error import URLError
@@ -126,7 +126,7 @@ def browse_base_urls(
                     f"URL '{current_url}' is ignored because it failed to answer GET ({e})"
                 )
 
-    pd.DataFrame([{'scanned_url': url} for url in sorted(visited_urls)], columns=["scanned_url"]).to_csv(
+    pd.DataFrame([{'scanned_url': url} for url in sorted(visited_urls)], columns=['scanned_url']).to_csv(
         scanned_urls_path,
         index=False,
         header=True
@@ -152,7 +152,7 @@ def scrape_urls(soup_filters, min_filters):
 
     # fetch URLs file contents
     df = pd.read_csv(filepath_or_buffer=scanned_urls_path)
-    for scanned_url in df["scanned_url"]:
+    for scanned_url in df['scanned_url']:
         logging.debug(f'Scraping {scanned_url}')
 
         # GET contents
@@ -219,7 +219,7 @@ def scrape_urls(soup_filters, min_filters):
 
     # Save to output CSV file (use pandas to ensure 'ready-to-index' consistency)
     results.sort(key=lambda d: d['source'])
-    pd.DataFrame(results, columns = ["title", "source", "text"]).to_csv(
+    pd.DataFrame(results, columns = ['title', 'source', 'text']).to_csv(
         output_csv_path,
         sep='|',
         index=False,
@@ -228,7 +228,7 @@ def scrape_urls(soup_filters, min_filters):
 
 
     ignored_urls.sort(key=lambda d: (d['nb_filters_found'], d['ignored_url']))
-    pd.DataFrame(ignored_urls, columns = ["nb_filters_found", "ignored_url"]).to_csv(
+    pd.DataFrame(ignored_urls, columns = ['nb_filters_found', 'ignored_url']).to_csv(
         ignored_urls_path,
         sep='|',
         index=False,
@@ -236,7 +236,7 @@ def scrape_urls(soup_filters, min_filters):
     )
 
     scraped_urls.sort(key=lambda d: (d['nb_filters_found'], d['scraped_url']))
-    pd.DataFrame(scraped_urls, columns = ["nb_filters_found", "scraped_url"]).to_csv(
+    pd.DataFrame(scraped_urls, columns = ['nb_filters_found', 'scraped_url']).to_csv(
         scraped_urls_path,
         sep='|',
         index=False,
@@ -245,10 +245,10 @@ def scrape_urls(soup_filters, min_filters):
 
 def get_mime_type(url):
     # 1. Essayer via Content-Type HTTP
-    _mime_type = "Unknown"
+    _mime_type = 'Unknown'
     try:
         response = requests.head(url, allow_redirects=True)
-        content_type = response.headers.get("Content-Type")
+        content_type = response.headers.get('Content-Type')
         if content_type:
             _mime_type =  content_type
     except requests.RequestException:
@@ -330,7 +330,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Init paths
-    now = time.strftime("%Y.%m.%d-%Hh%Mm%Ss")
+    now = time.strftime('%Y.%m.%d-%Hh%Mm%Ss')
     base_domain_path = Path(f'{base_domain}_{now}')
     scanned_urls_path = base_domain_path / f'scanned_urls_{now}.csv'
     output_csv_path = base_domain_path / f'{base_domain}_output_{now}.csv'

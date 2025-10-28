@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorCode,
     ErrorMessages,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
 
 client = TestClient(app)
 

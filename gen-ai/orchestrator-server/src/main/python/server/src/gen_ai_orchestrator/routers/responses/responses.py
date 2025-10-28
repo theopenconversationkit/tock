@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,17 +18,22 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import (
+    DocumentCompressorProvider,
+)
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorCode,
     ErrorInfo,
 )
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
 from gen_ai_orchestrator.models.rag.rag_models import Source, TextWithFootnotes
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.rag.rag_models import TextWithFootnotes
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
 
 
 class ErrorResponse(BaseModel):

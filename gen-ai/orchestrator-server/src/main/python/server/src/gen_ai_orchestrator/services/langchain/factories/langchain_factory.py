@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ It manages the creation of :
 """
 
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 from langchain_core.embeddings import Embeddings
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
@@ -31,8 +31,9 @@ from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
-from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
-    GenAIUnknownDocumentCompressorProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
+    GenAIUnknownDocumentCompressorProviderSettingException,
+)
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
 )
@@ -45,7 +46,9 @@ from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions 
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
-from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import (
+    BaseDocumentCompressorSetting,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -111,10 +114,12 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import \
-    BloomzCompressorFactory
-from gen_ai_orchestrator.services.langchain.factories.document_compressor.document_compressor_factory import \
-    DocumentCompressorFactory
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.document_compressor_factory import (
+    DocumentCompressorFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -160,7 +165,9 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_fac
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
 )
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import fetch_default_vector_store_credentials
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import (
+    fetch_default_vector_store_credentials,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 #   limitations under the License.
 #
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
-from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
+from gen_ai_orchestrator.services.utils.prompt_utility import (
+    validate_prompt_template,
+)
 
 
 def test_validate_prompt_template():
@@ -28,4 +30,4 @@ def test_validate_prompt_template():
         },
     }
     template = PromptTemplate(**json)
-    validate_prompt_template(template, "prompt_name")
+    validate_prompt_template(template, 'prompt_name')

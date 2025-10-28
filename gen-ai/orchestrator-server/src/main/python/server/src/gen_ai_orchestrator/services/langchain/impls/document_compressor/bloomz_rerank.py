@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ from langchain.retrievers.document_compressors.base import (
 )
 from langchain_core.documents import Document
 
-from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
-    GenAIDocumentCompressorUnknownLabelException, GenAIDocumentCompressorErrorException
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
+    GenAIDocumentCompressorErrorException,
+    GenAIDocumentCompressorUnknownLabelException,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 
 logger = logging.getLogger(__name__)

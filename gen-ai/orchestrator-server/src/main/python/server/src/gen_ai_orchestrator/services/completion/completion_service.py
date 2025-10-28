@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,25 +17,33 @@
 import logging
 import time
 
-from gen_ai_orchestrator.services.observability.observabilty_service import get_observability_info
-from langchain_core.output_parsers import NumberedListOutputParser, StrOutputParser
+from langchain_core.output_parsers import (
+    NumberedListOutputParser,
+    StrOutputParser,
+)
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.routers.requests.requests import (
-    CompletionRequest,
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
 )
+from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
 from gen_ai_orchestrator.routers.responses.responses import (
+    PlaygroundResponse,
     SentenceGenerationResponse,
-    PlaygroundResponse
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
-    get_llm_factory, create_observability_callback_handler,
+    create_observability_callback_handler,
+    get_llm_factory,
 )
-from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
+from gen_ai_orchestrator.services.observability.observabilty_service import (
+    get_observability_info,
+)
+from gen_ai_orchestrator.services.utils.prompt_utility import (
+    validate_prompt_template,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +84,7 @@ async def generate(
             user_id=None,
             tags=None,
         )
-        config = {"callbacks": [observability_handler]}
+        config = {'callbacks': [observability_handler]}
 
     parsedLlmAnswer = await chain.ainvoke(request.prompt.inputs, config=config)
 
@@ -118,7 +126,7 @@ async def generate_sentences(
     config = None
     # Create a RunnableConfig containing the observability callback handler
     if request.observability_setting is not None:
-        config = {"callbacks": [
+        config = {'callbacks': [
             create_observability_callback_handler(
                 observability_setting=request.observability_setting,
                 trace_name=ObservabilityTrace.SENTENCE_GENERATION.value

@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,8 +20,13 @@ from typing import Optional
 from langchain_community.embeddings import FakeEmbeddings
 
 from gen_ai_orchestrator.models.em.em_types import EMSetting
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
-from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_vector_store_factory, get_em_factory
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    VectorStoreSetting,
+)
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_em_factory,
+    get_vector_store_factory,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +52,7 @@ async def check_vector_store_setting(
     if em_setting is None or index_name is None:
         return await get_vector_store_factory(
             setting=vector_store_setting,
-            index_name="fake_index_name",
+            index_name='fake_index_name',
             embedding_function=FakeEmbeddings(size=1536)
         ).check_vector_store_connection()
     else:

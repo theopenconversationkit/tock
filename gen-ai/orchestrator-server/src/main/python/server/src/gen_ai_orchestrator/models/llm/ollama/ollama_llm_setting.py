@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -36,6 +36,6 @@ class OllamaLLMSetting(BaseLLMSetting):
     )
     base_url: str = Field(
         description='Your ollama endpoint base URL',
-        examples=["http://localhost:11434"],
-        default="http://localhost:11434"
+        examples=['http://localhost:11434'],
+        default='http://localhost:11434'
     )

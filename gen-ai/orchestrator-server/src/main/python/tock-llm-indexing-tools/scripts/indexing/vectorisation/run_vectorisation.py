@@ -1,3 +1,17 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 Index a CSV file (line format: 'title'|'source'|'text') into a vector database.
 
@@ -35,18 +49,23 @@ from uuid import uuid4
 
 import pandas as pd
 from docopt import docopt
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders.dataframe import DataFrameLoader
+from langchain_core.documents import Document
+from scripts.common.logging_config import configure_logging
+from scripts.common.models import ActivityStatus, StatusWithReason
+from scripts.indexing.vectorisation.models import (
+    RunVectorisationInput,
+    RunVectorisationOutput,
+)
+
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_vector_store_factory,
 )
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.dataframe import DataFrameLoader
-from langchain_core.documents import Document
-
-from scripts.common.logging_config import configure_logging
-from scripts.common.models import StatusWithReason, ActivityStatus
-from scripts.indexing.vectorisation.models import RunVectorisationOutput, RunVectorisationInput
 
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)
@@ -121,12 +140,12 @@ def main():
     cli_args = docopt(__doc__, version='Run Vectorisation 1.0.0')
     logger = configure_logging(cli_args)
 
-    index_name: str = ""
+    index_name: str = ''
     session_uuid: str = str(uuid4())
     documents_count: int = 0
     chunks_count: int = 0
     try:
-        logger.info("Loading input data...")
+        logger.info('Loading input data...')
         input_config = RunVectorisationInput.from_json_file(cli_args['--json-config-file'])
         logger.debug(f"\n{input_config.format()}")
 

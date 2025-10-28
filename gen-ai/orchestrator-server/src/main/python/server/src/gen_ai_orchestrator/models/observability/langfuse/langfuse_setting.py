@@ -44,8 +44,8 @@ class LangfuseObservabilitySetting(BaseObservabilitySetting):
     )
     public_url: Optional[AnyUrl] = Field(
         default=None,
-        description="Optional public URL for Langfuse server",
-        examples=["https://public.langfuse.com"]
+        description='Optional public URL for Langfuse server',
+        examples=['https://public.langfuse.com']
     )
     secret_key: SecretKey = Field(
         description='Stores the secret key used to authenticate requests to the Observability Provider API.',

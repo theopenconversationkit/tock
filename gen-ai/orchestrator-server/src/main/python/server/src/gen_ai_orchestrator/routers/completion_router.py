@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,9 +32,13 @@ import logging
 from fastapi import APIRouter
 
 from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
-from gen_ai_orchestrator.routers.responses.responses import PlaygroundResponse, SentenceGenerationResponse
+from gen_ai_orchestrator.routers.responses.responses import (
+    PlaygroundResponse,
+    SentenceGenerationResponse,
+)
 from gen_ai_orchestrator.services.completion.completion_service import (
-    generate_sentences, generate,
+    generate,
+    generate_sentences,
 )
 
 logger = logging.getLogger(__name__)

@@ -1,17 +1,18 @@
+files: \.py$
 repos:
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.22.1
+    rev: v8.28.0
     # the default gitleaks configuration file : https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
     hooks:
       - id: gitleaks
   - repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 25.9.0
     hooks:
       - id: black
         files: ^/gen-ai/orchestrator-server/src/main/python/
-        language_version: python3.9
+        language_version: python3
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
+    rev: v1.5.5
     hooks:
       - id: insert-license
         files: \.py$
@@ -21,7 +22,7 @@ repos:
           - --use-current-year
           - --no-extra-eol
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: check-ast
       - id: double-quote-string-fixer
@@ -29,16 +30,17 @@ repos:
       - id: end-of-file-fixer
         files: '\.md$'
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 7.0.0
     hooks:
       - id: isort
         files: "\\.(py)$"
         args: [ --settings-path=gen-ai/orchestrator-server/src/main/python/server/pyproject.toml ]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.3.0
+    rev: v2.6.0
     hooks:
       - id: pycln
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.3
+    rev: v2.9.0
     hooks:
       - id: pip-audit
+        additional_dependencies: ["pip>=25.3"]

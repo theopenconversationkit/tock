@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ from fastapi import APIRouter, Request
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
     AIProviderBadRequestException,
 )
-from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
-    GenAIUnknownDocumentCompressorProviderException
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
+    GenAIUnknownDocumentCompressorProviderException,
+)
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
 )
@@ -31,15 +32,25 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
-from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import BloomzCompressorSetting
-from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
-from gen_ai_orchestrator.models.document_compressor.document_compressor_types import DocumentCompressorSetting
-from gen_ai_orchestrator.routers.requests.requests import DocumentCompressorProviderSettingStatusRequest
-from gen_ai_orchestrator.routers.responses.responses import (
-    ProviderSettingStatusResponse, DocumentCompressorProviderResponse,
+from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
 )
-from gen_ai_orchestrator.services.document_compressor.document_compressor_service import \
-    check_document_compressor_setting
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import (
+    DocumentCompressorProvider,
+)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_types import (
+    DocumentCompressorSetting,
+)
+from gen_ai_orchestrator.routers.requests.requests import (
+    DocumentCompressorProviderSettingStatusRequest,
+)
+from gen_ai_orchestrator.routers.responses.responses import (
+    DocumentCompressorProviderResponse,
+    ProviderSettingStatusResponse,
+)
+from gen_ai_orchestrator.services.document_compressor.document_compressor_service import (
+    check_document_compressor_setting,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -107,8 +118,8 @@ async def get_document_compressor_provider_setting_by_id(
             provider=DocumentCompressorProvider.BLOOMZ,
             max_documents=3,
             min_score=0.91002147,
-            endpoint="http://localhost:8082",
-            label="LABEL_1"
+            endpoint='http://localhost:8082',
+            label='LABEL_1'
         )
 
 

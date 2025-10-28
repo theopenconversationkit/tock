@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@ from typing import Literal, Optional
 
 from pydantic import Field
 
-from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
-from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import (
+    DocumentCompressorProvider,
+)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import (
+    BaseDocumentCompressorSetting,
+)
 
 
 class BloomzCompressorSetting(BaseDocumentCompressorSetting):

@@ -1,17 +1,37 @@
-import os
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 from datetime import datetime
 from typing import Optional
 
 import humanize
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from pydantic import BaseModel, Field
+from scripts.common.models import (
+    ActivityOutput,
+    BotInfo,
+    DatasetTemplate,
+    FromJsonMixin,
+)
 
-from scripts.common.models import FromJsonMixin, ActivityOutput, BotInfo, DatasetTemplate
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
 
 
 class DatasetInfo(BaseModel):
     name: str = Field(description='The dataset name.')
-    description: str = Field(description='The dataset description.', default="")
+    description: str = Field(description='The dataset description.', default='')
     metadata: dict = Field(description='The dataset metadata.', default={})
     template: DatasetTemplate = Field(description='The dataset template.')
 
@@ -28,7 +48,7 @@ class CreateDatasetInput(FromJsonMixin):
     )
 
     def format(self):
-        header_text = " CREATE DATASET INPUT "
+        header_text = ' CREATE DATASET INPUT '
         details_str = f"""
         Langfuse environment : {str(self.observability_setting.url)}
         The dataset name     : {self.dataset.name}
@@ -43,14 +63,14 @@ class CreateDatasetInput(FromJsonMixin):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 
 class CreateDatasetOutput(ActivityOutput):
     dataset_name: str = Field(description='The dataset name.')
 
     def format(self):
-        header_text = " CREATE DATASET OUTPUT "
+        header_text = ' CREATE DATASET OUTPUT '
         details_str = f"""
         The dataset name               : {self.dataset_name}
         Number of items in dataset     : {self.items_count}
@@ -71,4 +91,4 @@ class CreateDatasetOutput(ActivityOutput):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())

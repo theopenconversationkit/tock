@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@ List of all OpenSearch exceptions managed by Gen AI Orchestrator
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
 )
-from gen_ai_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
+from gen_ai_orchestrator.models.errors.errors_models import (
+    ErrorCode,
+    ErrorInfo,
+)
 
 
 class GenAIOpenSearchSettingException(GenAIOrchestratorException):

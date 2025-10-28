@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -20,10 +20,15 @@ from langchain_core.messages import AIMessage
 from langchain_core.output_parsers import BaseOutputParser
 
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.routers.requests.requests import LLMProviderSettingStatusRequest
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
+from gen_ai_orchestrator.routers.requests.requests import (
+    LLMProviderSettingStatusRequest,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
-    get_llm_factory, get_callback_handler_factory,
+    get_callback_handler_factory,
+    get_llm_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,

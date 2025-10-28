@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,8 +18,12 @@ from typing import List, Literal, Optional
 
 from pydantic import Field
 
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import OpenSearchTermParams
-from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import BaseVectorStoreSearchParams
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import (
+    OpenSearchTermParams,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
+    BaseVectorStoreSearchParams,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )

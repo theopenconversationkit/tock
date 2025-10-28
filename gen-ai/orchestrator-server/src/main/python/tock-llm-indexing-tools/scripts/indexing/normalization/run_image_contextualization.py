@@ -1,3 +1,17 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 Run image contextualization.
 
@@ -26,21 +40,26 @@ from datetime import datetime
 
 import backoff
 from docopt import docopt
-from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_llm_factory, \
-    get_callback_handler_factory
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from markdown_it import MarkdownIt
-from openai import RateLimitError, APITimeoutError
-
+from openai import APITimeoutError, RateLimitError
 from scripts.common.img_tools import encode_image
 from scripts.common.logging_config import configure_logging
-from scripts.common.models import StatusWithReason, ActivityStatus
-from scripts.common.utils import save_json, read_file, write_file
-from scripts.indexing.normalization.models import RunImageContextualizationInput, RunImageContextualizationOutput
+from scripts.common.models import ActivityStatus, StatusWithReason
+from scripts.common.utils import read_file, save_json, write_file
+from scripts.indexing.normalization.models import (
+    RunImageContextualizationInput,
+    RunImageContextualizationOutput,
+)
+
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_callback_handler_factory,
+    get_llm_factory,
+)
 
 
 def extract_images(md_file_path):
-    with open(md_file_path, "r", encoding="utf-8") as _md_file:
+    with open(md_file_path, 'r', encoding='utf-8') as _md_file:
         md = MarkdownIt().parse(_md_file.read())
 
     current_header = None
@@ -50,61 +69,61 @@ def extract_images(md_file_path):
     i = 0
     while i < len(md):
         token = md[i]
-        if token.type == "heading_open" and i + 1 < len(md) and md[i + 1].type == "inline":
+        if token.type == 'heading_open' and i + 1 < len(md) and md[i + 1].type == 'inline':
             current_header = md[i + 1].content.strip()
-            elements.append({"type": "heading", "content": current_header})
+            elements.append({'type': 'heading', 'content': current_header})
             i += 3  # Skip heading_open, inline and heading_close
         else:
-            if token.type == "inline" and token.children:
+            if token.type == 'inline' and token.children:
                 for child in token.children:
-                    if child.type == "image":
+                    if child.type == 'image':
                         elements.append({
-                            "type": "image",
-                            "src": child.attrs.get("src", ""),
-                            "header": current_header
+                            'type': 'image',
+                            'src': child.attrs.get('src', ''),
+                            'header': current_header
                         })
-                    elif child.type == "text" and child.content.strip():
-                        elements.append({"type": "text", "content": child.content.strip()})
-            elif token.content.strip() and token.type not in ["paragraph_open", "paragraph_close"]:
-                elements.append({"type": "text", "content": token.content.strip()})
+                    elif child.type == 'text' and child.content.strip():
+                        elements.append({'type': 'text', 'content': child.content.strip()})
+            elif token.content.strip() and token.type not in ['paragraph_open', 'paragraph_close']:
+                elements.append({'type': 'text', 'content': token.content.strip()})
             i += 1
 
     # Collect context for images
     results = []
     for idx, element in enumerate(elements):
-        if element["type"] != "image":
+        if element['type'] != 'image':
             continue
 
         # Find previous texts
         prev_texts = []
         for prev in reversed(elements[:idx]):
-            if prev["type"] == "heading":
+            if prev['type'] == 'heading':
                 break
-            if prev["type"] == "text":
-                prev_texts.append(prev["content"])
+            if prev['type'] == 'text':
+                prev_texts.append(prev['content'])
         prev_texts.reverse()
 
         # Find next texts
         next_texts = []
         for next_ in elements[idx + 1:]:
-            if next_["type"] == "heading":
+            if next_['type'] == 'heading':
                 break
-            if next_["type"] == "text":
-                next_texts.append(next_["content"])
+            if next_['type'] == 'text':
+                next_texts.append(next_['content'])
 
         results.append({
-            "name": element["src"],
-            "path": f'{os.path.dirname(md_file_path)}/{element["src"]}',
-            "prev_header": element["header"],
-            "prev_text": " ".join(prev_texts).strip(),
-            "next_text": " ".join(next_texts).strip()
+            'name': element['src'],
+            'path': f'{os.path.dirname(md_file_path)}/{element["src"]}',
+            'prev_header': element['header'],
+            'prev_text': ' '.join(prev_texts).strip(),
+            'next_text': ' '.join(next_texts).strip()
         })
 
     return results
 
 
 def generate_image_description(llm, observability_callback_handler, image):
-    base64_image = encode_image(image["path"])
+    base64_image = encode_image(image['path'])
 
     system_prompt = """
     You are an AI assistant specialized in analyzing financial and documentary images for accessibility.
@@ -151,12 +170,12 @@ def generate_image_description(llm, observability_callback_handler, image):
             SystemMessage(content=system_prompt),
             HumanMessage(
                 content=[
-                    {"type": "text", "text": user_prompt},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                    {'type': 'text', 'text': user_prompt},
+                    {'type': 'image_url', 'image_url': {'url': f"data:image/jpeg;base64,{base64_image}"}}
                 ]
             )
         ], config={
-            "callbacks": [observability_callback_handler] if observability_callback_handler else []
+            'callbacks': [observability_callback_handler] if observability_callback_handler else []
         })
 
     return invoke_llm().content
@@ -170,11 +189,11 @@ def main():
 
     nb_discovered_images = 0
     nb_described_images = 0
-    markdown_output = ""
+    markdown_output = ''
 
     try:
-        logger.info("Loading input data...")
-        input_config = RunImageContextualizationInput.from_json_file(cli_args["--json-config-file"])
+        logger.info('Loading input data...')
+        input_config = RunImageContextualizationInput.from_json_file(cli_args['--json-config-file'])
         logger.debug(f"\n{input_config.format()}")
 
         # Define file paths
@@ -203,7 +222,7 @@ def main():
             observability_callback_handler = get_callback_handler_factory(
                 setting=input_config.observability_setting
             ).get_callback_handler(
-                trace_name="Image contextualization"
+                trace_name='Image contextualization'
             )
 
         # Process each image to generate a description
@@ -236,7 +255,7 @@ def main():
 
     output = RunImageContextualizationOutput(
         status=activity_status,
-        output_filename=os.path.basename(markdown_output) if markdown_output else "",
+        output_filename=os.path.basename(markdown_output) if markdown_output else '',
         duration=datetime.now() - start_time,
         items_count=nb_discovered_images,
         success_rate=100 * (nb_described_images / nb_discovered_images) if nb_discovered_images > 0 else 0
@@ -247,7 +266,7 @@ def main():
 def replace_image_descriptions(markdown_text: str, images: list[dict]) -> str:
     """Replace image placeholders in markdown with generated descriptions."""
     for image in images:
-        pattern = r'!\[\]\s*\n?\s*\(' + re.escape(image["name"]) + r'\)'
+        pattern = r'!\[\]\s*\n?\s*\(' + re.escape(image['name']) + r'\)'
         replacement = (
             f'<!-- START - DESC IMG : {image["name"]} -->\n'
             f'{image.get("description", "Description non générée")}\n'

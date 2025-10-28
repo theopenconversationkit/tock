@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,16 +12,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-import os
-
-from gen_ai_orchestrator.configurations.environment.settings import _Settings, application_settings
-from gen_ai_orchestrator.configurations.logging.logger import setup_logging
-from gen_ai_orchestrator.models.security.credentials import Credentials
 from unittest.mock import patch
 
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import SecretManagerProvider
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import fetch_default_vector_store_credentials
+from gen_ai_orchestrator.configurations.environment.settings import (
+    _Settings,
+    application_settings,
+)
+from gen_ai_orchestrator.configurations.logging.logger import setup_logging
+from gen_ai_orchestrator.models.security.credentials import Credentials
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+    VectorStoreProvider,
+)
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (
+    SecretManagerProvider,
+)
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_service import (
+    fetch_default_vector_store_credentials,
+)
 
 
 def test_environment():
@@ -50,7 +57,7 @@ def test_logging():
 )
 def test_fetch_aws_secret_credentials(mock_get_credentials, mock_boto3_client):
     # Test data
-    my_credentials = Credentials(username="user", password="pwd123456")
+    my_credentials = Credentials(username='user', password='pwd123456')
 
     # Configure the mocks to return specific values
     mock_boto3_client.return_value = None
@@ -81,7 +88,7 @@ def test_fetch_aws_secret_credentials(mock_get_credentials, mock_boto3_client):
 )
 def test_fetch_gcp_secret_credentials(mock_get_credentials, mock_gcp_secretmanager_client):
     # Test data
-    my_credentials = Credentials(username="user", password="pwd123456")
+    my_credentials = Credentials(username='user', password='pwd123456')
 
     # Configure the mocks to return specific values
     mock_gcp_secretmanager_client.return_value = None

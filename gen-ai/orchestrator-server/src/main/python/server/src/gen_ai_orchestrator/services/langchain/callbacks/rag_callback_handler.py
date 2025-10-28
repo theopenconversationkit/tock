@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 """Retriever callback handler for LangChain."""
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain_core.messages import SystemMessage, AIMessage
+from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompt_values import ChatPromptValue, StringPromptValue
 
 logger = logging.getLogger(__name__)

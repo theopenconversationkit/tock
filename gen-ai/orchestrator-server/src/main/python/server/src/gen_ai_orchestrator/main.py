@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -30,13 +30,21 @@ from gen_ai_orchestrator.routers.app_monitors_router import (
     application_check_router,
 )
 from gen_ai_orchestrator.routers.completion_router import completion_router
-from gen_ai_orchestrator.routers.document_compressor_providers_router import document_compressor_providers_router
+from gen_ai_orchestrator.routers.document_compressor_providers_router import (
+    document_compressor_providers_router,
+)
 from gen_ai_orchestrator.routers.em_providers_router import em_providers_router
-from gen_ai_orchestrator.routers.llm_providers_router import llm_providers_router
-from gen_ai_orchestrator.routers.observability_providers_router import observability_providers_router
+from gen_ai_orchestrator.routers.llm_providers_router import (
+    llm_providers_router,
+)
+from gen_ai_orchestrator.routers.observability_providers_router import (
+    observability_providers_router,
+)
 from gen_ai_orchestrator.routers.qa_router import qa_router
 from gen_ai_orchestrator.routers.rag_router import rag_router
-from gen_ai_orchestrator.routers.vector_store_providers_router import vector_store_providers_router
+from gen_ai_orchestrator.routers.vector_store_providers_router import (
+    vector_store_providers_router,
+)
 
 # configure logging
 setup_logging()

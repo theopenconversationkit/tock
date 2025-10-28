@@ -24,8 +24,12 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderSettingException,
 )
-from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import BloomzCompressorSetting
-from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
+from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
+)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import (
+    DocumentCompressorProvider,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -70,8 +74,9 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import \
-    BloomzCompressorFactory
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )

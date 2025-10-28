@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,14 +13,20 @@
 #   limitations under the License.
 #
 """Model for creating OllamaEMFactory"""
-from gen_ai_orchestrator.errors.handlers.ollama.ollama_exception_handler import ollama_exception_handler
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
+from typing import List
+
+from langchain.embeddings.base import Embeddings
+from langchain_community.embeddings import OllamaEmbeddings
+
+from gen_ai_orchestrator.errors.handlers.ollama.ollama_exception_handler import (
+    ollama_exception_handler,
+)
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import (
+    OllamaEMSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
 )
-from langchain.embeddings.base import Embeddings
-from langchain_community.embeddings import OllamaEmbeddings
-from typing import List
 
 
 class OllamaEMFactory(LangChainEMFactory):

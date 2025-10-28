@@ -20,8 +20,9 @@ from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from requests.exceptions import HTTPError
 
-from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import \
-    GenAIDocumentCompressorUnknownLabelException
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
+    GenAIDocumentCompressorUnknownLabelException,
+)
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
@@ -30,11 +31,12 @@ from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain import rag_chain
-
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_guardrail_factory,
 )
-from gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank import BloomzRerank
+from gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank import (
+    BloomzRerank,
+)
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     check_guardrail_output,
     execute_rag_chain,

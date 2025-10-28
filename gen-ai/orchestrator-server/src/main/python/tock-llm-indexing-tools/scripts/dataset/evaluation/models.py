@@ -1,25 +1,41 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 from datetime import datetime
 from typing import List, Optional
 
 import humanize
+from pydantic import BaseModel, Field
+from scripts.common.models import ActivityOutput, FromJsonMixin
+
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from pydantic import BaseModel, Field
-
-from scripts.common.models import ActivityOutput, FromJsonMixin
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
 
 
 class DatasetExperiment(BaseModel):
     dataset_name: str = Field(description='The dataset name.', default='UNKNOWN')
     experiment_name: str = Field(description='The name of the dataset experiment.', default='UNKNOWN')
-    experiment_description: str = Field(description='The description of the dataset experiment.', default="")
+    experiment_description: str = Field(description='The description of the dataset experiment.', default='')
 
 
 class RunEvaluationInput(FromJsonMixin):
     metric_names: List[str] = Field(
         description='The list of RAGAS metric names.',
-        default=["SemanticSimilarity"]
+        default=['SemanticSimilarity']
     )
     llm_setting: Optional[LLMSetting] = Field(
         description='LLM setting, used to calculate the LLM-based metric.',
@@ -37,7 +53,7 @@ class RunEvaluationInput(FromJsonMixin):
     )
 
     def format(self):
-        header_text = " RUN EVALUATION INPUT "
+        header_text = ' RUN EVALUATION INPUT '
         details_str = f"""
             Langfuse environment : {str(self.observability_setting.url)}
             The dataset name     : {self.dataset_experiment.dataset_name}
@@ -53,7 +69,7 @@ class RunEvaluationInput(FromJsonMixin):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 
 class MetricScore(BaseModel):
@@ -67,7 +83,7 @@ class DatasetExperimentItemScores(BaseModel):
     run_trace_id: str = Field(description='The trace ID for the item in the dataset experience.')
     metric_scores: List[MetricScore] = Field(
         description='The metric scores.',
-        default=["SemanticSimilarity"]
+        default=['SemanticSimilarity']
     )
 
 class RunEvaluationOutput(ActivityOutput):
@@ -79,7 +95,7 @@ class RunEvaluationOutput(ActivityOutput):
     )
 
     def format(self):
-        header_text = " RUN EVALUATION OUTPUT "
+        header_text = ' RUN EVALUATION OUTPUT '
         details_str = f"""
         The dataset name               : {self.dataset_experiment.dataset_name}
         The experiment name            : {self.dataset_experiment.experiment_name}
@@ -101,6 +117,6 @@ class RunEvaluationOutput(ActivityOutput):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 

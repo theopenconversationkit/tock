@@ -1,3 +1,17 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 Run an evaluation on LangFuse dataset experiment using Ragas.
 
@@ -20,19 +34,25 @@ Examples:
     python run_evaluation.py --json-config-file=path/to/config-file.json
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from docopt import docopt
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
 from langfuse import Langfuse
-from langfuse.api import TraceWithFullDetails, DatasetRunItem
+from langfuse.api import DatasetRunItem, TraceWithFullDetails
 from langfuse.client import DatasetItemClient
-
 from scripts.common.logging_config import configure_logging
-from scripts.common.models import StatusWithReason, ActivityStatus
-from scripts.dataset.evaluation.models import DatasetExperiment, DatasetExperimentItemScores, RunEvaluationInput, \
-    RunEvaluationOutput
+from scripts.common.models import ActivityStatus, StatusWithReason
+from scripts.dataset.evaluation.models import (
+    DatasetExperiment,
+    DatasetExperimentItemScores,
+    RunEvaluationInput,
+    RunEvaluationOutput,
+)
 from scripts.dataset.evaluation.ragas_evaluator import RagasEvaluator
+
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
+)
 
 
 def get_trace_if_exists(logger, client, dataset_name, experiment_name, _dataset_run,
@@ -55,7 +75,7 @@ def main():
     dataset_items: List[DatasetItemClient] = []
 
     try:
-        logger.info("Loading input data...")
+        logger.info('Loading input data...')
         input_config = RunEvaluationInput.from_json_file(cli_args['--json-config-file'])
         logger.debug(f"\n{input_config.format()}")
 

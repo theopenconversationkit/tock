@@ -1,12 +1,34 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 import logging
 from functools import lru_cache
 from typing import Optional
 
-from gen_ai_orchestrator.configurations.environment.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.models.security.credentials import Credentials
-from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
-from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import GCPSecretManagerClient
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import SecretManagerProvider
+from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
+    AWSSecretsManagerClient,
+)
+from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import (
+    GCPSecretManagerClient,
+)
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (
+    SecretManagerProvider,
+)
 from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)
@@ -38,7 +60,7 @@ def fetch_default_vector_store_credentials() -> Optional[Credentials]:
 
     # Log whether credentials were successfully retrieved
     if credentials:
-        logger.info("A default Vector Store Credentials have been successfully retrieved.")
+        logger.info('A default Vector Store Credentials have been successfully retrieved.')
         logger.debug(
             'A default Vector Store Credentials have been defined [Credentials=(user:%s, password:%s)] for [Provider=%s]',
             application_settings.vector_store_provider.value,
@@ -46,7 +68,7 @@ def fetch_default_vector_store_credentials() -> Optional[Credentials]:
             obfuscate(credentials.password),
         )
     else:
-        logger.info("No credentials were found.")
+        logger.info('No credentials were found.')
         logger.warning('No default Vector Store Credentials is defined !')
 
 

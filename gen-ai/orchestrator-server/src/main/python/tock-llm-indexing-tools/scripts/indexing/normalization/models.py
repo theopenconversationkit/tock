@@ -1,14 +1,28 @@
-import json
-from datetime import datetime
-from datetime import timedelta
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 import humanize
-from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from pydantic import BaseModel, Field
+from scripts.common.models import ActivityOutput, BotInfo, FromJsonMixin
 
-from scripts.common.models import ActivityOutput, FromJsonMixin, BotInfo
+from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
 
 
 class DocumentChunk(BaseModel):
@@ -33,7 +47,7 @@ class RunChunkContextualizationInput(FromJsonMixin):
     )
 
     def format(self):
-        header_text = " RUN CHUNK CONTEXTUALIZATION INTPUT "
+        header_text = ' RUN CHUNK CONTEXTUALIZATION INTPUT '
         details_str = f"""
             Langfuse environment   : {str(self.observability_setting.url)}
             The reference document : {self.reference_document_name}
@@ -50,13 +64,13 @@ class RunChunkContextualizationInput(FromJsonMixin):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class RunChunkContextualizationOutput(ActivityOutput):
     duration: timedelta = Field(description='The evaluation time.')
 
     def format(self):
-        header_text = " RUN CHUNK CONTEXTUALIZATION OUTPUT "
+        header_text = ' RUN CHUNK CONTEXTUALIZATION OUTPUT '
         details_str = f"""
         Number of chunks               : {self.items_count}
         Rate of successful evaluations : {self.success_rate:.2f}%
@@ -76,7 +90,7 @@ class RunChunkContextualizationOutput(ActivityOutput):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class RunImageContextualizationInput(FromJsonMixin):
     bot: BotInfo = Field(description='The bot information.')
@@ -93,7 +107,7 @@ class RunImageContextualizationInput(FromJsonMixin):
     )
 
     def format(self):
-        header_text = " RUN IMAGE CONTEXTUALIZATION INTPUT "
+        header_text = ' RUN IMAGE CONTEXTUALIZATION INTPUT '
         details_str = f"""
             Langfuse environment   : {str(self.observability_setting.url)}
             The document directory : {self.document_directory}
@@ -109,13 +123,13 @@ class RunImageContextualizationInput(FromJsonMixin):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class RunImageContextualizationOutput(ActivityOutput):
     output_filename: str = Field(description='The output filename.')
 
     def format(self):
-        header_text = " RUN CHUNK CONTEXTUALIZATION OUTPUT "
+        header_text = ' RUN CHUNK CONTEXTUALIZATION OUTPUT '
         details_str = f"""
         Number of images               : {self.items_count}
         Output filename                : {self.output_filename}
@@ -136,4 +150,4 @@ class RunImageContextualizationOutput(ActivityOutput):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())

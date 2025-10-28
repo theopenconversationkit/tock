@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,12 +19,18 @@ from typing import Optional
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_postgres import PGVector
 
-from gen_ai_orchestrator.configurations.environment.settings import application_settings
-from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import PGVectorStoreSetting
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
+    PGVectorStoreSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
 )
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
+)
 from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)

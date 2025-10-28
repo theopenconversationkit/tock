@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2024-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,12 +17,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 from botocore.exceptions import ClientError
 
-from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
+from gen_ai_orchestrator.models.security.ai_provider_secret import (
+    AIProviderSecret,
+)
 from gen_ai_orchestrator.models.security.credentials import Credentials
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
     AWSSecretsManagerClient,
 )
-from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import parse_secret_data
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import (
+    parse_secret_data,
+)
 
 
 @patch('boto3.client')

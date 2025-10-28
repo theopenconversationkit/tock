@@ -1,15 +1,33 @@
+#   Copyright (C) 2025 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
 import humanize
+from pydantic import BaseModel, Field
+from scripts.common.models import ActivityOutput, BotInfo, FromJsonMixin
+
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
 from gen_ai_orchestrator.models.em.em_types import EMSetting
-from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
-from pydantic import Field, BaseModel
-
-from scripts.common.models import ActivityOutput, FromJsonMixin, BotInfo
+from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
+    BaseVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    VectorStoreSetting,
+)
 
 
 class RunVectorisationInput(FromJsonMixin):
@@ -24,7 +42,7 @@ class RunVectorisationInput(FromJsonMixin):
     append_doc_title_and_chunk: bool = Field(description='Append title and chunk before vectorisation if True.')
 
     def format(self):
-        header_text = " RUN VECTORISATION INPUT "
+        header_text = ' RUN VECTORISATION INPUT '
         details_str = f"""
                 Bot                     : {self.bot.namespace} - {self.bot.bot_id}
                 The EM model            : {self.em_setting.model} ({self.em_setting.provider})
@@ -44,16 +62,16 @@ class RunVectorisationInput(FromJsonMixin):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class RunVectorisationOutput(ActivityOutput):
     index_name: str = Field(
         description='The full index name.',
-        examples=["ns_03_bot_cmso_session_6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+        examples=['ns_03_bot_cmso_session_6f7a7023_ef29_448a_ba33_44ec2e21cd32']
     )
     session_uuid: str = Field(
         description='The indexing session unique id.',
-        examples=["6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+        examples=['6f7a7023_ef29_448a_ba33_44ec2e21cd32']
     )
     chunks_count: int = Field(
         description='Number of chunked documents.',
@@ -61,7 +79,7 @@ class RunVectorisationOutput(ActivityOutput):
     )
 
     def format(self):
-        header_text = " RUN VECTORISATION OUTPUT "
+        header_text = ' RUN VECTORISATION OUTPUT '
         details_str = f"""
         Index name             : {self.index_name}
         Index session ID       : {self.session_uuid}
@@ -83,18 +101,18 @@ class RunVectorisationOutput(ActivityOutput):
         separator = '-' * max_detail_length
 
         to_string = f"{header_line}\n{details_str}\n{separator}\n{status_str}\n{separator}"
-        return "\n".join(line.strip() for line in to_string.splitlines() if line.strip())
+        return '\n'.join(line.strip() for line in to_string.splitlines() if line.strip())
 
 class IndexingDetails(BaseModel):
     """The indexing detail base class for Embedding Model Setting."""
 
     index_name: str = Field(
         description='The full index name.',
-        examples=["ns_03_bot_cmso_session_6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+        examples=['ns_03_bot_cmso_session_6f7a7023_ef29_448a_ba33_44ec2e21cd32']
     )
     indexing_session_uuid: str = Field(
         description='The indexing session unique id.',
-        examples=["6f7a7023_ef29_448a_ba33_44ec2e21cd32"]
+        examples=['6f7a7023_ef29_448a_ba33_44ec2e21cd32']
     )
     documents_count: int = Field(
         description='Number of documents read from csv input file.',

@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,19 +16,27 @@
 import logging
 from typing import Optional
 
-from langchain_community.vectorstores.opensearch_vector_search import OpenSearchVectorSearch
+from langchain_community.vectorstores.opensearch_vector_search import (
+    OpenSearchVectorSearch,
+)
 from langchain_core.vectorstores import VectorStoreRetriever
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
-    is_prod_environment
+    is_prod_environment,
 )
-from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import opensearch_exception_handler
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
+from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
+    opensearch_exception_handler,
+)
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
+    OpenSearchVectorStoreSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
 )
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
+)
 from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)

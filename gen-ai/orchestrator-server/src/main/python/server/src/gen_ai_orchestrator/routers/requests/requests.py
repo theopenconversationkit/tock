@@ -14,12 +14,14 @@
 #
 """Module for Request Models"""
 
-from typing import Any, Optional
+from typing import Optional
 
 from pyasn1.type.univ import Boolean
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.document_compressor.document_compressor_types import DocumentCompressorSetting
+from gen_ai_orchestrator.models.document_compressor.document_compressor_types import (
+    DocumentCompressorSetting,
+)
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.guardrail.guardrail_types import (
     GuardrailSetting,
@@ -146,17 +148,17 @@ class DialogDetails(BaseModel):
     """The dialog details model"""
 
     dialog_id: Optional[str] = Field(
-        description="The dialog/session ID, attached to the observability traces if "
-                    "the observability provider support it.",
-        default=None, examples=["uuid-0123"])
+        description='The dialog/session ID, attached to the observability traces if '
+                    'the observability provider support it.',
+        default=None, examples=['uuid-0123'])
     user_id: Optional[str] = Field(
-        description="The user ID, attached to the observability traces if the observability provider support it",
-        default=None, examples=["address@mail.com"])
+        description='The user ID, attached to the observability traces if the observability provider support it',
+        default=None, examples=['address@mail.com'])
     history: list[ChatMessage] = Field(
         description="Conversation history, used to reformulate the user's question.")
     tags: list[str] = Field(
         description='List of tags, attached to the observability trace, if the observability provider support it.',
-        examples=[["my-Tag"]])
+        examples=[['my-Tag']])
 
 
 class RAGRequest(BaseRequest):

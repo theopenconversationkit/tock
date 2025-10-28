@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2025 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory, rate_limiter,
+    LangChainLLMFactory,
+    rate_limiter,
 )
 from gen_ai_orchestrator.services.security.security_service import (
     fetch_secret_key_value,
