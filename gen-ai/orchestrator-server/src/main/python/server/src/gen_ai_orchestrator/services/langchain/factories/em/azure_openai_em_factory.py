@@ -49,6 +49,7 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
             # the model is not Nullable, it has a default value
             model=self.setting.model or OpenAIEmbeddings.__fields__['model'].default,
             timeout=application_settings.em_provider_timeout,
+            chunk_size=self.setting.number_of_chunk_per_request,
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')
