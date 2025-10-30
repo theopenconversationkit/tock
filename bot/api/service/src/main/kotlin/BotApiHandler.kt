@@ -26,6 +26,8 @@ import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.Debug
+import ai.tock.bot.api.model.message.bot.Event
+import ai.tock.bot.api.model.message.bot.EventCategory
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.connector.media.MediaAction
@@ -40,6 +42,7 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType
 import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.config.UploadedFilesService
+import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.UserTimelineDAO
@@ -144,9 +147,9 @@ internal class BotApiHandler(
 
                 // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
                 if (connectorData.saveTimeline) {
-                   runBlocking {
-                       userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
-                   }
+                    runBlocking {
+                        userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
+                    }
                 }
 
                 val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, connectorId)
@@ -173,6 +176,11 @@ internal class BotApiHandler(
                 is CustomMessage -> listOf(toAction(message))
                 is Carousel -> toActions(message)
                 is Debug -> listOf(toAction(message))
+                is Event -> {
+                    send(toEvent(message))
+                    return
+                }
+
                 else -> error("unsupported message $message")
             }
 
@@ -231,6 +239,15 @@ internal class BotApiHandler(
             data.data
         )
     }
+
+    private fun BotBus.toEvent(data: Event): ai.tock.bot.engine.event.Event =
+        when (data.category) {
+            EventCategory.METADATA -> MetadataEvent(
+                data.key ?: error("null key"),
+                data.value ?: error("null value"),
+                connectorId
+            )
+        }
 
     private fun BotBus.toActions(card: Card): List<Action> {
         val connectorMessages =

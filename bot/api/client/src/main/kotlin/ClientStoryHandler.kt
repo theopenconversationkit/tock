@@ -23,5 +23,5 @@ interface ClientStoryHandler {
      *
      * @param bus the bus used to get the message and send the answer
      */
-    fun handle(bus: ClientBus)
+    suspend fun handle(bus: ClientBus)
 }

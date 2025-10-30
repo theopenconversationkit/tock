@@ -5,7 +5,7 @@
 To submit a feature or bugfix:
 
 1. [Create an _issue_](https://github.com/theopenconversationkit/tock/issues/new):
-    - Reccommended format for the title:
+    - Recommended format for the title:
         - `[Component] Title` where component might be 
     _Studio_, _Core_, _Doc_, etc. and title usually is like _Do or fix something_
 2. [Create a _pull request_](https://github.com/theopenconversationkit/tock/pulls) and link it to the issue(s):

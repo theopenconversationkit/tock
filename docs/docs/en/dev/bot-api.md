@@ -92,16 +92,16 @@ the API key of the bot you want to connect to.
 
 You will be able to enter/paste this key into the Kotlin code (see below).
 
-### Créer des parcours en Kotlin 
- 
-Pour le moment, les composants suivants sont supportés pour les réponses :
- 
-* Texte avec Boutons (Quick Reply)
-* Format "carte"
-* Format "carousel"
-* Formats spécifiques aux différents canaux intégrés
- 
-Voici un exemple de bot simple avec quelques parcours déclarés : 
+### Kotlin story samples
+
+For now, the following components are supported for responses:
+
+* Text with Buttons (Quick Reply)
+* “Card” format
+* “Carousel” format
+* Channel-specific formats for the various integrated platforms
+
+Here’s an example of a simple bot with a few declared stories:
  
 ```kotlin
 
@@ -109,10 +109,20 @@ fun main() {
     startWithDemo(
         newBot(
             "PUT-YOUR-TOCK-APP-API-KEY-HERE", // Retrieve the API key from the "Bot Configurations" tab in Tock Studio
-            newStory("greetings") { // Intention 'greetings'
+            newStory("greetings") { // 'greetings' intent
                 end("Hello!") // Simple text response
             },
-            newStory("location") { // Intention 'location'
+            newStory("stream") {
+                enableStreaming() // Enable streaming ("token by token")
+                for (i in 1..10) {
+                    send("$i + ")
+                    delay(400)
+                }
+                send(" = ${(1..10).sum()}")
+                disableStreaming()
+                end("That's all folks!")
+            },
+            newStory("card") {
                 end(
                     // Response with a card - including text, an attachment (e.g., an image), and suggested user actions
                     newCard(
@@ -124,7 +134,41 @@ fun main() {
                     )
                 )
             },
-            newStory("goodbye") { // Intention 'goodbye'
+            newStory("carousel") {
+                end(
+                    // Response with a carousel - including cards
+                    newCarousel(
+                        listOf(
+                            newCard(
+                                "Card 1",
+                                null,
+                                newAttachment("https://url-image.png"),
+                                newAction("Action1"),
+                                newAction("Tock", "http://redirection")
+                            ),
+                            newCard(
+                                "Card 2",
+                                null,
+                                newAttachment("https://doc.tock.ai/fr/images/header.jpg"),
+                                newAction("Action1"),
+                                newAction("Tock", "https://doc.tock.ai")
+                            )
+                        )
+                    )
+                )
+            },
+            newStory("web") {
+                end {
+                    // web connector specific response
+                    webMessage(
+                        "Web",
+                        webPostbackButton("Card", Intent("card")),
+                        webPostbackButton("Carousel", Intent("carousel")),
+                        webPostbackButton("Streaming", Intent("stream"))
+                    )
+                }
+            },
+            newStory("messenger") {
                 end {
                     // Messenger-specific response
                     buttonsTemplate("Are you sure you want to leave?", nlpQuickReply("I'll stay"))

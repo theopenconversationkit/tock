@@ -19,7 +19,6 @@ package ai.tock.bot.api.service
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.configuration.ClientConfiguration
-import ai.tock.bot.api.model.configuration.ResponseContextVersion.V2
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.bot.engine.WebSocketController
@@ -132,7 +131,9 @@ internal class BotApiClientController(
     }
 
     fun configuration(handler: (ClientConfiguration?) -> Unit) {
-        client?.send(RequestData(configuration = true))?.apply {
+        client
+            ?.takeIf { it.isReachable() }
+            ?.send(RequestData(configuration = true))?.apply {
             loadConfiguration(botConfiguration, handler)
         }
             ?: sendWithWebSocket(RequestData(configuration = true), {
@@ -142,7 +143,7 @@ internal class BotApiClientController(
 
     fun send(userRequest: UserRequest, sendResponse: (ResponseData?) -> Unit) {
         val request = RequestData(userRequest)
-        if (client != null) {
+        if (client?.isReachable() == true) {
             sendWithWebhook(request, sendResponse)
         } else {
             sendWithWebSocket(request, sendResponse)
@@ -150,16 +151,17 @@ internal class BotApiClientController(
     }
 
     private fun sendWithWebhook(request: RequestData, sendResponse: (ResponseData?) -> Unit) {
-        client?.apply {
-            if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.supportSSE != true) {
-                logger.debug { "sse not used for webhook" }
-                send(request).apply {
-                    sendResponse(this)
+        client
+            ?.apply {
+                if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.supportSSE != true) {
+                    logger.debug { "sse not used for webhook" }
+                    send(request).apply {
+                        sendResponse(this)
+                    }
+                } else {
+                    sendWithSse(request, lastConfiguration?.version, sendResponse)
                 }
-            } else {
-                sendWithSse(request, lastConfiguration?.version, sendResponse)
             }
-        }
     }
 
     private fun sendWithWebSocket(request: RequestData, sendResponse: (ResponseData?) -> Unit = {}): Unit {

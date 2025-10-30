@@ -26,7 +26,7 @@ private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understan
  * @param handler The handler for the story.
  */
 fun unknownStory(
-    handler: (ClientBus).() -> Unit
+    handler: suspend (ClientBus).() -> Unit
 ) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
@@ -71,7 +71,7 @@ fun newStory(
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent,
-    handler: (ClientBus).() -> Unit
+    handler: suspend (ClientBus).() -> Unit
 ): ClientStoryDefinition =
     ClientStoryDefinition(
         Intent(mainIntent),
@@ -97,7 +97,7 @@ fun newStory(
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent.wrappedIntent().name,
-    handler: (ClientBus).() -> Unit
+    handler: suspend (ClientBus).() -> Unit
 ): ClientStoryDefinition =
     ClientStoryDefinition(
         mainIntent,
@@ -112,9 +112,9 @@ fun newStory(
  * Creates a new [ClientStoryHandler].
  * @param handler lamdba handler for the story
  */
-fun newStoryHandler(handler: (ClientBus).() -> Unit): ClientStoryHandler =
+fun newStoryHandler(handler: suspend (ClientBus).() -> Unit): ClientStoryHandler =
     object : ClientStoryHandler {
-        override fun handle(bus: ClientBus) {
+        override suspend fun handle(bus: ClientBus) {
             handler(bus)
         }
     }

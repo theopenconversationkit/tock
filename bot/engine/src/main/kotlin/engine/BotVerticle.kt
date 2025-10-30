@@ -175,6 +175,8 @@ internal class BotVerticle(
                     if (key == null || !WebSocketController.isAuthorizedKey(key)) {
                         logger.warn { "unknown key: $key" }
                         context.reject()
+                    } else {
+                        context.accept()
                     }
                 } catch (e: Exception) {
                     logger.error(e)

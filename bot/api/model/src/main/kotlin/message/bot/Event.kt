@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.api.service
 
-import ai.tock.bot.api.model.websocket.RequestData
-import ai.tock.bot.api.model.websocket.ResponseData
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+package ai.tock.bot.api.model.message.bot
 
-internal interface BotApiService {
-
-    @POST("webhook")
-    fun send(@Body request: RequestData): Call<ResponseData>
-
-    @GET("healthcheck")
-    fun healthcheck(): Call<ResponseBody>
+enum class EventCategory {
+    METADATA
 }
+
+data class Event(
+    val category: EventCategory,
+    val key: String? = null,
+    val value: String? = null,
+    override val delay: Long = 0
+) : BotMessage

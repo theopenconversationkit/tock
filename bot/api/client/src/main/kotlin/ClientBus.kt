@@ -69,30 +69,34 @@ interface ClientBus : Bus<ClientBus> {
 
     override fun isCompatibleWith(connectorType: ConnectorType) = targetConnectorType == connectorType
 
+    suspend fun enableStreaming()
+
+    suspend fun disableStreaming()
+
     /**
      * Sends a [Card].
      */
-    fun send(card: Card): ClientBus
+    suspend fun send(card: Card): ClientBus
 
     /**
      * Sends a [Card] as last bot answer.
      */
-    fun end(card: Card): ClientBus
+    suspend fun end(card: Card): ClientBus
 
     /**
      * Sends a [Carousel].
      */
-    fun send(carousel: Carousel): ClientBus
+    suspend fun send(carousel: Carousel): ClientBus
 
     /**
      * Sends a [Carousel as last bot answer.
      */
-    fun end(carousel: Carousel): ClientBus
+    suspend fun end(carousel: Carousel): ClientBus
 
     /**
      * Sends a text with suggestions.
      */
-    fun send(
+    suspend fun send(
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
@@ -102,7 +106,7 @@ interface ClientBus : Bus<ClientBus> {
     /**
      * Sends a text with suggestions.
      */
-    fun send(
+    suspend fun send(
         i18nText: CharSequence,
         suggestions: List<CharSequence>
     ): ClientBus = send(i18nText, suggestions.map { Suggestion(translate(it)) })
@@ -110,7 +114,7 @@ interface ClientBus : Bus<ClientBus> {
     /**
      * Sends a text with suggestions as last bot answer.
      */
-    fun end(
+    suspend fun end(
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
@@ -120,7 +124,7 @@ interface ClientBus : Bus<ClientBus> {
     /**
      * Sends a text with suggestions as last bot answer.
      */
-    fun end(
+    suspend fun end(
         i18nText: CharSequence,
         suggestions: List<CharSequence>
     ): ClientBus = end(i18nText, suggestions.map { Suggestion(translate(it)) })

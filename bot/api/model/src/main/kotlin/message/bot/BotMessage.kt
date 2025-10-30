@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = Card::class, name = "card"),
     JsonSubTypes.Type(value = CustomMessage::class, name = "custom"),
     JsonSubTypes.Type(value = Carousel::class, name = "carousel"),
-    JsonSubTypes.Type(value = Debug::class, name = "debug")
+    JsonSubTypes.Type(value = Debug::class, name = "debug"),
+    JsonSubTypes.Type(value = Event::class, name = "event")
 )
 interface BotMessage {
     /**

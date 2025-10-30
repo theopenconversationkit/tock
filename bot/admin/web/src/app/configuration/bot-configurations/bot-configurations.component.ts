@@ -76,7 +76,7 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   }
 
   isFirstLevelConfiguration(bot: BotConfiguration, conf: BotApplicationConfiguration): boolean {
-    return conf.targetConfigurationId === null;
+    return conf.targetConfigurationId === null || conf.targetConfigurationId == undefined;
   }
 
   prepareCreate(): void {

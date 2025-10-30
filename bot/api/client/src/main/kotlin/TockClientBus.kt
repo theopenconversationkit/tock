@@ -25,6 +25,8 @@ import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.Debug
+import ai.tock.bot.api.model.message.bot.Event
+import ai.tock.bot.api.model.message.bot.EventCategory
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.api.model.message.bot.Suggestion
@@ -41,8 +43,8 @@ import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.raw
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
-import java.util.concurrent.CopyOnWriteArrayList
 
 class TockClientBus(
     override val botDefinition: ClientBotDefinition,
@@ -68,7 +70,7 @@ class TockClientBus(
     // Target connector : is the connector for which the message is produced
     override val targetConnectorType: ConnectorType = request.context.targetConnectorType
 
-    override val contextId: String? = request.context.userId.id
+    override val contextId: String = request.context.userId.id
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
     override val entities: MutableList<Entity> = request.entities.toMutableList()
@@ -81,6 +83,12 @@ class TockClientBus(
 
     override val stepName: String? = null
 
+    @Volatile
+    private var streaming: Boolean = false
+
+    @Volatile
+    private var streamedData: String = ""
+
     override fun handle() {
         story =
             if (request.storyId == botDefinition.unknownStory.storyId) {
@@ -91,10 +99,24 @@ class TockClientBus(
                     ?: botDefinition.unknownStory
             }
         step = story.steps.find { it.name == request.step }
-        story.handler.handle(this)
+        runBlocking {
+            story.handler.handle(this@TockClientBus)
+        }
     }
 
     override fun defaultDelay(answerIndex: Int): Long = 0
+
+    override suspend fun enableStreaming() {
+        streaming = true
+        streamedData = ""
+        addMessage(Event(EventCategory.METADATA, "TOCK_STREAM_RESPONSE", "true"))
+    }
+
+    override suspend fun disableStreaming() {
+        streaming = false
+        streamedData = ""
+        addMessage(Event(EventCategory.METADATA, "TOCK_STREAM_RESPONSE", "false"))
+    }
 
     private fun addMessage(message: BotMessage?, lastResponse: Boolean = false) {
         if (message != null) {
@@ -112,17 +134,33 @@ class TockClientBus(
             answer(CustomMessage(ConstrainedValueWrapper(it), delay), lastResponse && plainText == null)
         }
         if (plainText != null) {
+            val text : CharSequence = if (streaming) {
+                streamedData += plainText
+                streamedData
+            } else {
+                plainText
+            }
+
             answer(
-                when (plainText) {
-                    is String -> Sentence(I18nText(plainText), delay = delay, suggestions = suggestions)
-                    is TranslatedSequence -> Sentence(
-                        I18nText(plainText.toString(), toBeTranslated = false),
+                when (text) {
+                    is String -> Sentence(
+                        I18nText(text = text, toBeTranslated = !streaming),
                         delay = delay,
                         suggestions = suggestions
                     )
 
-                    is I18nText -> Sentence(plainText, delay = delay, suggestions = suggestions)
-                    else -> Sentence(I18nText(plainText.toString()), delay = delay, suggestions = suggestions)
+                    is I18nText -> Sentence(text, delay = delay, suggestions = suggestions)
+                    is TranslatedSequence -> Sentence(
+                        I18nText(text.toString(), toBeTranslated = false),
+                        delay = delay,
+                        suggestions = suggestions
+                    )
+
+                    else -> Sentence(
+                        I18nText(text.toString(), toBeTranslated = !streaming),
+                        delay = delay,
+                        suggestions = suggestions
+                    )
                 },
                 lastResponse
             )
@@ -154,7 +192,7 @@ class TockClientBus(
         return this
     }
 
-    override fun send(
+    override suspend fun send(
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long,
@@ -164,7 +202,7 @@ class TockClientBus(
         return this
     }
 
-    override fun end(
+    override suspend fun end(
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long,
@@ -174,12 +212,12 @@ class TockClientBus(
         return this
     }
 
-    override fun end(card: Card): ClientBus {
+    override suspend fun end(card: Card): ClientBus {
         addMessage(card, lastResponse = true)
         return this
     }
 
-    override fun end(carousel: Carousel): ClientBus {
+    override suspend fun end(carousel: Carousel): ClientBus {
         addMessage(carousel, lastResponse = true)
         return this
     }
@@ -202,12 +240,12 @@ class TockClientBus(
         )
     }
 
-    override fun send(carousel: Carousel): ClientBus {
+    override suspend fun send(carousel: Carousel): ClientBus {
         addMessage(carousel)
         return this
     }
 
-    override fun send(card: Card): ClientBus {
+    override suspend fun send(card: Card): ClientBus {
         addMessage(card)
         return this
     }

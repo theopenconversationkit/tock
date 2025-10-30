@@ -20,6 +20,7 @@ import ai.tock.bot.api.model.configuration.ResponseContextVersion
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.create
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
@@ -40,10 +41,22 @@ internal class BotApiClient(baseUrl: String) {
 
     private val connectionTimeoutInMs = longProperty("tock_bot_api_connection_timeout_in_ms", 3000L)
     private val timeoutInMs = longProperty("tock_bot_api_timeout_in_ms", 60000L)
+    private val reachabilityInMs = longProperty("tock_bot_api_webhook_reachability_in_ms", 10000L)
+    private val checkReachability = booleanProperty(
+        "tock_bot_api_webhook_check_reachability",
+        false
+        /** false as waiting for API contract and python/node implementation */
+    )
     private val logger = KotlinLogging.logger {}
     private val formattedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
     private val service: BotApiService
+
+    @Volatile
+    private var webhookReachable: Boolean = !checkReachability
+
+    @Volatile
+    private var lastReachabilityCheck: Long? = null
 
     init {
         service = retrofitBuilderWithTimeoutAndLogger(timeoutInMs, logger)
@@ -51,6 +64,36 @@ internal class BotApiClient(baseUrl: String) {
             .baseUrl(formattedBaseUrl)
             .build()
             .create()
+        testReachability()
+    }
+
+    fun isReachable(): Boolean {
+        testReachability()
+        return webhookReachable
+    }
+
+    private fun testReachability() {
+        webhookReachable = if (checkReachability && !webhookReachable) {
+            val lastCheck = lastReachabilityCheck
+            val time = System.currentTimeMillis()
+            if (lastCheck == null || time - lastCheck > reachabilityInMs) {
+                try {
+                    lastReachabilityCheck = time
+                    logger.info { "test webhook reachability" }
+                    service.healthcheck().execute().run {
+                        logger.info { "webhook healthcheck : $this" }
+                        isSuccessful
+                    }
+                } catch (e: Exception) {
+                    logger.error(e)
+                    false
+                }
+            } else {
+                false
+            }
+        } else {
+            true
+        }
     }
 
     fun send(request: RequestData): ResponseData? =
@@ -71,7 +114,6 @@ internal class BotApiClient(baseUrl: String) {
         sendResponse: (ResponseData?) -> Unit
     ): Unit =
         try {
-
             val closeListener = CloseListener()
             BackgroundEventSource
                 .Builder(

@@ -113,27 +113,71 @@ fun main() {
     startWithDemo(
         newBot(
             "PUT-YOUR-TOCK-APP-API-KEY-HERE", // Récupérer la clé d'API à partir de l'onglet "Bot Configurations" dans Tock Studio
-             newStory("greetings") { // Intention 'greetings'
-                 end("Bonjour!") // Réponse texte simple
-             },
-             newStory("location") { // Intention 'location'
-                 end(
-                     // Réponse avec une carte - pouvant inclure du texte, un fichier (par exemple une image) et des suggestions d'action utilisateur
-                     newCard(
-                         "Le titre de la carte",
-                         "Un sous-titre",
-                         newAttachment("https://url-image.png"),
-                         newAction("Action 1"),
-                         newAction("Action 2", "http://redirection") 
-                     )
-                 )
-             },
-             newStory("goodbye") { // Intention 'goodbye'
-                 end {
-                     // Réponse spécifique au format Messenger 
-                     buttonsTemplate("Etes-vous sûr(e) de vouloir partir ?", nlpQuickReply("Je reste"))
-                 } 
-             },
+            newStory("greetings") { // Intention 'greetings'
+                end("Bonjour!") // Réponse texte simple 
+            },
+            newStory("stream") {
+                enableStreaming() // Active le streaming ("token par token")
+                for (i in 1..10) {
+                    send("$i + ")
+                    delay(400)
+                }
+                send(" = ${(1..10).sum()}")
+                disableStreaming()
+                end("That's all folks!")
+            },
+            newStory("card") {
+                end(
+                    // Réponse avec une Card — incluant du texte, une pièce jointe (par exemple, une image) et des actions suggérées pour l’utilisateur.
+                    newCard(
+                        "Card Title",
+                        "A subtitle",
+                        newAttachment("https://url-image.png"),
+                        newAction("Action 1"),
+                        newAction("Action 2", "http://redirection")
+                    )
+                )
+            },
+            newStory("carousel") {
+                end(
+                    // Répond avec un Carousel - comprenant des cards
+                    newCarousel(
+                        listOf(
+                            newCard(
+                                "Card 1",
+                                null,
+                                newAttachment("https://url-image.png"),
+                                newAction("Action1"),
+                                newAction("Tock", "http://redirection")
+                            ),
+                            newCard(
+                                "Card 2",
+                                null,
+                                newAttachment("https://doc.tock.ai/fr/images/header.jpg"),
+                                newAction("Action1"),
+                                newAction("Tock", "https://doc.tock.ai")
+                            )
+                        )
+                    )
+                )
+            },
+            newStory("web") {
+                end {
+                    // Réponses spécifiques pour le connector web
+                    webMessage(
+                        "Web",
+                        webPostbackButton("Card", Intent("card")),
+                        webPostbackButton("Carousel", Intent("carousel")),
+                        webPostbackButton("Streaming", Intent("stream"))
+                    )
+                }
+            },
+            newStory("messenger") {
+                end {
+                    // Réponses spécifiques pour le connector messenger
+                    buttonsTemplate("Are you sure you want to leave?", nlpQuickReply("I'll stay"))
+                }
+            },
              // Réponse fournie pas le bot en cas d'incompréhension
              unknownStory {
                  end("Je n'ai pas compris. Mais j'apprends tous les jours :)")
