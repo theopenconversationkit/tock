@@ -17,10 +17,12 @@
 package ai.tock.bot.connector.whatsapp.cloud
 
 import ai.tock.bot.connector.whatsapp.cloud.model.send.SendSuccessfulResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.send.SendTypingIndicatorSuccessfulResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.Media
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.ResponseDeleteMedia
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudTypingIndicatorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.template.WhatsappTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.template.management.CreateTemplateResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.template.management.GetTemplatesResponse
@@ -69,6 +71,13 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
             @Query("access_token") accessToken: String,
             @Body messageRequest: WhatsAppCloudSendBotMessage
         ): Call<SendSuccessfulResponse>
+
+        @POST("v$VERSION/{phoneNumberId}/messages")
+        fun sendMessage(
+            @Path("phoneNumberId") phoneNumberId: String,
+            @Query("access_token") accessToken: String,
+            @Body messageRequest: WhatsAppCloudTypingIndicatorMessage
+        ): Call<SendTypingIndicatorSuccessfulResponse>
 
         @POST("v$VERSION/{phoneNumberId}/media")
         fun uploadMediaInWhatsAppAccount(
@@ -158,6 +167,7 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
     fun retrieveMediaUrl(imgId: String) = graphApi.retrieveMediaUrl(imgId, token)
     fun downloadMediaBinary(url: String) = graphApi.downloadMediaBinary(url, "Bearer $token")
     fun sendMessage(phoneNumberId: String, messageRequest: WhatsAppCloudSendBotMessage) = graphApi.sendMessage(phoneNumberId, token, messageRequest)
+    fun sendMessage(phoneNumberId: String, messageRequest: WhatsAppCloudTypingIndicatorMessage) = graphApi.sendMessage(phoneNumberId, token, messageRequest)
     fun createMessageTemplate(template: WhatsappTemplate) = graphApi.createMessageTemplate(businessAccountId, token, template)
     fun deleteMessageTemplate(templateName: String) = graphApi.deleteMessageTemplate(businessAccountId, token, templateName)
     fun editMessageTemplate(templateId: String, updatedTemplate: WhatsappTemplate) = graphApi.editMessageTemplate(token, templateId, updatedTemplate)

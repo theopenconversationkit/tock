@@ -24,6 +24,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.common.MetaUploadHandle
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudTypingIndicatorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsappTemplateComponent
@@ -64,6 +65,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         send(messageRequest) {
             apiClient.sendMessage(phoneNumberId, messageRequest).execute()
         }
+    }
+
+    fun sendTypingIndicator(phoneNumberId: String, messageId: String) {
+        apiClient.sendMessage(phoneNumberId, WhatsAppCloudTypingIndicatorMessage(messageId)).execute()
     }
 
     fun downloadImgByBinary(imgId: String, mimeType: String): String {
