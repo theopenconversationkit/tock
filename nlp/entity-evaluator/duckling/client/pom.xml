@@ -70,4 +70,60 @@
         <sourceDirectory>src/main/kotlin</sourceDirectory>
     </build>
 
+    <!-- Intellij workaround -->
+    <profiles>
+        <profile>
+            <id>ide-only</id>
+            <activation>
+                <property>
+                    <name>idea.version</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>wit</groupId>
+                    <artifactId>duckling</artifactId>
+                    <scope>system</scope>
+                    <version>${duckling}</version>
+                    <systemPath>${project.basedir}/../duckling/lib/duckling-${duckling}-standalone.jar</systemPath>
+                </dependency>
+
+                <dependency>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-nlp-core-service</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-nlp-entity-value</artifactId>
+                </dependency>
+
+
+                <dependency>
+                    <groupId>com.squareup.retrofit2</groupId>
+                    <artifactId>retrofit</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.squareup.okhttp3</groupId>
+                    <artifactId>logging-interceptor</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.squareup.okhttp3</groupId>
+                    <artifactId>okhttp</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.squareup.retrofit2</groupId>
+                    <artifactId>converter-jackson</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.github.resilience4j</groupId>
+                    <artifactId>resilience4j-retrofit</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-core</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>

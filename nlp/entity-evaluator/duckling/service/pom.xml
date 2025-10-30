@@ -83,4 +83,35 @@
         </plugins>
     </build>
 
+    <!-- Intellij workaround -->
+    <profiles>
+        <profile>
+            <id>ide-only</id>
+            <activation>
+                <property>
+                    <name>idea.version</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>wit</groupId>
+                    <artifactId>duckling</artifactId>
+                    <scope>system</scope>
+                    <version>${duckling}</version>
+                    <systemPath>${project.basedir}/../duckling/lib/duckling-${duckling}-standalone.jar</systemPath>
+                </dependency>
+
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-web</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>ai.tock</groupId>
+                    <artifactId>tock-nlp-duckling-duckling</artifactId>
+                    <classifier>jar-dependencies</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>

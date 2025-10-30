@@ -29,6 +29,10 @@
     <name>Tock Duckling Entities</name>
     <description>Root project for Duckling Entities</description>
 
+    <properties>
+        <duckling>0.4.23</duckling>
+    </properties>
+
     <modules>
         <module>duckling</module>
         <module>service</module>

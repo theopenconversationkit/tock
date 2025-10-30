@@ -28,11 +28,6 @@
     <name>Tock Duckling Lib</name>
     <description>Duckling lib</description>
 
-    <properties>
-        <duckling>0.4.23</duckling>
-        <duckling.basedir>${project.basedir}</duckling.basedir>
-    </properties>
-
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
