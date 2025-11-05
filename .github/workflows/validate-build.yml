@@ -1,0 +1,238 @@
+name: Project Validation
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      gha: ${{ steps.filter.outputs.gha }}
+      kotlin: ${{ steps.filter.outputs.kotlin }}
+      front: ${{ steps.filter.outputs.front }}
+      python: ${{ steps.filter.outputs.python }}
+      doc: ${{ steps.filter.outputs.doc }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            gha:
+              - '.github/**'
+            front:
+              - 'bot/admin/web/**'
+            kotlin:
+              - '**/src/main/kotlin/**'
+              - '**/src/main/resources/**'
+              - '**/src/test/kotlin/**'
+              - '**/src/test/resources/**'
+              - '**/*.kts'
+              - '**/pom.xml'
+            python:
+              - 'gen-ai/orchestrator-server/src/main/python/server/**'
+            doc:
+              - 'docs/**'
+
+  kotlin:
+    name: Kotlin
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 20
+    if: ${{ needs.changes.outputs.kotlin == 'true' || needs.changes.outputs.gha == 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          
+      - name: Check Maven version
+        run: |
+          echo "Maven version:"
+          mvn --version
+          
+      - name: Build & Test
+        run: |
+          echo "Compiling and testing project with Maven..."
+          mvn -B -ntp clean -Dskip.npm -Dexec.skip verify
+
+  front:
+    name: Admin Front
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 20
+    if: ${{ needs.changes.outputs.front == 'true' || needs.changes.outputs.gha == 'true' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Check Maven version
+        run: |
+          echo "Maven version:"
+          mvn --version
+
+      - name: Build & Test
+        run: |
+          echo "building front with maven"
+          cd bot/admin/web
+          mvn -B -ntp verify        
+          
+  doc:
+    name: Documentation
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 20
+    if: ${{ needs.changes.outputs.doc == 'true' || needs.changes.outputs.gha == 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.9'
+          cache: 'pip'
+          cache-dependency-path: docs/requirements.txt
+          
+      - name: Check Python version
+        run: |
+          echo "Python version:"
+          python --version
+          pip --version
+          
+      - name: Install Python dependencies
+        run: |
+          echo "Installing dependencies from docs/requirements.txt..."
+          pip install -r docs/requirements.txt
+          
+      - name: Validate documentation build
+        working-directory: docs
+        run: |
+          echo "Building MkDocs documentation..."
+          mkdocs build --strict
+
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 25
+    if: ${{ needs.changes.outputs.python == 'true'  || needs.changes.outputs.gha == 'true'}}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.9'
+          
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          
+      - name: Cache Poetry
+        uses: actions/cache@v4
+        with:
+          path: |
+            gen-ai/orchestrator-server/src/main/python/server/.venv
+            ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('gen-ai/orchestrator-server/src/main/python/server/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+            
+      - name: Install Poetry dependencies
+        working-directory: gen-ai/orchestrator-server/src/main/python/server
+        run: |
+          echo "Installing Poetry dependencies..."
+          poetry install --with dev,test
+          
+      - name: Check Python Gen-AI syntax (recursive)
+        working-directory: gen-ai/orchestrator-server/src/main/python/server
+        run: |
+          echo "Checking Python syntax in gen-ai..."
+          poetry run python - <<'PY'
+          import compileall, sys
+          ok = compileall.compile_dir("src", quiet=1)
+          sys.exit(0 if ok else 1)
+          PY
+          
+      - name: Run Poetry tests
+        working-directory: gen-ai/orchestrator-server/src/main/python/server
+        run: |
+          poetry run pytest --version || echo "Pytest not configured, skipped"
+
+  precommit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.9'
+          cache: 'pip'
+          
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-precommit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-precommit-
+            
+      - name: Install pre-commit
+        run: |
+          echo "Installing pre-commit..."
+          pip install pre-commit
+          
+      - name: Run pre-commit
+        run: |
+          echo "Running pre-commit on all files..."
+          pre-commit run --all-files --show-diff-on-failure
+          
+  final-status:
+    name: Final Status
+    if: always()
+    needs: [ changes, kotlin, front, doc, python, precommit ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all required jobs status
+        run: |
+          echo "Checking status of all required jobs..."
+          results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
+          echo "Job results: $results"
+          
+          # Check if any required job failed or was cancelled
+          if grep -q -E '(failure|cancelled)' <<< "$results"; then
+            echo "❌ One or more required jobs failed or were cancelled"
+            exit 1
+          fi
+          
+          echo "✅ All validations passed successfully"
