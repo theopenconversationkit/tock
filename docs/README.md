@@ -11,8 +11,8 @@ Basic usage to create a venv with a specific version of Python for this project 
 
 ```sh
 # In docs folder
-pyenv install 3.13.0
-pyenv local 3.13.0  # Activate Python 3.9 for the current
+pyenv install 3.13.9
+pyenv local 3.13.9
 which python # Check that you use the python version installed by pyenv
 python --version # Check your python version
 python -m venv .venv # Create a virtual env based on this python version
@@ -21,13 +21,6 @@ pip install -r  requirements.txt # install dependencies
 mkdocs serve # Generate on default port 
 mkdocs serve --dev-addr 127.0.0.1:8182 # To generate the website on the port you want 
 ```
-
-To enable the git-committers plugin in MkDocs, configure the MKDOCS_GIT_COMMITTERS_APIKEY environment variable in your .bashrc file as follows:
-
-export MKDOCS_GIT_COMMITTERS_APIKEY=[your_github_token].
-
-Ensure the GitHub token you provide has the necessary repo permissions to access repository data. After adding this line, reload your shell configuration with source ~/.bashrc to apply the changes.
-
 
 ## Actions / Workflows 
 
@@ -58,9 +51,5 @@ Then, if you want to close a PR or simply remove a folder from your artifact:
 - Upload the updated files.
 - Add a comment in the PR to indicate the success of the cleanup.
 
-
-PS: It is possible to view the content of the artifact in the action at the "Upload static files as artifact" step in the build job, which is located at the last line of the block in the form:
-
-Artifact download URL: https://github.com/titouvgx/tock/actions/runs/13155545671/artifacts/2539935809
 
 
