@@ -1,19 +1,24 @@
-name: Deploy MkDocs
+name: Deploy and Cleanup MkDocs
 
 on:
+  pull_request_target:
+    types: [assigned, opened, synchronize, reopened, closed]
+    paths:
+      - docs/**
   push:
     branches:
       - master
-    tags:
-      - 'tock-*'
     paths:
       - docs/**
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      cleanup_branch:
+        description: "Nom de la branche à nettoyer"
+        required: true
+        type: string
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: deploy-${{ github.repository }}
@@ -21,37 +26,92 @@ concurrency:
 
 jobs:
   build:
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Setup Python 3.13
-        uses: actions/setup-python@v5
+      - name: Get artifact ID from the latest successful run
+        id: get_artifact
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const workflow_id = 'doc-deploy.yml'; 
+
+            console.log('Récupération des derniers artefacts');
+            try {
+              const runs = await github.rest.actions.listWorkflowRuns({
+                owner,
+                repo,
+                workflow_id: workflow_id,
+                status: "success",
+                per_page: 1
+              });
+
+              if (runs.data.total_count === 0) { 
+                console.log("Aucun artefact trouvé. On continue quand même.");
+                return;
+              }
+
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: runs.data.workflow_runs[0].id
+              });
+
+              const artifact = artifacts.data.artifacts.find(a => a.name === "github-pages");
+              if (artifact) {
+                console.log("Artifact trouvé avec ID :", artifact.id);
+                const response = await github.rest.actions.downloadArtifact({
+                  owner,
+                  repo,
+                  artifact_id: artifact.id,
+                  archive_format: 'zip'
+                });
+                require('fs').writeFileSync("github-pages.zip", Buffer.from(response.data));
+                require('child_process').execSync(`unzip -o github-pages.zip -d "/tmp/gh-artifact-extract" && mkdir -p docs/site && tar xvf /tmp/gh-artifact-extract/artifact.tar -C docs/site/`);
+                console.log("Artefact téléchargé et extrait");
+              } else {
+                console.log("Aucun artefact trouvé.");
+              }
+            } catch (error) {
+              console.error("Erreur lors de la récupération de l'artefact :", error);
+            }
+
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.13.9
 
       - name: Install dependencies
         run: |
-          echo "Installing dependencies"
+          echo "Installation des dépendances"
           pip install -r docs/requirements.txt
 
       - name: Build MkDocs site
         run: |
-          echo "Building MkDocs site"
+          echo "Compilation du site MkDocs"
           cd docs
-          mkdocs build
+          rm -rf site/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          mkdocs build --site-dir site/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
 
       - name: Upload static files as artifact
+        id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/site
 
   deploy:
+    if: "!(github.event.action == 'closed' || github.event_name == 'workflow_dispatch')"
     needs: build
     permissions:
-      pages: write      
+      pages: write
       id-token: write
+      issues: write
+      pull-requests: write
 
     environment:
       name: github-pages
@@ -62,3 +122,147 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Override page_url using PR branch name
+        id: change-page-url
+        run: |
+          echo "Mise à jour de l'URL de déploiement"
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+          BASE_URL="https://doc.tock.ai/tock/"
+          NEW_URL="${BASE_URL}${PR_BRANCH}/"
+          echo "new_page_url=$NEW_URL" >> $GITHUB_OUTPUT
+
+      - uses: actions/github-script@v7
+        name: Post comment
+        if: ${{ github.event_name == 'pull_request_target' }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('Commentaire sur la PR :');
+            console.log(context.payload);
+            context.payload.pull_request
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Website is published: [${{ steps.change-page-url.outputs.new_page_url }}](${{ steps.change-page-url.outputs.new_page_url }})`
+            });
+
+  cleanup:
+    if: github.event.action == 'closed' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get artifact ID from the latest successful run
+        id: get_artifact
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const workflow_id = 'doc-deploy.yml';
+
+            console.log('Récupération des derniers artefacts');
+            try {
+              const runs = await github.rest.actions.listWorkflowRuns({
+                owner,
+                repo,
+                workflow_id: workflow_id,
+                status: "success",
+                per_page: 1
+              });
+
+              if (runs.data.total_count === 0) { 
+                console.log("Aucun artefact trouvé. On continue quand même.");
+                return;
+              }
+
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: runs.data.workflow_runs[0].id
+              });
+
+              const artifact = artifacts.data.artifacts.find(a => a.name === "github-pages");
+              if (artifact) {
+                console.log("Artifact trouvé avec ID :", artifact.id);
+                const response = await github.rest.actions.downloadArtifact({
+                  owner,
+                  repo,
+                  artifact_id: artifact.id,
+                  archive_format: 'zip'
+                });
+                require('fs').writeFileSync("github-pages.zip", Buffer.from(response.data));
+                require('child_process').execSync(`unzip -o github-pages.zip -d "/tmp/gh-artifact-extract" && mkdir -p docs/site && tar xvf /tmp/gh-artifact-extract/artifact.tar -C docs/site/`);
+                console.log("Artefact téléchargé et extrait");
+              } else {
+                console.log("Aucun artefact trouvé.");
+              }
+            } catch (error) {
+              console.error("Erreur lors de la récupération de l'artefact :", error);
+            }
+
+      - name: Lister les fichiers de l'artefact
+        run: |
+          echo "📂 Contenu de l'artefact après extraction :"
+          ls -R /tmp/gh-artifact-extract/
+
+      - name: Déterminer la branche à nettoyer
+        id: determine_branch
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            branch_name="${{ github.event.inputs.cleanup_branch }}"
+          else
+            branch_name="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          fi
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+          echo "🛠️ Branche ciblée pour le nettoyage : $branch_name"
+
+      - name: Supprimer le dossier associé à la PR fermée
+        run: |
+          echo "📂 Vérification du contenu :"
+          ls -l docs/site/
+
+          folder_path="docs/site/${BRANCH_NAME}"
+          echo "🛠️ Dossier ciblé : $folder_path"
+
+          if [ ! -d "$folder_path" ]; then
+            echo "❌ Aucun dossier trouvé pour la branche ${BRANCH_NAME} !"
+          else
+            rm -rf "$folder_path"
+            echo "✅ Dossier supprimé avec succès."
+          fi
+
+          ls -l docs/site/
+
+      - name: Upload static files as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Post cleanup comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              const response = await github.rest.issues.createComment({
+                issue_number: context.payload.pull_request.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🚀 Cleanup completed for PR and associated branch: ${process.env.BRANCH_NAME}`
+              });
+            } catch (error) {
+              console.error("Erreur lors de l'ajout du commentaire de nettoyage :", error);
+            }
