@@ -35,6 +35,8 @@ Open Conversational AI platform to build Bots:
   
 💬 Contact: [https://gitter.im/tockchat/Lobby](https://gitter.im/tockchat/Lobby)
 
+🔢 Versions: [https://gitter.im/tockchat/tock-news](https://gitter.im/tockchat/tock-news)
+
 ## Python developers : using Pre-commit
 
 The python part of the project uses **pre-commit** to automate code checks and formatting before each commit, ensuring consistent code quality and reducing errors.<br/>
