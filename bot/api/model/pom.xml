@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot-api</artifactId>
-        <version>25.10.0</version>
+        <version>25.10.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-api-model</artifactId>
