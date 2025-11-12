@@ -373,7 +373,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) {
-        val u: TockUser? = user() as? TockUser ?: session().get("tockUser")
+        val u: TockUser? = user() as? TockUser ?: session()?.get("tockUser")
         if (u == null) {
             resultHandler.invoke(Future.failedFuture("No user set"))
         } else {
@@ -388,7 +388,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole?>,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) {
-        val tockUser: TockUser? = user() as? TockUser ?: session().get("tockUser") as? TockUser
+        val tockUser: TockUser? = user() as? TockUser ?: session()?.get("tockUser")
         if (tockUser == null) {
             resultHandler.invoke(Future.failedFuture("No user set"))
             return
