@@ -22,6 +22,7 @@ import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.dialog.DialogStatsQuery
+import ai.tock.bot.admin.dialog.DialogWithNlpStats
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.CsvCodec
@@ -145,13 +146,16 @@ class DialogVerticle {
             blockingJsonGet(PATH_DIALOG, setOf(TockUserRole.botUser)) { context ->
                 val app = FrontClient.getApplicationById(context.pathId("applicationId"))
                 if (context.organization == app?.namespace) {
-                    BotAdminService.getDialogWithCommentRights(
+                    val dialog = BotAdminService.getDialogWithCommentRights(
                         context.path("dialogId").toId(),
                         context.userLogin
                     )
-                } else {
-                    unauthorized()
-                }
+                    dialog?.let {
+                        val stats = BotAdminService.dialogReportDAO
+                            .getNlpStats(listOf(it.id), app.namespace)
+                        DialogWithNlpStats(it, stats)
+                    }
+                } else unauthorized()
             }
 
             blockingJsonPost(PATH_DIALOG_SATISFACTION, setOf(TockUserRole.botUser)) { context, query: Set<String> ->
