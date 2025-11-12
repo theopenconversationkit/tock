@@ -215,6 +215,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     executor.executeBlocking {
                         val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
                         if (event != null) {
+                            executor.executeBlocking {
+                                whatsAppCloudApiService.sendTypingIndicator(message.from,message.id)
+                            }
                             controller.handle(
                                 event,
                                 ConnectorData(WhatsAppConnectorCloudCallback(

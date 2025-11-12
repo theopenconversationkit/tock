@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send
+package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class SendSuccessfulResponse(
-        @JsonProperty("messaging_product") val messagingProduct: String,
-        val contacts: List<Contact>,
-        val messages: List<Message>
+
+data class WhatsAppCloudTypingIndicatorMessage(
+    val messageId:String,
+    @get:JsonProperty(value = "messaging_product")
+    val messagingProduct : String = "whatsapp",
+    val status : String = "read",
+    @get:JsonProperty(value = "typing_indicator")
+    val typingIndicator : TypingIndicator = TypingIndicator()
 )
 
-data class Contact(
-        val input: String,
-        @JsonProperty("wa_id") val waId: String
-)
-
-data class Message(
-        val id: String
-)
-
-data class SendTypingIndicatorSuccessfulResponse(
-    val success: Boolean = true
-)
+data class TypingIndicator(val type:String = "text")
