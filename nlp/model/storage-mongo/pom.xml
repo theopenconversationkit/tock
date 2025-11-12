@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-model</artifactId>
-        <version>25.10.1</version>
+        <version>25.10.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-model-storage-mongo</artifactId>
