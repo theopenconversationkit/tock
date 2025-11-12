@@ -17,13 +17,27 @@
 package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.indicators.metric.MetricFilter
-import ai.tock.bot.admin.model.genai.*
-import ai.tock.bot.admin.service.*
+import ai.tock.bot.admin.model.genai.BotDocumentCompressorConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotObservabilityConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotSentenceGenerationConfigurationDTO
+import ai.tock.bot.admin.model.genai.BotSentenceGenerationInfoDTO
+import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
+import ai.tock.bot.admin.model.genai.PlaygroundRequest
+import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.bot.admin.service.CompletionService
+import ai.tock.bot.admin.service.DocumentCompressorService
+import ai.tock.bot.admin.service.ObservabilityService
+import ai.tock.bot.admin.service.RAGService
+import ai.tock.bot.admin.service.SentenceGenerationService
+import ai.tock.bot.admin.service.VectorStoreService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.security.TockUser
-import ai.tock.shared.security.TockUserRole.*
+import ai.tock.shared.security.TockUserRole.admin
+import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
 
@@ -56,10 +70,11 @@ class GenAIVerticle {
              */
             val currentContextApp: (RoutingContext) -> ApplicationDefinition? = { context ->
                 val botId = context.pathParam("botId")
-                val namespace = getNamespace(context)
-                front.getApplicationByNamespaceAndName(
-                    namespace, botId
-                ) ?: throw NotFoundException(404, "Could not find $botId in $namespace")
+                getNamespace(context)?.let { namespace ->
+                    front.getApplicationByNamespaceAndName(
+                        namespace, botId
+                    )
+                }?: throw NotFoundException(404, "Could not find $botId in namespace")
             }
 
             // --------------------------------------- Config - RAG ----------------------------------------
@@ -252,7 +267,7 @@ class GenAIVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) = ((context.user() ?: context.session().get("tockUser")) as TockUser).namespace
+    private fun getNamespace(context: RoutingContext) : String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]

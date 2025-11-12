@@ -41,13 +41,13 @@ interface TockAuthProvider : AuthenticationProvider {
     ).toSet()
 
     /**
-     * Paths to exclude from the [AuthProvider].
+     * Paths to exclude.
      */
     fun excludedPaths(verticle: WebVerticle): Set<Regex> = defaultExcludedPaths(verticle)
 
     /**
      * Protect paths for the specified verticle.
-     * @return the [AuthHandler].
+     * @return the [AuthenticationHandler].
      */
     fun protectPaths(
         verticle: WebVerticle,
@@ -59,6 +59,6 @@ interface TockAuthProvider : AuthenticationProvider {
      * Gets a [TockUser] from current vert.x state.
      */
     fun toTockUser(context: RoutingContext): TockUser? {
-        return context.user() as? TockUser ?: context.session().get("tockUser") as? TockUser
+        return context.user() as? TockUser ?: context.session()?.get("tockUser")
     }
 }

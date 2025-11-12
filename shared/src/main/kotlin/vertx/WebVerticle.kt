@@ -334,7 +334,7 @@ abstract class WebVerticle : AbstractVerticle() {
     ) {
         router.route(method, "$basePath$path")
             .handler { context ->
-                val u: TockUser? = context.user() as? TockUser ?: context.session().get("tockUser") as? TockUser
+                val u: TockUser? = context.user() as? TockUser ?: context.session()?.get("tockUser")
                 if (u == null || roles.isNullOrEmpty()) {
                     handler.invoke(context)
                 } else {
