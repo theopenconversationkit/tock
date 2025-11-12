@@ -24,6 +24,7 @@ import { ApplicationService } from '../../core-nlp/applications.service';
 import { AuthService } from '../../core-nlp/auth/auth.service';
 import { SettingsService } from '../../core-nlp/settings.service';
 import { copyToClipboard } from '../../shared/utils';
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-dialog',
@@ -46,6 +47,7 @@ export class DialogComponent implements OnInit, OnDestroy {
     private applicationService: ApplicationService,
     public auth: AuthService,
     public settings: SettingsService,
+    private botSharedService: BotSharedService,
     private router: Router
   ) {}
 
@@ -100,8 +102,8 @@ export class DialogComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.analytics
-        .dialog(this.state.currentApplication._id, routeParams.dialogId)
+      this.botSharedService
+        .getDialogWithNlpStats(this.state.currentApplication._id, routeParams.dialogId)
         .pipe(take(1))
         .subscribe((dialog) => {
           if (dialog?.actions?.length) {
