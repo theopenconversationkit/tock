@@ -16,7 +16,9 @@
 
 package ai.tock.bot.api.service
 
+import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.ResponseContextVersion
+import ai.tock.bot.api.model.configuration.ResponseContextVersion.V3
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.shared.addJacksonConverter
@@ -42,10 +44,11 @@ internal class BotApiClient(baseUrl: String) {
     private val connectionTimeoutInMs = longProperty("tock_bot_api_connection_timeout_in_ms", 3000L)
     private val timeoutInMs = longProperty("tock_bot_api_timeout_in_ms", 60000L)
     private val reachabilityInMs = longProperty("tock_bot_api_webhook_reachability_in_ms", 10000L)
-    private val checkReachability = booleanProperty(
+
+    @Volatile
+    private var checkReachability = booleanProperty(
         "tock_bot_api_webhook_check_reachability",
-        false
-        /** false as waiting for API contract and python/node implementation */
+        true
     )
     private val logger = KotlinLogging.logger {}
     private val formattedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
@@ -53,10 +56,10 @@ internal class BotApiClient(baseUrl: String) {
     private val service: BotApiService
 
     @Volatile
-    private var webhookReachable: Boolean = !checkReachability
+    private var webhookReachable: Boolean = true
 
     @Volatile
-    private var lastReachabilityCheck: Long? = null
+    private var lastReachabilityCheck: Long = System.currentTimeMillis()
 
     init {
         service = retrofitBuilderWithTimeoutAndLogger(timeoutInMs, logger)
@@ -67,29 +70,44 @@ internal class BotApiClient(baseUrl: String) {
         testReachability()
     }
 
-    fun isReachable(): Boolean {
-        testReachability()
+    fun isReachable(configurationUpdate: (ClientConfiguration) -> Unit = {}): Boolean {
+        testReachability(configurationUpdate)
+        logger.debug { "isReachable: $webhookReachable" }
         return webhookReachable
     }
 
-    private fun testReachability() {
-        webhookReachable = if (checkReachability && !webhookReachable) {
+    private fun testReachability(configurationUpdate: (ClientConfiguration) -> Unit = {}) {
+        logger.debug { "testReachability: check: $checkReachability|reachable: $webhookReachable" }
+        webhookReachable = if (checkReachability) {
             val lastCheck = lastReachabilityCheck
             val time = System.currentTimeMillis()
-            if (lastCheck == null || time - lastCheck > reachabilityInMs) {
+            logger.debug { "elapsed time: ${time - lastCheck}" }
+            if (time - lastCheck > reachabilityInMs) {
                 try {
                     lastReachabilityCheck = time
-                    logger.info { "test webhook reachability" }
-                    service.healthcheck().execute().run {
-                        logger.info { "webhook healthcheck : $this" }
-                        isSuccessful
+                    //check the configuration
+                    val configuration = send(RequestData(configuration = true))?.botConfiguration
+                    if (configuration != null) {
+                        configurationUpdate(configuration)
+                    }
+                    val confVersion = configuration?.version
+                    if (confVersion == null || confVersion == V3) {
+                        logger.info { "test webhook reachability" }
+                        service.healthcheck().execute().run {
+                            logger.info { "webhook healthcheck : $this" }
+                            isSuccessful
+                        }
+                    } else {
+                        logger.info { "webhook configuration version is < v3 - disable reachability check" }
+                        checkReachability = false
+                        true
                     }
                 } catch (e: Exception) {
                     logger.error(e)
                     false
                 }
             } else {
-                false
+                webhookReachable
             }
         } else {
             true

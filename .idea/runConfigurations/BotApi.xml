@@ -1,8 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BotApi" type="JetRunConfigurationType">
     <envs>
-      <env name="tock_websocket_enabled" value="true" />
+      <env name="tock_timeline_persistence_asynchronous_mode" value="true" />
+      <env name="tock_timeline_persistence_synchronous_mode" value="false" />
       <env name="tock_web_sse" value="true" />
+      <env name="tock_websocket_enabled" value="true" />
+      <env name="tock_web_enable_markdown" value="true" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="ai.tock.bot.api.service.StartBotApiKt" />
     <module name="tock-bot-api-service" />

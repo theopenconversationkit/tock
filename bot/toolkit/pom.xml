@@ -91,6 +91,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-open-ai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-alcmeon</artifactId>
         </dependency>
 

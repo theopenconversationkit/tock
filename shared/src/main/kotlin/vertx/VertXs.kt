@@ -22,6 +22,7 @@ import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.provideOrDefault
 import io.vertx.core.AsyncResult
 import io.vertx.core.CompositeFuture
@@ -53,6 +54,8 @@ var defaultVertxOptions = VertxOptions().apply {
         warningExceptionTime = 1000L * 1000 * 1000000
     }
 }
+
+private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
 internal interface VertxProvider {
     fun vertx(): Vertx
@@ -230,7 +233,11 @@ internal fun vertxExecutor(): Executor {
     }
 }
 
-fun HttpServerResponse.setupSSE(): CompositeFuture {
+fun HttpServerResponse.setupSSE(
+    addEndHandler: Boolean = false,
+    keepAlive: Boolean = true,
+    closeHandler: () -> Unit = {}
+): CompositeFuture {
     isChunked = true
     headers().apply {
         add("Content-Type", "text/event-stream;charset=UTF-8")
@@ -238,17 +245,38 @@ fun HttpServerResponse.setupSSE(): CompositeFuture {
         add("Cache-Control", "no-cache")
         add("X-Accel-Buffering", "no")
     }
+    val timerId = if (keepAlive) {
+        vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
+            sendSsePing()
+        }
+    } else {
+        null
+    }
+    if (addEndHandler) {
+        endHandler {
+            closeHandler()
+            if (timerId != null) {
+                vertx.cancelTimer(timerId)
+            }
+        }
+    }
+    closeHandler {
+        closeHandler()
+        if (timerId != null) {
+            vertx.cancelTimer(timerId)
+        }
+    }
     return sendSsePing()
 }
 
 fun HttpServerResponse.sendSsePing(): CompositeFuture =
     Future.all(
         write("event: ping\n"),
-        write("data: 1\n\n")
+        write("data: 1\n\n"),
     )
 
 fun HttpServerResponse.sendSseMessage(data: String): CompositeFuture =
     Future.all(
         write("event: message\n"),
-        write("data: $data\n\n")
+        write("data: $data\n\n"),
     )

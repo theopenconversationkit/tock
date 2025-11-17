@@ -23,17 +23,13 @@ import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.merge
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.provide
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.setupSSE
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
-import java.time.Duration
 
 internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
 
@@ -66,7 +62,7 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
             val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
-                context.response().setupSSE()
+                context.response().setupSSE(addEndHandler = true)
                 val bus = TockClientBus(botDefinition, request) { response ->
                     context.response()
                         .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))

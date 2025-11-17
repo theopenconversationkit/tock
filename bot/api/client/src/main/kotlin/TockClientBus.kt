@@ -36,6 +36,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.ConstrainedValueWrapper
 import ai.tock.translator.I18nKeyProvider
@@ -83,12 +84,6 @@ class TockClientBus(
 
     override val stepName: String? = null
 
-    @Volatile
-    private var streaming: Boolean = false
-
-    @Volatile
-    private var streamedData: String = ""
-
     override fun handle() {
         story =
             if (request.storyId == botDefinition.unknownStory.storyId) {
@@ -107,15 +102,11 @@ class TockClientBus(
     override fun defaultDelay(answerIndex: Int): Long = 0
 
     override suspend fun enableStreaming() {
-        streaming = true
-        streamedData = ""
-        addMessage(Event(EventCategory.METADATA, "TOCK_STREAM_RESPONSE", "true"))
+        addMessage(Event(EventCategory.METADATA, STREAM_RESPONSE_METADATA, "true"))
     }
 
     override suspend fun disableStreaming() {
-        streaming = false
-        streamedData = ""
-        addMessage(Event(EventCategory.METADATA, "TOCK_STREAM_RESPONSE", "false"))
+        addMessage(Event(EventCategory.METADATA, STREAM_RESPONSE_METADATA, "false"))
     }
 
     private fun addMessage(message: BotMessage?, lastResponse: Boolean = false) {
@@ -134,17 +125,12 @@ class TockClientBus(
             answer(CustomMessage(ConstrainedValueWrapper(it), delay), lastResponse && plainText == null)
         }
         if (plainText != null) {
-            val text : CharSequence = if (streaming) {
-                streamedData += plainText
-                streamedData
-            } else {
-                plainText
-            }
+            val text: CharSequence = plainText
 
             answer(
                 when (text) {
                     is String -> Sentence(
-                        I18nText(text = text, toBeTranslated = !streaming),
+                        I18nText(text = text, toBeTranslated = true),
                         delay = delay,
                         suggestions = suggestions
                     )
@@ -157,7 +143,7 @@ class TockClientBus(
                     )
 
                     else -> Sentence(
-                        I18nText(text.toString(), toBeTranslated = !streaming),
+                        I18nText(text.toString(), toBeTranslated = true),
                         delay = delay,
                         suggestions = suggestions
                     )

@@ -143,7 +143,7 @@ internal class BotApiClientController(
 
     fun send(userRequest: UserRequest, sendResponse: (ResponseData?) -> Unit) {
         val request = RequestData(userRequest)
-        if (client?.isReachable() == true) {
+        if (client?.isReachable { lastConfiguration = it } == true) {
             sendWithWebhook(request, sendResponse)
         } else {
             sendWithWebSocket(request, sendResponse)
@@ -154,7 +154,7 @@ internal class BotApiClientController(
         client
             ?.apply {
                 if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.supportSSE != true) {
-                    logger.debug { "sse not used for webhook" }
+                    logger.debug { "sse not used for webhook - conf : ${request.configuration}|oldBehaviour: $oldWebhookBehaviour|supportSSE: ${lastConfiguration?.supportSSE}" }
                     send(request).apply {
                         sendResponse(this)
                     }
@@ -176,7 +176,7 @@ internal class BotApiClientController(
             }
         } else {
             if (request.configuration != true) {
-                error("no websocket handler for $apiKey")
+                error("no websocket handler for $apiKey and no webhook reachable")
             }
         }
     }

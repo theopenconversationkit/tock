@@ -19,23 +19,30 @@ package ai.tock.bot.connector.web
 import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.web.WebConnector.Companion.sendSseResponse
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.hasStreamMetadata
+import ai.tock.shared.booleanProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+
+private val mergeStreamResponse: Boolean =
+    booleanProperty("tock_web_connector_merge_stream_response", true)
 
 internal class WebConnectorCallback(
     applicationId: String,
     val locale: Locale,
     private val context: RoutingContext?,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
-    private val metadata: MutableMap<String, String> = mutableMapOf(),
+    private val metadata: MutableMap<String, String> = ConcurrentHashMap(),
     private val webMapper: ObjectMapper,
     private val eventId: String,
     private val messageProcessor: WebMessageProcessor,
-    internal val streamedResponse:Boolean,
+    internal val streamedResponse: Boolean,
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
 
     fun addAction(action: Action) {
@@ -44,11 +51,22 @@ internal class WebConnectorCallback(
 
     fun addMetadata(metadata: MetadataEvent) {
         this.metadata[metadata.type] = metadata.value
+        if (metadata.isEndStreamMetadata()) {
+            WebRequestInfosByEvent.get(eventId)?.clearStreamedResponse()
+        }
     }
 
     fun createResponse(actions: List<Action>): WebConnectorResponse {
-        val messages = actions.mapNotNull(messageProcessor::process)
-        return WebConnectorResponse(messages, metadata)
+        val messages = actions.mapNotNull { a ->
+            val action = if (a is SendSentence && metadata.hasStreamMetadata() && mergeStreamResponse) {
+                a.withText(WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a.stringText))
+            } else {
+                a
+            }
+            messageProcessor.process(action)
+        }
+
+        return WebConnectorResponse(messages, metadata.toMap()) //clone the metadata
     }
 
     fun sendResponse() {

@@ -23,7 +23,7 @@ Cette page liste en fait :
 
 ![logo messenger](../../img/messenger.png "whatsapp"){style="width:50px;"}
 ![Logo slack](../../img/slack.png "Slack"){style="width: 75px;"}
-![Logo Google assistant](../../img/googelassist.png "google assisstant"){style="width: 70px;"}
+![Logo Google assistant](../../img/googelassist.png "google assistant"){style="width: 70px;"}
 ![logo google home](../../img/googlehome.png "google home "){style="width:50px;"}
 ![Logo Alexa](../../img/alexa2.png "alexa"){style="width: 75px;"}
 ![logo Rocket rachat](../../img/rocketrachat.png "rocket rachat"){style="width:50px;"}
@@ -34,6 +34,7 @@ Cette page liste en fait :
 ![logo google chat ](../../img/ggchat.png "google chat"){style="width:50px;"}
 ![logo mattermost](../../img/mattermost.svg "Mattermost"){style="width:50px;"}
 ![logo web](../../img/web.png "web"){style="width:50px;"}
+![logo web](../../img/openai.png "Open AI"){style="width:50px;"}
 ![logo test](../../img/test.jpeg "test"){style="width:50px;"}
 
 - Les [kits utilisant le _connecteur Web_](#integrations-via-le-connecteur-web) pour intégrer d'autres canaux :  
@@ -210,10 +211,21 @@ Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le 
 
 * **Channel** : [Mattermost](https://mattermost.com/)
 * **Type** : text
-* **Status** : Tock connector not used for production (no use case yet)
+* **Status** : connecteur Tock utilisé en production depuis 2025
 
 Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
 [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost) sur GitHub.
+
+### Open AI
+
+![logo web](../../img/openai.png "Open AI"){style="width:50px;"}
+
+* **Channel** : [Open AI](https://openai.com/)
+* **Type** : text
+* **Status** : connecteur Tock utilisé hors production avec [Open WebUI](https://openwebui.com/)
+
+Pour en savoir plus sur ce connecteur, voir ses sources et son _README_ dans le dossier
+[connector-open-ai](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-open-ai) sur GitHub.
 
 ### Web generique
 

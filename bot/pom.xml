@@ -47,6 +47,7 @@
         <module>connector-businesschat</module>
         <module>connector-web</module>
         <module>connector-web-model</module>
+        <module>connector-open-ai</module>
         <module>connector-google-chat</module>
         <module>connector-iadvize</module>
         <module>connector-mattermost</module>
@@ -175,6 +176,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-web-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-connector-open-ai</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

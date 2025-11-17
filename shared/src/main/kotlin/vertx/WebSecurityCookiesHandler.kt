@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web.security
+package ai.tock.shared.vertx
 
 
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import ai.tock.shared.longProperty
+import ai.tock.shared.propertyOrNull
+import ai.tock.shared.provide
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import io.vertx.core.http.Cookie
 import io.vertx.core.http.CookieSameSite
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
-import java.util.*
+import java.util.UUID
 
 private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
 private val cookieAuthPath = propertyOrNull("tock_web_cookie_auth_path")
