@@ -63,7 +63,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
 
     val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
-    fun support(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData): Double {
+    suspend fun support(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData): Double {
         connector as TockConnectorController
 
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
@@ -184,7 +184,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         return story
     }
 
-    private fun parseAction(action: Action, userTimeline: UserTimeline, dialog: Dialog, connector: TockConnectorController) {
+    private suspend fun parseAction(action: Action, userTimeline: UserTimeline, dialog: Dialog, connector: TockConnectorController) {
         try {
             when (action) {
                 is SendChoice -> {

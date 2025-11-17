@@ -27,6 +27,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.bot.engine.nlp.engine.nlp.AsyncNlpListener
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.Entity
@@ -49,9 +50,9 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
-import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
+import mu.KotlinLogging
 
 /**
  * [NlpController] default implementation.
@@ -74,7 +75,7 @@ internal class Nlp : NlpController {
             val botDefinition: BotDefinition
     ) {
 
-        fun parse() {
+        suspend fun parse() {
             logger.debug { "Parse sentence : $sentence" }
 
             findKeyword(sentence.stringText)?.apply {
@@ -100,7 +101,11 @@ internal class Nlp : NlpController {
                         BotRepository.forEachNlpListener {
                             customEntityEvaluations.addAll(
                                     try {
-                                        it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
+                                        if (it is AsyncNlpListener) {
+                                            it.processEntities(userTimeline, dialog, sentence, nlpResult)
+                                        } else {
+                                            it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
+                                        }
                                     } catch (e: Exception) {
                                         logger.error(e)
                                         emptyList()
@@ -137,7 +142,7 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun findIntent(
+        private suspend fun findIntent(
                 userTimeline: UserTimeline,
                 dialog: Dialog,
                 sentence: SendSentence,
@@ -147,7 +152,11 @@ internal class Nlp : NlpController {
             BotRepository.forEachNlpListener {
                 if (i == null) {
                     i = try {
-                        it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
+                        if (it is AsyncNlpListener) {
+                            it.selectIntent(userTimeline, dialog, sentence, nlpResult)
+                        } else {
+                            it.findIntent(userTimeline, dialog, sentence, nlpResult)
+                        }?.wrappedIntent()
                     } catch (e: Exception) {
                         logger.error(e)
                         null
@@ -196,13 +205,17 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun findKeyword(sentence: String?): Intent? {
+        private suspend fun findKeyword(sentence: String?): Intent? {
             return if (sentence != null) {
                 var i: Intent? = null
                 BotRepository.forEachNlpListener {
                     if (i == null) {
                         i = try {
-                            it.handleKeyword(sentence)
+                            if (it is AsyncNlpListener) {
+                                it.detectKeyword(sentence)
+                            } else {
+                                it.handleKeyword(sentence)
+                            }
                         } catch (e: Exception) {
                             logger.error(e)
                             null
@@ -215,20 +228,28 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
+        private suspend fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
             BotRepository.forEachNlpListener {
                 try {
-                    it.success(query, result)
+                    if (it is AsyncNlpListener) {
+                        it.onSuccess(query, result)
+                    } else {
+                        it.success(query, result)
+                    }
                 } catch (e: Exception) {
                     logger.error(e)
                 }
             }
         }
 
-        private fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
+        private suspend fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
             BotRepository.forEachNlpListener {
                 try {
-                    it.error(query, dialog, throwable)
+                    if (it is AsyncNlpListener) {
+                        it.onError(query, dialog, throwable)
+                    } else {
+                        it.error(query, dialog, throwable)
+                    }
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -249,7 +270,7 @@ internal class Nlp : NlpController {
             )
         }
 
-        private fun toNlpQuery(): NlpQuery {
+        private suspend fun toNlpQuery(): NlpQuery {
             return NlpQuery(
                     listOf(sentence.stringText ?: ""),
                     botDefinition.namespace,
@@ -263,7 +284,11 @@ internal class Nlp : NlpController {
             ).run {
                 var query = this
                 BotRepository.forEachNlpListener {
-                    query = it.updateQuery(sentence, userTimeline, dialog, botDefinition, query)
+                    query = if (it is AsyncNlpListener) {
+                        it.updateNlpQuery(sentence, userTimeline, dialog, botDefinition, query)
+                    } else {
+                        it.updateQuery(sentence, userTimeline, dialog, botDefinition, query)
+                    }
                 }
                 query
             }
@@ -340,17 +365,25 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun DialogState.mergeEntityValuesFromAction(action: Action): List<EntityValue> {
+        private suspend fun DialogState.mergeEntityValuesFromAction(action: Action): List<EntityValue> {
             var merge: List<NlpEntityMergeContext> = action.state.entityValues
                     .asSequence()
                     .groupBy { it.entity.role }
                     .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
             // sort entities
-            BotRepository.forEachNlpListener { merge = it.sortEntitiesToMerge(merge) }
+            BotRepository.forEachNlpListener { merge = if (it is AsyncNlpListener) {
+                it.sortEntitiesBeforeMerge(merge)
+            } else {
+                it.sortEntitiesToMerge(merge)
+            } }
 
             return merge.mapNotNull { mergeContext ->
                 var context = mergeContext
-                BotRepository.forEachNlpListener { context = it.mergeEntityValues(this, action, context) }
+                BotRepository.forEachNlpListener { context = if (it is AsyncNlpListener) {
+                    it.tryMergeEntityValues(this, action, context)
+                } else {
+                    it.mergeEntityValues(this, action, context)
+                } }
                 val result = mergeEntityValues(action, context.newValues, context.initialValue)
                 entityValues[context.entityRole] = result
                 result.value
@@ -391,7 +424,7 @@ internal class Nlp : NlpController {
         }
     }
 
-    override fun parseSentence(
+    override suspend fun parseSentence(
             sentence: SendSentence,
             userTimeline: UserTimeline,
             dialog: Dialog,
@@ -400,7 +433,11 @@ internal class Nlp : NlpController {
     ) {
 
         BotRepository.forEachNlpListener {
-            val result = it.precompute(sentence, userTimeline, dialog, botDefinition)
+            val result = if (it is AsyncNlpListener) {
+                it.precomputeNlp(sentence, userTimeline, dialog, botDefinition)
+            } else {
+                it.precompute(sentence, userTimeline, dialog, botDefinition)
+            }
             if (result != null) {
                 sentence.precomputedNlp = result
             }
