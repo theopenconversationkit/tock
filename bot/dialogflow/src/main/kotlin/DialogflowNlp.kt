@@ -38,6 +38,7 @@ import ai.tock.nlp.api.client.model.dump.IntentDefinition
 import ai.tock.nlp.api.client.model.dump.SentencesDump
 import ai.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -59,6 +60,7 @@ internal class DialogflowNlp : NlpController {
     private val nlpClient: NlpClient get() = injector.provide()
     private val executor: Executor get() = injector.provide()
 
+    @OptIn(ExperimentalTockCoroutines::class)
     private class SentenceParser(
         val nlpClient: NlpClient,
         val sentence: SendSentence,
@@ -250,7 +252,7 @@ internal class DialogflowNlp : NlpController {
             } else {
                 nlpClient.parse(
                     request.copy(
-                        intentsSubset = intentsQualifiers!!.asSequence().map {
+                        intentsSubset = intentsQualifiers.asSequence().map {
                             it.copy(
                                 intent = it.intent.withNamespace(
                                     request.namespace
@@ -262,7 +264,7 @@ internal class DialogflowNlp : NlpController {
             }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
-                if (intentsQualifiers!!.none { it.intent == result.intent }) {
+                if (intentsQualifiers.none { it.intent == result.intent }) {
                     return result.copy(
                         intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
                             ?: intentsQualifiers.first().intent

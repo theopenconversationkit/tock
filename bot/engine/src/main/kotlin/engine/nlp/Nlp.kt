@@ -45,6 +45,7 @@ import ai.tock.nlp.api.client.model.merge.ValueToMerge
 import ai.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import ai.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -57,6 +58,7 @@ import mu.KotlinLogging
 /**
  * [NlpController] default implementation.
  */
+@OptIn(ExperimentalTockCoroutines::class)
 internal class Nlp : NlpController {
 
     companion object {
@@ -399,7 +401,7 @@ internal class Nlp : NlpController {
             } else {
                 nlpClient.parse(
                         request.copy(
-                                intentsSubset = intentsQualifiers!!.asSequence().map {
+                                intentsSubset = intentsQualifiers.asSequence().map {
                                     it.copy(
                                             intent = it.intent.withNamespace(
                                                     request.namespace
@@ -411,7 +413,7 @@ internal class Nlp : NlpController {
             }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
-                if (intentsQualifiers!!.none { it.intent == result.intent }) {
+                if (intentsQualifiers.none { it.intent == result.intent }) {
                     return result.copy(
                             intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
                                     ?: intentsQualifiers.first().intent
