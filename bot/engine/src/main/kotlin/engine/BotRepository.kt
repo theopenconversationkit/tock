@@ -165,8 +165,8 @@ object BotRepository {
     /**
      * Calls the specified [action] for each registered [NlpListener].
      */
-    fun forEachNlpListener(action: (NlpListener) -> Unit) {
-        nlpListeners.forEach(action)
+    suspend fun forEachNlpListener(action: suspend (NlpListener) -> Unit) {
+        nlpListeners.forEach { action(it) }
     }
 
     /**
