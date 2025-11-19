@@ -5,7 +5,8 @@ on:
     branches:
       - master
     paths:
-      - docs/**
+      - docs/**                         # Any change in documentation
+      - .github/workflows/doc-deploy.yml # Any change in this workflow
 
 # Set required permissions for GitHub Pages deployment
 permissions:
@@ -65,8 +66,6 @@ jobs:
 
     environment:
       name: github-pages
-      # This will be automatically filled with the deployed pages URL
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       # Deploy the uploaded artifact to GitHub Pages
