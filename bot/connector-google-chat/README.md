@@ -13,7 +13,9 @@ Grant the following permissions:
 - `chat.bots.get`
 - `chat.bots.update`
 
-> 💡 **Recommendation**: Create a specific role with these permissions and assign it to a service account.
+If you use **service account impersonation**, the *source* service account must also have:
+
+- `roles/iam.serviceAccountTokenCreator` on the **target** service account
 
 ### Retrieve information from Google Cloud Console
 
@@ -21,6 +23,7 @@ Grant the following permissions:
 |---------------------|-----------------|
 | **Bot project number** | The numeric ID of your project (e.g., `37564789203`) |
 | **JSON credentials** | Service account credentials file |
+| **(Optional) GSA to impersonate** | Email of the target service account if using impersonation |
 
 ### Configure Google Chat API
 
@@ -48,6 +51,7 @@ Authentication Audience → Project Number
 | **Application base URL** | `https://area-simple-teal.ngrok-free.app` |
 | **Bot project number** | `37564789203` |
 | **Service account credential json content** | `{"type": "service_account", ...}` |
+| **Service account to impersonate** (optional) | `bot-sa@project.iam.gserviceaccount.com` |
 | **Use condensed footnotes** | `1` = condensed, `0` = detailed |
 
 ---

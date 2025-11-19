@@ -28,16 +28,22 @@ internal object GoogleChatMessageConverter {
         condensedFootnotes: Boolean = false,
     ): GoogleChatConnectorMessage? =
         when (action) {
-            is SendSentence -> sendSentence(action)
-            is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
+            is SendSentence -> {
+                sendSentence(action)
+            }
+
+            is SendSentenceWithFootnotes -> {
+                sendSentenceWithFootnotes(action, condensedFootnotes)
+            }
+
             else -> {
                 logger.warn { "Action $action not supported" }
                 null
             }
         }
 
-    private fun sendSentence(action: SendSentence): GoogleChatConnectorMessage? {
-        return if (action.hasMessage(GoogleChatConnectorProvider.connectorType)) {
+    private fun sendSentence(action: SendSentence): GoogleChatConnectorMessage? =
+        if (action.hasMessage(GoogleChatConnectorProvider.connectorType)) {
             action.message(GoogleChatConnectorProvider.connectorType) as GoogleChatConnectorMessage
         } else {
             action.stringText
@@ -45,7 +51,6 @@ internal object GoogleChatMessageConverter {
                 ?.let { GoogleChatMarkdown.toGoogleChat(it.toString()) }
                 ?.let(::GoogleChatConnectorTextMessageOut)
         }
-    }
 
     private fun sendSentenceWithFootnotes(
         action: SendSentenceWithFootnotes,
