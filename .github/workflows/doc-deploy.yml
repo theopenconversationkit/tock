@@ -45,8 +45,10 @@ jobs:
         run: |
           echo "Building MkDocs site"
           cd docs
-          # Build the site into the 'site' directory
-          mkdocs build --site-dir site
+          # Clean previous 'master' build
+          rm -rf site/master
+          # Build the site into 'site/master'
+          mkdocs build --site-dir site/master
 
       # Upload the built static files as an artifact for GitHub Pages
       - name: Upload static files as artifact
