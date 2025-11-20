@@ -126,7 +126,7 @@ interface AsyncNlpListener {
      * ```
      * object MyNlpListener : AsyncNlpListener {
      *  override suspend fun onError(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
-     *   super.error(query, dialog, throwable)
+     *   super.onError(query, dialog, throwable)
      *   dialog.state.currentIntent = bot.myCustomErrorStory.mainIntent()
      *  }
      * }
