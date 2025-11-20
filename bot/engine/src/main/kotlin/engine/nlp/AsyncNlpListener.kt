@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.nlp.engine.nlp
+package ai.tock.bot.engine.nlp
 
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
@@ -25,25 +25,17 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.nlp.NlpEntityMergeContext
-import ai.tock.bot.engine.nlp.NlpListener
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import kotlinx.coroutines.runBlocking
 
 /**
  * Used to customize behaviour of NLP parsing - and also to monitor NLP requests - on bot side.
  * Has to be registered using [ai.tock.bot.engine.BotRepository.registerNlpListener].
  */
 @ExperimentalTockCoroutines
-interface AsyncNlpListener : NlpListener {
-
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("detectKeyword(sentence)"))
-    override fun handleKeyword(sentence: String): Intent? = runBlocking {
-        detectKeyword(sentence)
-    }
+interface AsyncNlpListener {
 
     /**
      * Used to handle "secret" keywords.
@@ -52,38 +44,17 @@ interface AsyncNlpListener : NlpListener {
      */
     suspend fun detectKeyword(sentence: String): Intent? = null
 
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("precomputeNlp(sentence, userTimeline, dialog, botDefinition)"))
-    override fun precompute(
-        sentence: SendSentence,
-        userTimeline: UserTimeline,
-        dialog: Dialog,
-        botDefinition: BotDefinition
-    ): NlpResult? = runBlocking {
-        precomputeNlp(sentence, userTimeline, dialog, botDefinition)
-    }
-
     /**
-     * Precomputes NLP result - if this method returns null, the [NlpResult] is used and no NLP call is sent.
+     * Precomputes NLP result - if this method returns null, the [ai.tock.nlp.api.client.model.NlpResult] is used and no NLP call is sent.
      *
      * Default returns null.
      */
-    suspend fun precomputeNlp(
+    suspend fun precompute(
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
         botDefinition: BotDefinition
     ): NlpResult? = null
-
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("updateNlpQuery(sentence, userTimeline, dialog, botDefinition, nlpQuery)"))
-    override fun updateQuery(
-        sentence: SendSentence,
-        userTimeline: UserTimeline,
-        dialog: Dialog,
-        botDefinition: BotDefinition,
-        nlpQuery: NlpQuery
-    ): NlpQuery = runBlocking {
-        updateNlpQuery(sentence, userTimeline, dialog, botDefinition, nlpQuery)
-    }
 
     /**
      * This method is automatically called by the bot before a NLP request is sent in order to update the NLP query parameters.
@@ -92,7 +63,7 @@ interface AsyncNlpListener : NlpListener {
      *
      * Default returns [nlpQuery] without change.
      */
-    suspend fun updateNlpQuery(
+    suspend fun updateQuery(
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
@@ -100,50 +71,30 @@ interface AsyncNlpListener : NlpListener {
         nlpQuery: NlpQuery
     ): NlpQuery = nlpQuery
 
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("selectIntent(userTimeline, dialog, event, nlpResult)"))
-    override fun findIntent(
-        userTimeline: UserTimeline,
-        dialog: Dialog,
-        event: Event,
-        nlpResult: NlpResult
-    ): IntentAware? = runBlocking {
-        selectIntent(userTimeline, dialog, event, nlpResult)
-    }
-
     /**
      * This method is automatically called by the bot after a NLP request in order to select an intent.
      * Overrides it if you need more control on intent choice.
      *
-     * If it returns null, [ai.tock.bot.definition.BotDefinition.findIntent] is called.
+     * If it returns null, [BotDefinition.findIntent] is called.
      *
      * Default returns null.
      */
-    suspend fun selectIntent(userTimeline: UserTimeline, dialog: Dialog, event: Event, nlpResult: NlpResult): IntentAware? = null
-
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("postProcessEntities(userTimeline, dialog, event, nlpResult)"))
-    override fun evaluateEntities(
+    suspend fun findIntent(
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
         nlpResult: NlpResult
-    ): List<EntityValue> = runBlocking {
-        processEntities(userTimeline, dialog, event, nlpResult)
-    }
+    ): IntentAware? = null
 
     /**
      * Allows custom entity evaluation - default returns empty list.
      */
-    suspend fun processEntities(
+    suspend fun evaluateEntities(
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
         nlpResult: NlpResult
     ): List<EntityValue> = emptyList()
-
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("sortEntitiesBeforeMerge(entities)"))
-    override fun sortEntitiesToMerge(entities: List<NlpEntityMergeContext>): List<NlpEntityMergeContext> = runBlocking {
-        sortEntitiesBeforeMerge(entities)
-    }
 
     /**
      * Defines custom sort new entity values.
@@ -153,42 +104,19 @@ interface AsyncNlpListener : NlpListener {
      */
     suspend fun sortEntitiesBeforeMerge(entities: List<NlpEntityMergeContext>): List<NlpEntityMergeContext> = entities
 
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("tryMergeEntityValues(dialogState, action, entityToMerge)"))
-    override fun mergeEntityValues(
-        dialogState: DialogState,
-        action: Action,
-        entityToMerge: NlpEntityMergeContext
-    ): NlpEntityMergeContext = runBlocking {
-        tryMergeEntityValues(dialogState, action, entityToMerge)
-    }
-
     /**
      * Allows to override [NlpEntityMergeContext] before trying to merge the entity context.
      */
-    suspend fun tryMergeEntityValues(
+    suspend fun mergeEntityValues(
         dialogState: DialogState,
         action: Action,
         entityToMerge: NlpEntityMergeContext
     ): NlpEntityMergeContext = entityToMerge
 
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("success(query, result)"))
-    override fun success(query: NlpQuery, result: NlpResult) = runBlocking {
-        onSuccess(query, result)
-    }
-
     /**
      * Called when nlp request is successful.
      */
     suspend fun onSuccess(query: NlpQuery, result: NlpResult) = Unit
-
-    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("onError(query, dialog, throwable)"))
-    override fun error(
-        query: NlpQuery,
-        dialog: Dialog,
-        throwable: Throwable?
-    ) = runBlocking {
-        onError(query, dialog, throwable)
-    }
 
     /**
      * Called when nlp request is throwing an error.
@@ -196,7 +124,7 @@ interface AsyncNlpListener : NlpListener {
      * Using this method, you can for example redirect to a custom story which will handle the error.
      *
      * ```
-     * object MyNlpListener : NlpListener {
+     * object MyNlpListener : AsyncNlpListener {
      *  override suspend fun onError(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
      *   super.error(query, dialog, throwable)
      *   dialog.state.currentIntent = bot.myCustomErrorStory.mainIntent()

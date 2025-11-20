@@ -27,7 +27,6 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
-import ai.tock.bot.engine.nlp.engine.nlp.AsyncNlpListener
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.Entity
@@ -103,11 +102,7 @@ internal class Nlp : NlpController {
                         BotRepository.forEachNlpListener {
                             customEntityEvaluations.addAll(
                                     try {
-                                        if (it is AsyncNlpListener) {
-                                            it.processEntities(userTimeline, dialog, sentence, nlpResult)
-                                        } else {
-                                            it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
-                                        }
+                                        it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
                                     } catch (e: Exception) {
                                         logger.error(e)
                                         emptyList()
@@ -154,11 +149,7 @@ internal class Nlp : NlpController {
             BotRepository.forEachNlpListener {
                 if (i == null) {
                     i = try {
-                        if (it is AsyncNlpListener) {
-                            it.selectIntent(userTimeline, dialog, sentence, nlpResult)
-                        } else {
-                            it.findIntent(userTimeline, dialog, sentence, nlpResult)
-                        }?.wrappedIntent()
+                        it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
                     } catch (e: Exception) {
                         logger.error(e)
                         null
@@ -166,7 +157,7 @@ internal class Nlp : NlpController {
                 }
             }
 
-            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.applicationId)
+            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.connectorId)
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
@@ -213,11 +204,7 @@ internal class Nlp : NlpController {
                 BotRepository.forEachNlpListener {
                     if (i == null) {
                         i = try {
-                            if (it is AsyncNlpListener) {
-                                it.detectKeyword(sentence)
-                            } else {
-                                it.handleKeyword(sentence)
-                            }
+                            it.detectKeyword(sentence)
                         } catch (e: Exception) {
                             logger.error(e)
                             null
@@ -233,11 +220,7 @@ internal class Nlp : NlpController {
         private suspend fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
             BotRepository.forEachNlpListener {
                 try {
-                    if (it is AsyncNlpListener) {
-                        it.onSuccess(query, result)
-                    } else {
-                        it.success(query, result)
-                    }
+                    it.onSuccess(query, result)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -247,11 +230,7 @@ internal class Nlp : NlpController {
         private suspend fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
             BotRepository.forEachNlpListener {
                 try {
-                    if (it is AsyncNlpListener) {
-                        it.onError(query, dialog, throwable)
-                    } else {
-                        it.error(query, dialog, throwable)
-                    }
+                    it.onError(query, dialog, throwable)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -286,11 +265,7 @@ internal class Nlp : NlpController {
             ).run {
                 var query = this
                 BotRepository.forEachNlpListener {
-                    query = if (it is AsyncNlpListener) {
-                        it.updateNlpQuery(sentence, userTimeline, dialog, botDefinition, query)
-                    } else {
-                        it.updateQuery(sentence, userTimeline, dialog, botDefinition, query)
-                    }
+                    query = it.updateQuery(sentence, userTimeline, dialog, botDefinition, query)
                 }
                 query
             }
@@ -373,19 +348,11 @@ internal class Nlp : NlpController {
                     .groupBy { it.entity.role }
                     .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
             // sort entities
-            BotRepository.forEachNlpListener { merge = if (it is AsyncNlpListener) {
-                it.sortEntitiesBeforeMerge(merge)
-            } else {
-                it.sortEntitiesToMerge(merge)
-            } }
+            BotRepository.forEachNlpListener { merge = it.sortEntitiesBeforeMerge(merge) }
 
             return merge.mapNotNull { mergeContext ->
                 var context = mergeContext
-                BotRepository.forEachNlpListener { context = if (it is AsyncNlpListener) {
-                    it.tryMergeEntityValues(this, action, context)
-                } else {
-                    it.mergeEntityValues(this, action, context)
-                } }
+                BotRepository.forEachNlpListener { context = it.mergeEntityValues(this, action, context) }
                 val result = mergeEntityValues(action, context.newValues, context.initialValue)
                 entityValues[context.entityRole] = result
                 result.value
@@ -435,11 +402,7 @@ internal class Nlp : NlpController {
     ) {
 
         BotRepository.forEachNlpListener {
-            val result = if (it is AsyncNlpListener) {
-                it.precomputeNlp(sentence, userTimeline, dialog, botDefinition)
-            } else {
-                it.precompute(sentence, userTimeline, dialog, botDefinition)
-            }
+            val result = it.precompute(sentence, userTimeline, dialog, botDefinition)
             if (result != null) {
                 sentence.precomputedNlp = result
             }
@@ -474,7 +437,7 @@ internal class Nlp : NlpController {
         }
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =
+    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition> =
             nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
 
     override fun importNlpDump(stream: InputStream): Boolean =

@@ -26,7 +26,6 @@ import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.nlp.NlpController
-import ai.tock.bot.engine.nlp.engine.nlp.AsyncNlpListener
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.NlpQuery
@@ -91,11 +90,7 @@ internal class DialogflowNlp : NlpController {
                         BotRepository.forEachNlpListener {
                             customEntityEvaluations.addAll(
                                 try {
-                                    if (it is AsyncNlpListener) {
-                                        it.processEntities(userTimeline, dialog, sentence, nlpResult)
-                                    } else {
-                                        it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
-                                    }
+                                    it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
                                 } catch (e: Exception) {
                                     logger.error(e)
                                     emptyList<EntityValue>()
@@ -104,10 +99,10 @@ internal class DialogflowNlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                            nlpResult.entities
-                                .asSequence()
-                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                .map { EntityValue(nlpResult, it) }
+                                nlpResult.entities
+                                    .asSequence()
+                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                    .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -150,11 +145,7 @@ internal class DialogflowNlp : NlpController {
             BotRepository.forEachNlpListener {
                 if (i == null) {
                     i = try {
-                        if (it is AsyncNlpListener) {
-                            it.selectIntent(userTimeline, dialog, sentence, nlpResult)
-                        } else {
-                            it.findIntent(userTimeline, dialog, sentence, nlpResult)
-                        }?.wrappedIntent()
+                        it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
                     } catch (e: Exception) {
                         logger.error(e)
                         null
@@ -162,7 +153,7 @@ internal class DialogflowNlp : NlpController {
                 }
             }
 
-            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.applicationId)
+            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.connectorId)
         }
 
         private suspend fun findKeyword(sentence: String?): Intent? {
@@ -171,11 +162,7 @@ internal class DialogflowNlp : NlpController {
                 BotRepository.forEachNlpListener {
                     if (i == null) {
                         i = try {
-                            if (it is AsyncNlpListener) {
-                                it.detectKeyword(sentence)
-                            } else {
-                                it.handleKeyword(sentence)
-                            }
+                            it.detectKeyword(sentence)
                         } catch (e: Exception) {
                             logger.error(e)
                             null
@@ -191,11 +178,7 @@ internal class DialogflowNlp : NlpController {
         private suspend fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
             BotRepository.forEachNlpListener {
                 try {
-                    if (it is AsyncNlpListener) {
-                        it.onSuccess(query, result)
-                    } else {
-                        it.success(query, result)
-                    }
+                    it.onSuccess(query, result)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -205,11 +188,7 @@ internal class DialogflowNlp : NlpController {
         private suspend fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
             BotRepository.forEachNlpListener {
                 try {
-                    if (it is AsyncNlpListener) {
-                        it.onError(query, dialog, throwable)
-                    } else {
-                        it.error(query, dialog, throwable)
-                    }
+                    it.onError(query, dialog, throwable)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -313,7 +292,7 @@ internal class DialogflowNlp : NlpController {
         }
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =
+    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition> =
         nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
 
     override fun importNlpDump(stream: InputStream): Boolean =
