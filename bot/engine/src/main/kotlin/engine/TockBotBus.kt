@@ -51,6 +51,8 @@ import mu.KotlinLogging
 import java.time.Duration
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 private val cleanupTimeoutProperty = longProperty("tock_cleanup_delay_seconds", 60)
 
@@ -255,20 +257,21 @@ internal class TockBotBus(
     /**
      * @return a callback to force-close the message queue
      */
+    @OptIn(ExperimentalAtomicApi::class)
     fun deferMessageSending(
         scope: CoroutineScope,
         messageChannel: Channel<QueuedAction> = Channel(Channel.BUFFERED),
         timeout: Duration = Duration.ofSeconds(cleanupTimeoutProperty)
     ): () -> Unit {
 
-        var closed = false
+        val closed = AtomicBoolean(false)
         customActionSender.set { action, delay ->
             // we queue in the current thread to preserve message ordering
             scope.launch(start = CoroutineStart.UNDISPATCHED) {
                 messageChannel.send(QueuedAction(action, delay))
                 // the following code may happen in a different thread if the channel's buffer was full
                 if (action.metadata.lastAnswer) {
-                    closed = true
+                    closed.store(true)
                     messageChannel.close()
                 }
             }
@@ -279,10 +282,12 @@ internal class TockBotBus(
             }
         }
         return {
-            if (!closed) {
+            if (!closed.load()) {
                 injector.provide<Executor>().executeBlocking(timeout) {
-                    logger.info("force-closing message channel")
-                    messageChannel.close()
+                    if (!closed.load()) {
+                        logger.info("force-closing message channel")
+                        messageChannel.close()
+                    }
                 }
 
             }

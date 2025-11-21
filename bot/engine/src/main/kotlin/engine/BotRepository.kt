@@ -160,6 +160,9 @@ object BotRepository {
             }
         }
 
+    @Volatile
+    var botAPI : Boolean = false
+
     private val verticle by lazy { BotVerticle() }
 
     /**

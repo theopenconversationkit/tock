@@ -149,14 +149,18 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 if (!isEndCalled(bus)) {
                     handler.handle()
 
-                    if (!bus.connectorData.skipAnswer &&
-                        !bus.hasCurrentSwitchStoryProcess &&
-                        !isEndCalled(bus)
-                    ) {
-                        logger.warn { "Bus.end not called for story ${(storyDefinition ?: bus.story.definition).id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
-                    }
+                    checkEndCalled(bus, storyDefinition)
                 }
             }
+        }
+    }
+
+    protected open fun checkEndCalled(bus: BotBus, storyDefinition: StoryDefinition?) {
+        if (!bus.connectorData.skipAnswer &&
+            !bus.hasCurrentSwitchStoryProcess &&
+            !isEndCalled(bus)
+        ) {
+            logger.warn { "Bus.end not called for story ${(storyDefinition ?: bus.story.definition).id}, user ${bus.userId.id} and connector ${bus.targetConnectorType}" }
         }
     }
 
@@ -212,7 +216,12 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
      */
-    override fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        defaultI18n: Set<I18nLocalizedLabel>,
+        vararg args: Any?
+    ): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             key,

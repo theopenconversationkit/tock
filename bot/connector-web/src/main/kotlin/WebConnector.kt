@@ -27,7 +27,6 @@ import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.web.channel.Channels
-import ai.tock.bot.connector.web.security.WebSecurityCookiesHandler
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
@@ -64,10 +63,9 @@ import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
+import ai.tock.shared.vertx.WebSecurityCookiesHandler
 import ai.tock.shared.vertx.sendSseMessage
-import ai.tock.shared.vertx.sendSsePing
 import ai.tock.shared.vertx.setupSSE
-import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -77,7 +75,6 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
-import java.time.Duration
 import java.util.Locale
 import java.util.UUID
 
@@ -91,7 +88,6 @@ val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 private val corsPattern = property("tock_web_cors_pattern", ".*")
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val directSseEnabled = booleanProperty("tock_web_direct_sse", false)
-private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -158,17 +154,11 @@ class WebConnector internal constructor(
                         try {
                             val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
                             val response = context.response()
-                            response.setupSSE()
-                            val timerId = vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
-                                response.sendSsePing()
-                            }
                             val channelId = channels.register(connectorId, userId) { webConnectorResponse ->
+                                logger.debug { "send response from channel: $webConnectorResponse" }
                                 response.sendSseResponse(webConnectorResponse)
                             }
-                            response.closeHandler {
-                                vertx.cancelTimer(timerId)
-                                channels.unregister(channelId)
-                            }
+                            response.setupSSE { channels.unregister(channelId) }
                         } catch (t: Throwable) {
                             context.fail(t)
                         }

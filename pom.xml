@@ -78,6 +78,7 @@
         <vertx-pac4j>7.0.2</vertx-pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
+        <openai>4.0.1</openai>
 
         <junit-jupiter>6.0.0</junit-jupiter>
         <testcontainer>1.21.3</testcontainer>
@@ -678,6 +679,12 @@
                 <groupId>com.launchdarkly</groupId>
                 <artifactId>okhttp-eventsource</artifactId>
                 <version>${okhttp-eventsource}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aallam.openai</groupId>
+                <artifactId>openai-core-jvm</artifactId>
+                <version>${openai}</version>
             </dependency>
 
             <dependency>

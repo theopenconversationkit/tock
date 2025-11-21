@@ -218,6 +218,18 @@ To learn more about this connector, see its sources and _README_ in the
 Please refer to [connector-mattermost](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-mattermost)
 for sources and _README_ instructions.
 
+### Open AI
+
+![logo web](../../img/openai.png "Open AI"){style="width:50px;"}
+
+* **Channel** : [Open AI](https://openai.com/)
+* **Type** : text
+* **Status** : Tock connector used for demo with [Open WebUI](https://openwebui.com/)
+
+Please refer to
+[connector-open-ai](https://github.com/theopenconversationkit/tock/tree/master/bot/connector-open-ai) for sources and _README_ instructions.
+
+
 ### Web generic
 
 ![logo BusinessChat Logo](../../img/web.png "BusinessChat Logo"){style="width:75px;"}

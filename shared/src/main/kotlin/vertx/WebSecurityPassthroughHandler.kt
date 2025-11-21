@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web.security
+package ai.tock.shared.vertx
 
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
@@ -29,7 +29,7 @@ class WebSecurityPassthroughHandler : WebSecurityHandler {
 
     override fun handle(routingContext: RoutingContext) {
         executor.executeBlocking {
-            logger.debug { "Nothing to do." }
+            logger.trace("Nothing to do.")
             routingContext.next()
         }
     }

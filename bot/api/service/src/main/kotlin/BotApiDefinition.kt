@@ -49,6 +49,13 @@ internal class FallbackStoryHandler(
             defaultUnknown.storyHandler.handle(bus)
         }
     }
+
+    override fun checkEndCalled(
+        bus: BotBus,
+        storyDefinition: StoryDefinition?
+    ) {
+        //ignore
+    }
 }
 
 internal class FallbackStoryDefinition(
