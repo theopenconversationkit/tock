@@ -17,10 +17,8 @@
 package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.BotAdminService
-import ai.tock.bot.admin.BotAdminService.dialogReportDAO
 import ai.tock.bot.admin.annotation.BotAnnotationDTO
 import ai.tock.bot.admin.annotation.BotAnnotationEventDTO
-import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogWithNlpStats
 import ai.tock.bot.admin.model.DialogsSearchQuery
@@ -34,7 +32,6 @@ import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion.unauthorized
 import io.vertx.ext.web.RoutingContext
-import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
 /**
@@ -60,22 +57,14 @@ class DialogVerticle {
 
     private val front = FrontClient
 
-    private fun RoutingContext.checkBotId(botId: String): ApplicationDefinition? {
-        val namespace = getNamespace(this)
-        return front.getApplicationByNamespaceAndName(namespace, botId)
-            ?: throw NotFoundException("Bot $botId not found in namespace $namespace")
-    }
+    private fun RoutingContext.checkBotId(botId: String): ApplicationDefinition? =
+        getNamespace(this)?.let { namespace ->
+            front.getApplicationByNamespaceAndName(namespace, botId)
+                ?: throw NotFoundException("Bot $botId not found in namespace $namespace")
+        }
 
     fun configure(webVerticle: WebVerticle) {
         with(webVerticle) {
-
-            val currentContextApp: (RoutingContext) -> ApplicationDefinition? = { context ->
-                val botId = context.pathParam("botId")
-                val namespace = getNamespace(context)
-                front.getApplicationByNamespaceAndName(
-                    namespace, botId
-                ) ?: throw NotFoundException(404, "Could not find $botId in $namespace")
-            }
 
             // --------------------------------- Dialog Routes --------------------------------------
 
@@ -215,7 +204,10 @@ class DialogVerticle {
             }
 
             // ADD COMMENT
-            blockingJsonPost(PATH_ANNOTATION_EVENTS, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+            blockingJsonPost(
+                PATH_ANNOTATION_EVENTS,
+                setOf(TockUserRole.botUser)
+            ) { context, eventDTO: BotAnnotationEventDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
                 BotAdminService.addCommentToAnnotation(
@@ -227,7 +219,10 @@ class DialogVerticle {
             }
 
             // MODIFY COMMENT
-            blockingJsonPut(PATH_ANNOTATION_EVENT, setOf(TockUserRole.botUser)) { context, eventDTO: BotAnnotationEventDTO ->
+            blockingJsonPut(
+                PATH_ANNOTATION_EVENT,
+                setOf(TockUserRole.botUser)
+            ) { context, eventDTO: BotAnnotationEventDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
                 BotAdminService.updateAnnotationEvent(
@@ -257,6 +252,7 @@ class DialogVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) = ((context.user() ?: context.session().get("tockUser")) as TockUser).namespace
+    private fun getNamespace(context: RoutingContext): String? =
+        ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
 }

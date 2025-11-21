@@ -1,64 +1,76 @@
-name: Deploy MkDocs
+name: Build and Deploy MkDocs
 
 on:
   push:
     branches:
       - master
-    tags:
-      - 'tock-*'
     paths:
-      - docs/**
-  workflow_dispatch: {}
+      - docs/**                         # Any change in documentation
+      - .github/workflows/doc-deploy.yml # Any change in this workflow
 
+# Set required permissions for GitHub Pages deployment
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: read       # Allow reading repository contents
+  pages: write         # Allow writing to GitHub Pages
+  id-token: write      # Required for OIDC authentication to deploy
 
+# Avoid concurrent deployments on the same branch
 concurrency:
-  group: deploy-${{ github.repository }}
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      # Checkout the repository at the pushed commit
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python 3.13
+      # Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.13.9
+          python-version: '3.13'
 
+      # Install Python dependencies for MkDocs
       - name: Install dependencies
         run: |
-          echo "Installing dependencies"
+          echo "Installing MkDocs dependencies"
           pip install -r docs/requirements.txt
 
+      # Build MkDocs site
       - name: Build MkDocs site
         run: |
           echo "Building MkDocs site"
           cd docs
-          mkdocs build
+          # Clean previous 'master' build
+          rm -rf site/master
+          # Build the site into 'site/master'
+          mkdocs build --site-dir site/master
 
+      # Upload the built static files as an artifact for GitHub Pages
       - name: Upload static files as artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Path to the directory containing the built site
           path: docs/site
 
   deploy:
+    # Ensure 'deploy' only runs after 'build' completes successfully
     needs: build
+    runs-on: ubuntu-latest
+
     permissions:
-      pages: write      
+      pages: write
       id-token: write
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
     steps:
+      # Deploy the uploaded artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

@@ -148,9 +148,11 @@ class WebConnector internal constructor(
                 // browsers do not send or save cookies unless credentials are allowed
                 .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
 
+            // Apply CORS Handler for all paths and all methods (OPTIONS handled automatically)
+            router.route("$path*").handler(corsHandler)
+
             if (sseEnabled) {
                 router.route("$path/sse")
-                    .handler(corsHandler)
                     .handler(webSecurityHandler)
                     .handler { context ->
                         try {
@@ -189,7 +191,6 @@ class WebConnector internal constructor(
 
             // Main connector endpoint
             router.post(path)
-                .handler(corsHandler)
                 .handler(webSecurityHandler)
                 .handler { context ->
                     // Override the user on the request body

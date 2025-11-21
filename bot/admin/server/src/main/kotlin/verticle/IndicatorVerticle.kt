@@ -70,11 +70,12 @@ class IndicatorVerticle {
             val currentContextApp: (RoutingContext) -> ApplicationDefinition? =
                 { context ->
                     val appName = context.pathParam(PATH_PARAM_APPLICATION_NAME)
-                    val namespace = getNamespace(context)
-                    front.getApplicationByNamespaceAndName(
-                        namespace,
-                        appName
-                    ) ?: throw NotFoundException(404, "Could not find $appName in $namespace")
+                    getNamespace(context)?.let { namespace ->
+                        front.getApplicationByNamespaceAndName(
+                            namespace,
+                            appName
+                        )
+                    }?: throw NotFoundException(404, "Could not find $appName in namespace")
                 }
 
             blockingJsonPost(
@@ -150,7 +151,7 @@ class IndicatorVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) = ((context.user() ?: context.session().get("tockUser")) as TockUser).namespace
+    private fun getNamespace(context: RoutingContext) : String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]

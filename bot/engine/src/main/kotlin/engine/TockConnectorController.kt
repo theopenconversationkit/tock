@@ -129,6 +129,7 @@ internal class TockConnectorController(
                     is Action -> executor.launchCoroutine {
                         handleAction(event, 0, data)
                     }
+
                     else -> callback.eventSkipped(event)
                 }
             } else {
@@ -190,8 +191,10 @@ internal class TockConnectorController(
                     send(null, data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
                     callback.exceptionThrown(action, t)
                 } finally {
-                    userLock.releaseLock(id)
-                    callback.userLockReleased(action)
+                    if (!asynchronousMode) {
+                        userLock.releaseLock(id)
+                        callback.userLockReleased(action)
+                    }
                 }
             } else if (nbAttempts < maxLockedAttempts) {
                 logger.debug { "$playerId locked - wait" }
@@ -211,21 +214,22 @@ internal class TockConnectorController(
             action.state.targetConnectorType = connector.connectorType
         }
         val callback = data.callback
-        return runBlocking { try {
-            val userTimeline =
-                userTimelineDAO.loadWithLastValidDialog(
-                    botDefinition.namespace,
-                    action.playerId,
-                    data.priorUserId,
-                    data.groupId,
-                    storyDefinitionLoader(action.applicationId)
-                )
-            bot.support(action, userTimeline, this@TockConnectorController, data)
-        } catch (t: Throwable) {
-            callback.exceptionThrown(action, t)
-            0.0
-        }
+        return runBlocking {
+            try {
+                val userTimeline =
+                    userTimelineDAO.loadWithLastValidDialog(
+                        botDefinition.namespace,
+                        action.playerId,
+                        data.priorUserId,
+                        data.groupId,
+                        storyDefinitionLoader(action.applicationId)
+                    )
+                bot.support(action, userTimeline, this@TockConnectorController, data)
+            } catch (t: Throwable) {
+                callback.exceptionThrown(action, t)
+                0.0
             }
+        }
     }
 
     override fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit) {
@@ -242,7 +246,13 @@ internal class TockConnectorController(
         serviceInstallers.forEach { verticle.unregisterServices(it) }
     }
 
-    internal fun send(userTimeline: UserTimeline?, data: ConnectorData, userAction: Action, action: Action, delay: Long = 0) {
+    internal fun send(
+        userTimeline: UserTimeline?,
+        data: ConnectorData,
+        userAction: Action,
+        action: Action,
+        delay: Long = 0
+    ) {
         try {
             logger.debug { "message sent to connector: $action" }
             connector.send(action, data.callback, delay)
@@ -256,6 +266,12 @@ internal class TockConnectorController(
                     }
                 }
                 data.callback.eventAnswered(userAction)
+                if (asynchronousMode) {
+                    runBlocking {
+                        userLock.releaseLock(userAction.playerId.id)
+                    }
+                    data.callback.userLockReleased(action)
+                }
             }
         }
     }
