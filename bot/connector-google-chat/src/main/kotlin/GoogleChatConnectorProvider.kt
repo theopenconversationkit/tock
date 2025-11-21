@@ -1,27 +1,6 @@
-/*
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package ai.tock.bot.connector.googlechat
 
-import ai.tock.bot.connector.Connector
-import ai.tock.bot.connector.ConnectorConfiguration
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorProvider
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.ConnectorTypeConfiguration
-import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.*
 import ai.tock.bot.connector.googlechat.builder.googleChatConnectorType
 import ai.tock.shared.resourceAsStream
 import ai.tock.shared.resourceAsString
@@ -44,6 +23,7 @@ private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialConte
 private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
+private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 
 internal object GoogleChatConnectorProvider : ConnectorProvider {
 
@@ -90,12 +70,16 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     ?: error("Parameter Bot project number not present")
             )
 
+            val introMessage =
+                connectorConfiguration.parameters[INTRO_MESSAGE_PARAMETER]?.takeIf { it.isNotBlank() }
+
             return GoogleChatConnector(
                 connectorId,
                 path,
                 chatService,
                 authorisationHandler,
-                useCondensedFootnotes
+                useCondensedFootnotes,
+                introMessage
             )
         }
     }
@@ -104,12 +88,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
         connectorConfiguration: ConnectorConfiguration,
         targetServiceAccount: String
     ): GoogleCredentials {
-
         val sourceCredentials = getSourceCredentials(connectorConfiguration)
-
-        logger.info { "Source credentials: ${(sourceCredentials as? ServiceAccountCredentials)?.clientEmail}" }
-        logger.info { "Impersonating target GSA = $targetServiceAccount with scopes = $CHAT_SCOPE" }
-
         return ImpersonatedCredentials.create(
             sourceCredentials,
             targetServiceAccount,
@@ -123,14 +102,9 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
     private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials {
         return try {
             val credentialInputStream = getCredentialInputStream(connectorConfiguration)
-            val creds = ServiceAccountCredentials.fromStream(credentialInputStream)
+            ServiceAccountCredentials.fromStream(credentialInputStream)
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
-
-            logger.info { "Loaded explicit service account: ${(creds as ServiceAccountCredentials).clientEmail}" }
-
-            creds
         } catch (e: Exception) {
-            logger.info { "No explicit credentials found, using Application Default Credentials" }
             GoogleCredentials.getApplicationDefault()
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
         }
@@ -180,6 +154,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Use condensed footnotes (true = 1, false = 0)",
                     CONDENSED_FOOTNOTES_PARAMETER,
+                    false
+                ),
+                ConnectorTypeConfigurationField(
+                    "Introductory message (sent only once per new session)",
+                    INTRO_MESSAGE_PARAMETER,
                     false
                 )
             ),
