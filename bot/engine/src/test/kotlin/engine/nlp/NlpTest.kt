@@ -38,10 +38,10 @@ import ai.tock.nlp.entity.Value
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  *
@@ -49,14 +49,14 @@ import kotlin.test.assertTrue
 class NlpTest : BotEngineTest() {
 
     @Test
-    fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
+    suspend fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify { nlpClient.parse(any()) }
         verify(exactly = 0) { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
     }
 
     @Test
-    fun `GIVEN intent qualifiers not null in dialog state THEN parse is_called with intentsSubset not empty`() {
+    suspend fun `GIVEN intent qualifiers not null in dialog state THEN parse is_called with intentsSubset not empty`() {
         dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
@@ -64,7 +64,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun `GIVEN intent qualifiers not null in dialog state WHEN parse call returns an intent not in the list THEN the the best modifier intent is returned`() {
+    suspend fun `GIVEN intent qualifiers not null in dialog state WHEN parse call returns an intent not in the list THEN the the best modifier intent is returned`() {
         dialog.state.nextActionState =
             NextUserActionState(listOf(NlpIntentQualifier("test3", 0.2), NlpIntentQualifier("test2", 0.5)))
         every { nlpClient.parse(any()) } returns nlpResult
@@ -74,7 +74,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun parseSentence_shouldNotRegisterQuery_whenBotIsDisabled() {
+    suspend fun parseSentence_shouldNotRegisterQuery_whenBotIsDisabled() {
 
         userTimeline.userState.botDisabled = true
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
@@ -89,7 +89,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun parseSentence_shouldRegisterQuery_whenBotIsNotDisabledAndItIsNotATestContext() {
+    suspend fun parseSentence_shouldRegisterQuery_whenBotIsNotDisabledAndItIsNotATestContext() {
 
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
@@ -103,7 +103,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
+    suspend fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
 
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
@@ -129,7 +129,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun `parseSentence uses NlpListener#findIntent when available`() {
+    suspend fun `parseSentence uses NlpListener#findIntent when available`() {
 
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
@@ -153,7 +153,7 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun `NlpListener#configureEntityValuesMerge can be used to configure entity values merge`() {
+    suspend fun `NlpListener#configureEntityValuesMerge can be used to configure entity values merge`() {
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
         val mergeQuery = slot<ValuesMergeQuery>()

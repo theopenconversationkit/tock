@@ -30,7 +30,8 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
@@ -56,7 +57,7 @@ class BotTest : BotEngineTest() {
     fun handleSendSentence_whenNotWaitingRawInput_shouldSendNlpQuery() {
         bot.handle(userAction, userTimeline, connectorController, connectorData)
 
-        verify { nlp.parseSentence(any(), any(), any(), any(), any()) }
+        coVerify { nlp.parseSentence(any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -84,7 +85,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             sendSentence.captured.state.intent = otherStory.name
             capturedDialog.captured.state.currentIntent = otherStory.mainIntent()
         }
@@ -104,7 +105,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             sendSentence.captured.state.intent = "s4_secondary"
             capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
         }
@@ -124,7 +125,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             sendSentence.captured.state.intent = "s4_secondary"
             capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
         }
@@ -144,7 +145,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             sendSentence.captured.state.intent = "secondaryIntent"
             capturedDialog.captured.state.currentIntent = secondaryIntent
         }
@@ -164,7 +165,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             sendSentence.captured.state.intent = "s4_secondary"
             capturedDialog.captured.state.currentIntent = Intent("s4_secondary")
         }
@@ -250,7 +251,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             capturedDialog.captured.stories.addAll(
                 listOf<Story>(
                     Story(
@@ -277,7 +278,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             capturedDialog.captured.stories.addAll(
                 listOf<Story>(
                     Story(
@@ -303,7 +304,7 @@ class BotTest : BotEngineTest() {
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
 
-        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+        coEvery { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
             capturedDialog.captured.stories.addAll(
                 listOf(
                     Story(TestStoryDefinition.withAskAgainTag, TestStoryDefinition.withAskAgainTag.wrappedIntent()),

@@ -44,18 +44,20 @@ import ai.tock.nlp.api.client.model.merge.ValueToMerge
 import ai.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import ai.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
-import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
+import mu.KotlinLogging
 
 /**
  * [NlpController] default implementation.
  */
+@OptIn(ExperimentalTockCoroutines::class)
 internal class Nlp : NlpController {
 
     companion object {
@@ -74,7 +76,7 @@ internal class Nlp : NlpController {
             val botDefinition: BotDefinition
     ) {
 
-        fun parse() {
+        suspend fun parse() {
             logger.debug { "Parse sentence : $sentence" }
 
             findKeyword(sentence.stringText)?.apply {
@@ -137,7 +139,7 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun findIntent(
+        private suspend fun findIntent(
                 userTimeline: UserTimeline,
                 dialog: Dialog,
                 sentence: SendSentence,
@@ -155,7 +157,7 @@ internal class Nlp : NlpController {
                 }
             }
 
-            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.applicationId)
+            return i ?: botDefinition.findIntent(nlpResult.intent, sentence.connectorId)
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
@@ -196,13 +198,13 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun findKeyword(sentence: String?): Intent? {
+        private suspend fun findKeyword(sentence: String?): Intent? {
             return if (sentence != null) {
                 var i: Intent? = null
                 BotRepository.forEachNlpListener {
                     if (i == null) {
                         i = try {
-                            it.handleKeyword(sentence)
+                            it.detectKeyword(sentence)
                         } catch (e: Exception) {
                             logger.error(e)
                             null
@@ -215,20 +217,20 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
+        private suspend fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
             BotRepository.forEachNlpListener {
                 try {
-                    it.success(query, result)
+                    it.onSuccess(query, result)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
             }
         }
 
-        private fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
+        private suspend fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
             BotRepository.forEachNlpListener {
                 try {
-                    it.error(query, dialog, throwable)
+                    it.onError(query, dialog, throwable)
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -249,7 +251,7 @@ internal class Nlp : NlpController {
             )
         }
 
-        private fun toNlpQuery(): NlpQuery {
+        private suspend fun toNlpQuery(): NlpQuery {
             return NlpQuery(
                     listOf(sentence.stringText ?: ""),
                     botDefinition.namespace,
@@ -340,13 +342,13 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun DialogState.mergeEntityValuesFromAction(action: Action): List<EntityValue> {
+        private suspend fun DialogState.mergeEntityValuesFromAction(action: Action): List<EntityValue> {
             var merge: List<NlpEntityMergeContext> = action.state.entityValues
                     .asSequence()
                     .groupBy { it.entity.role }
                     .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
             // sort entities
-            BotRepository.forEachNlpListener { merge = it.sortEntitiesToMerge(merge) }
+            BotRepository.forEachNlpListener { merge = it.sortEntitiesBeforeMerge(merge) }
 
             return merge.mapNotNull { mergeContext ->
                 var context = mergeContext
@@ -366,7 +368,7 @@ internal class Nlp : NlpController {
             } else {
                 nlpClient.parse(
                         request.copy(
-                                intentsSubset = intentsQualifiers!!.asSequence().map {
+                                intentsSubset = intentsQualifiers.asSequence().map {
                                     it.copy(
                                             intent = it.intent.withNamespace(
                                                     request.namespace
@@ -378,7 +380,7 @@ internal class Nlp : NlpController {
             }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
-                if (intentsQualifiers!!.none { it.intent == result.intent }) {
+                if (intentsQualifiers.none { it.intent == result.intent }) {
                     return result.copy(
                             intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
                                     ?: intentsQualifiers.first().intent
@@ -391,7 +393,7 @@ internal class Nlp : NlpController {
         }
     }
 
-    override fun parseSentence(
+    override suspend fun parseSentence(
             sentence: SendSentence,
             userTimeline: UserTimeline,
             dialog: Dialog,
@@ -435,7 +437,7 @@ internal class Nlp : NlpController {
         }
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =
+    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition> =
             nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
 
     override fun importNlpDump(stream: InputStream): Boolean =
