@@ -26,11 +26,11 @@ internal data class ReferralParametersWebhook(
     override val sender: Sender,
     override val recipient: Recipient,
     override val timestamp: Long,
-    val referral: Referral
+    val referral: Referral,
 ) : Webhook()
 
 data class Referral(
     val ref: String = "",
     val source: SourceType = SHORTLINK,
-    val type: ReferralIdentifierType = ReferralIdentifierType.OPEN_THREAD
+    val type: ReferralIdentifierType = ReferralIdentifierType.OPEN_THREAD,
 )

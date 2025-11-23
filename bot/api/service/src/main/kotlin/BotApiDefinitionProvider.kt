@@ -32,8 +32,8 @@ import ai.tock.shared.withoutNamespace
 import mu.KotlinLogging
 
 internal class BotApiDefinitionProvider(
-    private val configuration: BotConfiguration) : BotProvider {
-
+    private val configuration: BotConfiguration,
+) : BotProvider {
     private val logger = KotlinLogging.logger {}
 
     @Volatile
@@ -84,17 +84,18 @@ internal class BotApiDefinitionProvider(
                         nlpClient.importNlpPlainDump(
                             ApplicationDump(
                                 application = application,
-                                intents = intents.filter { it.name.withoutNamespace() != Intent.unknown.name.withoutNamespace() }
-                                    .map {
-                                        it.copy(
-                                            name = it.name.withoutNamespace(),
-                                            namespace = namespace,
-                                            applications = it.applications.toMutableSet().apply { add(applicationId) },
-                                            description = "Intent created automatically for built-in story.",
-                                            category = "builtin"
-                                        )
-                                    }
-                            )
+                                intents =
+                                    intents.filter { it.name.withoutNamespace() != Intent.unknown.name.withoutNamespace() }
+                                        .map {
+                                            it.copy(
+                                                name = it.name.withoutNamespace(),
+                                                namespace = namespace,
+                                                applications = it.applications.toMutableSet().apply { add(applicationId) },
+                                                description = "Intent created automatically for built-in story.",
+                                                category = "builtin",
+                                            )
+                                        },
+                            ),
                         )
                     }
                 }

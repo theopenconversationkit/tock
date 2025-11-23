@@ -22,7 +22,12 @@ import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeAwait
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeClose
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendSentence
@@ -39,21 +44,24 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.slot
+import io.mockk.verify
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Properties
 import kotlin.test.assertEquals
 
 /**
  *
  */
 class IadvizeConnectorTest {
-
     val applicationId = "appId"
     val path = "/path"
     val editorURL = "/editorUrl"
@@ -69,7 +77,7 @@ class IadvizeConnectorTest {
             distributionRule,
             null,
             distributionRuleUnavailableMessage,
-            null
+            null,
         )
     }
     val controller: ConnectorController = mockk(relaxed = true)
@@ -80,7 +88,6 @@ class IadvizeConnectorTest {
     val botId = "botId"
     val operateurId = "operateurId"
     val conversationId = "conversationId"
-
 
     private val marcus: String = "MARCUS"
     private val marcus1: String = "MARCUS1"
@@ -94,7 +101,7 @@ class IadvizeConnectorTest {
         tockInternalInjector.inject(
             Kodein {
                 import(sharedTestModule)
-            }
+            },
         )
 
         every { context.response() } returns response
@@ -112,7 +119,7 @@ class IadvizeConnectorTest {
                 "",
                 "",
                 "",
-                messageSlot.captured
+                messageSlot.captured,
             ).raw
         }
 
@@ -120,7 +127,6 @@ class IadvizeConnectorTest {
         mockkStatic(LocalDateTime::class)
         every { LocalDateTime.now() } returns LocalDateTime.of(2022, 4, 8, 16, 52, 37)
         every { LocalDateTime.of(2022, 4, 8, 16, 52, 37) } answers { callOriginal() }
-
     }
 
     @AfterEach
@@ -146,7 +152,7 @@ class IadvizeConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            iAdvizeRequest
+            iAdvizeRequest,
         )
 
         verify { controller.handle(any(), any()) }
@@ -165,13 +171,14 @@ class IadvizeConnectorTest {
             IadvizeMessage(TextPayload("MARCUS"), mutableListOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeReply)
 
-        val action = SendSentence(
-            PlayerId("MockPlayerId"),
-            "applicationId",
-            PlayerId("recipientId"),
-            text = null,
-            messages = mutableListOf(iadvizeConnectorMessage)
-        )
+        val action =
+            SendSentence(
+                PlayerId("MockPlayerId"),
+                "applicationId",
+                PlayerId("recipientId"),
+                text = null,
+                messages = mutableListOf(iadvizeConnectorMessage),
+            )
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -182,7 +189,7 @@ class IadvizeConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            iAdvizeRequest
+            iAdvizeRequest,
         )
 
         verify { controller.handle(any(), any()) }
@@ -200,13 +207,14 @@ class IadvizeConnectorTest {
         val iadvizeTransfer: IadvizeReply = IadvizeTransfer(0)
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeTransfer)
 
-        val action = SendSentence(
-            PlayerId("MockPlayerId"),
-            "applicationId",
-            PlayerId("recipientId"),
-            text = null,
-            messages = mutableListOf(iadvizeConnectorMessage)
-        )
+        val action =
+            SendSentence(
+                PlayerId("MockPlayerId"),
+                "applicationId",
+                PlayerId("recipientId"),
+                text = null,
+                messages = mutableListOf(iadvizeConnectorMessage),
+            )
         val connectorData = slot<ConnectorData>()
 
         every { iadvizeGraphQLClient.isAvailable(distributionRule) } returns true
@@ -215,13 +223,12 @@ class IadvizeConnectorTest {
             callback.iadvizeGraphQLClient = iadvizeGraphQLClient
             callback.addAction(action, 0)
             callback.eventAnswered(action)
-
         }
 
         connector.handleRequest(
             controller,
             context,
-            iAdvizeRequest
+            iAdvizeRequest,
         )
 
         verify { controller.handle(any(), any()) }
@@ -239,13 +246,14 @@ class IadvizeConnectorTest {
         val iadvizeTransfer: IadvizeReply = IadvizeTransfer(0)
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeTransfer)
 
-        val action = SendSentence(
-            PlayerId("MockPlayerId"),
-            "applicationId",
-            PlayerId("recipientId"),
-            text = null,
-            messages = mutableListOf(iadvizeConnectorMessage)
-        )
+        val action =
+            SendSentence(
+                PlayerId("MockPlayerId"),
+                "applicationId",
+                PlayerId("recipientId"),
+                text = null,
+                messages = mutableListOf(iadvizeConnectorMessage),
+            )
         val connectorData = slot<ConnectorData>()
         every { iadvizeGraphQLClient.isAvailable(distributionRule) } returns false
 
@@ -259,7 +267,7 @@ class IadvizeConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            iAdvizeRequest
+            iAdvizeRequest,
         )
 
         verify { controller.handle(any(), any()) }
@@ -274,22 +282,24 @@ class IadvizeConnectorTest {
         val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
         val expectedResponse: String = resourceAsStringMinified("/response_message_multipart_transfer.json")
 
-        val iadvizeMultipartReply = IadvizeMultipartReply(
-            IadvizeAwait(Duration(100, millis)),
-            IadvizeMessage("message info"),
-            IadvizeTransfer(Duration(20, seconds)),
-            IadvizeMessage("message after timeout"),
-            IadvizeClose()
-        )
+        val iadvizeMultipartReply =
+            IadvizeMultipartReply(
+                IadvizeAwait(Duration(100, millis)),
+                IadvizeMessage("message info"),
+                IadvizeTransfer(Duration(20, seconds)),
+                IadvizeMessage("message after timeout"),
+                IadvizeClose(),
+            )
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeMultipartReply)
 
-        val action = SendSentence(
-            PlayerId("MockPlayerId"),
-            "applicationId",
-            PlayerId("recipientId"),
-            text = null,
-            messages = mutableListOf(iadvizeConnectorMessage)
-        )
+        val action =
+            SendSentence(
+                PlayerId("MockPlayerId"),
+                "applicationId",
+                PlayerId("recipientId"),
+                text = null,
+                messages = mutableListOf(iadvizeConnectorMessage),
+            )
 
         val connectorData = slot<ConnectorData>()
 
@@ -305,7 +315,7 @@ class IadvizeConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            iAdvizeRequest
+            iAdvizeRequest,
         )
 
         verify { controller.handle(any(), any()) }
@@ -430,12 +440,12 @@ class IadvizeConnectorTest {
         verify { response.end(capture(messageResponse)) }
         assertEquals(expectedResponse, messageResponse.captured)
 
-        //echo1
+        // echo1
         every { context.body().asString() } returns requestEchoMarcus1
         connector.handlerConversation(context, controller)
         verify { response.end() }
 
-        //echo2
+        // echo2
         every { context.body().asString() } returns requestEchoMarcus2
         connector.handlerConversation(context, controller)
         verify { response.end() }
@@ -457,14 +467,17 @@ class IadvizeConnectorTest {
         val messageResponse = slot<String>()
         verify { response.end(capture(messageResponse)) }
         assertEquals(expectedResponse, messageResponse.captured)
-
     }
 
-    private fun getIadvizeRequestMessage(json: String, idConversation: String): IadvizeRequest {
-        val messageRequestJson: MessageRequestJson = mapper.readValue(
-            resourceAsString(json),
-            MessageRequestJson::class.java
-        )
+    private fun getIadvizeRequestMessage(
+        json: String,
+        idConversation: String,
+    ): IadvizeRequest {
+        val messageRequestJson: MessageRequestJson =
+            mapper.readValue(
+                resourceAsString(json),
+                MessageRequestJson::class.java,
+            )
         return MessageRequest(messageRequestJson, idConversation)
     }
 
@@ -472,5 +485,4 @@ class IadvizeConnectorTest {
         val text = resourceAsString(path)
         return (ObjectMapper().readTree(text) as JsonNode).toString()
     }
-
 }

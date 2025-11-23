@@ -23,8 +23,10 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 
 internal object MattermostRequestConverter {
-
-    fun toEvent(message: MattermostMessageIn, applicationId: String): Event {
+    fun toEvent(
+        message: MattermostMessageIn,
+        applicationId: String,
+    ): Event {
         val safeMessage = message
         safeMessage.text = message.getRealMessage()
 
@@ -33,7 +35,7 @@ internal object MattermostRequestConverter {
             connectorId = applicationId,
             recipientId = PlayerId(applicationId, bot),
             text = safeMessage.text,
-            messages = mutableListOf(safeMessage)
+            messages = mutableListOf(safeMessage),
         )
     }
 }

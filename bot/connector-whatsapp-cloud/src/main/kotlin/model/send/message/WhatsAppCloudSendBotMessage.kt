@@ -22,20 +22,19 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
 )
 @JsonSubTypes(
-        JsonSubTypes.Type(value = WhatsAppCloudSendBotTextMessage::class, name = "text"),
-        JsonSubTypes.Type(value = WhatsAppCloudSendBotInteractiveMessage::class, name = "interactive"),
-        JsonSubTypes.Type(value = WhatsAppCloudSendBotLocationMessage::class, name = "location"),
-        JsonSubTypes.Type(value = WhatsAppCloudSendBotTemplateMessage::class, name = "template"),
-        JsonSubTypes.Type(value = WhatsAppCloudSendBotImageMessage::class, name = "image"),
-    )
+    JsonSubTypes.Type(value = WhatsAppCloudSendBotTextMessage::class, name = "text"),
+    JsonSubTypes.Type(value = WhatsAppCloudSendBotInteractiveMessage::class, name = "interactive"),
+    JsonSubTypes.Type(value = WhatsAppCloudSendBotLocationMessage::class, name = "location"),
+    JsonSubTypes.Type(value = WhatsAppCloudSendBotTemplateMessage::class, name = "template"),
+    JsonSubTypes.Type(value = WhatsAppCloudSendBotImageMessage::class, name = "image"),
+)
 @JsonPropertyOrder("messaging_product")
 abstract class WhatsAppCloudSendBotMessage(val type: WhatsAppCloudBotMessageType) {
-
     @Suppress("unused")
     @JsonProperty("messaging_product")
     val messagingProduct = "whatsapp"

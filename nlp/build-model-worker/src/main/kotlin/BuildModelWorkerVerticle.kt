@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  */
 class BuildModelWorkerVerticle : AbstractVerticle() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private val completeModelEnabled = booleanProperty("tock_complete_model_enabled", true)
@@ -65,7 +64,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                                         minute % 1 == 0
                                 } &&
                                 !BuildModelWorker.testModels()
-                            )
+                        )
                     ) {
                         logger.trace { "nothing to do - skip" }
                     }

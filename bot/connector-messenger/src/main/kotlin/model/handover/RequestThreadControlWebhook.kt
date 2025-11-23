@@ -28,11 +28,11 @@ data class RequestThreadControlWebhook(
     override val sender: Sender,
     override val recipient: Recipient,
     override val timestamp: Long,
-    @JsonProperty("request_thread_control") val requestThreadControl: RequestThreadControl
+    @JsonProperty("request_thread_control") val requestThreadControl: RequestThreadControl,
 ) : Webhook()
 
 data class RequestThreadControl(
     @JsonProperty("requested_owner_app_id")
     val requestOwnerAppId: String,
-    val metadata: String? = null
+    val metadata: String? = null,
 )

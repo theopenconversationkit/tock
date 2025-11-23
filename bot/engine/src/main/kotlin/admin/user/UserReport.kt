@@ -32,5 +32,5 @@ data class UserReport(
     val userState: UserState = UserState(),
     val lastUpdateDate: Instant = now(),
     val lastActionText: String? = null,
-    val lastUserActionDate: Instant
+    val lastUserActionDate: Instant,
 )

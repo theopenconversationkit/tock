@@ -49,29 +49,27 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class BotAdminServiceTest : AbstractTest() {
-
     companion object {
         init {
             val i18nDAO: I18nDAO = mockk(relaxed = true)
             // IOC
             tockInternalInjector = KodeinInjector()
-            val specificModule = Kodein.Module {
-                bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
-                bind<I18nDAO>() with provider { i18nDAO }
-
-            }
+            val specificModule =
+                Kodein.Module {
+                    bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
+                    bind<I18nDAO>() with provider { i18nDAO }
+                }
             tockInternalInjector.inject(
                 Kodein {
                     import(defaultModulesBinding())
                     import(specificModule)
-                }
+                },
             )
         }
     }
 
     @Nested
     inner class SingleExistingStoryTest {
-
         internal fun initMocksForSingleStory(existingStory: StoryDefinitionConfiguration) {
             every { storyDefinitionDAO.getStoryDefinitionById(existingStory._id) } answers { existingStory }
             every { storyDefinitionDAO.getStoryDefinitionById(neq(existingStory._id)) } answers { null }
@@ -79,35 +77,34 @@ class BotAdminServiceTest : AbstractTest() {
                 storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
                     any(),
                     any(),
-                    any()
+                    any(),
                 )
             } answers { null }
             every {
                 storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     any(),
                     any(),
-                    any()
+                    any(),
                 )
             } answers { null }
             every {
                 storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
                     any(),
                     any(),
-                    existingStory.intent.name
+                    existingStory.intent.name,
                 )
             } answers { existingStory }
             every {
                 storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     any(),
                     any(),
-                    existingStory.storyId
+                    existingStory.storyId,
                 )
             } answers { existingStory }
         }
 
         @Nested
         inner class ExistingBuiltinStoryTest {
-
             val existingStory = aBuiltinStory.toStoryDefinitionConfiguration()
 
             @BeforeEach
@@ -117,7 +114,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN builtin story exists WHEN saving the same story THEN update the story`() {
-
                 val theNewStory = aBuiltinStory.copy(name = "otherName")
 
                 BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser")
@@ -135,7 +131,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN builtin story exists WHEN saving the same story with different _id THEN update the story`() {
-
                 val theNewStory = aBuiltinStory.copy(_id = newId(), name = "otherName")
 
                 BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser")
@@ -153,7 +148,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN builtin story exists WHEN saving a configured story with same _id THEN update the story`() {
-
                 val theNewStory =
                     aBuiltinStory.copy(_id = aBuiltinStory._id, currentType = AnswerConfigurationType.message)
 
@@ -171,7 +165,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN builtin story exists WHEN saving a configured story with different _id THEN update the existing story`() {
-
                 val theNewStory = aBuiltinStory.copy(currentType = AnswerConfigurationType.message, _id = newId())
 
                 BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser")
@@ -189,7 +182,6 @@ class BotAdminServiceTest : AbstractTest() {
 
         @Nested
         inner class ExistingConfiguredStoryTest {
-
             val existingStory = aMessageStory.toStoryDefinitionConfiguration()
 
             @BeforeEach
@@ -199,7 +191,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN configured story exists WHEN saving the same story THEN update the story`() {
-
                 val theNewStory = aMessageStory.copy(name = "otherName")
 
                 BotAdminService.saveStory(existingStory.namespace, theNewStory, "testUser")
@@ -217,14 +208,13 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN configured story exists WHEN saving the same story with different _id THEN fail with BadRequestException`() {
-
                 val theNewStory = aMessageStory.copy(_id = newId(), name = "otherName")
 
                 assertFailsWith<BadRequestException> {
                     BotAdminService.saveStory(
                         existingStory.namespace,
                         theNewStory,
-                        "testUser"
+                        "testUser",
                     )
                 }
 
@@ -234,7 +224,6 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN configured story exists WHEN saving a builtin story with same _id THEN fail with BadRequestException`() {
-
                 val theNewStory =
                     aMessageStory.copy(_id = aMessageStory._id, currentType = AnswerConfigurationType.builtin)
 
@@ -242,7 +231,7 @@ class BotAdminServiceTest : AbstractTest() {
                     BotAdminService.saveStory(
                         theNewStory.namespace,
                         theNewStory,
-                        "testUser"
+                        "testUser",
                     )
                 }
 
@@ -252,17 +241,18 @@ class BotAdminServiceTest : AbstractTest() {
 
             @Test
             fun `GIVEN configured story exists WHEN saving a builtin story with different _id THEN fail with BadRequestException`() {
-                val theNewStory = aMessageStory.copy(
-                    currentType = AnswerConfigurationType.builtin,
-                    _id = newId(),
-                    intent = IntentWithoutNamespace("test2")
-                )
+                val theNewStory =
+                    aMessageStory.copy(
+                        currentType = AnswerConfigurationType.builtin,
+                        _id = newId(),
+                        intent = IntentWithoutNamespace("test2"),
+                    )
 
                 assertFailsWith<BadRequestException> {
                     BotAdminService.saveStory(
                         theNewStory.namespace,
                         theNewStory,
-                        "testUser"
+                        "testUser",
                     )
                 }
 
@@ -276,18 +266,17 @@ class BotAdminServiceTest : AbstractTest() {
                     BotAdminService.saveStory(
                         existingStory.namespace,
                         aMessageStory.copy(metricStory = true),
-                        "testUser"
+                        "testUser",
                     )
                 }
             }
 
             @Test
             internal fun `GIVEN a story for a given namespace WHEN summary search on it THEN the story is returned`() {
-
-                val mockedStoryList = listOf(StoryDefinitionConfigurationSummaryMinimumMetrics("Id".toId(),"storyId",intent= IntentWithoutNamespace("myIntent"), simple, metricStory = false))
+                val mockedStoryList = listOf(StoryDefinitionConfigurationSummaryMinimumMetrics("Id".toId(), "storyId", intent = IntentWithoutNamespace("myIntent"), simple, metricStory = false))
                 every {
                     storyDefinitionDAO.searchStoryDefinitionSummaries(
-                        SummaryStorySearchRequest("category").toSummaryRequest()
+                        SummaryStorySearchRequest("category").toSummaryRequest(),
                     )
                 } returns mockedStoryList
 
@@ -372,10 +361,9 @@ class BotAdminServiceTest : AbstractTest() {
 
     @Test
     internal fun `GIVEN a non-existing story for a given namespace WHEN summary search on it THEN a null dump is returned`() {
-
         every {
             storyDefinitionDAO.searchStoryDefinitionSummaries(
-                any()
+                any(),
             )
         } returns emptyList()
 
@@ -385,5 +373,4 @@ class BotAdminServiceTest : AbstractTest() {
         // Then
         assertEquals(storiesList, emptyList())
     }
-
 }

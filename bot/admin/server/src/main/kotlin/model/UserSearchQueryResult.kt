@@ -25,13 +25,12 @@ data class UserSearchQueryResult(
     val total: Long,
     val start: Long,
     val end: Long,
-    val users: List<UserSearchResult>
+    val users: List<UserSearchResult>,
 ) {
-
     constructor(result: UserReportQueryResult) : this(
         result.total,
         result.start,
         result.end,
-        result.users.map { UserSearchResult(it) }
+        result.users.map { UserSearchResult(it) },
     )
 }

@@ -46,9 +46,8 @@ internal class SendSentenceNotYetLoaded(
     metadata: ActionMetadata = ActionMetadata(),
     val hasCustomMessage: Boolean = true,
     val hasNlpStats: Boolean = false,
-    override var annotation: BotAnnotation? = null
+    override var annotation: BotAnnotation? = null,
 ) : SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, null) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -67,7 +66,7 @@ internal class SendSentenceNotYetLoaded(
             if (!messageLoaded) {
                 logger.debug { "load message for $id" }
                 messageLoaded = true
-                loadedMessages.addAll(runBlocking { UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId) } )
+                loadedMessages.addAll(runBlocking { UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId) })
             }
             return loadedMessages
         }

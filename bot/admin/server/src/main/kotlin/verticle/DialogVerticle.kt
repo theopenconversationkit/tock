@@ -37,7 +37,6 @@ import org.litote.kmongo.toId
  * Verticle handling dialog and annotation related endpoints.
  */
 class DialogVerticle {
-
     companion object {
         // DIALOGS ENDPOINTS
         private const val PATH_RATINGS_EXPORT = "/dialogs/ratings/export"
@@ -64,7 +63,6 @@ class DialogVerticle {
 
     fun configure(webVerticle: WebVerticle) {
         with(webVerticle) {
-
             // --------------------------------- Dialog Routes --------------------------------------
 
             blockingJsonPost(PATH_RATINGS_EXPORT, setOf(TockUserRole.botUser)) { context, query: DialogsSearchQuery ->
@@ -81,7 +79,7 @@ class DialogVerticle {
                                     label.id,
                                     label.rating,
                                     label.review,
-                                )
+                                ),
                             )
                         }
                     sb.toString()
@@ -101,8 +99,8 @@ class DialogVerticle {
                             "Dialog ID",
                             "Player Type",
                             "Application ID",
-                            "Message"
-                        )
+                            "Message",
+                        ),
                     )
                     BotAdminService.search(query)
                         .dialogs
@@ -115,17 +113,20 @@ class DialogVerticle {
                                         dialog.id,
                                         it.playerId.type,
                                         it.applicationId,
-                                        if (it.message.isSimpleMessage()) it.message.toPrettyString().replace(
-                                            "\n",
-                                            " "
-                                        ) else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }
-                                            .replace("\n", " ")
-                                    )
+                                        if (it.message.isSimpleMessage()) {
+                                            it.message.toPrettyString().replace(
+                                                "\n",
+                                                " ",
+                                            )
+                                        } else {
+                                            (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }
+                                                .replace("\n", " ")
+                                        },
+                                    ),
                                 )
                             }
                         }
                     sb.toString()
-
                 } else {
                     unauthorized()
                 }
@@ -136,7 +137,7 @@ class DialogVerticle {
                 if (context.organization == app?.namespace) {
                     BotAdminService.getDialogWithCommentRights(
                         context.path("dialogId").toId(),
-                        context.userLogin
+                        context.userLogin,
                     )
                 } else {
                     unauthorized()
@@ -183,7 +184,7 @@ class DialogVerticle {
                     context.path("dialogId"),
                     context.path("actionId"),
                     annotationDTO,
-                    context.userLogin
+                    context.userLogin,
                 )
             }
 
@@ -195,14 +196,14 @@ class DialogVerticle {
                     context.path("dialogId"),
                     context.path("actionId"),
                     annotationDTO,
-                    context.userLogin
+                    context.userLogin,
                 )
             }
 
             // ADD COMMENT
             blockingJsonPost(
                 PATH_ANNOTATION_EVENTS,
-                setOf(TockUserRole.botUser)
+                setOf(TockUserRole.botUser),
             ) { context, eventDTO: BotAnnotationEventDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
@@ -210,14 +211,14 @@ class DialogVerticle {
                     context.path("dialogId"),
                     context.path("actionId"),
                     eventDTO,
-                    context.userLogin
+                    context.userLogin,
                 )
             }
 
             // MODIFY COMMENT
             blockingJsonPut(
                 PATH_ANNOTATION_EVENT,
-                setOf(TockUserRole.botUser)
+                setOf(TockUserRole.botUser),
             ) { context, eventDTO: BotAnnotationEventDTO ->
                 val botId = context.path("botId")
                 context.checkBotId(botId)
@@ -226,7 +227,7 @@ class DialogVerticle {
                     context.path("actionId"),
                     context.path("eventId"),
                     eventDTO,
-                    context.userLogin
+                    context.userLogin,
                 )
             }
 
@@ -238,7 +239,7 @@ class DialogVerticle {
                     context.path("dialogId"),
                     context.path("actionId"),
                     context.path("eventId"),
-                    context.userLogin
+                    context.userLogin,
                 )
             }
         }
@@ -248,7 +249,5 @@ class DialogVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext): String? =
-        ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
-
+    private fun getNamespace(context: RoutingContext): String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 }

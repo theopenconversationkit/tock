@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("ktlint:standard:property-naming", "ktlint:standard:max-line-length")
 
 package ai.tock.bot.admin
 
@@ -76,7 +77,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -93,18 +94,21 @@ class FaqAdminServiceTest : AbstractTest() {
         init {
             // IOC
             tockInternalInjector = KodeinInjector()
-            val specificModule = Kodein.Module {
-                bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
-                bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
-                bind<ClassifiedSentenceDAO>() with provider { sentenceDAO }
-                bind<IntentDefinitionDAO>() with provider { intentDAO }
-                bind<I18nDAO>() with provider { i18nDAO }
-                bind<FaqSettingsDAO>() with provider { faqSettingsDAO }
-            }
-            tockInternalInjector.inject(Kodein {
-                import(defaultModulesBinding())
-                import(specificModule)
-            })
+            val specificModule =
+                Kodein.Module {
+                    bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
+                    bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
+                    bind<ClassifiedSentenceDAO>() with provider { sentenceDAO }
+                    bind<IntentDefinitionDAO>() with provider { intentDAO }
+                    bind<I18nDAO>() with provider { i18nDAO }
+                    bind<FaqSettingsDAO>() with provider { faqSettingsDAO }
+                }
+            tockInternalInjector.inject(
+                Kodein {
+                    import(defaultModulesBinding())
+                    import(specificModule)
+                },
+            )
         }
 
         private val applicationId = newId<ApplicationDefinition>()
@@ -138,82 +142,98 @@ class FaqAdminServiceTest : AbstractTest() {
         private const val firstUterrance = "FAQ utterance A"
         private const val secondUterrance = "FAQ utterance B"
 
-        private val answer = I18nLabel(
-            i18nId,
-            defaultNamespace,
-            " category",
-            LinkedHashSet(
-                listOf(
-                    I18nLocalizedLabel(
-                        Locale.FRENCH,
-                        UserInterfaceType.textChat,
-                        "label",
-                        true
-                    )
-                )
+        private val answer =
+            I18nLabel(
+                i18nId,
+                defaultNamespace,
+                " category",
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            Locale.FRENCH,
+                            UserInterfaceType.textChat,
+                            "label",
+                            true,
+                        ),
+                    ),
+                ),
             )
-        )
-        private val faqDefinitionRequest = FaqDefinitionRequest(
-            faqId.toString(),
-            intentId.toString(),
-            Locale.FRENCH,
-            botId,
-            now,
-            now,
-            "FAQ TITLE",
-            "FAQ desciption",
-            listOf(firstUterrance, secondUterrance),
-            listOf("NEW TAG"),
-            answer,
-            true,
-            "faqtitle"
-        )
+        private val faqDefinitionRequest =
+            FaqDefinitionRequest(
+                faqId.toString(),
+                intentId.toString(),
+                Locale.FRENCH,
+                botId,
+                now,
+                now,
+                "FAQ TITLE",
+                "FAQ desciption",
+                listOf(firstUterrance, secondUterrance),
+                listOf("NEW TAG"),
+                answer,
+                true,
+                "faqtitle",
+            )
 
-        private val existingIntent = IntentDefinition(
-            name = "AlreadyExistingIntent",
-            namespace = namespace,
-            applications = setOf(applicationId),
-            label = "FAQ NEW TITLE",
-            description = "FAQ new description",
-            category = "faq",
-            _id = intentId,
-            entities = emptySet()
-        )
-        private val theSavedIntent = IntentDefinition(
-            name = "faqtitle",
-            namespace = namespace,
-            applications = setOf(applicationId),
-            label = "FAQ TITLE",
-            description = "FAQ description",
-            category = "faq",
-            _id = intentId,
-            entities = emptySet()
-        )
+        private val existingIntent =
+            IntentDefinition(
+                name = "AlreadyExistingIntent",
+                namespace = namespace,
+                applications = setOf(applicationId),
+                label = "FAQ NEW TITLE",
+                description = "FAQ new description",
+                category = "faq",
+                _id = intentId,
+                entities = emptySet(),
+            )
+        private val theSavedIntent =
+            IntentDefinition(
+                name = "faqtitle",
+                namespace = namespace,
+                applications = setOf(applicationId),
+                label = "FAQ TITLE",
+                description = "FAQ description",
+                category = "faq",
+                _id = intentId,
+                entities = emptySet(),
+            )
 
+        private val mockedDefaultLocalizedLabel: I18nLocalizedLabel =
+            I18nLocalizedLabel(
+                locale = Locale.FRENCH,
+                interfaceType = UserInterfaceType.textChat,
+                label = "The FAQ answer",
+                validated = true,
+                connectorId = null,
+                alternatives = emptyList(),
+            )
 
-        private val mockedDefaultLocalizedLabel: I18nLocalizedLabel = I18nLocalizedLabel(
-            locale = Locale.FRENCH,
-            interfaceType = UserInterfaceType.textChat,
-            label = "The FAQ answer",
-            validated = true,
-            connectorId = null,
-            alternatives = emptyList()
-        )
-
-        val mockedI18n = I18nLabel(
-            _id = i18nId, namespace = namespace, category = "faq", linkedSetOf(
-                mockedDefaultLocalizedLabel
-            ), defaultLabel = "The FAQ answer", defaultLocale = Locale.FRENCH, version = 0
-        )
+        val mockedI18n =
+            I18nLabel(
+                _id = i18nId,
+                namespace = namespace,
+                category = "faq",
+                linkedSetOf(
+                    mockedDefaultLocalizedLabel,
+                ),
+                defaultLabel = "The FAQ answer",
+                defaultLocale = Locale.FRENCH,
+                version = 0,
+            )
 
         val mockedI18nLabels_1Element = listOf<I18nLabel>(mockedI18n)
-        val mockedI18nLabels_2Elements = listOf<I18nLabel>(
-            mockedI18n, mockedI18n.copy(
-                i18nId2, i18n = linkedSetOf<I18nLocalizedLabel>(
-                    mockedDefaultLocalizedLabel.copy(label = "Another Faq answer")
-                ), defaultLabel = "Another Faq answer"
+        val mockedI18nLabels_2Elements =
+            listOf<I18nLabel>(
+                mockedI18n,
+                mockedI18n.copy(
+                    i18nId2,
+                    i18n =
+                        linkedSetOf<I18nLocalizedLabel>(
+                            mockedDefaultLocalizedLabel.copy(label = "Another Faq answer"),
+                        ),
+                    defaultLabel = "Another Faq answer",
+                ),
             )
-        )
 
         private val existingMessageStory =
             newFaqTestStory(namespace, AnswerConfigurationType.message, theSavedIntent.name, _id = storyId)
@@ -225,7 +245,7 @@ class FaqAdminServiceTest : AbstractTest() {
             intentName: String,
             _id: Id<StoryDefinitionConfiguration> = newId(),
             name: String = storyId,
-            botName: String = "testBotId"
+            botName: String = "testBotId",
         ): BotStoryDefinitionConfiguration {
             return BotStoryDefinitionConfiguration(
                 storyId = storyId,
@@ -236,11 +256,10 @@ class FaqAdminServiceTest : AbstractTest() {
                 answers = emptyList(),
                 userSentenceLocale = Locale.FRANCE,
                 _id = _id,
-                name = name
+                name = name,
             )
         }
     }
-
 
     internal fun initMocksForSingleStory(existingStory: StoryDefinitionConfiguration) {
         every { storyDefinitionDAO.getStoryDefinitionById(existingStory._id) } answers { existingStory }
@@ -248,35 +267,33 @@ class FaqAdminServiceTest : AbstractTest() {
         every { storyDefinitionDAO.getStoryDefinitionById(neq(existingStory._id)) } answers { null }
         every {
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                any(), any(), any()
+                any(), any(), any(),
             )
         } answers { null }
         every {
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                any(), any(), any()
+                any(), any(), any(),
             )
         } answers { null }
         every {
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                any(), any(), existingStory.intent.name
+                any(), any(), existingStory.intent.name,
             )
         } answers { existingStory }
         every {
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                any(), any(), existingStory.storyId
+                any(), any(), existingStory.storyId,
             )
         } answers { existingStory }
         every {
             storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(any(), any(), any())
         } answers { existingStory }
-
     }
 
     @Nested
     inner class SaveFaq {
         @Nested
         inner class SingleExistingFaqAndStory {
-
             internal fun initMocksForSingleFaq(existingFaq: FaqDefinition) {
                 every { faqDefinitionDAO.getFaqDefinitionById(any()) } answers { existingFaq }
                 every { faqDefinitionDAO.save(any()) } just Runs
@@ -284,7 +301,7 @@ class FaqAdminServiceTest : AbstractTest() {
                     faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                         eq(intentId),
                         eq(botId),
-                        eq(namespace)
+                        eq(namespace),
                     )
                 } answers { existingFaq }
             }
@@ -293,19 +310,23 @@ class FaqAdminServiceTest : AbstractTest() {
                 utterances: List<String>,
                 existingUtterances: Boolean,
                 applicationId: Id<ApplicationDefinition>,
-                intentId: Id<IntentDefinition>
+                intentId: Id<IntentDefinition>,
             ) {
-                val answers: List<ClassifiedSentence> = utterances.map {
-                    ClassifiedSentence(
-                        it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model, Classification(
-                            intentId, emptyList()
-                        ), null, null
-                    )
-                }.toList()
+                val answers: List<ClassifiedSentence> =
+                    utterances.map {
+                        ClassifiedSentence(
+                            it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model,
+                            Classification(
+                                intentId,
+                                emptyList(),
+                            ),
+                            null, null,
+                        )
+                    }.toList()
 
                 every { sentenceDAO.search(any()) } answers {
                     SentencesQueryResult(
-                        utterances.size.toLong(), if (existingUtterances) answers else emptyList()
+                        utterances.size.toLong(), if (existingUtterances) answers else emptyList(),
                     )
                 }
                 every { sentenceDAO.switchSentencesStatus(any(), ClassifiedSentenceStatus.deleted) } just Runs
@@ -313,19 +334,18 @@ class FaqAdminServiceTest : AbstractTest() {
 
             @Nested
             inner class NewFaqWithStoryWithNewUtterances {
-
                 @BeforeEach
                 internal fun initMocks() {
-                    //Existing Story
+                    // Existing Story
                     initMocksForSingleStory(existingStory)
-                    //Existing Faq
+                    // Existing Faq
                     initMocksForSingleFaq(faqDefinition)
-                    //Existing ClassifiedSentences
+                    // Existing ClassifiedSentences
                     initMocksForClassifiedSentences(
                         listOf(firstUterrance, secondUterrance),
                         false,
                         applicationId,
-                        intentId
+                        intentId,
                     )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
@@ -334,11 +354,10 @@ class FaqAdminServiceTest : AbstractTest() {
 
                 @Test
                 fun `GIVEN save faq and story WHEN intent is null THEN Throw bad request`() {
-
                     val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
                     every {
                         faqAdminService["findFaqDefinitionIntent"](
-                            allAny<Id<FaqDefinition>>()
+                            allAny<Id<FaqDefinition>>(),
                         )
                     } returns null
 
@@ -349,7 +368,7 @@ class FaqAdminServiceTest : AbstractTest() {
 
                     every {
                         botAdminService["getBotConfigurationsByNamespaceAndBotId"](
-                            any<String>(), any<String>()
+                            any<String>(), any<String>(),
                         )
                     } answers { listOf(aApplication) }
                     every {
@@ -357,7 +376,7 @@ class FaqAdminServiceTest : AbstractTest() {
                             any<String>(),
                             any<BotStoryDefinitionConfiguration>(),
                             any<UserLogin>(),
-                            any<IntentDefinition>()
+                            any<IntentDefinition>(),
                         )
                     } returns existingMessageStory
 
@@ -365,7 +384,10 @@ class FaqAdminServiceTest : AbstractTest() {
 
                     verify(exactly = 0) {
                         botAdminService["createOrGetIntent"](
-                            any<String>(), any<String>(), any<Id<ApplicationDefinition>>(), any<String>()
+                            any<String>(),
+                            any<String>(),
+                            any<Id<ApplicationDefinition>>(),
+                            any<String>(),
                         )
                     }
                     verify(exactly = 0) { faqDefinitionDAO.save(any()) }
@@ -380,7 +402,7 @@ class FaqAdminServiceTest : AbstractTest() {
 
                     every {
                         faqAdminService["createOrUpdateFaqIntent"](
-                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                         )
                     } returns theSavedIntent
 
@@ -389,7 +411,7 @@ class FaqAdminServiceTest : AbstractTest() {
                             allAny<FaqDefinitionRequest>(),
                             allAny<ApplicationDefinition>(),
                             allAny<IntentDefinition>(),
-                            allAny<FaqDefinition>()
+                            allAny<FaqDefinition>(),
                         ) as FaqDefinition
                     } returns savedFaqDefinition
 
@@ -419,16 +441,16 @@ class FaqAdminServiceTest : AbstractTest() {
 
                 @BeforeEach
                 internal fun initMocks() {
-                    //Existing Story
+                    // Existing Story
                     initMocksForSingleStory(existingStory)
-                    //Existing Faq
+                    // Existing Faq
                     initMocksForSingleFaq(faqDefinition)
-                    //Existing ClassifiedSentences
+                    // Existing ClassifiedSentences
                     initMocksForClassifiedSentences(
                         listOf(firstUterrance, secondUterrance),
                         true,
                         applicationId,
-                        intentId
+                        intentId,
                     )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
@@ -437,11 +459,10 @@ class FaqAdminServiceTest : AbstractTest() {
 
                 @Test
                 fun `GIVEN save faq and story When existing Faq THEN save the story`() {
-
                     val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
                     every {
                         faqAdminService["createOrUpdateFaqIntent"](
-                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                         )
                     } returns existingIntent
 
@@ -460,19 +481,18 @@ class FaqAdminServiceTest : AbstractTest() {
                     assertFalse(sentenceQuerySlot.captured.wholeNamespace)
 
                     assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
-                    //story name must no be overwritten
+                    // story name must no be overwritten
                     assertNotEquals(slotStory.captured.name, existingMessageStory.name)
                     assertEquals(slotStory.captured.category, FAQ_CATEGORY)
                 }
 
                 @Test
                 fun `GIVEN save faq and story When existing Faq THEN save and disable the story`() {
-
                     val faqDefinitionRequestDisabledStory = faqDefinitionRequest.copy(enabled = false)
                     val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
                     every {
                         faqAdminService["createOrUpdateFaqIntent"](
-                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                            allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                         )
                     } returns existingIntent
 
@@ -481,7 +501,7 @@ class FaqAdminServiceTest : AbstractTest() {
                     val botAdminService = spyk<BotAdminService>()
                     every {
                         botAdminService["getBotConfigurationsByNamespaceAndBotId"](
-                            any<String>(), any<String>()
+                            any<String>(), any<String>(),
                         )
                     } answers { listOf(aApplication) }
                     every {
@@ -489,7 +509,7 @@ class FaqAdminServiceTest : AbstractTest() {
                             any<String>(),
                             any<BotStoryDefinitionConfiguration>(),
                             any<UserLogin>(),
-                            any<IntentDefinition>()
+                            any<IntentDefinition>(),
                         )
                     } returns existingMessageStory
 
@@ -497,19 +517,22 @@ class FaqAdminServiceTest : AbstractTest() {
 
                     verify(exactly = 0) {
                         botAdminService["createOrGetIntent"](
-                            any<String>(), any<String>(), any<Id<ApplicationDefinition>>(), any<String>()
+                            any<String>(),
+                            any<String>(),
+                            any<Id<ApplicationDefinition>>(),
+                            any<String>(),
                         )
                     }
                     verify(exactly = 1) { faqDefinitionDAO.save(any()) }
                     verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
 
                     assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
-                    //story name must no be overwritten
+                    // story name must no be overwritten
                     assertNotEquals(slotStory.captured.name, existingMessageStory.name)
                     assertEquals(
                         slotStory.captured.features.get(0).enabled,
                         faqDefinitionRequestDisabledStory.enabled,
-                        "Should be equals to false, considered as disabled"
+                        "Should be equals to false, considered as disabled",
                     )
                     assertEquals(slotStory.captured.category, FAQ_CATEGORY)
 
@@ -522,7 +545,6 @@ class FaqAdminServiceTest : AbstractTest() {
                 }
             }
         }
-
     }
 
     @Nested
@@ -540,19 +562,23 @@ class FaqAdminServiceTest : AbstractTest() {
             utterances: List<String>,
             existingUtterances: Boolean,
             applicationId: Id<ApplicationDefinition>,
-            intentId: Id<IntentDefinition>
+            intentId: Id<IntentDefinition>,
         ) {
-            val answers: List<ClassifiedSentence> = utterances.map {
-                ClassifiedSentence(
-                    it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model, Classification(
-                        intentId, emptyList()
-                    ), null, null
-                )
-            }.toList()
+            val answers: List<ClassifiedSentence> =
+                utterances.map {
+                    ClassifiedSentence(
+                        it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model,
+                        Classification(
+                            intentId,
+                            emptyList(),
+                        ),
+                        null, null,
+                    )
+                }.toList()
 
             every { sentenceDAO.search(any()) } answers {
                 SentencesQueryResult(
-                    utterances.size.toLong(), if (existingUtterances) answers else emptyList()
+                    utterances.size.toLong(), if (existingUtterances) answers else emptyList(),
                 )
             }
             every { sentenceDAO.switchSentencesStatus(any(), ClassifiedSentenceStatus.deleted) } just Runs
@@ -569,36 +595,37 @@ class FaqAdminServiceTest : AbstractTest() {
 
         // variable for this nested class
         val OTHER_APP_NAME = "otherApp"
-        val FAQ_SPECIFIC_ANSWER = I18nLabel(
-            "new specific answer".toId(),
-            defaultNamespace,
-            " category",
-            LinkedHashSet(
-                listOf(
-                    I18nLocalizedLabel(
-                        Locale.FRENCH,
-                        UserInterfaceType.textChat,
-                        "label",
-                        true
-                    )
-                )
+        val FAQ_SPECIFIC_ANSWER =
+            I18nLabel(
+                "new specific answer".toId(),
+                defaultNamespace,
+                " category",
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            Locale.FRENCH,
+                            UserInterfaceType.textChat,
+                            "label",
+                            true,
+                        ),
+                    ),
+                ),
             )
-        )
 
         val newOtherUtterance = "new other utterance"
 
         @BeforeEach
         internal fun initMocks() {
-            //Existing Story
+            // Existing Story
             initMocksForSingleStory(existingStory)
-            //Existing Faq
+            // Existing Faq
             initMocksForSharedIntentFaq(faqDefinition)
-            //Existing ClassifiedSentences
+            // Existing ClassifiedSentences
             initMocksForClassifiedSentences(
                 listOf(firstUterrance, secondUterrance),
                 true,
                 applicationId,
-                intentId
+                intentId,
             )
 
             every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
@@ -607,49 +634,49 @@ class FaqAdminServiceTest : AbstractTest() {
         }
 
         @AfterEach
-        fun mockkServicesDeletion(){
+        fun mockkServicesDeletion() {
             unmockkObject(BotAdminService)
         }
 
         @Test
         fun `GIVEN save new faq on another bot application on same namespace with a shared intent WHEN saving faq same existing classified sentences should not be created THEN save the story`() {
-
-            //MOCK
+            // MOCK
             val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
 
-            //shared intent in two app
-            //GIVEN
+            // shared intent in two app
+            // GIVEN
             // new faq is created there was none before
             every {
                 faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
                     eq(OTHER_APP_NAME),
-                    eq(namespace)
+                    eq(namespace),
                 )
             } answers { null }
 
             every {
                 faqAdminService["createOrUpdateFaqIntent"](
-                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                 )
             } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
 
-            //faq definition request already exists with same intentId
-            val newFaqSharedIntent = faqDefinitionRequest.copy(
-                id = faqId2.toString(),
-                intentId = intentId.toString(),
-                applicationName = OTHER_APP_NAME,
-                answer = FAQ_SPECIFIC_ANSWER,
-                // add same existing utterrances and another one
-                utterances = faqDefinitionRequest.utterances.plus(newOtherUtterance)
-            )
+            // faq definition request already exists with same intentId
+            val newFaqSharedIntent =
+                faqDefinitionRequest.copy(
+                    id = faqId2.toString(),
+                    intentId = intentId.toString(),
+                    applicationName = OTHER_APP_NAME,
+                    answer = FAQ_SPECIFIC_ANSWER,
+                    // add same existing utterrances and another one
+                    utterances = faqDefinitionRequest.utterances.plus(newOtherUtterance),
+                )
 
             val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
 
-            //WHEN
+            // WHEN
             val savedFaq = faqAdminService.saveFAQ(newFaqSharedIntent, userLogin, otherAppDefinition)
 
-            //THEN
+            // THEN
             val slotStory = slot<StoryDefinitionConfiguration>()
 
             verify(exactly = 1) { faqDefinitionDAO.save(any()) }
@@ -659,9 +686,9 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-            assertEquals(intentId,sentenceQuerySlot.captured.intentId)
+            assertEquals(intentId, sentenceQuerySlot.captured.intentId)
 
-            //save only one new sentence not the shared one
+            // save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(newOtherUtterance), any(), any(), any(), any()) }
 
             val switchedClassifiedSentences = slot<List<ClassifiedSentence>>()
@@ -672,68 +699,68 @@ class FaqAdminServiceTest : AbstractTest() {
 
             assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
 
-            //story name must not be overwritten
+            // story name must not be overwritten
             assertNotEquals(slotStory.captured.name, existingMessageStory.name)
             assertEquals(slotStory.captured.category, FAQ_CATEGORY)
         }
 
-
         @Test
         fun `GIVEN existing shared faq on a bot application on same namespace WHEN updating faq THEN added classified sentence should be created`() {
-
-            //MOCK
+            // MOCK
             val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
 
-            //shared intent in two app
-            //GIVEN
+            // shared intent in two app
+            // GIVEN
             val secondFaqUtterance = "second FAQ utterance"
 
-            //faq definition request already exists with same intentId
-            val existingSecondBotFaqSharedIntentRequest = faqDefinitionRequest.copy(
-                id = faqId2.toString(),
-                intentId = intentId.toString(),
-                applicationName = OTHER_APP_NAME,
-                answer = FAQ_SPECIFIC_ANSWER,
-                // add same existing utterances and another one
-                utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance)
-            )
+            // faq definition request already exists with same intentId
+            val existingSecondBotFaqSharedIntentRequest =
+                faqDefinitionRequest.copy(
+                    id = faqId2.toString(),
+                    intentId = intentId.toString(),
+                    applicationName = OTHER_APP_NAME,
+                    answer = FAQ_SPECIFIC_ANSWER,
+                    // add same existing utterances and another one
+                    utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance),
+                )
 
             // faq is already existing to be updated
-            val existingFaqSharedIntentDefinition = FaqDefinition(
-                faqId2,
-                OTHER_APP_NAME,
-                namespace,
-                intentId,
-                i18nId,
-                existingSecondBotFaqSharedIntentRequest.tags,
-                existingSecondBotFaqSharedIntentRequest.enabled,
-                existingSecondBotFaqSharedIntentRequest.creationDate!!,
-                existingSecondBotFaqSharedIntentRequest.updateDate!!,
-            )
+            val existingFaqSharedIntentDefinition =
+                FaqDefinition(
+                    faqId2,
+                    OTHER_APP_NAME,
+                    namespace,
+                    intentId,
+                    i18nId,
+                    existingSecondBotFaqSharedIntentRequest.tags,
+                    existingSecondBotFaqSharedIntentRequest.enabled,
+                    existingSecondBotFaqSharedIntentRequest.creationDate!!,
+                    existingSecondBotFaqSharedIntentRequest.updateDate!!,
+                )
 
             every {
                 faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
                     eq(OTHER_APP_NAME),
-                    eq(namespace)
+                    eq(namespace),
                 )
             } answers { existingFaqSharedIntentDefinition }
 
             every {
                 faqAdminService["createOrUpdateFaqIntent"](
-                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                 )
             } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
 
             val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
 
-            //WHEN
+            // WHEN
             val savedFaq = faqAdminService.saveFAQ(existingSecondBotFaqSharedIntentRequest, userLogin, otherAppDefinition)
 
-            //THEN
+            // THEN
             // FAQ
             verify(exactly = 1) { faqDefinitionDAO.save(any()) }
-            assertEquals(savedFaq.utterances.size,3)
+            assertEquals(savedFaq.utterances.size, 3)
 
             // Classified Sentences
             val sentenceQuerySlot = slot<SentencesQuery>()
@@ -741,7 +768,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-                  assertEquals(intentId,sentenceQuerySlot.captured.intentId)
+            assertEquals(intentId, sentenceQuerySlot.captured.intentId)
 
             // save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
@@ -755,68 +782,69 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
             assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
 
-            //story name must not be overwritten
+            // story name must not be overwritten
             assertNotEquals(slotStory.captured.name, existingMessageStory.name)
             assertEquals(slotStory.captured.category, FAQ_CATEGORY)
         }
 
         @Test
         fun `GIVEN existing shared faq on a bot application on same namespace WHEN updating faq by erasing some existing one and adding another one THEN added classified sentence should be created and the other deleted`() {
-
-            //MOCK
+            // MOCK
             val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
 
-            //shared intent in two app
-            //GIVEN
+            // shared intent in two app
+            // GIVEN
             val secondFaqUtterance = "second FAQ utterance"
 
-            //faq definition request already exists with same intentId
-            val existingSecondBotFaqSharedIntentRequest = faqDefinitionRequest.copy(
-                id = faqId2.toString(),
-                intentId = intentId.toString(),
-                applicationName = OTHER_APP_NAME,
-                answer = FAQ_SPECIFIC_ANSWER,
-                // add same existing utterances and another one
-                utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance)
-            )
+            // faq definition request already exists with same intentId
+            val existingSecondBotFaqSharedIntentRequest =
+                faqDefinitionRequest.copy(
+                    id = faqId2.toString(),
+                    intentId = intentId.toString(),
+                    applicationName = OTHER_APP_NAME,
+                    answer = FAQ_SPECIFIC_ANSWER,
+                    // add same existing utterances and another one
+                    utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance),
+                )
 
             // faq is already existing to be updated
-            val existingFaqSharedIntentDefinition = FaqDefinition(
-                faqId2,
-                OTHER_APP_NAME,
-                namespace,
-                intentId,
-                i18nId,
-                existingSecondBotFaqSharedIntentRequest.tags,
-                existingSecondBotFaqSharedIntentRequest.enabled,
-                existingSecondBotFaqSharedIntentRequest.creationDate!!,
-                existingSecondBotFaqSharedIntentRequest.updateDate!!,
-            )
+            val existingFaqSharedIntentDefinition =
+                FaqDefinition(
+                    faqId2,
+                    OTHER_APP_NAME,
+                    namespace,
+                    intentId,
+                    i18nId,
+                    existingSecondBotFaqSharedIntentRequest.tags,
+                    existingSecondBotFaqSharedIntentRequest.enabled,
+                    existingSecondBotFaqSharedIntentRequest.creationDate!!,
+                    existingSecondBotFaqSharedIntentRequest.updateDate!!,
+                )
 
             every {
                 faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
                     eq(intentId),
                     eq(OTHER_APP_NAME),
-                    eq(namespace)
+                    eq(namespace),
                 )
             } answers { existingFaqSharedIntentDefinition }
 
             every {
                 faqAdminService["createOrUpdateFaqIntent"](
-                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>(),
                 )
             } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
 
             val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
 
-            //WHEN
+            // WHEN
             val removingSomeUtterancesSave = existingSecondBotFaqSharedIntentRequest.copy(utterances = listOf(secondFaqUtterance))
             val savedFaq = faqAdminService.saveFAQ(removingSomeUtterancesSave, userLogin, otherAppDefinition)
 
-            //THEN
+            // THEN
             // FAQ
             verify(exactly = 1) { faqDefinitionDAO.save(any()) }
-            assertEquals(savedFaq.utterances.size,1)
+            assertEquals(savedFaq.utterances.size, 1)
 
             // Classified Sentences
             val sentenceQuerySlot = slot<SentencesQuery>()
@@ -824,7 +852,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-            assertEquals(intentId,sentenceQuerySlot.captured.intentId)
+            assertEquals(intentId, sentenceQuerySlot.captured.intentId)
 
             // save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
@@ -838,21 +866,19 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
             assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
 
-            //story name must not be overwritten
+            // story name must not be overwritten
             assertNotEquals(slotStory.captured.name, existingMessageStory.name)
             assertEquals(slotStory.captured.category, FAQ_CATEGORY)
         }
     }
 
-
     @Nested
     inner class DeleteFaq {
-
         private fun initDeleteFaqMock(
             mockedIntentDefinition: IntentDefinition? = existingIntent,
             mockedFaqDefinition: FaqDefinition? = faqDefinition,
             mockedStoryDefinition: StoryDefinitionConfiguration = existingStory,
-            mockedApplicationDefinition: ApplicationDefinition? = applicationDefinition
+            mockedApplicationDefinition: ApplicationDefinition? = applicationDefinition,
         ) {
             every { applicationDefininitionDAO.getApplicationById(eq(applicationId)) } returns applicationDefinition
             every { applicationDefininitionDAO.getApplicationByNamespaceAndName(eq(namespace), eq(faqDefinition.botId)) } returns mockedApplicationDefinition
@@ -870,14 +896,15 @@ class FaqAdminServiceTest : AbstractTest() {
             every {
                 applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(
                     eq(namespace),
-                    eq(mockedStoryDefinition.botId)
+                    eq(mockedStoryDefinition.botId),
                 )
-            } returns listOf(
-                BotApplicationConfiguration(
-                    applicationId.toString(), mockedStoryDefinition.storyId, namespace, NlpEngineType.opennlp.name,
-                    ConnectorType.rest, ConnectorType.rest
+            } returns
+                listOf(
+                    BotApplicationConfiguration(
+                        applicationId.toString(), mockedStoryDefinition.storyId, namespace, NlpEngineType.opennlp.name,
+                        ConnectorType.rest, ConnectorType.rest,
+                    ),
                 )
-            )
         }
 
         @Test
@@ -937,8 +964,6 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqAdminService.deleteFaqDefinition(namespace, faqId.toString())
             }
         }
-
-
     }
 
     /**
@@ -958,10 +983,10 @@ class FaqAdminServiceTest : AbstractTest() {
                         faqId = faqId2,
                         intentId = intentId2,
                         i18nId = i18nId2,
-                        numberOfUtterances = 0
+                        numberOfUtterances = 0,
                     ),
-                    createFaqQueryResult(numberOfUtterances = 1, utteranceText = expectedUtteranceLabel)
-                )
+                    createFaqQueryResult(numberOfUtterances = 1, utteranceText = expectedUtteranceLabel),
+                ),
             )
 
             val faqSearchRequest = createFaqSearchRequest(enabled = null, search = null)
@@ -971,29 +996,33 @@ class FaqAdminServiceTest : AbstractTest() {
             assertEquals(
                 FaqAdminService.MISSING_UTTERANCE,
                 faqResult.rows.first().utterances[0],
-                "The name of the utterance should be 'MISSING_UTTERANCE'"
+                "The name of the utterance should be 'MISSING_UTTERANCE'",
             )
-            //test name is the utterranceText+numberOfutterance
-            //here 0 is the first label, see createFaqQueryResult() method
+            // test name is the utterranceText+numberOfutterance
+            // here 0 is the first label, see createFaqQueryResult() method
             assertEquals(
                 expectedUtteranceLabel + numberOfUtterances,
                 faqResult.rows.get(1).utterances[0],
-                "The name of the utterance should be $expectedUtteranceLabel$numberOfUtterances"
+                "The name of the utterance should be $expectedUtteranceLabel$numberOfUtterances",
             )
 
             verify(exactly = 1) {
                 faqDefinitionDAO.getFaqDetailsWithCount(
-                    any(), applicationDefinition, null
+                    any(),
+                    applicationDefinition,
+                    null,
                 )
             }
             verify(exactly = 1) {
                 faqAdminService["mapI18LabelFaqAndConvertToFaqDefinitionRequest"](
-                    any<List<FaqQueryResult>>(), any<ApplicationDefinition>()
+                    any<List<FaqQueryResult>>(),
+                    any<ApplicationDefinition>(),
                 )
             }
             verify(exactly = 0) {
                 faqAdminService["searchLabelsFromTockFrontDb"](
-                    any<List<FaqQueryResult>>(), any<ApplicationDefinition>()
+                    any<List<FaqQueryResult>>(),
+                    any<ApplicationDefinition>(),
                 )
             }
             verify(atLeast = 2) { i18nDAO.getLabelById(any()) }
@@ -1010,7 +1039,7 @@ class FaqAdminServiceTest : AbstractTest() {
                         intentId = intentId2,
                         i18nId = i18nId2,
                         utteranceText = "Question with answer to find",
-                        numberOfUtterances = 3
+                        numberOfUtterances = 3,
                     ),
                     createFaqQueryResult(
                         faqId = faqId3,
@@ -1018,7 +1047,7 @@ class FaqAdminServiceTest : AbstractTest() {
                         i18nId = i18nId3,
                         faqName = "FAQ B",
                         numberOfUtterances = 3,
-                        utteranceText = "Question with answer also expected"
+                        utteranceText = "Question with answer also expected",
                     ),
                     createFaqQueryResult(
                         faqId = faqId4,
@@ -1026,21 +1055,27 @@ class FaqAdminServiceTest : AbstractTest() {
                         intentId = intentId4,
                         faqName = "FAQ C",
                         numberOfUtterances = 1,
-                        utteranceText = "utteranceLabelUnexpected"
-                    )
+                        utteranceText = "utteranceLabelUnexpected",
+                    ),
                 ),
                 listOf<I18nLabel>(
                     mockedI18n.copy(
-                        i18nId2, i18n = linkedSetOf<I18nLocalizedLabel>(
-                            mockedDefaultLocalizedLabel.copy(label = "Answer to find1")
-                        ), defaultLabel = "Answer to find1"
+                        i18nId2,
+                        i18n =
+                            linkedSetOf<I18nLocalizedLabel>(
+                                mockedDefaultLocalizedLabel.copy(label = "Answer to find1"),
+                            ),
+                        defaultLabel = "Answer to find1",
                     ),
                     mockedI18n.copy(
-                        i18nId3, i18n = linkedSetOf<I18nLocalizedLabel>(
-                            mockedDefaultLocalizedLabel.copy(label = "Answer also expected1")
-                        ), defaultLabel = "Answer also expected1"
-                    )
-                )
+                        i18nId3,
+                        i18n =
+                            linkedSetOf<I18nLocalizedLabel>(
+                                mockedDefaultLocalizedLabel.copy(label = "Answer also expected1"),
+                            ),
+                        defaultLabel = "Answer also expected1",
+                    ),
+                ),
             )
 
             val faqSearchRequest = createFaqSearchRequest(enabled = null, search = "Question")
@@ -1059,13 +1094,17 @@ class FaqAdminServiceTest : AbstractTest() {
             initSearchFaqMockWithoutLabelsSearch(
                 listOf(
                     createFaqQueryResult(
-                        faqId = faqId2, intentId = intentId2, i18nId = i18nId2, numberOfUtterances = 0
+                        faqId = faqId2,
+                        intentId = intentId2,
+                        i18nId = i18nId2,
+                        numberOfUtterances = 0,
                     ),
                     createFaqQueryResult(
-                        numberOfUtterances = 1, utteranceText = "testUtteranceText"
-                    )
+                        numberOfUtterances = 1,
+                        utteranceText = "testUtteranceText",
+                    ),
                 ),
-                stories = listOf(story1, story2)
+                stories = listOf(story1, story2),
             )
 
             val faqSearchRequest = createFaqSearchRequest(enabled = null, search = null)
@@ -1083,7 +1122,7 @@ class FaqAdminServiceTest : AbstractTest() {
         private fun initSearchFaqMockWithoutLabelsSearch(
             faqQueryResults: List<FaqQueryResult> = listOf(createFaqQueryResult()),
             mockedI18nLabels: List<I18nLabel> = mockedI18nLabels_2Elements,
-            stories: List<StoryDefinitionConfiguration> = emptyList()
+            stories: List<StoryDefinitionConfiguration> = emptyList(),
         ) {
             val searchResult = Pair(faqQueryResults, faqQueryResults.size.toLong())
 
@@ -1096,7 +1135,7 @@ class FaqAdminServiceTest : AbstractTest() {
 
             every {
                 storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
-                    any(), any(), any()
+                    any(), any(), any(),
                 )
             } returns stories
         }
@@ -1104,9 +1143,8 @@ class FaqAdminServiceTest : AbstractTest() {
         private fun initSearchFaqMockWithLabelsSearch(
             faqQueryResults: List<FaqQueryResult> = listOf(createFaqQueryResult()),
             mockedI18nLabels: List<I18nLabel> = mockedI18nLabels_2Elements,
-            stories: List<StoryDefinitionConfiguration> = emptyList()
+            stories: List<StoryDefinitionConfiguration> = emptyList(),
         ) {
-
             val searchedWithLabels =
                 mockedI18nLabels.flatMap { i18n -> faqQueryResults.filter { it.i18nId == i18n._id }.map { it } }
 
@@ -1121,18 +1159,17 @@ class FaqAdminServiceTest : AbstractTest() {
 
             every {
                 storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
-                    any(), any(), any()
+                    any(), any(), any(),
                 )
             } returns stories
         }
-
 
         private fun createFaqSearchRequest(
             enabled: Boolean? = null,
             search: String? = null,
             tags: List<String> = emptyList(),
             start: Int = 0,
-            size: Int = 10
+            size: Int = 10,
         ): FaqSearchRequest {
             return FaqSearchRequest(tags, search, enabled, userLogin, null)
         }
@@ -1154,20 +1191,20 @@ class FaqAdminServiceTest : AbstractTest() {
             utteranceText: String = "randomText",
             classifiedSentenceStatus: ClassifiedSentenceStatus = ClassifiedSentenceStatus.validated,
             instant: Instant = now,
-            intentName: String = "name-$intentId"
+            intentName: String = "name-$intentId",
         ): FaqQueryResult {
+            val createdIntent =
+                IntentDefinition(
+                    intentName,
+                    namespace,
+                    setOf(applicationId),
+                    emptySet(),
+                    label = StringUtils.lowerCase(faqName),
+                    category = FAQ_CATEGORY,
+                    _id = intentId,
+                )
 
-            val createdIntent = IntentDefinition(
-                intentName,
-                namespace,
-                setOf(applicationId),
-                emptySet(),
-                label = StringUtils.lowerCase(faqName),
-                category = FAQ_CATEGORY,
-                _id = intentId
-            )
-
-            //create utterance according to the number of utterance
+            // create utterance according to the number of utterance
             val utterances = ArrayList<ClassifiedSentence>()
             for (number: Int in 1..numberOfUtterances) {
                 utterances.add(createUtterance("$utteranceText$number", intentId, classifiedSentenceStatus))
@@ -1185,23 +1222,26 @@ class FaqAdminServiceTest : AbstractTest() {
                 instant,
                 utterances,
                 createdIntent,
-                intentName
+                intentName,
             )
         }
 
-        private fun createUtterance(text: String, intentId: Id<IntentDefinition>, status: ClassifiedSentenceStatus) =
-            ClassifiedSentence(
-                text = text,
-                language = Locale.FRENCH,
-                applicationId = applicationId,
-                creationDate = Instant.now(),
-                updateDate = Instant.now(),
-                status = status,
-                classification = Classification(intentId, emptyList()),
-                lastIntentProbability = 1.0,
-                lastEntityProbability = 1.0,
-                qualifier = userLogin
-            )
+        private fun createUtterance(
+            text: String,
+            intentId: Id<IntentDefinition>,
+            status: ClassifiedSentenceStatus,
+        ) = ClassifiedSentence(
+            text = text,
+            language = Locale.FRENCH,
+            applicationId = applicationId,
+            creationDate = Instant.now(),
+            updateDate = Instant.now(),
+            status = status,
+            classification = Classification(intentId, emptyList()),
+            lastIntentProbability = 1.0,
+            lastEntityProbability = 1.0,
+            qualifier = userLogin,
+        )
 
         private fun generateIntentDefinition(intentId: String): IntentDefinition {
             return IntentDefinition(
@@ -1210,11 +1250,14 @@ class FaqAdminServiceTest : AbstractTest() {
                 namespace = "namespace-$intentId",
                 applications = setOf("appId-$intentId".toId()),
                 entities = emptySet<EntityDefinition>(),
-                category = FAQ_CATEGORY
+                category = FAQ_CATEGORY,
             )
         }
 
-        private fun generateStory(intent: IntentDefinition, storyId: String): StoryDefinitionConfiguration {
+        private fun generateStory(
+            intent: IntentDefinition,
+            storyId: String,
+        ): StoryDefinitionConfiguration {
             return StoryDefinitionConfiguration(
                 _id = storyId.toId(),
                 storyId = storyId,
@@ -1223,10 +1266,8 @@ class FaqAdminServiceTest : AbstractTest() {
                 intent = IntentWithoutNamespace(intent.name),
                 currentType = AnswerConfigurationType.simple,
                 answers = emptyList(),
-                category = FAQ_CATEGORY
+                category = FAQ_CATEGORY,
             )
         }
-
     }
-
 }

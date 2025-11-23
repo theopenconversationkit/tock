@@ -21,21 +21,20 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 
 internal class RestConnectorBuilderTest {
-
     @Test
     fun `connector path should include no space char`() {
-
         val aNameIncludingSpaces = "un nom avec espace"
-        val connectorConfiguration = addRestConnector(
-            BotApplicationConfiguration(
-                applicationId = aNameIncludingSpaces,
-                botId = aNameIncludingSpaces,
-                name = aNameIncludingSpaces,
-                namespace = "aNamespace",
-                connectorType = RestConnectorProvider.connectorType,
-                nlpModel = "aModel"
+        val connectorConfiguration =
+            addRestConnector(
+                BotApplicationConfiguration(
+                    applicationId = aNameIncludingSpaces,
+                    botId = aNameIncludingSpaces,
+                    name = aNameIncludingSpaces,
+                    namespace = "aNamespace",
+                    connectorType = RestConnectorProvider.connectorType,
+                    nlpModel = "aModel",
+                ),
             )
-        )
 
         assertFalse { connectorConfiguration.path.contains(' ') }
     }

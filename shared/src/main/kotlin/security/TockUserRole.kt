@@ -22,35 +22,45 @@ import mu.KotlinLogging
  * The user roles for [TockUser].
  */
 enum class TockUserRole {
-
     /**
      * A nlp user is allowed to qualify and search sentences, but not to update applications or builds.
      */
+    @Suppress("ktlint")
     nlpUser,
 
     /**
      *  A faq nlp user is allowed to qualify and search sentences, and train the FAQ, but not to update applications or builds.
      */
     @Deprecated(message = "Use the 'nlpUser' role instead")
+    @Suppress("ktlint")
     faqNlpUser,
 
     /**
      *  A faq bot user is allowed to qualify and search sentences, and train the FAQ, but not to update applications or builds.
      */
     @Deprecated(message = "Use the 'botUser' role instead")
+    @Suppress("ktlint")
     faqBotUser,
+
     /**
      * A bot user is allowed to modify answer & i18n, and to consult dialogs and conversations.
      */
+    @Suppress("ktlint")
     botUser,
+
     /**
      * An admin is allowed to update applications and builds, and to export/intent sentences dump.
      */
+    @Suppress("ktlint")
     admin,
+
     /**
      * A technical admin has access to all encrypted sentence, and to export/intent application dumps.
      */
-    technicalAdmin;
+    @Suppress("ktlint")
+    technicalAdmin,
+
+    ;
 
     companion object {
         private val logger = KotlinLogging.logger {}

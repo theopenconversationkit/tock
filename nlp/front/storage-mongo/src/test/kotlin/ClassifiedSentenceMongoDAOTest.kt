@@ -27,7 +27,6 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
-import ai.tock.shared.Dice.newId
 import ai.tock.shared.defaultLocale
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
@@ -39,7 +38,6 @@ import kotlin.test.assertEquals
  *
  */
 class ClassifiedSentenceMongoDAOTest : AbstractTest() {
-
     private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = ClassifiedSentenceMongoDAO
     private val entityTypeDAO: EntityTypeDefinitionDAO get() = EntityTypeDefinitionMongoDAO
 
@@ -49,68 +47,72 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
     private val namespace = "test"
     private val entityTypeA = EntityTypeDefinition("$namespace:a")
     private val entityTypeB = EntityTypeDefinition("$namespace:a")
-    private val entityTypeAB = EntityTypeDefinition(
-        "$namespace:ab",
-        subEntities = listOf(
-            EntityDefinition(entityTypeA, "a"),
-            EntityDefinition(entityTypeB, "b")
-        )
-    )
-
-    private val entityTypeABC = EntityTypeDefinition(
-        "$namespace:abc",
-        subEntities = listOf(EntityDefinition(entityTypeAB, "ab"))
-    )
-
-    private val sentence = ClassifiedSentence(
-        "a b c a",
-        defaultLocale,
-        applicationId,
-        now,
-        now,
-        model,
-        Classification(
-            intentId,
-            listOf(
-                ClassifiedEntity(
-                    entityTypeABC.name,
-                    "abc",
-                    0,
-                    3,
-                    listOf(
-                        ClassifiedEntity(
-                            entityTypeAB.name,
-                            "ab",
-                            0,
-                            2,
-                            listOf(
-                                ClassifiedEntity(
-                                    entityTypeA.name,
-                                    "a",
-                                    0,
-                                    1
-                                ),
-                                ClassifiedEntity(
-                                    entityTypeB.name,
-                                    "b",
-                                    1,
-                                    2
-                                )
-                            )
-                        )
-                    )
+    private val entityTypeAB =
+        EntityTypeDefinition(
+            "$namespace:ab",
+            subEntities =
+                listOf(
+                    EntityDefinition(entityTypeA, "a"),
+                    EntityDefinition(entityTypeB, "b"),
                 ),
-                ClassifiedEntity(
-                    entityTypeA.name,
-                    "a",
-                    3,
-                    4
-                )
-            )
-        ),
-        1.0,
-        1.0
-    )
+        )
+
+    private val entityTypeABC =
+        EntityTypeDefinition(
+            "$namespace:abc",
+            subEntities = listOf(EntityDefinition(entityTypeAB, "ab")),
+        )
+
+    private val sentence =
+        ClassifiedSentence(
+            "a b c a",
+            defaultLocale,
+            applicationId,
+            now,
+            now,
+            model,
+            Classification(
+                intentId,
+                listOf(
+                    ClassifiedEntity(
+                        entityTypeABC.name,
+                        "abc",
+                        0,
+                        3,
+                        listOf(
+                            ClassifiedEntity(
+                                entityTypeAB.name,
+                                "ab",
+                                0,
+                                2,
+                                listOf(
+                                    ClassifiedEntity(
+                                        entityTypeA.name,
+                                        "a",
+                                        0,
+                                        1,
+                                    ),
+                                    ClassifiedEntity(
+                                        entityTypeB.name,
+                                        "b",
+                                        1,
+                                        2,
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                    ClassifiedEntity(
+                        entityTypeA.name,
+                        "a",
+                        3,
+                        4,
+                    ),
+                ),
+            ),
+            1.0,
+            1.0,
+        )
 
     private fun waitForSentence(count: Long = 0L): ClassifiedSentence {
         when {
@@ -122,8 +124,8 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
             SentencesQuery(
                 applicationId = applicationId,
                 language = sentence.language,
-                search = sentence.text
-            )
+                search = sentence.text,
+            ),
         ).sentences.firstOrNull() ?: waitForSentence(count + 1)
     }
 
@@ -137,7 +139,7 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
             namespace,
             listOf(sentence),
             EntityDefinition(entityTypeABC, "abc"),
-            EntityDefinition(entityTypeB, "b")
+            EntityDefinition(entityTypeB, "b"),
         )
 
         // check
@@ -164,32 +166,42 @@ class ClassifiedSentenceMongoDAOTest : AbstractTest() {
                 creationDate = now,
                 updateDate = s.updateDate,
                 status = model,
-                classification = Classification(
-                    intentId = intentId,
-                    entities = listOf(
-                        ClassifiedEntity(
-                            type = entityTypeABC.name, role = "abc", start = 0, end = 3,
-                            subEntities = listOf(
+                classification =
+                    Classification(
+                        intentId = intentId,
+                        entities =
+                            listOf(
                                 ClassifiedEntity(
-                                    type = entityTypeAB.name, role = "ab", start = 0, end = 2,
-                                    subEntities = listOf(
-                                        ClassifiedEntity(type = entityTypeB.name, role = "b", start = 1, end = 2)
-                                    )
-                                )
-                            )
-                        ),
-                        ClassifiedEntity(
-                            entityTypeA.name,
-                            "a",
-                            3,
-                            4
-                        )
-                    )
-                ),
+                                    type = entityTypeABC.name,
+                                    role = "abc",
+                                    start = 0,
+                                    end = 3,
+                                    subEntities =
+                                        listOf(
+                                            ClassifiedEntity(
+                                                type = entityTypeAB.name,
+                                                role = "ab",
+                                                start = 0,
+                                                end = 2,
+                                                subEntities =
+                                                    listOf(
+                                                        ClassifiedEntity(type = entityTypeB.name, role = "b", start = 1, end = 2),
+                                                    ),
+                                            ),
+                                        ),
+                                ),
+                                ClassifiedEntity(
+                                    entityTypeA.name,
+                                    "a",
+                                    3,
+                                    4,
+                                ),
+                            ),
+                    ),
                 lastIntentProbability = 1.0,
-                lastEntityProbability = 1.0
+                lastEntityProbability = 1.0,
             ),
-            s
+            s,
         )
     }
 }

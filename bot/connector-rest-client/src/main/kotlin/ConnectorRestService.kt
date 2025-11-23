@@ -28,10 +28,9 @@ import java.util.Locale
  *
  */
 interface ConnectorRestService {
-
     @POST("{locale}")
     fun talk(
         @Path("locale") locale: Locale,
-        @Body request: ClientMessageRequest
+        @Body request: ClientMessageRequest,
     ): Call<ClientMessageResponse>
 }

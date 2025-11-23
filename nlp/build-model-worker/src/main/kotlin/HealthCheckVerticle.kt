@@ -28,9 +28,8 @@ import io.vertx.ext.web.RoutingContext
  *
  */
 class HealthCheckVerticle(
-    private val buildVerticle: BuildModelWorkerVerticle
+    private val buildVerticle: BuildModelWorkerVerticle,
 ) : WebVerticle() {
-
     override fun configure() {
         // do nothing
     }
@@ -40,17 +39,18 @@ class HealthCheckVerticle(
             context.response().end(
                 mapper.writeValueAsString(
                     listOf(
-                        "current build" to !buildVerticle.canAnalyse.get()
-                    )
-                )
+                        "current build" to !buildVerticle.canAnalyse.get(),
+                    ),
+                ),
             )
         }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        listOf(
-            Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
-            Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) })
-        ),
-        selfCheck = { buildVerticle.canAnalyse.get() }
-    )
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        detailedHealthcheck(
+            listOf(
+                Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
+                Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) }),
+            ),
+            selfCheck = { buildVerticle.canAnalyse.get() },
+        )
 }

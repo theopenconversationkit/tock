@@ -23,10 +23,10 @@ data class OrchestrationHandlers(
     // TODO Why an eligibilityHandler by connector ? Can be generic?
     val eligibilityHandler: (
         controller: ConnectorController,
-        context: RoutingContext
+        context: RoutingContext,
     ) -> Unit,
     val proxyHandler: (
         controller: ConnectorController,
-        context: RoutingContext
-    ) -> Unit
+        context: RoutingContext,
+    ) -> Unit,
 )

@@ -27,8 +27,7 @@ data class MediaFile(
     val url: String,
     val name: String,
     val type: AttachmentType = UploadedFilesService.attachmentType(url),
-    val description: CharSequence?
+    val description: CharSequence?,
 ) {
-
     internal fun toAttachment(): Attachment = Attachment(url, type)
 }

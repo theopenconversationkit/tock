@@ -19,6 +19,5 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.media
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ResponseDeleteMedia(
-        @JsonProperty("success") val success: Boolean
+    @JsonProperty("success") val success: Boolean,
 )
-

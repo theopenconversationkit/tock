@@ -25,6 +25,5 @@ import com.fasterxml.jackson.annotation.JsonIgnore
  *
  */
 data class GARequestConnectorMessage(val request: GARequest) : ConnectorMessage {
-
     override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
 }

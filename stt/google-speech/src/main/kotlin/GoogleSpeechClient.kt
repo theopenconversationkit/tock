@@ -25,17 +25,16 @@ import com.google.protobuf.ByteString
 import mu.KotlinLogging
 import ws.schild.jave.Encoder
 import ws.schild.jave.MultimediaObject
+import ws.schild.jave.encode.AudioAttributes
+import ws.schild.jave.encode.EncodingAttributes
 import java.io.File
 import java.nio.file.Files
 import java.util.Locale
-import ws.schild.jave.encode.AudioAttributes
-import ws.schild.jave.encode.EncodingAttributes
 
 /**
  *
  */
 internal object GoogleSpeechClient : STT {
-
     private val logger = KotlinLogging.logger {}
 
     private fun parseUnknown(sourceBytes: ByteArray): ByteArray {
@@ -52,7 +51,7 @@ internal object GoogleSpeechClient : STT {
             encoder.encode(
                 MultimediaObject(sourceFile),
                 targetFile,
-                a
+                a,
             )
             Files.readAllBytes(targetFile.toPath())
         } finally {
@@ -61,21 +60,26 @@ internal object GoogleSpeechClient : STT {
         }
     }
 
-    override fun parse(bytes: ByteArray, language: Locale): String? =
+    override fun parse(
+        bytes: ByteArray,
+        language: Locale,
+    ): String? =
         try {
             SpeechClient.create().use { speechClient ->
 
-                val config = RecognitionConfig.newBuilder()
-                    .setEncoding(
-                        RecognitionConfig.AudioEncoding.FLAC
-                    )
-                    .setLanguageCode(language.toString())
-                    .build()
-                val audio = RecognitionAudio.newBuilder()
-                    .setContent(
-                        ByteString.copyFrom(parseUnknown(bytes))
-                    )
-                    .build()
+                val config =
+                    RecognitionConfig.newBuilder()
+                        .setEncoding(
+                            RecognitionConfig.AudioEncoding.FLAC,
+                        )
+                        .setLanguageCode(language.toString())
+                        .build()
+                val audio =
+                    RecognitionAudio.newBuilder()
+                        .setContent(
+                            ByteString.copyFrom(parseUnknown(bytes)),
+                        )
+                        .build()
                 val response = speechClient.recognize(config, audio)
                 logger.info { response }
                 response.getResults(0).getAlternatives(0).transcript

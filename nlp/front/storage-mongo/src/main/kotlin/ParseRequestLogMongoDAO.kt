@@ -20,14 +20,14 @@ import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.ParseRequestExportLog
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCount
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
-import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCount
-import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
-import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.nlp.front.shared.parser.ParseResult
 import ai.tock.nlp.front.storage.mongo.DayAndYear_.Companion.DayOfYear
@@ -107,7 +107,6 @@ import java.util.concurrent.TimeUnit.DAYS
  *
  */
 internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
-
     private val logger = KotlinLogging.logger {}
     private val logObfuscationService = LogObfuscationService()
 
@@ -120,19 +119,18 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val result: ParseResult? = null,
         val durationInMS: Long = 0,
         val error: Boolean = false,
-        val date: Instant = Instant.now()
+        val date: Instant = Instant.now(),
     ) {
-
         constructor(request: ParseRequestLog) :
-                this(
-                    textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
-                    request.applicationId,
-                    request.query,
-                    request.result,
-                    request.durationInMS,
-                    request.error,
-                    request.date
-                )
+            this(
+                textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
+                request.applicationId,
+                request.query,
+                request.result,
+                request.durationInMS,
+                request.error,
+                request.date,
+            )
 
         fun toRequest(): ParseRequestLog =
             ParseRequestLog(
@@ -141,7 +139,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 result,
                 durationInMS,
                 error,
-                date
+                date,
             )
     }
 
@@ -158,19 +156,18 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val count: Long = 1,
         val validated: Boolean = false,
     ) {
-
         constructor(request: ParseRequestLog) :
-                this(
-                    textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
-                    request.applicationId,
-                    request.query.context.language,
-                    request.result?.intentNamespace?.let { namespace ->
-                        request.result?.intent?.withNamespace(namespace)
-                    },
-                    request.result?.intentProbability,
-                    request.result?.entitiesProbability,
-                    request.date
-                )
+            this(
+                textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
+                request.applicationId,
+                request.query.context.language,
+                request.result?.intentNamespace?.let { namespace ->
+                    request.result?.intent?.withNamespace(namespace)
+                },
+                request.result?.intentProbability,
+                request.result?.entitiesProbability,
+                request.date,
+            )
 
         fun toRequestLogStat(): ParseRequestLogCount =
             ParseRequestLogCount(
@@ -180,7 +177,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 entitiesProbability = entitiesProbability,
                 lastUsage = lastUsage,
                 count = count,
-                validated = validated
+                validated = validated,
             )
     }
 
@@ -193,7 +190,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val intent2: String,
         val averageDiff: Double,
         val count: Long = 1,
-        val _id: Id<ParseRequestLogIntentStatCol> = newId()
+        val _id: Id<ParseRequestLogIntentStatCol> = newId(),
     )
 
     @Data(internal = true)
@@ -208,17 +205,17 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val count: Int,
         val duration: Double,
         val intentProbability: Double,
-        val entitiesProbability: Double
+        val entitiesProbability: Double,
     ) {
-
-        fun toStat(): ParseRequestLogStat = ParseRequestLogStat(
-            LocalDate.ofYearDay(_id.year, _id.dayOfYear),
-            error,
-            count,
-            duration,
-            intentProbability,
-            entitiesProbability
-        )
+        fun toStat(): ParseRequestLogStat =
+            ParseRequestLogStat(
+                LocalDate.ofYearDay(_id.year, _id.dayOfYear),
+                error,
+                count,
+                duration,
+                intentProbability,
+                entitiesProbability,
+            )
     }
 
     internal val col: MongoCollection<ParseRequestLogCol> by lazy {
@@ -228,7 +225,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             c.ensureIndex(Query.context.language, ApplicationId, Text)
             c.ensureIndex(
                 Date,
-                indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), DAYS)
+                indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), DAYS),
             )
         } catch (e: Exception) {
             logger.error(e)
@@ -243,8 +240,9 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             c.ensureIndex(Count, Language, ApplicationId, Text, Intent)
             c.ensureIndex(
                 LastUsage,
-                indexOptions = IndexOptions()
-                    .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 365), DAYS)
+                indexOptions =
+                    IndexOptions()
+                        .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 365), DAYS),
             )
         } catch (e: Exception) {
             logger.error(e)
@@ -263,23 +261,24 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         col.insertOne(ParseRequestLogCol(savedLog))
         if (log.query.context.increaseQueryCounter) {
             val stat = ParseRequestLogStatCol(log)
-            val updatedStat = statsCol.findOneAndUpdate(
-                and(
-                    Language eq stat.language,
-                    ApplicationId eq stat.applicationId,
-                    Text eq stat.text
-                ),
-                combine(
-                    listOfNotNull(
-                        stat.intentProbability?.let { setValue(IntentProbability, it) },
-                        stat.entitiesProbability?.let { setValue(EntitiesProbability, it) },
-                        setValue(LastUsage, stat.lastUsage),
-                        stat.intent?.let { setValue(Intent, it) },
-                        inc(Count, 1)
-                    )
-                ),
-                FindOneAndUpdateOptions().upsert(true).returnDocument(AFTER)
-            )
+            val updatedStat =
+                statsCol.findOneAndUpdate(
+                    and(
+                        Language eq stat.language,
+                        ApplicationId eq stat.applicationId,
+                        Text eq stat.text,
+                    ),
+                    combine(
+                        listOfNotNull(
+                            stat.intentProbability?.let { setValue(IntentProbability, it) },
+                            stat.entitiesProbability?.let { setValue(EntitiesProbability, it) },
+                            setValue(LastUsage, stat.lastUsage),
+                            stat.intent?.let { setValue(Intent, it) },
+                            inc(Count, 1),
+                        ),
+                    ),
+                    FindOneAndUpdateOptions().upsert(true).returnDocument(AFTER),
+                )
             if (updatedStat != null) {
                 ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
             }
@@ -295,27 +294,28 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     intent2 = tmp
                 }
                 val diff = log.result!!.intentProbability - nextIntent!!.value
-                val s = intentStatsCol.findOne(
-                    and(
-                        Language eq stat.language,
-                        ApplicationId eq stat.applicationId,
-                        Intent1 eq intent1,
-                        Intent2 eq intent2
-                    )
-                )?.run {
-                    copy(
-                        count = count + 1,
-                        averageDiff = ((averageDiff * count) + diff) / (count + 1)
-                    )
-                }
-                    ?: ParseRequestLogIntentStatCol(
-                        log.applicationId,
-                        log.query.context.language,
-                        intent1,
-                        intent2,
-                        diff,
-                        1
-                    )
+                val s =
+                    intentStatsCol.findOne(
+                        and(
+                            Language eq stat.language,
+                            ApplicationId eq stat.applicationId,
+                            Intent1 eq intent1,
+                            Intent2 eq intent2,
+                        ),
+                    )?.run {
+                        copy(
+                            count = count + 1,
+                            averageDiff = ((averageDiff * count) + diff) / (count + 1),
+                        )
+                    }
+                        ?: ParseRequestLogIntentStatCol(
+                            log.applicationId,
+                            log.query.context.language,
+                            intent1,
+                            intent2,
+                            diff,
+                            1,
+                        )
                 intentStatsCol.save(s)
             }
         }
@@ -336,14 +336,15 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (searchMark == null) null else Date lte searchMark!!.date,
                     if (sinceDate == null) null else Date gte sinceDate,
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
-                    if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
+                    if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId,
                 )
             val count = col.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
-                val list = col.find(baseFilter)
-                    .descendingSort(Date)
-                    .skip(start.toInt())
-                    .limit(size)
+                val list =
+                    col.find(baseFilter)
+                        .descendingSort(Date)
+                        .skip(start.toInt())
+                        .limit(size)
 
                 ParseRequestLogQueryResult(count, list.map { it.toRequest() }.toList())
             } else {
@@ -363,10 +364,11 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 )
             val count = statsCol.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
-                val list = statsCol.find(baseFilter)
-                    .descendingSort(Count)
-                    .skip(start.toInt())
-                    .limit(size)
+                val list =
+                    statsCol.find(baseFilter)
+                        .descendingSort(Count)
+                        .skip(start.toInt())
+                        .limit(size)
 
                 ParseRequestLogCountQueryResult(count, list.map { it.toRequestLogStat() }.toList())
             } else {
@@ -375,7 +377,10 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         }
     }
 
-    override fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog> =
+    override fun export(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+    ): List<ParseRequestExportLog> =
         col.withDocumentClass<Document>()
             .find(and(ApplicationId eq applicationId, Query.context.language eq language, Query.context.test eq false))
             .descendingSort(Date)
@@ -386,7 +391,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     ((it["query"] as Document)["queries"] as List<String>).first(),
                     (it["result"] as? Document)?.getString("intent")
                         ?.let { intent -> (it["result"] as Document).getString("intentNamespace") + ":" + intent },
-                    (it["date"] as Date).toInstant()
+                    (it["date"] as Date).toInstant(),
                 )
             }
             .toList()
@@ -400,9 +405,9 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                             ApplicationId eq applicationId,
                             if (language == null) null else Query.context.language eq language,
                             Query.context.test eq false,
-                            if (intent == null) null else Result.intent eq intent
-                        )
-                    )
+                            if (intent == null) null else Result.intent eq intent,
+                        ),
+                    ),
                 ),
                 project(
                     Error from cond(Error, 1, 0),
@@ -410,25 +415,25 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     Year from year(Date),
                     Duration from DurationInMS,
                     IntentProbability from Result.intentProbability,
-                    EntitiesProbability from Result.entitiesProbability
+                    EntitiesProbability from Result.entitiesProbability,
                 ),
                 group(
                     document(
                         DayOfYear from DayOfYear,
-                        Year from Year
+                        Year from Year,
                     ),
                     Error sum Error,
                     Count sum 1,
                     Duration avg Duration,
                     IntentProbability avg IntentProbability,
-                    EntitiesProbability avg EntitiesProbability
+                    EntitiesProbability avg EntitiesProbability,
                 ),
                 sort(
                     ascending(
                         _id.year,
-                        _id.dayOfYear
-                    )
-                )
+                        _id.dayOfYear,
+                    ),
+                ),
             )
                 .toList().map { it.toStat() }
         }
@@ -439,8 +444,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             .find(
                 and(
                     ApplicationId eq query.applicationId,
-                    Count gte query.minOccurrences
-                )
+                    Count gte query.minOccurrences,
+                ),
             )
             .descendingSort(Count)
             .map {
@@ -448,7 +453,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     it.intent1,
                     it.intent2,
                     it.count,
-                    it.averageDiff
+                    it.averageDiff,
                 )
             }.toList()
     }

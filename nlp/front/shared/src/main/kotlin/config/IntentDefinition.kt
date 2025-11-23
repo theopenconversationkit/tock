@@ -21,7 +21,6 @@ import ai.tock.nlp.core.Entity
 import ai.tock.shared.withNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.util.LinkedHashSet
 import java.util.Locale
 
 /**
@@ -71,16 +70,18 @@ data class IntentDefinition(
     /**
      * The unique [Id] of the intent.
      */
-    val _id: Id<IntentDefinition> = newId()
+    val _id: Id<IntentDefinition> = newId(),
 ) {
-
     /**
      * Qualified name (ie "namespace:name") of the intent.
      */
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)
 
-    fun findEntity(type: String, role: String): EntityDefinition? {
+    fun findEntity(
+        type: String,
+        role: String,
+    ): EntityDefinition? {
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }
     }
 

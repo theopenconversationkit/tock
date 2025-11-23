@@ -16,6 +16,8 @@
 
 package ai.tock.bot.connector.web.send
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ButtonStyle {
-    primary, secondary
+    primary,
+    secondary,
 }

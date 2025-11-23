@@ -16,6 +16,10 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ReplyType {
-    await, message, transfer, close
+    await,
+    message,
+    transfer,
+    close,
 }

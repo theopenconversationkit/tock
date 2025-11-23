@@ -23,15 +23,16 @@ import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
 
-class VectorStoreProviderServiceImpl: VectorStoreProviderService {
+class VectorStoreProviderServiceImpl : VectorStoreProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val vectorStoreProviderApi = retrofit.create(VectorStoreProviderApi::class.java)
 
     override fun checkSetting(query: VectorStoreProviderSettingStatusRequest): ProviderSettingStatusResponse? {
-        val response = vectorStoreProviderApi.checkVectorStoreSetting(
-            query,
-            query.vectorStoreSetting?.provider ?: VectorStoreProvider.Default
-        ).execute()
+        val response =
+            vectorStoreProviderApi.checkVectorStoreSetting(
+                query,
+                query.vectorStoreSetting?.provider ?: VectorStoreProvider.Default,
+            ).execute()
         return response.body()
     }
 }

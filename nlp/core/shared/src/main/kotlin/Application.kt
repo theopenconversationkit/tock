@@ -28,13 +28,11 @@ data class Application(
     val supportedLocales: Set<Locale>,
     val normalizeText: Boolean = false,
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     private val intentMap: Map<String, Intent> = intents.associateBy { it.name }
 
-    fun getIntent(intentName: String): Intent? =
-        intentMap[intentName] ?: (null.also { logger.warn { "Intent $intentName does not exist in app $name" } })
+    fun getIntent(intentName: String): Intent? = intentMap[intentName] ?: (null.also { logger.warn { "Intent $intentName does not exist in app $name" } })
 }

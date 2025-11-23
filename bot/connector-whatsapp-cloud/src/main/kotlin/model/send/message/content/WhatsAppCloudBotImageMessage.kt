@@ -24,22 +24,25 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSend
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
-data class WhatsAppCloudBotImageMessage (
-        val image: WhatsAppCloudBotImage,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val userId: String? = null,
-        val uploadToWhatsapp: Boolean = true,
+data class WhatsAppCloudBotImageMessage(
+    val image: WhatsAppCloudBotImage,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val userId: String? = null,
+    val uploadToWhatsapp: Boolean = true,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.image, userId) {
-    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotImageMessage(
-                    image.prepare(apiService),
-                    recipientType,
-                    recipientId
-            )
+    override fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String,
+    ): WhatsAppCloudSendBotMessage =
+        WhatsAppCloudSendBotImageMessage(
+            image.prepare(apiService),
+            recipientType,
+            recipientId,
+        )
 
     override fun toGenericMessage(): GenericMessage =
-            GenericMessage(
-                    texts = mapOf(GenericMessage.TEXT_PARAM to "image"),
-                    attachments = listOf(image.toGenericAttachment())
-            )
+        GenericMessage(
+            texts = mapOf(GenericMessage.TEXT_PARAM to "image"),
+            attachments = listOf(image.toGenericAttachment()),
+        )
 }

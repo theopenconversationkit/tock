@@ -25,8 +25,10 @@ import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
  */
 data class BuiltInAnswerConfigurationDump(val storyHandlerClassName: String? = null) :
     AnswerConfigurationDump(AnswerConfigurationType.builtin) {
-
     constructor(conf: BuiltInAnswerConfiguration) : this(conf.storyHandlerClassName)
 
-    override fun toAnswer(currentType: AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController): AnswerConfiguration = BuiltInAnswerConfiguration(storyHandlerClassName)
+    override fun toAnswer(
+        currentType: AnswerConfigurationType,
+        controller: StoryDefinitionConfigurationDumpController,
+    ): AnswerConfiguration = BuiltInAnswerConfiguration(storyHandlerClassName)
 }

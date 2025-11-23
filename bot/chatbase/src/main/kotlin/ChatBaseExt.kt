@@ -20,7 +20,10 @@ import ai.tock.analytics.chatbase.model.Platform
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 
-fun BotRepository.enableChatbase(apiKey: String, version: String) {
+fun BotRepository.enableChatbase(
+    apiKey: String,
+    version: String,
+) {
     val client = ChatBaseClient()
     registerStoryHandlerListener(ChatBaseStoryHandlerListener(apiKey, client, version))
     registerBotAnswerInterceptor(ChatBaseBotAnswerinterceptor(apiKey, client, version))

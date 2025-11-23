@@ -34,5 +34,5 @@ data class ModelBuildTrigger(
     /**
      * Builds only if model does not exist
      */
-    val onlyIfModelNotExists: Boolean = false
+    val onlyIfModelNotExists: Boolean = false,
 )

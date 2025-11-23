@@ -24,9 +24,7 @@ import ai.tock.bot.engine.message.GenericMessage
  * A [MediaMessage] action.
  */
 data class MediaAction(val title: CharSequence, var url: String? = null) : MediaMessage {
-
-    override fun toGenericMessage(): GenericMessage? =
-        GenericMessage(choices = listOf(toChoice()))
+    override fun toGenericMessage(): GenericMessage? = GenericMessage(choices = listOf(toChoice()))
 
     internal fun toChoice(): Choice =
         if (url == null) {
@@ -36,8 +34,8 @@ data class MediaAction(val title: CharSequence, var url: String? = null) : Media
                 SendChoice.EXIT_INTENT,
                 mapOf(
                     SendChoice.URL_PARAMETER to url!!,
-                    SendChoice.TITLE_PARAMETER to title.toString()
-                )
+                    SendChoice.TITLE_PARAMETER to title.toString(),
+                ),
             )
         }
 }

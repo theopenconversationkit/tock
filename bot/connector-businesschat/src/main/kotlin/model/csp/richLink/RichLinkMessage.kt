@@ -22,22 +22,22 @@ import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
 class RichLinkMessage(
     sourceId: String,
     destinationId: String,
-    val richLinkData: RichLinkData?
+    val richLinkData: RichLinkData?,
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.richLink)
 
 data class RichLinkData(
     val url: String,
     val title: String,
-    val assets: Assets
+    val assets: Assets,
 )
 
 data class Assets(
-    val image: Image
+    val image: Image,
 )
 
 data class Image(
     val data: ByteArray,
-    val mimeType: String
+    val mimeType: String,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

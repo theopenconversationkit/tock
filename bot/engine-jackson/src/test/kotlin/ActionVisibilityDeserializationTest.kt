@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ActionVisibilityDeserializationTest {
-
     @Test
     fun `GIVEN upper case visibility THEN deserialization is ok`() {
         val request = """{"lastAnswer":false,"priority":"normal","visibility":"PUBLIC","replyMessage":"UNKNOWN","quoteMessage":"UNKNOWN"}"""

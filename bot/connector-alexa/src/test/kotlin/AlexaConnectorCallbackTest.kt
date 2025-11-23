@@ -31,7 +31,6 @@ import kotlin.test.assertEquals
  *
  */
 class AlexaConnectorCallbackTest {
-
     @Test
     fun `sendResponse with no test returns unknown response`() {
         val botDefinition: BotDefinition = mockk()
@@ -42,13 +41,14 @@ class AlexaConnectorCallbackTest {
         every { botDefinition.i18nTranslator(any(), any(), any()) } returns i18nTranslator
         every { botDefinition.defaultUnknownAnswer } returns unknownAnswer
         every { i18nTranslator.translate(any()) } returns unknownAnswer.raw
-        val callback = AlexaConnectorCallback(
-            "id",
-            controller,
-            AlexaTockMapper("id"),
-            mockk(),
-            mutableListOf()
-        )
+        val callback =
+            AlexaConnectorCallback(
+                "id",
+                controller,
+                AlexaTockMapper("id"),
+                mockk(),
+                mutableListOf(),
+            )
 
         callback.sendResponse()
 

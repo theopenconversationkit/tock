@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppCloudBotRecipientType {
-    individual
+    individual,
 }

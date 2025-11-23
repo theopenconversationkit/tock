@@ -22,9 +22,7 @@ import kotlin.test.assertNotNull
  *
  */
 class TestJacksonDependency {
-
     class TestJacksonDependency {
-
         @Test
         fun testClassPresent() {
             // check this compile

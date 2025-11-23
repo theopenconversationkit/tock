@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 enum class Type {
     @JsonProperty("agent")
     AGENT,
+
     @JsonProperty("user")
-    USER
+    USER,
 }

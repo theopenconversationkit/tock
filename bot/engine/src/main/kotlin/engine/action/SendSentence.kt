@@ -48,26 +48,26 @@ open class SendSentence(
     /**
      * Used by analysed nlp (ie Alexa).
      */
-    var precomputedNlp: NlpResult? = null
+    var precomputedNlp: NlpResult? = null,
 ) :
     Action(playerId, recipientId, connectorId, id, date, state, metadata) {
-
     @Deprecated(
-        "Use constructor with connectorId", ReplaceWith(
+        "Use constructor with connectorId",
+        ReplaceWith(
             "SendSentence(" +
-                    "playerId, " +
-                    "connectorId = applicationId, " +
-                    "recipientId, " +
-                    "text, " +
-                    "messages, " +
-                    "id, " +
-                    "date, " +
-                    "state, " +
-                    "metadata, " +
-                    "nlpStats, " +
-                    "annotation, " +
-                    "precomputedNlp)"
-        )
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "text, " +
+                "messages, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata, " +
+                "nlpStats, " +
+                "annotation, " +
+                "precomputedNlp)",
+        ),
     )
     constructor(
         playerId: PlayerId,
@@ -95,7 +95,7 @@ open class SendSentence(
         metadata,
         nlpStats,
         annotation,
-        precomputedNlp
+        precomputedNlp,
     )
 
     @Transient
@@ -109,8 +109,7 @@ open class SendSentence(
         return messages.any { it.connectorType == type }
     }
 
-    fun hasMessage(types: List<ConnectorType>): Boolean =
-        messages.any { types.contains(it.connectorType) }
+    fun hasMessage(types: List<ConnectorType>): Boolean = messages.any { types.contains(it.connectorType) }
 
     override fun toMessage(): Message {
         return Sentence(stringText, messages, state.userInterface) { nlpStats }
@@ -148,6 +147,6 @@ open class SendSentence(
             metadata,
             nlpStats,
             annotation,
-            precomputedNlp
+            precomputedNlp,
         )
 }

@@ -16,15 +16,14 @@
 
 package ai.tock.bot.admin.model.indicator
 
-
 data class IndicatorResponse(
     val id: String,
     val name: String,
     val label: String,
-    val description: String?= null,
+    val description: String? = null,
     val applicationName: String,
     val dimensions: Set<String> = mutableSetOf(),
-    val values: Set<IndicatorValueResponse>
+    val values: Set<IndicatorValueResponse>,
 )
 
 data class IndicatorValueResponse(val name: String, val label: String)

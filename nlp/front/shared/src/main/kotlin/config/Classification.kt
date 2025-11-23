@@ -30,12 +30,11 @@ data class Classification(
     /**
      * The entities.
      */
-    val entities: List<ClassifiedEntity>
+    val entities: List<ClassifiedEntity>,
 ) {
-
     constructor(query: ParseResult, intentId: Id<IntentDefinition>) : this(
         intentId,
-        query.entities.map { ClassifiedEntity(it) }
+        query.entities.map { ClassifiedEntity(it) },
     )
 
     /**

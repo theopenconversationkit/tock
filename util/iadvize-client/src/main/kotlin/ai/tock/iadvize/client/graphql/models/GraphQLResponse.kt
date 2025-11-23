@@ -21,12 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * Representation of a graphql response
  */
-data class GraphQLResponse<T: Any> (
+data class GraphQLResponse<T : Any>(
     @JsonProperty("data") val data: T,
-    @JsonProperty("errors") val errors: List<GraphQLError>? = null
+    @JsonProperty("errors") val errors: List<GraphQLError>? = null,
 ) {
-
     fun hasErrors(): Boolean = !errors.isNullOrEmpty()
+
     fun isSuccessful(): Boolean = !hasErrors()
 }
 
@@ -36,7 +36,7 @@ data class GraphQLError(
     @JsonProperty("path")
     val path: List<String>,
     @JsonProperty("locations")
-    val locations: List<GraphQLErrorLocation>
+    val locations: List<GraphQLErrorLocation>,
 ) {
     override fun toString(): String {
         return "GraphQLError{ message='$message', path=$path, locations=$locations }"
@@ -47,7 +47,7 @@ data class GraphQLErrorLocation(
     @JsonProperty("line")
     val line: Number,
     @JsonProperty("column")
-    val column: Number
+    val column: Number,
 ) {
     override fun toString(): String {
         return "GraphQLErrorLocation{ line=$line, column=$column }"

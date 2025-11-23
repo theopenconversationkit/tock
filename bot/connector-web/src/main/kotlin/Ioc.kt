@@ -23,9 +23,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 
-val webConnectorModule = Kodein.Module {
-    bind<ChannelDAO>() with singleton { ChannelMongoDAO }
-}
+val webConnectorModule =
+    Kodein.Module {
+        bind<ChannelDAO>() with singleton { ChannelMongoDAO }
+    }
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService
 class IOCModulesService : BotAdditionalModulesService {

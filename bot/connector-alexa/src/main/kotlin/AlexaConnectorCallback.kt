@@ -54,9 +54,8 @@ data class AlexaConnectorCallback internal constructor(
     private val controller: ConnectorController,
     private val alexaTockMapper: AlexaTockMapper,
     private val context: RoutingContext,
-    private val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
+    private val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList(),
 ) : ConnectorCallbackBase(applicationId, alexaConnectorType), SpeechletV2 {
-
     @Volatile
     private var answered: Boolean = false
 
@@ -80,7 +79,10 @@ data class AlexaConnectorCallback internal constructor(
 
     internal data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
-    internal fun addAction(event: Event, delayInMs: Long) {
+    internal fun addAction(
+        event: Event,
+        delayInMs: Long,
+    ) {
         if (event is Action) {
             actions.add(ActionWithDelay(event, delayInMs))
         } else {
@@ -89,13 +91,15 @@ data class AlexaConnectorCallback internal constructor(
     }
 
     private fun buildResponse(): SpeechletResponse {
-        val answer = actions.mapNotNull { it.action as? SendSentence }
-            .mapNotNull { it.stringText }
-            .takeUnless { it.isEmpty() }
-            ?.reduce(::concat)
-        val end = actions.map { it.action }.filterIsInstance<SendSentence>().any {
-            (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
-        }
+        val answer =
+            actions.mapNotNull { it.action as? SendSentence }
+                .mapNotNull { it.stringText }
+                .takeUnless { it.isEmpty() }
+                ?.reduce(::concat)
+        val end =
+            actions.map { it.action }.filterIsInstance<SendSentence>().any {
+                (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
+            }
         val card =
             actions.map { it.action }
                 .filterIsInstance<SendSentence>()
@@ -103,27 +107,35 @@ data class AlexaConnectorCallback internal constructor(
                 .firstOrNull { it.card != null }
                 ?.card
         val speech =
-            if (answer == null) PlainTextOutputSpeech().apply {
-
-                text = controller.botDefinition.i18nTranslator(
-                    locale,
-                    alexaConnectorType,
-                    UserInterfaceType.voiceAssistant
-                ).translate(controller.botDefinition.defaultUnknownAnswer).toString()
+            if (answer == null) {
+                PlainTextOutputSpeech().apply {
+                    text =
+                        controller.botDefinition.i18nTranslator(
+                            locale,
+                            alexaConnectorType,
+                            UserInterfaceType.voiceAssistant,
+                        ).translate(controller.botDefinition.defaultUnknownAnswer).toString()
+                }
+            } else if (answer.isSSML()) {
+                SsmlOutputSpeech().apply { ssml = answer }
+            } else {
+                PlainTextOutputSpeech().apply { text = answer }
             }
-            else if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
-            else PlainTextOutputSpeech().apply { text = answer }
 
-        val reprompt = actions.map { it.action }
-            .filterIsInstance<SendSentence>()
-            .mapNotNull { it.message(alexaConnectorType) as? AlexaMessage? }
-            .firstOrNull { it.reprompt != null }
-            ?.reprompt
-            ?.let {
-                if (it.isSSML()) SsmlOutputSpeech().apply { ssml = it }
-                else PlainTextOutputSpeech().apply { text = it }
-            }
-            ?: speech
+        val reprompt =
+            actions.map { it.action }
+                .filterIsInstance<SendSentence>()
+                .mapNotNull { it.message(alexaConnectorType) as? AlexaMessage? }
+                .firstOrNull { it.reprompt != null }
+                ?.reprompt
+                ?.let {
+                    if (it.isSSML()) {
+                        SsmlOutputSpeech().apply { ssml = it }
+                    } else {
+                        PlainTextOutputSpeech().apply { text = it }
+                    }
+                }
+                ?: speech
         return if (end) {
             if (card != null) {
                 SpeechletResponse.newTellResponse(speech, card)
@@ -135,12 +147,12 @@ data class AlexaConnectorCallback internal constructor(
                 SpeechletResponse.newAskResponse(
                     speech,
                     Reprompt().apply { outputSpeech = reprompt },
-                    card
+                    card,
                 )
             } else {
                 SpeechletResponse.newAskResponse(
                     speech,
-                    Reprompt().apply { outputSpeech = reprompt }
+                    Reprompt().apply { outputSpeech = reprompt },
                 )
             }
         }
@@ -161,17 +173,23 @@ data class AlexaConnectorCallback internal constructor(
         }
     }
 
-    override fun exceptionThrown(event: Event, throwable: Throwable) {
+    override fun exceptionThrown(
+        event: Event,
+        throwable: Throwable,
+    ) {
         super.exceptionThrown(event, throwable)
         sendTechnicalError(context, throwable)
     }
 
-    private fun logRequest(method: String, req: SpeechletRequestEnvelope<*>) {
+    private fun logRequest(
+        method: String,
+        req: SpeechletRequestEnvelope<*>,
+    ) {
         _alexaRequest = req
         try {
             logger.debug {
                 "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
-                    req.request
+                    req.request,
                 )}"
             }
         } catch (e: Exception) {
@@ -193,7 +211,7 @@ data class AlexaConnectorCallback internal constructor(
         logRequest("onSessionStarted", requestEnvelope)
         controller.handle(
             alexaTockMapper.toStartSessionEvent(requestEnvelope),
-            ConnectorData(this)
+            ConnectorData(this),
         )
     }
 
@@ -201,7 +219,7 @@ data class AlexaConnectorCallback internal constructor(
         logRequest("onSessionEnded", requestEnvelope)
         controller.handle(
             alexaTockMapper.toEndSessionEvent(requestEnvelope),
-            ConnectorData(this)
+            ConnectorData(this),
         )
     }
 
@@ -210,11 +228,12 @@ data class AlexaConnectorCallback internal constructor(
 
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
-            val event = alexaTockMapper.toEvent(
-                requestEnvelope.session.user.userId,
-                requestEnvelope.request,
-                controller.botDefinition
-            )
+            val event =
+                alexaTockMapper.toEvent(
+                    requestEnvelope.session.user.userId,
+                    requestEnvelope.request,
+                    controller.botDefinition,
+                )
             locale = Locale(requestEnvelope.request.locale.language)
 
             controller.handle(event, ConnectorData(this))
@@ -245,9 +264,9 @@ data class AlexaConnectorCallback internal constructor(
                         .withLocale(requestEnvelope.request.locale)
                         .withIntent(Intent.builder().withName(helloStory).build())
                         .withDialogState(IntentRequest.DialogState.STARTED)
-                        .build()
+                        .build(),
                 )
-                .build()
+                .build(),
         )
     }
 }

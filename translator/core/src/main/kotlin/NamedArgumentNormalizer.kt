@@ -19,7 +19,6 @@ package ai.tock.translator
 import mu.KotlinLogging
 
 internal object NamedArgumentNormalizer {
-
     private val logger = KotlinLogging.logger {}
     private val enrichedArgPattern = "\\{:([a-zA-Z_]+)\\}".toRegex()
     private val vanillaArgPattern = "\\{[0-9]+\\}".toRegex()
@@ -28,13 +27,17 @@ internal object NamedArgumentNormalizer {
      * @param label e.g: "{:arg_name} {0} {:customName}"
      * @return messageFormat label and compatible arguments
      */
-    fun normalize(label: String, args: List<Any?> = emptyList()): NamedArgResult {
+    fun normalize(
+        label: String,
+        args: List<Any?> = emptyList(),
+    ): NamedArgResult {
         try {
-            val argNames = enrichedArgPattern.findAll(label)
-                .sortedBy { it.range.first }
-                .map { it.groupValues }
-                .map { it.last() }
-                .toList()
+            val argNames =
+                enrichedArgPattern.findAll(label)
+                    .sortedBy { it.range.first }
+                    .map { it.groupValues }
+                    .map { it.last() }
+                    .toList()
 
             if (argNames.isEmpty()) {
                 return NamedArgResult(label, args)
@@ -50,10 +53,10 @@ internal object NamedArgumentNormalizer {
                 argNames.foldIndexed(label) { index, p, arg ->
                     p.replace(
                         "{:$arg}",
-                        "{${index + newArgsOffset}}"
+                        "{${index + newArgsOffset}}",
                     )
                 },
-                vanillaArgs + argNames.map { argsMap[it] ?: ":$it" }
+                vanillaArgs + argNames.map { argsMap[it] ?: ":$it" },
             )
         } catch (e: Exception) {
             logger.error("error with $label and $args", e)

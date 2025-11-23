@@ -31,7 +31,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit.SECONDS
 
 internal class WSHolder {
-
     companion object {
         private val timeoutInSeconds: Long = longProperty("tock_api_timout_in_s", 10)
         private val logger = KotlinLogging.logger {}

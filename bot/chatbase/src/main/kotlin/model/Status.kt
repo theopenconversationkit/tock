@@ -21,9 +21,12 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = StatusDeserializer::class)
-internal enum class Status(@JsonValue val code: Int) {
+internal enum class Status(
+    @JsonValue val code: Int,
+) {
     OK(200),
-    KO(400);
+    KO(400),
+    ;
 
     companion object {
         fun findByCode(code: Int) = values().find { it.code == code } ?: KO

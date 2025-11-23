@@ -35,13 +35,14 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): IncomingEvent? {
-
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): IncomingEvent? {
         data class EventFields(
             var forUserId: String? = null,
             var users: Map<String, User>? = null,
@@ -49,22 +50,23 @@ internal class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             var directMessages: List<DirectMessage>? = null,
             var directMessagesIndicateTyping: List<DirectMessageIndicateTyping>? = null,
             var tweets: List<Tweet>? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses) = jp.read<EventFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    "for_user_id" -> forUserId = jp.readValue()
-                    DirectMessageIncomingEvent::users.name -> users = jp.readValueAs(object : TypeReference<Map<String, User>>() {})
-                    DirectMessageIncomingEvent::apps.name -> apps = jp.readValueAs(object : TypeReference<Map<String, Application>>() {})
-                    "direct_message_events" -> directMessages = jp.readListValues()
-                    "direct_message_indicate_typing_events" -> directMessagesIndicateTyping = jp.readListValues()
-                    "tweet_create_events" -> tweets = jp.readValueAs(object : TypeReference<List<Tweet>>() {})
-                    else -> other = jp.readUnknownValue()
+        val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses) =
+            jp.read<EventFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        "for_user_id" -> forUserId = jp.readValue()
+                        DirectMessageIncomingEvent::users.name -> users = jp.readValueAs(object : TypeReference<Map<String, User>>() {})
+                        DirectMessageIncomingEvent::apps.name -> apps = jp.readValueAs(object : TypeReference<Map<String, Application>>() {})
+                        "direct_message_events" -> directMessages = jp.readListValues()
+                        "direct_message_indicate_typing_events" -> directMessagesIndicateTyping = jp.readListValues()
+                        "tweet_create_events" -> tweets = jp.readValueAs(object : TypeReference<List<Tweet>>() {})
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return when {
             directMessages != null -> DirectMessageIncomingEvent(forUserId!!, users!!, apps, directMessages)

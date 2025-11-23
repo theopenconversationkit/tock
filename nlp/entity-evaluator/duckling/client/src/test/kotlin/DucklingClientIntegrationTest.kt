@@ -32,7 +32,6 @@ import kotlin.test.assertTrue
  *
  */
 class DucklingClientIntegrationTest {
-
     companion object {
         private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     }
@@ -43,7 +42,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
 
@@ -53,7 +52,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
 
@@ -63,7 +62,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             LocalDateTime.now().atZone(systemDefault()).withFixedOffsetZone().truncatedTo(ChronoUnit.DAYS),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
 
@@ -74,7 +73,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
 
@@ -110,7 +109,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             now.withZoneSameInstant(zoneId).plusHours(1).toLocalDateTime().truncatedTo(ChronoUnit.MINUTES),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime()
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime(),
         )
     }
 
@@ -122,7 +121,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             now.withHour(18).toLocalDateTime().truncatedTo(ChronoUnit.HOURS),
-            parse(result!![0][":value"][":from"][":value"].string(), formatter).toLocalDateTime()
+            parse(result!![0][":value"][":from"][":value"].string(), formatter).toLocalDateTime(),
         )
     }
 
@@ -134,7 +133,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
             now.withFixedOffsetZone().truncatedTo(ChronoUnit.DAYS),
-            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter),
         )
     }
 

@@ -19,6 +19,7 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
+import ai.tock.bot.admin.story.StoryDefinitionStepMetric
 import ai.tock.bot.definition.EntityStepSelection
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -26,7 +27,6 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
-import ai.tock.bot.admin.story.StoryDefinitionStepMetric
 
 data class BotStoryDefinitionConfigurationStep(
     /**
@@ -81,9 +81,7 @@ data class BotStoryDefinitionConfigurationStep(
      * Target Intent defined by the intent name.
      */
     val targetIntentDefinition: IntentDefinition? = null,
-
-    ) {
-
+) {
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep, readOnly: Boolean = false) :
         this(
             e.name.takeUnless { it.isBlank() } ?: "${e.intent?.name}_${e.level}",
@@ -98,17 +96,17 @@ data class BotStoryDefinitionConfigurationStep(
                         I18nKeyProvider.generateKey(story.namespace, story.category, e.userSentence),
                         story.namespace,
                         story.category,
-                        e.userSentence
+                        e.userSentence,
                     )
-                )
+            )
                 .let { Translator.saveIfNotExist(it, readOnly) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
             e.level,
             e.entity,
-            e.metrics
+            e.metrics,
         )
 
-    fun hasMetrics() : Boolean {
+    fun hasMetrics(): Boolean {
         return metrics.isNotEmpty() || children.any { it.hasMetrics() }
     }
 }

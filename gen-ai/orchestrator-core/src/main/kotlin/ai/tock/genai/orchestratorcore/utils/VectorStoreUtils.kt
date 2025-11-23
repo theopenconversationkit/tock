@@ -16,18 +16,22 @@
 
 package ai.tock.genai.orchestratorcore.utils
 
-import ai.tock.genai.orchestratorcore.models.vectorstore.*
-import ai.tock.shared.intProperty
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBase
+import ai.tock.genai.orchestratorcore.models.vectorstore.OpenSearchParams
+import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorParams
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 import ai.tock.shared.property
 
-private val vectorStore = property(
-    name = "tock_gen_ai_orchestrator_vector_store_provider",
-    defaultValue = VectorStoreProvider.OpenSearch.name)
+private val vectorStore =
+    property(
+        name = "tock_gen_ai_orchestrator_vector_store_provider",
+        defaultValue = VectorStoreProvider.OpenSearch.name,
+    )
 
 typealias DocumentIndexName = String
 
 object VectorStoreUtils {
-
     fun getVectorStoreElements(
         namespace: String,
         botId: String,
@@ -35,24 +39,24 @@ object VectorStoreUtils {
         kNeighborsDocuments: Int,
         vectorStoreSetting: VectorStoreSetting?,
     ): Pair<DocumentSearchParamsBase, DocumentIndexName> {
-
         vectorStoreSetting?.let {
             val searchParams = it.getDocumentSearchParams(kNeighborsDocuments)
             val indexName = it.normalizeDocumentIndexName(namespace, botId, indexSessionId)
             return Pair(searchParams, indexName)
         }
 
-        val (documentSearchParams, indexName) = when (vectorStore) {
-            VectorStoreProvider.OpenSearch.name -> {
-                OpenSearchParams(k = kNeighborsDocuments) to
+        val (documentSearchParams, indexName) =
+            when (vectorStore) {
+                VectorStoreProvider.OpenSearch.name -> {
+                    OpenSearchParams(k = kNeighborsDocuments) to
                         OpenSearchUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
-            }
-            VectorStoreProvider.PGVector.name -> {
-                PGVectorParams(k = kNeighborsDocuments) to
+                }
+                VectorStoreProvider.PGVector.name -> {
+                    PGVectorParams(k = kNeighborsDocuments) to
                         PGVectorUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
+                }
+                else -> throw IllegalArgumentException("Unsupported Vector Store Provider [$vectorStore]")
             }
-            else -> throw IllegalArgumentException("Unsupported Vector Store Provider [$vectorStore]")
-        }
 
         return Pair(documentSearchParams, indexName)
     }

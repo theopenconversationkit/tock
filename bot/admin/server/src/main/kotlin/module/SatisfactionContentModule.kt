@@ -31,53 +31,55 @@ import ai.tock.bot.engine.config.SatisfactionIntent.YES
 
 const val SATISFACTION_CATEGORY: String = "satisfaction"
 
-val satisfactionContentModule = ConfigurationContentModule(
+val satisfactionContentModule =
+    ConfigurationContentModule(
         SATISFACTION_MODULE_ID,
         listOf(
-                StoryDefinitionConfigurationContent(
-                        storyId = SATISFACTION.id,
-                        userSentence = "Rate your experience",
-                        answers = fromLabel("How would you rate your experience with the Chatbot ?"),
-                        category = SATISFACTION_CATEGORY,
-                        description = "satisfaction rating story (startup)",
-                        steps = (1..5).map { note ->
-                            StoryDefinitionConfigurationStepContent(
-                                    intent = NOTE.intent,
-                                    targetIntent = REVIEW_ASK.intent,
-                                    userSentence = note.toString()
-                            )
-                        },
-                ),
-                StoryDefinitionConfigurationContent(
-                        storyId = REVIEW_ASK.id,
-                        answers = fromLabel("Would you like to leave a comment ?"),
-                        category = SATISFACTION_CATEGORY,
-                        description = "satisfaction review ask",
-                        steps = listOf(
-                                StoryDefinitionConfigurationStepContent(
-                                        intent = YES.intent,
-                                        targetIntent = REVIEW_COMMENT.intent,
-                                        userSentence = "Yes"
-                                ),
-                                StoryDefinitionConfigurationStepContent(
-                                        intent = NO.intent,
-                                        targetIntent = REVIEW_ADDED.intent,
-                                        userSentence = "No"
-                                )
+            StoryDefinitionConfigurationContent(
+                storyId = SATISFACTION.id,
+                userSentence = "Rate your experience",
+                answers = fromLabel("How would you rate your experience with the Chatbot ?"),
+                category = SATISFACTION_CATEGORY,
+                description = "satisfaction rating story (startup)",
+                steps =
+                    (1..5).map { note ->
+                        StoryDefinitionConfigurationStepContent(
+                            intent = NOTE.intent,
+                            targetIntent = REVIEW_ASK.intent,
+                            userSentence = note.toString(),
+                        )
+                    },
+            ),
+            StoryDefinitionConfigurationContent(
+                storyId = REVIEW_ASK.id,
+                answers = fromLabel("Would you like to leave a comment ?"),
+                category = SATISFACTION_CATEGORY,
+                description = "satisfaction review ask",
+                steps =
+                    listOf(
+                        StoryDefinitionConfigurationStepContent(
+                            intent = YES.intent,
+                            targetIntent = REVIEW_COMMENT.intent,
+                            userSentence = "Yes",
                         ),
-                ),
-
-                StoryDefinitionConfigurationContent(
-                        storyId = REVIEW_COMMENT.id,
-                        answers = fromLabel("Please leave your comment or suggestion:"),
-                        category = SATISFACTION_CATEGORY,
-                        description = "satisfaction add comment",
-                ),
-                StoryDefinitionConfigurationContent(
-                        storyId = REVIEW_ADDED.id,
-                        answers = fromLabel("Thanks for your feedback !"),
-                        category = SATISFACTION_CATEGORY,
-                        description = "thank user after satisfaction",
-                )
-        )
-)
+                        StoryDefinitionConfigurationStepContent(
+                            intent = NO.intent,
+                            targetIntent = REVIEW_ADDED.intent,
+                            userSentence = "No",
+                        ),
+                    ),
+            ),
+            StoryDefinitionConfigurationContent(
+                storyId = REVIEW_COMMENT.id,
+                answers = fromLabel("Please leave your comment or suggestion:"),
+                category = SATISFACTION_CATEGORY,
+                description = "satisfaction add comment",
+            ),
+            StoryDefinitionConfigurationContent(
+                storyId = REVIEW_ADDED.id,
+                answers = fromLabel("Thanks for your feedback !"),
+                category = SATISFACTION_CATEGORY,
+                description = "thank user after satisfaction",
+            ),
+        ),
+    )

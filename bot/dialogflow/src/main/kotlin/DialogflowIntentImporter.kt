@@ -38,14 +38,13 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import java.util.Locale
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  * Intent Importer from Dialogflow
  */
 object DialogflowIntentImporter {
-
     private val projectId = property("dialogflow_project_id", "please set a google project id")
 
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
@@ -60,7 +59,10 @@ object DialogflowIntentImporter {
      * Import intents in Tock model from a Dialogflow project - It doesn't import entities
      * Create a new story for each intent with text response message
      */
-    fun importIntentsFromDialogflow(appName: String, appNamespace: String) {
+    fun importIntentsFromDialogflow(
+        appName: String,
+        appNamespace: String,
+    ) {
         val application = FrontClient.getApplicationByNamespaceAndName(appNamespace, appName)
         if (application == null) {
             logger.error { "Can't find application $appNamespace:$appName" }
@@ -78,13 +80,14 @@ object DialogflowIntentImporter {
                     // Create intent if not exist
                     var intentDefinition = FrontClient.getIntentByNamespaceAndName(application.namespace, intentName)
                     if (intentDefinition == null) {
-                        intentDefinition = IntentDefinition(
-                            intentName,
-                            application.namespace,
-                            setOf(application._id),
-                            setOf(),
-                            label = dialogflowIntent.displayName
-                        )
+                        intentDefinition =
+                            IntentDefinition(
+                                intentName,
+                                application.namespace,
+                                setOf(application._id),
+                                setOf(),
+                                label = dialogflowIntent.displayName,
+                            )
                         FrontClient.save(intentDefinition)
                     }
 
@@ -99,8 +102,8 @@ object DialogflowIntentImporter {
                                 text = text,
                                 intent = intentDefinition.qualifiedName,
                                 language = locale,
-                                status = ClassifiedSentenceStatus.model
-                            )
+                                status = ClassifiedSentenceStatus.model,
+                            ),
                         )
                     }
 
@@ -108,14 +111,15 @@ object DialogflowIntentImporter {
                     val simpleAnswers =
                         createSimpleAnswers(dialogflowIntent.messagesList, locale, application.namespace)
                     if (simpleAnswers.isNotEmpty()) {
-                        val storyDefinitionConfiguration = StoryDefinitionConfiguration(
-                            intentName,
-                            application.name,
-                            IntentWithoutNamespace(intentName),
-                            AnswerConfigurationType.simple,
-                            simpleAnswers,
-                            namespace = application.namespace
-                        )
+                        val storyDefinitionConfiguration =
+                            StoryDefinitionConfiguration(
+                                intentName,
+                                application.name,
+                                IntentWithoutNamespace(intentName),
+                                AnswerConfigurationType.simple,
+                                simpleAnswers,
+                                namespace = application.namespace,
+                            )
 
                         try {
                             storyDefinitionDAO.save(storyDefinitionConfiguration)
@@ -143,7 +147,7 @@ object DialogflowIntentImporter {
     private fun createSimpleAnswers(
         messagesList: MutableList<com.google.cloud.dialogflow.v2.Intent.Message>,
         locale: Locale,
-        namespace: String
+        namespace: String,
     ): List<SimpleAnswerConfiguration> {
         val answerConfigurations = mutableListOf<SimpleAnswerConfiguration>()
         for (message in messagesList) {
@@ -161,10 +165,10 @@ object DialogflowIntentImporter {
                             SimpleAnswer(
                                 I18nLabelValue(label),
                                 -1,
-                                null
-                            )
-                        )
-                    )
+                                null,
+                            ),
+                        ),
+                    ),
                 )
             }
         }

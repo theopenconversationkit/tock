@@ -21,5 +21,5 @@ import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTemplate
 internal data class WhatsAppSendBotInteractiveMessage(
     override val to: String,
     override val recipientType: WhatsAppBotRecipientType,
-    val template: WhatsAppTemplate
+    val template: WhatsAppTemplate,
 ) : WhatsAppSendBotMessage(WhatsAppBotMessageType.template)

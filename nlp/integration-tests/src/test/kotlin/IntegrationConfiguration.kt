@@ -33,7 +33,6 @@ import java.util.Locale
  *
  */
 object IntegrationConfiguration {
-
     fun loadDump(nlpEngineType: NlpEngineType): ApplicationDump {
         val dump: ApplicationDump = mapper.readValue(resource("/dump.json"))
         return dump.copy(application = dump.application.copy(nlpEngineType = nlpEngineType))

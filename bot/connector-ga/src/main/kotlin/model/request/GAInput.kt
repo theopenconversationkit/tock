@@ -22,9 +22,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 data class GAInput(
     val rawInputs: List<GARawInput>,
     val intent: String,
-    val arguments: List<GAArgument>?
+    val arguments: List<GAArgument>?,
 ) {
-
     @get:JsonIgnore
     val builtInIntent: GAIntent? =
         try {

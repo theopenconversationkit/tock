@@ -31,26 +31,28 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class IadvizeConnectorMessageTest {
-
     private val hi = "Hi !"
     private val question = "You're okay ?"
     private val yesAndNo = listOf("Yes", "No")
     private val error = "Error !"
     private val await = IadvizeAwait(Duration(7, minutes))
-    private val transfer = IadvizeTransfer(
-        distributionRule = "distributionRule",
-        transferOptions = IadvizeTransfer.TransferOptions(Duration(2, seconds))
-    )
+    private val transfer =
+        IadvizeTransfer(
+            distributionRule = "distributionRule",
+            transferOptions = IadvizeTransfer.TransferOptions(Duration(2, seconds)),
+        )
     private val close = IadvizeClose()
     private val message = IadvizeMessage(TextPayload(hi))
     private val messageError = IadvizeMessage(TextPayload(error))
-    private val messageWithQuickReplies = IadvizeMessage(
-        TextPayload(question),
-        yesAndNo.map { QuickReply(it) }.toMutableList()
-    )
-    private val multipartReply = IadvizeMultipartReply(
-        listOf(await, messageError, transfer, message, close)
-    )
+    private val messageWithQuickReplies =
+        IadvizeMessage(
+            TextPayload(question),
+            yesAndNo.map { QuickReply(it) }.toMutableList(),
+        )
+    private val multipartReply =
+        IadvizeMultipartReply(
+            listOf(await, messageError, transfer, message, close),
+        )
 
     @Test
     fun `convert await to generic message`() {
@@ -77,11 +79,12 @@ class IadvizeConnectorMessageTest {
         assertEquals(
             GenericMessage(
                 iadvizeConnectorType,
-                texts = mapOf(
-                    "text" to hi
-                )
+                texts =
+                    mapOf(
+                        "text" to hi,
+                    ),
             ),
-            e
+            e,
         )
     }
 
@@ -92,12 +95,13 @@ class IadvizeConnectorMessageTest {
         assertEquals(
             GenericMessage(
                 iadvizeConnectorType,
-                texts = mapOf(
-                    "text" to question
-                ),
-                choices = yesAndNo.map { Choice.fromText(it) }
+                texts =
+                    mapOf(
+                        "text" to question,
+                    ),
+                choices = yesAndNo.map { Choice.fromText(it) },
             ),
-            e
+            e,
         )
     }
 
@@ -108,11 +112,12 @@ class IadvizeConnectorMessageTest {
         assertEquals(
             GenericMessage(
                 iadvizeConnectorType,
-                texts = mapOf(
-                    "text" to error
-                )
+                texts =
+                    mapOf(
+                        "text" to error,
+                    ),
             ),
-            e
+            e,
         )
     }
 }

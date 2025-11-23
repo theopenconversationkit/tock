@@ -28,7 +28,6 @@ import ai.tock.shared.resourceAsString
  *
  */
 internal object RocketChatConnectorProvider : ConnectorProvider {
-
     private const val ROCKET_CHAT_URL = "_url_"
     private const val LOGIN = "_login_"
     private const val PASSWORD = "_password_"
@@ -45,9 +44,9 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                     parameters.getValue(ROCKET_CHAT_URL),
                     parameters.getValue(LOGIN),
                     parameters.getValue(PASSWORD),
-                    parameters.getValue(AVATAR)
+                    parameters.getValue(AVATAR),
                 ),
-                parameters[DEDICATED_ROOM_ID]?.run { if (isBlank()) null else trim() }
+                parameters[DEDICATED_ROOM_ID]?.run { if (isBlank()) null else trim() },
             )
         }
     }
@@ -59,30 +58,30 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Rocket.Chat Server Url",
                     ROCKET_CHAT_URL,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Bot Login",
                     LOGIN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Bot Password",
                     PASSWORD,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Avatar Url",
                     AVATAR,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Optional Room Id",
                     DEDICATED_ROOM_ID,
-                    false
-                )
+                    false,
+                ),
             ),
-            resourceAsString("/rocketchat.svg")
+            resourceAsString("/rocketchat.svg"),
         )
 }
 

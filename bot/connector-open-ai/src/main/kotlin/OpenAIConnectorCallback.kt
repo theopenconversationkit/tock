@@ -45,7 +45,6 @@ class OpenAIConnectorCallback(
     private val eventId: String,
     internal val streamedResponse: Boolean,
 ) : ConnectorCallbackBase(applicationId, openAIConnectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -63,9 +62,10 @@ class OpenAIConnectorCallback(
     }
 
     fun createResponse(actions: List<Action>): OpenAIConnectorResponse {
-        val messages = actions.mapNotNull {
-            toOpenAI(it)
-        }
+        val messages =
+            actions.mapNotNull {
+                toOpenAI(it)
+            }
         return OpenAIConnectorResponse(messages)
     }
 
@@ -76,11 +76,12 @@ class OpenAIConnectorCallback(
                 if (message != null) {
                     message
                 } else {
-                    val stringText = if (metadata.hasStreamMetadata()) {
-                        action.stringText
-                    } else {
-                        "${if (endStreaming.load()) "\n" else ""}${action.stringText}\n"
-                    }
+                    val stringText =
+                        if (metadata.hasStreamMetadata()) {
+                            action.stringText
+                        } else {
+                            "${if (endStreaming.load()) "\n" else ""}${action.stringText}\n"
+                        }
                     endStreaming.store(false)
 
                     if (stringText != null) {
@@ -116,15 +117,15 @@ class OpenAIConnectorCallback(
     private fun HttpServerResponse.sendSseEnd(): CompositeFuture =
         Future.all(
             write("data: [DONE]\n\n"),
-            end()
+            end(),
         )
 
     private fun HttpServerResponse.sendSseResponse(webConnectorResponse: OpenAIConnectorResponse) =
         webConnectorResponse.messages.forEach { message ->
-            sendSseMessage(writeJson(message.toOpenAIChunk()).apply {
-                logger.debug { "send to client: $this" }
-            })
+            sendSseMessage(
+                writeJson(message.toOpenAIChunk()).apply {
+                    logger.debug { "send to client: $this" }
+                },
+            )
         }
-
-
 }

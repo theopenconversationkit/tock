@@ -36,15 +36,24 @@ import org.litote.kmongo.push
 import org.litote.kmongo.setValue
 
 interface OrchestrationRepository {
+    fun create(
+        playerId: PlayerId,
+        targetMetadata: OrchestrationMetaData,
+        target: OrchestrationTargetedBot,
+        actions: List<SecondaryBotAction>,
+    ): Orchestration
 
-    fun create(playerId: PlayerId, targetMetadata: OrchestrationMetaData, target: OrchestrationTargetedBot, actions: List<SecondaryBotAction>): Orchestration
     fun get(playerId: PlayerId): Orchestration?
-    fun update(id: Id<Orchestration>, action: SecondaryBotAction)
+
+    fun update(
+        id: Id<Orchestration>,
+        action: SecondaryBotAction,
+    )
+
     fun end(playerId: PlayerId)
 }
 
 object MongoOrchestrationRepository : OrchestrationRepository {
-
     private val col: MongoCollection<Orchestration> by lazy {
 
         injector.provide<MongoDatabase>(TOCK_BOT_DATABASE).getCollection<Orchestration>()
@@ -54,7 +63,12 @@ object MongoOrchestrationRepository : OrchestrationRepository {
             }
     }
 
-    override fun create(playerId: PlayerId, targetMetadata: OrchestrationMetaData, target: OrchestrationTargetedBot, actions: List<SecondaryBotAction>): Orchestration {
+    override fun create(
+        playerId: PlayerId,
+        targetMetadata: OrchestrationMetaData,
+        target: OrchestrationTargetedBot,
+        actions: List<SecondaryBotAction>,
+    ): Orchestration {
         val orchestration = Orchestration(playerId = playerId, targetMetadata = targetMetadata, targetBot = target, history = actions.toMutableList())
         col.insertOne(orchestration)
         return orchestration
@@ -63,17 +77,20 @@ object MongoOrchestrationRepository : OrchestrationRepository {
     override fun get(playerId: PlayerId): Orchestration? =
         col.findOne(
             Orchestration::playerId eq playerId,
-            Orchestration::status eq ACTIVE
+            Orchestration::status eq ACTIVE,
         )
 
-    override fun update(id: Id<Orchestration>, action: SecondaryBotAction) {
+    override fun update(
+        id: Id<Orchestration>,
+        action: SecondaryBotAction,
+    ) {
         col.updateOne(Orchestration::id eq id, push(Orchestration::history, action))
     }
 
     override fun end(playerId: PlayerId) {
         col.updateMany(
             Orchestration::playerId eq playerId,
-            setValue(Orchestration::status, CLOSED)
+            setValue(Orchestration::status, CLOSED),
         )
     }
 }

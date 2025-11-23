@@ -22,26 +22,32 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.OutputStream
 
 internal object RasaNlpModelIo : NlpEngineModelIo {
-
     override fun loadTokenizerModel(input: NlpModelStream): Any {
         error("loading tokenizer model is not supported")
     }
 
-    override fun loadIntentModel(input: NlpModelStream): Any =
-        mapper.readValue<RasaModelConfiguration>(input.inputStream)
+    override fun loadIntentModel(input: NlpModelStream): Any = mapper.readValue<RasaModelConfiguration>(input.inputStream)
 
-    override fun loadEntityModel(input: NlpModelStream): Any =
-        mapper.readValue<String>(input.inputStream)
+    override fun loadEntityModel(input: NlpModelStream): Any = mapper.readValue<String>(input.inputStream)
 
-    override fun copyTokenizerModel(model: Any, output: OutputStream) {
+    override fun copyTokenizerModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         error("copying tokenizer model is not supported")
     }
 
-    override fun copyIntentModel(model: Any, output: OutputStream) {
+    override fun copyIntentModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         mapper.writeValue(output, model)
     }
 
-    override fun copyEntityModel(model: Any, output: OutputStream) {
+    override fun copyEntityModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         mapper.writeValue(output, model)
     }
 }

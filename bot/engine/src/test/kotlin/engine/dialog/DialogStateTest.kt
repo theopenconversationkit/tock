@@ -25,7 +25,6 @@ import kotlin.test.assertTrue
  *
  */
 class DialogStateTest {
-
     @Test()
     fun `setContextValue returns an error if value is a list`() {
         assertThrows<IllegalStateException> {

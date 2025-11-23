@@ -21,7 +21,6 @@ import java.time.Duration
 import kotlin.test.assertEquals
 
 class SerializationTest {
-
     @Test
     fun `Duration is serialized as Iso format`() {
         val d = mapper.writeValueAsString(Duration.ofMinutes(10))

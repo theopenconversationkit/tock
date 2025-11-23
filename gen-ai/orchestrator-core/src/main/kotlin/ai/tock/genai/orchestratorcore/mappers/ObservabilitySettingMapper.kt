@@ -25,7 +25,6 @@ import ai.tock.genai.orchestratorcore.utils.SecurityUtils
  * The Observability Setting Mapper
  */
 object ObservabilitySettingMapper {
-
     /**
      * Convert the Observability setting to a DTO
      * @param entity the [ObservabilitySetting] as recorded in the database
@@ -58,17 +57,16 @@ object ObservabilitySettingMapper {
         botId: String,
         feature: String,
         dto: ObservabilitySettingDTO,
-        rawByForce: Boolean = false
+        rawByForce: Boolean = false,
     ): ObservabilitySetting =
         with(dto) {
             when (this) {
                 is LangfuseObservabilitySetting -> {
                     val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey, rawByForce)
-                    return LangfuseObservabilitySetting(secretKey, publicKey, url, publicUrl.takeIf {!it.isNullOrBlank()})
+                    return LangfuseObservabilitySetting(secretKey, publicKey, url, publicUrl.takeIf { !it.isNullOrBlank() })
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
             }
         }
-
 }

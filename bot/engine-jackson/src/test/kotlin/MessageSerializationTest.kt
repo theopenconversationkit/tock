@@ -35,7 +35,7 @@ class MessageSerializationTest {
     data class MessageRequest(
         val userId: String,
         val recipientId: String,
-        val message: Message
+        val message: Message,
     )
 
     @Test

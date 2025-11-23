@@ -39,7 +39,6 @@ import java.util.Locale
  *
  */
 internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
-
     private val col: MongoCollection<ModelBuildTrigger> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ModelBuildTrigger>()
         c.ensureIndex(ApplicationId)
@@ -60,7 +59,7 @@ internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
     override fun deleteTrigger(trigger: ModelBuildTrigger) {
         col.deleteMany(
             ApplicationId eq trigger.applicationId,
-            OnlyIfModelNotExists eq trigger.onlyIfModelNotExists
+            OnlyIfModelNotExists eq trigger.onlyIfModelNotExists,
         )
     }
 
@@ -76,12 +75,13 @@ internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         applicationId: Id<ApplicationDefinition>,
         language: Locale,
         start: Int,
-        size: Int
+        size: Int,
     ): ModelBuildQueryResult {
-        val filter = and(
-            ModelBuild_.ApplicationId eq applicationId,
-            ModelBuild_.Language eq language
-        )
+        val filter =
+            and(
+                ModelBuild_.ApplicationId eq applicationId,
+                ModelBuild_.Language eq language,
+            )
 
         return ModelBuildQueryResult(
             modelCol.countDocuments(filter),
@@ -90,7 +90,7 @@ internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
                 .descendingSort(ModelBuild_.Date)
                 .skip(start)
                 .limit(size)
-                .toList()
+                .toList(),
         )
     }
 }

@@ -29,7 +29,7 @@ data class ApplicationDump(
     val intents: List<IntentDefinition> = emptyList(),
     val sentences: List<ClassifiedSentence> = emptyList(),
     val dumpType: DumpType = DumpType.full,
-    val timestamp: Instant = Instant.now()
+    val timestamp: Instant = Instant.now(),
 )
 
 data class ApplicationDefinition(
@@ -43,19 +43,19 @@ data class ApplicationDefinition(
     val mergeEngineTypes: Boolean = true,
     val useEntityModels: Boolean = true,
     val supportSubEntities: Boolean = false,
-    val _id: String
+    val _id: String,
 )
 
 data class Classification(
     val intentId: String,
-    val entities: List<ClassifiedEntity>
+    val entities: List<ClassifiedEntity>,
 )
 
 data class ClassifiedEntity(
     val type: String,
     val role: String,
     val start: Int,
-    val end: Int
+    val end: Int,
 )
 
 data class ClassifiedSentence(
@@ -65,14 +65,19 @@ data class ClassifiedSentence(
     val creationDate: Instant,
     val updateDate: Instant,
     val status: ClassifiedSentenceStatus,
-    val classification: Classification
+    val classification: Classification,
 )
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ClassifiedSentenceStatus {
-    inbox, validated, model, deleted
+    inbox,
+    validated,
+    model,
+    deleted,
 }
 
-enum class DumpType { full }
+@Suppress("ktlint:standard:enum-entry-name-case")
+enum class DumpType { full, }
 
 data class EntityDefinition(
     val entityTypeName: String,
@@ -80,7 +85,7 @@ data class EntityDefinition(
     /**
      * To evaluate time.
      */
-    val atStartOfDay: Boolean? = null
+    val atStartOfDay: Boolean? = null,
 )
 
 data class EntityTypeDefinition(
@@ -92,7 +97,7 @@ data class EntityTypeDefinition(
      * Is the entity has to be systematically obfuscated?
      */
     val obfuscated: Boolean = false,
-    val _id: String
+    val _id: String,
 )
 
 data class IntentDefinition(
@@ -105,5 +110,5 @@ data class IntentDefinition(
     val label: String? = null,
     val description: String? = null,
     val category: String? = null,
-    val _id: String
+    val _id: String,
 )

@@ -33,7 +33,6 @@ import ai.tock.shared.namespace
 import ai.tock.shared.watch
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
-import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
@@ -49,7 +48,6 @@ import java.util.Locale
  *
  */
 internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
-
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
         c.ensureUniqueIndex(Name)
@@ -79,17 +77,15 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         dictionaryCol.replaceOneWithFilter(
             and(Namespace eq data.namespace, EntityName eq data.entityName),
             data,
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
     override fun getAllDictionaryData(): List<DictionaryData> = dictionaryCol.find().toList()
 
-    override fun getDictionaryDataByEntityName(qualifiedName: String): DictionaryData? =
-        dictionaryCol.findOne(Namespace eq qualifiedName.namespace(), EntityName eq qualifiedName.name())
+    override fun getDictionaryDataByEntityName(qualifiedName: String): DictionaryData? = dictionaryCol.findOne(Namespace eq qualifiedName.namespace(), EntityName eq qualifiedName.name())
 
-    override fun getDictionaryDataByNamespace(namespace: String): List<DictionaryData> =
-        dictionaryCol.find(Namespace eq namespace).toList()
+    override fun getDictionaryDataByNamespace(namespace: String): List<DictionaryData> = dictionaryCol.find(Namespace eq namespace).toList()
 
     override fun listenDictionaryDataChanges(listener: () -> Unit) {
         asyncDictionaryCol.watch { listener() }
@@ -108,13 +104,16 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         return col.deleteOne(Name eq name).deletedCount == 1L
     }
 
-    override fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String) {
+    override fun deletePredefinedValueByName(
+        entityTypeName: String,
+        predefinedValue: String,
+    ) {
         dictionaryCol.updateOne(
             and(
                 Namespace eq entityTypeName.namespace(),
-                EntityName eq entityTypeName.name()
+                EntityName eq entityTypeName.name(),
             ),
-            pullByFilter(Values, Value eq predefinedValue)
+            pullByFilter(Values, Value eq predefinedValue),
         )
     }
 
@@ -122,9 +121,9 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         entityTypeName: String,
         predefinedValue: String,
         locale: Locale,
-        label: String
+        label: String,
     ) {
-        //see https://github.com/theopenconversationkit/tock/issues/1257
+        // see https://github.com/theopenconversationkit/tock/issues/1257
         if (isDocumentDB()) {
             dictionaryCol.findOne(
                 Namespace eq entityTypeName.namespace(),
@@ -133,16 +132,19 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
                 dictionaryCol.updateOne(
                     and(
                         Namespace eq entityTypeName.namespace(),
-                        EntityName eq entityTypeName.name()
+                        EntityName eq entityTypeName.name(),
                     ),
-                    copy(values = values.map { v ->
-                        val newList = v.labels[locale]?.filter { it != label }
-                        if (newList != null) {
-                            v.copy(labels = v.labels + (locale to newList))
-                        } else {
-                            v
-                        }
-                    })
+                    copy(
+                        values =
+                            values.map { v ->
+                                val newList = v.labels[locale]?.filter { it != label }
+                                if (newList != null) {
+                                    v.copy(labels = v.labels + (locale to newList))
+                                } else {
+                                    v
+                                }
+                            },
+                    ),
                 )
             }
         } else {
@@ -150,9 +152,9 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
                 and(
                     Namespace eq entityTypeName.namespace(),
                     EntityName eq entityTypeName.name(),
-                    Values.value eq predefinedValue
+                    Values.value eq predefinedValue,
                 ),
-                pull(Values.posOp.labels.keyProjection(locale), label)
+                pull(Values.posOp.labels.keyProjection(locale), label),
             )
         }
     }

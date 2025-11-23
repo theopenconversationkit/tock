@@ -22,5 +22,5 @@ data class Url(
     val url: String,
     @JsonProperty("expanded_url") val expandedUrl: String,
     @JsonProperty("display_url") val displayUrl: String,
-    override val indices: List<Int>
+    override val indices: List<Int>,
 ) : Entity()

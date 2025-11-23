@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class DialogflowTockMapperTest {
-
     @Test
     fun `nlp result mapping`() {
         val namespace = "app"

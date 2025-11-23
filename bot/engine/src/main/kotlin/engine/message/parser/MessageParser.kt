@@ -45,7 +45,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
  * (Very) simple DSL parser for [Message]s.
  */
 object MessageParser {
-
     private val multiMessagesSeparator = "|_|"
     private val elementsSeparator = "@@"
     private val fieldSeparator = "||"
@@ -81,32 +80,38 @@ object MessageParser {
 
     private fun elementToString(element: GenericMessage): String {
         return with(element) {
-            val content = listOfNotNull(
-                if (connectorType == ConnectorType.none) null else "connectorType:$connectorType",
-                if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (choices.isEmpty()) null else "choices:[${choices.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (locations.isEmpty()) null else "locations:[${locations.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (texts.isEmpty()) null else "texts:${mapper.writeValueAsString(texts)}",
-                if (metadata.isEmpty()) null else "metadata:${mapper.writeValueAsString(metadata)}",
-                if (subElements.isEmpty()) null else "subElements:[${subElements.joinToString(subElementsArraySeparator) {
-                    subElementToString(
-                        it
-                    )
-                }}]"
-            ).joinToString(prefix = elementsSeparator, separator = elementsSeparator)
+            val content =
+                listOfNotNull(
+                    if (connectorType == ConnectorType.none) null else "connectorType:$connectorType",
+                    if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (choices.isEmpty()) null else "choices:[${choices.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (locations.isEmpty()) null else "locations:[${locations.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (texts.isEmpty()) null else "texts:${mapper.writeValueAsString(texts)}",
+                    if (metadata.isEmpty()) null else "metadata:${mapper.writeValueAsString(metadata)}",
+                    if (subElements.isEmpty()) {
+                        null
+                    } else {
+                        "subElements:[${subElements.joinToString(subElementsArraySeparator) {
+                            subElementToString(
+                                it,
+                            )
+                        }}]"
+                    },
+                ).joinToString(prefix = elementsSeparator, separator = elementsSeparator)
             "{$content}"
         }
     }
 
     private fun subElementToString(element: GenericElement): String {
         return with(element) {
-            val content = listOfNotNull(
-                if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (choices.isEmpty()) null else "choices:[${choices.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (locations.isEmpty()) null else "locations:[${locations.joinToString(fieldSeparator) { it.toPrettyString() }}]",
-                if (texts.isEmpty()) null else "texts:${mapper.writeValueAsString(texts)}",
-                if (metadata.isEmpty()) null else "metadata:${mapper.writeValueAsString(metadata)}"
-            ).joinToString(prefix = subElementsSeparator, separator = subElementsSeparator)
+            val content =
+                listOfNotNull(
+                    if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (choices.isEmpty()) null else "choices:[${choices.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (locations.isEmpty()) null else "locations:[${locations.joinToString(fieldSeparator) { it.toPrettyString() }}]",
+                    if (texts.isEmpty()) null else "texts:${mapper.writeValueAsString(texts)}",
+                    if (metadata.isEmpty()) null else "metadata:${mapper.writeValueAsString(metadata)}",
+                ).joinToString(prefix = subElementsSeparator, separator = subElementsSeparator)
             "{$content}"
         }
     }
@@ -132,7 +137,7 @@ object MessageParser {
                         Sentence(
                             null,
                             // only one element supported
-                            mutableListOf(parseSentenceElement(it))
+                            mutableListOf(parseSentenceElement(it)),
                         )
                     }
             }
@@ -152,32 +157,38 @@ object MessageParser {
                     it?.split(elementsSeparator)?.forEach { s ->
                         when {
                             s.startsWith("attachments") -> {
-                                attachments = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                                    .split(fieldSeparator)
-                                    .map { parseAttachment(it.trim()) }
+                                attachments =
+                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                        .split(fieldSeparator)
+                                        .map { parseAttachment(it.trim()) }
                             }
                             s.startsWith("choices") -> {
-                                choices = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                                    .split(fieldSeparator)
-                                    .map { parseChoice(it.trim()) }
+                                choices =
+                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                        .split(fieldSeparator)
+                                        .map { parseChoice(it.trim()) }
                             }
                             s.startsWith("locations") -> {
-                                locations = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                                    .split(fieldSeparator)
-                                    .map { parseLocation(it.trim()) }
+                                locations =
+                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                        .split(fieldSeparator)
+                                        .map { parseLocation(it.trim()) }
                             }
                             s.startsWith("subElements") -> {
-                                elements = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                                    .split(subElementsArraySeparator)
-                                    .map { parseSentenceSubElement(it.trim()) }
+                                elements =
+                                    s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                        .split(subElementsArraySeparator)
+                                        .map { parseSentenceSubElement(it.trim()) }
                             }
                             s.startsWith("texts") -> {
-                                texts = s.substring(s.indexOf(":") + 1)
-                                    .let { mapper.readValue(it) }
+                                texts =
+                                    s.substring(s.indexOf(":") + 1)
+                                        .let { mapper.readValue(it) }
                             }
                             s.startsWith("metadata") -> {
-                                metadata = s.substring(s.indexOf(":") + 1)
-                                    .let { mapper.readValue(it) }
+                                metadata =
+                                    s.substring(s.indexOf(":") + 1)
+                                        .let { mapper.readValue(it) }
                             }
                         }
                     }
@@ -189,7 +200,7 @@ object MessageParser {
                         texts,
                         locations,
                         metadata,
-                        elements
+                        elements,
                     )
                 }
         }
@@ -207,23 +218,28 @@ object MessageParser {
 
                 it.split(subElementsSeparator).forEach { s ->
                     if (s.startsWith("attachments")) {
-                        attachments = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                            .split(fieldSeparator)
-                            .map { parseAttachment(it.trim()) }
+                        attachments =
+                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                .split(fieldSeparator)
+                                .map { parseAttachment(it.trim()) }
                     } else if (s.startsWith("choices")) {
-                        choices = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                            .split(fieldSeparator)
-                            .map { parseChoice(it.trim()) }
+                        choices =
+                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                .split(fieldSeparator)
+                                .map { parseChoice(it.trim()) }
                     } else if (s.startsWith("locations")) {
-                        locations = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
-                            .split(fieldSeparator)
-                            .map { parseLocation(it.trim()) }
+                        locations =
+                            s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                                .split(fieldSeparator)
+                                .map { parseLocation(it.trim()) }
                     } else if (s.startsWith("texts")) {
-                        texts = s.substring(s.indexOf(":") + 1)
-                            .let { mapper.readValue(it) }
+                        texts =
+                            s.substring(s.indexOf(":") + 1)
+                                .let { mapper.readValue(it) }
                     } else if (s.startsWith("metadata")) {
-                        metadata = s.substring(s.indexOf(":") + 1)
-                            .let { mapper.readValue(it) }
+                        metadata =
+                            s.substring(s.indexOf(":") + 1)
+                                .let { mapper.readValue(it) }
                     }
                 }
 
@@ -232,7 +248,7 @@ object MessageParser {
                     choices,
                     texts,
                     locations,
-                    metadata
+                    metadata,
                 )
             }
     }
@@ -247,7 +263,7 @@ object MessageParser {
                         if (index != -1) {
                             Choice(
                                 it.substring(0, index).trim(),
-                                mapper.readValue<Map<String, String>>(it.substring(index + 1))
+                                mapper.readValue<Map<String, String>>(it.substring(index + 1)),
                             )
                         } else {
                             Choice(it.trim())
@@ -266,7 +282,7 @@ object MessageParser {
                         if (index != -1) {
                             Attachment(
                                 it.substring(0, index).trim(),
-                                enumValueOf(it.substring(index + 1).trim())
+                                enumValueOf(it.substring(index + 1).trim()),
                             )
                         } else {
                             Attachment(it.trim(), image)
@@ -285,8 +301,8 @@ object MessageParser {
                         Location(
                             UserLocation(
                                 it.substring(0, index).trim().toDouble(),
-                                it.substring(index + 1).trim().toDouble()
-                            )
+                                it.substring(index + 1).trim().toDouble(),
+                            ),
                         )
                     }
             }

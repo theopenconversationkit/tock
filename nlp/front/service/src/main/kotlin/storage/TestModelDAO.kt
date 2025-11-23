@@ -30,7 +30,6 @@ import java.util.Locale
  *
  */
 interface TestModelDAO {
-
     fun getTestBuilds(query: TestErrorQuery): List<TestBuild>
 
     fun saveTestBuild(build: TestBuild)
@@ -39,11 +38,19 @@ interface TestModelDAO {
 
     fun addTestIntentError(intentError: IntentTestError)
 
-    fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
+    fun deleteTestIntentError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    )
 
     fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult
 
     fun addTestEntityError(entityError: EntityTestError)
 
-    fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
+    fun deleteTestEntityError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    )
 }

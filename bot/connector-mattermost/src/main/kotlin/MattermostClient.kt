@@ -38,18 +38,22 @@ internal class MattermostClient(
     private interface MattermostApi {
         @Headers("Content-Type: application/json")
         @POST("hooks/{token}")
-        fun sendMessage(@Path("token") token: String, @Body message: MattermostMessageOut): Call<Void>
+        fun sendMessage(
+            @Path("token") token: String,
+            @Body message: MattermostMessageOut,
+        ): Call<Void>
     }
 
     private val logger = KotlinLogging.logger {}
-    private val mattermostApi: MattermostApi = retrofitBuilderWithTimeoutAndLogger(
-        longProperty("tock_mattermost_request_timeout_ms", 30000),
-        logger
-    )
-        .baseUrl(mattermostUrl)
-        .addJacksonConverter()
-        .build()
-        .create()
+    private val mattermostApi: MattermostApi =
+        retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_mattermost_request_timeout_ms", 30000),
+            logger,
+        )
+            .baseUrl(mattermostUrl)
+            .addJacksonConverter()
+            .build()
+            .create()
 
     fun sendMessage(message: MattermostMessageOut) {
         val response = mattermostApi.sendMessage(mattermostToken, message).execute()

@@ -36,5 +36,5 @@ data class TestBuildStat(
     val nbSentencesInModel: Int,
     val nbSentencesTested: Int,
     val buildModelDuration: Duration,
-    val testModelDuration: Duration
+    val testModelDuration: Duration,
 )

@@ -44,18 +44,16 @@ import java.util.concurrent.CopyOnWriteArraySet
  */
 internal class BotVerticle(
     private val nlpProxyOnBot: Boolean = booleanProperty("tock_nlp_proxy_on_bot", false),
-    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true)
+    private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true),
 ) : WebVerticle() {
-
     inner class ServiceInstaller(
         val serviceId: String,
         private val installer: (Router) -> Any?,
         private val routes: MutableList<Route> = CopyOnWriteArrayList(),
         @Volatile
         var installed: Boolean = false,
-        val registrationDate: Instant = Instant.now()
+        val registrationDate: Instant = Instant.now(),
     ) {
-
         fun install() {
             if (!installed) {
                 installed = true
@@ -87,7 +85,10 @@ internal class BotVerticle(
 
     override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
 
-    fun registerServices(serviceIdentifier: String, installer: (Router) -> Any?): ServiceInstaller {
+    fun registerServices(
+        serviceIdentifier: String,
+        installer: (Router) -> Any?,
+    ): ServiceInstaller {
         return ServiceInstaller(serviceIdentifier, installer).also {
             if (!handlers.containsKey(serviceIdentifier)) {
                 handlers[serviceIdentifier] = it
@@ -105,9 +106,10 @@ internal class BotVerticle(
         if (handlers[installer.serviceId] == installer) {
             handlers.remove(installer.serviceId)
                 ?.also {
-                    val s = secondaryInstallers.find {
-                        it.serviceId == installer.serviceId
-                    }
+                    val s =
+                        secondaryInstallers.find {
+                            it.serviceId == installer.serviceId
+                        }
 
                     logger.debug { "remove service ${it.serviceId}" }
                     it.uninstall()
@@ -160,12 +162,16 @@ internal class BotVerticle(
         return BotRepository.healthcheckHandler
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        BotRepository.detailedHealthcheckTasks,
-        selfCheck = { BotRepository.botsInstalled }
-    )
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        detailedHealthcheck(
+            BotRepository.detailedHealthcheckTasks,
+            selfCheck = { BotRepository.botsInstalled },
+        )
 
-    override fun startServer(promise: Promise<Void>, port: Int) {
+    override fun startServer(
+        promise: Promise<Void>,
+        port: Int,
+    ) {
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
             server.webSocketHandshakeHandler { context ->

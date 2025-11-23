@@ -58,7 +58,6 @@ import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
-import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
@@ -98,51 +97,52 @@ val webConnectorUseExtraHeadersAsMetadata: Boolean =
 class WebConnector internal constructor(
     val connectorId: String,
     val path: String,
-    private val webSecurityHandler: WebSecurityHandler
+    private val webSecurityHandler: WebSecurityHandler,
 ) : ConnectorBase(webConnectorType, setOf(CAROUSEL)), OrchestrationConnector {
     @Deprecated("Use the more aptly named connectorId field", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val webMapper = mapper.copy().registerModules(
-            SimpleModule().apply {
-                // fallback for serializing CharSequence
-                addSerializer(CharSequence::class.java, ToStringSerializer())
-            }
-        )
-        private val messageProcessor = WebMessageProcessor(
-            processMarkdown = propertyOrNull("tock_web_enable_markdown")?.toBoolean()
-            // Fallback to previous property name for backward compatibility
-                ?: propertyOrNull("allow_markdown").toBoolean()
-        )
+        private val webMapper =
+            mapper.copy().registerModules(
+                SimpleModule().apply {
+                    // fallback for serializing CharSequence
+                    addSerializer(CharSequence::class.java, ToStringSerializer())
+                },
+            )
+        private val messageProcessor =
+            WebMessageProcessor(
+                processMarkdown =
+                    propertyOrNull("tock_web_enable_markdown")?.toBoolean()
+                        // Fallback to previous property name for backward compatibility
+                        ?: propertyOrNull("allow_markdown").toBoolean(),
+            )
         private val channels by lazy { Channels() }
 
-        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponse) =
-            sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
-
+        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponse) = sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
     }
 
     override fun register(controller: ConnectorController) {
-
         controller.registerServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
-            val corsHandler = CorsHandler.create()
-                .addOriginWithRegex(corsPattern)
-                .allowedMethod(HttpMethod.POST)
-                .run {
-                    if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
-                }
-                .allowedHeader("Access-Control-Allow-Origin")
-                .allowedHeader("Content-Type")
-                .allowedHeader("X-Requested-With").apply {
-                    webConnectorExtraHeaders.forEach {
-                        this.allowedHeader(it)
+            val corsHandler =
+                CorsHandler.create()
+                    .addOriginWithRegex(corsPattern)
+                    .allowedMethod(HttpMethod.POST)
+                    .run {
+                        if (sseEnabled || directSseEnabled) allowedMethod(HttpMethod.GET) else this
                     }
-                }
-                // browsers do not send or save cookies unless credentials are allowed
-                .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
+                    .allowedHeader("Access-Control-Allow-Origin")
+                    .allowedHeader("Content-Type")
+                    .allowedHeader("X-Requested-With").apply {
+                        webConnectorExtraHeaders.forEach {
+                            this.allowedHeader(it)
+                        }
+                    }
+                    // browsers do not send or save cookies unless credentials are allowed
+                    .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
 
             // Apply CORS Handler for all paths and all methods (OPTIONS handled automatically)
             router.route("$path*").handler(corsHandler)
@@ -154,10 +154,11 @@ class WebConnector internal constructor(
                         try {
                             val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
                             val response = context.response()
-                            val channelId = channels.register(connectorId, userId) { webConnectorResponse ->
-                                logger.debug { "send response from channel: $webConnectorResponse" }
-                                response.sendSseResponse(webConnectorResponse)
-                            }
+                            val channelId =
+                                channels.register(connectorId, userId) { webConnectorResponse ->
+                                    logger.debug { "send response from channel: $webConnectorResponse" }
+                                    response.sendSseResponse(webConnectorResponse)
+                                }
                             response.setupSSE { channels.unregister(channelId) }
                         } catch (t: Throwable) {
                             context.fail(t)
@@ -168,8 +169,9 @@ class WebConnector internal constructor(
                 router.route("$path/sse/direct")
                     .handler { context ->
                         try {
-                            val body = context.request().getHeader("message")
-                                ?: context.body().asString() ?: error("message is mandatory and is missing")
+                            val body =
+                                context.request().getHeader("message")
+                                    ?: context.body().asString() ?: error("message is mandatory and is missing")
                             context.response().setupSSE()
 
                             handleRequest(controller, context, body)
@@ -185,11 +187,12 @@ class WebConnector internal constructor(
                 .handler { context ->
                     // Override the user on the request body
                     val tockUserId = context.get<String>(TOCK_USER_ID)
-                    val body = tockUserId?.let {
-                        val jsonBody = context.body().asJsonObject() ?: JsonObject()
-                        jsonBody.put("userId", tockUserId)
-                        jsonBody.toString()
-                    } ?: context.body().asString()
+                    val body =
+                        tockUserId?.let {
+                            val jsonBody = context.body().asJsonObject() ?: JsonObject()
+                            jsonBody.put("userId", tockUserId)
+                            jsonBody.toString()
+                        } ?: context.body().asString()
 
                     // Handle the request
                     handleRequest(controller, context, body)
@@ -200,13 +203,13 @@ class WebConnector internal constructor(
     override fun getOrchestrationHandlers(): OrchestrationHandlers =
         OrchestrationHandlers(
             eligibilityHandler = this::handleEligibility,
-            proxyHandler = this::handleProxy
+            proxyHandler = this::handleProxy,
         )
 
     private fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
-        body: String
+        body: String,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook")
         try {
@@ -214,13 +217,15 @@ class WebConnector internal constructor(
             val request: WebConnectorRequest = mapper.readValue(body)
 
             val applicationId =
-                if (request.connectorId?.isNotBlank() == true)
-                    if (webConnectorBridgeEnabled)
+                if (request.connectorId?.isNotBlank() == true) {
+                    if (webConnectorBridgeEnabled) {
                         request.connectorId.also { logger.debug { "Web bridge: $connectorId -> $it" } }
-                    else
+                    } else {
                         connectorId.also { logger.warn { "Web bridge disabled." } }
-                else
+                    }
+                } else {
                     connectorId
+                }
 
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
@@ -242,15 +247,16 @@ class WebConnector internal constructor(
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
     ) {
-        val callback = WebConnectorCallback(
-            applicationId = applicationId,
-            locale = locale,
-            context = context,
-            webMapper = webMapper,
-            eventId = event.id.toString(),
-            messageProcessor = messageProcessor,
-            streamedResponse = (event as? Action)?.metadata?.streamedResponse == true
-        )
+        val callback =
+            WebConnectorCallback(
+                applicationId = applicationId,
+                locale = locale,
+                context = context,
+                webMapper = webMapper,
+                eventId = event.id.toString(),
+                messageProcessor = messageProcessor,
+                streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
+            )
         if (sseEnabled) {
             // Uniquely identify each response, so they can be reconciliated between SSE and POST
             callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
@@ -259,8 +265,8 @@ class WebConnector internal constructor(
             event,
             ConnectorData(
                 callback = callback,
-                metadata = headersMetadata
-            )
+                metadata = headersMetadata,
+            ),
         )
     }
 
@@ -271,7 +277,7 @@ class WebConnector internal constructor(
         step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit
+        errorListener: (Throwable) -> Unit,
     ) {
         if (!sseEnabled) {
             throw UnsupportedOperationException("Web Connector only supports notifications when SSE is enabled")
@@ -279,14 +285,15 @@ class WebConnector internal constructor(
         handleEvent(
             applicationId = connectorId,
             locale = defaultLocale,
-            event = SendChoice(
-                recipientId,
-                connectorId,
-                PlayerId(connectorId, bot),
-                intent.wrappedIntent().name,
-                step,
-                parameters
-            ),
+            event =
+                SendChoice(
+                    recipientId,
+                    connectorId,
+                    PlayerId(connectorId, bot),
+                    intent.wrappedIntent().name,
+                    step,
+                    parameters,
+                ),
             controller = controller,
             context = null,
             headersMetadata = emptyMap(),
@@ -312,18 +319,19 @@ class WebConnector internal constructor(
 
     private fun handleProxy(
         controller: ConnectorController,
-        context: RoutingContext
+        context: RoutingContext,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook_orchestred")
         try {
             logger.debug { "Web proxy request input : ${context.body().asString()}" }
             val request: ResumeOrchestrationRequest = mapper.readValue(context.body().asString())
-            val callback = RestOrchestrationCallback(
-                webConnectorType,
-                applicationId = connectorId,
-                context = context,
-                orchestrationMapper = webMapper
-            )
+            val callback =
+                RestOrchestrationCallback(
+                    webConnectorType,
+                    applicationId = connectorId,
+                    context = context,
+                    orchestrationMapper = webMapper,
+                )
 
             controller.handle(request.toAction(), ConnectorData(callback))
         } catch (t: Throwable) {
@@ -336,28 +344,30 @@ class WebConnector internal constructor(
 
     private fun handleEligibility(
         controller: ConnectorController,
-        context: RoutingContext
+        context: RoutingContext,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook_support")
         try {
             logger.debug { "Web support request input : ${context.body().asString()}" }
             val request: AskEligibilityToOrchestratedBotRequest = mapper.readValue(context.body().asString())
-            val callback = RestOrchestrationCallback(
-                webConnectorType,
-                connectorId,
-                context = context,
-                orchestrationMapper = webMapper
-            )
+            val callback =
+                RestOrchestrationCallback(
+                    webConnectorType,
+                    connectorId,
+                    context = context,
+                    orchestrationMapper = webMapper,
+                )
 
             val support = controller.support(request.toAction(connectorId), ConnectorData(callback))
-            val sendEligibility = SecondaryBotEligibilityResponse(
-                support,
-                OrchestrationMetaData(
-                    playerId = PlayerId(connectorId, bot),
-                    applicationId = connectorId,
-                    recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user)
+            val sendEligibility =
+                SecondaryBotEligibilityResponse(
+                    support,
+                    OrchestrationMetaData(
+                        playerId = PlayerId(connectorId, bot),
+                        applicationId = connectorId,
+                        recipientId = request.metadata?.playerId ?: PlayerId(Dice.newId(), user),
+                    ),
                 )
-            )
             callback.sendResponse(sendEligibility)
         } catch (t: Throwable) {
             RestOrchestrationCallback(webConnectorType, connectorId, context = context).sendError()
@@ -367,7 +377,11 @@ class WebConnector internal constructor(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         when (event) {
             is Action -> {
                 when (callback) {
@@ -383,7 +397,10 @@ class WebConnector internal constructor(
         }
     }
 
-    private fun handleWebConnectorCallback(callback: WebConnectorCallback, event: Action) {
+    private fun handleWebConnectorCallback(
+        callback: WebConnectorCallback,
+        event: Action,
+    ) {
         if (callback.streamedResponse) {
             if (event.metadata.lastAnswer) {
                 callback.addMetadata(MetadataEvent.lastAnswer(event.applicationId))
@@ -400,7 +417,10 @@ class WebConnector internal constructor(
         }
     }
 
-    private fun handleOrchestrationCallback(callback: OrchestrationCallback, event: Action) {
+    private fun handleOrchestrationCallback(
+        callback: OrchestrationCallback,
+        event: Action,
+    ) {
         callback.actions.add(event)
         if (event.metadata.lastAnswer) {
             callback.sendResponse()
@@ -409,64 +429,73 @@ class WebConnector internal constructor(
 
     override val persistProfileLoaded: Boolean = booleanProperty("tock_web_connector_persist_profile", false)
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences {
         return when (callback) {
             is WebConnectorCallback -> UserPreferences().apply { locale = callback.locale }
             else -> UserPreferences()
         }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
-        { WebMessage(text.toString(), suggestions.map { webNlpQuickReply(it) }) }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? = { WebMessage(text.toString(), suggestions.map { webNlpQuickReply(it) }) }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        (message as? WebMessage)?.let {
-            if (it.card != null && it.card.buttons.isEmpty()) {
-                it.copy(card = it.card.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) }))
-            } else if (it.card == null && it.buttons.isEmpty()) {
-                it.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) })
-            } else {
-                null
-            }
-        } ?: message
-    }
-
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        listOfNotNull(
-            when (message) {
-                is MediaCard -> {
-                    WebMessage(
-                        card = WebCard(
-                            title = message.title,
-                            subTitle = message.subTitle,
-                            file = message.file?.toWebMediaFile(),
-                            buttons = message.actions.map { button -> button.toButton() }
-                        )
-                    )
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            (message as? WebMessage)?.let {
+                if (it.card != null && it.card.buttons.isEmpty()) {
+                    it.copy(card = it.card.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) }))
+                } else if (it.card == null && it.buttons.isEmpty()) {
+                    it.copy(buttons = suggestions.map { s -> webNlpQuickReply(s) })
+                } else {
+                    null
                 }
+            } ?: message
+        }
 
-                is MediaCarousel -> {
-                    WebMessage(
-                        carousel = WebCarousel(
-                            message.cards.map { mediaCard ->
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            listOfNotNull(
+                when (message) {
+                    is MediaCard -> {
+                        WebMessage(
+                            card =
                                 WebCard(
-                                    title = mediaCard.title,
-                                    subTitle = mediaCard.subTitle,
-                                    file = mediaCard.file?.toWebMediaFile(),
-                                    buttons = mediaCard.actions.map { button -> button.toButton() }
-                                )
-                            }
+                                    title = message.title,
+                                    subTitle = message.subTitle,
+                                    file = message.file?.toWebMediaFile(),
+                                    buttons = message.actions.map { button -> button.toButton() },
+                                ),
                         )
-                    )
-                }
+                    }
 
-                else -> null
-            }
-        )
-    }
+                    is MediaCarousel -> {
+                        WebMessage(
+                            carousel =
+                                WebCarousel(
+                                    message.cards.map { mediaCard ->
+                                        WebCard(
+                                            title = mediaCard.title,
+                                            subTitle = mediaCard.subTitle,
+                                            file = mediaCard.file?.toWebMediaFile(),
+                                            buttons = mediaCard.actions.map { button -> button.toButton() },
+                                        )
+                                    },
+                                ),
+                        )
+                    }
+
+                    else -> null
+                },
+            )
+        }
 
     private fun MediaAction.toButton() =
         if (url == null) {

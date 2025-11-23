@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "backend"
+    property = "backend",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageIn::class, name = whatsappBackend),
@@ -51,15 +51,14 @@ abstract class AlcmeonConnectorMessageIn(
 data class AlcmeonConnectorWhatsappMessageIn(
     override val userExternalId: String,
     override val userName: String,
-    val event: AlcmeonConnectorWhatsappMessageEvent
+    val event: AlcmeonConnectorWhatsappMessageEvent,
 ) : AlcmeonConnectorMessageIn(whatsappBackend)
-
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "type",
-    defaultImpl = AlcmeonConnectorWhatsappMessageDefaultEvent::class
+    defaultImpl = AlcmeonConnectorWhatsappMessageDefaultEvent::class,
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageTextEvent::class, name = "text"),
@@ -67,16 +66,18 @@ data class AlcmeonConnectorWhatsappMessageIn(
 )
 abstract class AlcmeonConnectorWhatsappMessageEvent(val type: AlcmeonConnectorWhatsappMessageEventType? = null)
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AlcmeonConnectorWhatsappMessageEventType {
-    text, interactive
+    text,
+    interactive,
 }
 
 data class AlcmeonConnectorWhatsappMessageTextEvent(val text: WhatsAppTextBody) : AlcmeonConnectorWhatsappMessageEvent(
-    AlcmeonConnectorWhatsappMessageEventType.text
+    AlcmeonConnectorWhatsappMessageEventType.text,
 )
 
 data class AlcmeonConnectorWhatsappMessageInteractiveEvent(val interactive: WhatsAppInteractive) : AlcmeonConnectorWhatsappMessageEvent(
-    AlcmeonConnectorWhatsappMessageEventType.interactive
+    AlcmeonConnectorWhatsappMessageEventType.interactive,
 )
 
 class AlcmeonConnectorWhatsappMessageDefaultEvent : AlcmeonConnectorWhatsappMessageEvent()
@@ -84,7 +85,7 @@ class AlcmeonConnectorWhatsappMessageDefaultEvent : AlcmeonConnectorWhatsappMess
 data class AlcmeonConnectorFacebookMessageIn(
     override val userExternalId: String,
     override val userName: String,
-    val event: AlcmeonConnectorFacebookMessageEvent
+    val event: AlcmeonConnectorFacebookMessageEvent,
 ) : AlcmeonConnectorMessageIn(facebookBackend)
 
 data class AlcmeonConnectorFacebookMessageEvent(val message: MessengerMessage)
@@ -92,5 +93,5 @@ data class AlcmeonConnectorFacebookMessageEvent(val message: MessengerMessage)
 data class MessengerMessage(
     var text: String? = null,
     val attachments: List<Attachment> = emptyList(),
-    @get:JsonProperty("quick_reply") val quickReply: UserActionPayload? = null
+    @get:JsonProperty("quick_reply") val quickReply: UserActionPayload? = null,
 )

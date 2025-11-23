@@ -36,37 +36,36 @@ data class Sentence(
     val messages: MutableList<GenericMessage> = mutableListOf(),
     val userInterface: UserInterfaceType? = null,
     override val delay: Long = 0,
-    @Transient private val nlpStatsProvider: NlpStatsProvider? = null
+    @Transient private val nlpStatsProvider: NlpStatsProvider? = null,
 ) : Message {
-
     companion object {
         private val logger = KotlinLogging.logger {}
 
         private fun toGenericMessage(message: ConnectorMessage): GenericMessage =
             (
-                    try {
-                        message.toGenericMessage() ?: GenericMessage(message)
-                    } catch (t: Throwable) {
-                        logger.error(t)
-                        GenericMessage(message)
-                    }
-                    ).copy(connectorType = message.connectorType, connectorMessage = message)
+                try {
+                    message.toGenericMessage() ?: GenericMessage(message)
+                } catch (t: Throwable) {
+                    logger.error(t)
+                    GenericMessage(message)
+                }
+            ).copy(connectorType = message.connectorType, connectorMessage = message)
     }
 
     constructor(
         text: String?,
         messages: MutableList<ConnectorMessage> = mutableListOf(),
         userInterface: UserInterfaceType? = null,
-        nlpStatsProvider: NlpStatsProvider? = null
+        nlpStatsProvider: NlpStatsProvider? = null,
     ) :
-            this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
+        this(text, messages.map { toGenericMessage(it) }.toMutableList(), userInterface, 0, nlpStatsProvider)
 
     override val eventType: EventType = EventType.sentence
 
     override fun toAction(
         playerId: PlayerId,
         applicationId: String,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ): Action {
         return SendSentence(
             playerId,
@@ -80,14 +79,14 @@ data class Sentence(
                     logger.error(e)
                     null
                 }
-            }.toMutableList()
+            }.toMutableList(),
         )
     }
 
     override fun obfuscate(): Sentence =
         copy(
             text = TockObfuscatorService.obfuscate(text, nlpStatsProvider?.invoke()?.obfuscatedRanges() ?: emptyList()),
-            messages = messages.asSequence().map { it.obfuscate() }.toMutableList()
+            messages = messages.asSequence().map { it.obfuscate() }.toMutableList(),
         )
 
     override fun toPrettyString(): String {
@@ -124,4 +123,3 @@ data class Sentence(
 fun interface NlpStatsProvider {
     operator fun invoke(): NlpCallStats?
 }
-

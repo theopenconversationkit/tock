@@ -25,14 +25,13 @@ import java.time.Instant.now
  * The user state.
  */
 data class UserState(
-        /** The user creation date. **/
-        val creationDate: Instant = now(),
-        /**
-         * The flag for this user - useful to store basic information about this user.
-         */
-        val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf()
+    /** The user creation date. **/
+    val creationDate: Instant = now(),
+    /**
+     * The flag for this user - useful to store basic information about this user.
+     */
+    val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf(),
 ) {
-
     companion object {
         private const val PROFILE_LOADED_FLAG = "tock_profile_loaded"
         private const val PROFILE_REFRESHED_FLAG = "tock_profile_refreshed"
@@ -55,33 +54,39 @@ data class UserState(
     var profileLoaded: Boolean
         get() = getFlag(PROFILE_LOADED_FLAG)?.toBoolean() ?: false
         set(value) {
-            if (value)
+            if (value) {
                 setUnlimitedFlag(PROFILE_LOADED_FLAG, value.toString())
-            else removeFlag(PROFILE_LOADED_FLAG)
+            } else {
+                removeFlag(PROFILE_LOADED_FLAG)
+            }
         }
 
     internal var profileRefreshed: Boolean
         get() = getFlag(PROFILE_REFRESHED_FLAG)?.toBoolean() ?: false
         set(value) {
-            if (value)
+            if (value) {
                 setFlag(
-                        PROFILE_REFRESHED_FLAG,
-                        refreshDuration,
-                        "true"
+                    PROFILE_REFRESHED_FLAG,
+                    refreshDuration,
+                    "true",
                 )
-            else removeFlag(PROFILE_REFRESHED_FLAG)
+            } else {
+                removeFlag(PROFILE_REFRESHED_FLAG)
+            }
         }
 
     var botDisabled: Boolean
         get() = getFlag(BOT_DISABLED_FLAG)?.toBoolean() ?: false
         set(value) {
-            if (value)
+            if (value) {
                 setFlag(
-                        BOT_DISABLED_FLAG,
-                        disabledDuration,
-                        "true"
+                    BOT_DISABLED_FLAG,
+                    disabledDuration,
+                    "true",
                 )
-            else removeFlag(BOT_DISABLED_FLAG)
+            } else {
+                removeFlag(BOT_DISABLED_FLAG)
+            }
         }
 
     fun getFlag(flag: String): String? {
@@ -95,11 +100,19 @@ data class UserState(
 
     fun hasFlag(flag: String): Boolean = getFlag(flag) != null
 
-    fun setFlag(flag: String, timeoutInMinutes: Long, value: String) {
+    fun setFlag(
+        flag: String,
+        timeoutInMinutes: Long,
+        value: String,
+    ) {
         setFlag(flag, Duration.ofMinutes(timeoutInMinutes), value)
     }
 
-    fun setFlag(flag: String, timeoutDuration: Duration, value: String) {
+    fun setFlag(
+        flag: String,
+        timeoutDuration: Duration,
+        value: String,
+    ) {
         flags[flag] = TimeBoxedFlag(value, now().plus(timeoutDuration))
     }
 
@@ -107,7 +120,10 @@ data class UserState(
         flags -= flag
     }
 
-    fun setUnlimitedFlag(flag: String, value: String) {
+    fun setUnlimitedFlag(
+        flag: String,
+        value: String,
+    ) {
         flags[flag] = TimeBoxedFlag(value, null)
     }
 }

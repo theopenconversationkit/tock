@@ -76,9 +76,13 @@ internal val collectionBuilder: (KClass<*>) -> String = {
         .replace("storage", "", true)
         .toCharArray()
         .fold("") { s, t ->
-            if (s.isEmpty()) t.lowercase()
-            else if (t.isUpperCase()) "${s}_${t.lowercase()}"
-            else "$s$t"
+            if (s.isEmpty()) {
+                t.lowercase()
+            } else if (t.isUpperCase()) {
+                "${s}_${t.lowercase()}"
+            } else {
+                "$s$t"
+            }
         }
 }
 
@@ -89,54 +93,57 @@ internal object TockKMongoConfiguration {
         CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
         IdGenerator.defaultGenerator = ObjectIdToStringGenerator
 
-        val tockModule = SimpleModule().apply {
-            addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
-            addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
-            addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
-            addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
-            addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
-            addSerializer(Period::class, ToStringSerializer(Period::class.java))
-            if (isDocumentDB()) {
-                addSerializer(
-                    Duration::class,
-                    object : StdScalarSerializer<Duration>(Duration::class.java) {
-                        override fun serialize(
-                            duration: Duration?,
-                            generator: JsonGenerator?,
-                            provider: SerializerProvider?
-                        ) {
-                            generator?.writeString(duration?.toString())
-                        }
-                    }
-                )
-            } else {
-                addSerializer(Duration::class, DurationSerializer.INSTANCE)
-            }
-            addDeserializer(
-                Duration::class,
-                object : StdScalarDeserializer<Duration>(Duration::class.java) {
-
-                    override fun deserialize(parser: JsonParser, context: DeserializationContext): Duration? {
-                        return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
-                            val e = parser.embeddedObject
-                            when (e) {
-                                is Decimal128 -> {
-                                    val b = e.bigDecimalValue()
-                                    val seconds = b.toLong()
-                                    val nanoseconds = b.subtract(BigDecimal.valueOf(seconds)).multiply(ONE_BILLION).toInt()
-                                    Duration.ofSeconds(seconds, nanoseconds.toLong())
-                                }
-
-                                is Duration -> e
-                                else -> error("unsupported duration $e")
+        val tockModule =
+            SimpleModule().apply {
+                addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
+                addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
+                addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
+                addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
+                addDeserializer(Period::class, JSR310StringParsableDeserializer.PERIOD)
+                addSerializer(Period::class, ToStringSerializer(Period::class.java))
+                if (isDocumentDB()) {
+                    addSerializer(
+                        Duration::class,
+                        object : StdScalarSerializer<Duration>(Duration::class.java) {
+                            override fun serialize(
+                                duration: Duration?,
+                                generator: JsonGenerator?,
+                                provider: SerializerProvider?,
+                            ) {
+                                generator?.writeString(duration?.toString())
                             }
-                        } else {
-                            DurationDeserializer.INSTANCE.deserialize(parser, context)
-                        }
-                    }
+                        },
+                    )
+                } else {
+                    addSerializer(Duration::class, DurationSerializer.INSTANCE)
                 }
-            )
-        }
+                addDeserializer(
+                    Duration::class,
+                    object : StdScalarDeserializer<Duration>(Duration::class.java) {
+                        override fun deserialize(
+                            parser: JsonParser,
+                            context: DeserializationContext,
+                        ): Duration? {
+                            return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
+                                val e = parser.embeddedObject
+                                when (e) {
+                                    is Decimal128 -> {
+                                        val b = e.bigDecimalValue()
+                                        val seconds = b.toLong()
+                                        val nanoseconds = b.subtract(BigDecimal.valueOf(seconds)).multiply(ONE_BILLION).toInt()
+                                        Duration.ofSeconds(seconds, nanoseconds.toLong())
+                                    }
+
+                                    is Duration -> e
+                                    else -> error("unsupported duration $e")
+                                }
+                            } else {
+                                DurationDeserializer.INSTANCE.deserialize(parser, context)
+                            }
+                        }
+                    },
+                )
+            }
 
         registerBsonModule(tockModule)
         KMongoConfiguration.extendedJsonMapper.registerModule(tockModule)
@@ -151,19 +158,21 @@ internal object TockKMongoConfiguration {
     }
 }
 
-private val defaultMongoUrl = property(
-    "tock_mongo_url",
-    "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock&retryWrites=true"
-)
+private val defaultMongoUrl =
+    property(
+        "tock_mongo_url",
+        "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock&retryWrites=true",
+    )
 
 private val mongoUrl = ConnectionString(defaultMongoUrl)
 
-private val asyncMongoUrl = ConnectionString(
-    property(
-        "tock_async_mongo_url",
-        defaultMongoUrl
+private val asyncMongoUrl =
+    ConnectionString(
+        property(
+            "tock_async_mongo_url",
+            defaultMongoUrl,
+        ),
     )
-)
 
 private val credentialsProvider = injector.provide<MongoCredentialsProvider>()
 
@@ -174,11 +183,12 @@ internal val mongoClient: MongoClient by lazy {
     TockKMongoConfiguration.configure()
     if (mongoUrl.credential == null) {
         val connectionString = mongoUrl
-        val settings = MongoClientSettings
-            .builder()
-            .applyConnectionString(connectionString)
-            .run { credentialsProvider.getCredentials()?.let { credential(it) } ?: this }
-            .build()
+        val settings =
+            MongoClientSettings
+                .builder()
+                .applyConnectionString(connectionString)
+                .run { credentialsProvider.getCredentials()?.let { credential(it) } ?: this }
+                .build()
 
         KMongo.createClient(settings)
     } else {
@@ -204,7 +214,7 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
                     transportSettings(TransportSettings.nettyBuilder().build())
                 }
             }
-            .build()
+            .build(),
     )
 }
 
@@ -228,25 +238,24 @@ fun getAsyncDatabase(databaseNameProperty: String): com.mongodb.reactivestreams.
     return injector.provide<com.mongodb.reactivestreams.client.MongoClient>().getDatabase(databaseName)
 }
 
-private fun formatDatabase(databaseNameProperty: String): String =
-    property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
+private fun formatDatabase(databaseNameProperty: String): String = property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
 
 inline fun <reified T : Any> MongoCollection<T>.watch(
     fullDocument: FullDocument = FullDocument.DEFAULT,
-    noinline listener: (ChangeStreamDocument<T>) -> Unit
+    noinline listener: (ChangeStreamDocument<T>) -> Unit,
 ) {
     watchIndefinitely(
         fullDocument = fullDocument,
         subscribeListener = { (KotlinLogging.logger {}).info { "Subscribe stream" } },
         errorListener = { (KotlinLogging.logger {}).error(it) },
         reopenListener = { (KotlinLogging.logger {}).warn { "Reopen stream" } },
-        listener = listener
+        listener = listener,
     )
 }
 
 fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
-    indexOptions: IndexOptions = IndexOptions()
+    indexOptions: IndexOptions = IndexOptions(),
 ): String {
     if (indexOptions.name == null) {
         generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
@@ -256,7 +265,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
 
 fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
-    indexOptions: IndexOptions = IndexOptions()
+    indexOptions: IndexOptions = IndexOptions(),
 ): String {
     if (indexOptions.name == null) {
         generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
@@ -266,7 +275,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
 
 fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: Bson,
-    indexOptions: IndexOptions = IndexOptions()
+    indexOptions: IndexOptions = IndexOptions(),
 ): String {
     if (indexOptions.name == null) {
         generateIndexName(keys, indexOptions = indexOptions)?.also { indexOptions.name(it) }
@@ -276,7 +285,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
 
 fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: String,
-    indexOptions: IndexOptions = IndexOptions()
+    indexOptions: IndexOptions = IndexOptions(),
 ): String {
     if (indexOptions.name == null) {
         generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.also { indexOptions.name(it) }
@@ -293,7 +302,7 @@ fun isDocumentDB(): Boolean = isDocumentDB
  * Amazon DocumentDB does not support dots “.” in a document field name
  */
 fun transformData(data: Any?): Any? {
-    return if (isDocumentDB())
+    return if (isDocumentDB()) {
         data?.let {
             when (it) {
                 is Map<*, *> -> {
@@ -305,19 +314,24 @@ fun transformData(data: Any?): Any? {
                 else -> it
             }
         }
-    else data
+    } else {
+        data
+    }
 }
 
 /**
  * Generate and return an index matching DocumentDB limits (32 characters maximum in a compound index) with the given document keys and options
  */
-private fun generateIndexName(document: Bson, indexOptions: IndexOptions): String? {
+private fun generateIndexName(
+    document: Bson,
+    indexOptions: IndexOptions,
+): String? {
     // Don't generate an index if the database isn't DocumentDB
     if (!isDocumentDB()) {
         return null
     }
 
-    if (indexOptions.name?.let { it.length > DocumentDBIndexLimitSize } != false) {
+    if (indexOptions.name?.let { it.length > DOCUMENT_DB_INDEX_LIMIT_SIZE } != false) {
         var index = ""
         var reducedIndex = ""
 
@@ -325,17 +339,21 @@ private fun generateIndexName(document: Bson, indexOptions: IndexOptions): Strin
             val sort: String = value.takeIf { it.isInt32 }?.asInt32()?.value.toString()
             index += key + sort
             reducedIndex += key.let {
-                if (it.length > DocumentDBIndexReducedSize) it.substring(
-                    0,
-                    DocumentDBIndexReducedSize
-                ) else it
+                if (it.length > DOCUMENT_DB_INDEX_REDUCED_SIZE) {
+                    it.substring(
+                        0,
+                        DOCUMENT_DB_INDEX_REDUCED_SIZE,
+                    )
+                } else {
+                    it
+                }
             } + sort
         }
 
-        if (index.length <= DocumentDBIndexLimitSize) {
+        if (index.length <= DOCUMENT_DB_INDEX_LIMIT_SIZE) {
             return index
         }
-        if (reducedIndex.length <= DocumentDBIndexLimitSize) {
+        if (reducedIndex.length <= DOCUMENT_DB_INDEX_LIMIT_SIZE) {
             return reducedIndex
         } else {
             logger.error("Generated reduced index too long : $index")
@@ -368,9 +386,9 @@ fun <T> AggregateIterable<T>.safeCollation(collation: Collation): AggregateItera
         collation(collation)
     }
 
-private const val DocumentDBIndexLimitSize = 32
+private const val DOCUMENT_DB_INDEX_LIMIT_SIZE = 32
 
-private const val DocumentDBIndexReducedSize = 3
+private const val DOCUMENT_DB_INDEX_REDUCED_SIZE = 3
 
 /**
  * By default, do not count more than 1000000 documents (for large databases)

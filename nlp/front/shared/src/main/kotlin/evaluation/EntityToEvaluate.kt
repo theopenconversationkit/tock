@@ -28,8 +28,7 @@ data class EntityToEvaluate(
     override val start: Int,
     override val end: Int,
     val entity: Entity,
-    val subEntities: List<EntityToEvaluate> = emptyList()
+    val subEntities: List<EntityToEvaluate> = emptyList(),
 ) : IntOpenRange {
-
     fun toEntityRecognition(): EntityRecognition = EntityRecognition(EntityValue(start, end, entity, null, subEntities.map { it.toEntityRecognition() }), 1.0)
 }

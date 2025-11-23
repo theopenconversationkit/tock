@@ -27,13 +27,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = DirectMessageOutcomingEvent::class, name = "message_create")
+    JsonSubTypes.Type(value = DirectMessageOutcomingEvent::class, name = "message_create"),
 )
 abstract class AbstractOutcomingEvent {
     abstract fun toGenericMessage(): GenericMessage
+
     abstract fun playerId(playerType: PlayerType): PlayerId
+
     abstract fun recipientId(playerType: PlayerType): PlayerId
 }

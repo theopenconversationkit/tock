@@ -41,19 +41,19 @@ import java.time.ZonedDateTime
  *
  */
 internal object DucklingClient {
-
     data class ParseRequest(
         val language: String,
         val dimensions: List<String>,
         val referenceDate: ZonedDateTime,
         val referenceTimezone: ZoneId,
-        val textToParse: String
+        val textToParse: String,
     )
 
     interface DucklingService {
-
         @POST("parse")
-        fun parse(@Body request: ParseRequest): Call<JSONValue>
+        fun parse(
+            @Body request: ParseRequest,
+        ): Call<JSONValue>
 
         @GET("healthcheck")
         fun healthcheck(): Call<Void>
@@ -64,36 +64,48 @@ internal object DucklingClient {
     private val jacksonConverterFactory: JacksonConverterFactory = JacksonConverterFactory.create(mapper)
 
     init {
-        val retrofit = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_duckling_request_timeout_ms", 4000),
-            logger,
-            circuitBreaker = true
-        )
-            .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
-            .addConverterFactory(RawJsonBodyConverterFactory)
-            .build()
+        val retrofit =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_duckling_request_timeout_ms", 4000),
+                logger,
+                circuitBreaker = true,
+            )
+                .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
+                .addConverterFactory(RawJsonBodyConverterFactory)
+                .build()
 
         service = retrofit.create()
     }
 
     object JacksonJsonArrayConverter : Converter<ResponseBody, JSONValue> {
-
         override fun convert(value: ResponseBody): JSONValue {
             return JSONValue(JsonArray(value.string()))
         }
     }
 
     object RawJsonBodyConverterFactory : Converter.Factory() {
-
-        override fun responseBodyConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit): Converter<ResponseBody, *> {
+        override fun responseBodyConverter(
+            type: Type,
+            annotations: Array<out Annotation>,
+            retrofit: Retrofit,
+        ): Converter<ResponseBody, *> {
             return JacksonJsonArrayConverter
         }
 
-        override fun requestBodyConverter(type: Type, parameterAnnotations: Array<out Annotation>, methodAnnotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, RequestBody>? {
+        override fun requestBodyConverter(
+            type: Type,
+            parameterAnnotations: Array<out Annotation>,
+            methodAnnotations: Array<out Annotation>,
+            retrofit: Retrofit,
+        ): Converter<*, RequestBody>? {
             return jacksonConverterFactory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
         }
 
-        override fun stringConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, String>? {
+        override fun stringConverter(
+            type: Type,
+            annotations: Array<out Annotation>,
+            retrofit: Retrofit,
+        ): Converter<*, String>? {
             return jacksonConverterFactory.stringConverter(type, annotations, retrofit)
         }
     }
@@ -103,10 +115,10 @@ internal object DucklingClient {
         dimensions: List<String>,
         referenceDate: ZonedDateTime,
         referenceTimezone: ZoneId,
-        textToParse: String
+        textToParse: String,
     ): JSONValue? {
         // duckling does not support well ’ char & no break space char
-        val text = textToParse.replace("’", "'").replace("\u00A0"," ")
+        val text = textToParse.replace("’", "'").replace("\u00A0", " ")
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
     }
 

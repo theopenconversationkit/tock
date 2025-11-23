@@ -48,26 +48,30 @@ import mu.KotlinLogging
 internal class BusinessChatConnector(
     private val path: String,
     private val connectorId: String,
-    private val businessId: String
+    private val businessId: String,
 ) : ConnectorBase(BusinessChatConnectorProvider.connectorType) {
-
     private val logger = KotlinLogging.logger { }
 
-    private val cspBusinessChatClient: CSPBusinessChatClient = CSPBusinessChatClient(
-        try {
-            injector.provide<BusinessChatIntegrationService>()
-        } catch (e: Throwable) {
-            logger.error("No Business Chat Integration Service injected - fallback to default")
-            logger.trace(e)
-            DefaultBusinessChatIntegrationService()
-        }
-    )
+    private val cspBusinessChatClient: CSPBusinessChatClient =
+        CSPBusinessChatClient(
+            try {
+                injector.provide<BusinessChatIntegrationService>()
+            } catch (e: Throwable) {
+                logger.error("No Business Chat Integration Service injected - fallback to default")
+                logger.trace(e)
+                DefaultBusinessChatIntegrationService()
+            },
+        )
     private val executor: Executor get() = injector.provide()
 
     /**
      * Called for each messages sent on the bot bus
      */
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         when (event) {
             is SendSentence -> {
                 val message = MessageConverter.toMessage(event)
@@ -103,8 +107,8 @@ internal class BusinessChatConnector(
                                     event,
                                     ConnectorData(
                                         BusinessChatConnectorCallback(connectorId),
-                                        referer = message.intent
-                                    )
+                                        referer = message.intent,
+                                    ),
                                 )
                             }
                         }

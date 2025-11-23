@@ -22,5 +22,5 @@ package ai.tock.bot.xray
 data class XrayPlanExecutionResult(
     val success: Int,
     val total: Int,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )

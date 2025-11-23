@@ -21,5 +21,5 @@ import java.util.Locale
 data class TranslateSentencesQuery(
     val targetLanguage: Locale,
     val searchQuery: SearchQuery?,
-    val selectedSentences: List<SentenceReport> = emptyList()
+    val selectedSentences: List<SentenceReport> = emptyList(),
 ) : ApplicationScopedQuery()

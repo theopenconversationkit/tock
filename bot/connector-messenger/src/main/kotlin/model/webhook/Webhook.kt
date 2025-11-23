@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
  */
 @JsonDeserialize(using = WebhookDeserializer::class)
 abstract class Webhook : MessengerConnectorMessage() {
-
     abstract val sender: Sender?
     abstract val recipient: Recipient
     abstract val timestamp: Long
@@ -40,11 +39,11 @@ abstract class Webhook : MessengerConnectorMessage() {
         return null
     }
 
-    open fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
+    open fun playerId(playerType: PlayerType): PlayerId = PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
 
-    open fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
-        recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
-        playerType
-    )
+    open fun recipientId(playerType: PlayerType): PlayerId =
+        PlayerId(
+            recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
+            playerType,
+        )
 }

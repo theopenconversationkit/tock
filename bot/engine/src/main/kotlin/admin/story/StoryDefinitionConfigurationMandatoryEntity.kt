@@ -44,9 +44,8 @@ data class StoryDefinitionConfigurationMandatoryEntity(
     /**
      * The type of answer configuration.
      */
-    override val currentType: AnswerConfigurationType
+    override val currentType: AnswerConfigurationType,
 ) : StoryDefinitionAnswersContainer {
-
     @Transient
     val entityTypeName: String = entityType.withoutNamespace()
 }

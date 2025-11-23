@@ -27,13 +27,12 @@ import org.litote.kmongo.Id
 data class TestDialogReport(
     val actions: List<TestActionReport> = emptyList(),
     val userInterface: UserInterfaceType,
-    val id: Id<Dialog>
+    val id: Id<Dialog>,
 ) {
-
     constructor(dialog: DialogReport) :
         this(
             dialog.actions.map { TestActionReport(it) },
             dialog.userInterface,
-            dialog.id
+            dialog.id,
         )
 }

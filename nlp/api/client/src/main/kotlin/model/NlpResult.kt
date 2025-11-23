@@ -65,13 +65,14 @@ data class NlpResult(
     /**
      * Original intents (without qualifier) with significant probabilities.
      */
-    val originalIntentsProbabilities: Map<String, Double> = emptyMap()
+    val originalIntentsProbabilities: Map<String, Double> = emptyMap(),
 ) {
-
     fun firstValue(role: String): NlpEntityValue? = entities.firstOrNull { it.entity.role == role }
 
     fun entityTextContent(value: NlpEntityValue): String = retainedQuery.substring(value.start, value.end)
 
-    fun hasIntent(intent: String, minProbability: Double = 0.0): Boolean =
-        otherIntentsProbabilities.any { intent == it.key && it.value > minProbability }
+    fun hasIntent(
+        intent: String,
+        minProbability: Double = 0.0,
+    ): Boolean = otherIntentsProbabilities.any { intent == it.key && it.value > minProbability }
 }

@@ -24,6 +24,7 @@ import com.github.salomonbrys.kodein.provider
 /**
  *
  */
-val googleSTTModule = Kodein.Module {
-    bind<STT>(overrides = true) with provider { GoogleSpeechClient }
-}
+val googleSTTModule =
+    Kodein.Module {
+        bind<STT>(overrides = true) with provider { GoogleSpeechClient }
+    }

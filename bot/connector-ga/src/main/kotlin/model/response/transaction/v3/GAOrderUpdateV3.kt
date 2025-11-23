@@ -26,5 +26,5 @@ data class GAOrderUpdateV3(
     val updateMask: String? = null,
     val order: GAOrder,
     val userNotification: GAUserNotification? = null,
-    val reason: String? = null
+    val reason: String? = null,
 )

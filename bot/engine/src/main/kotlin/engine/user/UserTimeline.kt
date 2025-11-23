@@ -43,9 +43,8 @@ class UserTimeline(
     /**
      * Temporary ids (of type [PlayerType.temporary] linked to this user timeline.
      */
-    val temporaryIds: MutableSet<String> = mutableSetOf()
+    val temporaryIds: MutableSet<String> = mutableSetOf(),
 ) {
-
     /**
      * Returns the current dialog.
      */

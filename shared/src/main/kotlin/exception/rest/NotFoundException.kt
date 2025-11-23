@@ -23,8 +23,8 @@ import io.netty.handler.codec.http.HttpResponseStatus
 /**
  * Http 404 exception.
  */
-class NotFoundException(httpResponseBody: ErrorMessageWrapper)
-    : RestException(httpResponseBody, HttpResponseStatus.NOT_FOUND) {
+class NotFoundException(httpResponseBody: ErrorMessageWrapper) :
+    RestException(httpResponseBody, HttpResponseStatus.NOT_FOUND) {
     constructor(errorCode: Int, message: String) : this(ErrorMessageWrapper(setOf(ErrorMessage(errorCode.toString(), message))))
     constructor() : this(ErrorMessageWrapper())
     constructor(message: String) : this(ErrorMessageWrapper(message))

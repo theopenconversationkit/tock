@@ -25,22 +25,25 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSend
 import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
-data class WhatsAppCloudBotTextMessage (
-        val text: TextContent,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val userId: String? = null,
-        val previewUrl: Boolean = false,
+data class WhatsAppCloudBotTextMessage(
+    val text: TextContent,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val userId: String? = null,
+    val previewUrl: Boolean = false,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.text, userId) {
-    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotTextMessage(
-                    text,
-                    recipientType,
-                    recipientId,
-                    previewUrl,
-            )
+    override fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String,
+    ): WhatsAppCloudSendBotMessage =
+        WhatsAppCloudSendBotTextMessage(
+            text,
+            recipientType,
+            recipientId,
+            previewUrl,
+        )
 
     override fun toGenericMessage(): GenericMessage =
-            GenericMessage(
-                    texts = mapOf(GenericMessage.TEXT_PARAM to text.body),
-            )
+        GenericMessage(
+            texts = mapOf(GenericMessage.TEXT_PARAM to text.body),
+        )
 }

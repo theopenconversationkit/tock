@@ -19,6 +19,10 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ClientAttachmentType {
-    image, audio, video, file
+    image,
+    audio,
+    video,
+    file,
 }

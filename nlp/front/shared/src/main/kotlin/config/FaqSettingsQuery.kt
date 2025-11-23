@@ -21,5 +21,5 @@ package ai.tock.nlp.front.shared.config
  */
 class FaqSettingsQuery(
     val satisfactionEnabled: Boolean,
-    val satisfactionStoryId: String?
+    val satisfactionStoryId: String?,
 )

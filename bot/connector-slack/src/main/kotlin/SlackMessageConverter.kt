@@ -23,7 +23,6 @@ import ai.tock.bot.engine.action.SendSentence
 import mu.KotlinLogging
 
 internal object SlackMessageConverter {
-
     val logger = KotlinLogging.logger {}
 
     fun toMessageOut(action: Action): SlackConnectorMessage? {

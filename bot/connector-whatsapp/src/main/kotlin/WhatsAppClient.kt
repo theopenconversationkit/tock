@@ -58,41 +58,46 @@ import java.time.format.DateTimeFormatter
 internal class WhatsAppClient(
     whatsAppUrl: String,
     login: String,
-    password: String
+    password: String,
 ) {
-
     data class LoginResponse(val users: List<LoginUser> = emptyList())
+
     data class LoginUser(
         val token: String,
-        @get:JsonProperty("expires_after") val expiresAfter: OffsetDateTime
+        @get:JsonProperty("expires_after") val expiresAfter: OffsetDateTime,
     )
 
     data class MediaResponse(val media: List<MediaId> = emptyList())
+
     data class MediaId(val id: String)
 
     private interface WhatsAppLoginApi {
-
         @Headers("Content-Type: application/json")
         @POST("v1/users/login")
         fun login(): Call<LoginResponse>
     }
 
     private interface WhatsAppApi {
-
         @Headers("Content-Type: application/json")
         @POST("v1/messages")
-        fun sendMessage(@Body message: WhatsAppSendBotMessage): Call<WhatsAppResponse>
+        fun sendMessage(
+            @Body message: WhatsAppSendBotMessage,
+        ): Call<WhatsAppResponse>
 
         @GET("v1/media/{mediaId}")
-        fun getMedia(@Path("mediaId") mediaId: String): Call<ResponseBody>
+        fun getMedia(
+            @Path("mediaId") mediaId: String,
+        ): Call<ResponseBody>
 
         @DELETE("v1/media/{mediaId}")
-        fun deleteMedia(@Path("mediaId") mediaId: String): Call<ResponseBody>
+        fun deleteMedia(
+            @Path("mediaId") mediaId: String,
+        ): Call<ResponseBody>
 
         @POST("v1/media")
         fun sendMedia(
             @Header("Content-Type") contentType: String,
-            @Body body: RequestBody
+            @Body body: RequestBody,
         ): Call<MediaResponse>
     }
 
@@ -106,50 +111,53 @@ internal class WhatsAppClient(
     @Volatile
     private var token: String? = null
 
-    val clientMapper = mapper.copy().registerModule(
-        SimpleModule()
-            .addDeserializer(
-                OffsetDateTime::class,
-                object : InstantDeserializer<OffsetDateTime>(
-                    OffsetDateTime::class.java,
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX"),
-                    { OffsetDateTime.from(it) },
-                    { a -> OffsetDateTime.ofInstant(Instant.ofEpochMilli(a.value), a.zoneId) },
-                    { a ->
-                        OffsetDateTime.ofInstant(
-                            Instant.ofEpochSecond(a.integer, a.fraction.toLong()),
-                            a.zoneId
-                        )
+    val clientMapper =
+        mapper.copy().registerModule(
+            SimpleModule()
+                .addDeserializer(
+                    OffsetDateTime::class,
+                    object : InstantDeserializer<OffsetDateTime>(
+                            OffsetDateTime::class.java,
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX"),
+                            { OffsetDateTime.from(it) },
+                            { a -> OffsetDateTime.ofInstant(Instant.ofEpochMilli(a.value), a.zoneId) },
+                            { a ->
+                                OffsetDateTime.ofInstant(
+                                    Instant.ofEpochSecond(a.integer, a.fraction.toLong()),
+                                    a.zoneId,
+                                )
+                            },
+                            { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
+                            false,
+                            false,
+                            false,
+                        ) {
                     },
-                    { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
-                    false,
-                    false,
-                    false,
-                ) {
-                }
-            )
-    )
+                ),
+        )
 
     init {
-        loginApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_whatsapp_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(basicAuthInterceptor(login, password))
-        )
-            .baseUrl(whatsAppUrl)
-            .addJacksonConverter(clientMapper)
-            .build()
-            .create()
+        loginApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(basicAuthInterceptor(login, password)),
+            )
+                .baseUrl(whatsAppUrl)
+                .addJacksonConverter(clientMapper)
+                .build()
+                .create()
 
-        api = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_whatsapp_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(tokenInterceptor())
-        )
-            .baseUrl(whatsAppUrl)
-            .addJacksonConverter(clientMapper)
-            .build()
-            .create()
+        api =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(tokenInterceptor()),
+            )
+                .baseUrl(whatsAppUrl)
+                .addJacksonConverter(clientMapper)
+                .build()
+                .create()
     }
 
     /**
@@ -159,8 +167,9 @@ internal class WhatsAppClient(
         return Interceptor { chain ->
             val original = chain.request()
 
-            val requestBuilder = original.newBuilder()
-                .header("Authorization", "Bearer $token")
+            val requestBuilder =
+                original.newBuilder()
+                    .header("Authorization", "Bearer $token")
 
             val request = requestBuilder.build()
             chain.proceed(request)
@@ -205,12 +214,13 @@ internal class WhatsAppClient(
                     }
 
                     is WhatsAppSendBotImageMessage -> {
-                        val response = api.sendMedia(
-                            message.image.contentType,
-                            message.image.byteImages!!.toRequestBody(
-                                message.image.contentType.toMediaType()
-                            )
-                        ).execute()
+                        val response =
+                            api.sendMedia(
+                                message.image.contentType,
+                                message.image.byteImages!!.toRequestBody(
+                                    message.image.contentType.toMediaType(),
+                                ),
+                            ).execute()
                         val id = response.body()?.media?.firstOrNull()?.id
                         if (id == null) {
                             response.logError()

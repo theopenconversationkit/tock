@@ -23,27 +23,24 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
 )
-
 @JsonSubTypes(
-        JsonSubTypes.Type(value = WhatsAppCloudTextMessage::class, name = "text"),
-        JsonSubTypes.Type(value = WhatsAppCloudAudioMessage::class, name = "audio"),
-        JsonSubTypes.Type(value = WhatsAppCloudButtonMessage::class, name = "button"),
-        JsonSubTypes.Type(value = WhatsAppCloudDocumentMessage::class, name = "document"),
-        JsonSubTypes.Type(value = WhatsAppCloudImageMessage::class, name = "image"),
-        JsonSubTypes.Type(value = WhatsAppCloudInteractiveMessage::class, name = "interactive"),
-        JsonSubTypes.Type(value = WhatsAppCloudOrderMessage::class, name = "order"),
-        JsonSubTypes.Type(value = WhatsAppCloudStickerMessage::class, name = "sticker"),
-        JsonSubTypes.Type(value = WhatsAppCloudSystemMessage::class, name = "system"),
-        JsonSubTypes.Type(value = WhatsAppCloudVideoMessage::class, name = "video"),
-        JsonSubTypes.Type(value = WhatsAppCloudLocationMessage::class, name = "location")
+    JsonSubTypes.Type(value = WhatsAppCloudTextMessage::class, name = "text"),
+    JsonSubTypes.Type(value = WhatsAppCloudAudioMessage::class, name = "audio"),
+    JsonSubTypes.Type(value = WhatsAppCloudButtonMessage::class, name = "button"),
+    JsonSubTypes.Type(value = WhatsAppCloudDocumentMessage::class, name = "document"),
+    JsonSubTypes.Type(value = WhatsAppCloudImageMessage::class, name = "image"),
+    JsonSubTypes.Type(value = WhatsAppCloudInteractiveMessage::class, name = "interactive"),
+    JsonSubTypes.Type(value = WhatsAppCloudOrderMessage::class, name = "order"),
+    JsonSubTypes.Type(value = WhatsAppCloudStickerMessage::class, name = "sticker"),
+    JsonSubTypes.Type(value = WhatsAppCloudSystemMessage::class, name = "system"),
+    JsonSubTypes.Type(value = WhatsAppCloudVideoMessage::class, name = "video"),
+    JsonSubTypes.Type(value = WhatsAppCloudLocationMessage::class, name = "location"),
 )
-
-
-abstract class WhatsAppCloudMessage (val type: WhatsAppCloudMessageType) {
+abstract class WhatsAppCloudMessage(val type: WhatsAppCloudMessageType) {
     abstract val from: String
     abstract val id: String
     abstract val timestamp: String

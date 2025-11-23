@@ -19,7 +19,6 @@ package ai.tock.shared.service
 import com.github.salomonbrys.kodein.Kodein.Module
 
 interface BotAdditionalModulesService {
-
     /**
      * A default modules injected first
      */

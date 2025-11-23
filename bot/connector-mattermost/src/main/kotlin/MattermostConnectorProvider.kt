@@ -16,14 +16,18 @@
 
 package ai.tock.bot.connector.mattermost
 
-import ai.tock.bot.connector.*
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.resourceAsString
 
 /**
  *
  */
 internal object MattermostConnectorProvider : ConnectorProvider {
-
     private const val MATTERMOST_URL = "_url_"
     private const val TOKEN = "_token_"
     private const val DEDICATED_CHANNEL_ID = "_dedicated_room_id_"
@@ -53,30 +57,30 @@ internal object MattermostConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Mattermost Server Url",
                     MATTERMOST_URL,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Incoming webhook token",
                     TOKEN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Optional Channel Id",
                     DEDICATED_CHANNEL_ID,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Outgoing webhook token",
                     OUTGOING_TOKEN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Optional Tock Username",
                     TOCK_USERNAME,
-                    false
+                    false,
                 ),
             ),
-            resourceAsString("/mattermost.svg")
+            resourceAsString("/mattermost.svg"),
         )
 }
 

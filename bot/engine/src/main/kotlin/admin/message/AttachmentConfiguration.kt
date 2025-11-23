@@ -30,9 +30,8 @@ import java.util.Locale
 data class AttachmentConfiguration(
     val url: String,
     val type: AttachmentType,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : MessageConfiguration {
-
     override val eventType: EventType = EventType.attachment
 
     override fun toAction(
@@ -40,14 +39,14 @@ data class AttachmentConfiguration(
         applicationId: String,
         recipientId: PlayerId,
         locale: Locale,
-        userInterfaceType: UserInterfaceType
+        userInterfaceType: UserInterfaceType,
     ): Action {
         return SendAttachment(
             playerId,
             applicationId,
             recipientId,
             url,
-            type
+            type,
         )
     }
 }

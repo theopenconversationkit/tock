@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
  *
  */
 class DateEntityValueTest {
-
     @Test
     fun duration_withDifferentTimeZone_shouldGiveTheRightValue() {
         var actual = ZonedDateTime.now()

@@ -17,12 +17,12 @@
 package ai.tock.bot.api.model.message.bot
 
 enum class EventCategory {
-    METADATA
+    METADATA,
 }
 
 data class Event(
     val category: EventCategory,
     val key: String? = null,
     val value: String? = null,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : BotMessage

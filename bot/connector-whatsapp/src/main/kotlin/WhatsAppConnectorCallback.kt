@@ -25,5 +25,5 @@ import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType
  */
 class WhatsAppConnectorCallback(
     applicationId: String,
-    val recipientType: WhatsAppBotRecipientType
+    val recipientType: WhatsAppBotRecipientType,
 ) : ConnectorCallbackBase(applicationId, whatsAppConnectorType)

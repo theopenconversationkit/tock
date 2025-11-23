@@ -19,6 +19,11 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppMessageStatus {
-    sent, delivered, read, failed, deleted
+    sent,
+    delivered,
+    read,
+    failed,
+    deleted,
 }

@@ -24,7 +24,6 @@ import ai.tock.nlp.front.service.ParserRequestData
  *
  */
 internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(data) {
-
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
             // select first
@@ -32,7 +31,7 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
             while (hasNext() && result == null) {
                 next().apply {
                     val p = probability()
-                    if(p >= data.application.knownIntentThreshold) {
+                    if (p >= data.application.knownIntentThreshold) {
                         originalIntents[name] = p
                     }
 
@@ -46,7 +45,7 @@ internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(dat
             while (hasNext()) {
                 next().run {
                     val p = probability()
-                    if(p >= data.application.knownIntentThreshold) {
+                    if (p >= data.application.knownIntentThreshold) {
                         originalIntents[name] = p
                     }
                     if (data.isStateSupportedByIntent(this)) {

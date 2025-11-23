@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("ktlint:standard:max-line-length")
 
 package ai.tock.bot.admin.model
 
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
 class BotI18nLabelUpdateTest {
-
     private val json =
         """{"_id":"${Dice.newId()}","namespace":"sncf","category":"build","i18n":[{"locale":"de","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"de","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"en","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"en","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"es","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"es","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"fr","interfaceType":0,"label":"Worlds","validated":true,"alternatives":[],"stats":[]},{"locale":"fr","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"it","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"it","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"ja","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"ja","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"nl","interfaceType":0,"label":"","validated":false,"alternatives":[],"stats":[]},{"locale":"nl","interfaceType":1,"label":"","validated":false,"alternatives":[],"stats":[]}],"defaultLabel":"Worlds","defaultLocale":"fr","defaultI18n":[],"version":10,"unhandledLocaleStats":[],"lastUpdate":null}"""
 

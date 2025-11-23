@@ -21,5 +21,5 @@ data class Card(
     val subTitle: I18nText? = null,
     val attachment: Attachment? = null,
     val actions: List<Action> = emptyList(),
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : BotMessage

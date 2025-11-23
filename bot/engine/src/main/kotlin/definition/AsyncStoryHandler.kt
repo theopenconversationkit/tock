@@ -29,7 +29,6 @@ import kotlinx.coroutines.runBlocking
  */
 @ExperimentalTockCoroutines
 interface AsyncStoryHandler : StoryHandler {
-
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
     override fun handle(bus: BotBus) {
         // This should only happen in automated tests

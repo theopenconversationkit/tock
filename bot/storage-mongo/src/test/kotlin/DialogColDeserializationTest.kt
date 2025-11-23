@@ -57,7 +57,6 @@ import kotlin.test.assertTrue
  *
  */
 class DialogColDeserializationTest : AbstractTest(false) {
-
     class TestParamObfuscator : MapObfuscator {
         override fun obfuscate(map: Map<String, String>): Map<String, String> {
             return map.mapValues { "" }
@@ -66,10 +65,11 @@ class DialogColDeserializationTest : AbstractTest(false) {
 
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {
-        val value = AnyValueWrapper(
-            UserLocation::class,
-            UserLocation(1.0, 2.0)
-        )
+        val value =
+            AnyValueWrapper(
+                UserLocation::class,
+                UserLocation(1.0, 2.0),
+            )
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper>(s)
         assertEquals(value, newValue)
@@ -77,26 +77,28 @@ class DialogColDeserializationTest : AbstractTest(false) {
 
     @Test
     fun serializeAndDeserializeStateMongoWrapper_shouldLeftDataInchanged() {
-        val state = DialogStateMongoWrapper(
-            Intent("test"),
-            mapOf(
-                "role" to EntityStateValueWrapper(
-                    EntityValue(
-                        0,
-                        1,
-                        Entity(EntityType("type"), "role"),
-                        "content"
-                    )
-                )
-            ),
-            emptyMap(),
-            UserLocation(1.0, 2.0),
-            NextUserActionState(
-                listOf(NlpIntentQualifier("test")),
-                ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Z")),
-                ZoneId.systemDefault()
+        val state =
+            DialogStateMongoWrapper(
+                Intent("test"),
+                mapOf(
+                    "role" to
+                        EntityStateValueWrapper(
+                            EntityValue(
+                                0,
+                                1,
+                                Entity(EntityType("type"), "role"),
+                                "content",
+                            ),
+                        ),
+                ),
+                emptyMap(),
+                UserLocation(1.0, 2.0),
+                NextUserActionState(
+                    listOf(NlpIntentQualifier("test")),
+                    ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Z")),
+                    ZoneId.systemDefault(),
+                ),
             )
-        )
         val s = mapper.writeValueAsString(state)
         val newValue = mapper.readValue<DialogStateMongoWrapper>(s)
         assertEquals(state, newValue)
@@ -104,46 +106,48 @@ class DialogColDeserializationTest : AbstractTest(false) {
 
     @Test
     fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
-        val dialog = Dialog(
-            emptySet(),
-            state = ai.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now()))
-        )
-        val playerId = PlayerId("a", PlayerType.user)
-        val s = mapper.writeValueAsString(
-            DialogCol(
-                dialog,
-                UserTimelineCol(
-                    "id",
-                    "namespace",
-                    UserTimeline(
-                        playerId
-                    ),
-                    null
-                )
+        val dialog =
+            Dialog(
+                emptySet(),
+                state = ai.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now())),
             )
-        )
+        val playerId = PlayerId("a", PlayerType.user)
+        val s =
+            mapper.writeValueAsString(
+                DialogCol(
+                    dialog,
+                    UserTimelineCol(
+                        "id",
+                        "namespace",
+                        UserTimeline(
+                            playerId,
+                        ),
+                        null,
+                    ),
+                ),
+            )
         val newValue = mapper.readValue<DialogCol>(s)
         assertEquals(dialog, newValue.toDialog { mockk() })
     }
 
     @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
-
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
         val parameters: Map<String, String> = mapOf("key" to "value")
 
-        val choice = SendChoice(
-            PlayerId(
-                UUID.randomUUID().toString()
-            ),
-            "",
-            PlayerId(
-                UUID.randomUUID().toString()
-            ),
-            "test",
-            parameters
-        )
+        val choice =
+            SendChoice(
+                PlayerId(
+                    UUID.randomUUID().toString(),
+                ),
+                "",
+                PlayerId(
+                    UUID.randomUUID().toString(),
+                ),
+                "test",
+                parameters,
+            )
         val stateWrapper = SendChoiceMongoWrapper(choice)
 
         assertTrue {
@@ -160,10 +164,13 @@ class DialogColDeserializationTest : AbstractTest(false) {
 
     @Test
     fun `StoryMongoWrapper can be serialized and deserialized correctly`() {
-        val s = StoryMongoWrapper(
-            "a", null, null,
-            listOf(SendSentenceMongoWrapper(SendSentence(PlayerId("a"), "app", PlayerId("b"), "text")))
-        )
+        val s =
+            StoryMongoWrapper(
+                "a",
+                null,
+                null,
+                listOf(SendSentenceMongoWrapper(SendSentence(PlayerId("a"), "app", PlayerId("b"), "text"))),
+            )
         println(mapper.writeValueAsString(s))
         val r = mapper.readValue<StoryMongoWrapper>(mapper.writeValueAsString(s))
         assertEquals(s, r)

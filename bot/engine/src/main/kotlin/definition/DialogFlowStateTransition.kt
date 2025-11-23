@@ -21,5 +21,5 @@ data class DialogFlowStateTransition(
     val nextState: DialogFlowState,
     val intent: IntentAware?,
     val step: StoryStep<*>?,
-    val type: DialogFlowStateTransitionType = DialogFlowStateTransitionType.nlp
+    val type: DialogFlowStateTransitionType = DialogFlowStateTransitionType.nlp,
 )

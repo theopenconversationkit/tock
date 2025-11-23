@@ -35,5 +35,5 @@ data class UserReportQuery(
     /**
      * Display test users.
      */
-    val displayTests: Boolean = false
+    val displayTests: Boolean = false,
 )

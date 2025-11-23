@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ai.tock.bot.admin.model
 
 import ai.tock.shared.defaultNamespace
@@ -28,6 +27,7 @@ import java.util.Locale
 /**
  * [I18nLabel] dto.
  */
+
 data class BotI18nLabel(
     val _id: Id<I18nLabel>,
     val namespace: String = defaultNamespace,
@@ -38,22 +38,32 @@ data class BotI18nLabel(
     val statCount: Int = 0,
     val lastUpdate: Instant? = null,
     val unhandledLocaleStats: List<I18nLabelStat> = emptyList(),
-    val version: Int = 0
+    val version: Int = 0,
 ) {
-
     companion object {
         private fun selectStats(
             label: I18nLocalizedLabel,
             labels: LinkedHashSet<I18nLocalizedLabel>,
-            stats: List<I18nLabelStat>
+            stats: List<I18nLabelStat>,
         ): List<I18nLabelStat> =
             stats.filter { s ->
                 s.hasSameLanguage(label) &&
                     (
                         (label.interfaceType == s.interfaceType && s.connectorId == label.connectorId) ||
-                            (label.connectorId == null && label.interfaceType == s.interfaceType && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType && it.connectorId == s.connectorId }) ||
-                            (label.connectorId == null && label.interfaceType == textChat && labels.none { it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType })
-                        )
+                            (
+                                label.connectorId == null && label.interfaceType == s.interfaceType &&
+                                    labels.none {
+                                        it != label && it.label.isNotBlank() && s.hasSameLanguage(it) &&
+                                            it.interfaceType == s.interfaceType && it.connectorId == s.connectorId
+                                    }
+                            ) ||
+                            (
+                                label.connectorId == null && label.interfaceType == textChat &&
+                                    labels.none {
+                                        it != label && it.label.isNotBlank() && s.hasSameLanguage(it) && it.interfaceType == s.interfaceType
+                                    }
+                            )
+                    )
             }
     }
 
@@ -68,6 +78,6 @@ data class BotI18nLabel(
             stats.sumOf { it.count },
             stats.maxByOrNull { it.lastUpdate }?.lastUpdate,
             stats.filter { label.i18n.none { l -> it.hasSameLanguage(l) } },
-            label.version
+            label.version,
         )
 }

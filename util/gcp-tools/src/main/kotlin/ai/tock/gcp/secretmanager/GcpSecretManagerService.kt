@@ -27,7 +27,14 @@ import ai.tock.shared.security.key.GcpSecretKey
 import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.api.gax.rpc.AlreadyExistsException
-import com.google.cloud.secretmanager.v1.*
+import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse
+import com.google.cloud.secretmanager.v1.ProjectName
+import com.google.cloud.secretmanager.v1.Replication
+import com.google.cloud.secretmanager.v1.Secret
+import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
+import com.google.cloud.secretmanager.v1.SecretName
+import com.google.cloud.secretmanager.v1.SecretPayload
+import com.google.cloud.secretmanager.v1.SecretVersionName
 import com.google.protobuf.ByteString
 import kotlinx.serialization.json.Json
 import mu.KLogger
@@ -36,8 +43,7 @@ import mu.KotlinLogging
 /**
  * Implementation of the AWS Secret Manager Service
  */
-class GcpSecretManagerService: SecretManagerService {
-
+class GcpSecretManagerService : SecretManagerService {
     override val type: SecretManagerProviderType
         get() = SecretManagerProviderType.GCP_SECRET_MANAGER
 
@@ -45,7 +51,7 @@ class GcpSecretManagerService: SecretManagerService {
     private val logger: KLogger = KotlinLogging.logger { }
 
     // Get an existing secret.
-    private fun getGcpSecret(secretId: String): String  {
+    private fun getGcpSecret(secretId: String): String {
         // Access the secret version.
         val secretVersionName: SecretVersionName = SecretVersionName.of(EnvConfig.gcpProjectId, secretId, GCP_SECRET_VERSION)
         val response: AccessSecretVersionResponse = client.accessSecretVersion(secretVersionName)
@@ -54,8 +60,10 @@ class GcpSecretManagerService: SecretManagerService {
         return response.payload.data.toByteArray().decodeToString()
     }
 
-
-    private fun createOrUpdateGcpSecret(secretId: String, secretObject: Any) {
+    private fun createOrUpdateGcpSecret(
+        secretId: String,
+        secretObject: Any,
+    ) {
         // Create secret if it does not exist
         createGcpSecret(secretId)
 
@@ -75,41 +83,45 @@ class GcpSecretManagerService: SecretManagerService {
     private fun createGcpSecret(secretId: String) {
         try {
             // Build the secret to create with manual replication
-            val secretToCreate: Secret = Secret.newBuilder()
-                .setReplication(
-                    Replication.newBuilder()
-                        .setUserManaged(
-                            Replication.UserManaged.newBuilder()
-                                .addReplicas(
-                                    Replication.UserManaged.Replica.newBuilder()
-                                        .setLocation(EnvConfig.gcpRegion)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
+            val secretToCreate: Secret =
+                Secret.newBuilder()
+                    .setReplication(
+                        Replication.newBuilder()
+                            .setUserManaged(
+                                Replication.UserManaged.newBuilder()
+                                    .addReplicas(
+                                        Replication.UserManaged.Replica.newBuilder()
+                                            .setLocation(EnvConfig.gcpRegion)
+                                            .build(),
+                                    )
+                                    .build(),
+                            )
+                            .build(),
+                    )
+                    .build()
 
             val projectName: ProjectName = ProjectName.of(EnvConfig.gcpProjectId)
             val createdSecret = client.createSecret(projectName, secretId, secretToCreate)
             logger.info { "The secret ${createdSecret.name} is successfully created." }
-
         } catch (e: AlreadyExistsException) {
             logger.info { "The secret $secretId is already exists." }
         }
     }
 
-    override fun getCredentials(secretName: String): Credentials =
-        Json.decodeFromString(getGcpSecret(secretName))
+    override fun getCredentials(secretName: String): Credentials = Json.decodeFromString(getGcpSecret(secretName))
 
-    override fun getAIProviderSecret(secretName: String): AIProviderSecret =
-        Json.decodeFromString(getGcpSecret(secretName))
+    override fun getAIProviderSecret(secretName: String): AIProviderSecret = Json.decodeFromString(getGcpSecret(secretName))
 
-    override fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret) =
-        createOrUpdateGcpSecret(secretName, secretValue)
+    override fun createOrUpdateAIProviderSecret(
+        secretName: String,
+        secretValue: AIProviderSecret,
+    ) = createOrUpdateGcpSecret(secretName, secretValue)
 
-    override fun generateSecretName(namespace: String, botId: String, feature: String): String {
+    override fun generateSecretName(
+        namespace: String,
+        botId: String,
+        feature: String,
+    ): String {
         // Define allowed characters
         val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/_+=.@-"
 
@@ -122,11 +134,12 @@ class GcpSecretManagerService: SecretManagerService {
         val filteredInput = normalized.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
 
         // Limit length to 255 characters
-        val normalizedName = if (filteredInput.length > 255) {
-            filteredInput.substring(0, 255)
-        } else {
-            filteredInput
-        }
+        val normalizedName =
+            if (filteredInput.length > 255) {
+                filteredInput.substring(0, 255)
+            } else {
+                filteredInput
+            }
 
         return normalizedName
     }

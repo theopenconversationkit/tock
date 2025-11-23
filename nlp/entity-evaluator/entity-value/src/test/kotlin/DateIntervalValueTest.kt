@@ -28,7 +28,6 @@ import kotlin.test.assertEquals
  *
  */
 class DateIntervalValueTest {
-
     @Test
     fun duration_withDifferentTimeZone_shouldGiveTheRightValue() {
         val actual = ZonedDateTime.now()
@@ -38,8 +37,8 @@ class DateIntervalValueTest {
             duration,
             DateIntervalEntityValue(
                 DateEntityValue(actual, hour),
-                DateEntityValue(end, hour)
-            ).duration()
+                DateEntityValue(end, hour),
+            ).duration(),
         )
     }
 
@@ -52,8 +51,8 @@ class DateIntervalValueTest {
             end.plusHours(1),
             DateIntervalEntityValue(
                 DateEntityValue(actual, hour),
-                DateEntityValue(end, hour)
-            ).end(zoneId)
+                DateEntityValue(end, hour),
+            ).end(zoneId),
         )
     }
 
@@ -66,8 +65,8 @@ class DateIntervalValueTest {
             end,
             DateIntervalEntityValue(
                 DateEntityValue(actual, hour),
-                DateEntityValue(end, hour)
-            ).inclusiveEnd(zoneId)
+                DateEntityValue(end, hour),
+            ).inclusiveEnd(zoneId),
         )
     }
 
@@ -80,8 +79,8 @@ class DateIntervalValueTest {
             end,
             DateIntervalEntityValue(
                 DateEntityValue(actual, hour),
-                DateEntityValue(end, minute)
-            ).inclusiveEnd(zoneId)
+                DateEntityValue(end, minute),
+            ).inclusiveEnd(zoneId),
         )
     }
 }

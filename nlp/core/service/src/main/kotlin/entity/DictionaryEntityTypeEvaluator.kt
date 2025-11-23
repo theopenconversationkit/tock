@@ -24,22 +24,25 @@ import org.simmetrics.metrics.StringMetrics
 import java.util.Locale
 
 internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
-
     private val levenshtein = StringMetrics.damerauLevenshtein()
 
-    override fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult {
+    override fun evaluate(
+        context: EntityCallContextForEntity,
+        text: String,
+    ): EvaluationResult {
         val dictionary = DictionaryRepositoryService.getDictionary(context.entityType)
 
-        val value = dictionary?.let {
-            findValue(
-                context.language,
-                it.getLabelsMap(context.language),
-                it.onlyValues,
-                it.minDistance,
-                text.trim(),
-                it.textSearch
-            )
-        }
+        val value =
+            dictionary?.let {
+                findValue(
+                    context.language,
+                    it.getLabelsMap(context.language),
+                    it.onlyValues,
+                    it.minDistance,
+                    text.trim(),
+                    it.textSearch,
+                )
+            }
         return EvaluationResult(true, value, value?.candidates?.firstOrNull()?.probability ?: 1.0)
     }
 
@@ -49,7 +52,7 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
         onlyValues: Boolean,
         minDistance: Double,
         text: String,
-        textSearch: Boolean
+        textSearch: Boolean,
     ): StringValue? {
         val textToCompare = text.lowercase(locale)
         val values = predefinedValues.mapValues { l -> l.value?.map { s -> s.lowercase(locale) } ?: emptyList() }
@@ -61,14 +64,15 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
                 }
             }
         } else {
-            val acceptableValues = values.mapNotNull { e ->
-                val max = e.value.asSequence().map { levenshtein.compare(textToCompare, it) }.maxOrNull()
-                if (max != null && (max > minDistance || (textSearch && e.value.any { textToCompare.contains(it) }))) {
-                    ValueWithProbability(e.key.value, max.toDouble())
-                } else {
-                    null
-                }
-            }.sortedByDescending { it.probability }
+            val acceptableValues =
+                values.mapNotNull { e ->
+                    val max = e.value.asSequence().map { levenshtein.compare(textToCompare, it) }.maxOrNull()
+                    if (max != null && (max > minDistance || (textSearch && e.value.any { textToCompare.contains(it) }))) {
+                        ValueWithProbability(e.key.value, max.toDouble())
+                    } else {
+                        null
+                    }
+                }.sortedByDescending { it.probability }
 
             return acceptableValues.firstOrNull()?.value?.let { StringValue(it, acceptableValues) }
         }

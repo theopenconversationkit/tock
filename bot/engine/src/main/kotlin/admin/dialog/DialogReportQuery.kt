@@ -49,22 +49,17 @@ data class DialogReportQuery(
      * Is the result is obfuscated ?.
      */
     val obfuscated: Boolean = false,
-
     /**
      * [ratings] list of number between 1 and 5 to filter dialog by rating
      */
 
-    val ratings : Set<Int> = emptySet(),
-
+    val ratings: Set<Int> = emptySet(),
     /**
      * [applicationId] configuration canal
      */
-    val applicationId : String? = null,
-
-    val intentsToHide : Set<String> =  emptySet(),
-
+    val applicationId: String? = null,
+    val intentsToHide: Set<String> = emptySet(),
     val isGenAiRagDialog: Boolean? = null,
-
     val withAnnotations: Boolean? = null,
     val annotationStates: Set<BotAnnotationState> = emptySet(),
     val annotationReasons: Set<BotAnnotationReasonType> = emptySet(),

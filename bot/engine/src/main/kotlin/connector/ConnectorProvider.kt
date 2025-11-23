@@ -27,7 +27,6 @@ import kotlin.reflect.KClass
  * - you need to provide a META-INF/services/ai.tock.bot.connector.ConnectorProvider file.
  */
 interface ConnectorProvider {
-
     /**
      * The connector type provided
      */
@@ -78,6 +77,6 @@ interface ConnectorProvider {
     fun createRequestFilter(connectorConfiguration: ConnectorConfiguration): RequestFilter =
         ai.tock.shared.security.createRequestFilter(
             connectorConfiguration.parameters[ALLOWED_IPS_FIELD]?.split(",")?.toSet(),
-            connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD]
+            connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD],
         )
 }

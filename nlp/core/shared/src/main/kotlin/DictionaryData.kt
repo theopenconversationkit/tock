@@ -45,14 +45,12 @@ data class DictionaryData(
     /**
      * If the text is contained by at least one label, the value is eligible.
      */
-    val textSearch: Boolean = false
+    val textSearch: Boolean = false,
 ) {
-
     /**
      * Returns a [PredefinedValue] -> list of labels map for the specified [locale].
      */
-    fun getLabelsMap(locale: Locale): Map<PredefinedValue, List<String>?> =
-        values.associateWith { v -> v.labels[locale] }
+    fun getLabelsMap(locale: Locale): Map<PredefinedValue, List<String>?> = values.associateWith { v -> v.labels[locale] }
 
     @Transient
     val qualifiedName: String = "$namespace:$entityName"

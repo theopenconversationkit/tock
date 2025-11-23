@@ -16,11 +16,11 @@
 
 package ai.tock.nlp.front.service.storage
 
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.FaqSettings
 import org.litote.kmongo.Id
 
 interface FaqSettingsDAO {
-
     fun getFaqSettingsById(id: Id<FaqSettings>): FaqSettings?
 
     fun deleteFaqSettingsById(id: Id<FaqSettings>)
@@ -28,5 +28,4 @@ interface FaqSettingsDAO {
     fun save(faqSettings: FaqSettings)
 
     fun getFaqSettingsByApplicationId(id: Id<ApplicationDefinition>): FaqSettings?
-
 }

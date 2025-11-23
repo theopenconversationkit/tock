@@ -31,26 +31,29 @@ object DataMigrationService {
      *
      * Resolves the `namespace` and `applicationId` from related dialogs (for metrics where it is missing).
      */
-    fun migrateMetrics(){
+    fun migrateMetrics() {
         // Count the number of metrics eligible for migration
         val eligibleMetricsCount = DataMigrationMetricMongoDAO.countEligibleMetrics()
         logger.info { "eligibleMetricsCount=$eligibleMetricsCount" }
 
         // If no metrics are eligible, cancel the migration early
-        if(eligibleMetricsCount == 0L){
+        if (eligibleMetricsCount == 0L) {
             logger.warn { "Migration of metrics is canceled: No metric is eligible for migration." }
             return
         }
 
         // Retrieve the list of MetricProjectionResult containing metricId, dialogNamespace, and dialogApplicationId
-        val metricProjections : List<MetricProjectionResult> = DataMigrationMetricMongoDAO.getMetricProjections()
+        val metricProjections: List<MetricProjectionResult> = DataMigrationMetricMongoDAO.getMetricProjections()
 
         // Verify that the count of projections matches the count of eligible metrics
         // This ensures data consistency between counting and fetching projections
-        if (eligibleMetricsCount != metricProjections.size.toLong()){
+        if (eligibleMetricsCount != metricProjections.size.toLong()) {
             logger.error { "The migration of metrics has failed! (eligibleMetricsCount=$eligibleMetricsCount != metricProjections=${metricProjections.size})" }
-            logger.warn { "distinctMetricProjections=${metricProjections.distinctBy { 
-                Triple(it.metricId, it.dialogNamespace, it.dialogApplicationId) }.size}" }
+            logger.warn {
+                "distinctMetricProjections=${metricProjections.distinctBy {
+                    Triple(it.metricId, it.dialogNamespace, it.dialogApplicationId)
+                }.size}"
+            }
             return
         }
 
@@ -59,9 +62,9 @@ object DataMigrationService {
         logger.info { "Migrated $modifiedCount Metrics with their namespace and applicationId" }
 
         // Log partial success or full success
-        if(modifiedCount != eligibleMetricsCount){
+        if (modifiedCount != eligibleMetricsCount) {
             logger.warn { "The migration of metrics was partially successful. ${eligibleMetricsCount - modifiedCount} metrics have not been updated!" }
-        }else{
+        } else {
             logger.info { "All eligible metrics have been successfully updated." }
         }
     }
@@ -69,12 +72,12 @@ object DataMigrationService {
     /**
      * Migrates indicators by updating their `namespace` field.
      */
-    fun migrateIndicators(){
+    fun migrateIndicators() {
         // Count indicators eligible for migration
         val eligibleIndicatorsCount = DataMigrationMetricMongoDAO.countEligibleIndicators()
         logger.info { "eligibleIndicatorsCount=$eligibleIndicatorsCount" }
 
-        if(eligibleIndicatorsCount == 0L){
+        if (eligibleIndicatorsCount == 0L) {
             // No indicators need migration; exit early
             logger.warn { "Migration of indicators is canceled: No indicator is eligible for migration." }
             return
@@ -84,7 +87,7 @@ object DataMigrationService {
         val botProjections = DataMigrationMetricMongoDAO.getBotProjections()
         val duplicatesBotId = botProjections.filter { it.namespaces.size > 1 }
 
-        if (duplicatesBotId.isNotEmpty()){
+        if (duplicatesBotId.isNotEmpty()) {
             // Prevent migration if duplicates exist to avoid inconsistent updates
             logger.error { "The migration of indicators has failed! (duplicatesBotId=$duplicatesBotId)" }
             return

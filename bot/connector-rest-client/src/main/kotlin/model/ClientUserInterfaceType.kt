@@ -19,7 +19,9 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ClientUserInterfaceType {
-
-    textChat, voiceAssistant, textAndVoiceAssistant
+    textChat,
+    voiceAssistant,
+    textAndVoiceAssistant,
 }

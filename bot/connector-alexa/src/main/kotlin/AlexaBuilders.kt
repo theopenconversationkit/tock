@@ -36,7 +36,7 @@ val alexaConnectorType = ConnectorType(ALEXA_CONNECTOR_TYPE_ID, UserInterfaceTyp
  */
 fun <T : Bus<T>> T.sendToAlexa(
     messageProvider: T.() -> AlexaMessage,
-    delay: Long = defaultDelay(currentAnswerIndex)
+    delay: Long = defaultDelay(currentAnswerIndex),
 ): T {
     if (targetConnectorType == alexaConnectorType) {
         withMessage(messageProvider(this))
@@ -50,7 +50,7 @@ fun <T : Bus<T>> T.sendToAlexa(
  */
 fun <T : Bus<T>> T.endForAlexa(
     messageProvider: T.() -> AlexaMessage,
-    delay: Long = defaultDelay(currentAnswerIndex)
+    delay: Long = defaultDelay(currentAnswerIndex),
 ): T {
     if (targetConnectorType == alexaConnectorType) {
         withMessage(messageProvider(this))
@@ -75,8 +75,7 @@ fun alexaEndConversation(): AlexaMessage = AlexaMessage(true)
 /**
  * Set a reprompt.
  */
-fun I18nTranslator.alexaReprompt(reprompt: CharSequence): AlexaMessage =
-    AlexaMessage(false, reprompt = translate(reprompt).toString())
+fun I18nTranslator.alexaReprompt(reprompt: CharSequence): AlexaMessage = AlexaMessage(false, reprompt = translate(reprompt).toString())
 
 /**
  * Add the specified card.
@@ -85,16 +84,17 @@ fun I18nTranslator.alexaStandardCard(
     title: CharSequence,
     text: CharSequence,
     smallImageUrl: String,
-    largeImageUrl: String = smallImageUrl
+    largeImageUrl: String = smallImageUrl,
 ): AlexaMessage =
     AlexaMessage(
         false,
         StandardCard().apply {
             setTitle(translate(title).toString())
             setText(translate(text).toString())
-            image = Image().apply {
-                setSmallImageUrl(smallImageUrl)
-                setLargeImageUrl(largeImageUrl)
-            }
-        }
+            image =
+                Image().apply {
+                    setSmallImageUrl(smallImageUrl)
+                    setLargeImageUrl(largeImageUrl)
+                }
+        },
     )

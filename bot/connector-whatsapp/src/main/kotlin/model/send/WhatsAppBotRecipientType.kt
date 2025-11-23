@@ -19,6 +19,8 @@ package ai.tock.bot.connector.whatsapp.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppBotRecipientType {
-    individual, group
+    individual,
+    group,
 }

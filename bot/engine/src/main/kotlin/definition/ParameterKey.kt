@@ -22,7 +22,6 @@ import ai.tock.shared.jackson.mapper
  * A parameter key - the implementation is usually an enum.
  */
 interface ParameterKey {
-
     /**
      * Overridden by enum implementation.
      */
@@ -36,12 +35,10 @@ interface ParameterKey {
     /**
      * Create a [Parameters] with this as key and the [value].toString() value.
      */
-    operator fun get(value: Any): Parameters =
-        Parameters(key to ((value as? ParameterKey)?.key ?: value.toString()))
+    operator fun get(value: Any): Parameters = Parameters(key to ((value as? ParameterKey)?.key ?: value.toString()))
 
     /**
      * Create a [Parameters] with this as key and the [value] json serialized string.
      */
-    operator fun invoke(value: Any): Parameters =
-        Parameters(key to mapper.writeValueAsString(value))
+    operator fun invoke(value: Any): Parameters = Parameters(key to mapper.writeValueAsString(value))
 }

@@ -37,7 +37,6 @@ import mu.KotlinLogging
  *
  */
 internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
-
     private val logger = KotlinLogging.logger {}
 
     // stories with configuration (including built-in)
@@ -51,17 +50,21 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
-    override fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        super.disableBot(timeline, dialog, action)
+    override fun disableBot(
+        timeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+    ): Boolean = super.disableBot(timeline, dialog, action)
 
-    override fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        super.enableBot(timeline, dialog, action)
+    override fun enableBot(
+        timeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+    ): Boolean = super.enableBot(timeline, dialog, action)
 
-    override fun hasDisableTagIntent(dialog: Dialog): Boolean =
-        super.hasDisableTagIntent(dialog)
+    override fun hasDisableTagIntent(dialog: Dialog): Boolean = super.hasDisableTagIntent(dialog)
 
-    private fun findStoryDefinitionByTag(tag: StoryTag): List<StoryDefinition> =
-        stories.filter { it.tags.contains(tag) }
+    private fun findStoryDefinitionByTag(tag: StoryTag): List<StoryDefinition> = stories.filter { it.tags.contains(tag) }
 
     override val botDisabledStories: List<StoryDefinition>
         get() = findStoryDefinitionByTag(StoryTag.DISABLE)
@@ -82,21 +85,22 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                     ConfiguredStoryDefinition(
                         definition = this,
                         configuration = it,
-                        configurationStoryHandler = botStoryHandlers[it.storyId]
+                        configurationStoryHandler = botStoryHandlers[it.storyId],
                     )
                 }
                 .groupBy { it.storyId }
 
-        allStories = (
+        allStories =
+            (
                 this.configuredStories +
-                        // in order to handle built-in not yet configured...
-                        botDefinition
-                            .stories
-                            .asSequence()
-                            .filterNot { this.configuredStories.containsKey(it.id) }
-                            .groupBy { it.id }
-                )
-            .values.flatten()
+                    // in order to handle built-in not yet configured...
+                    botDefinition
+                        .stories
+                        .asSequence()
+                        .filterNot { this.configuredStories.containsKey(it.id) }
+                        .groupBy { it.id }
+            )
+                .values.flatten()
 
         this.allStoriesById = allStories.associateBy { it.id }
     }
@@ -104,7 +108,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     override val stories: List<StoryDefinition>
         get() = allStories
 
-    override fun findIntent(intent: String, applicationId: String): Intent {
+    override fun findIntent(
+        intent: String,
+        applicationId: String,
+    ): Intent {
         val i = super.findIntent(intent, applicationId)
         return if (i == ragexcluded) {
             val i2 = botDefinition.findIntent(intent, applicationId)
@@ -112,14 +119,22 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         } else if (i == unknown) {
             val i2 = botDefinition.findIntent(intent, applicationId)
             if (i2 == unknown) BotDefinition.findIntent(stories, intent) else i2
-        } else i
+        } else {
+            i
+        }
     }
 
-    override fun findStoryDefinition(intent: IntentAware?, applicationId: String): StoryDefinition {
+    override fun findStoryDefinition(
+        intent: IntentAware?,
+        applicationId: String,
+    ): StoryDefinition {
         return findStoryDefinition(intent?.wrappedIntent()?.name, applicationId)
     }
 
-    private fun findStory(intent: String?, applicationId: String): StoryDefinition =
+    private fun findStory(
+        intent: String?,
+        applicationId: String,
+    ): StoryDefinition =
         BotDefinition.findStoryDefinition(
             stories
                 .asSequence()
@@ -136,11 +151,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             keywordStory,
             ragExcludedStory,
             ragStory,
-            botDefinition.ragConfiguration
+            botDefinition.ragConfiguration,
         )
 
-    internal fun builtInStory(storyId: String): StoryDefinition =
-        builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
+    internal fun builtInStory(storyId: String): StoryDefinition = builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
 
     private fun returnsUnknownStory(storyId: String): StoryDefinition =
         unknownStory.also {
@@ -151,7 +165,11 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             }
         }
 
-    private fun findStoryDefinition(intent: String?, applicationId: String, initialIntent: String?): StoryDefinition {
+    private fun findStoryDefinition(
+        intent: String?,
+        applicationId: String,
+        initialIntent: String?,
+    ): StoryDefinition {
         val story = findStory(intent, applicationId)
 
         return (story as? ConfiguredStoryDefinition)?.let {
@@ -159,14 +177,15 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             if (switchId != null) {
                 (configuredStories[switchId] ?: listOfNotNull(builtInStoriesMap[switchId]))
                     .let { stories ->
-                        val targetStory = stories
-                            .asSequence()
-                            .filterIsInstance<ConfiguredStoryDefinition>()
-                            .filterNot { c -> c.isDisabled(applicationId) }
-                            .run {
-                                firstOrNull { c -> c.answerType != builtin } ?: firstOrNull()
-                            }
-                            ?: stories.firstOrNull { c -> c !is ConfiguredStoryDefinition }
+                        val targetStory =
+                            stories
+                                .asSequence()
+                                .filterIsInstance<ConfiguredStoryDefinition>()
+                                .filterNot { c -> c.isDisabled(applicationId) }
+                                .run {
+                                    firstOrNull { c -> c.answerType != builtin } ?: firstOrNull()
+                                }
+                                ?: stories.firstOrNull { c -> c !is ConfiguredStoryDefinition }
 
                         targetStory
                             ?.let { toStory ->
@@ -185,7 +204,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         } ?: story
     }
 
-    override fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition =
+    override fun findStoryDefinition(
+        intent: String?,
+        applicationId: String,
+    ): StoryDefinition =
         findStoryDefinition(intent, applicationId, intent).let {
             if (it is ConfiguredStoryDefinition && it.answerType == builtin) {
                 builtInStory(it.storyId)
@@ -194,19 +216,25 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             }
         }
 
-    override fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition =
+    override fun findStoryDefinitionById(
+        storyId: String,
+        applicationId: String,
+    ): StoryDefinition =
         // first search into built-in then in configured, fallback to search by intent
         builtInStoriesMap[storyId] ?: allStoriesById[storyId]?.checkApplicationId(applicationId)
-        ?: findStoryDefinition(
-            storyId,
-            applicationId
-        )
+            ?: findStoryDefinition(
+                storyId,
+                applicationId,
+            )
 
-    override fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
+    override fun findStoryByStoryHandler(
+        storyHandler: StoryHandler,
+        applicationId: String,
+    ): StoryDefinition? =
         (
-                botDefinition.stories.find { it.storyHandler == storyHandler }
-                    ?: stories.find { it.storyHandler == storyHandler }
-                )
+            botDefinition.stories.find { it.storyHandler == storyHandler }
+                ?: stories.find { it.storyHandler == storyHandler }
+        )
             ?.checkApplicationId(applicationId)
 
     private fun StoryDefinition.checkApplicationId(applicationId: String): StoryDefinition =
@@ -217,7 +245,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             ConfiguredStoryDefinition(
                 this@BotDefinitionWrapper,
                 configuration,
-                BotApplicationConfigurationKey(applicationId, this@BotDefinitionWrapper)
+                BotApplicationConfigurationKey(applicationId, this@BotDefinitionWrapper),
             )
         } else {
             this

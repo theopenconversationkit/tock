@@ -35,18 +35,23 @@ import io.mockk.coVerify
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
 
 /**
  *
  */
 class BotTest : BotEngineTest() {
-    private fun Bot.handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+    private fun Bot.handle(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData,
+    ) {
         @OptIn(ExperimentalTockCoroutines::class)
         runBlocking {
             handleAction(action, userTimeline, connector, connectorData)
@@ -62,14 +67,15 @@ class BotTest : BotEngineTest() {
 
     @Test
     fun handleSendChoice_shouldNotReturnUnknownStory_whenIntentIsSecondaryIntentAndNoStoryExists() {
-        val choice = action(
-            Choice(
-                secondaryIntent.name,
-                mapOf(
-                    SendChoice.PREVIOUS_INTENT_PARAMETER to test.name
-                )
+        val choice =
+            action(
+                Choice(
+                    secondaryIntent.name,
+                    mapOf(
+                        SendChoice.PREVIOUS_INTENT_PARAMETER to test.name,
+                    ),
+                ),
             )
-        )
         dialog.stories.clear()
         bot.handle(choice, userTimeline, connectorController, connectorData)
 
@@ -228,7 +234,6 @@ class BotTest : BotEngineTest() {
 
     @Test
     fun `GIVEN disabled intent tagged story WHEN call intent THEN send message before disabling bot`() {
-
         // Given
         val sentence = action(Sentence("disable bot"))
         val connectorControllerSpy = spyk(connectorController)
@@ -246,7 +251,6 @@ class BotTest : BotEngineTest() {
     fun `GIVEN When ASK_AGAIN TAG is present on previous story THEN return no more rounds and hasCurrentAskAgainProcess true`() {
         dialog.stories.clear()
 
-
         val sentence = action(Sentence("unknown"))
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
@@ -256,9 +260,9 @@ class BotTest : BotEngineTest() {
                 listOf<Story>(
                     Story(
                         TestStoryDefinition.withAskAgainTag,
-                        TestStoryDefinition.withAskAgainTag.wrappedIntent()
-                    )
-                )
+                        TestStoryDefinition.withAskAgainTag.wrappedIntent(),
+                    ),
+                ),
             )
             capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
         }
@@ -273,7 +277,6 @@ class BotTest : BotEngineTest() {
     fun `GIVEN When ASK_AGAIN TAG is not present on previous story THEN default rounds and hasCurrentAskAgainProcess false`() {
         dialog.stories.clear()
 
-
         val sentence = action(Sentence("unknown"))
         val sendSentence = slot<SendSentence>()
         val capturedDialog = slot<Dialog>()
@@ -283,9 +286,9 @@ class BotTest : BotEngineTest() {
                 listOf<Story>(
                     Story(
                         TestStoryDefinition.withoutStep,
-                        TestStoryDefinition.withoutStep.wrappedIntent()
-                    )
-                )
+                        TestStoryDefinition.withoutStep.wrappedIntent(),
+                    ),
+                ),
             )
             capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
         }
@@ -310,9 +313,9 @@ class BotTest : BotEngineTest() {
                     Story(TestStoryDefinition.withAskAgainTag, TestStoryDefinition.withAskAgainTag.wrappedIntent()),
                     Story(
                         unknown,
-                        Intent.unknown
-                    )
-                )
+                        Intent.unknown,
+                    ),
+                ),
             )
             capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
         }

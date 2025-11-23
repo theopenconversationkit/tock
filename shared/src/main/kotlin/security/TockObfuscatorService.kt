@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList
  * To manage obfuscations.
  */
 object TockObfuscatorService {
-
     private val logger = KotlinLogging.logger {}
 
     private val stringObfuscators: MutableList<StringObfuscator> = CopyOnWriteArrayList()
@@ -74,7 +73,10 @@ object TockObfuscatorService {
      * @param texts the text list to obfuscate
      * @param obfuscatedRanges a map (texts list indexed) of forced obfuscated ranges
      */
-    fun obfuscate(texts: List<String>, obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap()): List<String> {
+    fun obfuscate(
+        texts: List<String>,
+        obfuscatedRanges: Map<Int, List<IntRange>> = emptyMap(),
+    ): List<String> {
         return texts.mapIndexed { index, t -> obfuscate(t, obfuscatedRanges[index] ?: emptyList()) ?: "" }
     }
 
@@ -84,7 +86,10 @@ object TockObfuscatorService {
      * @param text the text to obfuscate
      * @param obfuscatedRanges the forced obfuscation ranges
      */
-    fun obfuscate(text: String?, obfuscatedRanges: List<IntRange> = emptyList()): String? {
+    fun obfuscate(
+        text: String?,
+        obfuscatedRanges: List<IntRange> = emptyList(),
+    ): String? {
         return try {
             if (text == null) {
                 null

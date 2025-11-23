@@ -63,7 +63,7 @@ private const val WHATS_APP_MAX_SECTIONS = 10
  */
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
-    ReplaceWith("whatsAppCloudConnectorType", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType")
+    ReplaceWith("whatsAppCloudConnectorType", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType"),
 )
 val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 
@@ -76,7 +76,7 @@ val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 )
 fun <T : Bus<T>> T.sendToWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
-    delay: Long = defaultDelay(currentAnswerIndex)
+    delay: Long = defaultDelay(currentAnswerIndex),
 ): T {
     if (isCompatibleWith(whatsAppConnectorType)) {
         withMessage(messageProvider(this))
@@ -94,7 +94,7 @@ fun <T : Bus<T>> T.sendToWhatsApp(
 )
 fun <T : Bus<T>> T.endForWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
-    delay: Long = defaultDelay(currentAnswerIndex)
+    delay: Long = defaultDelay(currentAnswerIndex),
 ): T {
     if (isCompatibleWith(whatsAppConnectorType)) {
         withMessage(messageProvider(this))
@@ -127,14 +127,15 @@ fun <T : Bus<T>> T.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): T {
 )
 fun BotBus.whatsAppText(
     text: CharSequence,
-    previewUrl: Boolean = false
+    previewUrl: Boolean = false,
 ): WhatsAppBotTextMessage =
     WhatsAppBotTextMessage(
         text = WhatsAppTextBody(translate(text).toString()),
-        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
-            ?: WhatsAppBotRecipientType.individual,
+        recipientType =
+            (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+                ?: WhatsAppBotRecipientType.individual,
         userId = userId.id,
-        previewUrl = previewUrl
+        previewUrl = previewUrl,
     )
 
 /**
@@ -147,17 +148,19 @@ fun BotBus.whatsAppText(
 fun BotBus.whatsAppImage(
     byteImages: ByteArray,
     contentType: String = "image/png",
-    caption: CharSequence? = null
+    caption: CharSequence? = null,
 ): WhatsAppBotImageMessage =
     WhatsAppBotImageMessage(
-        image = WhatsAppBotAttachment(
-            byteImages,
-            contentType,
-            caption?.let { translate(it).toString() }
-        ),
-        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
-            ?: WhatsAppBotRecipientType.individual,
-        userId = userId.id
+        image =
+            WhatsAppBotAttachment(
+                byteImages,
+                contentType,
+                caption?.let { translate(it).toString() },
+            ),
+        recipientType =
+            (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+                ?: WhatsAppBotRecipientType.individual,
+        userId = userId.id,
     )
 
 /**
@@ -170,13 +173,14 @@ fun BotBus.whatsAppImage(
 fun BotBus.whatsAppInteractiveMessage(
     nameSpace: String,
     templateName: String,
-    components: List<WhatsAppComponent>? = emptyList()
+    components: List<WhatsAppComponent>? = emptyList(),
 ): WhatsAppBotInteractiveMessage =
     WhatsAppBotInteractiveMessage(
         template = buildTemplate(nameSpace, templateName, components),
-        recipientType = (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
-            ?: WhatsAppBotRecipientType.individual,
-        userId = userId.id
+        recipientType =
+            (connectorData.callback as? WhatsAppConnectorCallback)?.recipientType
+                ?: WhatsAppBotRecipientType.individual,
+        userId = userId.id,
     )
 
 @Deprecated(
@@ -185,8 +189,8 @@ fun BotBus.whatsAppInteractiveMessage(
 )
 fun I18nTranslator.replyButtonMessage(
     text: CharSequence,
-    vararg replies: QuickReply
-) : WhatsAppBotMessageInteractiveMessage = replyButtonMessage(text, replies.toList())
+    vararg replies: QuickReply,
+): WhatsAppBotMessageInteractiveMessage = replyButtonMessage(text, replies.toList())
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
@@ -194,24 +198,29 @@ fun I18nTranslator.replyButtonMessage(
 )
 fun I18nTranslator.replyButtonMessage(
     text: CharSequence,
-    replies: List<QuickReply>
-) : WhatsAppBotMessageInteractiveMessage = WhatsAppBotMessageInteractiveMessage(
-    recipientType = WhatsAppBotRecipientType.individual,
-    interactive = WhatsAppBotInteractive(
-        type = WhatsAppBotInteractiveType.button,
-        body = WhatsAppBotBody(translate(text).toString()),
-        action = WhatsAppBotAction(
-            buttons = replies.map {
-                WhatsAppBotActionButton(
-                    reply = WhatsAppBotActionButtonReply(
-                        id = it.payload.checkLength(WHATS_APP_BUTTONS_ID_MAX_LENGTH),
-                        title = translate(it.title).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
-                    )
-                )
-            }
-        )
+    replies: List<QuickReply>,
+): WhatsAppBotMessageInteractiveMessage =
+    WhatsAppBotMessageInteractiveMessage(
+        recipientType = WhatsAppBotRecipientType.individual,
+        interactive =
+            WhatsAppBotInteractive(
+                type = WhatsAppBotInteractiveType.button,
+                body = WhatsAppBotBody(translate(text).toString()),
+                action =
+                    WhatsAppBotAction(
+                        buttons =
+                            replies.map {
+                                WhatsAppBotActionButton(
+                                    reply =
+                                        WhatsAppBotActionButtonReply(
+                                            id = it.payload.checkLength(WHATS_APP_BUTTONS_ID_MAX_LENGTH),
+                                            title = translate(it.title).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
+                                        ),
+                                )
+                            },
+                    ),
+            ),
     )
-)
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
@@ -220,8 +229,8 @@ fun I18nTranslator.replyButtonMessage(
 fun I18nTranslator.completeListMessage(
     text: CharSequence,
     button: CharSequence,
-    vararg sections: WhatsAppBotActionSection
-) : WhatsAppBotMessageInteractiveMessage = completeListMessage(text, button, sections.toList())
+    vararg sections: WhatsAppBotActionSection,
+): WhatsAppBotMessageInteractiveMessage = completeListMessage(text, button, sections.toList())
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
@@ -231,38 +240,43 @@ fun I18nTranslator.completeListMessage(
     text: CharSequence,
     button: CharSequence,
     sections: List<WhatsAppBotActionSection>,
-) : WhatsAppBotMessageInteractiveMessage = WhatsAppBotMessageInteractiveMessage(
-    recipientType = WhatsAppBotRecipientType.individual,
-    interactive = WhatsAppBotInteractive(
-        type = WhatsAppBotInteractiveType.list,
-        body = WhatsAppBotBody(translate(text).toString()),
-        action = WhatsAppBotAction(
-            button = translate(button).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
-            sections = sections.map {
-                WhatsAppBotActionSection(
-                    title = translate(it.title).toString().checkLength(WHATS_APP_SECTION_TITLE_MAX_LENGTH),
-                    rows = it.rows?.map { row ->
-                        WhatsAppBotRow(
-                            id = row.id.checkLength(WHATS_APP_ROW_ID_MAX_LENGTH),
-                            title = translate(row.title).toString().checkLength(WHATS_APP_ROW_TITLE_MAX_LENGTH),
-                            description = translate(row.description).toString().checkLength(WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH)
-                        )
-                    }
-                )
-            }
-        )
-    )
-).also {
-    if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATS_APP_MAX_ROWS) {
-        error("a list message is limited to $WHATS_APP_MAX_ROWS rows across all sections.")
+): WhatsAppBotMessageInteractiveMessage =
+    WhatsAppBotMessageInteractiveMessage(
+        recipientType = WhatsAppBotRecipientType.individual,
+        interactive =
+            WhatsAppBotInteractive(
+                type = WhatsAppBotInteractiveType.list,
+                body = WhatsAppBotBody(translate(text).toString()),
+                action =
+                    WhatsAppBotAction(
+                        button = translate(button).toString().checkLength(WHATS_APP_BUTTONS_TITLE_MAX_LENGTH),
+                        sections =
+                            sections.map {
+                                WhatsAppBotActionSection(
+                                    title = translate(it.title).toString().checkLength(WHATS_APP_SECTION_TITLE_MAX_LENGTH),
+                                    rows =
+                                        it.rows?.map { row ->
+                                            WhatsAppBotRow(
+                                                id = row.id.checkLength(WHATS_APP_ROW_ID_MAX_LENGTH),
+                                                title = translate(row.title).toString().checkLength(WHATS_APP_ROW_TITLE_MAX_LENGTH),
+                                                description = translate(row.description).toString().checkLength(WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH),
+                                            )
+                                        },
+                                )
+                            },
+                    ),
+            ),
+    ).also {
+        if ((it.interactive.action?.sections?.flatMap { s -> s.rows ?: listOf() }?.count() ?: 0) > WHATS_APP_MAX_ROWS) {
+            error("a list message is limited to $WHATS_APP_MAX_ROWS rows across all sections.")
+        }
+        if ((it.interactive.action?.sections?.count() ?: 0) > WHATS_APP_MAX_SECTIONS) {
+            error("sections count in list message should not exceed $WHATS_APP_MAX_SECTIONS.")
+        }
+        if ((it.interactive.action?.button?.count() ?: 0) > WHATS_APP_BUTTONS_TITLE_MAX_LENGTH) {
+            error("button text ${it.interactive.action?.button} should not exceed $WHATS_APP_BUTTONS_TITLE_MAX_LENGTH chars.")
+        }
     }
-    if ((it.interactive.action?.sections?.count() ?: 0) > WHATS_APP_MAX_SECTIONS) {
-        error("sections count in list message should not exceed $WHATS_APP_MAX_SECTIONS.")
-    }
-    if ((it.interactive.action?.button?.count() ?: 0) > WHATS_APP_BUTTONS_TITLE_MAX_LENGTH) {
-        error("button text ${it.interactive.action?.button} should not exceed $WHATS_APP_BUTTONS_TITLE_MAX_LENGTH chars.")
-    }
-}
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
@@ -271,9 +285,8 @@ fun I18nTranslator.completeListMessage(
 fun I18nTranslator.listMessage(
     text: CharSequence,
     button: CharSequence,
-    vararg replies: QuickReply
-) : WhatsAppBotMessageInteractiveMessage =
-        listMessage(text, button, replies.toList())
+    vararg replies: QuickReply,
+): WhatsAppBotMessageInteractiveMessage = listMessage(text, button, replies.toList())
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
@@ -282,16 +295,21 @@ fun I18nTranslator.listMessage(
 fun I18nTranslator.listMessage(
     text: CharSequence,
     button: CharSequence,
-    replies: List<QuickReply>
-) : WhatsAppBotMessageInteractiveMessage =
+    replies: List<QuickReply>,
+): WhatsAppBotMessageInteractiveMessage =
     completeListMessage(
-        text, button, WhatsAppBotActionSection(rows = replies.map {
-            WhatsAppBotRow(
-                id = it.payload,
-                title = it.title,
-                description = it.subTitle
-            )
-        })
+        text,
+        button,
+        WhatsAppBotActionSection(
+            rows =
+                replies.map {
+                    WhatsAppBotRow(
+                        id = it.payload,
+                        title = it.title,
+                        description = it.subTitle,
+                    )
+                },
+        ),
     )
 
 @Deprecated(
@@ -302,47 +320,47 @@ fun I18nTranslator.nlpQuickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     textToSend: CharSequence = title,
-) : QuickReply = QuickReply(
+): QuickReply =
+    QuickReply(
         translate(title).toString(),
         SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
         translate(subTitle).toString(),
-)
+    )
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
     ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
 )
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
-    parameters: Parameters
-): QuickReply =
-    quickReply(title, subTitle, targetIntent, stepName, parameters.toMap())
+    parameters: Parameters,
+): QuickReply = quickReply(title, subTitle, targetIntent, stepName, parameters.toMap())
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
     ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
 )
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
     step: StoryStepDef? = null,
-    vararg parameters: Pair<String, String>
-) : QuickReply = quickReply(title, subTitle, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
+    vararg parameters: Pair<String, String>,
+): QuickReply = quickReply(title, subTitle, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
 
 @Deprecated(
     "On-Premises API is being sunset by Meta, consider migrating to the WhatsApp Cloud API connector",
     ReplaceWith("whatsAppCloudQuickReply", "ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudQuickReply"),
 )
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.quickReply(
     title: CharSequence,
     subTitle: CharSequence? = null,
     targetIntent: IntentAware,
     step: String? = null,
-    parameters: Map<String, String> = mapOf()
-) : QuickReply =
+    parameters: Map<String, String> = mapOf(),
+): QuickReply =
     quickReply(title, subTitle, targetIntent, step, parameters) { intent, s, params ->
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
@@ -357,30 +375,32 @@ private fun I18nTranslator.quickReply(
     targetIntent: IntentAware,
     step: String? = null,
     parameters: Map<String, String>,
-    payloadEncoder: (IntentAware, String?, Map<String, String>) -> String
-) : QuickReply = QuickReply(
+    payloadEncoder: (IntentAware, String?, Map<String, String>) -> String,
+): QuickReply =
+    QuickReply(
         translate(title).toString(),
         payloadEncoder.invoke(targetIntent, step, parameters),
-        translate(subTitle).toString()
-)
+        translate(subTitle).toString(),
+    )
 
 private fun buildTemplate(
     nameSpace: String,
     templateName: String,
-    components: List<WhatsAppComponent>?
+    components: List<WhatsAppComponent>?,
 ): WhatsAppTemplate {
     return WhatsAppTemplate(
         namespace = nameSpace,
         name = templateName,
-        language = WhatsAppLanguage(
-            code = "fr",
-            policy = "deterministic"
-        ),
-        components = components
+        language =
+            WhatsAppLanguage(
+                code = "fr",
+                policy = "deterministic",
+            ),
+        components = components,
     )
 }
 
-private fun String.checkLength(maxLength: Int) : String {
+private fun String.checkLength(maxLength: Int): String {
     if (maxLength > 0 && this.length > maxLength) {
         error("text $this should not exceed $maxLength chars.")
     }

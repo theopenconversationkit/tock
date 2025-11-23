@@ -21,10 +21,13 @@ import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.user.PlayerId
 
 data class ActionWrappedMessage(val action: Action, override val delay: Long) : Message {
-
     override val eventType: EventType get() = action.toMessage().eventType
 
-    override fun toAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action = action
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+    ): Action = action
 
     override fun toPrettyString(): String = action.toMessage().toPrettyString()
 

@@ -16,9 +16,9 @@
 
 package ai.tock.bot
 
-import ai.tock.shared.Loader
 import ai.tock.bot.engine.botModule
 import ai.tock.bot.mongo.botMongoModule
+import ai.tock.shared.Loader
 import ai.tock.shared.injector
 import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.shared.sharedModule
@@ -32,20 +32,20 @@ import mu.KotlinLogging
  * Bot module configuration.
  */
 object BotIoc {
-
     private val logger = KotlinLogging.logger {}
 
     /**
      * The core modules of the bot.
      */
-    val coreModules: List<Module> = run {
-        val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
-        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
-            .plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
-            // Add custom modules/services to override default modules/services.
-            // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
-            .plus(additionalModulesService.flatMap { it.customModules() }.toList())
-    }
+    val coreModules: List<Module> =
+        run {
+            val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
+            listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
+                .plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
+                // Add custom modules/services to override default modules/services.
+                // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
+                .plus(additionalModulesService.flatMap { it.customModules() }.toList())
+        }
 
     /**
      * Start the bot with the specified additional [modules].
@@ -67,7 +67,7 @@ object BotIoc {
                 modules.forEach {
                     import(it, allowOverride = true)
                 }
-            }
+            },
         )
     }
 }

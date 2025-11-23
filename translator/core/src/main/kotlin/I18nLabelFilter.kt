@@ -22,5 +22,5 @@ data class I18nLabelFilter(
     val label: String? = null,
     val category: String? = null,
     val state: I18nLabelStateFilter = I18nLabelStateFilter.ALL,
-    val notUsedSince: Instant? = null
+    val notUsedSince: Instant? = null,
 )

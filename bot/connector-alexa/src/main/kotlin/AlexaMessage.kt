@@ -42,28 +42,29 @@ data class AlexaMessage(
     /**
      * Is there a reprompt?
      */
-    val reprompt: String? = null
+    val reprompt: String? = null,
 ) : ConnectorMessage {
-
     override val connectorType: ConnectorType = alexaConnectorType
 
     override fun toGenericMessage(): GenericMessage {
         return GenericMessage(
-            attachments = listOfNotNull(
-                card?.run {
-                    if (this is StandardCard) {
-                        Attachment(image.smallImageUrl, AttachmentType.image)
-                    } else {
-                        null
-                    }
-                }
-            ),
-            texts = mapNotNullValues(
-                ::reprompt.name to reprompt,
-                TITLE_PARAM to card?.title,
-                TEXT_PARAM to (card as? StandardCard)?.text
-            ),
-            metadata = mapOf(::end.name to end.toString())
+            attachments =
+                listOfNotNull(
+                    card?.run {
+                        if (this is StandardCard) {
+                            Attachment(image.smallImageUrl, AttachmentType.image)
+                        } else {
+                            null
+                        }
+                    },
+                ),
+            texts =
+                mapNotNullValues(
+                    ::reprompt.name to reprompt,
+                    TITLE_PARAM to card?.title,
+                    TEXT_PARAM to (card as? StandardCard)?.text,
+                ),
+            metadata = mapOf(::end.name to end.toString()),
         )
     }
 }

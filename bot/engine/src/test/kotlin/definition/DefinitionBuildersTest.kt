@@ -19,35 +19,39 @@ package ai.tock.bot.definition
 import ai.tock.bot.engine.BotEngineTest
 import ai.tock.bot.engine.TestStoryDefinition
 import ai.tock.nlp.entity.date.DateEntityRange
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import org.junit.jupiter.api.Test
 
 /**
  *
  */
 class DefinitionBuildersTest : BotEngineTest() {
-
+    @Suppress("ktlint:standard:enum-entry-name-case")
     enum class Step : StoryStep<StoryHandlerDefinition> {
-        a, b
+        a,
+        b,
     }
 
-    val unknownStory = storyWithSteps<Step>("unknown") {
-        end("I said unknown")
-    }
+    val unknownStory =
+        storyWithSteps<Step>("unknown") {
+            end("I said unknown")
+        }
 
-    override val botDefinition: BotDefinition = object : BotDefinitionBase(
-        "test",
-        "namespace",
-        stories = enumValues<TestStoryDefinition>().toList(),
-        unknownStory = unknownStory
-    ) {}
+    override val botDefinition: BotDefinition =
+        object : BotDefinitionBase(
+            "test",
+            "namespace",
+            stories = enumValues<TestStoryDefinition>().toList(),
+            unknownStory = unknownStory,
+        ) {}
 
     @Test
     fun `story with steps set the right base intent for steps`() {
-        val yeh = storyWithSteps<Step>("yeh") {
-            end("yeh")
-        }
+        val yeh =
+            storyWithSteps<Step>("yeh") {
+                end("yeh")
+            }
         assertEquals("yeh", yeh.steps.first().baseIntent.wrappedIntent().name)
         assertEquals("yeh", yeh.steps.last().baseIntent.wrappedIntent().name)
         assertEquals(Step.a, yeh.steps.first())
@@ -62,43 +66,47 @@ class DefinitionBuildersTest : BotEngineTest() {
 
     @Test
     fun `story with preconditions is ok`() {
-        val s = storyDef<Def, StoryData>("yeh") {
-            StoryData(
-                entityText("entity"),
-                entityValue<DateEntityRange>("date")?.start()
-            )
-        }
+        val s =
+            storyDef<Def, StoryData>("yeh") {
+                StoryData(
+                    entityText("entity"),
+                    entityValue<DateEntityRange>("date")?.start(),
+                )
+            }
         assertNotNull(s)
     }
 
     @Test
     fun `story with preconditions and steps is ok`() {
-        val s = storyDefWithSteps<Def2, Step2, StoryData>("yeh") {
-            StoryData(
-                entityText("entity"),
-                entityValue<DateEntityRange>("date")?.start()
-            )
-        }
+        val s =
+            storyDefWithSteps<Def2, Step2, StoryData>("yeh") {
+                StoryData(
+                    entityText("entity"),
+                    entityValue<DateEntityRange>("date")?.start(),
+                )
+            }
         assertNotNull(s)
     }
 
     @Test
     fun `story with preconditions and no exhaustive conditions is ok`() {
-        val s = storyDef<Def>("yeh") {
-            when {
-                entityText("entity") == null -> end("For which destination?")
+        val s =
+            storyDef<Def>("yeh") {
+                when {
+                    entityText("entity") == null -> end("For which destination?")
+                }
             }
-        }
         assertNotNull(s)
     }
 
     @Test
     fun `async story is ok`() {
-        val s = storyDef<AsyncDefWithData, StoryData>(
-            "yah",
-            handling = { bus, data -> AsyncDefWithData(bus, data) },
-            preconditionsChecker = { StoryData() },
-        )
+        val s =
+            storyDef<AsyncDefWithData, StoryData>(
+                "yah",
+                handling = { bus, data -> AsyncDefWithData(bus, data) },
+                preconditionsChecker = { StoryData() },
+            )
         assertNotNull(s)
     }
 }

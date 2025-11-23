@@ -30,5 +30,5 @@ data class TestModelReport(
     val entityErrors: List<EntityMatchError>,
     val buildModelDuration: Duration,
     val testSentencesDuration: Duration,
-    val startDate: Instant
+    val startDate: Instant,
 )

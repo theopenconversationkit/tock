@@ -18,6 +18,6 @@ package ai.tock.genai.orchestratorclient.requests
 
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 
-class EMProviderSettingStatusRequest (
-    val setting: EMSetting
+class EMProviderSettingStatusRequest(
+    val setting: EMSetting,
 )

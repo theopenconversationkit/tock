@@ -17,7 +17,6 @@ package ai.tock.nlp.sagemaker
 
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.sagemaker.SageMakerClient
 import software.amazon.awssdk.services.sagemaker.model.DescribeEndpointRequest
@@ -26,26 +25,25 @@ import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequ
 import java.nio.charset.Charset
 
 class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties) {
-
     val name = configuration.name
 
     // for intentions and entities
     data class ParsedRequest(
-        val text: String
+        val text: String,
     )
 
     data class ParsedIntentResponse(
         val intent: ParsedIntent? = null,
-        val intent_ranking: List<ParsedIntent> = emptyList()
+        val intent_ranking: List<ParsedIntent> = emptyList(),
     )
 
     data class ParsedIntent(
         val name: String?,
-        val score: Double?
+        val score: Double?,
     )
 
     data class ParsedEntitiesResponse(
-        val entities: List<ParsedEntity> = emptyList()
+        val entities: List<ParsedEntity> = emptyList(),
     )
 
     data class ParsedEntity(
@@ -57,48 +55,49 @@ class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties
         val role: String? = null,
     )
 
-    private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
-        .region(configuration.region)
-        .build()
+    private val runtimeClient: SageMakerRuntimeClient =
+        SageMakerRuntimeClient.builder()
+            .region(configuration.region)
+            .build()
 
-    private val sagemakerClient: SageMakerClient = SageMakerClient.builder()
-        .region(configuration.region)
-        .build()
+    private val sagemakerClient: SageMakerClient =
+        SageMakerClient.builder()
+            .region(configuration.region)
+            .build()
 
     fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
 
     fun parseEntities(request: ParsedRequest): ParsedEntitiesResponse = invokeSageMakerEntitiesEndpoint(request.text)
 
-    private fun invokeSageMakerIntentEndpoint(
-        payload: String,
-    ): ParsedIntentResponse {
-        val endpointRequest = InvokeEndpointRequest.builder()
-            .endpointName(configuration.endpointName)
-            .contentType(configuration.contentType)
-            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
-            .build()
+    private fun invokeSageMakerIntentEndpoint(payload: String): ParsedIntentResponse {
+        val endpointRequest =
+            InvokeEndpointRequest.builder()
+                .endpointName(configuration.endpointName)
+                .contentType(configuration.contentType)
+                .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
+                .build()
         val response = runtimeClient.invokeEndpoint(endpointRequest)
         return mapper.readValue<ParsedIntentResponse>(response.body().asInputStream())
     }
 
-    private fun invokeSageMakerEntitiesEndpoint(
-        payload: String,
-    ): ParsedEntitiesResponse {
-        val endpointRequest = InvokeEndpointRequest.builder()
-            .endpointName(configuration.endpointName)
-            .contentType(configuration.contentType)
-            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
-            .build()
+    private fun invokeSageMakerEntitiesEndpoint(payload: String): ParsedEntitiesResponse {
+        val endpointRequest =
+            InvokeEndpointRequest.builder()
+                .endpointName(configuration.endpointName)
+                .contentType(configuration.contentType)
+                .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
+                .build()
         val response = runtimeClient.invokeEndpoint(endpointRequest)
         val entities = mapper.readValue<List<ParsedEntity>>(response.body().asInputStream())
         return ParsedEntitiesResponse(entities)
     }
 
     fun healthcheck(): Boolean {
-        val endpointRequest = DescribeEndpointRequest.builder()
-            .endpointName(configuration.endpointName)
-            .build()
+        val endpointRequest =
+            DescribeEndpointRequest.builder()
+                .endpointName(configuration.endpointName)
+                .build()
         val response = sagemakerClient.describeEndpoint(endpointRequest)
-       return response.endpointStatus() == software.amazon.awssdk.services.sagemaker.model.EndpointStatus.IN_SERVICE
+        return response.endpointStatus() == software.amazon.awssdk.services.sagemaker.model.EndpointStatus.IN_SERVICE
     }
 }

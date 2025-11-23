@@ -25,21 +25,25 @@ import ai.tock.bot.engine.action.SendSentence
 
 internal class ChatBaseBotAnswerinterceptor(private val apiKey: String, private val client: ChatBaseClient, private val version: String) :
     BotAnswerInterceptor {
-
-    override fun handle(action: Action, bus: BotBus): Action {
-        val messages = when (action) {
-            is SendSentence -> action.messages.map { message ->
-                Message(
-                    apiKey = apiKey,
-                    type = Type.AGENT,
-                    platform = bus.platform,
-                    userId = action.recipientId.id,
-                    message = action.toMessage().toPrettyString(),
-                    version = version
-                )
+    override fun handle(
+        action: Action,
+        bus: BotBus,
+    ): Action {
+        val messages =
+            when (action) {
+                is SendSentence ->
+                    action.messages.map { message ->
+                        Message(
+                            apiKey = apiKey,
+                            type = Type.AGENT,
+                            platform = bus.platform,
+                            userId = action.recipientId.id,
+                            message = action.toMessage().toPrettyString(),
+                            version = version,
+                        )
+                    }
+                else -> listOf()
             }
-            else -> listOf()
-        }
 
         messages.map { message ->
             client.message(message)

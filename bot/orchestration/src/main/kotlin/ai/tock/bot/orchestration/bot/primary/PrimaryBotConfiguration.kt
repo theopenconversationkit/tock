@@ -33,10 +33,9 @@ data class PrimaryBotConfiguration(
     private val eligibleTargetBotsByConnector: Map<ConnectorType, List<OrchestrationTargetedBot>> = emptyMap(),
     private val dataProvider: OrchestrationDataProvider = DefaultOrchestrationDataProvider(),
     val takeBackOrchestration: ((BotBus) -> Boolean)? = null,
-    val primaryBotOrchestrationEventHandler: PrimaryBotOrchestrationEventHandler = DefaultPrimaryBotOrchestrationEventHandler(comebackStory)
+    val primaryBotOrchestrationEventHandler: PrimaryBotOrchestrationEventHandler = DefaultPrimaryBotOrchestrationEventHandler(comebackStory),
 ) {
-    fun getEligibleTargetBots(connectorType: ConnectorType): List<OrchestrationTargetedBot> =
-        eligibleTargetBotsByConnector[connectorType] ?: emptyList()
+    fun getEligibleTargetBots(connectorType: ConnectorType): List<OrchestrationTargetedBot> = eligibleTargetBotsByConnector[connectorType] ?: emptyList()
 
     fun getOrchestrationData(bus: BotBus): OrchestrationData? = dataProvider.provideOrchestrationData(bus)
 

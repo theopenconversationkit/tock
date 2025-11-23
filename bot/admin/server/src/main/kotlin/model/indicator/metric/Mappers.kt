@@ -25,14 +25,16 @@ import model.indicator.metric.Row
  * @param customMetric a [CustomMetric] to map
  * @return [CustomMetricResponse]
  */
-fun toMetricResponse(customMetric: CustomMetric) = CustomMetricResponse(
-    Row(
-        customMetric.id,
-        customMetric.applicationId,
-        customMetric.type?.name,
-        customMetric.emitterStoryId,
-        customMetric.trackedStoryId,
-        customMetric.indicatorName,
-        customMetric.indicatorValueName
-    ), customMetric.count
-)
+fun toMetricResponse(customMetric: CustomMetric) =
+    CustomMetricResponse(
+        Row(
+            customMetric.id,
+            customMetric.applicationId,
+            customMetric.type?.name,
+            customMetric.emitterStoryId,
+            customMetric.trackedStoryId,
+            customMetric.indicatorName,
+            customMetric.indicatorValueName,
+        ),
+        customMetric.count,
+    )

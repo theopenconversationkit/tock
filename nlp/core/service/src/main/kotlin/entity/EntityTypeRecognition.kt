@@ -26,7 +26,6 @@ import ai.tock.nlp.core.IntOpenRange
  *
  */
 data class EntityTypeRecognition(val value: EntityTypeValue, val probability: Double) : IntOpenRange by value {
-
     @Transient
     val entityType: EntityType = value.entityType
 
@@ -38,8 +37,8 @@ data class EntityTypeRecognition(val value: EntityTypeValue, val probability: Do
                 Entity(value.entityType, role),
                 value.value,
                 emptyList(),
-                value.evaluated
+                value.evaluated,
             ),
-            probability
+            probability,
         )
 }

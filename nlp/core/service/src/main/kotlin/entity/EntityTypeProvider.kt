@@ -24,7 +24,6 @@ import ai.tock.nlp.core.EntityType
  * - you need to provide a META-INF/services/ai.tock.nlp.core.service.entity.EntityTypeProvider file.
  */
 interface EntityTypeProvider {
-
     /**
      * Returns supported entity types - ie if the list of supported entity types if it is already known.
      */
@@ -33,18 +32,26 @@ interface EntityTypeProvider {
     /**
      * Does the given [EntityType] can be classified?
      */
-    fun supportClassification(namespace: String, entityTypeName: String): Boolean =
-        supportedEntityTypes().contains("$namespace:$entityTypeName")
+    fun supportClassification(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = supportedEntityTypes().contains("$namespace:$entityTypeName")
 
     /**
      * Does the given [EntityType] can be evaluated?
      */
-    fun supportEvaluation(namespace: String, entityTypeName: String): Boolean = false
+    fun supportEvaluation(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = false
 
     /**
      * Does the given [EntityType] supports values merge?
      */
-    fun supportValuesMerge(namespace: String, entityTypeName: String): Boolean = false
+    fun supportValuesMerge(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = false
 
     /**
      * Returns the entity classifier - null by default.

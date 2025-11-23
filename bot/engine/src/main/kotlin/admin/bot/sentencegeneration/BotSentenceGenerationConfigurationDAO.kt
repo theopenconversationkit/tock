@@ -19,12 +19,14 @@ package ai.tock.bot.admin.bot.sentencegeneration
 import org.litote.kmongo.Id
 
 interface BotSentenceGenerationConfigurationDAO {
-
     fun listenChanges(listener: () -> Unit)
 
     fun save(conf: BotSentenceGenerationConfiguration): BotSentenceGenerationConfiguration
 
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotSentenceGenerationConfiguration?
+    fun findByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): BotSentenceGenerationConfiguration?
 
     fun delete(id: Id<BotSentenceGenerationConfiguration>)
 }

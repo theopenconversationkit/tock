@@ -30,7 +30,6 @@ import kotlin.test.assertEquals
  *
  */
 class I18nMongoDAOTest : AbstractTest() {
-
     @Test
     fun `getAlternativeIndexes returns the indexes already used`() {
         val label = I18nLabel(newId(), defaultNamespace, "category", LinkedHashSet())
@@ -40,8 +39,7 @@ class I18nMongoDAOTest : AbstractTest() {
 
         assertEquals(
             setOf(2, 3),
-            getAlternativeIndexes(label, localized, "id")
-
+            getAlternativeIndexes(label, localized, "id"),
         )
     }
 }

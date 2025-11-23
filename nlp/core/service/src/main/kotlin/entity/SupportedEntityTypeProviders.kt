@@ -22,6 +22,5 @@ import ai.tock.shared.Loader
  * Provides all supported entity type providers.
  */
 internal object SupportedEntityTypeProviders {
-
     fun providers(): List<EntityTypeProvider> = Loader.loadServices()
 }

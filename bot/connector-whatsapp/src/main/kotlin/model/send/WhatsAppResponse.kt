@@ -23,5 +23,5 @@ import ai.tock.bot.connector.whatsapp.model.common.WhatsAppError
  */
 data class WhatsAppResponse(
     val messages: List<WhatsAppMessageRef> = emptyList(),
-    val errors: List<WhatsAppError> = emptyList()
-) 
+    val errors: List<WhatsAppError> = emptyList(),
+)

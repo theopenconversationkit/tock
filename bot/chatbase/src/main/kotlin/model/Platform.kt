@@ -36,5 +36,5 @@ enum class Platform(val label: String) {
     WECHAT("WeChat"),
     LINE("Line"),
     KAKAO("Kakao"),
-    CUSTOM("Custom")
+    CUSTOM("Custom"),
 }

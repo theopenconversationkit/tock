@@ -28,5 +28,5 @@ data class ApplicationImportConfiguration(
      * If true, an automatically generated model may exist.
      * Then the default model options are removed from the model when importing the dump.
      */
-    val defaultModelMayExist: Boolean = false
+    val defaultModelMayExist: Boolean = false,
 )

@@ -21,5 +21,7 @@ package ai.tock.bot.connector.messenger.model.send
  * See [https://developers.facebook.com/docs/messenger-platform/send-messages#messaging_types](facebook documentation).
  */
 enum class MessagingType {
-    RESPONSE, UPDATE, MESSAGE_TAG
+    RESPONSE,
+    UPDATE,
+    MESSAGE_TAG,
 }

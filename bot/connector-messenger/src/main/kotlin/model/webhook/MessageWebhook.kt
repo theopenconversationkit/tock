@@ -28,9 +28,8 @@ data class MessageWebhook(
     override val timestamp: Long,
     val message: Message,
     @get:JsonProperty("prior_message")
-    override val priorMessage: PriorMessage? = null
+    override val priorMessage: PriorMessage? = null,
 ) : Webhook() {
-
     @JsonIgnore
     fun getMessageId(): String =
         message.mid.run {

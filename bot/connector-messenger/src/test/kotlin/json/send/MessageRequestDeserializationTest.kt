@@ -43,140 +43,148 @@ import kotlin.test.assertEquals
 /**
  *
  */
+@Suppress("ktlint:standard:max-line-length")
 class MessageRequestDeserializationTest {
-
     @Test
     fun testMessageRequestWithButtonDeserialization() {
-        val m = MessageRequest(
-            Recipient("2"),
-            AttachmentMessage(
-                Attachment(
-                    AttachmentType.template,
-                    GenericPayload(
-                        listOf(
-                            Element(
-                                "title",
-                                buttons = listOf(
-                                    PostbackButton(
-                                        "payload",
-                                        "titleButton"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            ),
-            tag = HUMAN_AGENT
-        )
+        val m =
+            MessageRequest(
+                Recipient("2"),
+                AttachmentMessage(
+                    Attachment(
+                        AttachmentType.template,
+                        GenericPayload(
+                            listOf(
+                                Element(
+                                    "title",
+                                    buttons =
+                                        listOf(
+                                            PostbackButton(
+                                                "payload",
+                                                "titleButton",
+                                            ),
+                                        ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                tag = HUMAN_AGENT,
+            )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))
     }
 
     @Test
     fun `media payload deserialization is ok`() {
-        val m = MessageRequest(
-            Recipient("2"),
-            AttachmentMessage(
-                Attachment(
-                    AttachmentType.template,
-                    MediaPayload(
-                        listOf(
-                            MediaElement(
-                                MediaType.image,
-                                "http://test.com",
-                                buttons = listOf(
-                                    PostbackButton(
-                                        "payload",
-                                        "titleButton"
-                                    )
-                                )
-                            )
+        val m =
+            MessageRequest(
+                Recipient("2"),
+                AttachmentMessage(
+                    Attachment(
+                        AttachmentType.template,
+                        MediaPayload(
+                            listOf(
+                                MediaElement(
+                                    MediaType.image,
+                                    "http://test.com",
+                                    buttons =
+                                        listOf(
+                                            PostbackButton(
+                                                "payload",
+                                                "titleButton",
+                                            ),
+                                        ),
+                                ),
+                            ),
+                            true,
                         ),
-                        true
-
-                    )
-                )
-            ),
-            tag = HUMAN_AGENT
-        )
+                    ),
+                ),
+                tag = HUMAN_AGENT,
+            )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue(s))
     }
 
     @Test
     fun testMessageRequestWithUrlPayload() {
-        val m = MessageRequest(
-            Recipient("2"),
-            AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png", null, null)))
-        )
+        val m =
+            MessageRequest(
+                Recipient("2"),
+                AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png", null, null))),
+            )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<MessageRequest>(s))
     }
 
     @Test
     fun testTextQuickReplyDeserialization() {
-        val input = "{\n" +
-            "        \"content_type\":\"text\",\n" +
-            "        \"title\":\"Green\",\n" +
-            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
-            "      }"
+        val input =
+            "{\n" +
+                "        \"content_type\":\"text\",\n" +
+                "        \"title\":\"Green\",\n" +
+                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
+                "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             TextQuickReply(
                 "Green",
-                "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+                "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN",
             ),
-            output
+            output,
         )
     }
 
     @Test
     fun testLocationQuickReplyDeserialization() {
-        val input = "{\n" +
-            "        \"content_type\":\"location\"\n" +
-            "      }"
+        val input =
+            "{\n" +
+                "        \"content_type\":\"location\"\n" +
+                "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             LocationQuickReply(),
-            output
+            output,
         )
     }
 
     @Test
     fun testEmailQuickReplyDeserialization() {
-        val input = "{\n" +
-            "        \"content_type\":\"user_email\"\n" +
-            "      }"
+        val input =
+            "{\n" +
+                "        \"content_type\":\"user_email\"\n" +
+                "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
             EmailQuickReply(),
-            output
+            output,
         )
     }
 
     @Test
     fun testQuickRepliesMessageRequestDeserialization() {
-        val input = "{\n" +
-            "  \"recipient\":{\n" +
-            "    \"id\":\"USER_ID\"\n" +
-            "  },\n" +
-            "  \"message\":{\n" +
-            "    \"text\":\"Pick a color:\",\n" +
-            "    \"quick_replies\":[\n" +
-            "      {\n" +
-            "        \"content_type\":\"text\",\n" +
-            "        \"title\":\"Red\",\n" +
-            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-            "      },\n" +
-            "      {\n" +
-            "        \"content_type\":\"text\",\n" +
-            "        \"title\":\"Green\",\n" +
-            "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}"
+        val input =
+            "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"USER_ID\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"text\":\"Pick a color:\",\n" +
+                "    \"quick_replies\":[\n" +
+                "      {\n" +
+                "        \"content_type\":\"text\",\n" +
+                "        \"title\":\"Red\",\n" +
+                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"content_type\":\"text\",\n" +
+                "        \"title\":\"Green\",\n" +
+                "        \"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}"
         val output = mapper.readValue<MessageRequest>(input)
         assertEquals(
             MessageRequest(
@@ -186,17 +194,16 @@ class MessageRequestDeserializationTest {
                     listOf(
                         TextQuickReply(
                             "Red",
-                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED",
                         ),
                         TextQuickReply(
                             "Green",
-                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
-                        )
-                    )
-                )
-
+                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN",
+                        ),
+                    ),
+                ),
             ),
-            output
+            output,
         )
 
         assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))
@@ -204,19 +211,20 @@ class MessageRequestDeserializationTest {
 
     @Test
     fun testEmailQuickRepliesMessageRequestDeserialization() {
-        val input = "{\n" +
-            "  \"recipient\":{\n" +
-            "    \"id\":\"USER_ID\"\n" +
-            "  },\n" +
-            "  \"message\":{\n" +
-            "    \"text\":\"Send us your email to get more deals and offers!\",\n" +
-            "    \"quick_replies\":[\n" +
-            "      {\n" +
-            "        \"content_type\":\"user_email\"\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }\n" +
-            "}"
+        val input =
+            "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"USER_ID\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"text\":\"Send us your email to get more deals and offers!\",\n" +
+                "    \"quick_replies\":[\n" +
+                "      {\n" +
+                "        \"content_type\":\"user_email\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}"
         val output = mapper.readValue<MessageRequest>(input)
         assertEquals(
             MessageRequest(
@@ -224,12 +232,11 @@ class MessageRequestDeserializationTest {
                 TextMessage(
                     "Send us your email to get more deals and offers!",
                     listOf(
-                        EmailQuickReply()
-                    )
-                )
-
+                        EmailQuickReply(),
+                    ),
+                ),
             ),
-            output
+            output,
         )
 
         assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))
@@ -237,7 +244,10 @@ class MessageRequestDeserializationTest {
 
     @Test
     fun `UserProfile deserialization is ok`() {
-        val p = mapper.readValue<UserProfile>("""{"first_name":"Simone","last_name":"En Gare","profile_pic":"https:\/\/platform-lookaside.fbsbx.com\/platform\/profilepic\/?psid=1107678927&width=1024&ext=1549209201&hash=AeQ5_frOwCI51K21","id":"1107678927"}""")
+        val p =
+            mapper.readValue<UserProfile>(
+                """{"first_name":"Simone","last_name":"En Gare","profile_pic":"https:\/\/platform-lookaside.fbsbx.com\/platform\/profilepic\/?psid=1107678927&width=1024&ext=1549209201&hash=AeQ5_frOwCI51K21","id":"1107678927"}""",
+            )
         println(p)
     }
 }

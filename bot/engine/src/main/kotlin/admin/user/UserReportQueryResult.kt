@@ -20,5 +20,5 @@ data class UserReportQueryResult(
     val total: Long,
     val start: Long = 0,
     val end: Long = 0,
-    val users: List<UserReport> = emptyList()
+    val users: List<UserReport> = emptyList(),
 )

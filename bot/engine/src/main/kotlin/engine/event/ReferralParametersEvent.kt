@@ -25,5 +25,5 @@ class ReferralParametersEvent(
     userId: PlayerId,
     recipientId: PlayerId,
     applicationId: String,
-    val ref: String
+    val ref: String,
 ) : OneToOneEvent(userId, recipientId, applicationId)

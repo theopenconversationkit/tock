@@ -21,5 +21,5 @@ package ai.tock.bot.admin.kotlin.compiler
  */
 data class CompilationResult(
     val files: Map<String, ByteArray>,
-    val mainClass: String
+    val mainClass: String,
 )

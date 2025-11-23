@@ -22,12 +22,12 @@ import org.litote.jackson.data.JacksonDataRegistry
 import org.litote.kmongo.DataRegistry
 
 @DataRegistry(
-    []
+    [],
 )
 @JacksonDataRegistry(
     [
         NlpApplicationConfiguration::class,
-        NlpModelConfiguration::class
-    ]
+        NlpModelConfiguration::class,
+    ],
 )
 internal object ModelDataRegistry

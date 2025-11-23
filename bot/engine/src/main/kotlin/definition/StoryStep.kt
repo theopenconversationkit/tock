@@ -27,16 +27,16 @@ internal val stepToIntentRepository = ConcurrentHashMap<StoryStepDef, IntentAwar
 /**
  * Use this step when you want to set a null [StoryStep].
  */
-val noStep = object : SimpleStoryStep {
-    override val name: String = "_NO_STEP_"
-}
+val noStep =
+    object : SimpleStoryStep {
+        override val name: String = "_NO_STEP_"
+    }
 
 /**
  * A step is a part of a [StoryDefinition].
  * Used to manage workflow in a [StoryHandler].
  */
 interface StoryStep<T : StoryHandlerDefinition> : StoryStepDef {
-
     /**
      * The custom answer for this step.
      * When returning a null value,

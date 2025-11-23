@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.core.service
 
-
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
@@ -50,7 +49,6 @@ import mu.KotlinLogging
  *
  */
 internal object NlpCoreService : NlpCore {
-
     private val logger = KotlinLogging.logger {}
 
     private val unknownResult = ParsingResult(UNKNOWN_INTENT_NAME, emptyList(), emptyList(), 1.0, 1.0)
@@ -62,7 +60,7 @@ internal object NlpCoreService : NlpCore {
     override fun parse(
         context: CallContext,
         text: String,
-        intentSelector: IntentSelector
+        intentSelector: IntentSelector,
     ): ParsingResult {
         val t = context.prepareText(checkMaxLengthAllowed(text))
         return parse(
@@ -72,10 +70,10 @@ internal object NlpCoreService : NlpCore {
             { intent ->
                 nlpClassifier.classifyEntities(
                     EntityCallContextForIntent(context, intent),
-                    t
+                    t,
                 )
             },
-            intentSelector
+            intentSelector,
         )
     }
 
@@ -83,7 +81,7 @@ internal object NlpCoreService : NlpCore {
         context: TestContext,
         text: String,
         intentModelHolder: ModelHolder,
-        entityModelHolders: Map<Intent, ModelHolder?>
+        entityModelHolders: Map<Intent, ModelHolder?>,
     ): ParsingResult {
         val t = context.prepareText(text)
         return parse(
@@ -95,11 +93,11 @@ internal object NlpCoreService : NlpCore {
                     nlpClassifier.classifyEntities(
                         EntityCallContextForIntent(context, intent),
                         entityModel,
-                        t
+                        t,
                     )
                 } ?: emptyList()
             },
-            IntentSelector.defaultIntentSelector
+            IntentSelector.defaultIntentSelector,
         )
     }
 
@@ -108,7 +106,7 @@ internal object NlpCoreService : NlpCore {
         text: String,
         intentClassifier: () -> IntentClassification,
         entityClassifier: (Intent) -> List<EntityRecognition>,
-        intentSelector: IntentSelector
+        intentSelector: IntentSelector,
     ): ParsingResult {
         try {
             val intents = intentClassifier.invoke()
@@ -118,19 +116,20 @@ internal object NlpCoreService : NlpCore {
                 return unknownResult
             }
 
-            val (evaluatedEntities, notRetainedEntities) = classifyAndEvaluate(
-                callContext,
-                intent,
-                entityClassifier,
-                text
-            )
+            val (evaluatedEntities, notRetainedEntities) =
+                classifyAndEvaluate(
+                    callContext,
+                    intent,
+                    entityClassifier,
+                    text,
+                )
 
             return ParsingResult(
                 intent.name,
                 evaluatedEntities,
                 notRetainedEntities,
                 probability,
-                if (evaluatedEntities.isEmpty()) 1.0 else evaluatedEntities.map { it.probability }.average()
+                if (evaluatedEntities.isEmpty()) 1.0 else evaluatedEntities.map { it.probability }.average(),
             )
         } catch (e: ModelNotInitializedException) {
             logger.warn { "model not initialized : ${e.message}" }
@@ -145,7 +144,7 @@ internal object NlpCoreService : NlpCore {
         context: CallContext,
         intent: Intent,
         entityClassifier: (Intent) -> List<EntityRecognition>,
-        text: String
+        text: String,
     ): Pair<List<EntityRecognition>, List<EntityRecognition>> {
         return try {
             // TODO regexp
@@ -166,15 +165,15 @@ internal object NlpCoreService : NlpCore {
                                 text,
                                 intent,
                                 evaluatedEntities,
-                                classifiedEntityTypes
+                                classifiedEntityTypes,
                             )
                         result to
-                                (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
-                                    .subtract(result).toList()
+                            (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
+                                .subtract(result).toList()
                     } else {
                         evaluatedEntities to
-                                classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
-                                    .subtract(evaluatedEntities).toList()
+                            classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
+                                .subtract(evaluatedEntities).toList()
                     }
                 } else {
                     evaluatedEntities to emptyList()
@@ -191,7 +190,7 @@ internal object NlpCoreService : NlpCore {
     override fun evaluateEntities(
         context: CallContext,
         text: String,
-        entities: List<EntityRecognition>
+        entities: List<EntityRecognition>,
     ): List<EntityRecognition> {
         return entityCore.evaluateEntities(context, text, entities)
     }
@@ -204,7 +203,11 @@ internal object NlpCoreService : NlpCore {
         return entityCore.supportValuesMerge(entityType)
     }
 
-    override fun mergeValues(context: CallContext, entity: Entity, values: List<ValueDescriptor>): ValueDescriptor? {
+    override fun mergeValues(
+        context: CallContext,
+        entity: Entity,
+        values: List<ValueDescriptor>,
+    ): ValueDescriptor? {
         return entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
     }
 
@@ -215,9 +218,11 @@ internal object NlpCoreService : NlpCore {
     }
 
     private fun CallContext.prepareText(text: String): String {
-        return if (application.normalizeText)
+        return if (application.normalizeText) {
             text.normalize(language)
-        else text
+        } else {
+            text
+        }
     }
 
     private fun TestContext.prepareText(text: String): String = callContext.prepareText(text)

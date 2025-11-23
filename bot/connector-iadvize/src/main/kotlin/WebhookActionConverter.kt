@@ -26,10 +26,9 @@ import ai.tock.bot.engine.user.PlayerType
  *
  */
 internal object WebhookActionConverter {
-
     fun toEvent(
         request: MessageRequest,
-        applicationId: String
+        applicationId: String,
     ): Event {
         val playerId = PlayerId(request.idConversation, PlayerType.user)
         val recipientId = PlayerId(applicationId, PlayerType.bot)
@@ -37,7 +36,7 @@ internal object WebhookActionConverter {
             playerId,
             applicationId,
             recipientId,
-            request.message.payload.value
+            request.message.payload.value,
         )
     }
 }

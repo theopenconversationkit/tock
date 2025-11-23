@@ -20,7 +20,6 @@ import ai.tock.bot.engine.message.GenericMessage
 import com.google.api.services.chat.v1.model.Message
 
 data class GoogleChatConnectorTextMessageOut(val text: CharSequence) : GoogleChatConnectorMessage() {
-
     override fun toGoogleMessage(): Message = Message().setText(text.toString())
 
     override fun toGenericMessage(): GenericMessage? {

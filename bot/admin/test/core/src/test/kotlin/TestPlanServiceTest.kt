@@ -25,10 +25,12 @@ import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.expect
 
 internal class TestPlanServiceTest {
-
     @ParameterizedTest
     @CsvSource("Hello,Hello", "Hello ,Hello", "Hello, Hello ")
-    fun `should be deepEquals if texts are the same`(text: String, comparedText: String) {
+    fun `should be deepEquals if texts are the same`(
+        text: String,
+        comparedText: String,
+    ) {
         expect(null) {
             ClientSentence(text).checkEquality(ClientSentence(comparedText))
         }
@@ -57,9 +59,9 @@ internal class TestPlanServiceTest {
                     ClientGenericMessage(
                         ClientConnectorType.none,
                         texts = mapOf("text" to "Hello"),
-                        choices = listOf(ClientChoice("cancel"))
-                    )
-                )
+                        choices = listOf(ClientChoice("cancel")),
+                    ),
+                ),
             ).checkEquality(
                 ClientSentence(
                     null,
@@ -67,10 +69,10 @@ internal class TestPlanServiceTest {
                         ClientGenericMessage(
                             ClientConnectorType.none,
                             texts = mapOf("text" to "Hello"),
-                            choices = listOf(ClientChoice("cancel"))
-                        )
-                    )
-                )
+                            choices = listOf(ClientChoice("cancel")),
+                        ),
+                    ),
+                ),
             )
         }
     }
@@ -84,9 +86,9 @@ internal class TestPlanServiceTest {
                     ClientGenericMessage(
                         ClientConnectorType.none,
                         texts = mapOf("text" to "Hello you"),
-                        choices = listOf(ClientChoice("cancel"))
-                    )
-                )
+                        choices = listOf(ClientChoice("cancel")),
+                    ),
+                ),
             ).checkEquality(
                 ClientSentence(
                     null,
@@ -94,10 +96,10 @@ internal class TestPlanServiceTest {
                         ClientGenericMessage(
                             ClientConnectorType.none,
                             texts = mapOf("text" to "Hello"),
-                            choices = listOf(ClientChoice("cancel"))
-                        )
-                    )
-                )
+                            choices = listOf(ClientChoice("cancel")),
+                        ),
+                    ),
+                ),
             )
         }
     }

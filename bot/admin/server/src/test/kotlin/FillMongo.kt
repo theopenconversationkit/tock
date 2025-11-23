@@ -37,9 +37,8 @@ import ai.tock.shared.provide
 import kotlinx.coroutines.runBlocking
 import kotlin.system.exitProcess
 
-//helper to fill database with large data
+// helper to fill database with large data
 internal object FillMongo {
-
     class Def(bus: BotBus) : HandlerDef<Connector>(bus) {
         override fun answer() {}
     }
@@ -53,29 +52,32 @@ internal object FillMongo {
             val userTimelineDAO: UserTimelineDAO = injector.provide()
             for (i in 0..10000000) {
                 val playerId = PlayerId(Dice.newId())
-                val dialog = Dialog(
-                    playerIds = setOf(playerId),
-                    stories = mutableListOf(
-                        Story(
-                            storyDef<Def>("usage") {},
-                            Intent("usage"),
-                            actions = mutableListOf(
-                                SendSentence(
-                                    playerId,
-                                    "63506610cebd8d6b715559f5",
-                                    PlayerId("bot", PlayerType.bot),
-                                    text = "Hello"
-                                )
-                            )
-                        )
+                val dialog =
+                    Dialog(
+                        playerIds = setOf(playerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef<Def>("usage") {},
+                                    Intent("usage"),
+                                    actions =
+                                        mutableListOf(
+                                            SendSentence(
+                                                playerId,
+                                                "63506610cebd8d6b715559f5",
+                                                PlayerId("bot", PlayerType.bot),
+                                                text = "Hello",
+                                            ),
+                                        ),
+                                ),
+                            ),
                     )
-                )
                 userTimelineDAO.save(
                     UserTimeline(
                         playerId = PlayerId(Dice.newId()),
-                        dialogs = mutableListOf(dialog)
+                        dialogs = mutableListOf(dialog),
                     ),
-                    defaultNamespace
+                    defaultNamespace,
                 )
             }
 

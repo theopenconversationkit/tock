@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = OptionsResponse::class, name = "options")
+    JsonSubTypes.Type(value = OptionsResponse::class, name = "options"),
 )
 abstract class QuickReplyResponse()

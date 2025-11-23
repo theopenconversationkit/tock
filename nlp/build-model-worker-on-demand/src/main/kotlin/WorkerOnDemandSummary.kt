@@ -22,5 +22,5 @@ data class WorkerOnDemandSummary(
     val name: String,
     val id: String? = null,
     val startingDate: LocalDateTime? = null,
-    val status: WorkerOnDemandStatus
+    val status: WorkerOnDemandStatus,
 )

@@ -56,10 +56,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import com.microsoft.bot.schema.Activity
 import com.microsoft.bot.schema.ActivityTypes
+import mu.KotlinLogging
 import java.time.Duration
 import java.util.Locale
 import kotlin.system.measureTimeMillis
-import mu.KotlinLogging
 
 /**
  *
@@ -68,9 +68,8 @@ internal class TeamsConnector(
     private val connectorId: String,
     private val path: String,
     val appId: String,
-    val appPassword: String
+    val appPassword: String,
 ) : ConnectorBase(teamsConnectorType, setOf(CAROUSEL)) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -90,7 +89,6 @@ internal class TeamsConnector(
     }
 
     override fun register(controller: ConnectorController) {
-
         logger.debug("Register TeamsConnector : $connectorId")
         tokenHandler.launchTokenCollector(connectorId)
         jwkHandler.launchJWKCollector(connectorId)
@@ -98,89 +96,101 @@ internal class TeamsConnector(
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
-                val timeElapsed = measureTimeMillis {
-                    var responseSent = false
-                    val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
-                    try {
-                        val body = context.body().asString()
-                        logger.debug { body }
-                        val activity: Activity = mapper.readValue(body)
-                        if (activity.type != ActivityTypes.MESSAGE) {
-                            throw NoMessageException("The activity received is not a message")
-                        }
-                        logger.debug { "check authentication..." }
-                        authenticateBotConnectorService.checkRequestValidity(
-                            jwkHandler,
-                            context.request().headers(),
-                            activity
-                        )
-                        logger.debug { "authentication checked" }
-                        executor.executeBlocking {
-                            logger.debug { "sentence created..." }
-                            val e = SendSentence(
-                                PlayerId(activity.from.id),
-                                connectorId,
-                                PlayerId(connectorId, PlayerType.bot),
-                                activity.text
+                val timeElapsed =
+                    measureTimeMillis {
+                        var responseSent = false
+                        val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
+                        try {
+                            val body = context.body().asString()
+                            logger.debug { body }
+                            val activity: Activity = mapper.readValue(body)
+                            if (activity.type != ActivityTypes.MESSAGE) {
+                                throw NoMessageException("The activity received is not a message")
+                            }
+                            logger.debug { "check authentication..." }
+                            authenticateBotConnectorService.checkRequestValidity(
+                                jwkHandler,
+                                context.request().headers(),
+                                activity,
                             )
-                            logger.debug { "send to controller..." }
-                            controller.handle(
-                                e,
-                                ConnectorData(
-                                    TeamsConnectorCallback(connectorId, activity)
+                            logger.debug { "authentication checked" }
+                            executor.executeBlocking {
+                                logger.debug { "sentence created..." }
+                                val e =
+                                    SendSentence(
+                                        PlayerId(activity.from.id),
+                                        connectorId,
+                                        PlayerId(connectorId, PlayerType.bot),
+                                        activity.text,
+                                    )
+                                logger.debug { "send to controller..." }
+                                controller.handle(
+                                    e,
+                                    ConnectorData(
+                                        TeamsConnectorCallback(connectorId, activity),
+                                    ),
                                 )
-                            )
-                        }
-                    } catch (e: ForbiddenException) {
-                        context.fail(403)
-                        responseSent = true
-                        logger.logError(e.message ?: "error", requestTimerData)
-                    } catch (e: NoMessageException) {
-                        logger.warn(e)
-                    } catch (e: Throwable) {
-                        context.fail(500)
-                        responseSent = true
-                        logger.logError(e, requestTimerData)
-                    } finally {
-                        BotRepository.requestTimer.end(requestTimerData)
-                        if (!responseSent) {
-                            try {
-                                context.response().end()
-                            } catch (e: Throwable) {
-                                logger.error(e)
+                            }
+                        } catch (e: ForbiddenException) {
+                            context.fail(403)
+                            responseSent = true
+                            logger.logError(e.message ?: "error", requestTimerData)
+                        } catch (e: NoMessageException) {
+                            logger.warn(e)
+                        } catch (e: Throwable) {
+                            context.fail(500)
+                            responseSent = true
+                            logger.logError(e, requestTimerData)
+                        } finally {
+                            BotRepository.requestTimer.end(requestTimerData)
+                            if (!responseSent) {
+                                try {
+                                    context.response().end()
+                                } catch (e: Throwable) {
+                                    logger.error(e)
+                                }
                             }
                         }
                     }
-                }
                 logger.trace { "Time elapsed : $timeElapsed ms" }
             }
         }
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences {
         return when (callback) {
             is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> UserPreferences()
         }
     }
 
-    override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
+    override fun refreshProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? {
         return when (callback) {
             is TeamsConnectorCallback -> UserPreferences().apply { locale = locale(callback.activity.locale) }
             else -> null
         }
     }
 
-    private fun locale(code: String?): Locale = try {
-        Locale.forLanguageTag(code)
-    } catch (e: Exception) {
-        logger.error(e)
-        defaultLocale
-    }
+    private fun locale(code: String?): Locale =
+        try {
+            Locale.forLanguageTag(code)
+        } catch (e: Exception) {
+            logger.error(e)
+            defaultLocale
+        }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         if (event is SendSentence && callback is TeamsConnectorCallback) {
-
             val teamsMessage = SendActionConverter.toActivity(event)
 
             val delay = Duration.ofMillis(delayInMs)
@@ -190,52 +200,58 @@ internal class TeamsConnector(
         }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        teamsMessageWithButtonCard(text, suggestions.map { nlpCardAction(it) })
-    }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            teamsMessageWithButtonCard(text, suggestions.map { nlpCardAction(it) })
+        }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        // TODO support complex cards
-        message
-    }
-
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (message) {
-            is MediaCard -> {
-                listOf(
-                    teamsHeroCard(
-                        message.title ?: "",
-                        null,
-                        message.subTitle ?: "",
-                        listOfNotNull(
-                            message.file?.takeIf { it.type == image }?.let { cardImage(it.url) }
-                        ),
-                        message.actions.map {
-                            val url = it.url
-                            if (url == null) {
-                                nlpCardAction(it.title)
-                            } else {
-                                urlCardAction(it.title, url)
-                            }
-                        }
-                    )
-                )
-            }
-            is MediaCarousel -> {
-                listOf(
-                    teamsCarousel(
-                        message.cards.mapNotNull {
-                            toConnectorMessage(it).invoke(this).firstOrNull() as? TeamsBotMessage
-                        }
-                    )
-                )
-            }
-            else -> emptyList()
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            // TODO support complex cards
+            message
         }
-    }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (message) {
+                is MediaCard -> {
+                    listOf(
+                        teamsHeroCard(
+                            message.title ?: "",
+                            null,
+                            message.subTitle ?: "",
+                            listOfNotNull(
+                                message.file?.takeIf { it.type == image }?.let { cardImage(it.url) },
+                            ),
+                            message.actions.map {
+                                val url = it.url
+                                if (url == null) {
+                                    nlpCardAction(it.title)
+                                } else {
+                                    urlCardAction(it.title, url)
+                                }
+                            },
+                        ),
+                    )
+                }
+                is MediaCarousel -> {
+                    listOf(
+                        teamsCarousel(
+                            message.cards.mapNotNull {
+                                toConnectorMessage(it).invoke(this).firstOrNull() as? TeamsBotMessage
+                            },
+                        ),
+                    )
+                }
+                else -> emptyList()
+            }
+        }
 }
 
 class NoMessageException(exception: String) : Exception(exception)

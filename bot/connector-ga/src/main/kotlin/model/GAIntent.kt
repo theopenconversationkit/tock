@@ -21,11 +21,11 @@ import com.fasterxml.jackson.annotation.JsonValue
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class GAIntent(
     @get:JsonValue val value: String,
-    val type: GAInputValueDataType? = null
+    val type: GAInputValueDataType? = null,
 ) {
-
     main("actions.intent.MAIN"),
     text("actions.intent.TEXT"),
     cancel("actions.intent.CANCEL"),
@@ -39,7 +39,8 @@ enum class GAIntent(
     datetime("actions.intent.DATETIME", GAInputValueDataType.datetime),
     signIn("actions.intent.SIGN_IN"),
     newSurface("actions.intent.NEW_SURFACE", GAInputValueDataType.newSurface),
-    mediaStatus("actions.intent.MEDIA_STATUS", GAInputValueDataType.mediaStatus);
+    mediaStatus("actions.intent.MEDIA_STATUS", GAInputValueDataType.mediaStatus),
+    ;
 
     companion object {
         fun findIntent(name: String): GAIntent? {

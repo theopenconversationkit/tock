@@ -51,8 +51,8 @@ import org.litote.kmongo.DataRegistry
         EventState::class,
         ConnectorType::class,
         ActionMetadata::class,
-        BotAnnotation::class
-    ]
+        BotAnnotation::class,
+    ],
 )
 @JacksonDataRegistry(
     [
@@ -66,7 +66,7 @@ import org.litote.kmongo.DataRegistry
         Intent::class,
         IntentWithoutNamespace::class,
         PlayerId::class,
-        ConnectorType::class
-    ]
+        ConnectorType::class,
+    ],
 )
 internal object BotDataRegistry

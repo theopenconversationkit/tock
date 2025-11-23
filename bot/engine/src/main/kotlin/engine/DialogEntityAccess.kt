@@ -27,7 +27,7 @@ interface DialogEntityAccess {
      */
     fun <T : Value> entityValue(
         role: String,
-        valueTransformer: (EntityValue) -> T?
+        valueTransformer: (EntityValue) -> T?,
     ): T?
 
     /**
@@ -35,7 +35,7 @@ interface DialogEntityAccess {
      */
     fun <T : Value> entityValue(
         entity: Entity,
-        valueTransformer: (EntityValue) -> T?
+        valueTransformer: (EntityValue) -> T?,
     ): T? = entityValue(entity.role, valueTransformer)
 
     /**
@@ -63,32 +63,43 @@ interface DialogEntityAccess {
      * @param role entity role
      * @param newValue the new entity value
      */
-    fun changeEntityValue(role: String, newValue: EntityValue?)
+    fun changeEntityValue(
+        role: String,
+        newValue: EntityValue?,
+    )
 
     /**
      * Updates the current entity value in the dialog.
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: Value?)
+    fun changeEntityValue(
+        entity: Entity,
+        newValue: Value?,
+    )
 
     /**
      * Updates the current entity value in the dialog.
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: EntityValue) = changeEntityValue(entity.role, newValue)
+    fun changeEntityValue(
+        entity: Entity,
+        newValue: EntityValue,
+    ) = changeEntityValue(entity.role, newValue)
 
     /**
      * Updates the current entity text value in the dialog.
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    fun changeEntityText(entity: Entity, textContent: String?) =
-        changeEntityValue(
-            entity.role,
-            EntityValue(entity, null, textContent)
-        )
+    fun changeEntityText(
+        entity: Entity,
+        textContent: String?,
+    ) = changeEntityValue(
+        entity.role,
+        EntityValue(entity, null, textContent),
+    )
 
     /**
      * Removes entity value for the specified role.
@@ -107,4 +118,5 @@ interface DialogEntityAccess {
 }
 
 inline fun <reified T : Value> DialogEntityAccess.entityValue(role: String) = entityValue(role) { T::class.safeCast(it.value) }
+
 inline fun <reified T : Value> DialogEntityAccess.entityValue(type: Entity) = entityValue(type) { T::class.safeCast(it.value) }

@@ -28,23 +28,33 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 object SlackClient {
-
     private val logger = KotlinLogging.logger { }
 
     interface SlackApi {
         @POST("/services/{outToken1}/{outToken2}/{outToken3}")
-        fun sendMessage(@Path("outToken1") outToken1: String, @Path("outToken2") outToken2: String, @Path("outToken3") outToken3: String, @Body message: RequestBody): Call<Void>
+        fun sendMessage(
+            @Path("outToken1") outToken1: String,
+            @Path("outToken2") outToken2: String,
+            @Path("outToken3") outToken3: String,
+            @Body message: RequestBody,
+        ): Call<Void>
     }
 
-    private val slackApi: SlackApi = retrofitBuilderWithTimeoutAndLogger(
-        30000,
-        logger
-    )
-        .baseUrl("https://hooks.slack.com")
-        .build()
-        .create(SlackApi::class.java)
+    private val slackApi: SlackApi =
+        retrofitBuilderWithTimeoutAndLogger(
+            30000,
+            logger,
+        )
+            .baseUrl("https://hooks.slack.com")
+            .build()
+            .create(SlackApi::class.java)
 
-    fun sendMessage(outToken1: String, outToken2: String, outToken3: String, message: SlackConnectorMessage) {
+    fun sendMessage(
+        outToken1: String,
+        outToken2: String,
+        outToken3: String,
+        message: SlackConnectorMessage,
+    ) {
         val body = RequestBody.create("application/json".toMediaType(), mapper.writeValueAsBytes(message))
         val response = slackApi.sendMessage(outToken1, outToken2, outToken3, body).execute()
         logger.debug { response }

@@ -29,13 +29,17 @@ import kotlinx.coroutines.runBlocking
  */
 @ExperimentalTockCoroutines
 interface AsyncStoryHandlerListener : StoryHandlerListener {
-
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("startAction(asyncBus, handler)"))
-    override fun startAction(botBus: BotBus, handler: StoryHandler): Boolean = runBlocking {
-        startAction(
-            AsyncBotBus(botBus), handler
-        )
-    }
+    override fun startAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ): Boolean =
+        runBlocking {
+            startAction(
+                AsyncBotBus(botBus),
+                handler,
+            )
+        }
 
     /**
      * Called before [StoryHandler.handle].
@@ -43,10 +47,16 @@ interface AsyncStoryHandlerListener : StoryHandlerListener {
      * and the [StoryHandler] are not called.
      * (however [endAction] of each [StoryHandlerListener] is called).
      */
-    suspend fun startAction(botBus: AsyncBus, handler: StoryHandler): Boolean = true
+    suspend fun startAction(
+        botBus: AsyncBus,
+        handler: StoryHandler,
+    ): Boolean = true
 
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("endAction(asyncBus, handler)"))
-    override fun endAction(botBus: BotBus, handler: StoryHandler) {
+    override fun endAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ) {
         runBlocking {
             endAction(AsyncBotBus(botBus), handler)
         }
@@ -55,5 +65,8 @@ interface AsyncStoryHandlerListener : StoryHandlerListener {
     /**
      * Called when [StoryHandler] handling is over.
      */
-    suspend fun endAction(botBus: AsyncBus, handler: StoryHandler) = Unit
+    suspend fun endAction(
+        botBus: AsyncBus,
+        handler: StoryHandler,
+    ) = Unit
 }

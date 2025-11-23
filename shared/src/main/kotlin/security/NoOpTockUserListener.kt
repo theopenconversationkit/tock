@@ -17,6 +17,8 @@
 package ai.tock.shared.security
 
 internal object NoOpTockUserListener : TockUserListener {
-
-    override fun registerUser(user: TockUser, joinNamespace: Boolean) = user.copy(registered = true)
+    override fun registerUser(
+        user: TockUser,
+        joinNamespace: Boolean,
+    ) = user.copy(registered = true)
 }

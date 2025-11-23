@@ -27,8 +27,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 @JsonDeserialize(using = MessageDeserializer::class)
 abstract class Message(
     @get:JsonProperty("quick_replies")
-    val quickReplies: List<QuickReply>? = null
+    val quickReplies: List<QuickReply>? = null,
 ) : MessengerConnectorMessage() {
-
     abstract fun copy(quickReplies: List<QuickReply>? = null): Message
 }

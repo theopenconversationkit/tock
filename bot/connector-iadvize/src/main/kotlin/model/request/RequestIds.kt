@@ -20,6 +20,8 @@ import io.vertx.ext.web.RoutingContext
 
 data class RequestIds(val idConnectorVersion: String, val idWebsite: String) {
     constructor(context: RoutingContext) :
-            this(context.request().getParam("idConnectorVersion"),
-                 context.request().getParam("idWebsite"))
+        this(
+            context.request().getParam("idConnectorVersion"),
+            context.request().getParam("idWebsite"),
+        )
 }

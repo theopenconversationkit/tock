@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter
  *
  */
 object XrayConfiguration {
-
     private const val DEFAULT_XRAY_URL = "please set xray url"
     internal val xrayUrl: String = property("tock_bot_test_xray_url", DEFAULT_XRAY_URL)
 
@@ -49,10 +48,10 @@ object XrayConfiguration {
                         object : OffsetDateTimeSerializer(
                             INSTANCE,
                             true,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZZZ")
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZZZ"),
                         ) {
-                        }
-                    )
+                        },
+                    ),
             )
         }
     }

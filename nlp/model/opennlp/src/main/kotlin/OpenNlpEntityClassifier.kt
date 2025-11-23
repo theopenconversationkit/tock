@@ -32,10 +32,13 @@ import opennlp.tools.namefind.NameFinderME
  *
  */
 internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
-
     private val logger = logger {}
 
-    override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition> {
+    override fun classifyEntities(
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>,
+    ): List<EntityRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classify(context, text, tokens)
             is EntityCallContextForEntity -> error("EntityCallContextForEntity is not supported")
@@ -43,15 +46,27 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
         }
     }
 
-    private fun classify(context: EntityCallContextForSubEntities, text: String, tokens: Array<String>): List<EntityRecognition> {
+    private fun classify(
+        context: EntityCallContextForSubEntities,
+        text: String,
+        tokens: Array<String>,
+    ): List<EntityRecognition> {
         return classify(text, tokens) { context.entityType.findSubEntity(it) }
     }
 
-    private fun classify(context: EntityCallContextForIntent, text: String, tokens: Array<String>): List<EntityRecognition> {
+    private fun classify(
+        context: EntityCallContextForIntent,
+        text: String,
+        tokens: Array<String>,
+    ): List<EntityRecognition> {
         return classify(text, tokens) { context.intent.getEntity(it) }
     }
 
-    private fun classify(text: String, tokens: Array<String>, entityFinder: (String) -> Entity?): List<EntityRecognition> {
+    private fun classify(
+        text: String,
+        tokens: Array<String>,
+        entityFinder: (String) -> Entity?,
+    ): List<EntityRecognition> {
         with(model) {
             val finder = nativeModel as NameFinderME
             val spans = finder.find(tokens)

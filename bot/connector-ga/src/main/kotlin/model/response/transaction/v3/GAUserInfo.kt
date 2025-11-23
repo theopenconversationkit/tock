@@ -24,11 +24,11 @@ data class GAUserInfo(
     val firstName: String?,
     val lastName: String?,
     val displayName: String?,
-    val phoneNumbers: List<GAPhoneNumber>?
+    val phoneNumbers: List<GAPhoneNumber>?,
 )
 
 data class GAPhoneNumber(
     val e164PhoneNumber: String?,
     val extension: String?,
-    val preferredDomesticCarrierCode: String?
+    val preferredDomesticCarrierCode: String?,
 )

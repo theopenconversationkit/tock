@@ -18,21 +18,23 @@ package ai.tock.bot.connector.googlechat
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
-import io.grpc.lb.v1.FallbackResponse
 import mu.KotlinLogging
 
 internal object GoogleChatMessageConverter {
-
     private val logger = KotlinLogging.logger {}
 
-    fun toMessageOut(action: Action, condensedFootnotes: Boolean = false): GoogleChatConnectorMessage? = when (action) {
-        is SendSentence -> sendSentence(action)
-        is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
-        else -> {
-            logger.warn { "Action $action not supported" }
-            null
+    fun toMessageOut(
+        action: Action,
+        condensedFootnotes: Boolean = false,
+    ): GoogleChatConnectorMessage? =
+        when (action) {
+            is SendSentence -> sendSentence(action)
+            is SendSentenceWithFootnotes -> sendSentenceWithFootnotes(action, condensedFootnotes)
+            else -> {
+                logger.warn { "Action $action not supported" }
+                null
+            }
         }
-    }
 
     private fun sendSentence(action: SendSentence): GoogleChatConnectorMessage? {
         return if (action.hasMessage(GoogleChatConnectorProvider.connectorType)) {
@@ -47,13 +49,14 @@ internal object GoogleChatMessageConverter {
 
     private fun sendSentenceWithFootnotes(
         action: SendSentenceWithFootnotes,
-        condensedFootnotes: Boolean
+        condensedFootnotes: Boolean,
     ): GoogleChatConnectorMessage {
-        val formatted = GoogleChatFootnoteFormatter.format(
-            action.text,
-            action.footnotes,
-            condensed = condensedFootnotes
-        )
+        val formatted =
+            GoogleChatFootnoteFormatter.format(
+                action.text,
+                action.footnotes,
+                condensed = condensedFootnotes,
+            )
         val parsed = GoogleChatMarkdown.toGoogleChat(formatted)
         return GoogleChatConnectorTextMessageOut(parsed)
     }

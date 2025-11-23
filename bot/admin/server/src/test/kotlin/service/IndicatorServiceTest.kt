@@ -50,39 +50,37 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.newId
 
-
 class IndicatorServiceTest {
-
     companion object {
-
-        const val NAMESPACE= "myNS"
+        const val NAMESPACE = "myNS"
         const val BOT_ID = "app"
         const val NAME = "Satisfaction"
         const val LABEL = "Satisfaction label"
         const val DESCRIPTION = "Satisfaction description"
         val DIMENSIONS = setOf("satisfaction", "Survey")
-        val VALUES = listOf(
-            "ok" to "OK",
-            "ko" to "KO"
-        )
+        val VALUES =
+            listOf(
+                "ok" to "OK",
+                "ko" to "KO",
+            )
 
         const val NEW_LABEL = "Satisfaction label"
         const val NEW_DESCRIPTION = "new Satisfaction description"
         val NEW_DIMENSIONS = setOf("satisfaction", "Survey", "new dimension")
-        val NEW_VALUES = listOf(
-            "ok" to "OK",
-            "ko" to "KO",
-            "N/S" to "unknown"
-        )
+        val NEW_VALUES =
+            listOf(
+                "ok" to "OK",
+                "ko" to "KO",
+                "N/S" to "unknown",
+            )
 
         init {
             tockInternalInjector = KodeinInjector()
             Kodein.Module {
                 bind<IndicatorDAO>() with singleton { dao }
-
             }.also {
                 tockInternalInjector.inject(
-                    Kodein { import(it) }
+                    Kodein { import(it) },
                 )
             }
         }
@@ -99,9 +97,8 @@ class IndicatorServiceTest {
 
     @Test
     fun `Save valid indicator that does not exist yet`() {
-
         val entry: TSupplier<SaveFnEntry> = {
-            Triple(NAMESPACE, BOT_ID,saveIndicatorRequest())
+            Triple(NAMESPACE, BOT_ID, saveIndicatorRequest())
         }
 
         val similarIndicatorNotExist: TRunnable = {
@@ -129,14 +126,13 @@ class IndicatorServiceTest {
             assertEquals(DESCRIPTION, captured.description)
             assertEquals(DIMENSIONS, captured.dimensions)
             assertEquals(VALUES.map { IndicatorValue(it.first, it.second) }.toSet(), captured.values)
-
         }
 
         TestCase<SaveFnEntry, Unit>("Save valid indicator that does not exist yet")
             .given("A application name and a valid request", entry)
             .and(
                 "Indicator not exist with request name or label and the given application name",
-                similarIndicatorNotExist
+                similarIndicatorNotExist,
             )
             .and("The indicator to persist in database is captured", captureIndicatorToSave)
             .`when`("IndicatorService's save method is called", callServiceSave)
@@ -145,16 +141,16 @@ class IndicatorServiceTest {
                 """
                 - Indicator to persist must be not null
                 - Indicator to persist must have a not null id
-            """.trimIndent(), checkIndicatorToPersist
+                """.trimIndent(),
+                checkIndicatorToPersist,
             )
             .run()
     }
 
     @Test
     fun `Try to save valid indicator that already exist`() {
-
         val entry: TSupplier<SaveFnEntry> = {
-            Triple(NAMESPACE, BOT_ID,saveIndicatorRequest())
+            Triple(NAMESPACE, BOT_ID, saveIndicatorRequest())
         }
 
         val similarIndicatorNotExist: TRunnable = {
@@ -186,7 +182,6 @@ class IndicatorServiceTest {
             assertEquals(LABEL, it.label)
             assertEquals(NAMESPACE, it.namespace)
             assertEquals(BOT_ID, it.botId)
-
         }
 
         TestCase<SaveFnEntry, IndicatorError>("Try to save valid indicator that already exists")
@@ -199,20 +194,20 @@ class IndicatorServiceTest {
                 """ 
                 - Error is not null
                 - Error is of type IndicatorAlreadyExists
-            """.trimIndent(), checkError
+                """.trimIndent(),
+                checkError,
             )
             .run()
     }
 
     @Test
     fun `Update existing indicator`() {
-
         val entry: TSupplier<UpdateFnEntry> = {
             UpdateFnEntry(
                 namespace = NAMESPACE,
                 botId = BOT_ID,
                 name = NAME,
-                request = updateIndicatorRequest()
+                request = updateIndicatorRequest(),
             )
         }
 
@@ -230,12 +225,12 @@ class IndicatorServiceTest {
                 namespace = it!!.namespace,
                 botId = it.botId,
                 indicatorName = it.name,
-                request = Valid(it.request)
+                request = Valid(it.request),
             )
         }
 
         val daoFindByNameAndBotIdIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { dao.findByNameAndBotId(NAME, NAMESPACE,BOT_ID) }
+            verify(exactly = 1) { dao.findByNameAndBotId(NAME, NAMESPACE, BOT_ID) }
         }
 
         val checkIndicatorToPersist: TRunnable = {
@@ -247,7 +242,6 @@ class IndicatorServiceTest {
             assertEquals(NEW_DESCRIPTION, captured.description)
             assertEquals(NEW_DIMENSIONS, captured.dimensions)
             assertEquals(NEW_VALUES.map { IndicatorValue(it.first, it.second) }.toSet(), captured.values)
-
         }
 
         TestCase<UpdateFnEntry, Unit>("Update existing indicator")
@@ -260,20 +254,20 @@ class IndicatorServiceTest {
                 """
                 - Indicator to persist must not be null
                 - Indicator to persist must not have a null id
-            """.trimIndent(), checkIndicatorToPersist
+                """.trimIndent(),
+                checkIndicatorToPersist,
             )
             .run()
     }
 
     @Test
     fun `Try to update non existing indicator`() {
-
         val entry: TSupplier<UpdateFnEntry> = {
             UpdateFnEntry(
                 namespace = NAMESPACE,
                 botId = BOT_ID,
                 name = NAME,
-                request = updateIndicatorRequest()
+                request = updateIndicatorRequest(),
             )
         }
 
@@ -288,7 +282,7 @@ class IndicatorServiceTest {
                     namespace = it!!.namespace,
                     botId = it.botId,
                     indicatorName = it.name,
-                    request = Valid(it.request)
+                    request = Valid(it.request),
                 )
             }
         }
@@ -310,7 +304,6 @@ class IndicatorServiceTest {
             assertEquals(NAME, it.name)
             assertEquals(NAMESPACE, it.namespace)
             assertEquals(BOT_ID, it.botId)
-
         }
 
         TestCase<UpdateFnEntry, IndicatorError>("Try to update non existing indicator ")
@@ -323,16 +316,16 @@ class IndicatorServiceTest {
                 """ 
                 - Error is not null
                 - Error is of type IndicatorNotFound
-            """.trimIndent(), checkError
+                """.trimIndent(),
+                checkError,
             )
             .run()
     }
 
     @Test
     fun `Find indicator by name and bot id`() {
-
         val entries: TSupplier<Triple<String, String, String>> = {
-            Triple(NAME, NAMESPACE,BOT_ID)
+            Triple(NAME, NAMESPACE, BOT_ID)
         }
 
         val indicatorExist: TRunnable = {
@@ -361,18 +354,17 @@ class IndicatorServiceTest {
                 """"
                 - response must not be null
                 - 
-            """.trimMargin(), checkResponse
+                """.trimMargin(),
+                checkResponse,
             )
-
     }
-
 
     @Test
     fun `Delete successfully an indicator`() {
         val indicatorName: TSupplier<String> = { NAME }
 
         val deleteSucceed: TRunnable = {
-            every { dao.deleteByNameAndApplicationName(any(),any(),any()) } returns true
+            every { dao.deleteByNameAndApplicationName(any(), any(), any()) } returns true
         }
 
         val callServiceDelete: TFunction<String?, Boolean> = {
@@ -397,7 +389,7 @@ class IndicatorServiceTest {
         val indicatorName: TSupplier<String> = { NAME }
 
         val deleteFails: TRunnable = {
-            every { dao.deleteByNameAndApplicationName(any(),any(), any()) } returns false
+            every { dao.deleteByNameAndApplicationName(any(), any(), any()) } returns false
         }
 
         val callServiceDelete: TFunction<String?, IndicatorError> = {
@@ -419,35 +411,40 @@ class IndicatorServiceTest {
             .then("An error of type IndicatorDeletionFailed should be returned", checkError)
     }
 
-    private fun indicator() = Indicator(
-        newId(),
-        NAME,
-        LABEL,
-        DESCRIPTION,
-        NAMESPACE,
-        BOT_ID,
-        DIMENSIONS,
-        VALUES.map { IndicatorValue(it.first, it.second) }.toSet()
-    )
+    private fun indicator() =
+        Indicator(
+            newId(),
+            NAME,
+            LABEL,
+            DESCRIPTION,
+            NAMESPACE,
+            BOT_ID,
+            DIMENSIONS,
+            VALUES.map { IndicatorValue(it.first, it.second) }.toSet(),
+        )
 
-    private fun saveIndicatorRequest() = SaveIndicatorRequest(
-        name = NAME,
-        label = LABEL,
-        description = DESCRIPTION,
-        dimensions = DIMENSIONS,
-        values = VALUES.map {
-            IndicatorValueRequest(it.first, it.second)
-        }.toSet()
-    )
+    private fun saveIndicatorRequest() =
+        SaveIndicatorRequest(
+            name = NAME,
+            label = LABEL,
+            description = DESCRIPTION,
+            dimensions = DIMENSIONS,
+            values =
+                VALUES.map {
+                    IndicatorValueRequest(it.first, it.second)
+                }.toSet(),
+        )
 
-    private fun updateIndicatorRequest() = UpdateIndicatorRequest(
-        label = NEW_LABEL,
-        description = NEW_DESCRIPTION,
-        dimensions = NEW_DIMENSIONS,
-        values = NEW_VALUES.map {
-            IndicatorValueRequest(it.first, it.second)
-        }.toSet()
-    )
+    private fun updateIndicatorRequest() =
+        UpdateIndicatorRequest(
+            label = NEW_LABEL,
+            description = NEW_DESCRIPTION,
+            dimensions = NEW_DIMENSIONS,
+            values =
+                NEW_VALUES.map {
+                    IndicatorValueRequest(it.first, it.second)
+                }.toSet(),
+        )
 }
 
 typealias SaveFnEntry = Triple<String, String, SaveIndicatorRequest>
@@ -456,5 +453,5 @@ data class UpdateFnEntry(
     val namespace: String,
     val botId: String,
     val name: String,
-    val request: UpdateIndicatorRequest
+    val request: UpdateIndicatorRequest,
 )

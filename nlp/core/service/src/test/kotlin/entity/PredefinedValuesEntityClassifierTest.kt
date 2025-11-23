@@ -31,15 +31,15 @@ import java.time.ZonedDateTime
 import java.util.Locale
 
 class PredefinedValuesEntityClassifierTest {
-
     val entityType = EntityType("namespace:pizza", dictionary = true)
-    val context = EntityCallContextForIntent(
-        Intent("eat", listOf(Entity(entityType, "pizza"))),
-        Locale.FRENCH,
-        NlpEngineType.stanford,
-        "pizzayolo",
-        ZonedDateTime.now()
-    )
+    val context =
+        EntityCallContextForIntent(
+            Intent("eat", listOf(Entity(entityType, "pizza"))),
+            Locale.FRENCH,
+            NlpEngineType.stanford,
+            "pizzayolo",
+            ZonedDateTime.now(),
+        )
 
     @BeforeEach
     fun fillDictionary() {
@@ -53,12 +53,12 @@ class PredefinedValuesEntityClassifierTest {
                             "pizza",
                             mapOf(
                                 Pair(Locale.FRENCH, listOf("4 fromages", "napolitaine", "calzone")),
-                                Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone"))
-                            )
-                        )
-                    )
-                )
-            )
+                                Pair(Locale.ITALIAN, listOf("4 formaggi", "napoletana", "calzone")),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
         )
     }
 
@@ -69,7 +69,6 @@ class PredefinedValuesEntityClassifierTest {
 
     @Test
     fun `classifier recognized label a end of sentence`() {
-
         val text = "Je voudrais manger une napolitaine"
 
         val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
@@ -77,16 +76,16 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(23, 34, entityType, "pizza", true), 1.0
-                )
+                    EntityTypeValue(23, 34, entityType, "pizza", true),
+                    1.0,
+                ),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 
     @Test
     fun `classifier recognized label a start of sentence`() {
-
         val text = "Napolitaine stp!"
 
         val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
@@ -94,16 +93,16 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0
-                )
+                    EntityTypeValue(0, 11, entityType, "pizza", true),
+                    1.0,
+                ),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 
     @Test
     fun `classifier recognized label if label equals to sentence`() {
-
         val text = "Napolitaine"
 
         val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
@@ -111,16 +110,16 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(0, 11, entityType, "pizza", true), 1.0
-                )
+                    EntityTypeValue(0, 11, entityType, "pizza", true),
+                    1.0,
+                ),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 
     @Test
     fun `classifier recognized label contaiones in a sentence`() {
-
         val text = "une Napolitaine stp"
 
         val entityTypeRecognitions = DictionaryEntityTypeClassifier.classifyEntities(context, text)
@@ -128,10 +127,11 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0
-                )
+                    EntityTypeValue(4, 15, entityType, "pizza", true),
+                    1.0,
+                ),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 
@@ -144,10 +144,11 @@ class PredefinedValuesEntityClassifierTest {
         Assertions.assertEquals(
             listOf(
                 EntityTypeRecognition(
-                    EntityTypeValue(4, 15, entityType, "pizza", true), 1.0
-                )
+                    EntityTypeValue(4, 15, entityType, "pizza", true),
+                    1.0,
+                ),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 
@@ -161,9 +162,9 @@ class PredefinedValuesEntityClassifierTest {
             listOf(
                 EntityTypeRecognition(EntityTypeValue(4, 15, entityType, "pizza", true), 1.0),
                 EntityTypeRecognition(EntityTypeValue(37, 48, entityType, "pizza", true), 1.0),
-                EntityTypeRecognition(EntityTypeValue(59, 70, entityType, "pizza", true), 1.0)
+                EntityTypeRecognition(EntityTypeValue(59, 70, entityType, "pizza", true), 1.0),
             ),
-            entityTypeRecognitions
+            entityTypeRecognitions,
         )
     }
 }

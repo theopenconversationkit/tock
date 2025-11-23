@@ -40,32 +40,36 @@ import java.util.concurrent.TimeUnit
  * (see https://javadoc.io/doc/com.melloware/jasypt/latest/org/jasypt/util/text/BasicTextEncryptor.html)
  */
 object UserHashedIdCache {
-
     private const val PERSISTENT_CACHE_TYPE = "whatsapp_id"
 
-    private val persistentCacheActivated = booleanProperty("tock_whatsapp_persistent_cache", false)
-        .also { activated ->
-            if (activated && !encryptionEnabled) {
-                error("when tock_whatsapp_persistent_cache is activated, you need also to activate encryption using tock_encrypt_pass property - exiting")
+    private val persistentCacheActivated =
+        booleanProperty("tock_whatsapp_persistent_cache", false)
+            .also { activated ->
+                if (activated && !encryptionEnabled) {
+                    error("when tock_whatsapp_persistent_cache is activated, you need also to activate encryption using tock_encrypt_pass property - exiting")
+                }
             }
-        }
 
     private val idCache: Cache<String, String> =
         CacheBuilder.newBuilder()
             .expireAfterAccess(longProperty("tock_whatsapp_memory_timeout_in_minutes", 60), TimeUnit.MINUTES)
             .build()
 
-    fun createHashedId(id: String): String = sha256Uuid(id).toString().apply {
-        putIdFromPersistentCache(this, id)
-        idCache.put(this, id)
-    }
+    fun createHashedId(id: String): String =
+        sha256Uuid(id).toString().apply {
+            putIdFromPersistentCache(this, id)
+            idCache.put(this, id)
+        }
 
     fun getRealId(hashedId: String): String =
         idCache.getIfPresent(hashedId)
             ?: getIdFromPersistentCache(hashedId)
             ?: throw CacheExpiredException("Cache expired or real ID not found for hashedId: $hashedId")
 
-    private fun putIdFromPersistentCache(hashedId: String, id: String) {
+    private fun putIdFromPersistentCache(
+        hashedId: String,
+        id: String,
+    ) {
         if (persistentCacheActivated) {
             fireAndForgetIO {
                 putInCache(hashedId.toId(), PERSISTENT_CACHE_TYPE, encrypt(id))

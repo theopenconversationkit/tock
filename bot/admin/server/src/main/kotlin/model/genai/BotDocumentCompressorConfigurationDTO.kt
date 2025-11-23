@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.model.genai
 
-
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
 import org.litote.kmongo.newId
@@ -46,6 +45,3 @@ data class BotDocumentCompressorConfigurationDTO(
             setting = setting,
         )
 }
-
-
-

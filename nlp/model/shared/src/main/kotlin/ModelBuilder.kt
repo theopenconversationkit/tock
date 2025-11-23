@@ -27,22 +27,39 @@ import ai.tock.nlp.core.sample.SampleExpression
  * To manage and build nlp models.
  */
 interface ModelBuilder {
+    fun buildAndSaveTokenizerModel(
+        context: TokenizerContext,
+        expressions: List<SampleExpression>,
+    )
 
-    fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>)
+    fun buildIntentModel(
+        context: IntentContext,
+        expressions: List<SampleExpression>,
+    ): ModelHolder
 
-    fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): ModelHolder
+    fun buildAndSaveIntentModel(
+        context: IntentContext,
+        expressions: List<SampleExpression>,
+    )
 
-    fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>)
+    fun buildEntityModel(
+        context: EntityBuildContext,
+        expressions: List<SampleExpression>,
+    ): ModelHolder?
 
-    fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): ModelHolder?
-
-    fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>)
+    fun buildAndSaveEntityModel(
+        context: EntityBuildContext,
+        expressions: List<SampleExpression>,
+    )
 
     fun isIntentModelExist(context: IntentContext): Boolean
 
     fun isEntityModelExist(context: EntityBuildContext): Boolean
 
-    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
+    fun deleteOrphans(
+        applicationsAndIntents: Map<Application, Set<Intent>>,
+        entityTypes: List<EntityType>,
+    )
 
     /**
      * Stores in memory the model.
@@ -59,11 +76,15 @@ interface ModelBuilder {
      */
     fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
+        nlpEngineType: NlpEngineType,
     ): NlpApplicationConfiguration
 
     /**
      * Updates the model configuration for the given application name.
      */
-    fun updateModelConfiguration(applicationName: String, engineType: NlpEngineType, configuration: NlpApplicationConfiguration)
+    fun updateModelConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration,
+    )
 }

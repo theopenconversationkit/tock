@@ -37,5 +37,5 @@ class MarkAsUnknownQuery(
     /**
      * The sentence to mark
      */
-    val text: String
+    val text: String,
 )

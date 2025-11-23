@@ -29,24 +29,25 @@ import ai.tock.bot.engine.message.GenericMessage
  */
 class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) :
     Message(quickReplies?.run { if (isEmpty()) null else this }) {
-
     override fun toGenericMessage(): GenericMessage? {
         return when (attachment.type) {
-            audio, file, image, video -> GenericMessage(
-                this,
-                attachments = listOf(
-                    ai.tock.bot.engine.message.Attachment(
-                        (attachment.payload as UrlPayload).url ?: "",
-                        attachment.type.toTockAttachmentType()
-                    )
+            audio, file, image, video ->
+                GenericMessage(
+                    this,
+                    attachments =
+                        listOf(
+                            ai.tock.bot.engine.message.Attachment(
+                                (attachment.payload as UrlPayload).url ?: "",
+                                attachment.type.toTockAttachmentType(),
+                            ),
+                        ),
                 )
-            )
             template -> attachment.payload.toGenericMessage()
         }?.run {
             if (quickReplies?.isNotEmpty() == true) {
                 copy(
                     choices = choices + quickReplies.mapNotNull { it.toChoice() },
-                    locations = locations + quickReplies.mapNotNull { it.toLocation() }
+                    locations = locations + quickReplies.mapNotNull { it.toLocation() },
                 )
             } else {
                 this
@@ -56,10 +57,11 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
 
     override fun obfuscate(): ConnectorMessage {
         return when (attachment.type) {
-            template -> AttachmentMessage(
-                attachment.copy(payload = attachment.payload.obfuscate()),
-                quickReplies
-            )
+            template ->
+                AttachmentMessage(
+                    attachment.copy(payload = attachment.payload.obfuscate()),
+                    quickReplies,
+                )
             else -> this
         }
     }
@@ -93,6 +95,5 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
         return "AttachmentMessage(attachment=$attachment,quickReplies=$quickReplies)"
     }
 
-    override fun copy(quickReplies: List<QuickReply>?): Message =
-        AttachmentMessage(attachment, quickReplies)
+    override fun copy(quickReplies: List<QuickReply>?): Message = AttachmentMessage(attachment, quickReplies)
 }

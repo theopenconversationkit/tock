@@ -30,35 +30,37 @@ import kotlin.reflect.KClass
  * The [RestConnector] provider.
  */
 internal object RestConnectorProvider : ConnectorProvider {
-
     override val connectorType: ConnectorType get() = ConnectorType.rest
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         return RestConnector(
             connectorConfiguration.connectorId,
             connectorConfiguration.path,
-            createRequestFilter(connectorConfiguration)
+            createRequestFilter(connectorConfiguration),
         )
     }
 
     override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
         super.check(connectorConfiguration) +
             listOfNotNull(
-                if (connectorConfiguration.ownerConnectorType == null)
+                if (connectorConfiguration.ownerConnectorType == null) {
                     "rest connector must have an owner connector type"
-                else null
+                } else {
+                    null
+                },
             )
 
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             ConnectorType.rest,
             ConnectorTypeConfiguration.commonSecurityFields(),
-            resourceAsString("/test.svg")
+            resourceAsString("/test.svg"),
         )
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        MessageRequest::class
-    )
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
+        setOf(
+            MessageRequest::class,
+        )
 }
 
 internal class RestConnectorProviderService : ConnectorProvider by RestConnectorProvider

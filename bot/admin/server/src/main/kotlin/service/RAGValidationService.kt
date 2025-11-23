@@ -29,60 +29,67 @@ import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 
-
 object RAGValidationService {
-
     private val llmProviderService: LLMProviderService get() = injector.provide()
     private val emProviderService: EMProviderService get() = injector.provide()
     private val vectorStoreProviderService: VectorStoreProviderService get() = injector.provide()
 
     fun validate(ragConfig: BotRAGConfiguration): Set<ErrorMessage> {
-        val observabilitySetting = ObservabilityService.getObservabilityConfiguration(
-            ragConfig.namespace, ragConfig.botId, enabled = true
-        )?.setting
+        val observabilitySetting =
+            ObservabilityService.getObservabilityConfiguration(
+                ragConfig.namespace,
+                ragConfig.botId,
+                enabled = true,
+            )?.setting
 
         return mutableSetOf<ErrorMessage>().apply {
-            val questionCondensingLlmErrors = llmProviderService.checkSetting(
-                LLMProviderSettingStatusRequest(
-                    ragConfig.questionCondensingLlmSetting!!,
-                    observabilitySetting
-                )
-            ).getErrors("LLM setting check failed (for question condensing)")
+            val questionCondensingLlmErrors =
+                llmProviderService.checkSetting(
+                    LLMProviderSettingStatusRequest(
+                        ragConfig.questionCondensingLlmSetting!!,
+                        observabilitySetting,
+                    ),
+                ).getErrors("LLM setting check failed (for question condensing)")
 
-            val questionAnsweringLlmErrors = llmProviderService.checkSetting(
-                LLMProviderSettingStatusRequest(
-                    ragConfig.questionAnsweringLlmSetting!!,
-                    observabilitySetting
-                )
-            ).getErrors("LLM setting check failed (for question answering)")
+            val questionAnsweringLlmErrors =
+                llmProviderService.checkSetting(
+                    LLMProviderSettingStatusRequest(
+                        ragConfig.questionAnsweringLlmSetting!!,
+                        observabilitySetting,
+                    ),
+                ).getErrors("LLM setting check failed (for question answering)")
 
-            val embeddingErrors = emProviderService.checkSetting(
-                EMProviderSettingStatusRequest(ragConfig.emSetting)
-            ).getErrors("Embedding Model setting check failed")
+            val embeddingErrors =
+                emProviderService.checkSetting(
+                    EMProviderSettingStatusRequest(ragConfig.emSetting),
+                ).getErrors("Embedding Model setting check failed")
 
             val indexSessionIdErrors = validateIndexSessionId(ragConfig)
 
-            val vectorStoreErrors = (indexSessionIdErrors + embeddingErrors).takeIf { it.isEmpty() }?.let {
-                val vectorStoreSetting = VectorStoreService.getVectorStoreConfiguration(
-                    ragConfig.namespace, ragConfig.botId, enabled = true
-                )?.setting
+            val vectorStoreErrors =
+                (indexSessionIdErrors + embeddingErrors).takeIf { it.isEmpty() }?.let {
+                    val vectorStoreSetting =
+                        VectorStoreService.getVectorStoreConfiguration(
+                            ragConfig.namespace, ragConfig.botId, enabled = true,
+                        )?.setting
 
-                val (_, indexName) = VectorStoreUtils.getVectorStoreElements(
-                    ragConfig.namespace,
-                    ragConfig.botId,
-                    ragConfig.indexSessionId!!,
-                    ragConfig.maxDocumentsRetrieved,
-                    vectorStoreSetting
-                )
+                    val (_, indexName) =
+                        VectorStoreUtils.getVectorStoreElements(
+                            ragConfig.namespace,
+                            ragConfig.botId,
+                            ragConfig.indexSessionId!!,
+                            ragConfig.maxDocumentsRetrieved,
+                            vectorStoreSetting,
+                        )
 
-                vectorStoreProviderService.checkSetting(
-                    VectorStoreProviderSettingStatusRequest(
-                        vectorStoreSetting = vectorStoreSetting,
-                        emSetting = ragConfig.emSetting,
-                        documentIndexName = indexName
-                    )
-                ).getErrors("Vector store setting check failed")
-            } ?: emptySet()
+                    vectorStoreProviderService.checkSetting(
+                        VectorStoreProviderSettingStatusRequest(
+                            vectorStoreSetting = vectorStoreSetting,
+                            emSetting = ragConfig.emSetting,
+                            documentIndexName = indexName,
+                        ),
+                    ).getErrors("Vector store setting check failed")
+                } ?: emptySet()
 
             addAll(questionCondensingLlmErrors + questionAnsweringLlmErrors + embeddingErrors + indexSessionIdErrors + vectorStoreErrors)
         }
@@ -93,14 +100,12 @@ object RAGValidationService {
         if (ragConfig.enabled && ragConfig.indexSessionId.isNullOrBlank()) {
             errors.add(
                 ErrorMessage(
-                    message = "The index session ID is required to enable the RAG feature"
-                )
+                    message = "The index session ID is required to enable the RAG feature",
+                ),
             )
         }
         return errors
     }
 
-    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> =
-        this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
-
+    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

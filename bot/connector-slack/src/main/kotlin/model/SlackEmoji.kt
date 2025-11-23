@@ -22,5 +22,5 @@ enum class SlackEmoji(val format: String) {
     HEART(":heart:"),
     SLIGHT_SMILE(":slightly_smiling_face:"),
     THUMBS_UP(":+1:"),
-    GRINNING(":grinning:")
+    GRINNING(":grinning:"),
 }

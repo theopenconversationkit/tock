@@ -37,17 +37,20 @@ import java.time.ZonedDateTime
  *
  */
 class DucklingVerticle : WebVerticle() {
-
     data class ParseRequest(
         val language: String,
         val dimensions: List<String>,
         val referenceDate: ZonedDateTime,
         val referenceTimezone: ZoneId,
-        val textToParse: String
+        val textToParse: String,
     )
 
     class KeywordSerializer : JsonSerializer<Keyword>() {
-        override fun serialize(keyword: Keyword, gen: JsonGenerator, provider: SerializerProvider) {
+        override fun serialize(
+            keyword: Keyword,
+            gen: JsonGenerator,
+            provider: SerializerProvider,
+        ) {
             gen.writeString(keyword.name)
         }
     }
@@ -70,11 +73,12 @@ class DucklingVerticle : WebVerticle() {
         return { context -> if (DucklingBridge.initialized) context.response().end() else context.fail(500) }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        listOf(
-            Pair("duckling_bridge", { DucklingBridge.initialized })
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        detailedHealthcheck(
+            listOf(
+                Pair("duckling_bridge", { DucklingBridge.initialized }),
+            ),
         )
-    )
 
     override fun startServer(promise: Promise<Void>) {
         vertx.blocking<Boolean>(
@@ -95,7 +99,7 @@ class DucklingVerticle : WebVerticle() {
                 } else {
                     promise.fail(it.cause())
                 }
-            }
+            },
         )
     }
 }

@@ -25,16 +25,15 @@ import ai.tock.bot.engine.message.Choice
  */
 data class PostbackButton(
     val payload: String?,
-    val title: String
+    val title: String,
 ) : Button(ButtonType.postback) {
-
     override fun toChoice(): Choice {
         return payload?.let {
             SendChoice.decodeChoiceId(it)
                 .let { (intent, params) ->
                     Choice(
                         intent,
-                        params + (SendChoice.TITLE_PARAMETER to title)
+                        params + (SendChoice.TITLE_PARAMETER to title),
                     )
                 }
         } ?: Choice(Companion.unknown.name, mapOf(SendChoice.TITLE_PARAMETER to title))

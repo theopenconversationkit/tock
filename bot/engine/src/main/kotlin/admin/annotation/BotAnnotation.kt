@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.annotation
 
-
 import java.time.Instant
 
 data class BotAnnotation(

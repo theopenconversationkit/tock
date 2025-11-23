@@ -24,28 +24,27 @@ import ai.tock.nlp.core.NlpEngineType
  * NLP query operations.
  */
 interface NlpClassifier : ModelBuilder {
-
     fun supportedNlpEngineTypes(): Set<NlpEngineType>
 
     fun classifyIntent(
         context: IntentContext,
         modelHolder: ModelHolder,
-        text: String
+        text: String,
     ): IntentClassification
 
     fun classifyEntities(
         context: EntityCallContext,
         modelHolder: ModelHolder,
-        text: String
+        text: String,
     ): List<EntityRecognition>
 
     fun classifyIntent(
         context: IntentContext,
-        text: String
+        text: String,
     ): IntentClassification
 
     fun classifyEntities(
         context: EntityCallContext,
-        text: String
+        text: String,
     ): List<EntityRecognition>
 }

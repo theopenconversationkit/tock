@@ -19,10 +19,10 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class WhatsAppCloudSendBotTextMessage (
-        val text: TextContent,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val to: String,
-        @get:JsonProperty("preview_url")
-        val previewUrl: Boolean = false,
+data class WhatsAppCloudSendBotTextMessage(
+    val text: TextContent,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val to: String,
+    @get:JsonProperty("preview_url")
+    val previewUrl: Boolean = false,
 ) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.text)

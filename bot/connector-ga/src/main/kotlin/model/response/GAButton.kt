@@ -24,16 +24,15 @@ import ai.tock.bot.engine.message.Choice
  */
 data class GAButton(
     val title: String,
-    val openUrlAction: GAOpenUrlAction
+    val openUrlAction: GAOpenUrlAction,
 ) {
-
     fun toChoice(): Choice {
         return Choice(
             SendChoice.EXIT_INTENT,
             mapOf(
                 SendChoice.URL_PARAMETER to openUrlAction.url,
-                SendChoice.TITLE_PARAMETER to title
-            )
+                SendChoice.TITLE_PARAMETER to title,
+            ),
         )
     }
 }

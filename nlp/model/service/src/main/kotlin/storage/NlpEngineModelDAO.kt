@@ -25,22 +25,37 @@ import java.time.Instant
  * To save, load and update model files.
  */
 interface NlpEngineModelDAO {
-
     fun getEntityModelInputStream(key: EntityContextKey): NlpModelStream?
-    fun saveEntityModel(key: EntityContextKey, stream: InputStream)
+
+    fun saveEntityModel(
+        key: EntityContextKey,
+        stream: InputStream,
+    )
+
     fun getEntityModelLastUpdate(key: EntityContextKey): Instant?
+
     fun deleteEntityModelsNotIn(keys: List<EntityContextKey>)
+
     fun deleteEntityModel(key: EntityContextKey)
+
     /**
      * Listen changes on entity models.
      */
     fun listenEntityModelChanges(listener: (String) -> Unit)
 
     fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream?
-    fun saveIntentModel(key: IntentContextKey, stream: InputStream)
+
+    fun saveIntentModel(
+        key: IntentContextKey,
+        stream: InputStream,
+    )
+
     fun getIntentModelLastUpdate(key: IntentContextKey): Instant?
+
     fun deleteIntentModelsNotIn(keys: List<IntentContextKey>)
+
     fun deleteIntentModel(key: IntentContextKey)
+
     /**
      * Listen changes on intent models.
      */

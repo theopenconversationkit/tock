@@ -35,13 +35,15 @@ class XrayKeywordHandler {
     private val dialogReportDAO: DialogReportDAO = injector.provide()
     private val jiraKeyProject = property("tock_bot_test_jira_project", "Set a key for the jira project.")
 
-    internal fun createXray(keyword: String, bus: BotBus) {
+    internal fun createXray(
+        keyword: String,
+        bus: BotBus,
+    ) {
         val params = keyword.replace(XRAY_KEYWORD, "").split(",")
 
         if (params.size == 1 && params[0].isBlank()) {
             bus.endRawText("Error : Test title is mandatory")
         } else {
-
             val labelPlanMap = emptyMap<String, String>()
             val xray =
                 try {
@@ -61,14 +63,14 @@ class XrayKeywordHandler {
                                         trim()
                                     }
                                 } ?: "Test"
-                                )
+                            )
                     }
                     XrayService().generateXrayTest(
                         dialog,
                         testTitle,
                         linkedJira,
                         listOfNotNull(""),
-                        labelPlanMap
+                        labelPlanMap,
                     )
                 } catch (e: Exception) {
                     logger.error(e)
@@ -84,7 +86,10 @@ class XrayKeywordHandler {
         }
     }
 
-    internal fun updateXray(keyword: String, bus: BotBus) {
+    internal fun updateXray(
+        keyword: String,
+        bus: BotBus,
+    ) {
         val params = keyword.replace(XRAY_UPDATE_KEYWORD, "")
         val testKey = params.trim()
 

@@ -35,5 +35,5 @@ data class UserNamespace(
     /**
      * Is it the current namespace for the user ?
      */
-    val current: Boolean = false
+    val current: Boolean = false,
 )

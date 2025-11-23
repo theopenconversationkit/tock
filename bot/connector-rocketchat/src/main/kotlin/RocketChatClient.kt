@@ -29,7 +29,6 @@ import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
 import chat.rocket.core.model.Room
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -38,6 +37,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -46,9 +46,8 @@ internal class RocketChatClient(
     val targetUrl: String,
     val login: String,
     private val password: String,
-    private val avatar: String
+    private val avatar: String,
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -58,7 +57,11 @@ internal class RocketChatClient(
 
     private class SimpleTokenRepository : TokenRepository {
         private var savedToken: Token? = null
-        override fun save(url: String, token: Token) {
+
+        override fun save(
+            url: String,
+            token: Token,
+        ) {
             savedToken = token
         }
 
@@ -68,27 +71,29 @@ internal class RocketChatClient(
     }
 
     private val client: RocketChatClient by lazy {
-        val logger = object : PlatformLogger {
-            override fun debug(s: String) {
-                logger.debug(s)
-            }
+        val logger =
+            object : PlatformLogger {
+                override fun debug(s: String) {
+                    logger.debug(s)
+                }
 
-            override fun info(s: String) {
-                logger.info(s)
-            }
+                override fun info(s: String) {
+                    logger.info(s)
+                }
 
-            override fun warn(s: String) {
-                logger.warn(s)
+                override fun warn(s: String) {
+                    logger.warn(s)
+                }
             }
-        }
 
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .build()
+        val okHttpClient =
+            OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build()
 
         RocketChatClient.create {
             httpClient = okHttpClient
@@ -99,50 +104,54 @@ internal class RocketChatClient(
         }
     }
 
-    fun join(roomId: String?, listener: (Room) -> Unit) {
+    fun join(
+        roomId: String?,
+        listener: (Room) -> Unit,
+    ) {
         disabled = false
-        val job = GlobalScope.launch(Dispatchers.IO) {
-            try {
-                logger.debug { "Try to connect $login" }
-                val token = client.login(login, password)
-                logger.debug { "Token: userId = ${token.userId} - authToken = ${token.authToken}" }
+        val job =
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    logger.debug { "Try to connect $login" }
+                    val token = client.login(login, password)
+                    logger.debug { "Token: userId = ${token.userId} - authToken = ${token.authToken}" }
 
-                launch {
-                    val statusChannel = Channel<State>()
-                    client.addStateChannel(statusChannel)
-                    for (status in statusChannel) {
-                        logger.debug("Changing status to: $status")
-                        when (status) {
-                            is State.Authenticating -> {
-                                logger.debug("Authenticating")
+                    launch {
+                        val statusChannel = Channel<State>()
+                        client.addStateChannel(statusChannel)
+                        for (status in statusChannel) {
+                            logger.debug("Changing status to: $status")
+                            when (status) {
+                                is State.Authenticating -> {
+                                    logger.debug("Authenticating")
+                                }
+                                is State.Connected -> {
+                                    logger.debug("Connected")
+                                    client.subscribeRooms { _, _ -> }
+                                }
+                                else -> logger.debug { status }
                             }
-                            is State.Connected -> {
-                                logger.debug("Connected")
-                                client.subscribeRooms { _, _ -> }
+                        }
+                        logger.debug("Done on statusChannel")
+                    }
+                    launch {
+                        for (room in client.roomsChannel) {
+                            if (!disabled) {
+                                logger.debug { "room: $room" }
+                                listener.invoke(room.data)
                             }
-                            else -> logger.debug { status }
                         }
                     }
-                    logger.debug("Done on statusChannel")
-                }
-                launch {
-                    for (room in client.roomsChannel) {
-                        if (!disabled) {
-                            logger.debug { "room: $room" }
-                            listener.invoke(room.data)
-                        }
+
+                    client.connect()
+
+                    if (roomId != null) {
+                        client.joinChat(roomId)
                     }
+                } catch (e: Exception) {
+                    logger.error(e)
                 }
-
-                client.connect()
-
-                if (roomId != null) {
-                    client.joinChat(roomId)
-                }
-            } catch (e: Exception) {
-                logger.error(e)
             }
-        }
 
         runBlocking {
             try {
@@ -153,7 +162,10 @@ internal class RocketChatClient(
         }
     }
 
-    fun send(roomId: String, message: String) {
+    fun send(
+        roomId: String,
+        message: String,
+    ) {
         runBlocking {
             try {
                 client.sendMessage(
@@ -162,7 +174,7 @@ internal class RocketChatClient(
                     message = message,
                     alias = "Tock bot",
                     emoji = ":smirk:",
-                    avatar = avatar
+                    avatar = avatar,
                 )
             } catch (e: Exception) {
                 logger.error(e)

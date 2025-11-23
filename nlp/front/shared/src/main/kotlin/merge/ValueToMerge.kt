@@ -27,9 +27,8 @@ data class ValueToMerge(
     val content: String? = null,
     val initial: Boolean = false,
     val position: Int? = null,
-    val probability: Double = 1.0
+    val probability: Double = 1.0,
 ) {
-
     fun toValueDescriptor(): ValueDescriptor {
         return ValueDescriptor(value, content, initial, position, probability)
     }

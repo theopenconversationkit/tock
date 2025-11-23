@@ -46,41 +46,44 @@ import kotlin.test.assertNull
  *
  */
 internal class ParseRequestLogMongoDAOTest : AbstractTest() {
+    private val parseResult =
+        ParseResult(
+            "test",
+            "namespace",
+            defaultLocale,
+            listOf(
+                ParsedEntityValue(
+                    0,
+                    1,
+                    Entity(EntityType("type"), "role"),
+                    NumberValue(1),
+                ),
+            ),
+            emptyList(),
+            1.0,
+            1.0,
+            "sentence",
+            mapOf("app:test2" to 0.4),
+        )
 
-    private val parseResult = ParseResult(
-        "test",
-        "namespace",
-        defaultLocale,
-        listOf(
-            ParsedEntityValue(
-                0,
-                1,
-                Entity(EntityType("type"), "role"),
-                NumberValue(1)
-            )
-        ),
-        emptyList(),
-        1.0,
-        1.0,
-        "sentence",
-        mapOf("app:test2" to 0.4)
-    )
-
-    private val log = ParseRequestLog(
-        "a".toId(),
-        ParseQuery(
-            listOf("1"), "namespace", "appName",
-            QueryContext(
-                defaultLocale,
-                Dice.newId(),
-                referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS)
-            )
-        , configuration = null
-        ),
-        parseResult,
-        2,
-        date = Instant.now().truncatedTo(ChronoUnit.MILLIS)
-    )
+    private val log =
+        ParseRequestLog(
+            "a".toId(),
+            ParseQuery(
+                listOf("1"),
+                "namespace",
+                "appName",
+                QueryContext(
+                    defaultLocale,
+                    Dice.newId(),
+                    referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS),
+                ),
+                configuration = null,
+            ),
+            parseResult,
+            2,
+            date = Instant.now().truncatedTo(ChronoUnit.MILLIS),
+        )
 
     private val log2 = log.copy(result = parseResult.copy(otherIntentsProbabilities = mapOf("app:test2" to 0.5)))
 

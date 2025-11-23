@@ -23,13 +23,11 @@ import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.CompletionService
 
-class CompletionServiceImpl: CompletionService {
+class CompletionServiceImpl : CompletionService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val completionApi = retrofit.create(CompletionApi::class.java)
 
-    override fun generate(query: CompletionRequest): CompletionResponse?
-        = completionApi.generate(query).execute().body()
+    override fun generate(query: CompletionRequest): CompletionResponse? = completionApi.generate(query).execute().body()
 
-    override fun generateSentences(query: CompletionRequest): SentenceCompletionResponse?
-            = completionApi.generateSentences(query).execute().body()
+    override fun generateSentences(query: CompletionRequest): SentenceCompletionResponse? = completionApi.generateSentences(query).execute().body()
 }

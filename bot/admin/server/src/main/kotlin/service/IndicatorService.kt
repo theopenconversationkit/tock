@@ -31,7 +31,6 @@ import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 
 object IndicatorService {
-
     private val dao: IndicatorDAO by injector.instance()
 
     /**
@@ -41,7 +40,11 @@ object IndicatorService {
      * @param request the save request
      * @throws [IndicatorError.IndicatorAlreadyExists]
      */
-    fun save(namespace: String, botId: String, request: Valid<SaveIndicatorRequest>) = request.data.let {
+    fun save(
+        namespace: String,
+        botId: String,
+        request: Valid<SaveIndicatorRequest>,
+    ) = request.data.let {
         if (!PredefinedIndicators.has(it.name) && dao.existByNameAndBotId(it.name, namespace, botId)) {
             throw IndicatorError.IndicatorAlreadyExists(it.name, it.label, namespace, botId)
         }
@@ -56,15 +59,20 @@ object IndicatorService {
      * @param request the update request
      * @throws [IndicatorError.IndicatorNotFound]
      */
-    fun update(namespace: String, botId: String, indicatorName: String, request: Valid<UpdateIndicatorRequest>) = request.data.let {
+    fun update(
+        namespace: String,
+        botId: String,
+        indicatorName: String,
+        request: Valid<UpdateIndicatorRequest>,
+    ) = request.data.let {
         findIndicatorAndMap(indicatorName, namespace, botId) { it }.let { indicator ->
             dao.save(
                 indicator.copy(
                     label = it.label,
                     description = it.description,
                     dimensions = it.dimensions,
-                    values = it.values.map { value -> IndicatorValue(value.name, value.label) }.toSet()
-                )
+                    values = it.values.map { value -> IndicatorValue(value.name, value.label) }.toSet(),
+                ),
             )
         }
     }
@@ -77,7 +85,11 @@ object IndicatorService {
      * @throws [IndicatorError.IndicatorNotFound]
      * @return [IndicatorResponse]
      */
-    fun findByNameAndBotId(indicatorName: String, namespace: String, botId: String): IndicatorResponse =
+    fun findByNameAndBotId(
+        indicatorName: String,
+        namespace: String,
+        botId: String,
+    ): IndicatorResponse =
         findIndicatorAndMap(indicatorName, namespace, botId) {
             toResponse(it)
         }
@@ -88,17 +100,22 @@ object IndicatorService {
      * @param botId the name of the application which the indicator is linked to
      * @return List<[IndicatorResponse]>
      */
-    fun findAllByBotId(namespace: String, botId: String): List<IndicatorResponse> = dao.findAllByBotId(namespace, botId).map {
-        toResponse(it)
-    }
+    fun findAllByBotId(
+        namespace: String,
+        botId: String,
+    ): List<IndicatorResponse> =
+        dao.findAllByBotId(namespace, botId).map {
+            toResponse(it)
+        }
 
     /**
      * Retrieve all indicators
      * @return List<[IndicatorResponse]>
      */
-    fun findAll(): List<IndicatorResponse> = dao.findAll().map {
-        toResponse(it)
-    }
+    fun findAll(): List<IndicatorResponse> =
+        dao.findAll().map {
+            toResponse(it)
+        }
 
     /**
      * Delete an indicator
@@ -108,7 +125,11 @@ object IndicatorService {
      * @throws [IndicatorError.IndicatorDeletionFailed]
      * @return [Boolean]
      */
-    fun deleteByNameAndApplicationName(name: String, namespace: String, botId: String): Boolean =
+    fun deleteByNameAndApplicationName(
+        name: String,
+        namespace: String,
+        botId: String,
+    ): Boolean =
         dao.deleteByNameAndApplicationName(name, namespace, botId)
             .also { if (!it) throw IndicatorError.IndicatorDeletionFailed(name, namespace, botId) }
 
@@ -124,8 +145,6 @@ object IndicatorService {
         name: String,
         namespace: String,
         botId: String,
-        mapper: (Indicator) -> T
-    ): T =
-        dao.findByNameAndBotId(name, namespace, botId)?.let { mapper(it) } ?: throw IndicatorError.IndicatorNotFound(name, namespace, botId)
-
+        mapper: (Indicator) -> T,
+    ): T = dao.findByNameAndBotId(name, namespace, botId)?.let { mapper(it) } ?: throw IndicatorError.IndicatorNotFound(name, namespace, botId)
 }

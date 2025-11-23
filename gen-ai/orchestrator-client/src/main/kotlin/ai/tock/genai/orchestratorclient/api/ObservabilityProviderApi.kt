@@ -28,8 +28,6 @@ internal interface ObservabilityProviderApi {
     @POST("/observability-providers/{provider-id}/setting/status")
     fun checkObservabilitySetting(
         @Body query: ObservabilityProviderSettingStatusRequest,
-        @Path("provider-id") providerId: ObservabilityProvider
+        @Path("provider-id") providerId: ObservabilityProvider,
     ): Call<ProviderSettingStatusResponse>
-
 }
-

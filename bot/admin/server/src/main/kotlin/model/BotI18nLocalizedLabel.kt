@@ -31,9 +31,8 @@ data class BotI18nLocalizedLabel(
     val validated: Boolean,
     val connectorId: String? = null,
     val alternatives: List<String> = emptyList(),
-    val stats: List<I18nLabelStat> = emptyList()
+    val stats: List<I18nLabelStat> = emptyList(),
 ) {
-
     constructor(label: I18nLocalizedLabel, stats: List<I18nLabelStat>) :
         this(
             label.locale,
@@ -42,6 +41,6 @@ data class BotI18nLocalizedLabel(
             label.validated,
             label.connectorId,
             label.alternatives,
-            stats
+            stats,
         )
 }

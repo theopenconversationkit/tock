@@ -35,7 +35,6 @@ import org.litote.kmongo.setValue
 import java.util.regex.Pattern
 
 object UserNamespaceMongoDAO : UserNamespaceDAO {
-
     private val col: MongoCollection<UserNamespace> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<UserNamespace>()
         c.ensureUniqueIndex(Login, Namespace)
@@ -46,31 +45,40 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
 
     override fun getNamespaces(user: String): List<UserNamespace> = col.find(Login eq user).toList()
 
-    override fun getUsers(namespace: String): List<UserNamespace> =
-        col.find(getCaseInsensitiveBsonFilter(Namespace.name, namespace)).toList()
+    override fun getUsers(namespace: String): List<UserNamespace> = col.find(getCaseInsensitiveBsonFilter(Namespace.name, namespace)).toList()
 
     override fun saveNamespace(namespace: UserNamespace) {
         col.replaceOne(
             and(Login eq namespace.login, Namespace eq namespace.namespace),
             namespace,
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
-    override fun deleteNamespace(user: String, namespace: String) {
+    override fun deleteNamespace(
+        user: String,
+        namespace: String,
+    ) {
         col.deleteOne(and(Login eq user, Namespace eq namespace))
     }
 
-    override fun hasNamespace(user: String, namespace: String): Boolean =
-        col.countDocuments(and(Login eq user, Namespace eq namespace)) == 1L
+    override fun hasNamespace(
+        user: String,
+        namespace: String,
+    ): Boolean = col.countDocuments(and(Login eq user, Namespace eq namespace)) == 1L
 
-    override fun setCurrentNamespace(user: String, namespace: String) {
+    override fun setCurrentNamespace(
+        user: String,
+        namespace: String,
+    ) {
         col.updateMany(Login eq user, setValue(Current, false))
         col.updateOne(and(Login eq user, Namespace eq namespace), setValue(Current, true))
     }
 
-    override fun isNamespaceOwner(user: String, namespace: String): Boolean =
-        col.countDocuments(and(Login eq user, Namespace eq namespace, Owner eq true)) == 1L
+    override fun isNamespaceOwner(
+        user: String,
+        namespace: String,
+    ): Boolean = col.countDocuments(and(Login eq user, Namespace eq namespace, Owner eq true)) == 1L
 
     override fun isExistingNamespace(namespace: String): Boolean {
         return col.countDocuments(getCaseInsensitiveBsonFilter(Namespace.name, namespace)) != 0L
@@ -79,7 +87,10 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
     /**
      * obtain the case-insensitive bson filter
      */
-    private fun getCaseInsensitiveBsonFilter(field: String, input: String): Bson {
+    private fun getCaseInsensitiveBsonFilter(
+        field: String,
+        input: String,
+    ): Bson {
         val escapedNamespace = Pattern.quote(input)
         return Filters.regex(Namespace.name, "^$escapedNamespace$", "i")
     }

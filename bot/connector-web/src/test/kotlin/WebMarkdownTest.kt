@@ -19,19 +19,19 @@ import ai.tock.bot.connector.web.WebMarkdown.regex
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
+@Suppress("ktlint:standard:max-line-length")
 class WebMarkdownTest {
-
     @Test
     fun `test simple markdown`() {
         Assertions.assertThat(WebMarkdown.markdown("* item 1")).isEqualTo(
             "<ul>\n" +
-                    "<li>item 1</li>\n" +
-                    "</ul>"
+                "<li>item 1</li>\n" +
+                "</ul>",
         )
         Assertions.assertThat(WebMarkdown.markdown("1. item 1")).isEqualTo(
             "<ol>\n" +
-                    "<li>item 1</li>\n" +
-                    "</ol>"
+                "<li>item 1</li>\n" +
+                "</ol>",
         )
     }
 
@@ -50,25 +50,25 @@ class WebMarkdownTest {
         Assertions.assertThat(WebMarkdown.markdown("> Blockquote"))
             .isEqualTo(
                 "<blockquote style=\"font-style: normal; font-size: 15px; margin-left: 0px; font-family: Arial; border-left: 4px solid rgb(0 0 0 / 28%); padding-left: 8px; background-color: #f5f5f5;\">\n" +
-                        "<p>Blockquote</p>\n" +
-                        "</blockquote>"
+                    "<p>Blockquote</p>\n" +
+                    "</blockquote>",
             )
         Assertions.assertThat(
             WebMarkdown.markdown(
                 "title 1 :\n" +
-                        "# h1 Heading\n" +
-                        "title 2 :\n" +
-                        "## h2 Heading\n" +
-                        "title 3 :\n" +
-                        "### h3 Heading"
-            )
+                    "# h1 Heading\n" +
+                    "title 2 :\n" +
+                    "## h2 Heading\n" +
+                    "title 3 :\n" +
+                    "### h3 Heading",
+            ),
         ).isEqualTo(
             "<p>title 1 :</p>\n" +
-                    "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">h1 Heading</h1>\n" +
-                    "<p>title 2 :</p>\n" +
-                    "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">h2 Heading</h2>\n" +
-                    "<p>title 3 :</p>\n" +
-                    "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">h3 Heading</h3>"
+                "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">h1 Heading</h1>\n" +
+                "<p>title 2 :</p>\n" +
+                "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">h2 Heading</h2>\n" +
+                "<p>title 3 :</p>\n" +
+                "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">h3 Heading</h3>",
         )
         Assertions.assertThat(WebMarkdown.markdown("`code`"))
             .isEqualTo("<p><code style=\"padding: 2px 4px; font-size: 90%; background-color: #f5f5f5; border-radius: 4px;\">code</code></p>")
@@ -83,8 +83,8 @@ class WebMarkdownTest {
         Assertions.assertThat(
             WebMarkdown.extractAllDataWithRegex(
                 regex,
-                "~~first strikethrblough~~ and blabla ~~ other information~~"
-            )
+                "~~first strikethrblough~~ and blabla ~~ other information~~",
+            ),
         )
             .isEqualTo("<s style=\"text-decoration: line-through;\">first strikethrblough</s> and blabla <s style=\"text-decoration: line-through;\"> other information</s>")
     }
@@ -115,7 +115,7 @@ class WebMarkdownTest {
             |<p>The platform source code is available on  <a target="_blank" rel="noopener noreferrer" href="https://github.com/theopenconversationkit/tock">GitHub</a>  under the  <a target="_blank" rel="noopener noreferrer" href="https://github.com/theopenconversationkit/tock/blob/master/LICENSE">Apache License, version 2.0</a>.</p>
             |<h2 style="display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;">Overview</h2>
             |<p>The  <a target="_blank" rel="noopener noreferrer" href="https://doc.tock.ai/">Tock.ai</a>  site is a good starting point to learn about the solution and its growing community.  <a target="_blank" rel="noopener noreferrer" href="https://doc.tock.ai/tock/en/guide/studio">Tutorials</a>,  <a target="_blank" rel="noopener noreferrer" href="https://doc.tock.ai/tock/en/about/resources">presentations</a>  and a  <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=UsKkpYL7Hto">live demo</a>  (20 minutes, in English,  <a target="_blank" rel="noopener noreferrer" href="https://www.opensource-experience.com/en/event/20-minutes-from-zero-to-live-chatbot-with-tock/">ℹ️ abstract</a>) are also available.</p>
-            """.trimMargin()
+            """.trimMargin(),
         )
     }
 }

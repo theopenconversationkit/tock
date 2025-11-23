@@ -27,9 +27,8 @@ data class SampleExpression(
     val text: String,
     val intent: Intent,
     val entities: List<SampleEntity> = emptyList(),
-    val context: SampleContext = SampleContext()
+    val context: SampleContext = SampleContext(),
 ) {
-
     fun entityValues(def: Entity): List<String> {
         return entities
             .filter { it.definition == def }

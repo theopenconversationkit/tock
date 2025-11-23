@@ -104,9 +104,8 @@ data class StoryDefinitionConfigurationDump(
     /**
      * Steps by bot application configuration
      */
-    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList()
+    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList(),
 ) {
-
     constructor(def: StoryDefinitionConfiguration) :
         this(
             storyId = def.storyId,
@@ -127,7 +126,7 @@ data class StoryDefinitionConfigurationDump(
             features = def.features.map { StoryDefinitionConfigurationFeatureDump(it) },
             tags = def.tags,
             configuredAnswers = def.configuredAnswers,
-            configuredSteps = def.configuredSteps
+            configuredSteps = def.configuredSteps,
         )
 
     fun toStoryDefinitionConfiguration(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfiguration =
@@ -150,6 +149,6 @@ data class StoryDefinitionConfigurationDump(
             features = features.mapNotNull { it.toFeature(controller) },
             tags = tags,
             configuredAnswers = configuredAnswers,
-            configuredSteps = configuredSteps
+            configuredSteps = configuredSteps,
         )
 }

@@ -22,4 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * Root callback request format :
  * see [facebook documentation](https://developers.facebook.com/docs/messenger-platform/webhook-reference#format)
  */
-data class CallbackRequest(@JsonProperty("object") val objectType: String, val entry: List<Entry>)
+data class CallbackRequest(
+    @JsonProperty("object") val objectType: String,
+    val entry: List<Entry>,
+)

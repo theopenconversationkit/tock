@@ -34,31 +34,34 @@ import mu.KotlinLogging
  *
  */
 internal class ButtonDeserializer : JacksonDeserializer<Button>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Button? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Button? {
         data class ButtonFields(
             var type: ButtonType? = null,
             var url: String? = null,
             var title: String? = null,
             var payload: String? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (type, url, title, payload) = jp.read<ButtonFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    Button::type.name -> type = jp.readValue()
-                    UrlButton::url.name -> url = jp.valueAsString
-                    UrlButton::title.name -> title = jp.valueAsString
-                    PostbackButton::payload.name -> payload = jp.valueAsString
-                    else -> other = jp.readUnknownValue()
+        val (type, url, title, payload) =
+            jp.read<ButtonFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        Button::type.name -> type = jp.readValue()
+                        UrlButton::url.name -> url = jp.valueAsString
+                        UrlButton::title.name -> title = jp.valueAsString
+                        PostbackButton::payload.name -> payload = jp.valueAsString
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (type != null) {
             when (type) {

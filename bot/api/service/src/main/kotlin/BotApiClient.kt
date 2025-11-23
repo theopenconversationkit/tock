@@ -41,16 +41,16 @@ import java.net.URI
 import java.util.concurrent.TimeUnit
 
 internal class BotApiClient(baseUrl: String) {
-
     private val connectionTimeoutInMs = longProperty("tock_bot_api_connection_timeout_in_ms", 3000L)
     private val timeoutInMs = longProperty("tock_bot_api_timeout_in_ms", 60000L)
     private val reachabilityInMs = longProperty("tock_bot_api_webhook_reachability_in_ms", 10000L)
 
     @Volatile
-    private var checkReachability = booleanProperty(
-        "tock_bot_api_webhook_check_reachability",
-        true
-    )
+    private var checkReachability =
+        booleanProperty(
+            "tock_bot_api_webhook_check_reachability",
+            true,
+        )
     private val logger = KotlinLogging.logger {}
     private val formattedBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
@@ -63,11 +63,12 @@ internal class BotApiClient(baseUrl: String) {
     private var lastReachabilityCheck: Long = System.currentTimeMillis()
 
     init {
-        service = retrofitBuilderWithTimeoutAndLogger(timeoutInMs, logger)
-            .addJacksonConverter()
-            .baseUrl(formattedBaseUrl)
-            .build()
-            .create()
+        service =
+            retrofitBuilderWithTimeoutAndLogger(timeoutInMs, logger)
+                .addJacksonConverter()
+                .baseUrl(formattedBaseUrl)
+                .build()
+                .create()
         testReachability()
     }
 
@@ -79,40 +80,41 @@ internal class BotApiClient(baseUrl: String) {
 
     private fun testReachability(configurationUpdate: (ClientConfiguration) -> Unit = {}) {
         logger.debug { "testReachability: check: $checkReachability|reachable: $webhookReachable" }
-        webhookReachable = if (checkReachability) {
-            val lastCheck = lastReachabilityCheck
-            val time = System.currentTimeMillis()
-            logger.debug { "elapsed time: ${time - lastCheck}" }
-            if (time - lastCheck > reachabilityInMs) {
-                try {
-                    lastReachabilityCheck = time
-                    //check the configuration
-                    val configuration = send(RequestData(configuration = true))?.botConfiguration
-                    if (configuration != null) {
-                        configurationUpdate(configuration)
-                    }
-                    val confVersion = configuration?.version
-                    if (confVersion == null || confVersion == V3) {
-                        logger.info { "test webhook reachability" }
-                        service.healthcheck().execute().run {
-                            logger.info { "webhook healthcheck : $this" }
-                            isSuccessful
+        webhookReachable =
+            if (checkReachability) {
+                val lastCheck = lastReachabilityCheck
+                val time = System.currentTimeMillis()
+                logger.debug { "elapsed time: ${time - lastCheck}" }
+                if (time - lastCheck > reachabilityInMs) {
+                    try {
+                        lastReachabilityCheck = time
+                        // check the configuration
+                        val configuration = send(RequestData(configuration = true))?.botConfiguration
+                        if (configuration != null) {
+                            configurationUpdate(configuration)
                         }
-                    } else {
-                        logger.info { "webhook configuration version is < v3 - disable reachability check" }
-                        checkReachability = false
-                        true
+                        val confVersion = configuration?.version
+                        if (confVersion == null || confVersion == V3) {
+                            logger.info { "test webhook reachability" }
+                            service.healthcheck().execute().run {
+                                logger.info { "webhook healthcheck : $this" }
+                                isSuccessful
+                            }
+                        } else {
+                            logger.info { "webhook configuration version is < v3 - disable reachability check" }
+                            checkReachability = false
+                            true
+                        }
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        false
                     }
-                } catch (e: Exception) {
-                    logger.error(e)
-                    false
+                } else {
+                    webhookReachable
                 }
             } else {
-                webhookReachable
+                true
             }
-        } else {
-            true
-        }
     }
 
     fun send(request: RequestData): ResponseData? =
@@ -130,14 +132,13 @@ internal class BotApiClient(baseUrl: String) {
     fun sendWithSse(
         request: RequestData,
         version: ResponseContextVersion?,
-        sendResponse: (ResponseData?) -> Unit
+        sendResponse: (ResponseData?) -> Unit,
     ): Unit =
         try {
             val closeListener = CloseListener()
             BackgroundEventSource
                 .Builder(
                     object : BackgroundEventHandler {
-
                         override fun onOpen() {
                             logger.debug("open sse connection")
                         }
@@ -146,7 +147,10 @@ internal class BotApiClient(baseUrl: String) {
                             logger.debug("close sse connection")
                         }
 
-                        override fun onMessage(event: String, messageEvent: MessageEvent) {
+                        override fun onMessage(
+                            event: String,
+                            messageEvent: MessageEvent,
+                        ) {
                             logger.debug { "Event: $event" }
                             logger.debug { "Message: ${messageEvent.data}" }
                             if (event == "message") {
@@ -154,7 +158,7 @@ internal class BotApiClient(baseUrl: String) {
                                 val holder = getHolderIfPresent(message.requestId)
                                 if (holder == null) {
                                     logger.warn { "unknown request ${message.requestId}" }
-                                    //fallback
+                                    // fallback
                                     sendResponse(message)
                                 } else {
                                     holder.receive(message)
@@ -182,15 +186,15 @@ internal class BotApiClient(baseUrl: String) {
                                 if (version == ResponseContextVersion.V2) {
                                     header(
                                         "message",
-                                        mapper.writeValueAsString(request)
+                                        mapper.writeValueAsString(request),
                                     )
                                 } else {
                                     methodAndBody("POST", mapper.writeValueAsString(request).toRequestBody())
                                 }
                             }
                             .connectTimeout(connectionTimeoutInMs, TimeUnit.MILLISECONDS)
-                            .readTimeout(timeoutInMs, TimeUnit.MILLISECONDS)
-                    )
+                            .readTimeout(timeoutInMs, TimeUnit.MILLISECONDS),
+                    ),
                 )
                 .threadPriority(Thread.MAX_PRIORITY)
                 .build()

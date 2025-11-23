@@ -52,9 +52,8 @@ class AlcmeonConnector(
     private val connectorId: String,
     private val path: String,
     private val description: String,
-    private val authorisationHandler: Handler<RoutingContext>
+    private val authorisationHandler: Handler<RoutingContext>,
 ) : ConnectorBase(AlcmeonConnectorProvider.connectorType) {
-
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
@@ -71,31 +70,36 @@ class AlcmeonConnector(
         }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.WHATSAPP) {
-            if (suggestions.size > 3) {
-                listMessage(text, i18nKey("whatsapp_list_message_default_button","Choose an answer"), suggestions.map { whatsappNlpQuickReply(it) })
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.WHATSAPP) {
+                if (suggestions.size > 3) {
+                    listMessage(text, i18nKey("whatsapp_list_message_default_button", "Choose an answer"), suggestions.map { whatsappNlpQuickReply(it) })
+                } else {
+                    replyButtonMessage(text, suggestions.map { whatsappNlpQuickReply(it) })
+                }
+            } else if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.FACEBOOK) {
+                text(text, suggestions.map { messengerNlpQuickReply(it) })
             } else {
-                replyButtonMessage(text, suggestions.map { whatsappNlpQuickReply(it) })
+                null
             }
-        } else if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.FACEBOOK) {
-            text(text, suggestions.map { messengerNlpQuickReply(it) })
-        } else {
-            null
         }
-    }
 
     override fun canHandleMessageFor(otherConnectorType: ConnectorType): Boolean {
-        return otherConnectorType.id in setOf(
-            ALCMEON_CONNECTOR_TYPE_ID,
-            messengerConnectorType.id,
-            whatsAppConnectorType.id
-        )
+        return otherConnectorType.id in
+            setOf(
+                ALCMEON_CONNECTOR_TYPE_ID,
+                messengerConnectorType.id,
+                whatsAppConnectorType.id,
+            )
     }
 
     private fun handleMessage(
         context: RoutingContext,
-        controller: ConnectorController
+        controller: ConnectorController,
     ) {
         try {
             val body = context.body().asString()
@@ -104,23 +108,24 @@ class AlcmeonConnector(
 
             val senderId = UserHashedIdCache.createHashedId(message.userExternalId)
 
-            val event = when(message) {
-                is AlcmeonConnectorWhatsappMessageIn -> {
-                    when(message.event) {
-                        is AlcmeonConnectorWhatsappMessageInteractiveEvent ->
-                            SendChoice.decodeChoice(
-                                message.event.interactive.payload,
-                                PlayerId(senderId),
-                                connectorId,
-                                PlayerId(connectorId, PlayerType.bot)
-                            )
-                        is AlcmeonConnectorWhatsappMessageTextEvent -> sendSentence(senderId, message.event.text.body)
-                        else -> sendSentence(senderId, null)
+            val event =
+                when (message) {
+                    is AlcmeonConnectorWhatsappMessageIn -> {
+                        when (message.event) {
+                            is AlcmeonConnectorWhatsappMessageInteractiveEvent ->
+                                SendChoice.decodeChoice(
+                                    message.event.interactive.payload,
+                                    PlayerId(senderId),
+                                    connectorId,
+                                    PlayerId(connectorId, PlayerType.bot),
+                                )
+                            is AlcmeonConnectorWhatsappMessageTextEvent -> sendSentence(senderId, message.event.text.body)
+                            else -> sendSentence(senderId, null)
+                        }
                     }
+                    is AlcmeonConnectorFacebookMessageIn -> sendSentence(senderId, message.event.message.text)
+                    else -> sendSentence(senderId, null)
                 }
-                is AlcmeonConnectorFacebookMessageIn -> sendSentence(senderId, message.event.message.text)
-                else -> sendSentence(senderId, null)
-            }
 
             executor.executeBlocking {
                 controller.handle(
@@ -129,9 +134,9 @@ class AlcmeonConnector(
                         AlcmeonConnectorCallback(
                             connectorId,
                             AlcmeonBackend.findBackend(message.backend),
-                            context
-                        )
-                    )
+                            context,
+                        ),
+                    ),
                 )
             }
         } catch (e: Throwable) {
@@ -139,7 +144,11 @@ class AlcmeonConnector(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         logger.debug { "event: $event" }
         callback as AlcmeonConnectorCallback
         if (event is Action) {
@@ -147,24 +156,27 @@ class AlcmeonConnector(
             if (event.metadata.lastAnswer) {
                 callback.sendResponseWithoutExit()
             }
-        } else if(event is AlcmeonExitEvent) {
+        } else if (event is AlcmeonExitEvent) {
             callback.sendResponseWithExit(event.exitReason, event.delayInMs)
         }
     }
 
-    private fun sendSentence(from: String, text: String?) = SendSentence(
+    private fun sendSentence(
+        from: String,
+        text: String?,
+    ) = SendSentence(
         PlayerId((from)),
         connectorId,
         PlayerId(connectorId, PlayerType.bot),
-        text
+        text,
     )
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when ((connectorData.callback as? AlcmeonConnectorCallback)?.backend ) {
-            AlcmeonBackend.WHATSAPP -> WhatsAppMediaConverter.toConnectorMessage(message)(this)
-            AlcmeonBackend.FACEBOOK -> MessengerMediaConverter.toConnectorMessage(message)(this)
-            else -> emptyList()
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when ((connectorData.callback as? AlcmeonConnectorCallback)?.backend) {
+                AlcmeonBackend.WHATSAPP -> WhatsAppMediaConverter.toConnectorMessage(message)(this)
+                AlcmeonBackend.FACEBOOK -> MessengerMediaConverter.toConnectorMessage(message)(this)
+                else -> emptyList()
+            }
         }
-    }
-
 }

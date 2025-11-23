@@ -31,5 +31,5 @@ data class DialogFlowRequest(
     val from: LocalDateTime? = null,
     val to: LocalDateTime? = null,
     val includeTestConfigurations: Boolean = false,
-    val intent: String? = null
+    val intent: String? = null,
 ) : ApplicationScopedQuery()

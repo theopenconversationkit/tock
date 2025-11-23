@@ -34,5 +34,5 @@ data class NlpEntityMergeContext(
     /**
      * The proposed new values
      */
-    val newValues: List<EntityValue>
+    val newValues: List<EntityValue>,
 )

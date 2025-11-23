@@ -34,7 +34,6 @@ import kotlin.reflect.KClass
  *
  */
 internal object TeamsConnectorProvider : ConnectorProvider {
-
     private const val APP_ID = "appId"
     private const val PASSWORD = "password"
 
@@ -46,7 +45,7 @@ internal object TeamsConnectorProvider : ConnectorProvider {
                 connectorId = connectorId,
                 path = path,
                 appId = parameters.getValue(APP_ID),
-                appPassword = parameters.getValue(PASSWORD)
+                appPassword = parameters.getValue(PASSWORD),
             )
         }
     }
@@ -58,23 +57,24 @@ internal object TeamsConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "appId",
                     APP_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "password",
                     PASSWORD,
-                    true
-                )
+                    true,
+                ),
             ),
-            resourceAsString("/teams.svg")
+            resourceAsString("/teams.svg"),
         )
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        TeamsBotTextMessage::class,
-        TeamsCardAction::class,
-        TeamsCarousel::class,
-        TeamsHeroCard::class
-    )
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
+        setOf(
+            TeamsBotTextMessage::class,
+            TeamsCardAction::class,
+            TeamsCarousel::class,
+            TeamsHeroCard::class,
+        )
 }
 
 internal class TeamsConnectorProviderService : ConnectorProvider by TeamsConnectorProvider

@@ -36,8 +36,7 @@ data class Tweet(
     val coordinates: Coordinates? = null,
     val entities: Entities,
     @JsonProperty("extended_entities") val extendedEntities: Entities? = null,
-    @JsonProperty("extended_tweet") val extendedTweet: Text? = null
+    @JsonProperty("extended_tweet") val extendedTweet: Text? = null,
 ) {
-    fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(user.id, playerType)
+    fun playerId(playerType: PlayerType): PlayerId = PlayerId(user.id, playerType)
 }

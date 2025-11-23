@@ -22,10 +22,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = Text::class, name = "text"),
-    JsonSubTypes.Type(value = Choice::class, name = "choice")
+    JsonSubTypes.Type(value = Choice::class, name = "choice"),
 )
 interface UserMessage

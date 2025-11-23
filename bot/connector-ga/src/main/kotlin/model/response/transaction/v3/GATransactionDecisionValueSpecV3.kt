@@ -23,11 +23,11 @@ data class GATransactionDecisionValueSpecV3(
     val order: GAOrder,
     val orderOptions: GAOrderOptionsV3?,
     val paymentParameters: GAPaymentParameters?,
-    val presentationOptions: GAPresentationOptions?
+    val presentationOptions: GAPresentationOptions?,
 ) : GAInputValueData(GAIntent.transactionDecisionV3.type!!)
 
 data class GAPresentationOptions(
-    val actionDisplayName: GAActionDisplayName
+    val actionDisplayName: GAActionDisplayName,
 )
 
 enum class GAActionDisplayName {
@@ -38,5 +38,5 @@ enum class GAActionDisplayName {
     BOOK,
     RESERVE,
     SCHEDULE,
-    SUBSCRIBE
+    SUBSCRIBE,
 }

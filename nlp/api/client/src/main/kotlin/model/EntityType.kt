@@ -35,5 +35,5 @@ data class EntityType(
     /**
      * Is the entity has to be systematically obfuscated?
      */
-    val obfuscated: Boolean = false
+    val obfuscated: Boolean = false,
 )

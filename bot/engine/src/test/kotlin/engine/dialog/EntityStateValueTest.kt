@@ -28,7 +28,6 @@ import kotlin.test.assertTrue
  *
  */
 class EntityStateValueTest {
-
     @Test
     fun changeValue_shouldAddToHistory_whenChangeValue() {
         val state = EntityStateValue(null)

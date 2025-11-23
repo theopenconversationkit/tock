@@ -37,7 +37,14 @@ Open Conversational AI platform to build Bots:
 
 🔢 Versions: [https://gitter.im/tockchat/tock-news](https://gitter.im/tockchat/tock-news)
 
-## Python developers : using Pre-commit
+## Kotlin developers : use ktlint
+
+In order to format your code with [ktlint](https://pinterest.github.io/ktlint):
+```bash
+mvn antrun:run@ktlint-format
+```
+
+## Python developers : use Pre-commit
 
 The python part of the project uses **pre-commit** to automate code checks and formatting before each commit, ensuring consistent code quality and reducing errors.<br/>
 It is very important to always execute these hooks to maintain the quality of the code.

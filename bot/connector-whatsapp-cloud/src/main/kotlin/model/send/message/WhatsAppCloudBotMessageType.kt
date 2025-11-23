@@ -16,6 +16,15 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppCloudBotMessageType {
-    text, reaction, image, audio , video, location, contacts, interactive, template
+    text,
+    reaction,
+    image,
+    audio,
+    video,
+    location,
+    contacts,
+    interactive,
+    template,
 }

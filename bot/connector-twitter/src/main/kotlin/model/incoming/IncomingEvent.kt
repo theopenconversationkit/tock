@@ -32,13 +32,13 @@ abstract class IncomingEvent : TwitterConnectorMessage() {
     abstract val users: Map<String, User>
     abstract val ignored: Boolean
 
-    open fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(users.values.firstOrNull()?.id ?: error("null sender field in IncomingEvent"), playerType)
+    open fun playerId(playerType: PlayerType): PlayerId = PlayerId(users.values.firstOrNull()?.id ?: error("null sender field in IncomingEvent"), playerType)
 
-    open fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
-        users.values.lastOrNull()?.id ?: error("id or userRef must not be null"),
-        playerType
-    )
+    open fun recipientId(playerType: PlayerType): PlayerId =
+        PlayerId(
+            users.values.lastOrNull()?.id ?: error("id or userRef must not be null"),
+            playerType,
+        )
 
     abstract fun toEvent(applicationId: String): Event?
 }

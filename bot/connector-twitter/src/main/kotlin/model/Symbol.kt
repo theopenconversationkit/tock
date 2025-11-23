@@ -18,5 +18,5 @@ package ai.tock.bot.connector.twitter.model
 
 data class Symbol(
     override val indices: List<Int>,
-    val text: String
+    val text: String,
 ) : Entity()

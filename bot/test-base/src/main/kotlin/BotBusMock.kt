@@ -56,8 +56,8 @@ import ai.tock.translator.Translator
 import ai.tock.translator.TranslatorEngine
 import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.raw
-import java.util.Locale
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  * A Bus mock used in unit tests.
@@ -66,9 +66,8 @@ import mu.KotlinLogging
  */
 open class BotBusMock(
     val context: BotBusMockContext,
-    override val action: Action = context.firstAction
+    override val action: Action = context.firstAction,
 ) : BotBus {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -130,10 +129,12 @@ open class BotBusMock(
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
 
-    override fun isCompatibleWith(connectorType: ConnectorType): Boolean =
-        context.connectorsCompatibleWith.contains(connectorType)
+    override fun isCompatibleWith(connectorType: ConnectorType): Boolean = context.connectorsCompatibleWith.contains(connectorType)
 
-    override fun send(event: Event, delayInMs: Long): BotBus =
+    override fun send(
+        event: Event,
+        delayInMs: Long,
+    ): BotBus =
         if (event is Action) {
             answer(event, delayInMs)
         } else {
@@ -166,8 +167,11 @@ open class BotBusMock(
      * Throws an exception if the end() is not called
      */
     fun checkEndCalled(): BotBusMock {
-        if (endCount == 0) error("end() method not called")
-        else if (endCount > 1) error("end() called $endCount times")
+        if (endCount == 0) {
+            error("end() method not called")
+        } else if (endCount > 1) {
+            error("end() called $endCount times")
+        }
         return this
     }
 
@@ -182,13 +186,18 @@ open class BotBusMock(
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock = addActionEntity(EntityValue(entity, newValue))
+    fun addActionEntity(
+        entity: Entity,
+        newValue: Value?,
+    ): BotBusMock = addActionEntity(EntityValue(entity, newValue))
 
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: Entity, textContent: String): BotBusMock =
-        addActionEntity(EntityValue(entity, null, textContent))
+    fun addActionEntity(
+        entity: Entity,
+        textContent: String,
+    ): BotBusMock = addActionEntity(EntityValue(entity, null, textContent))
 
     override var userTimeline: UserTimeline
         get() = context.userTimeline
@@ -321,12 +330,18 @@ open class BotBusMock(
         }
     }
 
-    open fun sendAction(action: Action, delay: Long) {
+    open fun sendAction(
+        action: Action,
+        delay: Long,
+    ) {
         logsRepository.add(BotBusMockLog(action, delay))
         context.logsRepository.add(BotBusMockLog(action, delay))
     }
 
-    private fun answer(action: Action, delay: Long = 0): BotBus {
+    private fun answer(
+        action: Action,
+        delay: Long = 0,
+    ): BotBus {
         mockData.currentDelay += delay
         action.metadata.priority = mockData.priority
         action.metadata.visibility = mockData.visibility
@@ -376,7 +391,10 @@ open class BotBusMock(
     /**
      * Update the non persistent current value.
      */
-    override fun setBusContextValue(key: String, value: Any?) {
+    override fun setBusContextValue(
+        key: String,
+        value: Any?,
+    ) {
         if (value == null) {
             mockData.contextMap.remove(key)
         } else {
@@ -384,29 +402,40 @@ open class BotBusMock(
         }
     }
 
-    override fun end(action: Action, delay: Long): BotBus {
+    override fun end(
+        action: Action,
+        delay: Long,
+    ): BotBus {
         action.metadata.lastAnswer = true
         return answer(action, delay)
     }
 
-    fun createBotSentence(plainText: CharSequence?): SendSentence =
-        SendSentence(botId, connectorId, userId, plainText)
+    fun createBotSentence(plainText: CharSequence?): SendSentence = SendSentence(botId, connectorId, userId, plainText)
 
-    override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
+    override fun sendRawText(
+        plainText: CharSequence?,
+        delay: Long,
+    ): BotBus {
         return answer(createBotSentence(plainText), delay)
     }
 
-    override fun sendDebugData(title: String, data: Any?): BotBus {
+    override fun sendDebugData(
+        title: String,
+        data: Any?,
+    ): BotBus {
         // The test connector is a rest connector (source),
         // but it invokes the engine with a target connector,
         // to receive the corresponding messages
-        if(ConnectorType.rest == sourceConnectorType) {
+        if (ConnectorType.rest == sourceConnectorType) {
             return answer(SendDebug(botId, connectorId, userId, title, data), 0)
         }
         return this
     }
 
-    override fun send(action: Action, delay: Long): BotBus {
+    override fun send(
+        action: Action,
+        delay: Long,
+    ): BotBus {
         return answer(action, delay)
     }
 
@@ -425,7 +454,10 @@ open class BotBusMock(
         return this
     }
 
-    override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(
+        connectorType: ConnectorType,
+        messageProvider: () -> ConnectorMessage,
+    ): BotBus {
         if (targetConnectorType == connectorType || isCompatibleWith(connectorType)) {
             mockData.addMessage(messageProvider.invoke())
         }
@@ -435,7 +467,7 @@ open class BotBusMock(
     override fun withMessage(
         connectorType: ConnectorType,
         connectorId: String,
-        messageProvider: () -> ConnectorMessage
+        messageProvider: () -> ConnectorMessage,
     ): BotBus {
         if (this.connectorId == connectorId && (targetConnectorType == connectorType || isCompatibleWith(connectorType))) {
             mockData.addMessage(messageProvider.invoke())
@@ -448,28 +480,31 @@ open class BotBusMock(
     }
 
     override fun translate(key: I18nLabelValue?): TranslatedSequence =
-        if (key == null) EMPTY_TRANSLATED_STRING
-        else Translator.formatMessage(
-            I18nLabel.findLabel(key.defaultI18n, userLocale, userInterfaceType, targetConnectorType.id)?.label
-                ?: translator.translate(
-                    key.defaultLabel.toString(),
-                    defaultLocale,
-                    userLocale
+        if (key == null) {
+            EMPTY_TRANSLATED_STRING
+        } else {
+            Translator.formatMessage(
+                I18nLabel.findLabel(key.defaultI18n, userLocale, userInterfaceType, targetConnectorType.id)?.label
+                    ?: translator.translate(
+                        key.defaultLabel.toString(),
+                        defaultLocale,
+                        userLocale,
+                    ),
+                I18nContext(
+                    userLocale,
+                    userInterfaceType,
+                    targetConnectorType.id,
+                    dialog.id.toString(),
                 ),
-            I18nContext(
-                userLocale,
-                userInterfaceType,
-                targetConnectorType.id,
-                dialog.id.toString()
-            ),
-            key.args.map { arg ->
-                when (arg) {
-                    is I18nLabelValue -> translate(arg)
-                    is Pair<*, *> -> if (arg.second is I18nLabelValue) Pair(arg.first, translate(arg.second as I18nLabelValue)) else arg
-                    else -> arg
-                }
-            }
-        ).raw
+                key.args.map { arg ->
+                    when (arg) {
+                        is I18nLabelValue -> translate(arg)
+                        is Pair<*, *> -> if (arg.second is I18nLabelValue) Pair(arg.first, translate(arg.second as I18nLabelValue)) else arg
+                        else -> arg
+                    }
+                },
+            ).raw
+        }
 
     override fun markAsUnknown() {
         // do nothing
@@ -487,6 +522,5 @@ open class BotBusMock(
     /**
      * Assert that logs contains specified messages.
      */
-    fun assert(vararg messages: ConnectorMessageProvider): Unit =
-        messages.forEachIndexed { i, m -> busAnswers[i].assert(m) }
+    fun assert(vararg messages: ConnectorMessageProvider): Unit = messages.forEachIndexed { i, m -> busAnswers[i].assert(m) }
 }

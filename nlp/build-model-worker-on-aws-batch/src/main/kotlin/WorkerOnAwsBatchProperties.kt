@@ -22,5 +22,5 @@ internal data class WorkerOnAwsBatchProperties(
     val jobName: String,
     val attemptDurationSeconds: Int,
     val vcpus: Int,
-    val memory: Int
+    val memory: Int,
 )

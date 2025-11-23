@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class AppRolesWebhook(
     override val recipient: Recipient,
     override val timestamp: Long,
-    @JsonProperty("app_roles") val appRoles: Map<String, List<String>>
+    @JsonProperty("app_roles") val appRoles: Map<String, List<String>>,
 ) : Webhook() {
     override val sender: Sender? = null
 }

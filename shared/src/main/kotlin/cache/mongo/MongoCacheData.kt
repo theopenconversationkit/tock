@@ -34,11 +34,14 @@ internal class MongoCacheData(
     val s: String? = null,
     val b: ByteArray? = null,
     val a: AnyValueWrapper? = null,
-    val date: Instant = Instant.now()
+    val date: Instant = Instant.now(),
 ) {
-
     companion object {
-        fun <T : Any> fromValue(id: Id<T>, type: String, v: T): MongoCacheData {
+        fun <T : Any> fromValue(
+            id: Id<T>,
+            type: String,
+            v: T,
+        ): MongoCacheData {
             return when (v) {
                 is String -> MongoCacheData(id, type, s = v)
                 is ByteArray -> MongoCacheData(id, type, b = v)

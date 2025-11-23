@@ -24,13 +24,16 @@ import ai.tock.shared.security.SecretManagerService
 import com.mongodb.MongoCredential
 
 // The expected values correspond to the names of the SecretManagerProviderType elements
-val databaseMongoDbSecretManagerProvider: String? = propertyOrNull(
-    name = "tock_database_mongodb_secret_manager_provider"
-)
-val databaseMongoDbCredentialsSecretName: String = property(
-    name = "tock_database_mongodb_credentials_secret_name",
-    defaultValue = "database_mongodb_credentials",
-)
+val databaseMongoDbSecretManagerProvider: String? =
+    propertyOrNull(
+        name = "tock_database_mongodb_secret_manager_provider",
+    )
+val databaseMongoDbCredentialsSecretName: String =
+    property(
+        name = "tock_database_mongodb_credentials_secret_name",
+        defaultValue = "database_mongodb_credentials",
+    )
+@Suppress("ktlint")
 const val defaultDatabase = "admin"
 
 /**
@@ -50,7 +53,9 @@ internal object DefaultMongoCredentialsProvider : MongoCredentialsProvider {
             MongoCredential.createCredential(
                 credentials.username,
                 defaultDatabase,
-                credentials.password.toCharArray()
+                credentials.password.toCharArray(),
             )
-        } else null
+        } else {
+            null
+        }
 }

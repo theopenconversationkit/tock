@@ -15,12 +15,14 @@
  */
 package ai.tock.bot.api.client
 
-val story1 = newStory("story1") {
-    end("Hello")
-}
+val story1 =
+    newStory("story1") {
+        end("Hello")
+    }
 
-val story2 = newStory("story2") {
-    end("Goodby")
-}
+val story2 =
+    newStory("story2") {
+        end("Goodby")
+    }
 
 val test = newBot("key", story1, story2)

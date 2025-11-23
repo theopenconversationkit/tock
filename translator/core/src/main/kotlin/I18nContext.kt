@@ -37,5 +37,5 @@ data class I18nContext(
     /**
      * The current context identifier.
      */
-    val contextId: String? = null
+    val contextId: String? = null,
 )

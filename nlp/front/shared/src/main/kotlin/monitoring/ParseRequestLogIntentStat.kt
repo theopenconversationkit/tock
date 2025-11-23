@@ -23,5 +23,5 @@ data class ParseRequestLogIntentStat(
     val intent1: String,
     val intent2: String,
     val occurrences: Long,
-    val average: Double
+    val average: Double,
 )

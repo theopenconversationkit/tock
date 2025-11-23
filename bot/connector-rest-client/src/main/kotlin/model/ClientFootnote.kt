@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,5 +24,5 @@ data class ClientFootnote(
     val title: String,
     val url: String?,
     val content: String?,
-    val score: Float?
+    val score: Float?,
 )

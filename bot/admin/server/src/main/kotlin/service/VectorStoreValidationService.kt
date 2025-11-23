@@ -24,9 +24,7 @@ import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 
-
 object VectorStoreValidationService {
-
     private val vectorStoreProviderService: VectorStoreProviderService get() = injector.provide()
 
     fun validate(config: BotVectorStoreConfiguration): Set<ErrorMessage> {
@@ -34,12 +32,10 @@ object VectorStoreValidationService {
             addAll(
                 vectorStoreProviderService
                     .checkSetting(VectorStoreProviderSettingStatusRequest(vectorStoreSetting = config.setting))
-                    .getErrors("Vector store setting check failed")
+                    .getErrors("Vector store setting check failed"),
             )
         }
     }
 
-    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> =
-        this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
-
+    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

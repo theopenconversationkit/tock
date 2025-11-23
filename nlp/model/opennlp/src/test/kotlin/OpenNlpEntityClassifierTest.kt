@@ -38,17 +38,17 @@ import kotlin.test.assertEquals
  *
  */
 class OpenNlpEntityClassifierTest {
-
     @Test
     fun classify_withAdjacentEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
-        val context = EntityCallContextForIntent(
-            Intent("test", listOf(entity)),
-            defaultLocale,
-            NlpEngineType.opennlp,
-            "test",
-            ZonedDateTime.now()
-        )
+        val context =
+            EntityCallContextForIntent(
+                Intent("test", listOf(entity)),
+                defaultLocale,
+                NlpEngineType.opennlp,
+                "test",
+                ZonedDateTime.now(),
+            )
         val text = "a b"
         val tokens = arrayOf("a", "b")
         val model: NameFinderME = mockk()
@@ -65,13 +65,14 @@ class OpenNlpEntityClassifierTest {
     @Test
     fun classify_withAdjacentMultiTokensEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
-        val context = EntityCallContextForIntent(
-            Intent("test", listOf(entity)),
-            defaultLocale,
-            NlpEngineType.opennlp,
-            "test",
-            ZonedDateTime.now()
-        )
+        val context =
+            EntityCallContextForIntent(
+                Intent("test", listOf(entity)),
+                defaultLocale,
+                NlpEngineType.opennlp,
+                "test",
+                ZonedDateTime.now(),
+            )
         val text = "a a b"
         val tokens = arrayOf("a", "a", "b")
         val model: NameFinderME = mockk()
@@ -88,13 +89,14 @@ class OpenNlpEntityClassifierTest {
     @Test
     fun classify_withNotAdjacentEntitiesOfSameRole_shouldReturnsTwoEntities() {
         val entity = Entity(EntityType("test:test"), "test")
-        val context = EntityCallContextForIntent(
-            Intent("test", listOf(entity)),
-            defaultLocale,
-            NlpEngineType.opennlp,
-            "test",
-            ZonedDateTime.now()
-        )
+        val context =
+            EntityCallContextForIntent(
+                Intent("test", listOf(entity)),
+                defaultLocale,
+                NlpEngineType.opennlp,
+                "test",
+                ZonedDateTime.now(),
+            )
         val text = "a toto b"
         val tokens = arrayOf("a", "toto", "b")
         val model: NameFinderME = mockk()
@@ -108,9 +110,9 @@ class OpenNlpEntityClassifierTest {
         assertEquals(
             listOf(
                 EntityRecognition(EntityValue(0, 1, entity), 0.8),
-                EntityRecognition(EntityValue(7, 8, entity), 0.6)
+                EntityRecognition(EntityValue(7, 8, entity), 0.6),
             ),
-            result
+            result,
         )
     }
 
@@ -129,42 +131,48 @@ class OpenNlpEntityClassifierTest {
                 Span(5, 6, "location", 0.55),
                 Span(6, 7, "location", 0.55),
                 Span(7, 8, "location", 0.55),
-                Span(8, 9, "location", 0.55)
+                Span(8, 9, "location", 0.55),
             )
         }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model, EMPTY_CONFIGURATION))
 
         val entity = Entity(EntityType("location:location"), "location")
-        val context = EntityCallContextForIntent(
-            Intent("test", listOf(entity)),
-            defaultLocale,
-            NlpEngineType.opennlp,
-            "test",
-            ZonedDateTime.now()
-        )
+        val context =
+            EntityCallContextForIntent(
+                Intent("test", listOf(entity)),
+                defaultLocale,
+                NlpEngineType.opennlp,
+                "test",
+                ZonedDateTime.now(),
+            )
 
         val result = classifier.classifyEntities(context, sentence, tokens)
 
         assertEquals(
             listOf(
                 EntityRecognition(
-                    value = EntityValue(
-                        start = 0,
-                        end = 43,
-                        entity = Entity(
-                            entityType = EntityType(
-                                name = "location:location",
-                                subEntities = emptyList()
-                            ),
-                            role = "location"
+                    value =
+                        EntityValue(
+                            start = 0,
+                            end = 43,
+                            entity =
+                                Entity(
+                                    entityType =
+                                        EntityType(
+                                            name = "location:location",
+                                            subEntities = emptyList(),
+                                        ),
+                                    role = "location",
+                                ),
+                            value = null,
+                            subEntities = emptyList(),
+                            evaluated = false,
                         ),
-                        value = null, subEntities = emptyList(), evaluated = false
-                    ),
-                    probability = 0.5499999999999999
-                )
+                    probability = 0.5499999999999999,
+                ),
             ),
-            result
+            result,
         )
     }
 }

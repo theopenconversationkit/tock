@@ -33,29 +33,32 @@ import mu.KotlinLogging
  *
  */
 internal class MessageDeserializer : JacksonDeserializer<Message>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Message? {
         data class MessageFields(
             var text: String? = null,
             var attachment: Attachment? = null,
             var quickReplies: List<QuickReply>? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (text, attachment, quickReplies) = jp.read<MessageFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    TextMessage::text.name -> text = jp.valueAsString
-                    AttachmentMessage::attachment.name -> attachment = jp.readValue()
-                    "quick_replies" -> quickReplies = jp.readListValues()
-                    else -> other = jp.readUnknownValue()
+        val (text, attachment, quickReplies) =
+            jp.read<MessageFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        TextMessage::text.name -> text = jp.valueAsString
+                        AttachmentMessage::attachment.name -> attachment = jp.readValue()
+                        "quick_replies" -> quickReplies = jp.readListValues()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (text != null) {
             TextMessage(text, quickReplies)

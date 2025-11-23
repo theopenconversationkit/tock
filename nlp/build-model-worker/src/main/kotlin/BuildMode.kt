@@ -20,5 +20,5 @@ enum class BuildMode {
     COMMAND_LINE,
     ON_DEMAND,
     VERTICLE,
-    DEV
+    DEV,
 }

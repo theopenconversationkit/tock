@@ -16,5 +16,4 @@
 
 package model.webhook
 
-class WhatsAppCloudMessagesDeserializationTest {
-}
+class WhatsAppCloudMessagesDeserializationTest

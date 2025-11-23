@@ -62,9 +62,8 @@ data class ParseResult(
     /**
      * Original intents (without qualifier) with significant probabilities.
      */
-    val originalIntentsProbabilities: Map<String, Double> = emptyMap()
+    val originalIntentsProbabilities: Map<String, Double> = emptyMap(),
 ) {
-
     /**
      * Returns the first value for the specified entity role.
      */
@@ -74,14 +73,15 @@ data class ParseResult(
      * Obfuscates the result.
      */
     fun obfuscate(obfuscatedRanges: List<IntRange>): ParseResult {
-        val obfuscatedQuery = TockObfuscatorService.obfuscate(
-            text = retainedQuery,
-            obfuscatedRanges = obfuscatedRanges
-        ) ?: ""
+        val obfuscatedQuery =
+            TockObfuscatorService.obfuscate(
+                text = retainedQuery,
+                obfuscatedRanges = obfuscatedRanges,
+            ) ?: ""
         return copy(
             retainedQuery = obfuscatedQuery,
             entities = entities.map { it.obfuscate(obfuscatedQuery) },
-            notRetainedEntities = notRetainedEntities.map { it.obfuscate(obfuscatedQuery) }
+            notRetainedEntities = notRetainedEntities.map { it.obfuscate(obfuscatedQuery) },
         )
     }
 }

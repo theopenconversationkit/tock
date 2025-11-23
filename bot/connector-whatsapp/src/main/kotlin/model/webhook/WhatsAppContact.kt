@@ -24,5 +24,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class WhatsAppContact(
     val profile: WhatsAppProfile?,
     @get:JsonProperty("wa_id")
-    val waId: String?
+    val waId: String?,
 )

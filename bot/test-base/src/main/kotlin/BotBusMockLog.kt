@@ -37,9 +37,8 @@ data class BotBusMockLog(
     /**
      * The delay before the action is sent.
      */
-    val delay: Long
+    val delay: Long,
 ) {
-
     /**
      * The message of the specified [ConnectorType] if it exists.
      */
@@ -53,7 +52,10 @@ data class BotBusMockLog(
     /**
      * Assert that log contains specified text.
      */
-    fun assertText(text: String, errorMessage: String? = null) = assertEquals(text, text(), errorMessage)
+    fun assertText(
+        text: String,
+        errorMessage: String? = null,
+    ) = assertEquals(text, text(), errorMessage)
 
     /**
      * Assert that log contains specified text.
@@ -63,8 +65,10 @@ data class BotBusMockLog(
     /**
      * Assert that log contains specified [ConnectorMessage].
      */
-    fun assertMessage(message: ConnectorMessage, errorMessage: String? = null) =
-        assertEquals(message, message(message.connectorType), errorMessage)
+    fun assertMessage(
+        message: ConnectorMessage,
+        errorMessage: String? = null,
+    ) = assertEquals(message, message(message.connectorType), errorMessage)
 
     /**
      * Assert that log contains specified message.
@@ -74,15 +78,19 @@ data class BotBusMockLog(
     /**
      * Convert current BotBusLog action first message to a generic message
      */
-    fun genericMessage(): GenericMessage? = (action as? SendSentence)
-        ?.messages
-        ?.let { if (it.size == 1) it.first() else null }
-        ?.toGenericMessage()
+    fun genericMessage(): GenericMessage? =
+        (action as? SendSentence)
+            ?.messages
+            ?.let { if (it.size == 1) it.first() else null }
+            ?.toGenericMessage()
 
     /**
      * Retrieve choice member with expected title belonging to element with specified index
      */
-    fun elementChoice(elementIndex: Int, title: String): Choice? =
+    fun elementChoice(
+        elementIndex: Int,
+        title: String,
+    ): Choice? =
         genericMessage()?.subElements?.get(elementIndex)
             ?.choices
             ?.find(hasTitle(title))
@@ -94,6 +102,5 @@ data class BotBusMockLog(
         genericMessage()?.choices
             ?.find(hasTitle(title))
 
-    private fun hasTitle(title: String): (Choice) -> Boolean =
-        { it.parameters[SendChoice.TITLE_PARAMETER] == title }
+    private fun hasTitle(title: String): (Choice) -> Boolean = { it.parameters[SendChoice.TITLE_PARAMETER] == title }
 }

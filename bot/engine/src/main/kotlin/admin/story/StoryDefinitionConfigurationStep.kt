@@ -74,14 +74,13 @@ data class StoryDefinitionConfigurationStep(
     /**
      * The step metrics.
      */
-    val metrics: List<StoryDefinitionStepMetric> = emptyList()
+    val metrics: List<StoryDefinitionStepMetric> = emptyList(),
 ) : StoryDefinitionAnswersContainer {
-
     internal class Step(
         override val name: String,
         override val intent: IntentAware?,
         val configuration: StoryDefinitionConfigurationStep,
-        private val storyConfiguration: StoryDefinitionConfiguration
+        private val storyConfiguration: StoryDefinitionConfiguration,
     ) : SimpleStoryStep {
         constructor(s: StoryDefinitionConfigurationStep, conf: StoryDefinitionConfiguration) :
             this(
@@ -89,7 +88,7 @@ data class StoryDefinitionConfigurationStep(
                     ?: "${s.intent?.name}${(s.entity?.value ?: s.entity?.entityRole)?.let { "_$it" }}_${s.level}",
                 s.intent?.intent(conf.namespace),
                 s,
-                conf
+                conf,
             )
 
         override fun equals(other: Any?): Boolean = name == (other as? Step)?.name
@@ -115,11 +114,13 @@ data class StoryDefinitionConfigurationStep(
             step.intent?.intentWithoutNamespace(),
             null,
             emptyList(),
-            builtin
+            builtin,
         )
 
     fun toStoryStep(story: StoryDefinitionConfiguration): SimpleStoryStep = Step(this, story)
 
-    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
-        children.map { it.userSentenceLabel ?: it.userSentence }
+    override fun findNextSteps(
+        bus: BotBus,
+        story: StoryDefinitionConfiguration,
+    ): List<CharSequence> = children.map { it.userSentenceLabel ?: it.userSentence }
 }

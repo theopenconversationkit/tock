@@ -27,30 +27,32 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class OptionDeserializer : JacksonDeserializer<AbstractOption>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): AbstractOption? {
-
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): AbstractOption? {
         data class MediaFields(
             var label: String? = null,
             var description: String? = null,
             var metadata: String? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (label, description, metadata) = jp.read<MediaFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    "label" -> label = jp.readValue()
-                    "description" -> description = jp.readValue()
-                    "metadata" -> metadata = jp.readValue()
-                    else -> other = jp.readUnknownValue()
+        val (label, description, metadata) =
+            jp.read<MediaFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        "label" -> label = jp.readValue()
+                        "description" -> description = jp.readValue()
+                        "metadata" -> metadata = jp.readValue()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (description == null) {
             OptionWithoutDescription.of(label!!, metadata!!)

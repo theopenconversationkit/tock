@@ -24,5 +24,5 @@ data class WhatsAppLocation(
     val longitude: Double,
     val address: String?,
     val name: String?,
-    val url: String?
+    val url: String?,
 )

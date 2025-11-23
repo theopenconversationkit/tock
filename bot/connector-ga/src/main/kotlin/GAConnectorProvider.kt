@@ -30,7 +30,6 @@ import kotlin.reflect.KClass
  *
  */
 internal object GAConnectorProvider : ConnectorProvider {
-
     private const val PROJECT_IDS = "_project_ids"
     private const val PROJECT_ID_SEPARATOR = ","
 
@@ -45,7 +44,7 @@ internal object GAConnectorProvider : ConnectorProvider {
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }
                     ?.toSet()
-                    ?: emptySet()
+                    ?: emptySet(),
             )
         }
     }
@@ -57,10 +56,10 @@ internal object GAConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Restricted project ids",
                     "_project_ids",
-                    false
-                )
+                    false,
+                ),
             ),
-            resourceAsString("/ga.svg")
+            resourceAsString("/ga.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(GAResponseConnectorMessage::class)

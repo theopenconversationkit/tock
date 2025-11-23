@@ -24,7 +24,7 @@ data class GAPurchaseItemExtension(
     val userVisibleStatusLabel: String,
     val type: GAPurchaseType = GAPurchaseType.PURCHASE_TYPE_UNSPECIFIED,
     val quantity: Int? = null,
-    val itemOptions: List<GaItemOption>? = emptyList()
+    val itemOptions: List<GaItemOption>? = emptyList(),
 )
 
 enum class GAPurchaseStatus {
@@ -32,7 +32,7 @@ enum class GAPurchaseStatus {
     CREATED,
     DELIVERED,
     CANCELLED,
-    PURCHASE_STATUS_UNSPECIFIED
+    PURCHASE_STATUS_UNSPECIFIED,
 }
 
 enum class GAPurchaseType {

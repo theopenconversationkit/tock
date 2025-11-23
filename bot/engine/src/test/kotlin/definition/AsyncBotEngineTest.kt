@@ -41,7 +41,10 @@ abstract class AsyncBotEngineTest(nbThreads: Int = 4) : BotEngineTest() {
         }
     }
 
-    suspend fun AsyncStoryDefinition.handle(asyncBus: AsyncBotBus, dispatcher: CoroutineDispatcher = executor.asCoroutineDispatcher()) {
+    suspend fun AsyncStoryDefinition.handle(
+        asyncBus: AsyncBotBus,
+        dispatcher: CoroutineDispatcher = executor.asCoroutineDispatcher(),
+    ) {
         withContext(dispatcher + AsyncBotBus.Ref(asyncBus)) {
             (asyncBus.botBus as TockBotBus).deferMessageSending(this)
             storyHandler.handle(asyncBus)

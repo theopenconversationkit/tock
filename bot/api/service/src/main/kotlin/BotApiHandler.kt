@@ -61,7 +61,6 @@ internal class BotApiHandler(
     configuration: BotConfiguration,
     private val clientController: BotApiClientController = BotApiClientController(provider, configuration),
 ) {
-
     companion object {
         private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
     }
@@ -78,16 +77,21 @@ internal class BotApiHandler(
         }
     }
 
-    private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
+    private fun BotBus.handleResponse(
+        request: UserRequest,
+        response: BotResponse?,
+    ) {
         if (response != null) {
-            //Check if there is a configuration for Ending story
-            val storySetting = storyDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                botDefinition.namespace,
-                botDefinition.botId,
-                story.definition.id
-            )
-            val endingStoryId = storySetting?.findEnabledEndWithStoryId(connectorId)
-                .takeIf { response.context.lastResponse }
+            // Check if there is a configuration for Ending story
+            val storySetting =
+                storyDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                    botDefinition.namespace,
+                    botDefinition.botId,
+                    story.definition.id,
+                )
+            val endingStoryId =
+                storySetting?.findEnabledEndWithStoryId(connectorId)
+                    .takeIf { response.context.lastResponse }
 
             val messages = response.messages
             if (messages.isEmpty()) {
@@ -112,7 +116,6 @@ internal class BotApiHandler(
                     if (result == null) {
                         removeEntityValue(role)
                     } else if (value != null) {
-
                         if (result.content != value.content) {
                             changeEntityText(value.entity, result.content)
                         }
@@ -142,9 +145,8 @@ internal class BotApiHandler(
                 step = story.definition.allSteps().find { it.name == response.step } as? StoryStep<*>
             }
 
-            //Handle current story and switch to ending story
+            // Handle current story and switch to ending story
             if (endingStoryId != null) {
-
                 // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
                 if (connectorData.saveTimeline) {
                     runBlocking {
@@ -168,7 +170,10 @@ internal class BotApiHandler(
         get() =
             getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
 
-    private fun BotBus.send(message: BotMessage, end: Boolean = false) {
+    private fun BotBus.send(
+        message: BotMessage,
+        end: Boolean = false,
+    ) {
         val actions =
             when (message) {
                 is Sentence -> listOf(toAction(message))
@@ -202,7 +207,7 @@ internal class BotApiHandler(
             connectorId,
             userId,
             null,
-            listOfNotNull(message.message.value).toMutableList()
+            listOfNotNull(message.message.value).toMutableList(),
         )
     }
 
@@ -218,7 +223,7 @@ internal class BotApiHandler(
                     connectorId,
                     userId,
                     null,
-                    mutableListOf(message)
+                    mutableListOf(message),
                 )
             }
         }
@@ -226,7 +231,7 @@ internal class BotApiHandler(
             botId,
             connectorId,
             userId,
-            text
+            text,
         )
     }
 
@@ -236,17 +241,18 @@ internal class BotApiHandler(
             connectorId,
             userId,
             data.text,
-            data.data
+            data.data,
         )
     }
 
     private fun BotBus.toEvent(data: Event): ai.tock.bot.engine.event.Event =
         when (data.category) {
-            EventCategory.METADATA -> MetadataEvent(
-                data.key ?: error("null key"),
-                data.value ?: error("null value"),
-                connectorId
-            )
+            EventCategory.METADATA ->
+                MetadataEvent(
+                    data.key ?: error("null key"),
+                    data.value ?: error("null value"),
+                    connectorId,
+                )
         }
 
     private fun BotBus.toActions(card: Card): List<Action> {
@@ -263,7 +269,7 @@ internal class BotApiHandler(
                 connectorId,
                 userId,
                 null,
-                mutableListOf(it)
+                mutableListOf(it),
             )
         } ?: emptyList()
     }
@@ -282,7 +288,7 @@ internal class BotApiHandler(
                 connectorId,
                 userId,
                 null,
-                mutableListOf(it)
+                mutableListOf(it),
             )
         } ?: emptyList()
     }
@@ -296,15 +302,15 @@ internal class BotApiHandler(
                     it.url,
                     it.url,
                     it.type?.let { AttachmentType.valueOf(it.name) } ?: UploadedFilesService.attachmentType(it.url),
-                    translateText(it.description)
+                    translateText(it.description),
                 )
             },
             card.actions.map {
                 MediaAction(
                     translateText(it.title) ?: "",
-                    it.url
+                    it.url,
                 )
-            }
+            },
         )
 }
 
@@ -312,14 +318,15 @@ private fun BotBus.translateText(i18n: I18nText?): TranslatedSequence? =
     when {
         i18n == null -> null
         i18n.toBeTranslated -> translate(i18n.text, i18n.args)
-        else -> Translator.formatMessage(
-            i18n.text,
-            I18nContext(
-                userLocale,
-                userInterfaceType,
-                targetConnectorType.id,
-                contextId
-            ),
-            i18n.args
-        ).raw
+        else ->
+            Translator.formatMessage(
+                i18n.text,
+                I18nContext(
+                    userLocale,
+                    userInterfaceType,
+                    targetConnectorType.id,
+                    contextId,
+                ),
+                i18n.args,
+            ).raw
     }

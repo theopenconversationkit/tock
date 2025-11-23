@@ -27,5 +27,5 @@ data class Entity(
     /**
      * Role of the entity.
      */
-    val role: String
+    val role: String,
 )

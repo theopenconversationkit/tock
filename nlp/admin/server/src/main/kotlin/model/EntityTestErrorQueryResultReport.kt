@@ -21,5 +21,5 @@ package ai.tock.nlp.admin.model
  */
 data class EntityTestErrorQueryResultReport(
     val total: Int,
-    val data: List<EntityTestErrorWithSentenceReport>
+    val data: List<EntityTestErrorWithSentenceReport>,
 )

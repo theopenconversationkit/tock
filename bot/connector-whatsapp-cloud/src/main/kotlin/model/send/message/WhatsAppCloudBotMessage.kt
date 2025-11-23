@@ -39,20 +39,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
-
 @JsonSubTypes(
     JsonSubTypes.Type(value = WhatsAppCloudBotTextMessage::class, name = "text"),
     JsonSubTypes.Type(value = WhatsAppCloudBotInteractiveMessage::class, name = "interactive"),
     JsonSubTypes.Type(value = WhatsAppCloudBotLocationMessage::class, name = "location"),
     JsonSubTypes.Type(value = WhatsAppCloudBotTemplateMessage::class, name = "template"),
-    JsonSubTypes.Type(value = WhatsAppCloudBotImageMessage::class, name = "image")
-    )
-
-abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @JsonIgnore internal open val userId: String?) :
+    JsonSubTypes.Type(value = WhatsAppCloudBotImageMessage::class, name = "image"),
+)
+abstract class WhatsAppCloudBotMessage(
+    val type: WhatsAppCloudBotMessageType,
+    @JsonIgnore internal open val userId: String?,
+) :
     ConnectorMessage, WhatsAppCloudConnectorMessage() {
-
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppCloudConnectorType
 
@@ -62,42 +62,38 @@ abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @
     /**
      * Processes a bot message in preparation for sending it to the WhatsApp cloud API
      */
-    internal abstract fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage
+    internal abstract fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String,
+    ): WhatsAppCloudSendBotMessage
 
     @get:JsonIgnore
     val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
 
-
-
     override fun toGenericMessage(): GenericMessage? {
-
-        return when(this) {
-            is WhatsAppCloudBotInteractiveMessage -> GenericMessage(
-                connectorType = whatsAppCloudConnectorType,
-                choices = interactive.action?.buttons?.mapNotNull { actionButton ->
-                    actionButton.reply.let {
-
-                        SendChoice.decodeChoiceId(it.id)
-                            .let { (intent, params) ->
-                                Choice(
-                                    intent,
-                                    params + (TITLE_PARAMETER to it.title)
-                                )
+        return when (this) {
+            is WhatsAppCloudBotInteractiveMessage ->
+                GenericMessage(
+                    connectorType = whatsAppCloudConnectorType,
+                    choices =
+                        interactive.action?.buttons?.mapNotNull { actionButton ->
+                            actionButton.reply.let {
+                                SendChoice.decodeChoiceId(it.id)
+                                    .let { (intent, params) ->
+                                        Choice(
+                                            intent,
+                                            params + (TITLE_PARAMETER to it.title),
+                                        )
+                                    }
                             }
+                        }!!,
+                )
 
-
-                    }
-                }!!
-
-
-            )
-
-            else -> GenericMessage(
-                connectorType = whatsAppCloudConnectorType,
-                texts = mapOf(GenericMessage.TEXT_PARAM to "Unsupported message type")
-            )
+            else ->
+                GenericMessage(
+                    connectorType = whatsAppCloudConnectorType,
+                    texts = mapOf(GenericMessage.TEXT_PARAM to "Unsupported message type"),
+                )
         }
     }
-
-
 }

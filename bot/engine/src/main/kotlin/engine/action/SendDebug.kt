@@ -20,9 +20,9 @@ import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 class SendDebug(
     playerId: PlayerId,
@@ -35,16 +35,21 @@ class SendDebug(
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata(),
 ) : Action(playerId, recipientId, connectorId, id, date, state, metadata) {
-    @Deprecated("Use constructor with connectorId", ReplaceWith("SendDebug(" +
-            "playerId, " +
-            "connectorId = applicationId, " +
-            "recipientId, " +
-            "text, " +
-            "data, " +
-            "id, " +
-            "date, " +
-            "state, " +
-            "metadata)"))
+    @Deprecated(
+        "Use constructor with connectorId",
+        ReplaceWith(
+            "SendDebug(" +
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "text, " +
+                "data, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata)",
+        ),
+    )
     constructor(
         playerId: PlayerId,
         applicationId: String,
@@ -56,8 +61,7 @@ class SendDebug(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, applicationId, recipientId, text, data, id, date, state, metadata)
-
+    ) : this(playerId, applicationId, recipientId, text, data, id, date, state, metadata)
 
     override fun toMessage(): Message {
         return DebugMessage(text, data)

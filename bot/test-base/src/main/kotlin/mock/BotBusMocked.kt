@@ -128,29 +128,29 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
 
     every {
         bus.entityValue<Value>(
-            any<Entity>()
+            any<Entity>(),
         )
     } returns null
     every {
         bus.entityValue(
             any<Entity>(),
-            any<(EntityValue) -> Value?>()
+            any<(EntityValue) -> Value?>(),
         )
     } returns null
     every { bus.changeEntityValue(any(), any<Value>()) } returns Unit
     every {
         bus.entityText(
-            any<Entity>()
+            any<Entity>(),
         )
     } returns null
     every {
         bus.entityValueDetails(
-            any<Entity>()
+            any<Entity>(),
         )
     } returns null
     every {
         bus.entityValueDetails(
-            any<String>()
+            any<String>(),
         )
     } returns null
     every { bus.changeEntityText(any(), any()) } returns Unit
@@ -181,7 +181,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
         Translator.formatMessage(
             args[0].toString(),
             I18nContext(defaultLocale, textChat, null),
-            args.subList(1, args.size)
+            args.subList(1, args.size),
         ).raw
     }
     every { bus.defaultDelay(any()) } returns 0
@@ -197,7 +197,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
             arg<Map<String, String>>(3),
             null,
             null,
-            bus.connectorId
+            bus.connectorId,
         )
     }
     every {
@@ -210,7 +210,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null,
-            bus.connectorId
+            bus.connectorId,
         )
     }
     val state = mockk<EventState>(relaxed = true)
@@ -226,7 +226,10 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
 /**
  * Execute test with a bus mocked with default BotBus configuration.
  */
-fun mockBus(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
+fun mockBus(
+    bus: BotBus = mockk(),
+    test: (BotBus) -> Any?,
+) {
     try {
         provideMockedBusCommon(bus)
 
@@ -239,7 +242,10 @@ fun mockBus(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
 /**
  * Execute test with a bus mocked with classic messenger extensions.
  */
-fun mockMessenger(bus: BotBus = mockk(), test: (BotBus) -> Any?) {
+fun mockMessenger(
+    bus: BotBus = mockk(),
+    test: (BotBus) -> Any?,
+) {
     try {
         provideMockedMessengerBus(bus)
 
@@ -271,7 +277,10 @@ fun provideMockedMessengerBus(bus: BotBus = mockk()): BotBus {
 /**
  * Execute test with a bus mocked with classic twitter extensions.
  */
-fun mockTwitter(bus: BotBus, test: (BotBus) -> Any?) {
+fun mockTwitter(
+    bus: BotBus,
+    test: (BotBus) -> Any?,
+) {
     try {
         provideMockedTwitterBus(bus)
 

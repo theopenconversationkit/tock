@@ -34,4 +34,3 @@ internal interface CompletionApi {
         @Body query: CompletionRequest,
     ): Call<SentenceCompletionResponse>
 }
-

@@ -31,27 +31,28 @@ import org.junit.jupiter.api.Test
  *
  */
 class WhatsAppClientIntegrationTest {
-
     @Test
     fun `translate voice`() {
-        val client = WhatsAppClient(
-            property("url", "none"),
-            "admin",
-            property("password", "password")
-        )
-        val bytes = client.getMedia("9b1b92f8-4ba9-4132-8e5b-872483453614")!!
-        val injector = KodeinInjector().apply {
-            inject(
-                Kodein {
-                    import(
-                        Kodein.Module {
-                            bind<STT>() with provider { mockk<STT>() }
-                        }
-                    )
-                    import(googleSTTModule, true)
-                }
+        val client =
+            WhatsAppClient(
+                property("url", "none"),
+                "admin",
+                property("password", "password"),
             )
-        }
+        val bytes = client.getMedia("9b1b92f8-4ba9-4132-8e5b-872483453614")!!
+        val injector =
+            KodeinInjector().apply {
+                inject(
+                    Kodein {
+                        import(
+                            Kodein.Module {
+                                bind<STT>() with provider { mockk<STT>() }
+                            },
+                        )
+                        import(googleSTTModule, true)
+                    },
+                )
+            }
         val translate = injector.provide<STT>().parse(bytes)
         println(translate)
     }

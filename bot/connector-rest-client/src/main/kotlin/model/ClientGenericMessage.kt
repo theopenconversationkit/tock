@@ -27,5 +27,5 @@ data class ClientGenericMessage(
     val texts: Map<String, String> = emptyMap(),
     val locations: List<ClientLocation> = emptyList(),
     val metadata: Map<String, String> = emptyMap(),
-    val subElements: List<ClientGenericElement> = emptyList()
+    val subElements: List<ClientGenericElement> = emptyList(),
 )

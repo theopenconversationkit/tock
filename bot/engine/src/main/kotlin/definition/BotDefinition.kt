@@ -21,6 +21,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.BotDefinition.Companion.defaultBreath
 import ai.tock.bot.definition.Intent.Companion.keyword
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
@@ -50,9 +51,7 @@ import java.util.Locale
  * New bots should usually not directly extend this class, but instead extend [BotDefinitionBase].
  */
 interface BotDefinition : I18nKeyProvider {
-
     companion object {
-
         /**
          * Convenient default value in ms to wait before next answer sentence. 1s by default.
          */
@@ -73,14 +72,17 @@ interface BotDefinition : I18nKeyProvider {
          * Finds an intent from an intent name and a list of [StoryDefinition].
          * Is no valid intent found, returns [unknown].
          */
-        internal fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
+        internal fun findIntent(
+            stories: List<StoryDefinition>,
+            intent: String,
+        ): Intent {
             val targetIntent = Intent(intent)
             return if (stories.any { it.supportIntent(targetIntent) } ||
                 stories.any { it.allSteps().any { s -> s.supportIntent(targetIntent) } }
             ) {
                 targetIntent
             } else {
-                when(intent){
+                when (intent) {
                     keyword.name -> keyword
                     ragexcluded.intentWithoutNamespace().name -> ragexcluded
                     else -> unknown
@@ -99,17 +101,17 @@ interface BotDefinition : I18nKeyProvider {
             keywordStory: StoryDefinition,
             ragExcludedStory: StoryDefinition? = null,
             ragStory: StoryDefinition? = null,
-            ragConfiguration: BotRAGConfiguration? = null
+            ragConfiguration: BotRAGConfiguration? = null,
         ): StoryDefinition {
             return if (intent == null) {
-               unknownStory
+                unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
-                    ?: when(intent) {
+                    ?: when (intent) {
                         keyword.name -> keywordStory
                         ragexcluded.intentWithoutNamespace().name -> ragExcludedStory ?: unknownStory
-                        else -> (if(ragConfiguration?.enabled == true) ragStory else null) ?: unknownStory
+                        else -> (if (ragConfiguration?.enabled == true) ragStory else null) ?: unknownStory
                     }
             }
         }
@@ -158,14 +160,20 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Finds an [Intent] from an intent name.
      */
-    fun findIntent(intent: String, applicationId: String): Intent {
+    fun findIntent(
+        intent: String,
+        applicationId: String,
+    ): Intent {
         return findIntent(stories, intent)
     }
 
     /**
      * Finds a [StoryDefinition] from an [Intent].
      */
-    fun findStoryDefinition(intent: IntentAware?, applicationId: String): StoryDefinition {
+    fun findStoryDefinition(
+        intent: IntentAware?,
+        applicationId: String,
+    ): StoryDefinition {
         return if (intent is StoryDefinition) {
             intent
         } else {
@@ -176,13 +184,18 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Search story by storyId.
      */
-    fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition = stories.find { it.id == storyId } ?: unknownStory
+    fun findStoryDefinitionById(
+        storyId: String,
+        applicationId: String,
+    ): StoryDefinition = stories.find { it.id == storyId } ?: unknownStory
 
     /**
      * Search story by storyHandler.
      */
-    fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
-        stories.find { it.storyHandler == storyHandler }
+    fun findStoryByStoryHandler(
+        storyHandler: StoryHandler,
+        applicationId: String,
+    ): StoryDefinition? = stories.find { it.storyHandler == storyHandler }
 
     /**
      * Finds a [StoryDefinition] from an intent name.
@@ -190,12 +203,15 @@ interface BotDefinition : I18nKeyProvider {
      * @param intent the intent name
      * @param applicationId the optional applicationId
      */
-    fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition {
+    fun findStoryDefinition(
+        intent: String?,
+        applicationId: String,
+    ): StoryDefinition {
         return findStoryDefinition(
             stories,
             intent,
             unknownStory,
-            keywordStory
+            keywordStory,
         )
     }
 
@@ -267,12 +283,16 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Called when error occurs. By default send "technical error".
      */
-    fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+    fun errorAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+    ): Action {
         return SendSentence(
             playerId,
             applicationId,
             recipientId,
-            property("tock_technical_error", "Technical error :( sorry!")
+            property("tock_technical_error", "Technical error :( sorry!"),
         )
     }
 
@@ -290,7 +310,11 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Does this action trigger bot deactivation ?
      */
-    fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
+    fun disableBot(
+        timeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+    ): Boolean =
         action.state.notification ||
             dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false ||
             hasDisableTagIntent(dialog)
@@ -298,8 +322,7 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Returns true if the dialog current intent is a disabling intent.
      */
-    fun hasDisableTagIntent(dialog: Dialog) =
-        dialog.state.currentIntent?.let { botDisabledStories.any { story -> story.isStarterIntent(it) } } ?: false
+    fun hasDisableTagIntent(dialog: Dialog) = dialog.state.currentIntent?.let { botDisabledStories.any { story -> story.isStarterIntent(it) } } ?: false
 
     /**
      * To manage reactivation.
@@ -315,7 +338,11 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Does this action trigger bot activation ?
      */
-    fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
+    fun enableBot(
+        timeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+    ): Boolean =
         dialog.state.currentIntent?.let { botEnabledStory?.isStarterIntent(it) } ?: false ||
             dialog.state.currentIntent?.let { botEnabledStories.any { story -> story.isStarterIntent(it) } } ?: false ||
             // send choice can reactivate disabled bot (is the intent is not a disabled intent)
@@ -324,7 +351,7 @@ interface BotDefinition : I18nKeyProvider {
                     action is SendChoice &&
                     !action.state.notification &&
                     !(dialog.state.currentIntent?.let { botDisabledStory?.isStarterIntent(it) } ?: false)
-                )
+            )
 
     /**
      *  Listener invoked when bot is enabled.
@@ -337,31 +364,40 @@ interface BotDefinition : I18nKeyProvider {
      * By default, actions where the bot is not only [ai.tock.bot.engine.dialog.EventState.notification]
      * are added in the bot history.
      */
-    fun hasToPersistAction(timeline: UserTimeline, action: Action): Boolean = !action.state.notification
+    fun hasToPersistAction(
+        timeline: UserTimeline,
+        action: Action,
+    ): Boolean = !action.state.notification
 
     /**
      * Returns a [TestBehaviour]. Used in Integration Tests.
      */
     val testBehaviour: TestBehaviour get() = TestBehaviourBase()
 
-    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+    override fun i18n(
+        defaultLabel: CharSequence,
+        args: List<Any?>,
+    ): I18nLabelValue {
         val category = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
         return I18nLabelValue(
             I18nKeyProvider.generateKey(namespace, category, defaultLabel),
             namespace,
             category,
             defaultLabel,
-            args
+            args,
         )
     }
 
     /**
      * Returns the entity with the specified name and optional role.
      */
-    fun entity(name: String, role: String? = null): Entity =
+    fun entity(
+        name: String,
+        role: String? = null,
+    ): Entity =
         Entity(
             EntityType(name.withNamespace(namespace)),
-            role ?: name.withoutNamespace(namespace)
+            role ?: name.withoutNamespace(namespace),
         )
 
     /**
@@ -371,7 +407,7 @@ interface BotDefinition : I18nKeyProvider {
         userLocale: Locale,
         connectorType: ConnectorType,
         userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
-        contextId: String? = null
+        contextId: String? = null,
     ): I18nTranslator =
         object : I18nTranslator {
             override val userLocale: Locale get() = userLocale
@@ -380,7 +416,10 @@ interface BotDefinition : I18nKeyProvider {
             override val targetConnectorType: ConnectorType get() = connectorType
             override val contextId: String? get() = contextId
 
-            override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+            override fun i18n(
+                defaultLabel: CharSequence,
+                args: List<Any?>,
+            ): I18nLabelValue {
                 return this@BotDefinition.i18n(defaultLabel, args)
             }
         }

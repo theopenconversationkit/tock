@@ -41,24 +41,23 @@ class SimpleBotDefinition(
     botEnabledListener: (Action) -> Unit = {},
 ) :
     BotDefinitionBase(
-        botId,
-        namespace,
-        stories,
-        nlpModelName,
-        unknownStory,
-        helloStory,
-        goodbyeStory,
-        noInputStory,
-        botDisabledStory,
-        botEnabledStory,
-        userLocationStory,
-        handleAttachmentStory,
-        eventListener,
-        keywordStory,
-        conversation,
-        botEnabledListener
-    ) {
-
+            botId,
+            namespace,
+            stories,
+            nlpModelName,
+            unknownStory,
+            helloStory,
+            goodbyeStory,
+            noInputStory,
+            botDisabledStory,
+            botEnabledStory,
+            userLocationStory,
+            handleAttachmentStory,
+            eventListener,
+            keywordStory,
+            conversation,
+            botEnabledListener,
+        ) {
     // set namespace for story handler
     init {
         (
@@ -72,9 +71,9 @@ class SimpleBotDefinition(
                     botEnabledStory,
                     userLocationStory,
                     handleAttachmentStory,
-                    keywordStory
+                    keywordStory,
                 )
-            ).forEach {
+        ).forEach {
             @OptIn(InternalTockApi::class)
             (it.storyHandler as? I18nStoryHandler)?.apply {
                 i18nNamespace = namespace

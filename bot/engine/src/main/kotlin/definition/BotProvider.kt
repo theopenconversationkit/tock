@@ -21,7 +21,6 @@ package ai.tock.bot.definition
  * Custom provider should usually not directly extend this class, but instead extend [BotProviderBase].
  */
 interface BotProvider {
-
     /**
      * Provides the bot definition.
      */

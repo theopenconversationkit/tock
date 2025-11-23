@@ -39,8 +39,7 @@ data class EntityEvaluationContext(
     /**
      * To manage a different date for each specified entity.
      */
-    val referenceDateByEntityMap: Map<Entity, ZonedDateTime>? = null
+    val referenceDateByEntityMap: Map<Entity, ZonedDateTime>? = null,
 ) {
-
     fun referenceDateForEntity(entity: Entity): ZonedDateTime = referenceDateByEntityMap?.get(entity) ?: referenceDate
 }

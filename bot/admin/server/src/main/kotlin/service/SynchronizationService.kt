@@ -36,14 +36,14 @@ import chat.rocket.common.util.ifNull
 import com.github.salomonbrys.kodein.instance
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.util.*
+import java.util.Locale
 
 object SynchronizationService {
     private val front = FrontClient
     private val i18n: I18nDAO by injector.instance()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
-    private const val tempPostfix = "-temp"
+    private const val TEMP_POSTFIX = "-temp"
 
     fun synchronize(
         srcNamespace: String,
@@ -52,7 +52,7 @@ object SynchronizationService {
         targetNamespace: String,
         targetAppName: String,
         withInboxMessages: Boolean,
-        userLogin: String
+        userLogin: String,
     ): ImportReport {
         // Step 1: Prepare temporary application
         val configMap = prepareTempApplication(targetNamespace, targetAppName, userLogin, withInboxMessages)
@@ -62,10 +62,10 @@ object SynchronizationService {
 
         // Step 3: Clean up temporary application and namespace
         cleanTempNamespaceAndApplication(
-            "${targetNamespace}${tempPostfix}",
-            "${targetAppName}${tempPostfix}",
+            "${targetNamespace}$TEMP_POSTFIX",
+            "${targetAppName}$TEMP_POSTFIX",
             userLogin,
-            configMap
+            configMap,
         )
 
         return report
@@ -77,7 +77,7 @@ object SynchronizationService {
         srcAppId: Id<ApplicationDefinition>,
         targetNamespace: String,
         targetAppName: String,
-        withInboxMessages: Boolean
+        withInboxMessages: Boolean,
     ): ImportReport {
         // Export source stories and delete target stories
         val sourceStories = BotAdminService.exportStories(srcNamespace, srcAppName)
@@ -91,32 +91,36 @@ object SynchronizationService {
                     targetAppName,
                     group.key ?: Locale.ENGLISH,
                     StoryDefinitionConfigurationDumpImport(group.value),
-                    TockUserRole.botUser.name
+                    TockUserRole.botUser.name,
                 )
             }
 
         // Export the application dump, optionally excluding Inbox messages
         val originalAppDump = front.export(srcAppId, DumpType.full)
-        val appDumpToImport = if (withInboxMessages) {
-            originalAppDump
-        } else {
-            originalAppDump.copy(sentences = emptyList())
-        }
+        val appDumpToImport =
+            if (withInboxMessages) {
+                originalAppDump
+            } else {
+                originalAppDump.copy(sentences = emptyList())
+            }
 
         // Import the application dump with an update to the name and namespace
-        val updatedAppDump = appDumpToImport.copy(
-            application = appDumpToImport.application.copy(
-                name = targetAppName,
-                namespace = targetNamespace
+        val updatedAppDump =
+            appDumpToImport.copy(
+                application =
+                    appDumpToImport.application.copy(
+                        name = targetAppName,
+                        namespace = targetNamespace,
+                    ),
             )
-        )
 
         // Perform the import with the updated application dump
-        val importReport = front.import(
-            targetNamespace,
-            updatedAppDump,
-            ApplicationImportConfiguration(targetAppName)
-        )
+        val importReport =
+            front.import(
+                targetNamespace,
+                updatedAppDump,
+                ApplicationImportConfiguration(targetAppName),
+            )
 
         // Import source labels to the target namespace
         val sourceLabels = i18n.getLabels(srcNamespace)
@@ -129,10 +133,10 @@ object SynchronizationService {
         targetNamespace: String,
         targetAppName: String,
         userLogin: String,
-        withInboxMessages: Boolean
+        withInboxMessages: Boolean,
     ): Map<BotApplicationConfiguration, BotApplicationConfiguration> {
-        val tempNamespaceName = "${targetNamespace}${tempPostfix}"
-        val tempAppName = "${targetAppName}${tempPostfix}"
+        val tempNamespaceName = "${targetNamespace}$TEMP_POSTFIX"
+        val tempAppName = "${targetAppName}$TEMP_POSTFIX"
         // Map to exchange paths between configurations
         val botApplicationConfigurationFitMap = mutableMapOf<BotApplicationConfiguration, BotApplicationConfiguration>()
         // Prepare Temp Namespace , Order is important here
@@ -147,22 +151,23 @@ object SynchronizationService {
                 botConfiguration.copy(
                     name = tempAppName,
                     botId = tempAppName,
-                    namespace = tempNamespaceName
-                )
+                    namespace = tempNamespaceName,
+                ),
             )
         }
         // Prepare ApplicationDefinition - application_definition collection on tock_front
         val targetNlpAppDef = front.getApplicationByNamespaceAndName(targetNamespace, targetAppName)
         if (targetNlpAppDef != null) {
-
-            val tempNlpAppDef = targetNlpAppDef.copy(
-                _id = newId(),
-                name = tempAppName,
-                label = targetNlpAppDef.label.plus(tempPostfix),
-                namespace = tempNamespaceName,
-                intents = setOf() // Should be updated by synchronization process
-            )
-            //delete temp application if exists
+            val tempNlpAppDef =
+                targetNlpAppDef.copy(
+                    _id = newId(),
+                    name = tempAppName,
+                    label = targetNlpAppDef.label.plus(TEMP_POSTFIX),
+                    namespace = tempNamespaceName,
+                    // Should be updated by synchronization process
+                    intents = setOf(),
+                )
+            // delete temp application if exists
             front.getApplicationByNamespaceAndName(tempNamespaceName, tempAppName)?.let {
                 front.deleteApplicationById(it._id)
             }
@@ -173,19 +178,20 @@ object SynchronizationService {
         val targetBotApplicationConfigurationList =
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(targetNamespace, targetAppName)
         for (targetBotAppConfig in targetBotApplicationConfigurationList) {
-            val tempApplicationId = targetBotAppConfig.applicationId.plus(tempPostfix)
-            val tempBotAppConfig = targetBotAppConfig.copy(
-                applicationId = tempApplicationId,
-                botId = tempAppName,
-                namespace = tempNamespaceName,
-                path = targetBotAppConfig.path!!.removeSuffix("/").plus("${tempPostfix}/"),
-                _id = newId(),
-                nlpModel = tempAppName
-            )
+            val tempApplicationId = targetBotAppConfig.applicationId.plus(TEMP_POSTFIX)
+            val tempBotAppConfig =
+                targetBotAppConfig.copy(
+                    applicationId = tempApplicationId,
+                    botId = tempAppName,
+                    namespace = tempNamespaceName,
+                    path = targetBotAppConfig.path!!.removeSuffix("/").plus("$TEMP_POSTFIX/"),
+                    _id = newId(),
+                    nlpModel = tempAppName,
+                )
             BotAdminService.getBotConfigurationByApplicationIdAndBotId(
                 tempNamespaceName,
                 tempApplicationId,
-                tempAppName
+                tempAppName,
             )?.let {
                 BotAdminService.deleteApplicationConfiguration(it)
             }
@@ -199,7 +205,7 @@ object SynchronizationService {
             targetNlpAppDef!!._id,
             tempNamespaceName,
             tempAppName,
-            withInboxMessages
+            withInboxMessages,
         )
         // Exchange paths for blue/green deployment before the main copy process ends
         val updatedBotConfigsMap = mutableMapOf<BotApplicationConfiguration, BotApplicationConfiguration>()
@@ -214,7 +220,7 @@ object SynchronizationService {
         tempNamespace: String,
         tempAppName: String,
         userLogin: String,
-        botAppConfMap: Map<BotApplicationConfiguration, BotApplicationConfiguration>
+        botAppConfMap: Map<BotApplicationConfiguration, BotApplicationConfiguration>,
     ) {
         // restore the original paths
         botAppConfMap.keys.forEach {
@@ -228,7 +234,6 @@ object SynchronizationService {
         }
         // delete the temp namespace
         front.deleteNamespace(userLogin, tempNamespace)
-
     }
 
     /**
@@ -237,10 +242,10 @@ object SynchronizationService {
      */
     private fun exchangePaths(
         first: BotApplicationConfiguration,
-        second: BotApplicationConfiguration
+        second: BotApplicationConfiguration,
     ): Pair<BotApplicationConfiguration, BotApplicationConfiguration> {
         val firstPath = first.path!!
-        val nonConflictingFirstPath = first.path!!.removeSuffix(tempPostfix).removeSuffix("/").plus("_")
+        val nonConflictingFirstPath = first.path!!.removeSuffix(TEMP_POSTFIX).removeSuffix("/").plus("_")
         val secondPath = second.path!!.removeSuffix("/").removeSuffix("_")
 
         botConfigurationDAO.getConfigurationByPath(nonConflictingFirstPath)
@@ -254,7 +259,10 @@ object SynchronizationService {
         return firstUpdated!! to secondUpdated!!
     }
 
-    private fun deleteStories(namespace: String, applicationName: String) {
+    private fun deleteStories(
+        namespace: String,
+        applicationName: String,
+    ) {
         storyDefinitionDAO.deleteByNamespaceAndBotId(namespace, applicationName)
     }
 }

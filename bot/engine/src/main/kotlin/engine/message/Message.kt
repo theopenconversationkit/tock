@@ -25,7 +25,6 @@ import ai.tock.bot.engine.user.PlayerId
  * A message.
  */
 interface Message {
-
     val eventType: EventType
     val delay: Long
 
@@ -34,7 +33,7 @@ interface Message {
     fun toAction(
         playerId: PlayerId,
         applicationId: String,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ): Action
 
     /**

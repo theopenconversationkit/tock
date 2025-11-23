@@ -22,7 +22,6 @@ import ai.tock.bot.engine.BotBus
  * Descriptor of [MediaMessage].
  */
 interface MediaMessageDescriptor {
-
     /**
      * The type of message.
      */

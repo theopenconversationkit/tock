@@ -57,6 +57,7 @@ enum class GAStatusCode {
     //
     // HTTP Mapping: 504 Gateway Timeout
     DEADLINE_EXCEEDED,
+
     // Some requested entity (e.g., file or directory) was not found.
     //
     // Note to server developers: if a request is denied for an entire class
@@ -73,6 +74,7 @@ enum class GAStatusCode {
     //
     // HTTP Mapping: 409 Conflict
     ALREADY_EXISTS,
+
     // The caller does not have permission to execute the specified
     // operation. `PERMISSION_DENIED` must not be used for rejections
     // caused by exhausting some resource (use `RESOURCE_EXHAUSTED`
@@ -171,7 +173,9 @@ enum class GAStatusCode {
     // Unrecoverable data loss or corruption.
     //
     // HTTP Mapping: 500 Internal Server Error
-    DATA_LOSS;
+    DATA_LOSS,
+
+    ;
 
     /**
      * Serialized as number.

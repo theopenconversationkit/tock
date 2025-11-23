@@ -28,13 +28,13 @@ import kotlin.test.assertEquals
  *
  */
 internal class OpenNlpTokenizerTest {
-
-    val tokenizer = OpenNlpTokenizer(
-        TokenizerModelHolder(
-            Locale.FRENCH,
-            EMPTY_CONFIGURATION
+    val tokenizer =
+        OpenNlpTokenizer(
+            TokenizerModelHolder(
+                Locale.FRENCH,
+                EMPTY_CONFIGURATION,
+            ),
         )
-    )
     val context = TokenizerContext(Locale.FRENCH, NlpEngineType.Companion.opennlp, "test")
 
     @Test

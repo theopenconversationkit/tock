@@ -23,5 +23,6 @@ import ai.tock.bot.admin.indicators.metric.MetricGroupBy
  * Custom Metric Request
  */
 data class Requests(
-    val filter: MetricFilter? = null, val groupBy: List<MetricGroupBy>
+    val filter: MetricFilter? = null,
+    val groupBy: List<MetricGroupBy>,
 )

@@ -31,9 +31,8 @@ class IntentTestErrorWithSentenceReport(
     val averageErrorProbability: Double,
     val count: Int = 1,
     val total: Int = 1,
-    val firstDetectionDate: Instant = Instant.now()
+    val firstDetectionDate: Instant = Instant.now(),
 ) {
-
     constructor(originalSentence: ClassifiedSentence, error: IntentTestError) : this(
         SentenceReport(error, originalSentence.obfuscatedEntityRanges()),
         error.currentIntent,
@@ -41,6 +40,6 @@ class IntentTestErrorWithSentenceReport(
         error.averageErrorProbability,
         error.count,
         error.total,
-        error.firstDetectionDate
+        error.firstDetectionDate,
     )
 }

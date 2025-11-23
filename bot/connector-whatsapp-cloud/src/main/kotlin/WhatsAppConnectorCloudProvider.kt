@@ -25,7 +25,6 @@ import ai.tock.bot.connector.ConnectorTypeConfigurationField
 import ai.tock.shared.resourceAsString
 
 internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
-
     internal const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
     internal const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
     internal const val META_APPLICATION_ID = "metaApplicationId"
@@ -35,7 +34,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
     override val connectorType: ConnectorType get() = whatsAppCloudConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
-        with(connectorConfiguration){
+        with(connectorConfiguration) {
             return WhatsAppConnectorCloudConnector(
                 connectorId = connectorId,
                 phoneNumberId = parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
@@ -56,30 +55,30 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "WhatsApp Phone Number Id",
                     WHATSAPP_PHONE_NUMBER_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "WhatsApp Business Account Id",
-                        WHATSAPP_BUSINESS_ACCOUNT_ID,
-                    true
+                    WHATSAPP_BUSINESS_ACCOUNT_ID,
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Webhook verify token",
                     VERIFY_TOKEN,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Call Token",
                     TOKEN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Meta Application Id",
                     META_APPLICATION_ID,
-                    false
+                    false,
                 ),
             ),
-            resourceAsString("/whatsapp.svg")
+            resourceAsString("/whatsapp.svg"),
         )
 }
 

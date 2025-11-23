@@ -23,5 +23,5 @@ import ai.tock.bot.engine.user.PlayerId
  */
 class EndSessionEvent(
     val userId: PlayerId,
-    applicationId: String
+    applicationId: String,
 ) : Event(applicationId)

@@ -19,5 +19,5 @@ package ai.tock.nlp.sagemaker
 import ai.tock.shared.property
 
 internal data class SagemakerModelConfiguration(
-    val modelFileName: String = property ("tock_sagemaker_aws_model_file_name", "default")
+    val modelFileName: String = property("tock_sagemaker_aws_model_file_name", "default"),
 )

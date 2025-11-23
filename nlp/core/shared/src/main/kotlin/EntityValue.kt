@@ -43,5 +43,5 @@ data class EntityValue(
     /**
      * Is this entity has been evaluated?
      */
-    val evaluated: Boolean = false
+    val evaluated: Boolean = false,
 ) : IntOpenRange

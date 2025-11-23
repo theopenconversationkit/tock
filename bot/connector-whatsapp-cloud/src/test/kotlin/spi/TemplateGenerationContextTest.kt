@@ -33,35 +33,38 @@ import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
-import org.junit.jupiter.api.Test
 
 class TemplateGenerationContextTest {
     @Test
     fun `carousel result serializes correctly`() {
         val metaApplicationId = "test-app"
-        val apiService = mockk<WhatsAppCloudApiService> {
-            every { getOrUpload(metaApplicationId, "a", "image/png") } returns MetaUploadHandle("aaa")
-            every { getOrUpload(metaApplicationId, "b", "video/mp4") } returns MetaUploadHandle("aaa")
-        }
+        val apiService =
+            mockk<WhatsAppCloudApiService> {
+                every { getOrUpload(metaApplicationId, "a", "image/png") } returns MetaUploadHandle("aaa")
+                every { getOrUpload(metaApplicationId, "b", "video/mp4") } returns MetaUploadHandle("aaa")
+            }
         val ctx = TemplateGenerationContext("test-connector", "123456789", metaApplicationId, apiService)
-        val template = ctx.buildCarousel("test", Locale("en", "gb")) {
-            body = TemplateBody("Hello, {{0}}", "World!")
-            carousel = TemplateCarousel(
-                TemplateCard(
-                    TemplateCardHeader.image(ctx.getOrUpload("a", "image/png")),
-                    TemplateCardBody("Body A"),
-                    TemplateQuickReply("Button 1a"),
-                    TemplateQuickReply("Button 2a"),
-                ),
-                TemplateCard(
-                    TemplateCardHeader.video(ctx.getOrUpload("b", "video/mp4")),
-                    TemplateCardBody("Body B"),
-                    TemplateQuickReply("Button 1b"),
-                ),
-            )
-        }
+        val template =
+            ctx.buildCarousel("test", Locale("en", "gb")) {
+                body = TemplateBody("Hello, {{0}}", "World!")
+                carousel =
+                    TemplateCarousel(
+                        TemplateCard(
+                            TemplateCardHeader.image(ctx.getOrUpload("a", "image/png")),
+                            TemplateCardBody("Body A"),
+                            TemplateQuickReply("Button 1a"),
+                            TemplateQuickReply("Button 2a"),
+                        ),
+                        TemplateCard(
+                            TemplateCardHeader.video(ctx.getOrUpload("b", "video/mp4")),
+                            TemplateCardBody("Body B"),
+                            TemplateQuickReply("Button 1b"),
+                        ),
+                    )
+            }
         val serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(template)
         println(serialized)
         assertEquals(template, mapper.readValue<WhatsappTemplate>(serialized))
@@ -70,12 +73,13 @@ class TemplateGenerationContextTest {
     @Test
     fun `basic template result serializes correctly`() {
         val ctx = TemplateGenerationContext("test-connector", "123456789", "test-app", mockk())
-        val template = ctx.buildBasicTemplate("test", Locale.ENGLISH) {
-            category = WhatsappTemplateCategory.UTILITY
-            header = TemplateHeader.text("Greetings")
-            body = TemplateBody("Hello, {{0}}", "World!")
-            footer = TemplateFooter("Message sent from a pineapple")
-        }
+        val template =
+            ctx.buildBasicTemplate("test", Locale.ENGLISH) {
+                category = WhatsappTemplateCategory.UTILITY
+                header = TemplateHeader.text("Greetings")
+                body = TemplateBody("Hello, {{0}}", "World!")
+                footer = TemplateFooter("Message sent from a pineapple")
+            }
         val serialized = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(template)
         println(serialized)
         assertEquals(template, mapper.readValue<WhatsappTemplate>(serialized))

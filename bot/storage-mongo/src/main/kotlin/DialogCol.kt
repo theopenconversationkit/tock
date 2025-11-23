@@ -16,7 +16,7 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.annotation.*
+import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.definition.Intent
@@ -40,7 +40,6 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.shared.checkMaxLengthAllowed
-import ai.tock.shared.isDocumentDB
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.transformData
@@ -75,9 +74,8 @@ internal data class DialogCol(
     val test: Boolean = false,
     val namespace: String? = null,
     val rating: Int? = null,
-    val review: String? = null
+    val review: String? = null,
 ) {
-
     companion object {
         private fun getActionWrapper(action: Action): ActionMongoWrapper {
             return when (action) {
@@ -102,7 +100,7 @@ internal data class DialogCol(
         test = userTimeline.userPreferences.test,
         namespace = userTimeline.namespace,
         review = dialog.review,
-        rating = dialog.rating
+        rating = dialog.rating,
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
@@ -114,7 +112,7 @@ internal data class DialogCol(
                 stories.toMutableList(),
                 groupId = groupId,
                 rating = rating,
-                review = review
+                review = review,
             )
         }
     }
@@ -128,24 +126,25 @@ internal data class DialogCol(
                 .map { it.toAction(_id) }
                 .toList()
                 .run {
-                    val customMessagesMap = runBlocking {
-                        UserTimelineMongoDAO.loadConnectorMessages(
-                            mapNotNull {
-                                (it as? SendSentenceNotYetLoaded)?.let {
-                                    ConnectorMessageColId(
-                                        it.toActionId(),
-                                        it.dialogId
-                                    )
-                                }
-                            }
-                        )
-                    }
+                    val customMessagesMap =
+                        runBlocking {
+                            UserTimelineMongoDAO.loadConnectorMessages(
+                                mapNotNull {
+                                    (it as? SendSentenceNotYetLoaded)?.let {
+                                        ConnectorMessageColId(
+                                            it.toActionId(),
+                                            it.dialogId,
+                                        )
+                                    }
+                                },
+                            )
+                        }
 
                     map { a ->
                         if (a is SendSentenceNotYetLoaded) {
                             a.setLoadedMessages(
                                 customMessagesMap[ConnectorMessageColId(a.toActionId(), a.dialogId)]
-                                    ?: emptyList()
+                                    ?: emptyList(),
                             )
                         }
                         ActionReport(
@@ -160,7 +159,7 @@ internal data class DialogCol(
                             a.state.intent,
                             a.applicationId,
                             a.metadata,
-                            a.annotation
+                            a.annotation,
                         )
                     }
                 }
@@ -172,7 +171,7 @@ internal data class DialogCol(
                 ?: textChat,
             _id,
             rating = rating,
-            review = review
+            review = review,
         )
     }
 
@@ -183,15 +182,14 @@ internal data class DialogCol(
         @JsonDeserialize(contentAs = AnyValueWrapper::class)
         val context: Map<String, AnyValueWrapper?>,
         var userLocation: UserLocation?,
-        var nextActionState: NextUserActionState?
+        var nextActionState: NextUserActionState?,
     ) {
-
         constructor(state: DialogState) : this(
             state.currentIntent,
             state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
             state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap(),
             state.userLocation,
-            state.nextActionState
+            state.nextActionState,
         )
 
         fun toState(actionsMap: Map<Id<Action>, Action>): DialogState {
@@ -201,7 +199,7 @@ internal data class DialogCol(
                 context.filter { it.value != null && it.value!!.value != null }.mapValues { it.value!!.value!! }
                     .toMutableMap(),
                 userLocation,
-                nextActionState
+                nextActionState,
             )
         }
     }
@@ -209,13 +207,12 @@ internal data class DialogCol(
     data class EntityStateValueWrapper(
         val value: EntityValue?,
         val lastUpdate: Instant = now(),
-        val id: Id<EntityStateValue> = newId()
+        val id: Id<EntityStateValue> = newId(),
     ) {
-
         constructor(value: EntityStateValue) : this(
             value.value,
             value.lastUpdate,
-            value.stateValueId ?: newId()
+            value.stateValueId ?: newId(),
         )
 
         fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue {
@@ -224,7 +221,7 @@ internal data class DialogCol(
                 mutableListOf(),
                 lastUpdate,
                 id,
-                actionsMap
+                actionsMap,
             )
         }
     }
@@ -235,22 +232,24 @@ internal data class DialogCol(
         val storyDefinitionId: String,
         var currentIntent: Intent?,
         val currentStep: String?,
-        val actions: List<ActionMongoWrapper>
+        val actions: List<ActionMongoWrapper>,
     ) {
-
         constructor(story: Story) : this(
             story.definition.id,
             story.starterIntent,
             story.currentStep?.name,
-            story.actions.map { getActionWrapper(it) }
+            story.actions.map { getActionWrapper(it) },
         )
 
-        fun toStory(dialogId: Id<Dialog>, storyDefinitionProvider: (String) -> StoryDefinition): Story {
+        fun toStory(
+            dialogId: Id<Dialog>,
+            storyDefinitionProvider: (String) -> StoryDefinition,
+        ): Story {
             return Story(
                 storyDefinitionProvider.invoke(storyDefinitionId),
                 currentIntent ?: Intent.unknown,
                 currentStep,
-                actions.map { it.toAction(dialogId) }.toMutableList()
+                actions.map { it.toAction(dialogId) }.toMutableList(),
             )
         }
     }
@@ -262,11 +261,10 @@ internal data class DialogCol(
         JsonSubTypes.Type(value = SendChoiceMongoWrapper::class, name = "choice"),
         JsonSubTypes.Type(value = SendAttachmentMongoWrapper::class, name = "attachment"),
         JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"),
-        JsonSubTypes.Type(value = SendDebugMongoWrapper::class, name = "debug")
+        JsonSubTypes.Type(value = SendDebugMongoWrapper::class, name = "debug"),
     )
     @Data(internal = true)
     abstract class ActionMongoWrapper {
-
         lateinit var id: Id<Action>
         lateinit var date: Instant
         lateinit var state: EventState
@@ -296,15 +294,14 @@ internal data class DialogCol(
         val customMessage: Boolean = false,
         val nlpStats: Boolean = false,
     ) : ActionMongoWrapper() {
-
         constructor(sentence: SendSentence) :
-                this(
-                    sentence.stringText?.let {
-                        checkMaxLengthAllowed(it)
-                    },
-                    (sentence as? SendSentenceNotYetLoaded)?.hasCustomMessage ?: sentence.messages.isNotEmpty(),
-                    (sentence as? SendSentenceNotYetLoaded)?.hasNlpStats ?: sentence.nlpStats != null
-                ) {
+            this(
+                sentence.stringText?.let {
+                    checkMaxLengthAllowed(it)
+                },
+                (sentence as? SendSentenceNotYetLoaded)?.hasCustomMessage ?: sentence.messages.isNotEmpty(),
+                (sentence as? SendSentenceNotYetLoaded)?.hasNlpStats ?: sentence.nlpStats != null,
+            ) {
             assignFrom(sentence)
         }
 
@@ -322,7 +319,7 @@ internal data class DialogCol(
                     botMetadata,
                     customMessage,
                     nlpStats,
-                    annotation
+                    annotation,
                 )
             } else {
                 SendSentence(
@@ -340,18 +337,16 @@ internal data class DialogCol(
         }
     }
 
-
     @JsonTypeName(value = "sentenceWithFootnotes")
     data class SendSentenceWithFootnotesMongoWrapper(
         val text: String,
         val footnotes: MutableList<Footnote>,
     ) : ActionMongoWrapper() {
-
         constructor(sentence: SendSentenceWithFootnotes) :
-                this(
-                    sentence.text.toString(),
-                    sentence.footnotes
-                ) {
+            this(
+                sentence.text.toString(),
+                sentence.footnotes,
+            ) {
             assignFrom(sentence)
         }
 
@@ -366,7 +361,7 @@ internal data class DialogCol(
                 date,
                 state,
                 botMetadata,
-                annotation
+                annotation,
             )
         }
     }
@@ -376,12 +371,11 @@ internal data class DialogCol(
         val text: String,
         val data: Any?,
     ) : ActionMongoWrapper() {
-
         constructor(debug: SendDebug) :
-                this(
-                    debug.text,
-                    transformData(debug.data)
-                ) {
+            this(
+                debug.text,
+                transformData(debug.data),
+            ) {
             assignFrom(debug)
         }
 
@@ -395,7 +389,7 @@ internal data class DialogCol(
                 id,
                 date,
                 state,
-                botMetadata
+                botMetadata,
             )
         }
     }
@@ -403,14 +397,13 @@ internal data class DialogCol(
     @JsonTypeName(value = "choice")
     class SendChoiceMongoWrapper private constructor(
         val intentName: String,
-        val parameters: Map<String, String>
+        val parameters: Map<String, String>,
     ) : ActionMongoWrapper() {
-
         constructor(choice: SendChoice) :
-                this(
-                    choice.intentName,
-                    if (choice.state.testEvent) choice.parameters else obfuscate(choice.parameters)
-                ) {
+            this(
+                choice.intentName,
+                if (choice.state.testEvent) choice.parameters else obfuscate(choice.parameters),
+            ) {
             assignFrom(choice)
         }
 
@@ -424,7 +417,7 @@ internal data class DialogCol(
                 id,
                 date,
                 state,
-                botMetadata
+                botMetadata,
             )
         }
     }
@@ -434,9 +427,8 @@ internal data class DialogCol(
         val url: String,
         @JsonProperty("attachment_type")
         @JsonAlias("type")
-        val type: SendAttachment.AttachmentType
+        val type: SendAttachment.AttachmentType,
     ) : ActionMongoWrapper() {
-
         constructor(attachment: SendAttachment) : this(attachment.url, attachment.type) {
             assignFrom(attachment)
         }
@@ -451,14 +443,13 @@ internal data class DialogCol(
                 id,
                 date,
                 state,
-                botMetadata
+                botMetadata,
             )
         }
     }
 
     @JsonTypeName(value = "location")
     class SendLocationMongoWrapper(val location: UserLocation?) : ActionMongoWrapper() {
-
         constructor(location: SendLocation) : this(location.location) {
             assignFrom(location)
         }
@@ -472,7 +463,7 @@ internal data class DialogCol(
                 id,
                 date,
                 state,
-                botMetadata
+                botMetadata,
             )
         }
     }
@@ -482,7 +473,5 @@ internal data class DialogCol(
 @JacksonData(internal = true)
 data class ParseRequestSatisfactionStatCol(
     val rating: Double,
-    val count: Int = 1
-) {
-
-}
+    val count: Int = 1,
+)

@@ -39,9 +39,8 @@ data class TestPlanUpdate(
     val locale: Locale = defaultLocale,
     val startAction: Message? = null,
     val targetConnectorType: ConnectorType = ConnectorType.none,
-    val _id: Id<TestPlan>? = null
+    val _id: Id<TestPlan>? = null,
 ) {
-
     fun toTestPlan(): TestPlan =
         TestPlan(
             dialogs,
@@ -53,6 +52,6 @@ data class TestPlanUpdate(
             locale,
             startAction,
             targetConnectorType,
-            _id ?: newId()
+            _id ?: newId(),
         )
 }

@@ -27,18 +27,17 @@ import kotlin.test.assertEquals
  *
  */
 class I18nTest {
-
     @Test
     fun formatWith_shouldWorks_forAllLocales() {
         val date = LocalDate.now().with(DayOfWeek.FRIDAY)
         val format = DateTimeFormatter.ofPattern("EEEE")
         assertEquals(
             "Friday",
-            date.formatWith(format, Locale.ENGLISH).toString()
+            date.formatWith(format, Locale.ENGLISH).toString(),
         )
         assertEquals(
             "vendredi",
-            date.formatWith(format, Locale.FRENCH).toString()
+            date.formatWith(format, Locale.FRENCH).toString(),
         )
     }
 }

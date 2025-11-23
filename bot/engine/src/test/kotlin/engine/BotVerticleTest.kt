@@ -25,7 +25,6 @@ import kotlin.test.assertFalse
  *
  */
 class BotVerticleTest : BotEngineTest() {
-
     @Test
     fun `unregisterRouter activates secondary router if one exists`() {
         val verticle = BotVerticle(false, false)
@@ -33,10 +32,11 @@ class BotVerticleTest : BotEngineTest() {
         var service1Installed = false
         var service2Installed = false
 
-        val installer1 = verticle.registerServices("/path") { router ->
-            service1Installed = true
-            router.get("/path").handler { }
-        }
+        val installer1 =
+            verticle.registerServices("/path") { router ->
+                service1Installed = true
+                router.get("/path").handler { }
+            }
         verticle.registerServices("/path") { router ->
             service2Installed = true
             router.get("/path2").handler { }
@@ -70,7 +70,6 @@ class BotVerticleTest : BotEngineTest() {
 
     @Test
     fun `GIVEN the need to expose NLP API on a BOT WHEN configure BOT Verticle THEN api is exposed`() {
-
         val verticle = BotVerticle(true, false)
         verticle.init(mockedVertx, mockk())
         // NLP Api exposed

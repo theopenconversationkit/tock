@@ -27,14 +27,13 @@ import ai.tock.nlp.model.TokenizerContext
  * Model builder to implement for nlp engines.
  */
 interface NlpEngineModelBuilder {
-
     /**
      * Builds a tokenizer model.
      */
     fun buildTokenizerModel(
         context: TokenizerContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): TokenizerModelHolder = TokenizerModelHolder(context.language, configuration)
 
     /**
@@ -43,7 +42,7 @@ interface NlpEngineModelBuilder {
     fun buildIntentModel(
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): IntentModelHolder
 
     /**
@@ -52,7 +51,7 @@ interface NlpEngineModelBuilder {
     fun buildEntityModel(
         context: EntityBuildContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): EntityModelHolder?
 
     /**
@@ -77,6 +76,6 @@ interface NlpEngineModelBuilder {
         NlpApplicationConfiguration(
             defaultTokenizerConfiguration,
             defaultIntentClassifierConfiguration,
-            defaultEntityClassifierConfiguration
+            defaultEntityClassifierConfiguration,
         )
 }

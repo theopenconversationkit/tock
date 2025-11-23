@@ -23,5 +23,5 @@ data class PostbackButton(
     val title: String,
     val payload: String?,
     val imageUrl: String? = null,
-    val style: String? = ButtonStyle.primary.name
+    val style: String? = ButtonStyle.primary.name,
 ) : Button(ButtonType.postback)

@@ -17,13 +17,17 @@
 package ai.tock.nlp.core.service.entity
 
 internal class DictionaryEntityTypeProvider : EntityTypeProvider {
-
     override fun getEntityTypeClassifier(): EntityTypeClassifier = DictionaryEntityTypeClassifier
 
     override fun getEntityTypeEvaluator(): EntityTypeEvaluator = DictionaryEntityTypeEvaluator
 
-    override fun supportClassification(namespace: String, entityTypeName: String): Boolean = supportEvaluation(namespace, entityTypeName)
+    override fun supportClassification(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = supportEvaluation(namespace, entityTypeName)
 
-    override fun supportEvaluation(namespace: String, entityTypeName: String): Boolean =
-        DictionaryRepositoryService.isSupportedEntityType(namespace, entityTypeName)
+    override fun supportEvaluation(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = DictionaryRepositoryService.isSupportedEntityType(namespace, entityTypeName)
 }

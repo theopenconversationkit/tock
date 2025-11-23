@@ -24,7 +24,10 @@ import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.Dice.newId
 import com.aallam.openai.api.chat.ChatRole
 
-fun ChatCompletionRequestWithStream.toEvent(connectorId: String, chatId: String?): Event {
+fun ChatCompletionRequestWithStream.toEvent(
+    connectorId: String,
+    chatId: String?,
+): Event {
     val query = messages.lastOrNull { it.role == ChatRole.User }?.content
     val userId = (if (chatId == null) user else "$user-$chatId") ?: newId()
     return if (query != null) {
@@ -33,9 +36,10 @@ fun ChatCompletionRequestWithStream.toEvent(connectorId: String, chatId: String?
             connectorId,
             PlayerId(connectorId, bot),
             query,
-            metadata = ActionMetadata(
-                streamedResponse = stream
-            )
+            metadata =
+                ActionMetadata(
+                    streamedResponse = stream,
+                ),
         )
     } else {
         error("No user message found in chat completion request. Chat completion request must contain at least one user message.")

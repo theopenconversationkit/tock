@@ -35,7 +35,6 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.provide
-import com.vdurmont.emoji.EmojiManager
 import com.vdurmont.emoji.EmojiParser
 import org.litote.kmongo.Id
 import java.util.Locale
@@ -44,13 +43,12 @@ import java.util.Locale
  * [AlexaCodec] implementation - mainly used for batch export.
  */
 object AlexaCodecService : AlexaCodec {
-
     private val config: ApplicationConfiguration get() = injector.provide()
 
     private fun exportAlexaIntents(
         intents: List<IntentDefinition>,
         sentences: List<ClassifiedSentence>,
-        filter: AlexaFilter?
+        filter: AlexaFilter?,
     ): List<AlexaIntent> {
         return intents
             .map { intent ->
@@ -59,22 +57,22 @@ object AlexaCodecService : AlexaCodec {
                     exportSamples(
                         intent,
                         sentences,
-                        filter
+                        filter,
                     ),
                     intent.entities
                         .filter { entity ->
                             filter == null ||
-                                    filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
+                                filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
                         }
                         .map {
                             AlexaSlot(
                                 (
-                                        filter?.findSlot(intent, it)?.targetName
-                                            ?: it.role
-                                        ) + "_slot",
-                                filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name()
+                                    filter?.findSlot(intent, it)?.targetName
+                                        ?: it.role
+                                ) + "_slot",
+                                filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name(),
                             )
-                        }
+                        },
                 )
             }
     }
@@ -83,9 +81,8 @@ object AlexaCodecService : AlexaCodec {
         intents: List<IntentDefinition>,
         sentences: List<ClassifiedSentence>,
         filter: AlexaFilter?,
-        transformer: AlexaModelTransformer
+        transformer: AlexaModelTransformer,
     ): List<AlexaType> {
-
         return intents
             .flatMap { intent -> intent.entities.map { entity -> intent to entity } }
             .filter { (intent, entity) ->
@@ -96,7 +93,7 @@ object AlexaCodecService : AlexaCodec {
                     filter?.findSlot(intent, entity)?.targetType
                         ?: entity.entityTypeName.name().replace("-", "_"),
                     exportAlexaTypeDefinition(intent, entity, sentences, transformer)
-                        .distinctBy { type -> type.name.value.lowercase().trim() }
+                        .distinctBy { type -> type.name.value.lowercase().trim() },
                 )
             }
             .groupBy { it.name }
@@ -113,14 +110,15 @@ object AlexaCodecService : AlexaCodec {
         applicationId: Id<ApplicationDefinition>,
         localeToExport: Locale,
         filter: AlexaFilter?,
-        transformer: AlexaModelTransformer
+        transformer: AlexaModelTransformer,
     ): AlexaIntentsSchema {
         val allIntents = config.getIntentsByApplicationId(applicationId)
 
-        val intentSet = allIntents
-            .filter { intent -> filter == null || filter.intents.any { it.intent == intent.name } }
-            .map { it._id }
-            .toSet()
+        val intentSet =
+            allIntents
+                .filter { intent -> filter == null || filter.intents.any { it.intent == intent.name } }
+                .map { it._id }
+                .toSet()
 
         val intents = allIntents.filter { intentSet.contains(it._id) }
 
@@ -131,18 +129,17 @@ object AlexaCodecService : AlexaCodec {
                 AlexaLanguageModel(
                     invocationName,
                     exportAlexaTypes(intents, sentences, filter, transformer),
-                    exportAlexaIntents(intents, sentences, filter)
-                )
-            )
+                    exportAlexaIntents(intents, sentences, filter),
+                ),
+            ),
         )
     }
 
     private fun exportSamples(
         intent: IntentDefinition,
         sentences: List<ClassifiedSentence>,
-        filter: AlexaFilter?
+        filter: AlexaFilter?,
     ): List<String> {
-
         val filteredRoles = filter?.intents?.first { it.intent == intent.name }?.slots?.map { it.name }?.toSet()
 
         val startByLetter = "^[a-z\\{].*".toRegex()
@@ -188,7 +185,7 @@ object AlexaCodecService : AlexaCodec {
         intent: IntentDefinition,
         entity: EntityDefinition,
         sentences: List<ClassifiedSentence>,
-        transformer: AlexaModelTransformer
+        transformer: AlexaModelTransformer,
     ): List<AlexaTypeDefinition> {
         val nonChar = "[^0-9a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
         val spaceRegex = "\\s{2,}".toRegex()
@@ -209,7 +206,7 @@ object AlexaCodecService : AlexaCodec {
                         .map { it.replace(nonChar, " ") }
                         .map { it.trim() }
                         .map { it.replace(spaceRegex, " ") }
-                }
+                },
         )
             .filter {
                 !it.contains("*")
@@ -219,8 +216,8 @@ object AlexaCodecService : AlexaCodec {
                     null,
                     AlexaTypeDefinitionName(
                         it.replace("-", "_").replace("\"", " "),
-                        emptyList()
-                    )
+                        emptyList(),
+                    ),
                 )
             }
     }

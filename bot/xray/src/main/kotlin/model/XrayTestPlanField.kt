@@ -17,5 +17,5 @@
 package ai.tock.bot.xray.model
 
 data class XrayTestPlanField(
-    val summary: String
+    val summary: String,
 )

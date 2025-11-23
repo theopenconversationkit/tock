@@ -26,9 +26,8 @@ import ai.tock.nlp.front.shared.parser.QueryState
 data class ParseQuery(
     val query: String,
     val checkExistingQuery: Boolean = true,
-    val state: String? = null
+    val state: String? = null,
 ) : ApplicationScopedQuery() {
-
     fun toQuery(): ParseQuery {
         return ParseQuery(
             listOf(query),
@@ -37,9 +36,9 @@ data class ParseQuery(
             QueryContext(
                 currentLanguage,
                 "admin",
-                checkExistingQuery = checkExistingQuery
+                checkExistingQuery = checkExistingQuery,
             ),
-            QueryState(listOfNotNull(state).toSet())
+            QueryState(listOfNotNull(state).toSet()),
         )
     }
 }

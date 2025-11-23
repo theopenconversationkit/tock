@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach
  *
  */
 abstract class AbstractTest {
-
     val i18nDAO: I18nDAO = mockk(relaxed = true)
     val translatorEngine: TranslatorEngine = mockk(relaxed = true)
 
@@ -48,7 +47,7 @@ abstract class AbstractTest {
             Kodein {
                 import(sharedTestModule)
                 import(baseModule())
-            }
+            },
         )
         Translator.enabled = true
     }

@@ -22,7 +22,6 @@ import org.litote.kmongo.Id
  *
  */
 interface BotApplicationConfigurationDAO {
-
     /**
      * Listen changes on application configurations.
      */
@@ -30,17 +29,31 @@ interface BotApplicationConfigurationDAO {
 
     fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration
 
-    fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByNamespaceAndNlpModel(
+        namespace: String,
+        nlpModel: String,
+    ): List<BotApplicationConfiguration>
 
-    fun getConfigurationsByBotNamespaceAndConfigurationName(namespace: String, botId: String, configurationName: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByBotNamespaceAndConfigurationName(
+        namespace: String,
+        botId: String,
+        configurationName: String,
+    ): List<BotApplicationConfiguration>
 
     fun getConfigurations(): List<BotApplicationConfiguration>
 
     fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration?
 
-    fun getConfigurationByApplicationIdAndBotId(namespace: String, applicationId: String, botId: String): BotApplicationConfiguration?
+    fun getConfigurationByApplicationIdAndBotId(
+        namespace: String,
+        applicationId: String,
+        botId: String,
+    ): BotApplicationConfiguration?
 
-    fun getConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): List<BotApplicationConfiguration>
 
     /**
      * Get configuration by path.
@@ -61,9 +74,16 @@ interface BotApplicationConfigurationDAO {
 
     fun save(conf: BotConfiguration)
 
-    fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotConfiguration>
+    fun getBotConfigurationsByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): List<BotConfiguration>
 
-    fun getBotConfigurationsByNamespaceAndNameAndBotId(namespace: String, name: String, botId: String): BotConfiguration?
+    fun getBotConfigurationsByNamespaceAndNameAndBotId(
+        namespace: String,
+        name: String,
+        botId: String,
+    ): BotConfiguration?
 
     fun getBotConfigurations(): List<BotConfiguration>
 

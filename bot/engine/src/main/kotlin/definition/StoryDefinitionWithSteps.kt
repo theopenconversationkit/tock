@@ -16,6 +16,6 @@
 
 package ai.tock.bot.definition
 
-interface StoryDefinitionWithSteps<S: StoryStepDef> : StoryDefinition {
+interface StoryDefinitionWithSteps<S : StoryStepDef> : StoryDefinition {
     override val steps: Set<S>
 }

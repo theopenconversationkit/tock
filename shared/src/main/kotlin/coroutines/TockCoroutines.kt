@@ -43,7 +43,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 fun Executor.launchCoroutine(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ): Job {
     return CoroutineScope(asCoroutineDispatcher()).launch(context, start, block)
 }
@@ -80,13 +80,10 @@ fun fireAndForget(block: suspend () -> Unit) =
  * Starts a coroutine and waits for the result. Current thread is blocked. [Dispatchers.IO] is used.
  * Useful if you are note in a coroutine context.
  */
-fun <T> waitForCoroutineIO(block: suspend CoroutineScope.() -> T): T =
-    runBlocking(context = Dispatchers.IO, block = block)
+fun <T> waitForCoroutineIO(block: suspend CoroutineScope.() -> T): T = runBlocking(context = Dispatchers.IO, block = block)
 
 /**
  * Starts a coroutine and waits for the result. Current thread is not blocked. [Dispatchers.IO] is used.
  * Useful if you are in a coroutine context.
  */
-suspend fun <T> waitForIO(block: suspend CoroutineScope.() -> T): T =
-    withContext(context = Dispatchers.IO, block = block)
-
+suspend fun <T> waitForIO(block: suspend CoroutineScope.() -> T): T = withContext(context = Dispatchers.IO, block = block)

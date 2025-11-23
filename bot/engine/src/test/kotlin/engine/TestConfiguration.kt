@@ -41,16 +41,17 @@ class BotDefinitionTest :
         stories = enumValues<TestStoryDefinition>().toList() + otherStory + testWithoutStep + builtInStories + disableBotTaggedStory,
         unknownStory = TestStoryDefinition.unknown,
         botEnabledStory = enableStory,
-        botDisabledStory = disableStory
+        botDisabledStory = disableStory,
     )
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class StepTest : SimpleStoryStep {
     s1,
     s2,
     s3,
     s4 {
         override val secondaryIntents: Set<IntentAware> = setOf(Intent("s4_secondary"))
-    }
+    },
 }
 
 abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
@@ -62,22 +63,23 @@ abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
     }
 }
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class TestStoryDefinition(
     override val storyHandler: AbstractStoryHandler,
     override val otherStarterIntents: Set<IntentAware> = emptySet(),
     override val secondaryIntents: Set<IntentAware> = emptySet(),
     override val stepsArray: Array<StepTest> = enumValues(),
     override val unsupportedUserInterface: UserInterfaceType? = null,
-    override val tags: Set<StoryTag> = emptySet()
+    override val tags: Set<StoryTag> = emptySet(),
 ) : StoryDefinitionExtended {
-
     test(StoryHandlerTest, secondaryIntents = setOf(secondaryIntent)),
     story_with_other_starter(StoryHandlerTest, setOf(secondaryIntent)),
     test2(StoryHandler2Test),
     voice_not_supported(StoryHandlerVoiceNotSupported, unsupportedUserInterface = voiceAssistant),
     withoutStep(StoryHandlerWithoutStep, stepsArray = emptyArray()),
     unknown(StoryHandlerUnknown),
-    withAskAgainTag(StoryHandlerWithoutStep, stepsArray = emptyArray(), tags = setOf<StoryTag>(StoryTag.ASK_AGAIN));
+    withAskAgainTag(StoryHandlerWithoutStep, stepsArray = emptyArray(), tags = setOf<StoryTag>(StoryTag.ASK_AGAIN)),
+    ;
 
     val registeredBus: BotBus? get() = storyHandler.registeredBus
 }
@@ -92,23 +94,27 @@ object StoryHandlerWithoutStep : AbstractStoryHandler()
 
 object StoryHandlerUnknown : AbstractStoryHandler()
 
-val otherStory = storyWithSteps<StepTest>("other") {
-    end("other")
-}
+val otherStory =
+    storyWithSteps<StepTest>("other") {
+        end("other")
+    }
 
-val testWithoutStep = story("withoutStep") {
-    end("withoutStep")
-}
+val testWithoutStep =
+    story("withoutStep") {
+        end("withoutStep")
+    }
 
 // stories in order to make BotDefinitionWrapperTest ok
-val builtInStories = listOf(
-    story("input_story") { end("input_story") },
-    story("target") { end("target") }
-)
+val builtInStories =
+    listOf(
+        story("input_story") { end("input_story") },
+        story("target") { end("target") },
+    )
 
-val disableBotTaggedStory = SimpleStoryDefinition(
-    id = "tagged_story",
-    storyHandler = StoryHandlerTest,
-    starterIntents = setOf(Intent("disable_bot")),
-    tags = setOf(StoryTag.DISABLE)
-)
+val disableBotTaggedStory =
+    SimpleStoryDefinition(
+        id = "tagged_story",
+        storyHandler = StoryHandlerTest,
+        starterIntents = setOf(Intent("disable_bot")),
+        tags = setOf(StoryTag.DISABLE),
+    )

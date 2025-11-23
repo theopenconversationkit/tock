@@ -33,5 +33,5 @@ data class IntentTestError(
     val averageErrorProbability: Double,
     val count: Int,
     val total: Int = 1,
-    val firstDetectionDate: Instant = Instant.now()
+    val firstDetectionDate: Instant = Instant.now(),
 )

@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
  *
  */
 class TockObfuscatorServiceTest {
-
     @BeforeEach
     fun before() {
         TockObfuscatorService.registerStringObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret"))

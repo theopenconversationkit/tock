@@ -25,12 +25,12 @@ import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.mapNotNullValues
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
 import java.net.URLEncoder.encode
 import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 
 /**
  * A user choice (click on a button or direct action).
@@ -44,18 +44,23 @@ class SendChoice(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata()
+    metadata: ActionMetadata = ActionMetadata(),
 ) : Action(playerId, recipientId, connectorId, id, date, state, metadata) {
-    @Deprecated("Use constructor with connectorId", ReplaceWith("SendChoice(" +
-            "playerId, " +
-            "connectorId = applicationId, " +
-            "recipientId, " +
-            "intentName, " +
-            "parameters, " +
-            "id, " +
-            "date, " +
-            "state, " +
-            "metadata)"))
+    @Deprecated(
+        "Use constructor with connectorId",
+        ReplaceWith(
+            "SendChoice(" +
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "intentName, " +
+                "parameters, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata)",
+        ),
+    )
     constructor(
         playerId: PlayerId,
         applicationId: String,
@@ -67,7 +72,7 @@ class SendChoice(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, applicationId, recipientId, intentName, parameters, id, date, state, metadata)
+    ) : this(playerId, applicationId, recipientId, intentName, parameters, id, date, state, metadata)
 
     constructor(
         playerId: PlayerId,
@@ -79,7 +84,7 @@ class SendChoice(
         id: Id<Action> = newId(),
         date: Instant = Instant.now(),
         state: EventState = EventState(),
-        metadata: ActionMetadata = ActionMetadata()
+        metadata: ActionMetadata = ActionMetadata(),
     ) :
         this(
             playerId,
@@ -90,20 +95,25 @@ class SendChoice(
             id,
             date,
             state,
-            metadata
+            metadata,
         )
 
-    @Deprecated("Use constructor with connectorId", ReplaceWith("SendChoice(" +
-            "playerId, " +
-            "connectorId = applicationId, " +
-            "recipientId, " +
-            "intentName, " +
-            "step, " +
-            "parameters, " +
-            "id, " +
-            "date, " +
-            "state, " +
-            "metadata)"))
+    @Deprecated(
+        "Use constructor with connectorId",
+        ReplaceWith(
+            "SendChoice(" +
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "intentName, " +
+                "step, " +
+                "parameters, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata)",
+        ),
+    )
     constructor(
         playerId: PlayerId,
         applicationId: String,
@@ -117,11 +127,10 @@ class SendChoice(
         metadata: ActionMetadata = ActionMetadata(),
         _deprecatedConstructor: Nothing? = null,
     ) : this(
-        playerId, applicationId, recipientId, intentName, step, parameters, id, date, state, metadata
+        playerId, applicationId, recipientId, intentName, step, parameters, id, date, state, metadata,
     )
 
     companion object {
-
         const val TITLE_PARAMETER = "_title"
         const val URL_PARAMETER = "_url"
         const val IMAGE_PARAMETER = "_image"
@@ -145,12 +154,12 @@ class SendChoice(
         internal fun nlpParametersMap(
             title: String,
             nlpText: String? = null,
-            imageUrl: String? = null
+            imageUrl: String? = null,
         ): Map<String, String> =
             mapNotNullValues(
                 NLP to (nlpText ?: title),
                 TITLE_PARAMETER to title,
-                IMAGE_PARAMETER to imageUrl
+                IMAGE_PARAMETER to imageUrl,
             )
 
         /**
@@ -172,7 +181,7 @@ class SendChoice(
             /**
              * The custom parameters.
              */
-            parameters: Map<String, String> = emptyMap()
+            parameters: Map<String, String> = emptyMap(),
         ): String {
             return encodeChoiceId(
                 intent,
@@ -180,7 +189,7 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.currentIntent?.wrappedIntent(),
-                sourceAppId = bus.connectorId
+                sourceAppId = bus.connectorId,
             )
         }
 
@@ -203,7 +212,7 @@ class SendChoice(
             /**
              * The custom parameters.
              */
-            parameters: Map<String, String> = emptyMap()
+            parameters: Map<String, String> = emptyMap(),
         ): String {
             return encodeChoiceId(
                 intent,
@@ -211,7 +220,7 @@ class SendChoice(
                 parameters,
                 bus.stepName,
                 bus.currentIntent?.wrappedIntent(),
-                sourceAppId = bus.connectorId
+                sourceAppId = bus.connectorId,
             )
         }
 
@@ -242,7 +251,7 @@ class SendChoice(
             /**
              * The app id emitter
              */
-            sourceAppId: String? = null
+            sourceAppId: String? = null,
         ): String =
             encodeChoiceId(
                 intent,
@@ -250,7 +259,7 @@ class SendChoice(
                 parameters,
                 busStep?.name,
                 currentIntent,
-                sourceAppId
+                sourceAppId,
             )
 
         /**
@@ -280,18 +289,22 @@ class SendChoice(
             /**
              * The app id emitter
              */
-            sourceAppId: String? = null
+            sourceAppId: String? = null,
         ): String {
             val currentStep = step ?: busStep
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
-                val params = parameters +
-                    listOfNotNull(
-                        if (currentStep != null) STEP_PARAMETER to currentStep else null,
-                        if (currentIntent != null && currentIntent != intent)
-                            PREVIOUS_INTENT_PARAMETER to currentIntent.name else null,
-                        if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null
-                    )
+                val params =
+                    parameters +
+                        listOfNotNull(
+                            if (currentStep != null) STEP_PARAMETER to currentStep else null,
+                            if (currentIntent != null && currentIntent != intent) {
+                                PREVIOUS_INTENT_PARAMETER to currentIntent.name
+                            } else {
+                                null
+                            },
+                            if (sourceAppId != null) SOURCE_APP_ID to sourceAppId else null,
+                        )
 
                 if (params.isNotEmpty()) {
                     params.map { e ->
@@ -309,12 +322,13 @@ class SendChoice(
             return if (questionMarkIndex == -1) {
                 id to emptyMap()
             } else {
-                id.substring(0, questionMarkIndex) to id.substring(questionMarkIndex + 1)
-                    .split("&")
-                    .map { s ->
-                        s.split("=")
-                            .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
-                    }.toMap()
+                id.substring(0, questionMarkIndex) to
+                    id.substring(questionMarkIndex + 1)
+                        .split("&")
+                        .map { s ->
+                            s.split("=")
+                                .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
+                        }.toMap()
             }
         }
 
@@ -326,7 +340,7 @@ class SendChoice(
             senderId: PlayerId,
             applicationId: String,
             recipientId: PlayerId,
-            referralParameter: String? = null
+            referralParameter: String? = null,
         ): Action =
             decodeChoiceId(id)
                 .let { (intentName, parameters) ->
@@ -335,7 +349,7 @@ class SendChoice(
                             senderId,
                             applicationId,
                             recipientId,
-                            parameters[NLP]
+                            parameters[NLP],
                         )
                     } else {
                         SendChoice(
@@ -343,11 +357,16 @@ class SendChoice(
                             applicationId = applicationId,
                             recipientId = recipientId,
                             intentName = intentName,
-                            parameters = parameters + (
-                                if (referralParameter == null) emptyMap() else mapOf(
-                                    REFERRAL_PARAMETER to referralParameter
-                                )
-                                )
+                            parameters =
+                                parameters + (
+                                    if (referralParameter == null) {
+                                        emptyMap()
+                                    } else {
+                                        mapOf(
+                                            REFERRAL_PARAMETER to referralParameter,
+                                        )
+                                    }
+                                ),
                         )
                     }
                 }

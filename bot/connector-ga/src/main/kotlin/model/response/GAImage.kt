@@ -27,14 +27,14 @@ data class GAImage(
     val url: String,
     val accessibilityText: String,
     val height: Int? = null,
-    val width: Int? = null
+    val width: Int? = null,
 ) {
-
     fun toAttachment(): Attachment = Attachment(url, image)
 
-    fun toMetadata(): Map<String, String> = mapNotNullValues(
-        GAImage::accessibilityText.name to accessibilityText,
-        GAImage::height.name to height?.toString(),
-        GAImage::width.name to width?.toString()
-    )
+    fun toMetadata(): Map<String, String> =
+        mapNotNullValues(
+            GAImage::accessibilityText.name to accessibilityText,
+            GAImage::height.name to height?.toString(),
+            GAImage::width.name to width?.toString(),
+        )
 }

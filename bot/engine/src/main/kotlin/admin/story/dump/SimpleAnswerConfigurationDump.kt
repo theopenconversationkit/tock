@@ -25,11 +25,12 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
  */
 data class SimpleAnswerConfigurationDump(val answers: List<SimpleAnswerDump>) :
     AnswerConfigurationDump(AnswerConfigurationType.simple) {
-
     constructor(conf: SimpleAnswerConfiguration) : this(
-        conf.answers.map { SimpleAnswerDump(it) }
+        conf.answers.map { SimpleAnswerDump(it) },
     )
 
-    override fun toAnswer(currentType: AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController): AnswerConfiguration =
-        SimpleAnswerConfiguration(answers.map { it.toAnswer(controller) })
+    override fun toAnswer(
+        currentType: AnswerConfigurationType,
+        controller: StoryDefinitionConfigurationDumpController,
+    ): AnswerConfiguration = SimpleAnswerConfiguration(answers.map { it.toAnswer(controller) })
 }

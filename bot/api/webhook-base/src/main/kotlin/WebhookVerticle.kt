@@ -32,16 +32,16 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 
 internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
-
     override fun configure() {
         blocking(HttpMethod.POST, "/webhook") { context ->
             val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 var botResponse: BotResponse? = null
-                val bus = TockClientBus(botDefinition, request) { response ->
-                    botResponse = merge(botResponse, response)
-                }
+                val bus =
+                    TockClientBus(botDefinition, request) { response ->
+                        botResponse = merge(botResponse, response)
+                    }
                 bus.handle()
                 context.response().end(mapper.writeValueAsString(ResponseData(request.requestId, botResponse)))
             } else if (request.configuration != null) {
@@ -49,9 +49,9 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
                     mapper.writeValueAsString(
                         ResponseData(
                             request.requestId,
-                            botConfiguration = botDefinition.toConfiguration()
-                        )
-                    )
+                            botConfiguration = botDefinition.toConfiguration(),
+                        ),
+                    ),
                 )
             } else {
                 error("unknown request: $content")
@@ -63,15 +63,16 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 context.response().setupSSE(addEndHandler = true)
-                val bus = TockClientBus(botDefinition, request) { response ->
-                    context.response()
-                        .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))
-                    if (response.context.lastResponse) {
-                        vertx.setTimer(1000) {
-                            context.response().end()
+                val bus =
+                    TockClientBus(botDefinition, request) { response ->
+                        context.response()
+                            .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))
+                        if (response.context.lastResponse) {
+                            vertx.setTimer(1000) {
+                                context.response().end()
+                            }
                         }
                     }
-                }
                 bus.handle()
             } else {
                 error("unknown request: $content")

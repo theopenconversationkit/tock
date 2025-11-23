@@ -25,7 +25,6 @@ import java.util.concurrent.Executor
  * Manage async tasks.
  */
 interface Executor : Executor {
-
     /**
      * Schedules a blocking task for execution on another thread.
      *
@@ -34,7 +33,10 @@ interface Executor : Executor {
      * @param delay the time from now to delay execution
      * @param runnable the task to run
      */
-    fun executeBlocking(delay: Duration, runnable: () -> Unit)
+    fun executeBlocking(
+        delay: Duration,
+        runnable: () -> Unit,
+    )
 
     /**
      * Schedules a blocking task for execution on another thread.
@@ -47,7 +49,10 @@ interface Executor : Executor {
      * @param task the task to run
      * @return a [CompletableFuture] that is asynchronously completed with the given [task]
      */
-    fun <T> executeBlockingTask(delay: Duration = Duration.ZERO, task: () -> T): CompletableFuture<T>
+    fun <T> executeBlockingTask(
+        delay: Duration = Duration.ZERO,
+        task: () -> T,
+    ): CompletableFuture<T>
 
     /**
      * Schedules a blocking task for execution on another thread.
@@ -68,7 +73,10 @@ interface Executor : Executor {
      * @param result the result handler
      *
      */
-    fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit)
+    fun <T> executeBlocking(
+        blocking: Callable<T>,
+        result: (T?) -> Unit,
+    )
 
     /**
      * Schedules a periodic task.
@@ -78,7 +86,10 @@ interface Executor : Executor {
      * @param delay the delay before the first call, and between each following call
      * @param runnable the task to run
      */
-    fun setPeriodic(delay: Duration, runnable: () -> Unit): Long = setPeriodic(delay, delay, runnable)
+    fun setPeriodic(
+        delay: Duration,
+        runnable: () -> Unit,
+    ): Long = setPeriodic(delay, delay, runnable)
 
     /**
      * Schedules a periodic task.
@@ -89,7 +100,11 @@ interface Executor : Executor {
      * @param delay the delay between each other call
      * @param runnable the task to run
      */
-    fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long
+    fun setPeriodic(
+        initialDelay: Duration,
+        delay: Duration,
+        runnable: () -> Unit,
+    ): Long
 
     override fun execute(command: Runnable) {
         executeBlocking { command.run() }

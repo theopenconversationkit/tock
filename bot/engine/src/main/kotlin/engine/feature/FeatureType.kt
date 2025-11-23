@@ -21,7 +21,6 @@ package ai.tock.bot.engine.feature
  * Usually implemented by an enum.
  */
 interface FeatureType {
-
     val name: String
 
     val category: String get() = javaClass.name

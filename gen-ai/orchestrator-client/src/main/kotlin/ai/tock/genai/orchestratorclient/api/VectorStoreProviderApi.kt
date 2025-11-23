@@ -28,7 +28,6 @@ internal interface VectorStoreProviderApi {
     @POST("/vector-store-providers/{provider-id}/setting/status")
     fun checkVectorStoreSetting(
         @Body query: VectorStoreProviderSettingStatusRequest,
-        @Path("provider-id") providerId: VectorStoreProvider
+        @Path("provider-id") providerId: VectorStoreProvider,
     ): Call<ProviderSettingStatusResponse>
 }
-

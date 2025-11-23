@@ -24,9 +24,7 @@ import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 
-
 object ObservabilityValidationService {
-
     private val observabilityProviderService: ObservabilityProviderService get() = injector.provide()
 
     fun validate(config: BotObservabilityConfiguration): Set<ErrorMessage> {
@@ -34,12 +32,10 @@ object ObservabilityValidationService {
             addAll(
                 observabilityProviderService
                     .checkSetting(ObservabilityProviderSettingStatusRequest(config.setting))
-                    .getErrors("Observability setting check failed")
+                    .getErrors("Observability setting check failed"),
             )
         }
     }
 
-    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> =
-        this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
-
+    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

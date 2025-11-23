@@ -38,12 +38,13 @@ import java.time.Duration
 
 private val logger = KotlinLogging.logger {}
 
-private val orchestrationLockTTL: Duration = Duration.ofMinutes(
-    longProperty(
-        "tock_orchestration_lock_ttl_in_min",
-        60
+private val orchestrationLockTTL: Duration =
+    Duration.ofMinutes(
+        longProperty(
+            "tock_orchestration_lock_ttl_in_min",
+            60,
+        ),
     )
-)
 
 /**
  * Should pass control to orchestrator ?
@@ -52,19 +53,22 @@ class RunOrchestrationStoryListener(
     private val configuration: PrimaryBotConfiguration,
     private val orchestrator: OrchestratorService,
     private val orchestrationRepository: OrchestrationRepository = MongoOrchestrationRepository,
-    private val orchestrationEnabled: (() -> Boolean) = { true }
+    private val orchestrationEnabled: (() -> Boolean) = { true },
 ) : StoryHandlerListener {
+    override fun startAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ): Boolean =
+        with(botBus) {
+            val currentOrchestration = orchestrationRepository.get(action.playerId)
 
-    override fun startAction(botBus: BotBus, handler: StoryHandler): Boolean = with(botBus) {
-        val currentOrchestration = orchestrationRepository.get(action.playerId)
-
-        return when {
-            botBus.blockHandoverToSecondaryBot -> true
-            currentOrchestration != null -> resumeOrchestration(currentOrchestration)
-            intent.inStartOrchestrationList() && orchestrationEnabled() -> startOrchestration()
-            else -> true // no need for orchestration, let's continue on this bot
+            return when {
+                botBus.blockHandoverToSecondaryBot -> true
+                currentOrchestration != null -> resumeOrchestration(currentOrchestration)
+                intent.inStartOrchestrationList() && orchestrationEnabled() -> startOrchestration()
+                else -> true // no need for orchestration, let's continue on this bot
+            }
         }
-    }
 
     private fun BotBus.startOrchestration(): Boolean {
         logger.info { "Try to start an orchestration for intent ${intent?.wrappedIntent()?.name ?: "???"}" }
@@ -86,7 +90,7 @@ class RunOrchestrationStoryListener(
 
     private fun BotBus.handleEligibleOrchestration(
         eligibility: EligibilityOrchestrationResponse,
-        botAction: SecondaryBotAction
+        botAction: SecondaryBotAction,
     ): Boolean {
         logger.info { "Eligibility with ${eligibility.targetBot} : ${eligibility.botResponse.indice}" }
 
@@ -98,7 +102,7 @@ class RunOrchestrationStoryListener(
                     action.playerId,
                     response.botResponse.metaData,
                     response.targetBot,
-                    response.botResponse.actions
+                    response.botResponse.actions,
                 )
                 configuration.primaryBotOrchestrationEventHandler.onStarOrchestration(this, response)
 
@@ -117,14 +121,14 @@ class RunOrchestrationStoryListener(
 
     private fun BotBus.callOrchestrationForFirstAction(
         eligibility: EligibilityOrchestrationResponse,
-        botAction: SecondaryBotAction
+        botAction: SecondaryBotAction,
     ): OrchestrationResponse {
         return orchestrator.resumeOrchestration(
             ResumeOrchestrationRequest(
                 targetBot = eligibility.targetBot,
                 action = botAction,
-                metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId)
-            )
+                metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId),
+            ),
         )
     }
 
@@ -135,12 +139,13 @@ class RunOrchestrationStoryListener(
                     eligibleTargetBots = targetConnectorType.getEligibleBots(),
                     data = data,
                     action = botAction,
-                    metadata = OrchestrationMetaData(
-                        playerId = userId,
-                        applicationId = applicationId,
-                        recipientId = botId
-                    )
-                )
+                    metadata =
+                        OrchestrationMetaData(
+                            playerId = userId,
+                            applicationId = applicationId,
+                            recipientId = botId,
+                        ),
+                ),
             )
         }
     }
@@ -179,13 +184,14 @@ class RunOrchestrationStoryListener(
             return true
         }
 
-        val response = orchestrator.resumeOrchestration(
-            ResumeOrchestrationRequest(
-                targetBot = orchestration.targetBot,
-                action = botAction,
-                metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId)
+        val response =
+            orchestrator.resumeOrchestration(
+                ResumeOrchestrationRequest(
+                    targetBot = orchestration.targetBot,
+                    action = botAction,
+                    metadata = OrchestrationMetaData(playerId = userId, applicationId = applicationId, recipientId = botId),
+                ),
             )
-        )
         return when (response) {
             is AvailableOrchestrationResponse -> {
                 logger.info { "Resume the orchestration to ${orchestration.targetBot}" }
@@ -211,17 +217,13 @@ class RunOrchestrationStoryListener(
         }
     }
 
-    private fun ConnectorType.getEligibleBots(): List<OrchestrationTargetedBot> =
-        configuration.getEligibleTargetBots(this)
+    private fun ConnectorType.getEligibleBots(): List<OrchestrationTargetedBot> = configuration.getEligibleTargetBots(this)
 
-    private fun IntentAware?.inStartOrchestrationList(): Boolean =
-        this?.wrappedIntent() in configuration.startOrchestrationIntentList
+    private fun IntentAware?.inStartOrchestrationList(): Boolean = this?.wrappedIntent() in configuration.startOrchestrationIntentList
 
-    private fun IntentAware?.inStopOrchestrationList(): Boolean =
-        this?.wrappedIntent() in configuration.stopOrchestrationIntentList
+    private fun IntentAware?.inStopOrchestrationList(): Boolean = this?.wrappedIntent() in configuration.stopOrchestrationIntentList
 
-    private fun IntentAware?.inNoOrchestrationList(): Boolean =
-        this?.wrappedIntent() in configuration.noOrchestrationIntentList
+    private fun IntentAware?.inNoOrchestrationList(): Boolean = this?.wrappedIntent() in configuration.noOrchestrationIntentList
 }
 
 var BotBus.blockHandoverToSecondaryBot: Boolean
@@ -241,7 +243,10 @@ var BotBus.blockTakeOverFromPrimaryBot: Boolean
  * It must be registered by secondary bot.
  */
 internal class OrchestrationSecondaryBotResponseInterceptor() : BotAnswerInterceptor {
-    override fun handle(action: Action, bus: BotBus): Action {
+    override fun handle(
+        action: Action,
+        bus: BotBus,
+    ): Action {
         action.metadata.orchestrationLock = bus.blockTakeOverFromPrimaryBot
         return action
     }

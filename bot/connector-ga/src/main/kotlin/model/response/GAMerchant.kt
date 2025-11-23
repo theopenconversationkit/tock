@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAMerchant(
     val id: String,
-    val name: String
+    val name: String,
 )

@@ -39,7 +39,7 @@ data class EntityContextKey(
     val language: Locale,
     override val engineType: NlpEngineType,
     val entityType: EntityType? = null,
-    val subEntities: Boolean = false
+    val subEntities: Boolean = false,
 ) : ClassifierContextKey {
     override fun id(): String {
         return "$applicationName-$intentName-$language-${engineType.name}-${entityType?.name}-$subEntities"
@@ -49,9 +49,8 @@ data class EntityContextKey(
 abstract class EntityContext(
     override val language: Locale,
     override val engineType: NlpEngineType,
-    override val applicationName: String
+    override val applicationName: String,
 ) : ClassifierContext<EntityContextKey> {
-
     override fun toString(): String {
         return key().toString()
     }
@@ -61,7 +60,7 @@ sealed class EntityCallContext(
     language: Locale,
     engineType: NlpEngineType,
     applicationName: String,
-    val referenceDate: ZonedDateTime
+    val referenceDate: ZonedDateTime,
 ) : EntityContext(language, engineType, applicationName)
 
 class EntityCallContextForIntent(
@@ -69,15 +68,14 @@ class EntityCallContextForIntent(
     language: Locale,
     engineType: NlpEngineType,
     applicationName: String,
-    referenceDate: ZonedDateTime
+    referenceDate: ZonedDateTime,
 ) : EntityCallContext(language, engineType, applicationName, referenceDate) {
-
     constructor(context: CallContext, intent: Intent) : this(
         intent,
         context.language,
         context.engineType,
         context.application.name,
-        context.evaluationContext.referenceDate
+        context.evaluationContext.referenceDate,
     )
 
     constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
@@ -92,16 +90,15 @@ class EntityCallContextForEntity(
     language: Locale,
     engineType: NlpEngineType,
     applicationName: String,
-    referenceDate: ZonedDateTime
+    referenceDate: ZonedDateTime,
 ) : EntityCallContext(language, engineType, applicationName, referenceDate) {
-
     constructor(context: CallContext, entity: Entity) :
         this(
             entity.entityType,
             context.language,
             context.engineType,
             context.application.name,
-            context.evaluationContext.referenceDateForEntity(entity)
+            context.evaluationContext.referenceDateForEntity(entity),
         )
 
     override fun key(): EntityContextKey {
@@ -114,11 +111,14 @@ class EntityCallContextForSubEntities(
     language: Locale,
     engineType: NlpEngineType,
     applicationName: String,
-    referenceDate: ZonedDateTime
+    referenceDate: ZonedDateTime,
 ) : EntityCallContext(language, engineType, applicationName, referenceDate) {
-
     constructor(entityType: EntityType, context: EntityCallContext) : this(
-        entityType, context.language, context.engineType, context.applicationName, context.referenceDate
+        entityType,
+        context.language,
+        context.engineType,
+        context.applicationName,
+        context.referenceDate,
     )
 
     override fun key(): EntityContextKey {
@@ -128,7 +128,7 @@ class EntityCallContextForSubEntities(
             language,
             engineType,
             entityType,
-            true
+            true,
         )
     }
 }
@@ -136,9 +136,8 @@ class EntityCallContextForSubEntities(
 sealed class EntityBuildContext(
     language: Locale,
     engineType: NlpEngineType,
-    applicationName: String
+    applicationName: String,
 ) : EntityContext(language, engineType, applicationName) {
-
     /**
      * Returns expressions for this context
      */
@@ -149,21 +148,20 @@ class EntityBuildContextForIntent(
     val intent: Intent,
     language: Locale,
     engineType: NlpEngineType,
-    applicationName: String
+    applicationName: String,
 ) : EntityBuildContext(language, engineType, applicationName) {
-
     constructor(context: BuildContext, intent: Intent) : this(
         intent,
         context.language,
         context.engineType,
-        context.application.name
+        context.application.name,
     )
 
     constructor(context: CallContext, intent: Intent) : this(
         intent,
         context.language,
         context.engineType,
-        context.application.name
+        context.application.name,
     )
 
     constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
@@ -183,7 +181,7 @@ class EntityBuildContextForEntity(
     val entityType: EntityType,
     language: Locale,
     engineType: NlpEngineType,
-    applicationName: String
+    applicationName: String,
 ) : EntityBuildContext(language, engineType, applicationName) {
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, null, language, engineType, entityType)
@@ -202,9 +200,8 @@ class EntityBuildContextForSubEntities(
     val entityType: EntityType,
     language: Locale,
     engineType: NlpEngineType,
-    applicationName: String
+    applicationName: String,
 ) : EntityBuildContext(language, engineType, applicationName) {
-
     constructor(context: BuildContext, entityType: EntityType) :
         this(entityType, context.language, context.engineType, context.application.name)
 
@@ -212,21 +209,25 @@ class EntityBuildContextForSubEntities(
         return EntityContextKey(applicationName, null, language, engineType, entityType, true)
     }
 
-    private fun findSampleExpressions(text: String, e: SampleEntity): List<SampleExpression> =
+    private fun findSampleExpressions(
+        text: String,
+        e: SampleEntity,
+    ): List<SampleExpression> =
         try {
             val t = e.textValue(text)
-            val s = if (e.isType(entityType)) {
-                listOf(
-                    SampleExpression(
-                        t,
-                        UNKNOWN_INTENT,
-                        e.subEntities,
-                        SampleContext(language)
+            val s =
+                if (e.isType(entityType)) {
+                    listOf(
+                        SampleExpression(
+                            t,
+                            UNKNOWN_INTENT,
+                            e.subEntities,
+                            SampleContext(language),
+                        ),
                     )
-                )
-            } else {
-                emptyList()
-            }
+                } else {
+                    emptyList()
+                }
             s + e.subEntities.flatMap { findSampleExpressions(t, it) }
         } catch (e: Exception) {
             logger.error("Error when extracting $text", e)

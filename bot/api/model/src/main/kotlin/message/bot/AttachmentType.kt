@@ -16,6 +16,10 @@
 
 package ai.tock.bot.api.model.message.bot
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AttachmentType {
-    image, audio, video, file
+    image,
+    audio,
+    video,
+    file,
 }

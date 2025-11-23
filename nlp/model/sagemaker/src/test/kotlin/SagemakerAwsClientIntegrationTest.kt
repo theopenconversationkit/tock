@@ -27,7 +27,6 @@ import kotlin.test.assertTrue
  *  In each test, set endpoint name and profile you want to test in SagemakerAwsClientProperties
  */
 class SagemakerAwsClientIntegrationTest {
-
     @Test
     @Disabled
     fun testParseIntents() {
@@ -45,33 +44,32 @@ class SagemakerAwsClientIntegrationTest {
         val client = SagemakerAwsClient(config)
         val response = client.parseEntities(SagemakerAwsClient.ParsedRequest("Est-ce que mon TGV 8536 de Cannes à Montpellier a du retard ?"))
         println(response)
-        assertEquals(response.entities[0].value , "TGV")
-        assertEquals(response.entities[0].start , 15)
-        assertEquals(response.entities[0].end , 18)
-        assertEquals(response.entities[0].entity , "evoyageurs:mode")
-        assertEquals(response.entities[0].role , "mode")
+        assertEquals(response.entities[0].value, "TGV")
+        assertEquals(response.entities[0].start, 15)
+        assertEquals(response.entities[0].end, 18)
+        assertEquals(response.entities[0].entity, "evoyageurs:mode")
+        assertEquals(response.entities[0].role, "mode")
         assert(response.entities[0].confidence > 0.99)
 
-
-        assertEquals(response.entities[1].value , "8536")
-        assertEquals(response.entities[1].start , 19)
-        assertEquals(response.entities[1].end , 23)
-        assertEquals(response.entities[1].entity , "evoyageurs:train")
-        assertEquals(response.entities[1].role , "train")
+        assertEquals(response.entities[1].value, "8536")
+        assertEquals(response.entities[1].start, 19)
+        assertEquals(response.entities[1].end, 23)
+        assertEquals(response.entities[1].entity, "evoyageurs:train")
+        assertEquals(response.entities[1].role, "train")
         assert(response.entities[1].confidence > 0.99)
 
-        assertEquals(response.entities[2].value , "Cannes")
-        assertEquals(response.entities[2].start , 27)
-        assertEquals(response.entities[2].end , 33)
-        assertEquals(response.entities[2].entity , "evoyageurs:location")
-        assertEquals(response.entities[2].role , "origin")
+        assertEquals(response.entities[2].value, "Cannes")
+        assertEquals(response.entities[2].start, 27)
+        assertEquals(response.entities[2].end, 33)
+        assertEquals(response.entities[2].entity, "evoyageurs:location")
+        assertEquals(response.entities[2].role, "origin")
         assert(response.entities[2].confidence > 0.99)
 
-        assertEquals(response.entities[3].value , "Montpellier")
-        assertEquals(response.entities[3].start , 36)
-        assertEquals(response.entities[3].end , 47)
-        assertEquals(response.entities[3].entity , "evoyageurs:location")
-        assertEquals(response.entities[3].role , "destination")
+        assertEquals(response.entities[3].value, "Montpellier")
+        assertEquals(response.entities[3].start, 36)
+        assertEquals(response.entities[3].end, 47)
+        assertEquals(response.entities[3].entity, "evoyageurs:location")
+        assertEquals(response.entities[3].role, "destination")
         assert(response.entities[3].confidence > 0.99)
     }
 
@@ -82,34 +80,32 @@ class SagemakerAwsClientIntegrationTest {
         val client = SagemakerAwsClient(config)
         val response = client.parseEntities(SagemakerAwsClient.ParsedRequest("Is my TGV 8536 from Cannes to Montpellier delayed?"))
         println(response)
-        assertEquals(response.entities[0].value , "TGV")
-        assertEquals(response.entities[0].start , 6)
-        assertEquals(response.entities[0].end , 9)
-        assertEquals(response.entities[0].entity , "evoyageurs:mode")
-        assertEquals(response.entities[0].role , "mode")
+        assertEquals(response.entities[0].value, "TGV")
+        assertEquals(response.entities[0].start, 6)
+        assertEquals(response.entities[0].end, 9)
+        assertEquals(response.entities[0].entity, "evoyageurs:mode")
+        assertEquals(response.entities[0].role, "mode")
         assert(response.entities[0].confidence > 0.99)
 
-
-        assertEquals(response.entities[1].value , "8536")
-        assertEquals(response.entities[1].start , 10)
-        assertEquals(response.entities[1].end , 14)
-        assertEquals(response.entities[1].entity , "evoyageurs:train")
-        assertEquals(response.entities[1].role , "train")
+        assertEquals(response.entities[1].value, "8536")
+        assertEquals(response.entities[1].start, 10)
+        assertEquals(response.entities[1].end, 14)
+        assertEquals(response.entities[1].entity, "evoyageurs:train")
+        assertEquals(response.entities[1].role, "train")
         assert(response.entities[1].confidence > 0.99)
 
-        assertEquals(response.entities[2].value , "Cannes")
-        assertEquals(response.entities[2].start , 20)
-        assertEquals(response.entities[2].end , 26)
-        assertEquals(response.entities[2].entity , "evoyageurs:location")
-        assertEquals(response.entities[2].role , "origin")
+        assertEquals(response.entities[2].value, "Cannes")
+        assertEquals(response.entities[2].start, 20)
+        assertEquals(response.entities[2].end, 26)
+        assertEquals(response.entities[2].entity, "evoyageurs:location")
+        assertEquals(response.entities[2].role, "origin")
         assert(response.entities[2].confidence > 0.99)
 
-        assertEquals(response.entities[3].value , "Montpellier")
-        assertEquals(response.entities[3].start , 30)
-        assertEquals(response.entities[3].end , 41)
-        assertEquals(response.entities[3].entity , "evoyageurs:location")
-        assertEquals(response.entities[3].role , "destination")
+        assertEquals(response.entities[3].value, "Montpellier")
+        assertEquals(response.entities[3].start, 30)
+        assertEquals(response.entities[3].end, 41)
+        assertEquals(response.entities[3].entity, "evoyageurs:location")
+        assertEquals(response.entities[3].role, "destination")
         assert(response.entities[3].confidence > 0.99)
     }
-
 }

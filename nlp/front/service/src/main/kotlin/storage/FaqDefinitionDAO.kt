@@ -16,23 +16,25 @@
 
 package ai.tock.nlp.front.service.storage
 
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.translator.I18nLabel
 import org.litote.kmongo.Id
 
 interface FaqDefinitionDAO {
-
     fun deleteFaqDefinitionById(id: Id<FaqDefinition>)
 
     /**
      * Delete the FaqDefinition by filtering on the application [id][ApplicationDefinition]
      * @param id the application name [ApplicationDefinition]
      */
-    fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String)
+    fun deleteFaqDefinitionByBotIdAndNamespace(
+        id: String,
+        namespace: String,
+    )
 
     fun save(faqDefinition: FaqDefinition)
 
@@ -43,7 +45,10 @@ interface FaqDefinitionDAO {
      * @param botId the application name
      * @param namespace the namespace
      */
-    fun getFaqDefinitionByBotIdAndNamespace(botId: String, namespace: String): List<FaqDefinition>
+    fun getFaqDefinitionByBotIdAndNamespace(
+        botId: String,
+        namespace: String,
+    ): List<FaqDefinition>
 
     fun listenFaqDefinitionChanges(listener: () -> Unit)
 
@@ -63,7 +68,11 @@ interface FaqDefinitionDAO {
      * @param botId the application name
      * @param namespace the namespace
      */
-    fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId: Id<IntentDefinition>, botId: String, namespace: String): FaqDefinition?
+    fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(
+        intentId: Id<IntentDefinition>,
+        botId: String,
+        namespace: String,
+    ): FaqDefinition?
 
     /**
      * Retrieve faq details with total count numbers according to the filter present un [FaqQuery]
@@ -74,10 +83,13 @@ interface FaqDefinitionDAO {
     fun getFaqDetailsWithCount(
         query: FaqQuery,
         applicationDefinition: ApplicationDefinition,
-        i18nIds: List<Id<I18nLabel>>? = null
+        i18nIds: List<Id<I18nLabel>>? = null,
     ): Pair<List<FaqQueryResult>, Long>
 
-    fun getTags(botId: String, namespace: String): List<String>
+    fun getTags(
+        botId: String,
+        namespace: String,
+    ): List<String>
 
     /**
      * Make migration

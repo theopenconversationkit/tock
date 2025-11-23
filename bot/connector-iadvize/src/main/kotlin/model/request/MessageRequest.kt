@@ -22,6 +22,5 @@ data class MessageRequest(override val idOperator: String, override val idConver
     data class MessageRequestJson(val idOperator: String, val message: Message<TextPayload>)
 
     constructor(messageRequestJson: MessageRequestJson, idConversation: String) :
-            this(messageRequestJson.idOperator, idConversation, messageRequestJson.message)
-
+        this(messageRequestJson.idOperator, idConversation, messageRequestJson.message)
 }

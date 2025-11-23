@@ -22,5 +22,5 @@ package ai.tock.bot.connector.ga.model.request.transaction.v3
 enum class GAResultTypeV3 {
     RESULT_TYPE_UNSPECIFIED,
     CANNOT_TRANSACT,
-    CAN_TRANSACT
+    CAN_TRANSACT,
 }

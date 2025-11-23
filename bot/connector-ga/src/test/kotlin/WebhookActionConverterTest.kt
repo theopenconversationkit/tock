@@ -34,7 +34,6 @@ import kotlin.test.assertTrue
  *
  */
 class WebhookActionConverterTest {
-
     companion object {
         val appId = "test"
         val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
@@ -66,11 +65,15 @@ class WebhookActionConverterTest {
 
     @Test
     fun toEvent_shouldReturnsSendSentenceWhithSttParsed_whenThereIsSttErrorInText() {
-        val sttListener = object : SttListener {
-            override fun transform(stt: String, locale: Locale): String {
-                return stt.replace("Deezer", "10h")
+        val sttListener =
+            object : SttListener {
+                override fun transform(
+                    stt: String,
+                    locale: Locale,
+                ): String {
+                    return stt.replace("Deezer", "10h")
+                }
             }
-        }
         SttService.addListener(sttListener)
         val e = WebhookActionConverter.toEvent(sttRequest, appId)
         assertEquals("ds 10h qs", (e as SendSentence).text)

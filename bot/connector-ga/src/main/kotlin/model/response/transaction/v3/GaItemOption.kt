@@ -22,5 +22,5 @@ data class GaItemOption(
     val prices: List<GAPriceAttribute>? = emptyList(),
     val note: String? = null,
     val quantity: Int? = null,
-    val productId: String?
+    val productId: String?,
 )

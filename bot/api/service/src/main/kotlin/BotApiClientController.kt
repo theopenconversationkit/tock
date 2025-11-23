@@ -34,9 +34,8 @@ private val oldWebhookBehaviour: Boolean = booleanProperty("tock_api_old_webhook
 
 internal class BotApiClientController(
     private val provider: BotApiDefinitionProvider,
-    configuration: BotConfiguration
+    configuration: BotConfiguration,
 ) {
-
     private val logger = KotlinLogging.logger {}
 
     private val apiKey: String = configuration.apiKey
@@ -45,14 +44,15 @@ internal class BotApiClientController(
     @Volatile
     private var lastConfiguration: ClientConfiguration? = null
 
-    private val client = webhookUrl?.takeUnless { it.isBlank() }?.let {
-        try {
-            BotApiClient(it)
-        } catch (e: Exception) {
-            logger.error(e)
-            null
+    private val client =
+        webhookUrl?.takeUnless { it.isBlank() }?.let {
+            try {
+                BotApiClient(it)
+            } catch (e: Exception) {
+                logger.error(e)
+                null
+            }
         }
-    }
 
     init {
         if (WebSocketController.websocketEnabled) {
@@ -84,7 +84,10 @@ internal class BotApiClientController(
         }
     }
 
-    private fun loadConfiguration(conf: ClientConfiguration?, handler: (ClientConfiguration?) -> Unit) {
+    private fun loadConfiguration(
+        conf: ClientConfiguration?,
+        handler: (ClientConfiguration?) -> Unit,
+    ) {
         logger.debug { "load configuration :$conf" }
         logger.info { "configuration version :${conf?.version}" }
         lastConfiguration = conf
@@ -102,7 +105,10 @@ internal class BotApiClientController(
             })
     }
 
-    fun send(userRequest: UserRequest, sendResponse: (ResponseData?) -> Unit) {
+    fun send(
+        userRequest: UserRequest,
+        sendResponse: (ResponseData?) -> Unit,
+    ) {
         val request = RequestData(userRequest)
         if (client?.isReachable { lastConfiguration = it } == true) {
             sendWithWebhook(request, sendResponse)
@@ -111,7 +117,10 @@ internal class BotApiClientController(
         }
     }
 
-    private fun sendWithWebhook(request: RequestData, sendResponse: (ResponseData?) -> Unit) {
+    private fun sendWithWebhook(
+        request: RequestData,
+        sendResponse: (ResponseData?) -> Unit,
+    ) {
         client
             ?.apply {
                 if (request.configuration == true || oldWebhookBehaviour || lastConfiguration?.supportSSE != true) {
@@ -127,7 +136,10 @@ internal class BotApiClientController(
             }
     }
 
-    private fun sendWithWebSocket(request: RequestData, sendResponse: (ResponseData?) -> Unit = {}): Unit {
+    private fun sendWithWebSocket(
+        request: RequestData,
+        sendResponse: (ResponseData?) -> Unit = {},
+    ) {
         val pushHandler = WebSocketController.getPushHandler(apiKey)
         if (pushHandler != null) {
             val holder = setHolder(request.requestId)
@@ -140,5 +152,4 @@ internal class BotApiClientController(
             }
         }
     }
-
 }

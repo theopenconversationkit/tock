@@ -16,21 +16,21 @@
 
 package ai.tock.genai.orchestratorclient.retrofit
 
-
-import ai.tock.shared.*
+import ai.tock.shared.addJacksonConverter
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
+import ai.tock.shared.retrofitDefaultLogLevel
+import ai.tock.shared.retrofitLogLevel
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import java.text.DateFormat
 import java.util.concurrent.TimeUnit
-
 
 /**
  *  Wraps calls to Generative AI Orchestrator Server.
@@ -46,28 +46,30 @@ object GenAIOrchestratorClient {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
 
-    private var client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(GenAIOrchestratorInterceptor(jsonObjectMapper))
-        .addInterceptor(
-            // adapt log level to use specific log interceptors
-            HttpLoggingInterceptor().setLevel(
-                HttpLoggingInterceptor.Level.valueOf(
-                    retrofitLogLevel(
-                        retrofitDefaultLogLevel
-                    ).toString()
-                )
+    private var client: OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(GenAIOrchestratorInterceptor(jsonObjectMapper))
+            .addInterceptor(
+                // adapt log level to use specific log interceptors
+                HttpLoggingInterceptor().setLevel(
+                    HttpLoggingInterceptor.Level.valueOf(
+                        retrofitLogLevel(
+                            retrofitDefaultLogLevel,
+                        ).toString(),
+                    ),
+                ),
             )
-        )
-        .readTimeout(timeout, TimeUnit.MILLISECONDS)
-        .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-        .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-        .build()
+            .readTimeout(timeout, TimeUnit.MILLISECONDS)
+            .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+            .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+            .build()
 
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .client(client)
-        .addJacksonConverter(jsonObjectMapper)
-        .build()
+    private val retrofit: Retrofit =
+        Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addJacksonConverter(jsonObjectMapper)
+            .build()
 
     fun getClient() = retrofit
 }

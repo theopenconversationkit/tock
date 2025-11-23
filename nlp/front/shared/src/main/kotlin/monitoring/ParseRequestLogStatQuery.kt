@@ -27,5 +27,5 @@ data class ParseRequestLogStatQuery(
     val applicationId: Id<ApplicationDefinition>,
     val language: Locale?,
     val intent: String?,
-    val minOccurrences: Int? = 0
+    val minOccurrences: Int? = 0,
 )

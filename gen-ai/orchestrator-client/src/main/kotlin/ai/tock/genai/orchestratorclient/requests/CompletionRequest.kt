@@ -21,5 +21,5 @@ import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 data class CompletionRequest(
     val llmSetting: LLMSetting,
     val prompt: PromptTemplate,
-    val observabilitySetting: ObservabilitySetting?
+    val observabilitySetting: ObservabilitySetting?,
 )

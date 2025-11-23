@@ -19,6 +19,15 @@ package ai.tock.bot.connector.whatsapp.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppBotMessageType {
-    audio, contact, document, hsm, image, location, text, template, interactive
+    audio,
+    contact,
+    document,
+    hsm,
+    image,
+    location,
+    text,
+    template,
+    interactive,
 }

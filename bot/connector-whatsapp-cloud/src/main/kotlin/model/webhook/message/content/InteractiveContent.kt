@@ -23,16 +23,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class InteractiveContent(
     val type: String?,
     @JsonProperty("button_reply") val buttonReply: ButtonReply?,
-    @JsonProperty("list_reply") val listReply: ListReply?
+    @JsonProperty("list_reply") val listReply: ListReply?,
 )
 
 data class ButtonReply(
     val id: String,
-    val title: String
+    val title: String,
 )
 
 data class ListReply(
     val id: String,
     val title: String,
-    val description: String?
+    val description: String?,
 )

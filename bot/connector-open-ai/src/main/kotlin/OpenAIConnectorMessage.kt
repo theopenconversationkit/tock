@@ -22,7 +22,6 @@ import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.openai.OpenAIConnector.Companion.defaultModel
-import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericMessage
@@ -40,14 +39,13 @@ data class OpenAIConnectorMessage(
     val suggestions: List<String> = emptyList(),
     val mediaMessage: MediaMessage? = null,
 ) : ConnectorMessage {
-
     override val connectorType: ConnectorType = openAIConnectorType
 
     override fun toGenericMessage(): GenericMessage =
         GenericMessage(
             connectorType = connectorType,
             texts = mapNotNullValues(GenericMessage.TEXT_PARAM to text),
-            choices = suggestions.map { Choice.fromText(it) }
+            choices = suggestions.map { Choice.fromText(it) },
         )
 
     fun toOpenAIChunk(): ChatCompletionChunk =
@@ -55,60 +53,69 @@ data class OpenAIConnectorMessage(
             id = Dice.newId(),
             created = System.currentTimeMillis(),
             model = defaultModel.id,
-            choices = listOf(
-                ChatChunk(
-                    index = 0,
-                    delta = ChatDelta(
-                        role = ChatRole.Assistant,
-                        content = formatText()
-                    )
-                )
-            )
+            choices =
+                listOf(
+                    ChatChunk(
+                        index = 0,
+                        delta =
+                            ChatDelta(
+                                role = ChatRole.Assistant,
+                                content = formatText(),
+                            ),
+                    ),
+                ),
         )
 
     fun toOpenAIChoice(): ChatChoice =
         ChatChoice(
             index = 0,
-            message = ChatMessage(
-                role = ChatRole.Assistant,
-                content = formatText()
-            )
+            message =
+                ChatMessage(
+                    role = ChatRole.Assistant,
+                    content = formatText(),
+                ),
         )
 
     private fun formatText(): String =
         (text ?: "") +
-                (suggestions.takeUnless { it.isEmpty() }
+            (
+                suggestions.takeUnless { it.isEmpty() }
                     ?.joinToString(separator = "\n", prefix = "\n", postfix = "") {
                         "- $it"
-                    } ?: "") +
-                if (mediaMessage == null) {
-                    ""
-                } else {
-                    when (mediaMessage) {
-                        is MediaCard -> mediaMessage.formatCard()
-                        is MediaCarousel -> mediaMessage.cards.joinToString(
+                    } ?: ""
+            ) +
+            if (mediaMessage == null) {
+                ""
+            } else {
+                when (mediaMessage) {
+                    is MediaCard -> mediaMessage.formatCard()
+                    is MediaCarousel ->
+                        mediaMessage.cards.joinToString(
                             separator = "\n\n",
-                            prefix = ""
+                            prefix = "",
                         ) { it.formatCard() }
 
-                        else -> "[unsupported message]"
-                    }
+                    else -> "[unsupported message]"
                 }
+            }
 
     private fun MediaCard.formatCard(): String =
-        "---\n" + (file?.run {
-            if (type == image) {
-                "![${name}]($url)\n"
-            } else {
-                "[${name}]($url)\n"
-            }
-        } ?: "") +
-                (title?.run { "# $this\n" } ?: "") +
-                (subTitle?.run { "## $this\n" } ?: "") +
-                (actions.takeUnless { it.isEmpty() }?.joinToString(
+        "---\n" + (
+            file?.run {
+                if (type == image) {
+                    "![$name]($url)\n"
+                } else {
+                    "[$name]($url)\n"
+                }
+            } ?: ""
+        ) +
+            (title?.run { "# $this\n" } ?: "") +
+            (subTitle?.run { "## $this\n" } ?: "") +
+            (
+                actions.takeUnless { it.isEmpty() }?.joinToString(
                     separator = "\n- ",
-                    prefix = "- "
-                ) { a -> a.url?.let { url -> "[${a.title}]($url)" } ?: a.title } ?: "") +
-                "\n---\n"
-
+                    prefix = "- ",
+                ) { a -> a.url?.let { url -> "[${a.title}]($url)" } ?: a.title } ?: ""
+            ) +
+            "\n---\n"
 }

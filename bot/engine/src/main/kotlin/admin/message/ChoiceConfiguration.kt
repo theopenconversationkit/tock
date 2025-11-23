@@ -29,9 +29,8 @@ import java.util.Locale
 data class ChoiceConfiguration(
     val intentName: String,
     val parameters: Map<String, String> = emptyMap(),
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : MessageConfiguration {
-
     override val eventType: EventType = EventType.choice
 
     override fun toAction(
@@ -39,14 +38,14 @@ data class ChoiceConfiguration(
         applicationId: String,
         recipientId: PlayerId,
         locale: Locale,
-        userInterfaceType: UserInterfaceType
+        userInterfaceType: UserInterfaceType,
     ): Action {
         return SendChoice(
             playerId,
             applicationId,
             recipientId,
             intentName,
-            parameters
+            parameters,
         )
     }
 }

@@ -50,8 +50,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
+@Suppress("ktlint:standard:max-line-length")
 class WebhookDeserializationTest {
-
     @Test
     fun testMessageWebhookDeserialization() {
         val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", "text"))
@@ -90,23 +90,24 @@ class WebhookDeserializationTest {
 
     @Test
     fun testQuickReplayWebhookDeserialization() {
-        val input = "{\n" +
-            "  \"sender\": {\n" +
-            "    \"id\": \"USER_ID\"\n" +
-            "  },\n" +
-            "  \"recipient\": {\n" +
-            "    \"id\": \"PAGE_ID\"\n" +
-            "  },\n" +
-            "  \"timestamp\": 1464990849275,\n" +
-            "  \"message\": {\n" +
-            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-            "    \"seq\": 69,\n" +
-            "    \"text\": \"Red\",\n" +
-            "    \"quick_reply\": {\n" +
-            "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "} "
+        val input =
+            "{\n" +
+                "  \"sender\": {\n" +
+                "    \"id\": \"USER_ID\"\n" +
+                "  },\n" +
+                "  \"recipient\": {\n" +
+                "    \"id\": \"PAGE_ID\"\n" +
+                "  },\n" +
+                "  \"timestamp\": 1464990849275,\n" +
+                "  \"message\": {\n" +
+                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+                "    \"seq\": 69,\n" +
+                "    \"text\": \"Red\",\n" +
+                "    \"quick_reply\": {\n" +
+                "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -117,10 +118,10 @@ class WebhookDeserializationTest {
                     "mid.1464990849238:b9a22a2bcb1de31773",
                     "Red",
                     emptyList(),
-                    UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")
-                )
+                    UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"),
+                ),
             ),
-            output
+            output,
         )
     }
 
@@ -147,12 +148,13 @@ class WebhookDeserializationTest {
                 sender = Sender("<PSID>"),
                 recipient = Recipient(id = "<PAGE_ID>"),
                 timestamp = 1458692752478,
-                passThreadControl = PassThreadControl(
-                    newOwnerAppId = "123456789",
-                    metadata = "Additional content that the caller wants to set"
-                )
+                passThreadControl =
+                    PassThreadControl(
+                        newOwnerAppId = "123456789",
+                        metadata = "Additional content that the caller wants to set",
+                    ),
             ),
-            output
+            output,
         )
     }
 
@@ -179,12 +181,13 @@ class WebhookDeserializationTest {
                 sender = Sender("<PSID>"),
                 recipient = Recipient(id = "<PAGE_ID>"),
                 timestamp = 1458692752478,
-                takeThreadControl = TakeThreadControl(
-                    previousOwnerAppId = "123456789",
-                    metadata = "Additional content that the caller wants to set"
-                )
+                takeThreadControl =
+                    TakeThreadControl(
+                        previousOwnerAppId = "123456789",
+                        metadata = "Additional content that the caller wants to set",
+                    ),
             ),
-            output
+            output,
         )
     }
 
@@ -211,12 +214,13 @@ class WebhookDeserializationTest {
                 sender = Sender("<PSID>"),
                 recipient = Recipient(id = "<PAGE_ID>"),
                 timestamp = 1458692752478,
-                requestThreadControl = RequestThreadControl(
-                    requestOwnerAppId = "123456789",
-                    metadata = "Additional content that the caller wants to set"
-                )
+                requestThreadControl =
+                    RequestThreadControl(
+                        requestOwnerAppId = "123456789",
+                        metadata = "Additional content that the caller wants to set",
+                    ),
             ),
-            output
+            output,
         )
     }
 
@@ -238,30 +242,31 @@ class WebhookDeserializationTest {
             AppRolesWebhook(
                 recipient = Recipient(id = "<PSID>"),
                 timestamp = 1458692752478,
-                appRoles = mapOf("123456789" to listOf("primary_receiver"))
+                appRoles = mapOf("123456789" to listOf("primary_receiver")),
             ),
-            output
+            output,
         )
     }
 
     @Test
     fun testEmailQuickReplyWebhookDeserialization() {
-        val input = "{\n" +
-            "  \"sender\": {\n" +
-            "    \"id\": \"USER_ID\"\n" +
-            "  },\n" +
-            "  \"recipient\": {\n" +
-            "    \"id\": \"PAGE_ID\"\n" +
-            "  },\n" +
-            "  \"timestamp\": 1464990849275,\n" +
-            "  \"message\": {\n" +
-            "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
-            "    \"text\": \"test@test.com\",\n" +
-            "    \"quick_reply\": {\n" +
-            "      \"payload\": \"test@test.com\"\n" +
-            "    }\n" +
-            "  }\n" +
-            "} "
+        val input =
+            "{\n" +
+                "  \"sender\": {\n" +
+                "    \"id\": \"USER_ID\"\n" +
+                "  },\n" +
+                "  \"recipient\": {\n" +
+                "    \"id\": \"PAGE_ID\"\n" +
+                "  },\n" +
+                "  \"timestamp\": 1464990849275,\n" +
+                "  \"message\": {\n" +
+                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+                "    \"text\": \"test@test.com\",\n" +
+                "    \"quick_reply\": {\n" +
+                "      \"payload\": \"test@test.com\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "} "
         val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
@@ -272,35 +277,37 @@ class WebhookDeserializationTest {
                     "mid.1464990849238:b9a22a2bcb1de31773",
                     "test@test.com",
                     emptyList(),
-                    UserActionPayload("test@test.com")
-                )
+                    UserActionPayload("test@test.com"),
+                ),
             ),
-            output
+            output,
         )
     }
 
     @Test
     fun `test emailQuickReply return email in sentence`() {
-        val message = MessageWebhook(
-            Sender("USER_ID"),
-            Recipient("PAGE_ID"),
-            1464990849275,
-            Message(
-                "mid.1464990849238:b9a22a2bcb1de31773",
-                "test@test.com",
-                emptyList(),
-                UserActionPayload("test@test.com")
+        val message =
+            MessageWebhook(
+                Sender("USER_ID"),
+                Recipient("PAGE_ID"),
+                1464990849275,
+                Message(
+                    "mid.1464990849238:b9a22a2bcb1de31773",
+                    "test@test.com",
+                    emptyList(),
+                    UserActionPayload("test@test.com"),
+                ),
             )
-        )
 
         val event = WebhookActionConverter.toEvent(message, "appId") as SendSentence
-        val expectedEvent = SendSentence(
-            PlayerId("USER_ID", PlayerType.bot),
-            "appId",
-            PlayerId("PAGE_ID", PlayerType.user),
-            "test@test.com",
-            metadata = ActionMetadata(visibility = ActionVisibility.PUBLIC)
-        )
+        val expectedEvent =
+            SendSentence(
+                PlayerId("USER_ID", PlayerType.bot),
+                "appId",
+                PlayerId("PAGE_ID", PlayerType.user),
+                "test@test.com",
+                metadata = ActionMetadata(visibility = ActionVisibility.PUBLIC),
+            )
         val eventMessage = event.messages[0]
         assert(eventMessage is MessageWebhook)
         assert((eventMessage as MessageWebhook).message.quickReply is UserActionPayload)
@@ -357,9 +364,9 @@ class WebhookDeserializationTest {
                 sender = Sender(id = "<PSID>"),
                 recipient = Recipient(id = "<PAGE_ID>"),
                 timestamp = 1458692752478,
-                referral = Referral(ref = "ref_data_in_m_dot_me_param", source = SHORTLINK, type = OPEN_THREAD)
+                referral = Referral(ref = "ref_data_in_m_dot_me_param", source = SHORTLINK, type = OPEN_THREAD),
             ),
-            webhook
+            webhook,
         )
     }
 }

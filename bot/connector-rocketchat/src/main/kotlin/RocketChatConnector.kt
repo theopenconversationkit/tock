@@ -37,9 +37,8 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal class RocketChatConnector(
     private val applicationId: String,
     private val client: RocketChatClient,
-    private val roomId: String? = null
+    private val roomId: String? = null,
 ) : ConnectorBase(rocketChatConnectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private val registeredClientUrls = CopyOnWriteArraySet<String>()
@@ -61,8 +60,8 @@ internal class RocketChatConnector(
                     logger.warn { "no message for $room - skip" }
                 } else if (message.sender!!.username == client.login) {
                     logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
-                } // sometimes the same message comes twice
-                else if (lastMessages.contains(message.id)) {
+                } else if (lastMessages.contains(message.id)) {
+                    // sometimes the same message comes twice
                     logger.debug { "message $message already seen - skip" }
                 } else {
                     // register last messages
@@ -77,9 +76,9 @@ internal class RocketChatConnector(
                                 PlayerId(message.sender!!.id!!),
                                 applicationId,
                                 PlayerId(applicationId, PlayerType.bot),
-                                message.message
+                                message.message,
                             ),
-                            ConnectorData(RocketChatConnectorCallback(applicationId, room.id))
+                            ConnectorData(RocketChatConnectorCallback(applicationId, room.id)),
                         )
                     } catch (e: Throwable) {
                         logger.error(e)
@@ -101,7 +100,11 @@ internal class RocketChatConnector(
         registeredClientUrls.remove(client.targetUrl)
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         if (event is SendSentence && event.text != null) {
             val roomId = (callback as RocketChatConnectorCallback).roomId
             client.send(roomId, event.stringText!!)

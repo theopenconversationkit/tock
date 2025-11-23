@@ -16,28 +16,33 @@
 package ai.tock.bot.connector.alcmeon
 
 internal object AlcmeonMessageConverter {
-
-    fun toMessageOut(actions: List<DelayedAction>, backend: AlcmeonBackend, exitReason: String? = null, exitDelay: Long = 0L): AlcmeonConnectorMessageResponse {
+    fun toMessageOut(
+        actions: List<DelayedAction>,
+        backend: AlcmeonBackend,
+        exitReason: String? = null,
+        exitDelay: Long = 0L,
+    ): AlcmeonConnectorMessageResponse {
         val exit = exitReason?.let { AlcmeonConnectorMessageExit(it, exitDelay.toInt()) }
         return when (backend) {
-            AlcmeonBackend.WHATSAPP -> AlcmeonConnectorMessageResponse.AlcmeonConnectorMessageWhatsappResponse(
-                messages = actions.mapNotNull { actionWithDelay ->
-                    ai.tock.bot.connector.whatsapp.SendActionConverter.toBotMessage(actionWithDelay.action)
-                        ?.let { AlcmeonConnectorMessageOut(it, actionWithDelay.delay.toInt()) }
-                },
-                exit = exit,
-            )
-            AlcmeonBackend.FACEBOOK -> AlcmeonConnectorMessageResponse.AlcmeonConnectorMessageFacebookResponse(
-                messages = actions.mapNotNull { actionWithDelay ->
-                    ai.tock.bot.connector.messenger.SendActionConverter.toMessageRequest(
-                        actionWithDelay.action
-                    )?.let { AlcmeonConnectorMessageOut(it.message, actionWithDelay.delay.toInt()) }
-                },
-                exit = exit,
-
-            )
+            AlcmeonBackend.WHATSAPP ->
+                AlcmeonConnectorMessageResponse.AlcmeonConnectorMessageWhatsappResponse(
+                    messages =
+                        actions.mapNotNull { actionWithDelay ->
+                            ai.tock.bot.connector.whatsapp.SendActionConverter.toBotMessage(actionWithDelay.action)
+                                ?.let { AlcmeonConnectorMessageOut(it, actionWithDelay.delay.toInt()) }
+                        },
+                    exit = exit,
+                )
+            AlcmeonBackend.FACEBOOK ->
+                AlcmeonConnectorMessageResponse.AlcmeonConnectorMessageFacebookResponse(
+                    messages =
+                        actions.mapNotNull { actionWithDelay ->
+                            ai.tock.bot.connector.messenger.SendActionConverter.toMessageRequest(
+                                actionWithDelay.action,
+                            )?.let { AlcmeonConnectorMessageOut(it.message, actionWithDelay.delay.toInt()) }
+                        },
+                    exit = exit,
+                )
         }
-
     }
-
 }

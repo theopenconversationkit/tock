@@ -35,7 +35,6 @@ import io.vertx.ext.web.Router
  * Controller to connect [Connector] and [BotDefinition].
  */
 interface ConnectorController {
-
     /**
      * The bot definition served by the controller.
      */
@@ -70,7 +69,7 @@ interface ConnectorController {
         step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit = {}
+        errorListener: (Throwable) -> Unit = {},
     ) {
         connector.notify(this, recipientId, intent, step, parameters, notificationType, errorListener)
     }
@@ -85,7 +84,7 @@ interface ConnectorController {
      */
     fun handle(
         event: Event,
-        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType))
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType)),
     )
 
     /**
@@ -96,13 +95,16 @@ interface ConnectorController {
      */
     fun support(
         action: Action,
-        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType))
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType)),
     ): Double
 
     /**
      * Register services at startup.
      */
-    fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit)
+    fun registerServices(
+        serviceIdentifier: String,
+        installer: (Router) -> Unit,
+    )
 
     /**
      * Unregister services when [Connector] is unregistered.
@@ -112,7 +114,11 @@ interface ConnectorController {
     /**
      * Returns an error message (technical error).
      */
-    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+    fun errorMessage(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+    ): Action {
         val errorAction = botDefinition.errorAction(playerId, applicationId, recipientId)
         errorAction.metadata.lastAnswer = true
         return errorAction
@@ -121,7 +127,8 @@ interface ConnectorController {
     /**
      * Return a story definition provider for this controller.
      */
-    fun storyDefinitionLoader(applicationId: String): (String) -> StoryDefinition = {
-        botDefinition.findStoryDefinitionById(it, applicationId)
-    }
+    fun storyDefinitionLoader(applicationId: String): (String) -> StoryDefinition =
+        {
+            botDefinition.findStoryDefinitionById(it, applicationId)
+        }
 }

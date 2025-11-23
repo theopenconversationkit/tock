@@ -21,5 +21,5 @@ package ai.tock.bot.connector.slack.model
  */
 data class InteractiveMessageEvent(
     val user: SlackUser,
-    val actions: List<Button> = emptyList()
+    val actions: List<Button> = emptyList(),
 ) : EventApiMessage()

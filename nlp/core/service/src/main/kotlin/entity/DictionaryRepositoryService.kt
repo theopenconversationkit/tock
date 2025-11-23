@@ -23,7 +23,6 @@ import ai.tock.shared.name
 import ai.tock.shared.namespace
 
 internal object DictionaryRepositoryService : DictionaryRepository {
-
     @Volatile
     private var dictionaries: Map<String, Map<String, DictionaryData>> = emptyMap()
 
@@ -36,10 +35,12 @@ internal object DictionaryRepositoryService : DictionaryRepository {
         dictionaries = r
     }
 
-    fun getDictionary(entityType: EntityType): DictionaryData? =
-        dictionaries[entityType.name.namespace()]?.get(entityType.name.name())
+    fun getDictionary(entityType: EntityType): DictionaryData? = dictionaries[entityType.name.namespace()]?.get(entityType.name.name())
 
-    fun isSupportedEntityType(namespace: String, name: String): Boolean {
+    fun isSupportedEntityType(
+        namespace: String,
+        name: String,
+    ): Boolean {
         return dictionaries[namespace]?.containsKey(name) == true
     }
 }

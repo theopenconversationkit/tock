@@ -16,14 +16,13 @@
 
 package ai.tock.translator
 
-import java.time.Instant
 import org.litote.kmongo.Id
+import java.time.Instant
 
 /**
  * I18n storage.
  */
 interface I18nDAO {
-
     /**
      * Listen all i18n changes.
      */
@@ -32,7 +31,10 @@ interface I18nDAO {
     /**
      * Gets all labels for the specified namespace with filters
      */
-    fun getLabels(namespace: String, filter: I18nLabelFilter? = null): List<I18nLabel>
+    fun getLabels(
+        namespace: String,
+        filter: I18nLabelFilter? = null,
+    ): List<I18nLabel>
 
     /**
      * Gets label by id.
@@ -60,22 +62,38 @@ interface I18nDAO {
     /**
      * Delete the label of specified id if and only if it has the specified namespace.
      */
-    fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
+    fun deleteByNamespaceAndId(
+        namespace: String,
+        id: Id<I18nLabel>,
+    )
 
     /**
      * Marks an alternative index as used, for the given localized label and context identifier.
      */
-    fun addAlternativeIndex(label: I18nLabel, localized: I18nLocalizedLabel, alternativeIndex: Int, contextId: String)
+    fun addAlternativeIndex(
+        label: I18nLabel,
+        localized: I18nLocalizedLabel,
+        alternativeIndex: Int,
+        contextId: String,
+    )
 
     /**
      * Removes all alternative indexes for the given localized label and context identifier.
      */
-    fun deleteAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String)
+    fun deleteAlternativeIndexes(
+        label: I18nLabel,
+        localized: I18nLocalizedLabel,
+        contextId: String,
+    )
 
     /**
      * Gets all current alternative indexes for the given localized label and context identifier.
      */
-    fun getAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String): Set<Int>
+    fun getAlternativeIndexes(
+        label: I18nLabel,
+        localized: I18nLocalizedLabel,
+        contextId: String,
+    ): Set<Int>
 
     /**
      * Increments [I18nLabelStat] usage.
@@ -90,5 +108,8 @@ interface I18nDAO {
     /**
      * Gets all label stats for the specified namespace.
      */
-    fun getLabelIdsFromStats(namespace: String, timeMarker: Instant): Set<Id<I18nLabel>>
+    fun getLabelIdsFromStats(
+        namespace: String,
+        timeMarker: Instant,
+    ): Set<Id<I18nLabel>>
 }

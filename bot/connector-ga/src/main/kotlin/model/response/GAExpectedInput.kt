@@ -21,23 +21,24 @@ import ai.tock.bot.engine.message.GenericMessage
 
 data class GAExpectedInput(
     val inputPrompt: GAInputPrompt,
-    val possibleIntents: List<GAExpectedIntent> = listOf(
-        GAExpectedIntent(GAIntent.text)
-    ),
-    val speechBiasingHints: List<String> = emptyList()
+    val possibleIntents: List<GAExpectedIntent> =
+        listOf(
+            GAExpectedIntent(GAIntent.text),
+        ),
+    val speechBiasingHints: List<String> = emptyList(),
 ) {
-
-    fun toGenericMessage(): GenericMessage? = inputPrompt.toGenericMessage()
-        .let {
-            val intentElement = possibleIntents.map { it.toGenericMessage() }.filterNotNull().firstOrNull()
-            if (it == null) {
-                intentElement
-            } else if (intentElement == null) {
-                it
-            } else {
-                it.copy(
-                    subElements = it.subElements + intentElement.subElements
-                )
+    fun toGenericMessage(): GenericMessage? =
+        inputPrompt.toGenericMessage()
+            .let {
+                val intentElement = possibleIntents.map { it.toGenericMessage() }.filterNotNull().firstOrNull()
+                if (it == null) {
+                    intentElement
+                } else if (intentElement == null) {
+                    it
+                } else {
+                    it.copy(
+                        subElements = it.subElements + intentElement.subElements,
+                    )
+                }
             }
-        }
 }

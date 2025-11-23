@@ -20,7 +20,7 @@ import ai.tock.bot.engine.BotBus
 
 fun <T : BotBus> T.endWithAlcmeonExit(
     delay: Long = defaultDelay(currentAnswerIndex),
-    exitReasonProvider: T.() -> String
+    exitReasonProvider: T.() -> String,
 ): T {
     if (isCompatibleWith(alcmeonConnectorType)) {
         send(AlcmeonExitEvent(applicationId, exitReasonProvider(), delay))

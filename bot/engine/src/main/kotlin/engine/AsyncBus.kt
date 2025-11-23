@@ -129,13 +129,19 @@ interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
      * Updates persistent context value.
      * Do not store Collection or Map in the context, only plain objects or typed arrays.
      */
-    fun <T : Any> setContextValue(key: DialogContextKey<T>, value: T?)
+    fun <T : Any> setContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
+    )
 
     /**
      * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun <T : Any> setBusContextValue(key: DialogContextKey<T>, value: T?)
+    fun <T : Any> setBusContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
+    )
 
     /**
      * Returns the non persistent current context value.
@@ -149,7 +155,10 @@ interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
      * @param feature the feature to check
      * @param default the default value if the feature state is unknown
      */
-    suspend fun isFeatureEnabled(feature: FeatureType, default: Boolean = false): Boolean
+    suspend fun isFeatureEnabled(
+        feature: FeatureType,
+        default: Boolean = false,
+    ): Boolean
 
     suspend fun handleAndSwitchStory(
         storyDefinition: StoryDefinition,
@@ -165,13 +174,38 @@ interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
         handleAndSwitchStory(storyDefinition as StoryDefinition, starterIntent, step)
     }
 
-    fun i18nWithKey(key: String, defaultLabel: String, vararg args: Any?): I18nLabelValue
-    fun i18nWithKey(key: String, defaultLabel: String, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue
+    fun i18nWithKey(
+        key: String,
+        defaultLabel: String,
+        vararg args: Any?,
+    ): I18nLabelValue
 
-    suspend fun send(i18nText: CharSequence, delay: Long = defaultAnswerDelay())
-    suspend fun send(i18nText: String, vararg i18nArgs: Any?)
-    suspend fun end(i18nText: CharSequence, delay: Long = defaultAnswerDelay())
-    suspend fun end(i18nText: String, vararg i18nArgs: Any?)
+    fun i18nWithKey(
+        key: String,
+        defaultLabel: String,
+        defaultI18n: Set<I18nLocalizedLabel>,
+        vararg args: Any?,
+    ): I18nLabelValue
+
+    suspend fun send(
+        i18nText: CharSequence,
+        delay: Long = defaultAnswerDelay(),
+    )
+
+    suspend fun send(
+        i18nText: String,
+        vararg i18nArgs: Any?,
+    )
+
+    suspend fun end(
+        i18nText: CharSequence,
+        delay: Long = defaultAnswerDelay(),
+    )
+
+    suspend fun end(
+        i18nText: String,
+        vararg i18nArgs: Any?,
+    )
 
     /**
      * [messageProvider] must return an instance or a collection of the following possible types:
@@ -183,7 +217,7 @@ interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
      */
     suspend fun send(
         delay: Long = defaultAnswerDelay(),
-        messageProvider: Bus<*>.() -> Any?
+        messageProvider: Bus<*>.() -> Any?,
     )
 
     /**
@@ -196,7 +230,7 @@ interface AsyncBus : DialogEntityAccess, I18nKeyProvider {
      */
     suspend fun end(
         delay: Long = defaultAnswerDelay(),
-        messageProvider: Bus<*>.() -> Any?
+        messageProvider: Bus<*>.() -> Any?,
     )
 
     /**

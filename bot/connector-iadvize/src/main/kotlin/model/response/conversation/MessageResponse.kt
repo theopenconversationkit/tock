@@ -21,11 +21,13 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 
-data class MessageResponse(val idConversation: String,
-                           val idOperator: String,
-                           @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-                           val createdAt: LocalDateTime,
-                           @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-                           val updatedAt: LocalDateTime,
-                           @JsonInclude(JsonInclude.Include.ALWAYS)
-                           val replies: MutableList<IadvizeReply> = mutableListOf()) : IadvizeResponse
+data class MessageResponse(
+    val idConversation: String,
+    val idOperator: String,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    val createdAt: LocalDateTime,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    val updatedAt: LocalDateTime,
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    val replies: MutableList<IadvizeReply> = mutableListOf(),
+) : IadvizeResponse

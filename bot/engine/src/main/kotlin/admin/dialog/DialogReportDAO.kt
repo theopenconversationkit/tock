@@ -28,23 +28,68 @@ import org.litote.kmongo.Id
  *
  */
 interface DialogReportDAO {
-
     fun search(query: DialogReportQuery): DialogReportQueryResult
-    fun intents(namespace: String,nlpModel : String): Set<String>
+
+    fun intents(
+        namespace: String,
+        nlpModel: String,
+    ): Set<String>
 
     fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
 
     fun getDialog(id: Id<Dialog>): DialogReport?
-    fun getNlpStats(dialogIds: List<Id<Dialog>>, namespace: String): List<NlpStats>
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
+
+    fun getNlpStats(
+        dialogIds: List<Id<Dialog>>,
+        namespace: String,
+    ): List<NlpStats>
+
+    fun getNlpCallStats(
+        actionId: Id<Action>,
+        namespace: String,
+    ): NlpCallStats?
+
     fun calculateDialogStats(query: DialogStatsQuery): DialogStatsQueryResult
 
     // ANNOTATION FUNCTIONS
-    fun insertAnnotation(dialogId: String, actionId: String, annotation: BotAnnotation)
-    fun addAnnotationEvent(dialogId: String, actionId: String, event: BotAnnotationEvent)
-    fun getAnnotationEvent(dialogId: String, actionId: String, eventId: String): BotAnnotationEvent?
-    fun updateAnnotationEvent(dialogId: String, actionId: String, eventId: String, updatedEvent: BotAnnotationEvent)
-    fun deleteAnnotationEvent(dialogId: String, actionId: String, eventId: String)
-    fun annotationExists(dialogId: String, actionId: String): Boolean
-    fun findAnnotation(dialogId: String, actionId: String): BotAnnotation?
+    fun insertAnnotation(
+        dialogId: String,
+        actionId: String,
+        annotation: BotAnnotation,
+    )
+
+    fun addAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        event: BotAnnotationEvent,
+    )
+
+    fun getAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+    ): BotAnnotationEvent?
+
+    fun updateAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+        updatedEvent: BotAnnotationEvent,
+    )
+
+    fun deleteAnnotationEvent(
+        dialogId: String,
+        actionId: String,
+        eventId: String,
+    )
+
+    fun annotationExists(
+        dialogId: String,
+        actionId: String,
+    ): Boolean
+
+    fun findAnnotation(
+        dialogId: String,
+        actionId: String,
+    ): BotAnnotation?
 }

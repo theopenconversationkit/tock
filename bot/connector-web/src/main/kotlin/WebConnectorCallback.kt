@@ -44,7 +44,6 @@ internal class WebConnectorCallback(
     private val messageProcessor: WebMessageProcessor,
     internal val streamedResponse: Boolean,
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
-
     fun addAction(action: Action) {
         actions.add(action)
     }
@@ -57,16 +56,18 @@ internal class WebConnectorCallback(
     }
 
     fun createResponse(actions: List<Action>): WebConnectorResponse {
-        val messages = actions.mapNotNull { a ->
-            val action = if (a is SendSentence && metadata.hasStreamMetadata() && mergeStreamResponse) {
-                a.withText(WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a.stringText))
-            } else {
-                a
+        val messages =
+            actions.mapNotNull { a ->
+                val action =
+                    if (a is SendSentence && metadata.hasStreamMetadata() && mergeStreamResponse) {
+                        a.withText(WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a.stringText))
+                    } else {
+                        a
+                    }
+                messageProcessor.process(action)
             }
-            messageProcessor.process(action)
-        }
 
-        return WebConnectorResponse(messages, metadata.toMap()) //clone the metadata
+        return WebConnectorResponse(messages, metadata.toMap()) // clone the metadata
     }
 
     fun sendResponse() {

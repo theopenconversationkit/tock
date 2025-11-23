@@ -41,19 +41,19 @@ import kotlin.test.assertEquals
  *
  */
 class I18nCsvCodecTest {
-
     companion object {
         val i18nDAO: I18nDAO = mockk(relaxed = true)
 
         init {
             tockInternalInjector = KodeinInjector()
-            val module = Kodein.Module {
-                bind<I18nDAO>() with provider { i18nDAO }
-            }
+            val module =
+                Kodein.Module {
+                    bind<I18nDAO>() with provider { i18nDAO }
+                }
             tockInternalInjector.inject(
                 Kodein {
                     import(module)
-                }
+                },
             )
         }
 
@@ -97,15 +97,15 @@ Départs suivants;mynamespace;departuresarrivals;fr;textChat;id2;true;"""
                         I18nLocalizedLabel(
                             FRENCH,
                             textChat,
-                            "ok"
+                            "ok",
                         ),
                         I18nLocalizedLabel(
                             FRENCH,
                             voiceAssistant,
-                            "notok"
-                        )
-                    )
-                )
+                            "notok",
+                        ),
+                    ),
+                ),
             )
         }
 

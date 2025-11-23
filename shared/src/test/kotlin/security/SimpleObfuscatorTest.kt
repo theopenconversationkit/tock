@@ -23,7 +23,6 @@ import kotlin.test.assertEquals
  *
  */
 class SimpleObfuscatorTest {
-
     @Test
     fun obfuscate_shouldUpdateText_WhenPatternFound() {
         val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret")

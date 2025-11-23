@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class SentenceTest {
-
     @Test
     fun `create Sentence with ConnectorMessage returns a GenericMessage with connector type and connector message`() {
         val c = mockk<ConnectorMessage>()

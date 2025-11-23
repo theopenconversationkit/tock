@@ -18,13 +18,17 @@ package ai.tock.bot.connector.iadvize.model.payload
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-data class FilePayload(val fileName: String,
-                       val mimeType: MimeType,
-                       val url: String) : Payload("file") {
-    enum class MimeType(@JsonValue val value: String) {
+data class FilePayload(
+    val fileName: String,
+    val mimeType: MimeType,
+    val url: String,
+) : Payload("file") {
+    enum class MimeType(
+        @JsonValue val value: String,
+    ) {
         GIF("image/gif"),
         PDF("application/pdf"),
         PNG("image/png"),
-        JPEG("image/jpeg");
+        JPEG("image/jpeg"),
     }
 }

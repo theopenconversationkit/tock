@@ -16,6 +16,10 @@
 
 package ai.tock.bot.connector.web.send
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ButtonType {
-    web_url, postback, quick_reply, none
+    web_url,
+    postback,
+    quick_reply,
+    none,
 }

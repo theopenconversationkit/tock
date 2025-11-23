@@ -32,7 +32,6 @@ open class AsyncStoryDefinitionBase<S : AsyncStoryStep<*>>(
     unsupportedUserInterface: UserInterfaceType? = null,
     override val tags: Set<StoryTag> = emptySet(),
 ) : AsyncStoryDefinition, StoryDefinitionWithSteps<S> {
-
     override val steps: Set<S> =
         stepsList.onEach {
             if (it.intent == null) {

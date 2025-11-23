@@ -31,5 +31,5 @@ data class MessageRequest(
     @JsonProperty("tag")
     val tag: MessageTag? = null,
     @JsonProperty("persona_id")
-    val personaId: String? = null
+    val personaId: String? = null,
 )

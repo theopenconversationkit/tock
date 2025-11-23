@@ -35,9 +35,8 @@ fun BotDefinition.startNewBusMock(
     story: StoryDefinition = testContext.defaultStoryDefinition(this),
     connectorType: ConnectorType = testContext.defaultConnectorType(),
     locale: Locale = testContext.defaultLocale(),
-    userId: PlayerId = testContext.defaultPlayerId()
-): BotBusMock =
-    newBusMock(testContext, story, connectorType, locale, userId).run()
+    userId: PlayerId = testContext.defaultPlayerId(),
+): BotBusMock = newBusMock(testContext, story, connectorType, locale, userId).run()
 
 /**
  * Provides a mock initialized with the specified [StoryDefinition].
@@ -47,9 +46,8 @@ fun BotDefinition.newBusMock(
     story: StoryDefinition = testContext.defaultStoryDefinition(this),
     connectorType: ConnectorType = testContext.defaultConnectorType(),
     locale: Locale = testContext.defaultLocale(),
-    userId: PlayerId = testContext.defaultPlayerId()
-): BotBusMock =
-    BotBusMock(newBusMockContext(testContext, story, connectorType, locale, userId))
+    userId: PlayerId = testContext.defaultPlayerId(),
+): BotBusMock = BotBusMock(newBusMockContext(testContext, story, connectorType, locale, userId))
 
 /**
  * Provides a mock context initialized with the specified [StoryDefinition].
@@ -78,7 +76,7 @@ fun BotDefinition.newBusMockContext(
         userPreferences,
         connectorType,
         testContext,
-        setOf(connectorType) + secondaryConnectorTypes.toSet()
+        setOf(connectorType) + secondaryConnectorTypes.toSet(),
     )
 
 /**

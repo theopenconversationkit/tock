@@ -32,7 +32,6 @@ import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 
 class FaqSettingsMongoDAOTest : AbstractTest() {
-
     private val faqSettingsDao: FaqSettingsDAO get() = injector.provide()
 
     private val faqSettingsId = "faqSettingsId".toId<FaqSettings>()
@@ -44,9 +43,10 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
 
     private val col: MongoCollection<FaqSettings> by lazy { FaqSettingsMongoDAO.col }
 
-    override fun moreBindingModules() = Kodein.Module {
-        bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
-    }
+    override fun moreBindingModules() =
+        Kodein.Module {
+            bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
+        }
 
     @AfterEach
     fun cleanup() {
@@ -61,12 +61,12 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = faqSettings.copy(_id = settings!!._id),
             actual = settings,
-            message = "There should be something returned with an applicationId"
+            message = "There should be something returned with an applicationId",
         )
         assertEquals(
             expected = faqSettings.copy(_id = settings._id),
             actual = faqSettingsDao.getFaqSettingsById(settings._id),
-            message = "There should be something returned with an faqSettingsId"
+            message = "There should be something returned with an faqSettingsId",
         )
         assertEquals(1, col.countDocuments())
     }
@@ -100,12 +100,12 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = null,
             actual = faqSettingsDao.getFaqSettingsById(faqSettingsId),
-            message = "There should be nothing returned with faqSettingsId"
+            message = "There should be nothing returned with faqSettingsId",
         )
         assertEquals(
             expected = null,
             actual = faqSettingsDao.getFaqSettingsByApplicationId(applicationId),
-            message = "There should be nothing returned with applicationId"
+            message = "There should be nothing returned with applicationId",
         )
         assertEquals(0, col.countDocuments())
     }

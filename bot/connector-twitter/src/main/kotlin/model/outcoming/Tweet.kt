@@ -22,7 +22,7 @@ import ai.tock.bot.engine.message.GenericMessage
 data class Tweet(val text: String, val dmRecipientID: String? = null, val welcomeMessageID: String? = null, val defaultMessage: String? = null) : TwitterPublicConnectorMessage() {
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-            texts = mapOf("text" to text)
+            texts = mapOf("text" to text),
         )
     }
 }

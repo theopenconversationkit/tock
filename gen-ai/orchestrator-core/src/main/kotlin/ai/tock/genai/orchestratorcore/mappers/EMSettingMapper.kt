@@ -16,28 +16,30 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.em.*
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
+import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
+import ai.tock.genai.orchestratorcore.models.em.OllamaEMSetting
+import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
-
 
 /**
  * The Embedding Setting Mapper
  */
 object EMSettingMapper {
-
     /**
      * Convert the Embedding setting to a DTO
      * @param entity the [EMSetting] as recorded in the database
      * @return [EMSettingDTO]
      */
     fun toDTO(entity: EMSetting): EMSettingDTO =
-        with(entity){
-            when(this){
+        with(entity) {
+            when (this) {
                 is OpenAIEMSetting ->
                     OpenAIEMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
                 is AzureOpenAIEMSetting ->
                     AzureOpenAIEMSetting(
@@ -45,7 +47,7 @@ object EMSettingMapper {
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
-                        model = model
+                        model = model,
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
@@ -68,15 +70,15 @@ object EMSettingMapper {
         botId: String,
         feature: String,
         dto: EMSettingDTO,
-        rawByForce: Boolean = false
+        rawByForce: Boolean = false,
     ): EMSetting =
-        with(dto){
-            when(this){
+        with(dto) {
+            when (this) {
                 is OpenAIEMSetting ->
                     OpenAIEMSetting(
                         apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
                 is AzureOpenAIEMSetting ->
                     AzureOpenAIEMSetting(
@@ -84,7 +86,7 @@ object EMSettingMapper {
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
-                        model = model
+                        model = model,
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
@@ -92,5 +94,4 @@ object EMSettingMapper {
                     throw IllegalArgumentException("Unsupported EM Setting")
             }
         }
-
 }

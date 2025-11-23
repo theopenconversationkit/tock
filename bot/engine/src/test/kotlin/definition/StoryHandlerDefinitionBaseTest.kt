@@ -25,21 +25,21 @@ import ai.tock.bot.definition.defaultHandlerStoryDefinitionCreator
 import ai.tock.bot.engine.BotBus
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.reflect.KClass
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import kotlin.reflect.KClass
+import kotlin.test.assertEquals
 
 internal class StoryHandlerDefinitionBaseTest {
-
     private val bus = mockk<SubBotBus>(relaxed = true)
 
     @Test
     fun `GIVEN simple connector WHEN creation THEN connector is set`() {
         // GIVEN
-        every { bus getProperty "targetConnectorType" } returns ConnectorType(
-            "connectorType1"
-        )
+        every { bus getProperty "targetConnectorType" } returns
+            ConnectorType(
+                "connectorType1",
+            )
 
         // WHEN
         val def: SimpleDefWithConnector = defaultHandlerStoryDefinitionCreator<SimpleDefWithConnector>().create(bus)
@@ -51,9 +51,10 @@ internal class StoryHandlerDefinitionBaseTest {
     @Test
     fun `GIVEN connector with parameter WHEN creation THEN connector is set with default parameter`() {
         // GIVEN
-        every { bus getProperty "targetConnectorType" } returns ConnectorType(
-            "connectorType2"
-        )
+        every { bus getProperty "targetConnectorType" } returns
+            ConnectorType(
+                "connectorType2",
+            )
 
         // WHEN
         val def: SimpleDefWithConnector = defaultHandlerStoryDefinitionCreator<SimpleDefWithConnector>().create(bus)
@@ -72,6 +73,7 @@ internal class StoryHandlerDefinitionBaseTest {
     abstract class SimpleConnectorDef(context: SimpleDefWithConnector) : ConnectorDef<SimpleDefWithConnector>(context)
 
     class FirstConnectorDef(context: SimpleDefWithConnector) : SimpleConnectorDef(context)
+
     class SecondConnectorWithParameterDef(context: SimpleDefWithConnector, val parameter: String = "parameter") :
         SimpleConnectorDef(context)
 

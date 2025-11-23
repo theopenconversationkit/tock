@@ -25,5 +25,5 @@ import ai.tock.bot.connector.ga.model.response.GAOpenUrlAction
 data class GAActionV3(
     val type: GAActionType,
     val title: String?,
-    val openUrlAction: GAOpenUrlAction
+    val openUrlAction: GAOpenUrlAction,
 )

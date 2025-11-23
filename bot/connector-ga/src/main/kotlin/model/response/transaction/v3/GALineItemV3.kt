@@ -29,5 +29,5 @@ data class GALineItemV3(
     val description: String? = null,
     val notes: List<String>? = emptyList(),
     val purchase: GAPurchaseItemExtension? = null,
-    val reservation: GAReservationItemExtension? = null
+    val reservation: GAReservationItemExtension? = null,
 )

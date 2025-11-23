@@ -25,7 +25,7 @@ data class DialogStatsQuery(
     val namespace: String,
     val applicationName: String,
     val from: ZonedDateTime? = null,
-    val to: ZonedDateTime? = null
+    val to: ZonedDateTime? = null,
 )
 
 /**
@@ -34,5 +34,5 @@ data class DialogStatsQuery(
 enum class IntentTypeEnum {
     ALL,
     KNOWN,
-    UNKNOWN
+    UNKNOWN,
 }

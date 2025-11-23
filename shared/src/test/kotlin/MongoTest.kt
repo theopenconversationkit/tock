@@ -34,7 +34,6 @@ import kotlin.test.assertEquals
  *
  */
 class MongoTest {
-
     class ThisIsACollection
 
     @BeforeEach
@@ -43,7 +42,7 @@ class MongoTest {
         tockInternalInjector.inject(
             Kodein.invoke {
                 bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
-            }
+            },
         )
     }
 

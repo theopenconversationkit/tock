@@ -28,10 +28,13 @@ data class DebugMessage(
     val data: Any?,
     override val delay: Long = 0,
 ) : Message {
-
     override val eventType: EventType = EventType.debug
-    override fun toAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+
+    override fun toAction(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+    ): Action {
         error("Not supported")
     }
-
 }

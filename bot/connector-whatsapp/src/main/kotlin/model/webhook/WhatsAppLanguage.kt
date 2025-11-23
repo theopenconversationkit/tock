@@ -18,5 +18,5 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 
 data class WhatsAppLanguage(
     val policy: String,
-    val code: String
+    val code: String,
 )

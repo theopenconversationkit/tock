@@ -19,13 +19,13 @@ package ai.tock.nlp.front.service.storage
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.monitoring.ParseRequestExportLog
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
-import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
-import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -33,7 +33,6 @@ import java.util.Locale
  *
  */
 interface ParseRequestLogDAO {
-
     fun save(log: ParseRequestLog)
 
     fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
@@ -44,5 +43,8 @@ interface ParseRequestLogDAO {
 
     fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat>
 
-    fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog>
+    fun export(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+    ): List<ParseRequestExportLog>
 }

@@ -25,5 +25,5 @@ import ai.tock.bot.connector.businesschat.model.csp.BusinessChatCommonModel
 class Message(
     sourceId: String,
     destinationId: String,
-    val body: String?
+    val body: String?,
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)

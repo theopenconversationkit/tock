@@ -21,15 +21,18 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 
 data class BotConfiguredSteps(
     val botConfiguration: String,
-    val steps: List<BotStoryDefinitionConfigurationStep> = emptyList()
+    val steps: List<BotStoryDefinitionConfigurationStep> = emptyList(),
 )
 
-fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(story: StoryDefinitionConfiguration, readOnly: Boolean = false): List<BotConfiguredSteps> =
+fun List<StoryDefinitionConfigurationByBotStep>.mapSteps(
+    story: StoryDefinitionConfiguration,
+    readOnly: Boolean = false,
+): List<BotConfiguredSteps> =
     map {
         BotConfiguredSteps(
             it.botConfiguration,
             it.steps.map { step ->
                 BotStoryDefinitionConfigurationStep(story, step, readOnly)
-            }
+            },
         )
     }

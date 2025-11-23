@@ -25,30 +25,41 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
  * Provides [ConnectorHandler].
  */
 interface ConnectorHandlerProvider {
-
     /**
      * Method to override in order to provide [ConnectorStoryHandler] from [ConnectorType].
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
-    fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? = null
+    fun provide(
+        storyDef: StoryHandlerDefinition,
+        connectorType: ConnectorType,
+    ): ConnectorStoryHandlerBase<*>? = null
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler] from connectorId.
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
-    fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? = null
+    fun provide(
+        storyDef: StoryHandlerDefinition,
+        connectorId: String,
+    ): ConnectorStoryHandlerBase<*>? = null
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler] from [ConnectorType].
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @ExperimentalTockCoroutines
-    fun provide(storyDef: AsyncStoryHandling, connectorType: ConnectorType): AsyncConnectorHandlingBase<*>? = null
+    fun provide(
+        storyDef: AsyncStoryHandling,
+        connectorType: ConnectorType,
+    ): AsyncConnectorHandlingBase<*>? = null
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler] from connectorId.
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
     @ExperimentalTockCoroutines
-    fun provide(storyDef: AsyncStoryHandling, connectorId: String): AsyncConnectorHandlingBase<*>? = null
+    fun provide(
+        storyDef: AsyncStoryHandling,
+        connectorId: String,
+    ): AsyncConnectorHandlingBase<*>? = null
 }

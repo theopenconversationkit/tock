@@ -28,11 +28,11 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 internal object RetrofitAWSPublicKeyClient {
-
     private interface AWSPublicKeyApi {
-
         @GET("/{keyID}")
-        fun getPublicKey(@Path("keyID") keyID: String): Call<ResponseBody>
+        fun getPublicKey(
+            @Path("keyID") keyID: String,
+        ): Call<ResponseBody>
     }
 
     private val api: AWSPublicKeyApi
@@ -41,14 +41,15 @@ internal object RetrofitAWSPublicKeyClient {
 
     init {
 
-        api = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_aws_public_key_request_timeout_ms", 30000),
-            logger
-        )
-            .baseUrl("https://public-keys.auth.elb.$awsRegion.amazonaws.com")
-            .addJacksonConverter()
-            .build()
-            .create()
+        api =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_aws_public_key_request_timeout_ms", 30000),
+                logger,
+            )
+                .baseUrl("https://public-keys.auth.elb.$awsRegion.amazonaws.com")
+                .addJacksonConverter()
+                .build()
+                .create()
     }
 
     fun getPublicKey(keyID: String): String? {

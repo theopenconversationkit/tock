@@ -21,9 +21,8 @@ package ai.tock.bot.connector
  */
 abstract class ConnectorBase(
     override val connectorType: ConnectorType,
-    override val supportedFeatures: Set<ConnectorFeature> = emptySet()
+    override val supportedFeatures: Set<ConnectorFeature> = emptySet(),
 ) : Connector {
-
     /**
      * Returns [connectorType.toString()] method.
      */

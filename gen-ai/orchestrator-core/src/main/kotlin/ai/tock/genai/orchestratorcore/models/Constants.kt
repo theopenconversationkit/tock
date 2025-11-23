@@ -28,16 +28,16 @@ object Constants {
 
     const val BLOOMZ_COMPRESSOR = "BloomzRerank"
 
-    private const val GEN_AI="GenAI"
-    private const val GEN_AI_RAG="$GEN_AI/RAG"
-    private const val GEN_AI_COMPLETION="$GEN_AI/COMPLETION"
+    private const val GEN_AI = "GenAI"
+    private const val GEN_AI_RAG = "$GEN_AI/RAG"
+    private const val GEN_AI_COMPLETION = "$GEN_AI/COMPLETION"
 
-    const val GEN_AI_RAG_QUESTION_CONDENSING="$GEN_AI_RAG/questionCondensing"
-    const val GEN_AI_RAG_QUESTION_ANSWERING="$GEN_AI_RAG/questionAnswering"
-    const val GEN_AI_RAG_EMBEDDING_QUESTION="$GEN_AI_RAG/embeddingQuestion"
+    const val GEN_AI_RAG_QUESTION_CONDENSING = "$GEN_AI_RAG/questionCondensing"
+    const val GEN_AI_RAG_QUESTION_ANSWERING = "$GEN_AI_RAG/questionAnswering"
+    const val GEN_AI_RAG_EMBEDDING_QUESTION = "$GEN_AI_RAG/embeddingQuestion"
 
-    const val GEN_AI_COMPLETION_SENTENCE_GENERATION="$GEN_AI_COMPLETION/sentenceGeneration"
+    const val GEN_AI_COMPLETION_SENTENCE_GENERATION = "$GEN_AI_COMPLETION/sentenceGeneration"
 
-    const val GEN_AI_VECTOR_STORE="$GEN_AI/VECTOR_STORE"
-    const val GEN_AI_OBSERVABILITY="$GEN_AI/OBSERVABILITY"
+    const val GEN_AI_VECTOR_STORE = "$GEN_AI/VECTOR_STORE"
+    const val GEN_AI_OBSERVABILITY = "$GEN_AI/OBSERVABILITY"
 }

@@ -23,12 +23,11 @@ import ai.tock.bot.engine.message.GenericMessage
  */
 data class MediaPayload(
     val elements: List<MediaElement>,
-    val sharable: Boolean = false
+    val sharable: Boolean = false,
 ) : ModelPayload(PayloadType.media) {
-
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-            subElements = elements.map { it.toGenericElement() }
+            subElements = elements.map { it.toGenericElement() },
         )
     }
 }

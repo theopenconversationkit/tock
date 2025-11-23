@@ -20,5 +20,8 @@ import ai.tock.genai.orchestratorclient.requests.RAGRequest
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 
 interface RAGService {
-    fun rag(query: RAGRequest, debug: Boolean = false): RAGResponse?
+    fun rag(
+        query: RAGRequest,
+        debug: Boolean = false,
+    ): RAGResponse?
 }

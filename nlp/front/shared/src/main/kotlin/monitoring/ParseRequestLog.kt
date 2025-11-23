@@ -32,5 +32,5 @@ data class ParseRequestLog(
     val result: ParseResult?,
     val durationInMS: Long,
     val error: Boolean = result == null,
-    val date: Instant = now()
+    val date: Instant = now(),
 )

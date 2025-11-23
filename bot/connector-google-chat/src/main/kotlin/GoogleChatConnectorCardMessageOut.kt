@@ -29,9 +29,10 @@ data class GoogleChatConnectorCardMessageOut(val card: ChatCard) : GoogleChatCon
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             this,
-            subElements = card.children.filterIsInstance(ChatSection::class.java).map {
-                GenericElement()
-            }
+            subElements =
+                card.children.filterIsInstance(ChatSection::class.java).map {
+                    GenericElement()
+                },
         )
     }
 }

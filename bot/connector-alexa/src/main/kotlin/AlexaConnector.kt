@@ -51,9 +51,8 @@ class AlexaConnector internal constructor(
     val path: String,
     val alexaTockMapper: AlexaTockMapper,
     supportedAlexaApplicationIds: Set<String>,
-    timestampInMs: Long
+    timestampInMs: Long,
 ) : ConnectorBase(AlexaConnectorProvider.connectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private val disableRequestSignatureCheck = booleanProperty("tock_alexa_disable_request_signature_check", false)
@@ -61,7 +60,7 @@ class AlexaConnector internal constructor(
         internal fun sendTechnicalError(
             context: RoutingContext,
             throwable: Throwable,
-            request: IntentRequest? = null
+            request: IntentRequest? = null,
         ) {
             try {
                 logger.error("request: $request", throwable)
@@ -77,12 +76,13 @@ class AlexaConnector internal constructor(
         }
     }
 
-    private val requestHandler = SpeechletRequestHandler(
-        listOf(
-            ApplicationIdSpeechletRequestEnvelopeVerifier(supportedAlexaApplicationIds),
-            SpeechletRequestVerifierWrapper(TimestampSpeechletRequestVerifier(timestampInMs, TimeUnit.MILLISECONDS))
+    private val requestHandler =
+        SpeechletRequestHandler(
+            listOf(
+                ApplicationIdSpeechletRequestEnvelopeVerifier(supportedAlexaApplicationIds),
+                SpeechletRequestVerifierWrapper(TimestampSpeechletRequestVerifier(timestampInMs, TimeUnit.MILLISECONDS)),
+            ),
         )
-    )
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -98,7 +98,11 @@ class AlexaConnector internal constructor(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         callback as AlexaConnectorCallback
         callback.addAction(event, delayInMs)
         if (event is Action) {
@@ -113,7 +117,7 @@ class AlexaConnector internal constructor(
     // internal for tests
     internal fun handleRequest(
         controller: ConnectorController,
-        context: RoutingContext
+        context: RoutingContext,
     ) {
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
@@ -123,7 +127,7 @@ class AlexaConnector internal constructor(
                 SpeechletRequestSignatureVerifier.checkRequestSignature(
                     bytes,
                     context.request().getHeader(Sdk.SIGNATURE_REQUEST_HEADER),
-                    context.request().getHeader(Sdk.SIGNATURE_CERTIFICATE_CHAIN_URL_REQUEST_HEADER)
+                    context.request().getHeader(Sdk.SIGNATURE_CERTIFICATE_CHAIN_URL_REQUEST_HEADER),
                 )
             }
             context
@@ -133,9 +137,9 @@ class AlexaConnector internal constructor(
                     Buffer.buffer(
                         requestHandler.handleSpeechletCall(
                             AlexaConnectorCallback(applicationId, controller, alexaTockMapper, context),
-                            bytes
-                        )
-                    )
+                            bytes,
+                        ),
+                    ),
                 )
         } catch (ex: Throwable) {
             BotRepository.requestTimer.throwable(ex, timerData)
@@ -145,19 +149,19 @@ class AlexaConnector internal constructor(
         }
     }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-
-        if (message is MediaCard) {
-            val title = message.title
-            val subTitle = message.subTitle
-            val file = message.file
-            if (title != null && subTitle != null && file != null && file.type == image) {
-                listOf(alexaStandardCard(title, subTitle, file.url))
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            if (message is MediaCard) {
+                val title = message.title
+                val subTitle = message.subTitle
+                val file = message.file
+                if (title != null && subTitle != null && file != null && file.type == image) {
+                    listOf(alexaStandardCard(title, subTitle, file.url))
+                } else {
+                    emptyList()
+                }
             } else {
                 emptyList()
             }
-        } else {
-            emptyList()
         }
-    }
 }

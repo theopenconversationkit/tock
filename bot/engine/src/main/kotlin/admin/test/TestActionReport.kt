@@ -36,16 +36,15 @@ data class TestActionReport(
     val messages: List<Message>,
     val connectorType: ConnectorType?,
     val userInterfaceType: UserInterfaceType = textChat,
-    val id: Id<Action>
+    val id: Id<Action>,
 ) {
-
     constructor(
         playerId: PlayerId,
         date: Instant,
         message: Message,
         connectorType: ConnectorType?,
         userInterfaceType: UserInterfaceType,
-        id: Id<Action> = newId()
+        id: Id<Action> = newId(),
     ) :
         this(
             playerId,
@@ -53,7 +52,7 @@ data class TestActionReport(
             listOf(message),
             connectorType,
             userInterfaceType,
-            id
+            id,
         )
 
     constructor(report: ActionReport) :
@@ -63,7 +62,7 @@ data class TestActionReport(
             report.message,
             report.connectorType,
             report.userInterfaceType,
-            report.id
+            report.id,
         )
 
     fun findFirstMessage(): Message {

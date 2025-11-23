@@ -19,10 +19,10 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.media
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Media(
-        @JsonProperty("sha256") val sha256: String,
-        @JsonProperty("mime_type") val mimeType: FileType,
-        @JsonProperty("messaging_product") val messagingProduct: String,
-        @JsonProperty("id") val id: String,
-        @JsonProperty("url") val url: String,
-        @JsonProperty("file_size") val fileSize: Long
+    @JsonProperty("sha256") val sha256: String,
+    @JsonProperty("mime_type") val mimeType: FileType,
+    @JsonProperty("messaging_product") val messagingProduct: String,
+    @JsonProperty("id") val id: String,
+    @JsonProperty("url") val url: String,
+    @JsonProperty("file_size") val fileSize: Long,
 )

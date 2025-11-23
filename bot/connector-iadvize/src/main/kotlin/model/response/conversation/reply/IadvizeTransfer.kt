@@ -25,45 +25,48 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class IadvizeTransfer(
     val distributionRule: String?,
-    val transferOptions: TransferOptions) : IadvizeReply(ReplyType.transfer) {
-
+    val transferOptions: TransferOptions,
+) : IadvizeReply(ReplyType.transfer) {
     /**
      * Convert a timeout in seconds
      * @param timeout the [Duration]
      */
     data class TransferOptions(val timeout: Duration) {
-
         @JsonIgnore
-        fun getTimeoutInSeconds(): Int = when(timeout.unit){
-            Duration.TimeUnit.minutes -> (timeout.value * 60).toInt()
-            Duration.TimeUnit.seconds -> timeout.value.toInt()
-            Duration.TimeUnit.millis -> (timeout.value / 1000).toInt()
-        }
+        fun getTimeoutInSeconds(): Int =
+            when (timeout.unit) {
+                Duration.TimeUnit.minutes -> (timeout.value * 60).toInt()
+                Duration.TimeUnit.seconds -> timeout.value.toInt()
+                Duration.TimeUnit.millis -> (timeout.value / 1000).toInt()
+            }
     }
 
     /**
      * When an IadvizeTransfer is created on a story, distribution rule is not known.
      * Distribution rule is added when response is built.
      */
-    constructor(timeoutInSeconds: Long)
-            : this(null, TransferOptions(Duration(timeoutInSeconds, Duration.TimeUnit.seconds)))
+    constructor(timeoutInSeconds: Long) :
+        this(null, TransferOptions(Duration(timeoutInSeconds, Duration.TimeUnit.seconds)))
 
     /**
      * When an IadvizeTransfer is created on a story, distribution rule is not known.
      * Distribution rule is added when response is built.
      */
-    constructor(timeout: Duration)
-            : this(null, TransferOptions(timeout))
+    constructor(timeout: Duration) :
+        this(null, TransferOptions(timeout))
 
     override fun toChatBotActionOrMessageInput() =
         ChatbotActionOrMessageInput(
-            chatbotAction = ChatbotActionInput(
-                transferMessage = TransferMessageInput(
-                    routingRuleId = distributionRule ?: "unknown_distribution_rule",
-                    transferOptions = TransferOptionsInput(
-                        timeout = transferOptions.getTimeoutInSeconds()
-                    )
-                )
-            )
+            chatbotAction =
+                ChatbotActionInput(
+                    transferMessage =
+                        TransferMessageInput(
+                            routingRuleId = distributionRule ?: "unknown_distribution_rule",
+                            transferOptions =
+                                TransferOptionsInput(
+                                    timeout = transferOptions.getTimeoutInSeconds(),
+                                ),
+                        ),
+                ),
         )
 }

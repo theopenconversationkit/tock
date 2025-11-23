@@ -20,26 +20,27 @@ import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.nlp.front.client.FrontClient
-import org.litote.kmongo.toId
 import java.util.Locale
 
 class ConfigurationContentModule(val id: String, val stories: List<StoryDefinitionConfigurationContent>) {
-
-    fun setupContent(conf: BotApplicationConfiguration, locale: Locale, userLogin: String) {
+    fun setupContent(
+        conf: BotApplicationConfiguration,
+        locale: Locale,
+        userLogin: String,
+    ) {
         val namespace = conf.namespace
         val nlpApplication = FrontClient.getApplicationByNamespaceAndName(namespace, conf.nlpModel) ?: error("nlp app not found for $namespace & $conf")
 
         stories.forEach {
             BotAdminService.createStory(
-                    namespace,
-                    CreateStoryRequest(
-                            story = it.toBotStoryDefinitionConfiguration(namespace, nlpApplication._id, conf.botId, locale),
-                            language = locale,
-                            firstSentences = emptyList(),
-                    ),
-                    userLogin
+                namespace,
+                CreateStoryRequest(
+                    story = it.toBotStoryDefinitionConfiguration(namespace, nlpApplication._id, conf.botId, locale),
+                    language = locale,
+                    firstSentences = emptyList(),
+                ),
+                userLogin,
             )
-
         }
     }
 }

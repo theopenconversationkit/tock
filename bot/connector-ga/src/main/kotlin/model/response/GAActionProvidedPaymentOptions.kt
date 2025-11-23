@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAActionProvidedPaymentOptions(
     val paymentType: GaPaymentType,
-    val displayName: String
+    val displayName: String,
 )

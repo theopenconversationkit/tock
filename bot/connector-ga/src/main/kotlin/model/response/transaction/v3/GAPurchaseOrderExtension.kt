@@ -22,5 +22,5 @@ package ai.tock.bot.connector.ga.model.response.transaction.v3
 data class GAPurchaseOrderExtension(
     val status: GAPurchaseStatus = GAPurchaseStatus.PURCHASE_STATUS_UNSPECIFIED,
     val userVisibleStatusLabel: String,
-    val type: GAPurchaseType = GAPurchaseType.PURCHASE_TYPE_UNSPECIFIED
+    val type: GAPurchaseType = GAPurchaseType.PURCHASE_TYPE_UNSPECIFIED,
 )

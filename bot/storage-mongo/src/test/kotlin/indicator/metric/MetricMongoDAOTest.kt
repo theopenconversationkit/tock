@@ -32,63 +32,68 @@ import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 
 class MetricMongoDAOTest : AbstractTest() {
-
     private val namespace1 = "namespace1"
     private val applicationId1 = "applicationId1"
     private val botId1 = "botId1"
     private val botId2 = "botId2"
     private val creationDate = Instant.now().truncatedTo(ChronoUnit.MILLIS)
 
-    private val metric1 = Metric(
-        type = MetricType.QUESTION_REPLIED,
-        indicatorName = "name1",
-        indicatorValueName = "value1",
-        emitterStoryId = "storyId1",
-        trackedStoryId = "storyId2",
-        playerIds = setOf(
-            PlayerId(id = "playerId1", PlayerType.user),
-            PlayerId(id = "playerId2", PlayerType.bot),
-        ),
-        dialogId = "dialogId1".toId(),
-        creationDate = creationDate,
-        botId = botId1,
-        namespace = namespace1,
-        applicationId = applicationId1
-    )
+    private val metric1 =
+        Metric(
+            type = MetricType.QUESTION_REPLIED,
+            indicatorName = "name1",
+            indicatorValueName = "value1",
+            emitterStoryId = "storyId1",
+            trackedStoryId = "storyId2",
+            playerIds =
+                setOf(
+                    PlayerId(id = "playerId1", PlayerType.user),
+                    PlayerId(id = "playerId2", PlayerType.bot),
+                ),
+            dialogId = "dialogId1".toId(),
+            creationDate = creationDate,
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1,
+        )
 
-    private val metric2 = Metric(
-        type = MetricType.QUESTION_REPLIED,
-        indicatorName = "name2",
-        indicatorValueName = "value2",
-        emitterStoryId = "storyId3",
-        trackedStoryId = "storyId3",
-        playerIds = setOf(
-            PlayerId(id = "playerId1", PlayerType.user),
-            PlayerId(id = "playerId2", PlayerType.bot),
-        ),
-        dialogId = "dialogId2".toId(),
-        creationDate = creationDate,
-        botId = botId1,
-        namespace = namespace1,
-        applicationId = applicationId1
-    )
+    private val metric2 =
+        Metric(
+            type = MetricType.QUESTION_REPLIED,
+            indicatorName = "name2",
+            indicatorValueName = "value2",
+            emitterStoryId = "storyId3",
+            trackedStoryId = "storyId3",
+            playerIds =
+                setOf(
+                    PlayerId(id = "playerId1", PlayerType.user),
+                    PlayerId(id = "playerId2", PlayerType.bot),
+                ),
+            dialogId = "dialogId2".toId(),
+            creationDate = creationDate,
+            botId = botId1,
+            namespace = namespace1,
+            applicationId = applicationId1,
+        )
 
-    private val metric3 = Metric(
-        type = MetricType.QUESTION_REPLIED,
-        indicatorName = "name3",
-        indicatorValueName = "value3",
-        emitterStoryId = "storyId4",
-        trackedStoryId = "storyId5",
-        playerIds = setOf(
-            PlayerId(id = "playerId1", PlayerType.user),
-            PlayerId(id = "playerId2", PlayerType.bot),
-        ),
-        dialogId = "dialogId3".toId(),
-        creationDate = creationDate,
-        botId = botId2,
-        namespace = namespace1,
-        applicationId = applicationId1
-    )
+    private val metric3 =
+        Metric(
+            type = MetricType.QUESTION_REPLIED,
+            indicatorName = "name3",
+            indicatorValueName = "value3",
+            emitterStoryId = "storyId4",
+            trackedStoryId = "storyId5",
+            playerIds =
+                setOf(
+                    PlayerId(id = "playerId1", PlayerType.user),
+                    PlayerId(id = "playerId2", PlayerType.bot),
+                ),
+            dialogId = "dialogId3".toId(),
+            creationDate = creationDate,
+            botId = botId2,
+            namespace = namespace1,
+            applicationId = applicationId1,
+        )
 
     private fun initDb(metrics: List<Metric> = emptyList()) {
         metrics.forEach(MetricMongoDAO::save)
@@ -134,5 +139,4 @@ class MetricMongoDAOTest : AbstractTest() {
         // THEN
         assertEquals(listOf(metric1, metric2), MetricMongoDAO.findAllByBotId(namespace = namespace1, botId = botId1))
     }
-
 }

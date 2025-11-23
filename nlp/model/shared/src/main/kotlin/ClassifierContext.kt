@@ -23,7 +23,6 @@ import java.util.Locale
  *
  */
 interface ClassifierContext<out T : ClassifierContextKey> {
-
     val language: Locale
     val engineType: NlpEngineType
     val applicationName: String

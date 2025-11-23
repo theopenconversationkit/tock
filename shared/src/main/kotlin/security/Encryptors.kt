@@ -20,12 +20,12 @@ import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.property
 import ai.tock.shared.propertyExists
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
-import java.util.UUID
 import mu.KotlinLogging
 import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64
 import org.jasypt.util.text.BasicTextEncryptor
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
@@ -57,8 +57,8 @@ val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
 fun shaS256(s: String): String =
     String(
         Base64.encodeBase64Chunked(
-            MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8))
-        )
+            MessageDigest.getInstance("SHA-256").digest(s.toByteArray(StandardCharsets.UTF_8)),
+        ),
     )
 
 /**
@@ -70,15 +70,19 @@ private val oidNamespaceBytes = UUID_OID_NAMESPACE.toByteArray()
 /**
  * Generates a UUID based on a sha256 hash of the given string.
  */
-fun sha256Uuid(s: String, namespace: UUID? = null): UUID {
-    val digest = MessageDigest.getInstance("SHA-256").apply {
-        update(namespace?.toString()?.toByteArray() ?: oidNamespaceBytes)
-        update(s.toByteArray())
-    }.digest()
-    digest[6] = (digest[6].toInt() and 0x0f).toByte() /* clear version        */
-    digest[6] = (digest[6].toInt() or  0x80).toByte() /* set to version 8     */
-    digest[8] = (digest[8].toInt() and 0x3f).toByte() /* clear variant        */
-    digest[8] = (digest[8].toInt() or  0x80).toByte() /* set to IETF variant  */
+fun sha256Uuid(
+    s: String,
+    namespace: UUID? = null,
+): UUID {
+    val digest =
+        MessageDigest.getInstance("SHA-256").apply {
+            update(namespace?.toString()?.toByteArray() ?: oidNamespaceBytes)
+            update(s.toByteArray())
+        }.digest()
+    digest[6] = (digest[6].toInt() and 0x0f).toByte() // clear version
+    digest[6] = (digest[6].toInt() or 0x80).toByte() // set to version 8
+    digest[8] = (digest[8].toInt() and 0x3f).toByte() // clear variant
+    digest[8] = (digest[8].toInt() or 0x80).toByte() // set to IETF variant
     return uuidFromBytes(digest)
 }
 

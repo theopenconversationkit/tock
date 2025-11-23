@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
  *
  */
 class GAListBuildersTest {
-
     @Test
     fun `listItem can generate image url`() {
         val bus: BotBus = mockk(relaxed = true)

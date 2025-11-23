@@ -26,26 +26,26 @@ import ai.tock.shared.security.TockUserRole.botUser
 private val testCoreService = TestCoreService()
 
 class XrayTestService : TestService by testCoreService {
+    override fun registerServices(): (AdminVerticle).() -> Unit =
+        {
+            testCoreService.registerServices().invoke(this)
+            /**
+             * Triggered on "Create" button, after providing connector and test plan key.
+             * Will reach Jira to gather all test steps and send them to the bot as a conversation
+             */
+            blockingJsonPost("/xray/execute", botUser) { context, configuration: XrayPlanExecutionConfiguration ->
+                XrayService(
+                    listOfNotNull(configuration.configurationId),
+                    listOfNotNull(configuration.testPlanKey),
+                    listOfNotNull(configuration.testKey),
+                    configuration.testedBotId,
+                ).execute(context.organization)
+            }
 
-    override fun registerServices(): (AdminVerticle).() -> Unit = {
-        testCoreService.registerServices().invoke(this)
-        /**
-         * Triggered on "Create" button, after providing connector and test plan key.
-         * Will reach Jira to gather all test steps and send them to the bot as a conversation
-         */
-        blockingJsonPost("/xray/execute", botUser) { context, configuration: XrayPlanExecutionConfiguration ->
-            XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOfNotNull(configuration.testPlanKey),
-                listOfNotNull(configuration.testKey),
-                configuration.testedBotId
-            ).execute(context.organization)
+            blockingJsonGet("/xray/test/plans", botUser) {
+                XrayService().getTestPlans()
+            }
         }
-
-        blockingJsonGet("/xray/test/plans", botUser) {
-            XrayService().getTestPlans()
-        }
-    }
 
     override fun priority(): Int = 1
 }

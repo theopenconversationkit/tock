@@ -34,9 +34,8 @@ internal class ConfiguredStoryDefinition(
     definition: BotDefinitionWrapper,
     val configuration: StoryDefinitionConfiguration,
     botApplicationConfigurationKey: BotApplicationConfigurationKey? = null,
-    val configurationStoryHandler: BotConfigurationStoryHandler? = null
+    val configurationStoryHandler: BotConfigurationStoryHandler? = null,
 ) : StoryDefinition {
-
     val answerType: AnswerConfigurationType = configuration.currentType
 
     override val id: String = configuration._id.toString()
@@ -54,8 +53,7 @@ internal class ConfiguredStoryDefinition(
 
     fun isDisabled(applicationId: String?): Boolean = configuration.isDisabled(applicationId)
 
-    fun findEnabledStorySwitchId(applicationId: String?): String? =
-        configuration.findEnabledStorySwitchId(applicationId)
+    fun findEnabledStorySwitchId(applicationId: String?): String? = configuration.findEnabledStorySwitchId(applicationId)
 
     override val starterIntents: Set<Intent> =
         setOf(configuration.mainIntent) +

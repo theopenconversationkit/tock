@@ -20,8 +20,8 @@ import ai.tock.nlp.front.shared.codec.DumpType.full
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
-import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.IntentDefinition
 import java.time.Instant
 
 /**
@@ -34,5 +34,5 @@ data class ApplicationDump(
     val sentences: List<ClassifiedSentence> = emptyList(),
     val faqs: List<FaqDefinition> = emptyList(),
     val dumpType: DumpType = full,
-    val timestamp: Instant = Instant.now()
+    val timestamp: Instant = Instant.now(),
 )

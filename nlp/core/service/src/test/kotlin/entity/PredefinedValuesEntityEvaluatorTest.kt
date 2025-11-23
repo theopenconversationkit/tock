@@ -32,14 +32,14 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PredefinedValuesEntityEvaluatorTest {
-
-    private val context = EntityCallContextForEntity(
-        EntityType("namespace:frequency", dictionary = true),
-        Locale.FRENCH,
-        NlpEngineType.stanford,
-        "test",
-        ZonedDateTime.now()
-    )
+    private val context =
+        EntityCallContextForEntity(
+            EntityType("namespace:frequency", dictionary = true),
+            Locale.FRENCH,
+            NlpEngineType.stanford,
+            "test",
+            ZonedDateTime.now(),
+        )
 
     @BeforeEach
     fun fillDictionary() {
@@ -52,31 +52,31 @@ class PredefinedValuesEntityEvaluatorTest {
                         PredefinedValue(
                             "Annuel",
                             mapOf(
-                                Pair(Locale.FRENCH, listOf("Année", "annee"))
-                            )
+                                Pair(Locale.FRENCH, listOf("Année", "annee")),
+                            ),
                         ),
                         PredefinedValue(
                             "Mensuel",
                             mapOf(
-                                Pair(Locale.FRENCH, listOf("Mois"))
-                            )
+                                Pair(Locale.FRENCH, listOf("Mois")),
+                            ),
                         ),
                         PredefinedValue(
                             "Semaine",
                             mapOf(
                                 Pair(Locale.FRENCH, listOf("Hebdomadaire")),
-                                Pair(Locale.ENGLISH, listOf("Week"))
-                            )
+                                Pair(Locale.ENGLISH, listOf("Week")),
+                            ),
                         ),
                         PredefinedValue(
                             "Jour",
                             mapOf(
-                                Pair(Locale.FRENCH, listOf("Journalier", "Quotidien"))
-                            )
-                        )
-                    )
-                )
-            )
+                                Pair(Locale.FRENCH, listOf("Journalier", "Quotidien")),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
         )
     }
 
@@ -87,7 +87,6 @@ class PredefinedValuesEntityEvaluatorTest {
 
     @Test
     fun should_evaluate_frequency_day_with_synonym_value_found() {
-
         val evaluationResult = DictionaryEntityTypeEvaluator.evaluate(context, "Quotidien")
 
         assertTrue(evaluationResult.evaluated)
@@ -97,7 +96,6 @@ class PredefinedValuesEntityEvaluatorTest {
 
     @Test
     fun should_evaluate_frequency_week_with_synonym_value_not_found() {
-
         val evaluationResult = DictionaryEntityTypeEvaluator.evaluate(context, "Week")
 
         assertTrue(evaluationResult.evaluated)
@@ -107,7 +105,6 @@ class PredefinedValuesEntityEvaluatorTest {
 
     @Test
     fun should_evaluate_frequency_day_with_synonym_value_not_found_but_near() {
-
         val evaluationResult = DictionaryEntityTypeEvaluator.evaluate(context, "Quotidienne")
 
         assertTrue(evaluationResult.evaluated)

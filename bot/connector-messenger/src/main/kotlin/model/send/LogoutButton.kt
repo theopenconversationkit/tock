@@ -23,13 +23,12 @@ import ai.tock.bot.engine.message.Choice
  *
  */
 class LogoutButton : Button(ButtonType.account_unlink) {
-
     override fun toChoice(): Choice {
         return Choice(
             SendChoice.LOGOUT_INTENT,
             mapOf(
-                SendChoice.TITLE_PARAMETER to "Logout"
-            )
+                SendChoice.TITLE_PARAMETER to "Logout",
+            ),
         )
     }
 

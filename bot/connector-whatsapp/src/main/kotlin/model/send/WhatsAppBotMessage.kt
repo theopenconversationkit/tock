@@ -31,17 +31,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = WhatsAppBotTextMessage::class, name = "text"),
     JsonSubTypes.Type(value = WhatsAppBotImageMessage::class, name = "image"),
     JsonSubTypes.Type(value = WhatsAppBotMessageInteractiveMessage::class, name = "interactive"),
-    JsonSubTypes.Type(value = WhatsAppBotInteractiveMessage::class, name = "template")
+    JsonSubTypes.Type(value = WhatsAppBotInteractiveMessage::class, name = "template"),
 )
-abstract class WhatsAppBotMessage(val type: WhatsAppBotMessageType, @JsonIgnore internal open val userId: String?) :
+abstract class WhatsAppBotMessage(
+    val type: WhatsAppBotMessageType,
+    @JsonIgnore internal open val userId: String?,
+) :
     ConnectorMessage {
-
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppConnectorType
 

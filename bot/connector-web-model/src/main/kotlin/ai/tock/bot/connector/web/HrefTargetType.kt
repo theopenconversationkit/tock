@@ -19,9 +19,10 @@ package ai.tock.bot.connector.web
 /**
  * Common target types for href.
  */
-enum class HrefTargetType{
+@Suppress("ktlint:standard:enum-entry-name-case")
+enum class HrefTargetType {
     _blank,
     _self,
     _parent,
-    _top
+    _top,
 }

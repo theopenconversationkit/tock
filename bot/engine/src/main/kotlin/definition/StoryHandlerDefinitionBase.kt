@@ -22,8 +22,8 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.BotBus
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import kotlin.LazyThreadSafetyMode.PUBLICATION
 import mu.KotlinLogging
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  * Base implementation of [StoryHandlerDefinition].
@@ -31,9 +31,7 @@ import mu.KotlinLogging
 abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val bus: BotBus) :
     BotBus by bus,
     StoryHandlerDefinition {
-
     companion object {
-
         private val logger = KotlinLogging.logger {}
 
         private val connectorProvider: ConnectorHandlerProvider
@@ -68,16 +66,14 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(val 
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorType: ConnectorType): T? =
-        connectorProvider.provide(this, connectorType) as? T?
+    open fun findConnector(connectorType: ConnectorType): T? = connectorProvider.provide(this, connectorType) as? T?
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorId: String): T? =
-        connectorProvider.provide(this, connectorId) as? T?
+    open fun findConnector(connectorId: String): T? = connectorProvider.provide(this, connectorId) as? T?
 
     private val cachedConnector: T? by lazy(PUBLICATION) {
         (findConnector(connectorId) ?: findConnector(connectorType))

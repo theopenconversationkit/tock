@@ -46,11 +46,11 @@ import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
-import java.net.URL
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import java.net.URL
+import java.util.concurrent.CopyOnWriteArrayList
 
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
 private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
@@ -63,13 +63,11 @@ internal class TockConnectorController(
     override val connector: Connector,
     private val verticle: BotVerticle,
     override val botDefinition: BotDefinition,
-    private val configuration: ConnectorConfiguration
+    private val configuration: ConnectorConfiguration,
 ) : ConnectorController {
-
     override val botConfiguration: BotApplicationConfiguration = bot.configuration
 
     companion object {
-
         private val logger = KotlinLogging.logger {}
         private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
         private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
@@ -80,7 +78,7 @@ internal class TockConnectorController(
             connector: Connector,
             bot: Bot,
             verticle: BotVerticle,
-            configuration: BotApplicationConfiguration
+            configuration: BotApplicationConfiguration,
         ): TockConnectorController =
             TockConnectorController(bot, connector, verticle, bot.botDefinition, ConnectorConfiguration(configuration))
                 .apply {
@@ -88,9 +86,7 @@ internal class TockConnectorController(
                     connector.register(this)
                 }
 
-        internal fun unregister(
-            controller: TockConnectorController
-        ) {
+        internal fun unregister(controller: TockConnectorController) {
             logger.info { "Unregister connector ${controller.connector} for bot ${controller.bot}" }
             controller.connector.unregister(controller)
         }
@@ -114,7 +110,10 @@ internal class TockConnectorController(
      * @param data the optional additional data from the connector
      */
     @OptIn(ExperimentalTockCoroutines::class)
-    override fun handle(event: Event, data: ConnectorData) {
+    override fun handle(
+        event: Event,
+        data: ConnectorData,
+    ) {
         if (event.state.sourceConnectorType == null) {
             event.state.sourceConnectorType = connector.connectorType
         }
@@ -126,9 +125,10 @@ internal class TockConnectorController(
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
                 when (event) {
-                    is Action -> executor.launchCoroutine {
-                        handleAction(event, 0, data)
-                    }
+                    is Action ->
+                        executor.launchCoroutine {
+                            handleAction(event, 0, data)
+                        }
 
                     else -> callback.eventSkipped(event)
                 }
@@ -140,7 +140,10 @@ internal class TockConnectorController(
         }
     }
 
-    private fun tryToParseVoiceAudio(action: Action, userTimeline: UserTimeline): Action {
+    private fun tryToParseVoiceAudio(
+        action: Action,
+        userTimeline: UserTimeline,
+    ): Action {
         if (parseAudioFileEnabled && action is SendAttachment && action.type == audio) {
             val bytes = URL(action.url).readBytes()
             if (bytes.size < audioNlpFileLimit) {
@@ -151,7 +154,7 @@ internal class TockConnectorController(
                         action.playerId,
                         action.applicationId,
                         action.recipientId,
-                        text
+                        text,
                     )
                 }
             }
@@ -160,7 +163,11 @@ internal class TockConnectorController(
     }
 
     @ExperimentalTockCoroutines
-    private suspend fun handleAction(action: Action, nbAttempts: Int, data: ConnectorData) {
+    private suspend fun handleAction(
+        action: Action,
+        nbAttempts: Int,
+        data: ConnectorData,
+    ) {
         val callback = data.callback
         try {
             val playerId = action.playerId
@@ -177,7 +184,7 @@ internal class TockConnectorController(
                             action.playerId,
                             data.priorUserId,
                             data.groupId,
-                            storyDefinitionLoader(action.applicationId)
+                            storyDefinitionLoader(action.applicationId),
                         )
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
@@ -209,7 +216,10 @@ internal class TockConnectorController(
         }
     }
 
-    override fun support(action: Action, data: ConnectorData): Double {
+    override fun support(
+        action: Action,
+        data: ConnectorData,
+    ): Double {
         if (action.state.targetConnectorType == null) {
             action.state.targetConnectorType = connector.connectorType
         }
@@ -222,7 +232,7 @@ internal class TockConnectorController(
                         action.playerId,
                         data.priorUserId,
                         data.groupId,
-                        storyDefinitionLoader(action.applicationId)
+                        storyDefinitionLoader(action.applicationId),
                     )
                 bot.support(action, userTimeline, this@TockConnectorController, data)
             } catch (t: Throwable) {
@@ -232,7 +242,10 @@ internal class TockConnectorController(
         }
     }
 
-    override fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit) {
+    override fun registerServices(
+        serviceIdentifier: String,
+        installer: (Router) -> Unit,
+    ) {
         verticle.registerServices(serviceIdentifier) { router ->
             // healthcheck
             router.get("$serviceIdentifier/healthcheck").handler {
@@ -251,7 +264,7 @@ internal class TockConnectorController(
         data: ConnectorData,
         userAction: Action,
         action: Action,
-        delay: Long = 0
+        delay: Long = 0,
     ) {
         try {
             logger.debug { "message sent to connector: $action" }
@@ -276,19 +289,32 @@ internal class TockConnectorController(
         }
     }
 
-    fun loadProfile(data: ConnectorData, playerId: PlayerId): UserPreferences? {
+    fun loadProfile(
+        data: ConnectorData,
+        playerId: PlayerId,
+    ): UserPreferences? {
         return connector.loadProfile(data.callback, playerId)
     }
 
-    fun refreshProfile(data: ConnectorData, playerId: PlayerId): UserPreferences? {
+    fun refreshProfile(
+        data: ConnectorData,
+        playerId: PlayerId,
+    ): UserPreferences? {
         return connector.refreshProfile(data.callback, playerId)
     }
 
-    fun startTypingInAnswerTo(action: Action, data: ConnectorData) {
+    fun startTypingInAnswerTo(
+        action: Action,
+        data: ConnectorData,
+    ) {
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
 
-    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData) {
+    fun sendIntent(
+        intent: Intent,
+        applicationId: String,
+        data: ConnectorData,
+    ) {
         connector.send(MetadataEvent.intent(intent, applicationId), data.callback)
     }
 

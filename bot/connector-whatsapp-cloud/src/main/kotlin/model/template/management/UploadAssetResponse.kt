@@ -18,4 +18,6 @@ package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class UploadAssetResponse(@JsonProperty("h") val handle: String)
+data class UploadAssetResponse(
+    @JsonProperty("h") val handle: String,
+)

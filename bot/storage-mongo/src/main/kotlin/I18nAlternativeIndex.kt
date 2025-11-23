@@ -35,14 +35,13 @@ internal data class I18nAlternativeIndex(
     val connectorId: String?,
     val contextId: String,
     val index: Int,
-    val date: Instant = Instant.now()
+    val date: Instant = Instant.now(),
 ) {
-
     constructor(
         label: I18nLabel,
         localized: I18nLocalizedLabel,
         alternativeIndex: Int,
-        contextId: String
+        contextId: String,
     ) : this(
         label._id,
         label.namespace,
@@ -50,6 +49,6 @@ internal data class I18nAlternativeIndex(
         localized.interfaceType,
         localized.connectorId,
         contextId,
-        alternativeIndex
+        alternativeIndex,
     )
 }

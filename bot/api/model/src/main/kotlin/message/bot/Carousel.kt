@@ -21,5 +21,5 @@ package ai.tock.bot.api.model.message.bot
  */
 data class Carousel(
     val cards: List<Card>,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : BotMessage

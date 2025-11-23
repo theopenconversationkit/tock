@@ -22,5 +22,5 @@ package ai.tock.bot.admin.indicators.metric
 enum class MetricType {
     QUESTION_ASKED,
     QUESTION_REPLIED,
-    STORY_HANDLED
+    STORY_HANDLED,
 }

@@ -38,5 +38,5 @@ enum class BuildType {
     /**
      * Cleanup orphan builds.
      */
-    CLEANUP
+    CLEANUP,
 }

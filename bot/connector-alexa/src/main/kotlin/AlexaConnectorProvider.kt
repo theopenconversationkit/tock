@@ -32,7 +32,6 @@ import kotlin.reflect.full.primaryConstructor
  * [ConnectorProvider] for [AlexaConnector].
  */
 internal object AlexaConnectorProvider : ConnectorProvider {
-
     private val logger = KotlinLogging.logger {}
 
     private const val PROJECT_IDS = "_project_ids"
@@ -65,7 +64,7 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                     ?.filter { it.isNotBlank() }
                     ?.toSet()
                     ?: emptySet(),
-                parameters[PROJECT_TIMESTAMP]?.toLong() ?: DEFAULT_TIMESTAMP
+                parameters[PROJECT_TIMESTAMP]?.toLong() ?: DEFAULT_TIMESTAMP,
             )
         }
 
@@ -76,20 +75,20 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Project ids",
                     "_project_ids",
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Request timestamp (in ms)",
                     "_project_timestamp",
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Alexa mapper class",
                     "_mapper",
-                    false
-                )
+                    false,
+                ),
             ),
-            resourceAsString("/alexa.svg")
+            resourceAsString("/alexa.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(AlexaMessage::class)

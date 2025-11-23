@@ -30,9 +30,8 @@ data class EntityTestErrorWithSentenceReport(
     val averageErrorProbability: Double,
     val count: Int = 1,
     val total: Int = 1,
-    val firstDetectionDate: Instant = Instant.now()
+    val firstDetectionDate: Instant = Instant.now(),
 ) {
-
     constructor(originalSentence: ClassifiedSentence, error: EntityTestError) :
         this(
             SentenceReport(originalSentence),
@@ -40,6 +39,6 @@ data class EntityTestErrorWithSentenceReport(
             error.averageErrorProbability,
             error.count,
             error.total,
-            error.firstDetectionDate
+            error.firstDetectionDate,
         )
 }

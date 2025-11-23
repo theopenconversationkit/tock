@@ -24,7 +24,6 @@ import ai.tock.nlp.front.service.ParserRequestData
  *
  */
 internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(data) {
-
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
             val qualifiedIntents = mutableMapOf<Intent, Double>()
@@ -35,7 +34,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                     .also { (intent, prob) ->
                         // intents with modifiers are always supported
                         val modifier = data.getModifierForIntent(intent)
-                        if(prob >= data.application.knownIntentThreshold) {
+                        if (prob >= data.application.knownIntentThreshold) {
                             originalIntents[intent.name] = prob
                         }
                         if (modifier != null) {

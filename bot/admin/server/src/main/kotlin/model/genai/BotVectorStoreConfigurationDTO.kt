@@ -45,14 +45,12 @@ data class BotVectorStoreConfigurationDTO(
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            setting = VectorStoreSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_VECTOR_STORE,
-                dto = setting
-            )
+            setting =
+                VectorStoreSettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_VECTOR_STORE,
+                    dto = setting,
+                ),
         )
 }
-
-
-

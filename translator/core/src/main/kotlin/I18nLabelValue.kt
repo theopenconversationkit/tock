@@ -50,7 +50,6 @@ class I18nLabelValue constructor(
      */
     val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
 ) : CharSequence by defaultLabel {
-
     constructor(label: I18nLabel) :
         this(
             label._id.toString(),
@@ -64,6 +63,7 @@ class I18nLabelValue constructor(
      * Namespace of the label.
      */
     val namespace: String = namespace.lowercase()
+
     /**
      * Category of the label.
      */
@@ -72,20 +72,17 @@ class I18nLabelValue constructor(
     /**
      * Returns the value with the given namespace.
      */
-    fun withNamespace(newNamespace: String): I18nLabelValue =
-        I18nLabelValue(key.replaceBefore("_", newNamespace), newNamespace, category, defaultLabel, args, defaultI18n)
+    fun withNamespace(newNamespace: String): I18nLabelValue = I18nLabelValue(key.replaceBefore("_", newNamespace), newNamespace, category, defaultLabel, args, defaultI18n)
 
     /**
      * Returns the value with the given args.
      */
-    fun withArgs(newArgs: List<Any?>): I18nLabelValue =
-        I18nLabelValue(key, namespace, category, defaultLabel, newArgs, defaultI18n)
+    fun withArgs(newArgs: List<Any?>): I18nLabelValue = I18nLabelValue(key, namespace, category, defaultLabel, newArgs, defaultI18n)
 
     /**
      * Returns the value with the given args.
      */
-    fun withArgs(vararg newArgs: Any?): I18nLabelValue =
-        withArgs(listOf(*newArgs))
+    fun withArgs(vararg newArgs: Any?): I18nLabelValue = withArgs(listOf(*newArgs))
 
     override fun toString(): String {
         return defaultLabel.toString()

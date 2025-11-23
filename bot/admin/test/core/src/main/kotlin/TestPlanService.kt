@@ -46,7 +46,6 @@ import java.time.Instant
  *
  */
 object TestPlanService {
-
     private val logger = KotlinLogging.logger {}
 
     private val testPlanDAO: TestPlanDAO by injector.instance()
@@ -61,7 +60,10 @@ object TestPlanService {
         return testPlanDAO.getPlanExecutions(plan._id)
     }
 
-    fun getTestPlansByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<TestPlan> {
+    fun getTestPlansByNamespaceAndNlpModel(
+        namespace: String,
+        nlpModel: String,
+    ): List<TestPlan> {
         return testPlanDAO.getTestPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
     }
 
@@ -73,11 +75,17 @@ object TestPlanService {
         return testPlanDAO.getPlansByApplicationId(applicationId)
     }
 
-    fun removeDialogFromTestPlan(plan: TestPlan, dialogId: Id<Dialog>) {
+    fun removeDialogFromTestPlan(
+        plan: TestPlan,
+        dialogId: Id<Dialog>,
+    ) {
         saveTestPlan(plan.copy(dialogs = plan.dialogs.filter { it.id != dialogId }))
     }
 
-    fun addDialogToTestPlan(plan: TestPlan, dialogId: Id<Dialog>) {
+    fun addDialogToTestPlan(
+        plan: TestPlan,
+        dialogId: Id<Dialog>,
+    ) {
         saveTestPlan(plan.copy(dialogs = plan.dialogs + TestDialogReport(dialogDAO.getDialog(dialogId)!!)))
     }
 
@@ -93,7 +101,10 @@ object TestPlanService {
         return testPlanDAO.getTestPlan(planId)
     }
 
-    fun getTestPlanExecution(testPlan: TestPlan, testExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
+    fun getTestPlanExecution(
+        testPlan: TestPlan,
+        testExecutionId: Id<TestPlanExecution>,
+    ): TestPlanExecution? {
         return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId)
     }
 
@@ -128,21 +139,22 @@ object TestPlanService {
     fun runTestPlan(
         client: ConnectorRestClient,
         plan: TestPlan,
-        executionId: Id<TestPlanExecution>
+        executionId: Id<TestPlanExecution>,
     ): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors = 0
 
         // store the test plan execution into the right Object
-        val exec = TestPlanExecution(
-            plan._id,
-            dialogs,
-            nbErrors,
-            duration = Duration.between(start, Instant.now()),
-            _id = executionId,
-            status = TestPlanExecutionStatus.PENDING
-        )
+        val exec =
+            TestPlanExecution(
+                plan._id,
+                dialogs,
+                nbErrors,
+                duration = Duration.between(start, Instant.now()),
+                _id = executionId,
+                status = TestPlanExecutionStatus.PENDING,
+            )
         // save the test plan execution into the database
         testPlanDAO.saveTestExecution(exec)
 
@@ -178,7 +190,7 @@ object TestPlanService {
     private fun runDialog(
         client: ConnectorRestClient,
         testPlan: TestPlan,
-        dialog: TestDialogReport
+        dialog: TestDialogReport,
     ): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
@@ -195,21 +207,22 @@ object TestPlanService {
                         botId,
                         testPlan.startAction!!.toClientMessage(),
                         testPlan.targetConnectorType.toClientConnectorType(),
-                        true
-                    )
+                        true,
+                    ),
                 )
             }
 
             dialog.actions.forEachIndexed { testStepIndex, testStepMessages ->
                 if (testStepMessages.playerId.type == PlayerType.user) {
                     // convert the current test step as a request formatted to be understandable by the bot
-                    val request = ClientMessageRequest(
-                        playerId,
-                        botId,
-                        testStepMessages.findFirstMessage().toClientMessage(),
-                        testPlan.targetConnectorType.toClientConnectorType(),
-                        true
-                    )
+                    val request =
+                        ClientMessageRequest(
+                            playerId,
+                            botId,
+                            testStepMessages.findFirstMessage().toClientMessage(),
+                            testPlan.targetConnectorType.toClientConnectorType(),
+                            true,
+                        )
                     logger.debug { "ASK -- : $request" }
                     // send the converted test step to the bot
                     val answer = client.talk(getPath(testPlan), testPlan.locale, request)
@@ -224,9 +237,11 @@ object TestPlanService {
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
                         return DialogExecutionReport(
-                            dialog.id, true,
-                            errorMessage = answer.errorBody()?.toString()
-                                ?: "Unknown error"
+                            dialog.id,
+                            true,
+                            errorMessage =
+                                answer.errorBody()?.toString()
+                                    ?: "Unknown error",
                         )
                     }
                 } else {
@@ -235,7 +250,7 @@ object TestPlanService {
                             dialog.id,
                             true,
                             testStepMessages.id,
-                            errorMessage = "(no answer but one expected)"
+                            errorMessage = "(no answer but one expected)",
                         )
                     }
                     val botMessage = botMessages.removeAt(0)
@@ -250,7 +265,7 @@ object TestPlanService {
                             error = true,
                             errorActionId = testStepMessages.id,
                             errorMessage = "Error : $errorMessage - during steps comparison : $givenAnswer / expected : $expectedAnswer",
-                            indexOfStepError = testStepIndex
+                            indexOfStepError = testStepIndex,
                         )
                     }
                 }
@@ -283,9 +298,10 @@ object TestPlanService {
      * @return true if the messages are equals, false otherwise.
      */
     private fun ClientMessage.convertAndEquals(step: TestActionReport): String? {
-        val result = step.messages.map {
-            this.checkEquality(it.toClientMessage())
-        }
+        val result =
+            step.messages.map {
+                this.checkEquality(it.toClientMessage())
+            }
 
         return if (result.any { it == null }) {
             null
@@ -345,11 +361,11 @@ private fun ClientChoice.partiallyEquals(expected: ClientChoice): String? {
     val parameter = "_title"
     return if (parameters[parameter] != expected.parameters[parameter]) {
         "Choices differs ${this.parameters[parameter]} / ${expected.parameters[parameter]}"
-    } else null
+    } else {
+        null
+    }
 }
 
-private fun Map<String, String>.cleanTexts() =
-    mapValues { (_, v) -> v.cleanSurrogateChars().replace(Regex("<[^>]*>"), "") }
+private fun Map<String, String>.cleanTexts() = mapValues { (_, v) -> v.cleanSurrogateChars().replace(Regex("<[^>]*>"), "") }
 
-private fun String.cleanSurrogateChars(): String =
-    filterNot { it.isSurrogate() }
+private fun String.cleanSurrogateChars(): String = filterNot { it.isSurrogate() }

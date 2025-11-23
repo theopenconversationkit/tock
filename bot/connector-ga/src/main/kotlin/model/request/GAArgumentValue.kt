@@ -25,13 +25,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "@type"
+    property = "@type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = GATransactionDecisionValueV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValue"),
     JsonSubTypes.Type(value = GAHoldValue::class, name = "type.googleapis.com/google.actions.v2.HoldValue"),
     JsonSubTypes.Type(value = GASignInValue::class, name = "type.googleapis.com/google.actions.v2.SignInValue"),
     JsonSubTypes.Type(value = GANewSurfaceValue::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValue"),
-    JsonSubTypes.Type(value = GAMediaStatusValue::class, name = "type.googleapis.com/google.actions.v2.MediaStatus")
+    JsonSubTypes.Type(value = GAMediaStatusValue::class, name = "type.googleapis.com/google.actions.v2.MediaStatus"),
 )
-abstract class GAArgumentValue(@get:JsonProperty("@type") val type: GAArgumentValueType)
+abstract class GAArgumentValue(
+    @get:JsonProperty("@type") val type: GAArgumentValueType,
+)

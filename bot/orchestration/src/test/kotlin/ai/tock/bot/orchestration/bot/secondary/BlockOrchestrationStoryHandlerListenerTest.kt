@@ -31,26 +31,27 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class BlockOrchestrationStoryHandlerListenerTest {
-
-    private val listener = BlockOrchestrationStoryHandlerListener(
-        BlockedIntentRegardlessPrimary(
-            Intent("help"),
-            Intent("human_request")
-        ),
-        BlockedIntentForPrimary(
-            "anonymousBot",
-            Intent("my_account"),
-            Intent("personalize"),
-            message = "You can't see your account on this bot"
+    private val listener =
+        BlockOrchestrationStoryHandlerListener(
+            BlockedIntentRegardlessPrimary(
+                Intent("help"),
+                Intent("human_request"),
+            ),
+            BlockedIntentForPrimary(
+                "anonymousBot",
+                Intent("my_account"),
+                Intent("personalize"),
+                message = "You can't see your account on this bot",
+            ),
         )
-    )
 
     @Test
     internal fun `should continue action if not orchestrated`() {
         assertTrue(
             listener.startAction(
-                mockBotBus(actionOrchestratedBy(null)), mockk()
-            )
+                mockBotBus(actionOrchestratedBy(null)),
+                mockk(),
+            ),
         )
     }
 
@@ -77,13 +78,18 @@ internal class BlockOrchestrationStoryHandlerListenerTest {
         assertTrue(listener.startAction(botBus, mockk()))
     }
 
-    private fun actionOrchestratedBy(primaryBot: String?): Action = mockk {
-        every { metadata } returns ActionMetadata(
-            orchestratedBy = primaryBot
-        )
-    }
+    private fun actionOrchestratedBy(primaryBot: String?): Action =
+        mockk {
+            every { metadata } returns
+                ActionMetadata(
+                    orchestratedBy = primaryBot,
+                )
+        }
 
-    private fun mockBotBus(busAction: Action, busIntent: IntentAware? = null): BotBus {
+    private fun mockBotBus(
+        busAction: Action,
+        busIntent: IntentAware? = null,
+    ): BotBus {
         return mockk(relaxed = true) {
             every { action } returns busAction
             every { intent } returns busIntent

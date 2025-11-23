@@ -16,15 +16,18 @@
 
 package ai.tock.bot.connector.alcmeon
 
+@Suppress("ktlint:standard:property-naming")
 const val whatsappBackend = "whatsapp"
+
+@Suppress("ktlint:standard:property-naming")
 const val facebookBackend = "facebook"
 
 enum class AlcmeonBackend(val backendId: String) {
     WHATSAPP(whatsappBackend),
-    FACEBOOK(facebookBackend);
+    FACEBOOK(facebookBackend),
+    ;
 
     companion object {
-        fun findBackend(backend: String) =
-            values().firstOrNull { it.backendId == backend } ?: error("Unknown backend $backend")
+        fun findBackend(backend: String) = entries.firstOrNull { it.backendId == backend } ?: error("Unknown backend $backend")
     }
 }

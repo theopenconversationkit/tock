@@ -24,12 +24,11 @@ import ai.tock.bot.engine.user.UserPreferences
 data class UserPreferencesSearchResult(
     var firstName: String? = null,
     var lastName: String? = null,
-    var picture: String?
+    var picture: String?,
 ) {
-
     constructor(pref: UserPreferences) : this(
         pref.firstName,
         pref.lastName,
-        pref.picture
+        pref.picture,
     )
 }

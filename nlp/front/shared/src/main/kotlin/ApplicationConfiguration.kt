@@ -38,12 +38,14 @@ import java.util.Locale
  *
  */
 interface ApplicationConfiguration {
-
     fun save(application: ApplicationDefinition): ApplicationDefinition
 
     fun deleteApplicationById(id: Id<ApplicationDefinition>)
 
-    fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
+    fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition?
 
     fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition?
 
@@ -56,7 +58,7 @@ interface ApplicationConfiguration {
      */
     fun removeIntentFromApplication(
         application: ApplicationDefinition,
-        intentId: Id<IntentDefinition>
+        intentId: Id<IntentDefinition>,
     ): Boolean
 
     /**
@@ -67,22 +69,27 @@ interface ApplicationConfiguration {
     fun getSentences(
         intents: Set<Id<IntentDefinition>>? = null,
         language: Locale? = null,
-        status: ClassifiedSentenceStatus? = null
+        status: ClassifiedSentenceStatus? = null,
     ): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
-    fun save(sentence: ClassifiedSentence, user: UserLogin? = sentence.qualifier)
+    fun save(
+        sentence: ClassifiedSentence,
+        user: UserLogin? = sentence.qualifier,
+    )
 
     fun search(query: SentencesQuery): SentencesQueryResult
 
-    fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
+    fun switchSentencesStatus(
+        sentences: List<ClassifiedSentence>,
+        newStatus: ClassifiedSentenceStatus,
+    )
 
     /**
      * Returns sentence validator users.
      */
     fun users(applicationId: Id<ApplicationDefinition>): List<String>
-
 
     /**
      * Returns sentence configurations source.
@@ -97,7 +104,7 @@ interface ApplicationConfiguration {
     fun switchSentencesIntent(
         sentences: List<ClassifiedSentence>,
         targetApplication: ApplicationDefinition,
-        targetIntentId: Id<IntentDefinition>
+        targetIntentId: Id<IntentDefinition>,
     ): Int
 
     /**
@@ -109,7 +116,7 @@ interface ApplicationConfiguration {
         sentences: List<ClassifiedSentence>,
         targetApplication: ApplicationDefinition,
         oldEntity: EntityDefinition,
-        newEntity: EntityDefinition
+        newEntity: EntityDefinition,
     ): Int
 
     fun save(entityType: EntityTypeDefinition)
@@ -140,13 +147,20 @@ interface ApplicationConfiguration {
     /**
      * Update matching entity definition of all intents of the specified application.
      */
-    fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition)
+    fun updateEntityDefinition(
+        namespace: String,
+        applicationName: String,
+        entity: EntityDefinition,
+    )
 
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
-    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
+    fun getIntentByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
@@ -163,7 +177,7 @@ interface ApplicationConfiguration {
         application: ApplicationDefinition,
         intent: IntentDefinition,
         entityType: String,
-        role: String
+        role: String,
     ): Boolean
 
     /**
@@ -174,7 +188,7 @@ interface ApplicationConfiguration {
     fun removeSubEntityFromEntity(
         application: ApplicationDefinition,
         entityType: EntityTypeDefinition,
-        role: String
+        role: String,
     ): Boolean
 
     /**
@@ -182,13 +196,16 @@ interface ApplicationConfiguration {
      */
     fun getSupportedNlpEngineTypes(): Set<NlpEngineType>
 
-    fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
+    fun deletePredefinedValueByName(
+        entityTypeName: String,
+        predefinedValue: String,
+    )
 
     fun deletePredefinedValueLabelByName(
         entityTypeName: String,
         predefinedValue: String,
         locale: Locale,
-        label: String
+        label: String,
     )
 
     /**
@@ -202,7 +219,7 @@ interface ApplicationConfiguration {
      */
     fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
+        nlpEngineType: NlpEngineType,
     ): NlpApplicationConfiguration
 
     /**
@@ -211,7 +228,7 @@ interface ApplicationConfiguration {
     fun updateModelConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     )
 
     /**
@@ -232,22 +249,34 @@ interface ApplicationConfiguration {
     /**
      * Delete namespace.
      */
-    fun deleteNamespace(user: String, namespace: String)
+    fun deleteNamespace(
+        user: String,
+        namespace: String,
+    )
 
     /**
      * Set current namespace for selected user.
      */
-    fun setCurrentNamespace(user: String, namespace: String)
+    fun setCurrentNamespace(
+        user: String,
+        namespace: String,
+    )
 
     /**
      * Is it the namespace owner ?
      */
-    fun isNamespaceOwner(user: String, namespace: String): Boolean
+    fun isNamespaceOwner(
+        user: String,
+        namespace: String,
+    ): Boolean
 
     /**
      * Is this user has the namespace ?
      */
-    fun hasNamespace(user: String, namespace: String): Boolean
+    fun hasNamespace(
+        user: String,
+        namespace: String,
+    ): Boolean
 
     /**
      * Is this namespace exists ?
@@ -271,5 +300,9 @@ interface ApplicationConfiguration {
     fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration>
 
     fun getModelSharedIntents(namespace: String): List<IntentDefinition>
-    fun getSentencesForModel(application: ApplicationDefinition, language: Locale): List<ClassifiedSentence>
+
+    fun getSentencesForModel(
+        application: ApplicationDefinition,
+        language: Locale,
+    ): List<ClassifiedSentence>
 }

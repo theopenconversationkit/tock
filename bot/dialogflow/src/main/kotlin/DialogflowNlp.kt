@@ -43,15 +43,14 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
+import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
-import mu.KotlinLogging
 
 /**
  * [NlpController] Dialogflow implementation.
  */
 internal class DialogflowNlp : NlpController {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -66,9 +65,8 @@ internal class DialogflowNlp : NlpController {
         val userTimeline: UserTimeline,
         val dialog: Dialog,
         val connector: ConnectorController,
-        val botDefinition: BotDefinition
+        val botDefinition: BotDefinition,
     ) {
-
         suspend fun parse() {
             logger.debug { "Parse sentence : $sentence" }
 
@@ -94,11 +92,12 @@ internal class DialogflowNlp : NlpController {
                                 } catch (e: Exception) {
                                     logger.error(e)
                                     emptyList<EntityValue>()
-                                }
+                                },
                             )
                         }
 
-                        val entityEvaluations = customEntityEvaluations +
+                        val entityEvaluations =
+                            customEntityEvaluations +
                                 nlpResult.entities
                                     .asSequence()
                                     .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
@@ -118,14 +117,15 @@ internal class DialogflowNlp : NlpController {
                                     state.entityValues[it.entity.role] = EntityStateValue(sentence, it)
                                 }
 
-                            sentence.nlpStats = NlpCallStats(
-                                userTimeline.userPreferences.locale,
-                                intent,
-                                entityEvaluations,
-                                entityEvaluations,
-                                query,
-                                nlpResult
-                            )
+                            sentence.nlpStats =
+                                NlpCallStats(
+                                    userTimeline.userPreferences.locale,
+                                    intent,
+                                    entityEvaluations,
+                                    entityEvaluations,
+                                    query,
+                                    nlpResult,
+                                )
                         }
                     } ?: listenNlpErrorCall(query, dialog, null)
                 } catch (t: Throwable) {
@@ -139,17 +139,18 @@ internal class DialogflowNlp : NlpController {
             userTimeline: UserTimeline,
             dialog: Dialog,
             sentence: SendSentence,
-            nlpResult: NlpResult
+            nlpResult: NlpResult,
         ): Intent {
             var i: Intent? = null
             BotRepository.forEachNlpListener {
                 if (i == null) {
-                    i = try {
-                        it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
-                    } catch (e: Exception) {
-                        logger.error(e)
-                        null
-                    }
+                    i =
+                        try {
+                            it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
+                        } catch (e: Exception) {
+                            logger.error(e)
+                            null
+                        }
                 }
             }
 
@@ -161,12 +162,13 @@ internal class DialogflowNlp : NlpController {
                 var i: Intent? = null
                 BotRepository.forEachNlpListener {
                     if (i == null) {
-                        i = try {
-                            it.detectKeyword(sentence)
-                        } catch (e: Exception) {
-                            logger.error(e)
-                            null
-                        }
+                        i =
+                            try {
+                                it.detectKeyword(sentence)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                                null
+                            }
                     }
                 }
                 i
@@ -175,7 +177,10 @@ internal class DialogflowNlp : NlpController {
             }
         }
 
-        private suspend fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
+        private suspend fun listenNlpSuccessCall(
+            query: NlpQuery,
+            result: NlpResult,
+        ) {
             BotRepository.forEachNlpListener {
                 try {
                     it.onSuccess(query, result)
@@ -185,7 +190,11 @@ internal class DialogflowNlp : NlpController {
             }
         }
 
-        private suspend fun listenNlpErrorCall(query: NlpQuery, dialog: Dialog, throwable: Throwable?) {
+        private suspend fun listenNlpErrorCall(
+            query: NlpQuery,
+            dialog: Dialog,
+            throwable: Throwable?,
+        ) {
             BotRepository.forEachNlpListener {
                 try {
                     it.onError(query, dialog, throwable)
@@ -205,7 +214,7 @@ internal class DialogflowNlp : NlpController {
                 referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
                 referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,
                 test = test,
-                registerQuery = !test && !userTimeline.userState.botDisabled
+                registerQuery = !test && !userTimeline.userState.botDisabled,
             )
         }
 
@@ -217,8 +226,8 @@ internal class DialogflowNlp : NlpController {
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
-                )
+                        ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet(),
+                ),
             )
         }
 
@@ -226,27 +235,31 @@ internal class DialogflowNlp : NlpController {
             logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
             val intentsQualifiers = dialog.state.nextActionState?.intentsQualifiers
             val useQualifiers = intentsQualifiers != null && intentsQualifiers.isNotEmpty()
-            val result = if (!useQualifiers) {
-                nlpClient.parse(request)
-            } else {
-                nlpClient.parse(
-                    request.copy(
-                        intentsSubset = intentsQualifiers.asSequence().map {
-                            it.copy(
-                                intent = it.intent.withNamespace(
-                                    request.namespace
-                                )
-                            )
-                        }.toSet()
+            val result =
+                if (!useQualifiers) {
+                    nlpClient.parse(request)
+                } else {
+                    nlpClient.parse(
+                        request.copy(
+                            intentsSubset =
+                                intentsQualifiers.asSequence().map {
+                                    it.copy(
+                                        intent =
+                                            it.intent.withNamespace(
+                                                request.namespace,
+                                            ),
+                                    )
+                                }.toSet(),
+                        ),
                     )
-                )
-            }
+                }
             if (result != null && useQualifiers) {
                 // force intents qualifiers if unknown answer
                 if (intentsQualifiers.none { it.intent == result.intent }) {
                     return result.copy(
-                        intent = intentsQualifiers.maxByOrNull { it.modifier }?.intent
-                            ?: intentsQualifiers.first().intent
+                        intent =
+                            intentsQualifiers.maxByOrNull { it.modifier }?.intent
+                                ?: intentsQualifiers.first().intent,
                     ).also {
                         logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
                     }
@@ -261,7 +274,7 @@ internal class DialogflowNlp : NlpController {
         userTimeline: UserTimeline,
         dialog: Dialog,
         connector: ConnectorController,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ) {
         SentenceParser(
             nlpClient,
@@ -269,14 +282,14 @@ internal class DialogflowNlp : NlpController {
             userTimeline,
             dialog,
             connector,
-            botDefinition
+            botDefinition,
         ).parse()
     }
 
     override fun markAsUnknown(
         sentence: SendSentence,
         userTimeline: UserTimeline,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ) {
         if (sentence.stringText != null) {
             executor.executeBlocking {
@@ -285,27 +298,25 @@ internal class DialogflowNlp : NlpController {
                         botDefinition.namespace,
                         botDefinition.nlpModelName,
                         userTimeline.userPreferences.locale,
-                        sentence.stringText!!
-                    )
+                        sentence.stringText!!,
+                    ),
                 )
             }
         }
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition> =
-        nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
+    override fun getIntentsByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): List<IntentDefinition> = nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
 
-    override fun importNlpDump(stream: InputStream): Boolean =
-        nlpClient.importNlpDump(stream)
+    override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream)
 
-    override fun importNlpPlainDump(dump: ApplicationDump): Boolean =
-        nlpClient.importNlpPlainDump(dump)
+    override fun importNlpPlainDump(dump: ApplicationDump): Boolean = nlpClient.importNlpPlainDump(dump)
 
-    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean =
-        nlpClient.importNlpPlainSentencesDump(dump)
+    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean = nlpClient.importNlpPlainSentencesDump(dump)
 
-    override fun importNlpSentencesDump(stream: InputStream): Boolean =
-        nlpClient.importNlpSentencesDump(stream)
+    override fun importNlpSentencesDump(stream: InputStream): Boolean = nlpClient.importNlpSentencesDump(stream)
 
     override fun waitAvailability(timeToWaitInMs: Long) {
         val s = System.currentTimeMillis()

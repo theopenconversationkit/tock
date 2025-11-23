@@ -19,5 +19,5 @@ package ai.tock.bot.api.model.message.bot
 data class Sentence(
     val text: I18nText,
     val suggestions: List<Suggestion> = emptyList(),
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : BotMessage

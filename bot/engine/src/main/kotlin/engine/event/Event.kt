@@ -20,9 +20,9 @@ import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.hasEntityPredefinedValue
 import ai.tock.bot.engine.dialog.hasSubEntity
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * The base class for all events or actions.
@@ -47,7 +47,7 @@ abstract class Event(
     /**
      * The state of the event.
      */
-    val state: EventState = EventState()
+    val state: EventState = EventState(),
 ) {
     @Deprecated("Use constructor with connectorId", ReplaceWith("Event(connectorId = applicationId, id, date, state)"))
     constructor(
@@ -56,7 +56,7 @@ abstract class Event(
         date: Instant = Instant.now(),
         state: EventState = EventState(),
         _deprecatedConstructor: Nothing? = null,
-    ): this(applicationId, id, date, state)
+    ) : this(applicationId, id, date, state)
 
     @Deprecated("Use more appropriately named connectorId", ReplaceWith("connectorId"))
     val applicationId: String get() = connectorId
@@ -71,7 +71,10 @@ abstract class Event(
     /**
      * Does this event contains specified predefined value entity?
      */
-    fun hasEntityPredefinedValue(role: String, value: String): Boolean {
+    fun hasEntityPredefinedValue(
+        role: String,
+        value: String,
+    ): Boolean {
         return hasEntityPredefinedValue(state.entityValues, role, value)
     }
 }

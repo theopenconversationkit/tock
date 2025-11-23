@@ -19,5 +19,5 @@ package ai.tock.bot.connector.whatsapp.model.send
 internal data class WhatsAppSendBotMessageInteractiveMessage(
     val interactive: WhatsAppBotInteractive,
     override val recipientType: WhatsAppBotRecipientType,
-    override val to: String
+    override val to: String,
 ) : WhatsAppSendBotMessage(WhatsAppBotMessageType.interactive)

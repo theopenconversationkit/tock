@@ -19,18 +19,20 @@ package ai.tock.bot.connector.media
 /**
  * All [MediaMessage] types.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class MediaMessageType {
-
     /**
      * Type of [MediaAction].
      */
     action,
+
     /**
      * Type of [MediaCard].
      */
     card,
+
     /**
      * Type of [MediaCarousel].
      */
-    carousel
+    carousel,
 }

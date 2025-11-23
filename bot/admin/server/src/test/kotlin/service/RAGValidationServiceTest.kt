@@ -41,7 +41,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RAGValidationServiceTest {
-
     companion object {
         init {
             tockInternalInjector = KodeinInjector()
@@ -52,9 +51,11 @@ class RAGValidationServiceTest {
                 bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
                 bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
             }.also {
-                tockInternalInjector.inject(Kodein {
-                    import(it)
-                })
+                tockInternalInjector.inject(
+                    Kodein {
+                        import(it)
+                    },
+                )
             }
         }
 
@@ -63,37 +64,41 @@ class RAGValidationServiceTest {
         private val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
     }
 
-    private val openAILLMSetting = OpenAILLMSetting(
-        apiKey = "123-abc", model = "unavailable-model", temperature = "0.4",
-        baseUrl = "https://api.openai.com/v1",
-    )
+    private val openAILLMSetting =
+        OpenAILLMSetting(
+            apiKey = "123-abc",
+            model = "unavailable-model",
+            temperature = "0.4",
+            baseUrl = "https://api.openai.com/v1",
+        )
 
-    private val azureOpenAIEMSetting = AzureOpenAIEMSettingDTO(
-        apiKey = "123-abc",
-        apiBase = "http://my-api-base-endpoint-url.com",
-        apiVersion = "2023-08-01-preview",
-        deploymentName = "deploymentName",
-        model = "model",
-    )
+    private val azureOpenAIEMSetting =
+        AzureOpenAIEMSettingDTO(
+            apiKey = "123-abc",
+            apiBase = "http://my-api-base-endpoint-url.com",
+            apiVersion = "2023-08-01-preview",
+            deploymentName = "deploymentName",
+            model = "model",
+        )
 
-    private val ragConfiguration = BotRAGConfigurationDTO(
-        namespace = "namespace",
-        botId = "botId",
-        questionCondensingLlmSetting = openAILLMSetting,
-        questionCondensingPrompt = PromptTemplate(template = "test"),
-        questionAnsweringLlmSetting = openAILLMSetting,
-        questionAnsweringPrompt = PromptTemplate(template = "How to bike in the rain"),
-        emSetting = azureOpenAIEMSetting,
-        noAnswerSentence = " No answer sentence",
-        documentsRequired = true,
-        debugEnabled = false,
-        maxDocumentsRetrieved = 2,
-        maxMessagesFromHistory = 2,
-    )
+    private val ragConfiguration =
+        BotRAGConfigurationDTO(
+            namespace = "namespace",
+            botId = "botId",
+            questionCondensingLlmSetting = openAILLMSetting,
+            questionCondensingPrompt = PromptTemplate(template = "test"),
+            questionAnsweringLlmSetting = openAILLMSetting,
+            questionAnsweringPrompt = PromptTemplate(template = "How to bike in the rain"),
+            emSetting = azureOpenAIEMSetting,
+            noAnswerSentence = " No answer sentence",
+            documentsRequired = true,
+            debugEnabled = false,
+            maxDocumentsRetrieved = 2,
+            maxMessagesFromHistory = 2,
+        )
 
     @Test
     fun `validation of the RAG configuration when the Orchestrator returns no error, and the RAG function has been activated, and the session index ID has been supplied`() {
-
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
         // - RAG enabled
@@ -107,9 +112,10 @@ class RAGValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RAGValidationService.validate(
-            ragConfiguration.copy(enabled = true, indexSessionId = "ABC-123").toBotRAGConfiguration()
-        )
+        val errors =
+            RAGValidationService.validate(
+                ragConfiguration.copy(enabled = true, indexSessionId = "ABC-123").toBotRAGConfiguration(),
+            )
 
         // THEN :
         // Check that no errors have been found
@@ -118,7 +124,6 @@ class RAGValidationServiceTest {
 
     @Test
     fun `validation of the RAG configuration when the Orchestrator returns no error, and the RAG function has been activated, but no session index ID has been supplied`() {
-
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
         // - RAG enabled
@@ -132,9 +137,10 @@ class RAGValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RAGValidationService.validate(
-            ragConfiguration.copy(enabled = true, indexSessionId = null).toBotRAGConfiguration()
-        )
+        val errors =
+            RAGValidationService.validate(
+                ragConfiguration.copy(enabled = true, indexSessionId = null).toBotRAGConfiguration(),
+            )
 
         // THEN :
         // Check that one error have been found
@@ -144,7 +150,6 @@ class RAGValidationServiceTest {
 
     @Test
     fun `validation of the RAG configuration when the Orchestrator returns no error, the RAG function has not been activated, and no session index ID has been supplied`() {
-
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
         // - RAG is not enabled
@@ -158,9 +163,10 @@ class RAGValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RAGValidationService.validate(
-            ragConfiguration.copy(enabled = false, indexSessionId = "sessionId").toBotRAGConfiguration()
-        )
+        val errors =
+            RAGValidationService.validate(
+                ragConfiguration.copy(enabled = false, indexSessionId = "sessionId").toBotRAGConfiguration(),
+            )
 
         // THEN :
         // Check that no errors have been found
@@ -169,30 +175,36 @@ class RAGValidationServiceTest {
 
     @Test
     fun `validation of the RAG configuration when the Orchestrator returns 2 errors for LLM and 1 for Embedding model, the RAG function has not been activated`() {
-
         // GIVEN
         // - 3 errors returned by Generative AI Orchestrator for LLM (4 = 2 for condensing + 2 for answering) and EM (1)
         // - RAG is not enabled
         every {
             llmProviderService.checkSetting(any())
-        } returns ProviderSettingStatusResponse(
-            valid = false, errors = listOf(
-                createFakeErrorResponse("10"), createFakeErrorResponse("20")
+        } returns
+            ProviderSettingStatusResponse(
+                valid = false,
+                errors =
+                    listOf(
+                        createFakeErrorResponse("10"), createFakeErrorResponse("20"),
+                    ),
             )
-        )
         every {
             emProviderService.checkSetting(any())
-        } returns ProviderSettingStatusResponse(
-            valid = false, errors = listOf(
-                createFakeErrorResponse("30")
+        } returns
+            ProviderSettingStatusResponse(
+                valid = false,
+                errors =
+                    listOf(
+                        createFakeErrorResponse("30"),
+                    ),
             )
-        )
 
         // WHEN :
         // Launch of validation
-        val errors = RAGValidationService.validate(
-            ragConfiguration.copy(enabled = false).toBotRAGConfiguration()
-        )
+        val errors =
+            RAGValidationService.validate(
+                ragConfiguration.copy(enabled = false).toBotRAGConfiguration(),
+            )
 
         // THEN :
         // Check that 3 groups of errors have been found
@@ -204,10 +216,11 @@ class RAGValidationServiceTest {
         assertEquals("30", (((errors.elementAt(2).params) as List<*>)[0] as ErrorResponse).code)
     }
 
-    private fun createFakeErrorResponse(code: String) = ErrorResponse(
-        code = code,
-        message = "message",
-        detail = "detail",
-        info = ErrorInfo(provider = "provider", error = "error", cause = "cause", request = "request")
-    )
+    private fun createFakeErrorResponse(code: String) =
+        ErrorResponse(
+            code = code,
+            message = "message",
+            detail = "detail",
+            info = ErrorInfo(provider = "provider", error = "error", cause = "cause", request = "request"),
+        )
 }

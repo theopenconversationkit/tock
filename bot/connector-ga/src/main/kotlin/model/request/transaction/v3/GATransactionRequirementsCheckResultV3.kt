@@ -23,7 +23,7 @@ import ai.tock.bot.connector.ga.model.request.GAArgumentValueType
  * @see https://developers.google.com/actions/reference/rest/Shared.Types/TransactionDecisionValue#TransactionRequirementsCheckResult
  */
 data class GATransactionRequirementsCheckResultV3(
-    val resultType: GAResultTypeV3
+    val resultType: GAResultTypeV3,
 ) : GAArgumentValue(
-    GAArgumentValueType.transactionRequirementsCheckResult
-)
+        GAArgumentValueType.transactionRequirementsCheckResult,
+    )

@@ -49,7 +49,6 @@ import org.litote.kmongo.save
  *
  */
 internal object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
-
     private val logger = KotlinLogging.logger {}
 
     private val botCol = database.getCollection<BotConfiguration>("bot")
@@ -85,14 +84,14 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     override fun getConfigurationByApplicationIdAndBotId(
         namespace: String,
         applicationId: String,
-        botId: String
+        botId: String,
     ): BotApplicationConfiguration? {
         return col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
     }
 
     override fun getConfigurationsByNamespaceAndBotId(
         namespace: String,
-        botId: String
+        botId: String,
     ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, BotId eq botId).toList()
     }
@@ -121,7 +120,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
     override fun getConfigurationsByNamespaceAndNlpModel(
         namespace: String,
-        nlpModel: String
+        nlpModel: String,
     ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
     }
@@ -129,7 +128,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     override fun getConfigurationsByBotNamespaceAndConfigurationName(
         namespace: String,
         botId: String,
-        configurationName: String
+        configurationName: String,
     ): List<BotApplicationConfiguration> {
         return col.find(Namespace eq namespace, BotId eq botId, Name eq configurationName).toList()
     }
@@ -143,21 +142,24 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             and(
                 Name eq conf.name,
                 Namespace eq conf.namespace,
-                BotId eq conf.botId
+                BotId eq conf.botId,
             ),
             conf,
-            replaceUpsert()
+            replaceUpsert(),
         )
     }
 
-    override fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotConfiguration> {
+    override fun getBotConfigurationsByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): List<BotConfiguration> {
         return botCol.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
     override fun getBotConfigurationsByNamespaceAndNameAndBotId(
         namespace: String,
         name: String,
-        botId: String
+        botId: String,
     ): BotConfiguration? {
         return botCol.findOne(Namespace eq namespace, Name eq name, BotId eq botId)
     }
@@ -171,12 +173,15 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
             and(
                 Name eq conf.name,
                 Namespace eq conf.namespace,
-                BotId eq conf.botId
-            )
+                BotId eq conf.botId,
+            ),
         )
     }
 
-    fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =
+    fun getApplicationIds(
+        namespace: String,
+        nlpModel: String,
+    ): Set<String> =
         getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
             .asSequence()
             .flatMap {

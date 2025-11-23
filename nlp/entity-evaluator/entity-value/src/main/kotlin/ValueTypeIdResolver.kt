@@ -26,8 +26,10 @@ import kotlin.reflect.KClass
  * The [TypeIdResolver] for any [Value] type.
  */
 class ValueTypeIdResolver : TypeIdResolverBase() {
-
-    override fun typeFromId(context: DatabindContext, id: String): JavaType {
+    override fun typeFromId(
+        context: DatabindContext,
+        id: String,
+    ): JavaType {
         return context.config.constructType(ValueResolverRepository.getType(id).java)
     }
 
@@ -36,7 +38,10 @@ class ValueTypeIdResolver : TypeIdResolverBase() {
         return ValueResolverRepository.getId(value::class as KClass<Value>)
     }
 
-    override fun idFromValueAndType(value: Any, suggestedType: Class<*>): String {
+    override fun idFromValueAndType(
+        value: Any,
+        suggestedType: Class<*>,
+    ): String {
         return idFromValue(value)
     }
 

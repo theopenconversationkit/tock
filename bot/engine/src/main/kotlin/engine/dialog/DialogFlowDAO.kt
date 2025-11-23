@@ -26,13 +26,15 @@ import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 interface DialogFlowDAO {
-
     /**
      * Init stat craw - used only in admin by default.
      */
     fun initFlowStatCrawl()
 
-    fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition)
+    fun saveFlow(
+        bot: BotDefinition,
+        flow: DialogFlowDefinition,
+    )
 
     fun loadApplicationData(
         namespace: String,
@@ -40,7 +42,7 @@ interface DialogFlowDAO {
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
         to: LocalDateTime?,
-        intent: String? = null
+        intent: String? = null,
     ): ApplicationDialogFlowData
 
     fun countMessagesByDate(
@@ -64,7 +66,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -80,7 +82,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -96,7 +98,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -109,7 +111,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<DayOfWeek, Int>
 
     /**
@@ -122,7 +124,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<Int, Int>
 
     /**
@@ -138,7 +140,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -151,7 +153,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 
     /**
@@ -164,7 +166,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 
     /**
@@ -180,7 +182,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -193,7 +195,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 
     /**
@@ -206,7 +208,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 
     /**
@@ -219,7 +221,7 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 
     /**
@@ -232,6 +234,6 @@ interface DialogFlowDAO {
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: LocalDateTime?,
-        to: LocalDateTime?
+        to: LocalDateTime?,
     ): Map<String, Int>
 }

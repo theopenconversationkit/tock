@@ -29,8 +29,7 @@ import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
 /**
  * The Messenger message if any.
  */
-fun BotBusMockLog.messenger(): MessengerConnectorMessage? =
-    message(messengerConnectorType) as? MessengerConnectorMessage
+fun BotBusMockLog.messenger(): MessengerConnectorMessage? = message(messengerConnectorType) as? MessengerConnectorMessage
 
 /**
  * The Google Assistant message if any.

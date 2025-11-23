@@ -33,69 +33,79 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
 internal class WebConnectorResponseTest {
-
     @Test
     fun `text only`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(text = "Text only")
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(text = "Text only"),
+                    ),
             )
-        )
         val deserializedEvent = mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_only.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 
     @Test
     fun `text with footnotes`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "Text with 2 footnotes", footnotes = listOf(
-                        Footnote("e122e97a5cc7", "title 1", url = "https://doc.tock.ai", content = "content 1", score = null),
-                        Footnote("fcad492fdb99", "title 2", url = "https://github.com/theopenconversationkit/tock", content = "content 2", score = null)
-                    )
-                )
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "Text with 2 footnotes",
+                            footnotes =
+                                listOf(
+                                    Footnote("e122e97a5cc7", "title 1", url = "https://doc.tock.ai", content = "content 1", score = null),
+                                    Footnote("fcad492fdb99", "title 2", url = "https://github.com/theopenconversationkit/tock", content = "content 2", score = null),
+                                ),
+                        ),
+                    ),
             )
-        )
         val deserializedEvent = mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_footnotes.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 
     @Test
     fun `deep link`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(deepLink = WebDeepLink("aaa-bbb-123"))
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(deepLink = WebDeepLink("aaa-bbb-123")),
+                    ),
             )
-        )
         val deserializedEvent = mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/deep_link.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 
     @Test
     fun `text with buttons`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "Text with Buttons",
-                    buttons = listOf(
-                        PostbackButton(
-                            title = "title",
-                            payload = "payload"
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "Text with Buttons",
+                            buttons =
+                                listOf(
+                                    PostbackButton(
+                                        title = "title",
+                                        payload = "payload",
+                                    ),
+                                    QuickReply(
+                                        title = "title",
+                                        payload = "payload",
+                                        imageUrl = null,
+                                    ),
+                                    UrlButton(
+                                        title = "title",
+                                        url = "http://www.sncf.com",
+                                    ),
+                                ),
                         ),
-                        QuickReply(
-                            title = "title",
-                            payload = "payload",
-                            imageUrl = null
-                        ),
-                        UrlButton(
-                            title = "title",
-                            url = "http://www.sncf.com"
-                        )
-                    )
-                )
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_buttons.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -103,20 +113,23 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `text with url button opened in the same window`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "Text with UrlButton",
-                    buttons = listOf(
-                        UrlButton(
-                            title = "title",
-                            url = "http://www.sncf.com",
-                            target = HrefTargetType._self.name
-                        )
-                    )
-                )
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "Text with UrlButton",
+                            buttons =
+                                listOf(
+                                    UrlButton(
+                                        title = "title",
+                                        url = "http://www.sncf.com",
+                                        target = HrefTargetType._self.name,
+                                    ),
+                                ),
+                        ),
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_url_button_opened_same_window.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -124,20 +137,23 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `text with url button opened in a popup window`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "Text with UrlButton",
-                    buttons = listOf(
-                        UrlButton(
-                            title = "title",
-                            url = "http://www.sncf.com",
-                            windowFeatures = "width=400,height=500",
-                        )
-                    )
-                )
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "Text with UrlButton",
+                            buttons =
+                                listOf(
+                                    UrlButton(
+                                        title = "title",
+                                        url = "http://www.sncf.com",
+                                        windowFeatures = "width=400,height=500",
+                                    ),
+                                ),
+                        ),
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_url_button_opened_popup_window.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -145,31 +161,34 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `text with secondary buttons`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "Text with Buttons",
-                    buttons = listOf(
-                        PostbackButton(
-                            title = "title",
-                            payload = "payload",
-                            style = "secondary"
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "Text with Buttons",
+                            buttons =
+                                listOf(
+                                    PostbackButton(
+                                        title = "title",
+                                        payload = "payload",
+                                        style = "secondary",
+                                    ),
+                                    QuickReply(
+                                        title = "title",
+                                        payload = "payload",
+                                        imageUrl = null,
+                                        style = "secondary",
+                                    ),
+                                    UrlButton(
+                                        title = "title",
+                                        url = "http://www.sncf.com",
+                                        style = "secondary",
+                                    ),
+                                ),
                         ),
-                        QuickReply(
-                            title = "title",
-                            payload = "payload",
-                            imageUrl = null,
-                            style = "secondary"
-                        ),
-                        UrlButton(
-                            title = "title",
-                            url = "http://www.sncf.com",
-                            style = "secondary"
-                        )
-                    )
-                )
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_buttons_secondary.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -177,31 +196,36 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `web card with buttons`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    card = WebCard(
-                        title = "title",
-                        subTitle = "subTitle",
-                        file = WebMediaFile(
-                            url = "http://www.sncf.com/image.png",
-                            name = "imageName",
-                            type = SendAttachment.AttachmentType.image
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            card =
+                                WebCard(
+                                    title = "title",
+                                    subTitle = "subTitle",
+                                    file =
+                                        WebMediaFile(
+                                            url = "http://www.sncf.com/image.png",
+                                            name = "imageName",
+                                            type = SendAttachment.AttachmentType.image,
+                                        ),
+                                    buttons =
+                                        listOf(
+                                            PostbackButton(
+                                                title = "title",
+                                                payload = "payload",
+                                            ),
+                                            UrlButton(
+                                                title = "title",
+                                                url = "http://www.sncf.com",
+                                            ),
+                                        ),
+                                ),
                         ),
-                        buttons = listOf(
-                            PostbackButton(
-                                title = "title",
-                                payload = "payload"
-                            ),
-                            UrlButton(
-                                title = "title",
-                                url = "http://www.sncf.com"
-                            )
-                        )
-                    )
-                )
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_buttons.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -209,32 +233,37 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `web card with buttons and description`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    card = WebCard(
-                        title = "title",
-                        subTitle = "subTitle",
-                        file = WebMediaFile(
-                            url = "http://www.sncf.com/image.png",
-                            name = "imageName",
-                            type = SendAttachment.AttachmentType.image,
-                            description = "description"
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            card =
+                                WebCard(
+                                    title = "title",
+                                    subTitle = "subTitle",
+                                    file =
+                                        WebMediaFile(
+                                            url = "http://www.sncf.com/image.png",
+                                            name = "imageName",
+                                            type = SendAttachment.AttachmentType.image,
+                                            description = "description",
+                                        ),
+                                    buttons =
+                                        listOf(
+                                            PostbackButton(
+                                                title = "title",
+                                                payload = "payload",
+                                            ),
+                                            UrlButton(
+                                                title = "title",
+                                                url = "http://www.sncf.com",
+                                            ),
+                                        ),
+                                ),
                         ),
-                        buttons = listOf(
-                            PostbackButton(
-                                title = "title",
-                                payload = "payload"
-                            ),
-                            UrlButton(
-                                title = "title",
-                                url = "http://www.sncf.com"
-                            )
-                        )
-                    )
-                )
+                    ),
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_buttons_and_file_description.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
@@ -242,53 +271,62 @@ internal class WebConnectorResponseTest {
 
     @Test
     fun `carousel with two cards and one button`() {
-        val expected = WebConnectorResponseContent(
-            responses = listOf(
-                WebMessageContent(
-                    text = "carousel with two cards and one button",
-                    carousel = WebCarousel(
-                        cards = listOf(
-                            WebCard(
-                                title = "item 1",
-                                subTitle = "subtitle 1",
-                                file = WebMediaFile(
-                                    url = "http://www.sncf.com/image1.png",
-                                    name = "imageName 1",
-                                    type = SendAttachment.AttachmentType.image
+        val expected =
+            WebConnectorResponseContent(
+                responses =
+                    listOf(
+                        WebMessageContent(
+                            text = "carousel with two cards and one button",
+                            carousel =
+                                WebCarousel(
+                                    cards =
+                                        listOf(
+                                            WebCard(
+                                                title = "item 1",
+                                                subTitle = "subtitle 1",
+                                                file =
+                                                    WebMediaFile(
+                                                        url = "http://www.sncf.com/image1.png",
+                                                        name = "imageName 1",
+                                                        type = SendAttachment.AttachmentType.image,
+                                                    ),
+                                                buttons =
+                                                    listOf(
+                                                        PostbackButton(
+                                                            title = "choice item 1",
+                                                            payload = "payload",
+                                                        ),
+                                                    ),
+                                            ),
+                                            WebCard(
+                                                title = "item 2",
+                                                subTitle = "subtitle 2",
+                                                file =
+                                                    WebMediaFile(
+                                                        url = "http://www.sncf.com/image2.png",
+                                                        name = "imageName 2",
+                                                        type = SendAttachment.AttachmentType.image,
+                                                    ),
+                                                buttons =
+                                                    listOf(
+                                                        PostbackButton(
+                                                            title = "choice item 2",
+                                                            payload = "payload",
+                                                        ),
+                                                    ),
+                                            ),
+                                        ),
                                 ),
-                                buttons = listOf(
+                            buttons =
+                                listOf(
                                     PostbackButton(
-                                        title = "choice item 1",
-                                        payload = "payload"
-                                    )
-                                )
-                            ),
-                            WebCard(
-                                title = "item 2",
-                                subTitle = "subtitle 2",
-                                file = WebMediaFile(
-                                    url = "http://www.sncf.com/image2.png",
-                                    name = "imageName 2",
-                                    type = SendAttachment.AttachmentType.image
+                                        title = "refresh",
+                                        payload = "payload",
+                                    ),
                                 ),
-                                buttons = listOf(
-                                    PostbackButton(
-                                        title = "choice item 2",
-                                        payload = "payload"
-                                    )
-                                )
-                            )
-                        )
+                        ),
                     ),
-                    buttons = listOf(
-                        PostbackButton(
-                            title = "refresh",
-                            payload = "payload"
-                        )
-                    )
-                )
             )
-        )
         val deserializedEvent =
             mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/carousel_with_2_cards_and_1_button.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)

@@ -20,4 +20,3 @@ import ai.tock.bot.engine.event.ExitEvent
 
 class AlcmeonExitEvent(applicationId: String, val exitReason: String, val delayInMs: Long = 0L) :
     ExitEvent(applicationId)
-

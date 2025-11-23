@@ -22,16 +22,16 @@ import ai.tock.shared.mapNotNullValues
 data class GASimpleResponse(
     val textToSpeech: String? = null,
     val ssml: String? = null,
-    val displayText: String? = null
+    val displayText: String? = null,
 ) {
-
     fun toGenericMessage(): GenericMessage {
         return GenericMessage(
-            texts = mapNotNullValues(
-                GASimpleResponse::textToSpeech.name to textToSpeech,
-                GASimpleResponse::ssml.name to ssml,
-                GASimpleResponse::displayText.name to displayText
-            )
+            texts =
+                mapNotNullValues(
+                    GASimpleResponse::textToSpeech.name to textToSpeech,
+                    GASimpleResponse::ssml.name to ssml,
+                    GASimpleResponse::displayText.name to displayText,
+                ),
         )
     }
 }

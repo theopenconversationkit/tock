@@ -71,7 +71,6 @@ object ApplicationConfigurationService :
     FaqDefinitionDAO by faqDefinitionDAO,
     NamespaceConfigurationDAO by namespaceConfigurationDAO,
     ApplicationConfiguration {
-
     private val logger = KotlinLogging.logger {}
 
     private val core: NlpCore get() = injector.provide()
@@ -90,7 +89,10 @@ object ApplicationConfigurationService :
         faqDefinitionDAO.save(faqDefinition)
     }
 
-    override fun save(sentence: ClassifiedSentence, user: UserLogin?) {
+    override fun save(
+        sentence: ClassifiedSentence,
+        user: UserLogin?,
+    ) {
         sentenceDAO.save(sentence.copy(qualifier = user))
     }
 
@@ -107,7 +109,7 @@ object ApplicationConfigurationService :
 
     override fun removeIntentFromApplication(
         application: ApplicationDefinition,
-        intentId: Id<IntentDefinition>
+        intentId: Id<IntentDefinition>,
     ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
         sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
@@ -126,7 +128,7 @@ object ApplicationConfigurationService :
         application: ApplicationDefinition,
         intent: IntentDefinition,
         entityType: String,
-        role: String
+        role: String,
     ): Boolean = removeEntityFromIntent(application, intent, entityType, role, true)
 
     private fun removeEntityFromIntent(
@@ -134,20 +136,22 @@ object ApplicationConfigurationService :
         intent: IntentDefinition,
         entityType: String,
         role: String,
-        deleteEntityType: Boolean
+        deleteEntityType: Boolean,
     ): Boolean {
         sentenceDAO.removeEntityFromSentences(application._id, intent._id, entityType, role)
         val loadedIntent = getIntentById(intent._id)
         if (loadedIntent != null) {
             intentDAO.save(
                 loadedIntent.copy(
-                    entities = loadedIntent.entities - setOfNotNull(
-                        loadedIntent.findEntity(
-                            entityType,
-                            role
-                        )
-                    )
-                )
+                    entities =
+                        loadedIntent.entities -
+                            setOfNotNull(
+                                loadedIntent.findEntity(
+                                    entityType,
+                                    role,
+                                ),
+                            ),
+                ),
             )
         }
         // delete entity if same namespace and if not used by any intent
@@ -166,7 +170,7 @@ object ApplicationConfigurationService :
     override fun removeSubEntityFromEntity(
         application: ApplicationDefinition,
         entityType: EntityTypeDefinition,
-        role: String
+        role: String,
     ): Boolean {
         sentenceDAO.removeSubEntityFromSentences(application._id, entityType.name, role)
         config.save(entityType.copy(subEntities = entityType.subEntities.filterNot { it.role == role }))
@@ -181,9 +185,13 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>? {
-        return if (name == UNKNOWN_INTENT_NAME) UNKNOWN_INTENT_NAME.toId()
-        else if (name == RAG_EXCLUDED_INTENT_NAME) RAG_EXCLUDED_INTENT_NAME.toId()
-        else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
+        return if (name == UNKNOWN_INTENT_NAME) {
+            UNKNOWN_INTENT_NAME.toId()
+        } else if (name == RAG_EXCLUDED_INTENT_NAME) {
+            RAG_EXCLUDED_INTENT_NAME.toId()
+        } else {
+            name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
+        }
     }
 
     override fun getSupportedNlpEngineTypes(): Set<NlpEngineType> {
@@ -207,7 +215,10 @@ object ApplicationConfigurationService :
         }
     }
 
-    fun toIntent(intentId: Id<IntentDefinition>, cache: MutableMap<Id<IntentDefinition>, Intent>? = null): Intent {
+    fun toIntent(
+        intentId: Id<IntentDefinition>,
+        cache: MutableMap<Id<IntentDefinition>, Intent>? = null,
+    ): Intent {
         return cache?.getOrPut(intentId) { findIntent(intentId) } ?: findIntent(intentId)
     }
 
@@ -221,28 +232,29 @@ object ApplicationConfigurationService :
         return Intent(
             intent.qualifiedName,
             intent.entities.mapNotNull { ConfigurationRepository.toEntity(it.entityTypeName, it.role) },
-            intent.entitiesRegexp
+            intent.entitiesRegexp,
         )
     }
 
     override fun switchSentencesIntent(
         sentences: List<ClassifiedSentence>,
         targetApplication: ApplicationDefinition,
-        targetIntentId: Id<IntentDefinition>
+        targetIntentId: Id<IntentDefinition>,
     ): Int {
-
         val s = sentences.filter { it.classification.intentId != targetIntentId }
 
         // 1 collect entities
-        val entities = s
-            .flatMap { sentence ->
-                sentence.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
-            }
-            .distinct()
+        val entities =
+            s
+                .flatMap { sentence ->
+                    sentence.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
+                }
+                .distinct()
 
         // 2 create entities where there are not present in the new intent (except if it's the unknown or ragexcluded intent)
-        if (targetIntentId.toString() != UNKNOWN_INTENT_NAME
-            && targetIntentId.toString() != RAG_EXCLUDED_INTENT_NAME) {
+        if (targetIntentId.toString() != UNKNOWN_INTENT_NAME &&
+            targetIntentId.toString() != RAG_EXCLUDED_INTENT_NAME
+        ) {
             val intent = getIntentById(targetIntentId)!!
             entities.filterNot { intent.hasEntity(it) }.apply {
                 if (isNotEmpty()) {
@@ -261,7 +273,7 @@ object ApplicationConfigurationService :
         sentences: List<ClassifiedSentence>,
         targetApplication: ApplicationDefinition,
         oldEntity: EntityDefinition,
-        newEntity: EntityDefinition
+        newEntity: EntityDefinition,
     ): Int {
         // 0 check new entity is known
         val entity = newEntity.toEntity()
@@ -290,7 +302,11 @@ object ApplicationConfigurationService :
         return sentences.size
     }
 
-    override fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition) {
+    override fun updateEntityDefinition(
+        namespace: String,
+        applicationName: String,
+        entity: EntityDefinition,
+    ) {
         val app = getApplicationByNamespaceAndName(namespace, applicationName)!!
         val intents = getIntentsByApplicationId(app._id)
         intents.forEach {
@@ -298,8 +314,8 @@ object ApplicationConfigurationService :
                 ?.apply {
                     save(
                         it.copy(
-                            entities = it.entities - this + entity
-                        )
+                            entities = it.entities - this + entity,
+                        ),
                     )
                 }
         }
@@ -309,13 +325,13 @@ object ApplicationConfigurationService :
 
     override fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
+        nlpEngineType: NlpEngineType,
     ): NlpApplicationConfiguration = modelCore.getCurrentModelConfiguration(applicationName, nlpEngineType)
 
     override fun updateModelConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     ) = modelCore.updateModelConfiguration(applicationName, engineType, configuration)
 
     override fun getEntityTypesByNamespaceAndSharedEntityTypes(namespace: String): List<EntityTypeDefinition> {
@@ -323,14 +339,12 @@ object ApplicationConfigurationService :
         return getEntityTypes().filter { it.name.namespace() == namespace || builtin.contains(it.name) }
     }
 
-    override fun isEntityTypeObfuscated(name: String): Boolean =
-        ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
+    override fun isEntityTypeObfuscated(name: String): Boolean = ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
 
     override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition> =
         getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(it.name, it.namespace) } ?: arrayListOf()
 
-    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? =
-        faqDefinitionDAO.getFaqDefinitionByIntentId(id)
+    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? = faqDefinitionDAO.getFaqDefinitionByIntentId(id)
 
     override fun getModelSharedIntents(namespace: String): List<IntentDefinition> =
         getNamespaceConfiguration(namespace)
@@ -342,12 +356,11 @@ object ApplicationConfigurationService :
 
     override fun getSentencesForModel(
         application: ApplicationDefinition,
-        language: Locale
+        language: Locale,
     ): List<ClassifiedSentence> =
         getSentences(
             application.intents + getModelSharedIntents(application.namespace).map { it._id },
             language,
-            ClassifiedSentenceStatus.model
+            ClassifiedSentenceStatus.model,
         )
-
 }

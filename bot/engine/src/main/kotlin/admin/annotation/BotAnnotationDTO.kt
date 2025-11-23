@@ -16,15 +16,11 @@
 
 package ai.tock.bot.admin.annotation
 
-import org.litote.kmongo.newId
-import org.litote.kmongo.toId
-import java.time.Instant
-
 data class BotAnnotationDTO(
     val id: String? = null,
     val state: BotAnnotationState,
     val reason: BotAnnotationReasonType? = null,
     val description: String,
     val groundTruth: String? = null,
-    val events: List<BotAnnotationEventDTO> = emptyList()
+    val events: List<BotAnnotationEventDTO> = emptyList(),
 )

@@ -22,9 +22,9 @@ import kotlin.test.assertEquals
  *
  */
 class FeatureTypeTest {
-
+    @Suppress("ktlint:standard:enum-entry-name-case")
     enum class Test : FeatureType {
-        a
+        a,
     }
 
     @kotlin.test.Test

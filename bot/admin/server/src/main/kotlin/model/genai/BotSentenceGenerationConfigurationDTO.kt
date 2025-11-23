@@ -41,7 +41,7 @@ data class BotSentenceGenerationConfigurationDTO(
         enabled = configuration.enabled,
         nbSentences = configuration.nbSentences,
         llmSetting = configuration.llmSetting.toDTO(),
-        prompt = configuration.prompt ?: configuration.initPrompt()
+        prompt = configuration.prompt ?: configuration.initPrompt(),
     )
 
     fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
@@ -51,15 +51,13 @@ data class BotSentenceGenerationConfigurationDTO(
             botId = botId,
             enabled = enabled,
             nbSentences = nbSentences,
-            llmSetting = LLMSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
-                dto = llmSetting
-            ),
-            prompt = prompt
+            llmSetting =
+                LLMSettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
+                    dto = llmSetting,
+                ),
+            prompt = prompt,
         )
 }
-
-
-

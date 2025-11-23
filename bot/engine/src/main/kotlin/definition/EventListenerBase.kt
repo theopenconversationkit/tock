@@ -35,17 +35,23 @@ import mu.KotlinLogging
  * Base implementation of [EventListener].
  */
 open class EventListenerBase : EventListener {
-
     private val logger = KotlinLogging.logger {}
 
     /**
      * Listen [StartConversationEvent] or [EndConversationEvent] by default
      * (if respectively [BotDefinition.helloStory] or [BotDefinition.goodbyeStory] are set).
      */
-    override fun listenEvent(controller: ConnectorController, connectorData: ConnectorData, event: Event): Boolean {
+    override fun listenEvent(
+        controller: ConnectorController,
+        connectorData: ConnectorData,
+        event: Event,
+    ): Boolean {
         logger.debug { "listen event $event" }
 
-        fun StoryDefinition?.sendChoice(event: OneToOneEvent, force: Boolean = false): Boolean =
+        fun StoryDefinition?.sendChoice(
+            event: OneToOneEvent,
+            force: Boolean = false,
+        ): Boolean =
             if (this == null && !force) {
                 false
             } else {
@@ -53,7 +59,8 @@ open class EventListenerBase : EventListener {
                     event,
                     this?.mainIntent()
                         ?: controller.botDefinition.defaultStory.mainIntent(),
-                    controller, connectorData
+                    controller,
+                    connectorData,
                 )
                 true
             }
@@ -72,7 +79,7 @@ open class EventListenerBase : EventListener {
     protected open fun passThreadControlEventListener(
         controller: ConnectorController,
         connectorData: ConnectorData,
-        event: PassThreadControlEvent
+        event: PassThreadControlEvent,
     ): Boolean {
         with(controller.botDefinition) {
             val userTimelineDAO: UserTimelineDAO by injector.instance()
@@ -85,16 +92,21 @@ open class EventListenerBase : EventListener {
         }
     }
 
-    protected fun sendChoice(event: OneToOneEvent, intent: IntentAware, controller: ConnectorController, connectorData: ConnectorData) {
+    protected fun sendChoice(
+        event: OneToOneEvent,
+        intent: IntentAware,
+        controller: ConnectorController,
+        connectorData: ConnectorData,
+    ) {
         controller.handle(
             SendChoice(
                 event.userId,
                 event.applicationId,
                 event.recipientId,
                 intent.wrappedIntent().name,
-                state = event.state
+                state = event.state,
             ),
-            connectorData
+            connectorData,
         )
     }
 }

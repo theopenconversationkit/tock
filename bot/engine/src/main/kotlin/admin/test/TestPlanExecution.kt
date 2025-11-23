@@ -52,5 +52,5 @@ data class TestPlanExecution(
     /**
      * The status of the test plan execution
      */
-    val status: TestPlanExecutionStatus = TestPlanExecutionStatus.PENDING
+    val status: TestPlanExecutionStatus = TestPlanExecutionStatus.PENDING,
 )

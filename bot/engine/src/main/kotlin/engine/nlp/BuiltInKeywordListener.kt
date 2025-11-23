@@ -33,15 +33,16 @@ object BuiltInKeywordListener : NlpListener {
     /**
      * The keyword to listen.
      */
-    val keywords: MutableSet<String> = ConcurrentSkipListSet<String>(
-        listOf(
-            deleteKeyword,
-            enableKeyword,
-            disableKeyword,
-            testContextKeyword,
-            endTestContextKeyword
+    val keywords: MutableSet<String> =
+        ConcurrentSkipListSet<String>(
+            listOf(
+                deleteKeyword,
+                enableKeyword,
+                disableKeyword,
+                testContextKeyword,
+                endTestContextKeyword,
+            ),
         )
-    )
 
     /**
      * The keyword regexp is applicable.

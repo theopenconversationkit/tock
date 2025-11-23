@@ -20,5 +20,5 @@ data class Entry(
     val id: String,
     val time: Number,
     val messaging: List<Webhook?>? = null,
-    val standby: List<Webhook?>? = null
+    val standby: List<Webhook?>? = null,
 )

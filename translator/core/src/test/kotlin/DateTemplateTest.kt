@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
  *
  */
 class DateTemplateTest {
-
     @Test
     fun formatTo_shouldWorks_forAllLocales() {
         val date = now().with(DayOfWeek.FRIDAY)
@@ -36,13 +35,13 @@ class DateTemplateTest {
         dateTemplate.formatTo(formatter, 0, 0, 0)
         assertEquals(
             "Friday",
-            formatter.toString()
+            formatter.toString(),
         )
         formatter = Formatter(Locale.FRENCH)
         dateTemplate.formatTo(formatter, 0, 0, 0)
         assertEquals(
             "vendredi",
-            formatter.toString()
+            formatter.toString(),
         )
     }
 }

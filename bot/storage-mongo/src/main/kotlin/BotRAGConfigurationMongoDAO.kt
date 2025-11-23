@@ -22,11 +22,15 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
-import org.litote.kmongo.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.save
 
 internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
-
     private const val COLLECTION_NAME = "bot_rag_configuration"
     internal val col = database.getCollection<BotRAGConfiguration>(COLLECTION_NAME)
     private val asyncCol = asyncDatabase.getCollectionOfName<BotRAGConfiguration>(COLLECTION_NAME)
@@ -41,23 +45,23 @@ internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
 
     override fun findByNamespaceAndBotId(
         namespace: String,
-        botId: String
+        botId: String,
     ): BotRAGConfiguration? {
         return col.findOne(
             BotRAGConfiguration::namespace eq namespace,
-            BotRAGConfiguration::botId eq botId
+            BotRAGConfiguration::botId eq botId,
         )
     }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
-        enabled: Boolean
+        enabled: Boolean,
     ): BotRAGConfiguration? {
         return col.findOne(
             BotRAGConfiguration::namespace eq namespace,
             BotRAGConfiguration::botId eq botId,
-            BotRAGConfiguration::enabled eq enabled
+            BotRAGConfiguration::enabled eq enabled,
         )
     }
 
@@ -69,5 +73,4 @@ internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
     override fun delete(id: Id<BotRAGConfiguration>) {
         col.deleteOneById(id)
     }
-
 }

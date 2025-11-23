@@ -20,5 +20,5 @@ data class WhatsAppError(
     val code: Long,
     val title: String,
     val details: String?,
-    val href: String? = null
+    val href: String? = null,
 )

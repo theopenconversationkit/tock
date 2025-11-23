@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-class WebhookActionConverterTest {
-}
+class WebhookActionConverterTest

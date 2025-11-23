@@ -20,5 +20,5 @@ enum class BotAnnotationState {
     ANOMALY,
     REVIEW_NEEDED,
     RESOLVED,
-    WONT_FIX
+    WONT_FIX,
 }

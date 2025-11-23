@@ -22,11 +22,15 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
-import org.litote.kmongo.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.save
 
 internal object BotVectorStoreConfigurationMongoDAO : BotVectorStoreConfigurationDAO {
-
     private const val COLLECTION_NAME = "bot_vector_store_configuration"
     internal val col = database.getCollection<BotVectorStoreConfiguration>(COLLECTION_NAME)
     private val asyncCol = asyncDatabase.getCollectionOfName<BotVectorStoreConfiguration>(COLLECTION_NAME)
@@ -41,23 +45,23 @@ internal object BotVectorStoreConfigurationMongoDAO : BotVectorStoreConfiguratio
 
     override fun findByNamespaceAndBotId(
         namespace: String,
-        botId: String
+        botId: String,
     ): BotVectorStoreConfiguration? {
         return col.findOne(
             BotVectorStoreConfiguration::namespace eq namespace,
-            BotVectorStoreConfiguration::botId eq botId
+            BotVectorStoreConfiguration::botId eq botId,
         )
     }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
-        enabled: Boolean
+        enabled: Boolean,
     ): BotVectorStoreConfiguration? {
         return col.findOne(
             BotVectorStoreConfiguration::namespace eq namespace,
             BotVectorStoreConfiguration::botId eq botId,
-            BotVectorStoreConfiguration::enabled eq enabled
+            BotVectorStoreConfiguration::enabled eq enabled,
         )
     }
 
@@ -69,5 +73,4 @@ internal object BotVectorStoreConfigurationMongoDAO : BotVectorStoreConfiguratio
     override fun delete(id: Id<BotVectorStoreConfiguration>) {
         col.deleteOneById(id)
     }
-
 }

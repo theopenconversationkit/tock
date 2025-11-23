@@ -27,5 +27,5 @@ data class AnalyticsQuery(
     val nlpModel: String,
     val language: Locale,
     val from: LocalDateTime = LocalDateTime.now().minusDays(7),
-    val to: LocalDateTime = LocalDateTime.now()
+    val to: LocalDateTime = LocalDateTime.now(),
 )

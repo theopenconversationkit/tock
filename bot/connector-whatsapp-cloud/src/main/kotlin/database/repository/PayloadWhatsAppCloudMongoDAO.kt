@@ -20,7 +20,6 @@ import ai.tock.bot.connector.whatsapp.cloud.database.model.PayloadWhatsAppCloud
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.error
 import ai.tock.shared.injector
-import ai.tock.shared.intProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import com.github.salomonbrys.kodein.instance
@@ -28,11 +27,13 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import mu.KotlinLogging
-import org.litote.kmongo.*
+import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.save
 import java.util.concurrent.TimeUnit
 
 object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
-
     /**
      * Name of the MongoDB database collection used to store WhatsApp payloads.
      */
@@ -41,14 +42,14 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
     private val uuidRegex = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
     private val database: MongoDatabase by injector.instance(
-        TOCK_BOT_DATABASE
+        TOCK_BOT_DATABASE,
     )
 
     private val logger = KotlinLogging.logger {}
 
     private val collection: MongoCollection<PayloadWhatsAppCloud>
-    private fun MongoDatabase.collectionExists(collectionName: String): Boolean =
-        listCollectionNames().contains(collectionName)
+
+    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().contains(collectionName)
 
     init {
         database.createCollectionIfNotExists()
@@ -82,7 +83,7 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
         try {
             this.ensureIndex(
                 PayloadWhatsAppCloud::payloadExpireDate,
-                indexOptions = IndexOptions().expireAfter(payloadTTL, TimeUnit.DAYS)
+                indexOptions = IndexOptions().expireAfter(payloadTTL, TimeUnit.DAYS),
             )
         } catch (e: Exception) {
             logger.error(e)

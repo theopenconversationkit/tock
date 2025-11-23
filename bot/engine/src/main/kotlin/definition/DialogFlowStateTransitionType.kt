@@ -16,10 +16,11 @@
 
 package ai.tock.bot.definition
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class DialogFlowStateTransitionType {
     nlp,
     choice,
     attachment,
     location,
-    other
+    other,
 }

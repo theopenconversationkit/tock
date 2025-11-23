@@ -30,17 +30,15 @@ data class BotSimpleAnswer(
     val label: I18nLabel,
     val delay: Long,
     val mediaMessage: BotMediaMessageDescriptor? = null,
-    val footnotes: List<Footnote>? = null
+    val footnotes: List<Footnote>? = null,
 ) {
-
     constructor(answer: SimpleAnswer, locale: Locale?, readOnly: Boolean = false) :
         this(
             Translator.saveIfNotExist(answer.key, locale, readOnly),
             answer.delay,
             answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it, readOnly) },
-            answer.footnotes
+            answer.footnotes,
         )
 
-    fun toConfiguration(): SimpleAnswer =
-        SimpleAnswer(I18nLabelValue(label), delay, mediaMessage?.toDescriptor(), footnotes)
+    fun toConfiguration(): SimpleAnswer = SimpleAnswer(I18nLabelValue(label), delay, mediaMessage?.toDescriptor(), footnotes)
 }

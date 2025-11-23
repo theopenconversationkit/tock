@@ -26,25 +26,24 @@ import java.util.Locale
 data class TokenizerContext(
     override val language: Locale,
     override val engineType: NlpEngineType,
-    override val applicationName: String
+    override val applicationName: String,
 ) : ClassifierContext<TokenizerContext>, ClassifierContextKey {
-
     constructor(callContext: CallContext) : this(
         callContext.language,
         callContext.engineType,
-        callContext.application.name
+        callContext.application.name,
     )
 
     constructor(intentContext: IntentContext) : this(
         intentContext.language,
         intentContext.engineType,
-        intentContext.application.name
+        intentContext.application.name,
     )
 
     constructor(entityContext: EntityContext) : this(
         entityContext.language,
         entityContext.engineType,
-        entityContext.applicationName
+        entityContext.applicationName,
     )
 
     override fun key(): TokenizerContext {

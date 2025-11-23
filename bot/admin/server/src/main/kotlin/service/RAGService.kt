@@ -38,7 +38,6 @@ import mu.KotlinLogging
  * Service that manage the retrieval augmented generation (RAG) with Large Language Model (LLM) functionality
  */
 object RAGService {
-
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
@@ -48,7 +47,10 @@ object RAGService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
+    fun getRAGConfiguration(
+        namespace: String,
+        botId: String,
+    ): BotRAGConfiguration? {
         return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
@@ -57,9 +59,13 @@ object RAGService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun deleteConfig(namespace: String, botId: String) {
-        val ragConfig = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
+    fun deleteConfig(
+        namespace: String,
+        botId: String,
+    ) {
+        val ragConfig =
+            ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
 
         logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
         ragConfigurationDAO.delete(ragConfig._id)
@@ -79,9 +85,7 @@ object RAGService {
      * @throws [BadRequestException] if a rag configuration is invalid
      * @return [BotRAGConfiguration]
      */
-    fun saveRag(
-        ragConfig: BotRAGConfigurationDTO
-    ): BotRAGConfiguration {
+    fun saveRag(ragConfig: BotRAGConfigurationDTO): BotRAGConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]")
         logger.info { "Saving the RAG Configuration [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]" }
@@ -92,13 +96,11 @@ object RAGService {
      * Save the RAG configuration
      * @param ragConfiguration [BotRAGConfigurationDTO]
      */
-    private fun saveRagConfiguration(
-        ragConfiguration: BotRAGConfigurationDTO
-    ): BotRAGConfiguration {
+    private fun saveRagConfiguration(ragConfiguration: BotRAGConfigurationDTO): BotRAGConfiguration {
         val ragConfig = ragConfiguration.toBotRAGConfiguration()
 
         // Check validity of the rag configuration
-        if(ragConfig.enabled) {
+        if (ragConfig.enabled) {
             RAGValidationService.validate(ragConfig).let { errors ->
                 if (errors.isNotEmpty()) {
                     throw BadRequestException(errors)
@@ -110,14 +112,18 @@ object RAGService {
             // If RAG Enabled, so disable the unknown story if exists
             // Else enable the unknown story if exists
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                ragConfiguration.namespace, ragConfiguration.botId, Intent.UNKNOWN_INTENT_NAME.withoutNamespace()
+                ragConfiguration.namespace,
+                ragConfiguration.botId,
+                Intent.UNKNOWN_INTENT_NAME.withoutNamespace(),
             )?.let {
                 storyDefinitionDAO.save(
                     it.copy(
-                        features = prepareEndingFeatures(
-                            it, !ragConfiguration.enabled
-                        )
-                    )
+                        features =
+                            prepareEndingFeatures(
+                                it,
+                                !ragConfiguration.enabled,
+                            ),
+                    ),
                 )
             }
 
@@ -130,7 +136,8 @@ object RAGService {
     }
 
     private fun prepareEndingFeatures(
-        story: StoryDefinitionConfiguration, ragEnabled: Boolean
+        story: StoryDefinitionConfiguration,
+        ragEnabled: Boolean,
     ): List<StoryDefinitionConfigurationFeature> {
         val features = mutableListOf<StoryDefinitionConfigurationFeature>()
         features.addAll(story.features)
@@ -138,6 +145,4 @@ object RAGService {
         features.add(StoryDefinitionConfigurationFeature(null, ragEnabled, null, null))
         return features
     }
-
-
 }

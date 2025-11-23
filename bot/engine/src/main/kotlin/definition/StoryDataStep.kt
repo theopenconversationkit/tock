@@ -26,7 +26,6 @@ import ai.tock.bot.engine.BotBus
  * @param D the data of the step
  */
 interface StoryDataStep<T : StoryHandlerDefinition, TD, D> : StoryStep<T> {
-
     override fun answer(): T.() -> Any? = { handler().invoke(this, null) }
 
     /**

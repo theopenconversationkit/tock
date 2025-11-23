@@ -22,5 +22,5 @@ package ai.tock.nlp.core.service.entity
 data class EvaluationResult(
     val evaluated: Boolean,
     val value: Any? = null,
-    val probability: Double = 1.0
+    val probability: Double = 1.0,
 )

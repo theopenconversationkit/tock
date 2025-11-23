@@ -28,8 +28,7 @@ private const val TEXT_MAX_LENGTH_ALLOWED = 50000
  * Checks that the text has no more than 50000 chars.
  * Else cuts the String.
  */
-fun checkMaxLengthAllowed(text: String): String =
-    if (text.length > TEXT_MAX_LENGTH_ALLOWED) text.substring(0, TEXT_MAX_LENGTH_ALLOWED) else text
+fun checkMaxLengthAllowed(text: String): String = if (text.length > TEXT_MAX_LENGTH_ALLOWED) text.substring(0, TEXT_MAX_LENGTH_ALLOWED) else text
 
 /**
  * Extract a namespace from a qualified name (ie namespace:name).
@@ -55,24 +54,28 @@ fun String.withNamespace(namespace: String): String = if (contains(":")) this el
 /**
  * Replace the current namespace with the new namespace.
  */
-fun String.changeNamespace(newNamespace: String): String =
-    withoutNamespace().withNamespace(newNamespace)
+fun String.changeNamespace(newNamespace: String): String = withoutNamespace().withNamespace(newNamespace)
 
 /**
  * Remove the specified namespace from a qualified name if this qualified name contains the namespace,
  * and return the result.
  */
 fun String.withoutNamespace(namespace: String? = null): String =
-    if (contains(":")) namespace().let { if (namespace == null || it == namespace) name() else this }
-    else this
+    if (contains(":")) {
+        namespace().let { if (namespace == null || it == namespace) name() else this }
+    } else {
+        this
+    }
 
-internal fun String.endWithPunctuation(): Boolean =
-    endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
+internal fun String.endWithPunctuation(): Boolean = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
 
 /**
  * Concat two strings and manage intermediate punctuation.
  */
-fun concat(s1: String?, s2: String?): String {
+fun concat(
+    s1: String?,
+    s2: String?,
+): String {
     val s = s1?.trim() ?: ""
     return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2?.trim() ?: "")
 }
@@ -82,13 +85,12 @@ private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
 
 private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
 
-fun String.stripAccents(): String =
-    Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
+fun String.stripAccents(): String = Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
 
-fun String.normalize(locale: Locale): String =
-    this.lowercase(locale).removeTrailingPunctuation().stripAccents()
+fun String.normalize(locale: Locale): String = this.lowercase(locale).removeTrailingPunctuation().stripAccents()
 
-fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", ignoreCase = true)
+fun allowDiacriticsInRegexp(s: String): String =
+    s.replace("e", "[eéèêë]", ignoreCase = true)
         .replace("a", "[aàáâãä]", ignoreCase = true)
         .replace("i", "[iìíîï]", ignoreCase = true)
         .replace("o", "[oòóôõöø]", ignoreCase = true)

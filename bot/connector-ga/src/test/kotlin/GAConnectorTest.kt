@@ -47,7 +47,6 @@ import kotlin.test.assertTrue
  *
  */
 class GAConnectorTest {
-
     val connector = GAConnector("appId", "/path", emptySet())
     val userPreferences: UserPreferences = UserPreferences()
     val controller: ConnectorController = mockk(relaxed = true)
@@ -66,21 +65,20 @@ class GAConnectorTest {
 
     @Test
     fun handleRequest_shouldHandleWell_NamePermissions() {
-
         every { controller.connector } returns connector
         every { controller.handle(any(), any()) } answers {
             userPreferences.fillWith(
                 connector.loadProfile(
                     (secondArg() as ConnectorData).callback,
-                    PlayerId("a", user)
-                )!!
+                    PlayerId("a", user),
+                )!!,
             )
         }
 
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request_with_permission.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_permission.json"), Charsets.UTF_8),
         )
 
         assertEquals("Pierre", userPreferences.firstName)
@@ -94,7 +92,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8),
         )
 
         val slotLoginEvent = slot<LoginEvent>()
@@ -109,7 +107,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/healthcheck.json"), Charsets.UTF_8)
+            Resources.toString(resource("/healthcheck.json"), Charsets.UTF_8),
         )
 
         val connectorData = slot<ConnectorData>()
@@ -124,7 +122,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_signout_error.json"), Charsets.UTF_8),
         )
 
         val connectorData = slot<ConnectorData>()
@@ -142,16 +140,16 @@ class GAConnectorTest {
                 PlayerId("jarvisteam@yopmail.com", user),
                 PlayerId(
                     "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
-                    user
+                    user,
                 ),
-                controller
+                controller,
             )
         } answers {}
 
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request_with_signin.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_signin.json"), Charsets.UTF_8),
         )
 
         val connectorData = slot<ConnectorData>()
@@ -163,9 +161,9 @@ class GAConnectorTest {
                 PlayerId("jarvisteam@yopmail.com", user),
                 PlayerId(
                     "ABwppHHaWSlfkEc3cou4A-K_rzAfjSsLZTkNEq3NLM_d8bVanmj61irxpfM8bPE1DA4NJD6Lw-4ZOQY43LIp9sWNj7w",
-                    user
+                    user,
                 ),
-                controller
+                controller,
             )
         }
     }
@@ -181,7 +179,7 @@ class GAConnectorTest {
         connector.handleRequest(
             controller,
             context,
-            Resources.toString(resource("/request_with_access_token.json"), Charsets.UTF_8)
+            Resources.toString(resource("/request_with_access_token.json"), Charsets.UTF_8),
         )
 
         val loginEvent = slot<LoginEvent>()
@@ -189,7 +187,7 @@ class GAConnectorTest {
         verify(exactly = 1) {
             controller.handle(
                 capture(loginEvent),
-                any()
+                any(),
             )
         }
 

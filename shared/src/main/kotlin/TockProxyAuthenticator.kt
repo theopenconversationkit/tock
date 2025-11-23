@@ -34,19 +34,24 @@ class TockProxyAuthenticator(proxyUser: String, proxyPassword: String) : Authent
             if (proxyUser != null && proxyPassword != null) {
                 builder.proxyAuthenticator(TockProxyAuthenticator(proxyUser, proxyPassword))
             } else if (proxyUser != null || proxyPassword != null) {
-                throw IllegalStateException("Both tock_proxy_user and tock_proxy_password must be configured simultaneously to authenticate with proxies, only one found")
+                throw IllegalStateException(
+                    "Both tock_proxy_user and tock_proxy_password must be configured simultaneously to authenticate with proxies, only one found",
+                )
             }
         }
     }
 
-    override fun authenticate(route: Route?, response: Response): Request? {
+    override fun authenticate(
+        route: Route?,
+        response: Response,
+    ): Request? {
         if (response.challenges().any {
                 // Allow both preemptive and reactive authentication
-                it.scheme.equals("Basic", ignoreCase = true)
-                        || it.scheme.equals("OkHttp-Preemptive", ignoreCase = true)
+                it.scheme.equals("Basic", ignoreCase = true) ||
+                    it.scheme.equals("OkHttp-Preemptive", ignoreCase = true)
                 // give up if we already tried to authenticate
-            } && response.request.header("Proxy-Authorization") == null) {
-
+            } && response.request.header("Proxy-Authorization") == null
+        ) {
             return response.request.newBuilder()
                 .header("Proxy-Authorization", credential)
                 .build()

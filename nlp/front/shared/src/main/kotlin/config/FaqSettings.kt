@@ -23,40 +23,32 @@ import java.time.Instant
 
 @JacksonData(internal = true)
 data class FaqSettings(
-
     /**
      * The unique [Id] of the settings.
      */
     val _id: Id<FaqSettings> = newId(),
-
     /**
      * The application id.
      */
     val applicationId: Id<ApplicationDefinition>,
-
     /**
      * Is the satisfaction story is asked ?
      */
     val satisfactionEnabled: Boolean = false,
-
     /**
      * The satisfaction story identifier.
      */
     val satisfactionStoryId: String? = null,
-
     /**
      * Faq creation date
      */
     val creationDate: Instant,
-
     /**
      * Faq update date
      */
     val updateDate: Instant,
-
-    ){
-
-    fun toFaqSettingsQuery(): FaqSettingsQuery{
+) {
+    fun toFaqSettingsQuery(): FaqSettingsQuery {
         return FaqSettingsQuery(satisfactionEnabled, satisfactionStoryId)
     }
 }

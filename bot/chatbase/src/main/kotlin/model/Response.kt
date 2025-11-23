@@ -21,5 +21,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 internal data class Response(
     @JsonProperty("message_id")
     val messageId: String,
-    val status: Status
+    val status: Status,
 )

@@ -24,16 +24,13 @@ import ai.tock.genai.orchestratorclient.responses.CompletionResponse
 import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 import ai.tock.genai.orchestratorclient.services.CompletionService
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
-import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.WebVerticle
 import mu.KLogger
 import mu.KotlinLogging
 
-
 object CompletionService {
-
     private val logger: KLogger = KotlinLogging.logger {}
     private val completionService: CompletionService get() = injector.provide()
     private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
@@ -48,22 +45,24 @@ object CompletionService {
     fun generate(
         request: PlaygroundRequest,
         namespace: String,
-        botId: String
+        botId: String,
     ): CompletionResponse? {
         return completionService
             .generate(
                 CompletionRequest(
-                    llmSetting = LLMSettingMapper.toEntity(
-                        dto = request.llmSetting,
-                        rawByForce = true
-                    ),
+                    llmSetting =
+                        LLMSettingMapper.toEntity(
+                            dto = request.llmSetting,
+                            rawByForce = true,
+                        ),
                     prompt = request.prompt,
-                    observabilitySetting = ObservabilityService.getObservabilityConfiguration(
-                        namespace,
-                        botId,
-                        enabled = true
-                    )?.setting
-                )
+                    observabilitySetting =
+                        ObservabilityService.getObservabilityConfiguration(
+                            namespace,
+                            botId,
+                            enabled = true,
+                        )?.setting,
+                ),
             )
     }
 
@@ -77,20 +76,21 @@ object CompletionService {
     fun generateSentences(
         request: SentenceGenerationRequest,
         namespace: String,
-        botId: String
+        botId: String,
     ): SentenceCompletionResponse? {
         // Check if feature is configured
-        val sentenceGenerationConfig = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest(
-                "No configuration of sentence generation feature is defined yet " +
-                        "[namespace: ${namespace}, botId = ${botId}]"
-            )
+        val sentenceGenerationConfig =
+            sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                ?: WebVerticle.badRequest(
+                    "No configuration of sentence generation feature is defined yet " +
+                        "[namespace: $namespace, botId = $botId]",
+                )
 
         // Check if feature is enabled
         if (!sentenceGenerationConfig.enabled) {
             WebVerticle.badRequest(
                 "The sentence generation feature is disabled " +
-                        "[namespace: ${namespace}, botId = ${botId}]"
+                    "[namespace: $namespace, botId = $botId]",
             )
         }
 
@@ -101,24 +101,27 @@ object CompletionService {
         val prompt = sentenceGenerationConfig.prompt ?: sentenceGenerationConfig.initPrompt()
 
         // Create the inputs map
-        val inputs = mapOf(
-            "locale" to request.locale,
-            "nb_sentences" to sentenceGenerationConfig.nbSentences,
-            "sentences" to request.sentences,
-            "options" to mapOf<String, Any>(
-                "spelling_mistakes" to request.options.spellingMistakes,
-                "sms_language" to request.options.smsLanguage,
-                "abbreviated_language" to request.options.abbreviatedLanguage
+        val inputs =
+            mapOf(
+                "locale" to request.locale,
+                "nb_sentences" to sentenceGenerationConfig.nbSentences,
+                "sentences" to request.sentences,
+                "options" to
+                    mapOf<String, Any>(
+                        "spelling_mistakes" to request.options.spellingMistakes,
+                        "sms_language" to request.options.smsLanguage,
+                        "abbreviated_language" to request.options.abbreviatedLanguage,
+                    ),
             )
-        )
 
         // call the completion service to generate sentences
         return completionService
             .generateSentences(
                 CompletionRequest(
-                    llmSetting, prompt.copy(inputs = inputs),
-                    ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
-                )
+                    llmSetting,
+                    prompt.copy(inputs = inputs),
+                    ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting,
+                ),
             )
     }
 }

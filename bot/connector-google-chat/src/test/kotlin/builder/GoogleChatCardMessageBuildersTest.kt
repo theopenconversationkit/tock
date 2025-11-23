@@ -29,10 +29,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class GoogleChatCardMessageBuildersTest {
-
-    private val i18nTranslator = mockk<I18nTranslator> {
-        every { translate(text = any()) } answers { TranslatedString(arg(0)) }
-    }
+    private val i18nTranslator =
+        mockk<I18nTranslator> {
+            every { translate(text = any()) } answers { TranslatedString(arg(0)) }
+        }
 
     private fun buildCard(): GoogleChatConnectorCardMessageOut {
         return i18nTranslator.card {
@@ -68,95 +68,95 @@ internal class GoogleChatCardMessageBuildersTest {
         assertThat(googleMessageOut).isNotNull
         assertThat(JacksonFactory().toPrettyString(googleMessageOut)).isEqualTo(
             """
-                {
-                  "cards" : [ {
-                    "header" : {
-                      "imageStyle" : "IMAGE",
-                      "imageUrl" : "https://goo.gl/aeDtrS",
-                      "subtitle" : "pizzabot@example.com",
-                      "title" : "Pizza Bot Customer Support"
-                    },
-                    "sections" : [ {
-                      "widgets" : [ {
-                        "keyValue" : {
-                          "content" : "12345",
-                          "contentMultiline" : false,
-                          "onClick" : {
-                            "action" : {
-                              "actionMethodName" : "SEND_SENTENCE",
-                              "parameters" : [ {
-                                "key" : "TEXT",
-                                "value" : "Voir ma commande"
-                              } ]
-                            }
-                          },
-                          "topLabel" : "Order No."
+            {
+              "cards" : [ {
+                "header" : {
+                  "imageStyle" : "IMAGE",
+                  "imageUrl" : "https://goo.gl/aeDtrS",
+                  "subtitle" : "pizzabot@example.com",
+                  "title" : "Pizza Bot Customer Support"
+                },
+                "sections" : [ {
+                  "widgets" : [ {
+                    "keyValue" : {
+                      "content" : "12345",
+                      "contentMultiline" : false,
+                      "onClick" : {
+                        "action" : {
+                          "actionMethodName" : "SEND_SENTENCE",
+                          "parameters" : [ {
+                            "key" : "TEXT",
+                            "value" : "Voir ma commande"
+                          } ]
                         }
-                      }, {
-                        "keyValue" : {
-                          "content" : "In Delivery",
-                          "contentMultiline" : false,
-                          "topLabel" : "Status"
+                      },
+                      "topLabel" : "Order No."
+                    }
+                  }, {
+                    "keyValue" : {
+                      "content" : "In Delivery",
+                      "contentMultiline" : false,
+                      "topLabel" : "Status"
+                    }
+                  } ]
+                }, {
+                  "header" : "Location",
+                  "widgets" : [ {
+                    "image" : {
+                      "imageUrl" : "https://maps.googleapis.com/...",
+                      "onClick" : {
+                        "action" : {
+                          "actionMethodName" : "SEND_CHOICE",
+                          "parameters" : [ {
+                            "key" : "INTENT",
+                            "value" : "geoloc"
+                          } ]
                         }
-                      } ]
+                      }
+                    }
+                  } ]
+                }, {
+                  "widgets" : [ {
+                    "buttons" : [ {
+                      "textButton" : {
+                        "onClick" : {
+                          "openLink" : {
+                            "url" : "https://example.com/orders/..."
+                          }
+                        },
+                        "text" : "OPEN ORDER"
+                      }
                     }, {
-                      "header" : "Location",
-                      "widgets" : [ {
-                        "image" : {
-                          "imageUrl" : "https://maps.googleapis.com/...",
-                          "onClick" : {
-                            "action" : {
-                              "actionMethodName" : "SEND_CHOICE",
-                              "parameters" : [ {
-                                "key" : "INTENT",
-                                "value" : "geoloc"
-                              } ]
-                            }
+                      "imageButton" : {
+                        "iconUrl" : "https://example.com/resources/cancel",
+                        "onClick" : {
+                          "openLink" : {
+                            "url" : "https://example.com/cancel/..."
                           }
                         }
-                      } ]
+                      }
                     }, {
-                      "widgets" : [ {
-                        "buttons" : [ {
-                          "textButton" : {
-                            "onClick" : {
-                              "openLink" : {
-                                "url" : "https://example.com/orders/..."
-                              }
-                            },
-                            "text" : "OPEN ORDER"
+                      "imageButton" : {
+                        "icon" : "PHONE",
+                        "onClick" : {
+                          "action" : {
+                            "actionMethodName" : "call",
+                            "parameters" : [ {
+                              "key" : "number",
+                              "value" : "+33671..."
+                            }, {
+                              "key" : "country",
+                              "value" : "FR"
+                            } ]
                           }
-                        }, {
-                          "imageButton" : {
-                            "iconUrl" : "https://example.com/resources/cancel",
-                            "onClick" : {
-                              "openLink" : {
-                                "url" : "https://example.com/cancel/..."
-                              }
-                            }
-                          }
-                        }, {
-                          "imageButton" : {
-                            "icon" : "PHONE",
-                            "onClick" : {
-                              "action" : {
-                                "actionMethodName" : "call",
-                                "parameters" : [ {
-                                  "key" : "number",
-                                  "value" : "+33671..."
-                                }, {
-                                  "key" : "country",
-                                  "value" : "FR"
-                                } ]
-                              }
-                            }
-                          }
-                        } ]
-                      } ]
+                        }
+                      }
                     } ]
                   } ]
-                }
-            """.trimIndent()
+                } ]
+              } ]
+            }
+            """.trimIndent(),
         )
     }
 
@@ -171,95 +171,95 @@ internal class GoogleChatCardMessageBuildersTest {
         assertThat(googleMessageOut).isNotNull
         assertThat(JacksonFactory().toPrettyString(googleMessageOut)).isEqualTo(
             """
-                {
-                  "cards" : [ {
-                    "header" : {
-                      "imageStyle" : "IMAGE",
-                      "imageUrl" : "https://goo.gl/aeDtrS",
-                      "subtitle" : "Trad de pizzabot@example.com",
-                      "title" : "SAV Pizza Bot"
-                    },
-                    "sections" : [ {
-                      "widgets" : [ {
-                        "keyValue" : {
-                          "content" : "Trad de 12345",
-                          "contentMultiline" : false,
-                          "onClick" : {
-                            "action" : {
-                              "actionMethodName" : "SEND_SENTENCE",
-                              "parameters" : [ {
-                                "key" : "TEXT",
-                                "value" : "Voir ma commande"
-                              } ]
-                            }
-                          },
-                          "topLabel" : "Trad de Order No."
+            {
+              "cards" : [ {
+                "header" : {
+                  "imageStyle" : "IMAGE",
+                  "imageUrl" : "https://goo.gl/aeDtrS",
+                  "subtitle" : "Trad de pizzabot@example.com",
+                  "title" : "SAV Pizza Bot"
+                },
+                "sections" : [ {
+                  "widgets" : [ {
+                    "keyValue" : {
+                      "content" : "Trad de 12345",
+                      "contentMultiline" : false,
+                      "onClick" : {
+                        "action" : {
+                          "actionMethodName" : "SEND_SENTENCE",
+                          "parameters" : [ {
+                            "key" : "TEXT",
+                            "value" : "Voir ma commande"
+                          } ]
                         }
-                      }, {
-                        "keyValue" : {
-                          "content" : "Trad de In Delivery",
-                          "contentMultiline" : false,
-                          "topLabel" : "Trad de Status"
+                      },
+                      "topLabel" : "Trad de Order No."
+                    }
+                  }, {
+                    "keyValue" : {
+                      "content" : "Trad de In Delivery",
+                      "contentMultiline" : false,
+                      "topLabel" : "Trad de Status"
+                    }
+                  } ]
+                }, {
+                  "header" : "Trad de Location",
+                  "widgets" : [ {
+                    "image" : {
+                      "imageUrl" : "https://maps.googleapis.com/...",
+                      "onClick" : {
+                        "action" : {
+                          "actionMethodName" : "SEND_CHOICE",
+                          "parameters" : [ {
+                            "key" : "INTENT",
+                            "value" : "geoloc"
+                          } ]
                         }
-                      } ]
+                      }
+                    }
+                  } ]
+                }, {
+                  "widgets" : [ {
+                    "buttons" : [ {
+                      "textButton" : {
+                        "onClick" : {
+                          "openLink" : {
+                            "url" : "https://example.com/orders/..."
+                          }
+                        },
+                        "text" : "Trad de OPEN ORDER"
+                      }
                     }, {
-                      "header" : "Trad de Location",
-                      "widgets" : [ {
-                        "image" : {
-                          "imageUrl" : "https://maps.googleapis.com/...",
-                          "onClick" : {
-                            "action" : {
-                              "actionMethodName" : "SEND_CHOICE",
-                              "parameters" : [ {
-                                "key" : "INTENT",
-                                "value" : "geoloc"
-                              } ]
-                            }
+                      "imageButton" : {
+                        "iconUrl" : "https://example.com/resources/cancel",
+                        "onClick" : {
+                          "openLink" : {
+                            "url" : "https://example.com/cancel/..."
                           }
                         }
-                      } ]
+                      }
                     }, {
-                      "widgets" : [ {
-                        "buttons" : [ {
-                          "textButton" : {
-                            "onClick" : {
-                              "openLink" : {
-                                "url" : "https://example.com/orders/..."
-                              }
-                            },
-                            "text" : "Trad de OPEN ORDER"
+                      "imageButton" : {
+                        "icon" : "PHONE",
+                        "onClick" : {
+                          "action" : {
+                            "actionMethodName" : "call",
+                            "parameters" : [ {
+                              "key" : "number",
+                              "value" : "+33671..."
+                            }, {
+                              "key" : "country",
+                              "value" : "FR"
+                            } ]
                           }
-                        }, {
-                          "imageButton" : {
-                            "iconUrl" : "https://example.com/resources/cancel",
-                            "onClick" : {
-                              "openLink" : {
-                                "url" : "https://example.com/cancel/..."
-                              }
-                            }
-                          }
-                        }, {
-                          "imageButton" : {
-                            "icon" : "PHONE",
-                            "onClick" : {
-                              "action" : {
-                                "actionMethodName" : "call",
-                                "parameters" : [ {
-                                  "key" : "number",
-                                  "value" : "+33671..."
-                                }, {
-                                  "key" : "country",
-                                  "value" : "FR"
-                                } ]
-                              }
-                            }
-                          }
-                        } ]
-                      } ]
+                        }
+                      }
                     } ]
                   } ]
-                }
-            """.trimIndent()
+                } ]
+              } ]
+            }
+            """.trimIndent(),
         )
     }
 }

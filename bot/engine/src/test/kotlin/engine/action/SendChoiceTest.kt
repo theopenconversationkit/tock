@@ -33,7 +33,6 @@ import kotlin.test.assertTrue
  *
  */
 class SendChoiceTest {
-
     class TestParamObfuscator : MapObfuscator {
         override fun obfuscate(map: Map<String, String>): Map<String, String> {
             return map.mapValues { "" }
@@ -47,30 +46,30 @@ class SendChoiceTest {
 
     @Test
     fun `GIVEN a sendchoice with parameters WHEN obfuscate the sendchoice THEN obfuscates the parameters`() {
-
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
 
-        val sendChoice = SendChoice(
-            PlayerId(
-                UUID.randomUUID().toString()
-            ),
-            "",
-            PlayerId(
-                UUID.randomUUID().toString()
-            ),
-            "intent",
-            mapOf(
-                "p1" to "paramValue",
-                "p2" to "paramValue"
+        val sendChoice =
+            SendChoice(
+                PlayerId(
+                    UUID.randomUUID().toString(),
+                ),
+                "",
+                PlayerId(
+                    UUID.randomUUID().toString(),
+                ),
+                "intent",
+                mapOf(
+                    "p1" to "paramValue",
+                    "p2" to "paramValue",
+                ),
             )
-        )
         val obfuscatedMap = obfuscate((sendChoice.toMessage() as Choice).parameters)
 
         assertTrue(
             obfuscatedMap.all {
                 it.value.isEmpty()
-            }
+            },
         )
         verify(exactly = 1) { testParameterObfuscator.obfuscate(any()) }
         TockObfuscatorService.deregisterObfuscators()

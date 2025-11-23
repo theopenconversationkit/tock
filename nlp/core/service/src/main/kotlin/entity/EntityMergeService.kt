@@ -30,7 +30,6 @@ import mu.KotlinLogging
  * To merge intent entity model results & dedicated entity models results.
  */
 internal object EntityMergeService : EntityMerge {
-
     sealed class Weighted(var weight: Double, val range: IntOpenRange) : Comparable<Weighted> {
         override fun compareTo(other: Weighted): Int {
             return weight.compareTo(other.weight)
@@ -44,8 +43,11 @@ internal object EntityMergeService : EntityMerge {
             companion object {
                 fun calculateWeight(entity: EntityRecognition): Double {
                     // if it's 100%, it's 100%
-                    return if (entity.probability == 1.0) 1.0
-                    else entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
+                    return if (entity.probability == 1.0) {
+                        1.0
+                    } else {
+                        entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
+                    }
                 }
             }
         }
@@ -68,14 +70,15 @@ internal object EntityMergeService : EntityMerge {
         text: String,
         intent: Intent,
         entities: List<EntityRecognition>,
-        entityTypes: List<EntityTypeRecognition>
+        entityTypes: List<EntityTypeRecognition>,
     ): List<EntityRecognition> {
         return if (entityTypes.isEmpty()) {
             entities
         } else {
             // introduce weight and start by the highest value
-            val all = (entities.map { WeightedEntity(it) } + entityTypes.map { WeightedEntityType(it) })
-                .sortedDescending()
+            val all =
+                (entities.map { WeightedEntity(it) } + entityTypes.map { WeightedEntityType(it) })
+                    .sortedDescending()
 
             // need to trace those already viewed
             val viewed = mutableSetOf<Weighted>()
@@ -129,7 +132,7 @@ internal object EntityMergeService : EntityMerge {
         callContext: CallContext,
         text: String,
         entityType: EntityTypeRecognition,
-        intent: Intent
+        intent: Intent,
     ): EntityRecognition? {
         val intentEntities = intent.entities.filter { it.entityType == entityType.entityType }
         return if (intentEntities.size == 1) {
@@ -148,7 +151,7 @@ internal object EntityMergeService : EntityMerge {
     private fun EntityTypeRecognition.toResult(
         callContext: CallContext,
         text: String,
-        role: String
+        role: String,
     ): EntityRecognition {
         return toEntityRecognition(role)
             .run {
@@ -159,11 +162,12 @@ internal object EntityMergeService : EntityMerge {
                         text,
                         listOf(
                             copy(
-                                value = value.copy(
-                                    evaluated = false
-                                )
-                            )
-                        )
+                                value =
+                                    value.copy(
+                                        evaluated = false,
+                                    ),
+                            ),
+                        ),
                     ).first()
                 } else {
                     this

@@ -36,8 +36,8 @@ import ai.tock.bot.engine.user.PlayerId
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class SendActionConverterTest {
     @Test
@@ -45,78 +45,101 @@ class SendActionConverterTest {
         mockkObject(UserHashedIdCache)
         val userId = "4567876543"
         every { UserHashedIdCache.getRealId(userId) } returns userId
-        val whatsAppCloudApiService = mockk<WhatsAppCloudApiService> {
-            every { getUploadedImageId("fish.png") } answers {
-                "test-image-id"
+        val whatsAppCloudApiService =
+            mockk<WhatsAppCloudApiService> {
+                every { getUploadedImageId("fish.png") } answers {
+                    "test-image-id"
+                }
+                every { shortenPayload("button1") } answers {
+                    "button1id"
+                }
+                every { shortenPayload("button2") } answers {
+                    "button2id"
+                }
             }
-            every { shortenPayload("button1") } answers {
-                "button1id"
-            }
-            every { shortenPayload("button2") } answers {
-                "button2id"
-            }
-        }
 
-        val result = SendActionConverter.toBotMessage(
-            whatsAppCloudApiService, SendSentence(
-                PlayerId("test-user"), "test", PlayerId(userId), text = null, messages = mutableListOf(
-                    WhatsAppCloudBotInteractiveMessage(
-                        recipientType = WhatsAppCloudBotRecipientType.individual,
-                        interactive = WhatsAppCloudBotInteractive(
-                            type = WhatsAppCloudBotInteractiveType.button,
-                            header = WhatsAppCloudBotInteractiveHeader(
-                                WhatsAppCloudBotHeaderType.image,
-                                image = WhatsAppCloudBotMediaImage("fish.png")
-                            ),
-                            body = WhatsAppCloudBotBody("test body"),
-                            action = WhatsAppCloudBotAction(
-                                buttons = listOf(
-                                    WhatsAppCloudBotActionButton(
-                                        reply = WhatsAppCloudBotActionButtonReply(
-                                            "Button 1",
-                                            "button1"
-                                        )
+        val result =
+            SendActionConverter.toBotMessage(
+                whatsAppCloudApiService,
+                SendSentence(
+                    PlayerId("test-user"),
+                    "test",
+                    PlayerId(userId),
+                    text = null,
+                    messages =
+                        mutableListOf(
+                            WhatsAppCloudBotInteractiveMessage(
+                                recipientType = WhatsAppCloudBotRecipientType.individual,
+                                interactive =
+                                    WhatsAppCloudBotInteractive(
+                                        type = WhatsAppCloudBotInteractiveType.button,
+                                        header =
+                                            WhatsAppCloudBotInteractiveHeader(
+                                                WhatsAppCloudBotHeaderType.image,
+                                                image = WhatsAppCloudBotMediaImage("fish.png"),
+                                            ),
+                                        body = WhatsAppCloudBotBody("test body"),
+                                        action =
+                                            WhatsAppCloudBotAction(
+                                                buttons =
+                                                    listOf(
+                                                        WhatsAppCloudBotActionButton(
+                                                            reply =
+                                                                WhatsAppCloudBotActionButtonReply(
+                                                                    "Button 1",
+                                                                    "button1",
+                                                                ),
+                                                        ),
+                                                        WhatsAppCloudBotActionButton(
+                                                            reply =
+                                                                WhatsAppCloudBotActionButtonReply(
+                                                                    "Button 2",
+                                                                    "button2",
+                                                                ),
+                                                        ),
+                                                    ),
+                                            ),
                                     ),
-                                    WhatsAppCloudBotActionButton(
-                                        reply = WhatsAppCloudBotActionButtonReply(
-                                            "Button 2",
-                                            "button2"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-        assertEquals(WhatsAppCloudSendBotInteractiveMessage(
-            interactive = WhatsAppCloudBotInteractive(
-                type = WhatsAppCloudBotInteractiveType.button,
-                header = WhatsAppCloudBotInteractiveHeader(
-                    WhatsAppCloudBotHeaderType.image,
-                    image = WhatsAppCloudBotMediaImage("test-image-id")
-                ),
-                body = WhatsAppCloudBotBody("test body"),
-                action = WhatsAppCloudBotAction(
-                    buttons = listOf(
-                        WhatsAppCloudBotActionButton(
-                            reply = WhatsAppCloudBotActionButtonReply(
-                                "Button 1",
-                                "button1id"
-                            )
+                            ),
                         ),
-                        WhatsAppCloudBotActionButton(
-                            reply = WhatsAppCloudBotActionButtonReply(
-                                "Button 2",
-                                "button2id"
-                            )
-                        )
-                    )
-                )
+                ),
+            )
+        assertEquals(
+            WhatsAppCloudSendBotInteractiveMessage(
+                interactive =
+                    WhatsAppCloudBotInteractive(
+                        type = WhatsAppCloudBotInteractiveType.button,
+                        header =
+                            WhatsAppCloudBotInteractiveHeader(
+                                WhatsAppCloudBotHeaderType.image,
+                                image = WhatsAppCloudBotMediaImage("test-image-id"),
+                            ),
+                        body = WhatsAppCloudBotBody("test body"),
+                        action =
+                            WhatsAppCloudBotAction(
+                                buttons =
+                                    listOf(
+                                        WhatsAppCloudBotActionButton(
+                                            reply =
+                                                WhatsAppCloudBotActionButtonReply(
+                                                    "Button 1",
+                                                    "button1id",
+                                                ),
+                                        ),
+                                        WhatsAppCloudBotActionButton(
+                                            reply =
+                                                WhatsAppCloudBotActionButtonReply(
+                                                    "Button 2",
+                                                    "button2id",
+                                                ),
+                                        ),
+                                    ),
+                            ),
+                    ),
+                recipientType = WhatsAppCloudBotRecipientType.individual,
+                to = userId,
             ),
-            recipientType = WhatsAppCloudBotRecipientType.individual,
-            to = userId,
-        ), result)
+            result,
+        )
     }
 }

@@ -55,7 +55,6 @@ import java.util.concurrent.TimeUnit
  *  Wraps calls to the NLP stack.
  */
 class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888") : NlpClient {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -73,31 +72,35 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
         val timeout = longProperty("tock_nlp_client_request_timeout_ms", 20000)
-        val retrofit = Retrofit.Builder()
-            .baseUrl("$baseUrl/rest/nlp/")
-            .addConverterFactory(JacksonConverterFactory.create(mapper))
-            .client(
-                OkHttpClient.Builder()
-                    .readTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .addInterceptor(
-                        // adapt log level to use specific log interceptors
-                        HttpLoggingInterceptor().setLevel(
-                            HttpLoggingInterceptor.Level.valueOf(
-                                retrofitLogLevel(
-                                    retrofitDefaultLogLevel
-                                ).toString()
-                            )
+        val retrofit =
+            Retrofit.Builder()
+                .baseUrl("$baseUrl/rest/nlp/")
+                .addConverterFactory(JacksonConverterFactory.create(mapper))
+                .client(
+                    OkHttpClient.Builder()
+                        .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+                        .addInterceptor(
+                            // adapt log level to use specific log interceptors
+                            HttpLoggingInterceptor().setLevel(
+                                HttpLoggingInterceptor.Level.valueOf(
+                                    retrofitLogLevel(
+                                        retrofitDefaultLogLevel,
+                                    ).toString(),
+                                ),
+                            ),
                         )
-                    )
-                    .build()
-            )
-            .build()
+                        .build(),
+                )
+                .build()
         nlpService = retrofit.create(NlpService::class.java)
     }
 
-    private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue
+    private fun longProperty(
+        name: String,
+        defaultValue: Long,
+    ): Long = System.getenv(name)?.toLong() ?: defaultValue
 
     private fun <T> Response<T>.parseAndReturns(): T? =
         body()
@@ -122,34 +125,46 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         nlpService.markAsUnknown(query).execute()
     }
 
-    override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? {
+    override fun createApplication(
+        namespace: String,
+        name: String,
+        locale: Locale,
+    ): ApplicationDefinition? {
         return nlpService.createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale))
             .execute().body()
     }
 
     private fun createMultipart(stream: InputStream): MultipartBody.Part {
-        val dump = ByteArrayOutputStream().apply {
-            var nRead: Int = 0
-            val data = ByteArray(2048)
-            while (nRead != -1) {
-                nRead = stream.read(data, 0, data.size)
-                if (nRead != -1)
-                    write(data, 0, Math.min(nRead, data.size))
+        val dump =
+            ByteArrayOutputStream().apply {
+                var nRead: Int = 0
+                val data = ByteArray(2048)
+                while (nRead != -1) {
+                    nRead = stream.read(data, 0, data.size)
+                    if (nRead != -1) {
+                        write(data, 0, Math.min(nRead, data.size))
+                    }
+                }
+                flush()
             }
-            flush()
-        }
         return MultipartBody.Part.createFormData(
             "dump",
             "dump",
-            RequestBody.create(MultipartBody.FORM, dump.toByteArray())
+            RequestBody.create(MultipartBody.FORM, dump.toByteArray()),
         )
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? {
+    override fun getIntentsByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): List<IntentDefinition>? {
         return nlpService.getIntentsByNamespaceAndName(namespace, name).execute().parseAndReturns()
     }
 
-    override fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
+    override fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition? {
         return nlpService.getApplicationByNamespaceAndName(namespace, name).execute().parseAndReturns()
     }
 

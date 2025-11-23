@@ -30,7 +30,6 @@ import java.util.Locale
  * Manage updates of NLP models (both intents and entity models).
  */
 interface ModelUpdater {
-
     /**
      * Update intents model.
      */
@@ -39,7 +38,7 @@ interface ModelUpdater {
         application: ApplicationDefinition,
         language: Locale,
         engineType: NlpEngineType,
-        onlyIfNotExists: Boolean = false
+        onlyIfNotExists: Boolean = false,
     )
 
     /**
@@ -51,7 +50,7 @@ interface ModelUpdater {
         intentId: Id<IntentDefinition>,
         language: Locale,
         engineType: NlpEngineType,
-        onlyIfNotExists: Boolean = false
+        onlyIfNotExists: Boolean = false,
     )
 
     fun updateEntityModelForEntityType(
@@ -60,7 +59,7 @@ interface ModelUpdater {
         entityTypeDefinition: EntityTypeDefinition,
         language: Locale,
         engineType: NlpEngineType,
-        onlyIfNotExists: Boolean = false
+        onlyIfNotExists: Boolean = false,
     )
 
     /**
@@ -86,5 +85,10 @@ interface ModelUpdater {
     /**
      * Get builds sorted by date.
      */
-    fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult
+    fun builds(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        start: Int,
+        size: Int,
+    ): ModelBuildQueryResult
 }

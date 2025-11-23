@@ -24,7 +24,6 @@ import org.litote.kmongo.Id
  *
  */
 interface IntentDefinitionDAO {
-
     /**
      * Listen changes on entity type definitions.
      */
@@ -34,7 +33,10 @@ interface IntentDefinitionDAO {
 
     fun getIntentsByNamespace(namespace: String): List<IntentDefinition>
 
-    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
+    fun getIntentByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): IntentDefinition?
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
@@ -48,6 +50,6 @@ interface IntentDefinitionDAO {
 
     fun getIntentsByApplicationIdAndCategory(
         applicationId: Id<ApplicationDefinition>,
-        category: String
+        category: String,
     ): List<IntentDefinition>
 }

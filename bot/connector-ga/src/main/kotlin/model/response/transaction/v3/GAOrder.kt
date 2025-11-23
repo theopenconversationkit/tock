@@ -36,5 +36,5 @@ data class GAOrder(
     val termsOfServiceUrl: String? = null,
     val note: String? = null,
     val purchase: GAPurchaseOrderExtension? = null,
-    val ticket: GATicketOrderExtension? = null
+    val ticket: GATicketOrderExtension? = null,
 )

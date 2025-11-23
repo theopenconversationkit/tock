@@ -51,16 +51,15 @@ data class ClassificationReport(
     /**
      * The total number of unknown count of this sentence.
      */
-    val unknownCount: Long = 0
+    val unknownCount: Long = 0,
 ) {
-
     constructor(result: ParseResult, intentId: Id<IntentDefinition>?) : this(
         intentId,
         result.entities.map { ClassifiedEntityReport(it) },
         result.notRetainedEntities.map { ClassifiedEntityReport(it) },
         result.intentProbability,
         result.entitiesProbability,
-        result.otherIntentsProbabilities
+        result.otherIntentsProbabilities,
     )
 
     constructor(sentence: ClassifiedSentence) : this(
@@ -72,7 +71,7 @@ data class ClassificationReport(
         sentence.otherIntentsProbabilities,
         sentence.lastUsage,
         sentence.usageCount,
-        sentence.unknownCount
+        sentence.unknownCount,
     )
 
     constructor(error: IntentTestError) : this(
@@ -81,7 +80,7 @@ data class ClassificationReport(
         emptyList(),
         error.averageErrorProbability,
         1.0,
-        emptyMap()
+        emptyMap(),
     )
 
     constructor(error: EntityTestError) : this(
@@ -90,7 +89,7 @@ data class ClassificationReport(
         emptyList(),
         1.0,
         error.averageErrorProbability,
-        emptyMap()
+        emptyMap(),
     )
 
     fun toClassification(): Classification {

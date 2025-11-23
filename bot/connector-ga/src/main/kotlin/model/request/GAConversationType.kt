@@ -19,5 +19,5 @@ package ai.tock.bot.connector.ga.model.request
 enum class GAConversationType {
     TYPE_UNSPECIFIED,
     NEW,
-    ACTIVE
+    ACTIVE,
 }

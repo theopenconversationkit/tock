@@ -26,5 +26,5 @@ data class SearchMark(
     /**
      * The results start with the elements updated before [date].
      */
-    val date: Instant
+    val date: Instant,
 )

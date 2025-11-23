@@ -25,5 +25,5 @@ class MediaStatusEvent(
     userId: PlayerId,
     recipientId: PlayerId,
     applicationId: String,
-    val status: String
+    val status: String,
 ) : OneToOneEvent(userId, recipientId, applicationId)

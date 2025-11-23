@@ -25,9 +25,8 @@ import io.vertx.ext.web.RoutingContext
  *
  */
 class OnDemandHealthCheckVerticle(
-    private val workerOnDemandVerticles: List<WorkerOnDemandVerticle>
+    private val workerOnDemandVerticles: List<WorkerOnDemandVerticle>,
 ) : WebVerticle() {
-
     override fun configure() {
         // do nothing
     }
@@ -36,19 +35,21 @@ class OnDemandHealthCheckVerticle(
         return {
             it.response()
                 .setStatusCode(
-                    if (workerOnDemandVerticles.none { workerOnDemandVerticle -> !workerOnDemandVerticle.isLoaded() })
+                    if (workerOnDemandVerticles.none { workerOnDemandVerticle -> !workerOnDemandVerticle.isLoaded() }) {
                         200
-                    else
+                    } else {
                         500
+                    },
                 )
                 .end()
         }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        workerOnDemandVerticles.map {
-            Pair(it.name(), { it.isLoaded() })
-        },
-        selfCheck = { workerOnDemandVerticles.none { !it.isLoaded() } }
-    )
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        detailedHealthcheck(
+            workerOnDemandVerticles.map {
+                Pair(it.name(), { it.isLoaded() })
+            },
+            selfCheck = { workerOnDemandVerticles.none { !it.isLoaded() } },
+        )
 }

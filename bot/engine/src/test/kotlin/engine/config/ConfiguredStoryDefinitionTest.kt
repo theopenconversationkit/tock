@@ -24,19 +24,19 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class ConfiguredStoryDefinitionTest {
-
     @Test
     fun `starterIntents returns builtin starter intents`() {
         val botDefinition = BotDefinitionTest()
         val wrapper = BotDefinitionWrapper(botDefinition)
-        val story = ConfiguredStoryDefinition(
-            wrapper,
-            StoryDefinitionConfiguration(
+        val story =
+            ConfiguredStoryDefinition(
                 wrapper,
-                story_with_other_starter,
-                null
+                StoryDefinitionConfiguration(
+                    wrapper,
+                    story_with_other_starter,
+                    null,
+                ),
             )
-        )
         assertEquals(setOf(story_with_other_starter.mainIntent(), secondaryIntent), story.starterIntents)
     }
 }

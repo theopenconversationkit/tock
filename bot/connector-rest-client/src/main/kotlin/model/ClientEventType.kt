@@ -19,8 +19,13 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ClientEventType {
-
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
+    sentence,
+    sentenceWithFootnotes,
+    choice,
+    attachment,
+    location,
+    subscribing,
+    debug,
 }

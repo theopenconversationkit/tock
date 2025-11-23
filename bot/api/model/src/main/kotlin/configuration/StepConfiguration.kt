@@ -20,5 +20,5 @@ data class StepConfiguration(
     val name: String,
     val mainIntent: String = name,
     val otherStarterIntents: Set<String> = emptySet(),
-    val secondaryIntents: Set<String> = emptySet()
+    val secondaryIntents: Set<String> = emptySet(),
 )

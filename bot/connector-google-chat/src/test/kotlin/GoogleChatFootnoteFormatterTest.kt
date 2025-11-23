@@ -24,7 +24,6 @@ import java.util.stream.Stream
 import kotlin.test.assertEquals
 
 class GoogleChatFootnoteFormatterTest {
-
     @Test
     fun `format with no footnotes returns original text`() {
         val text = "Hello world"
@@ -38,7 +37,7 @@ class GoogleChatFootnoteFormatterTest {
         description: String,
         text: String,
         footnotes: List<Footnote>,
-        expectedResult: String
+        expectedResult: String,
     ) {
         val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = false)
         assertEquals(expectedResult, result)
@@ -50,7 +49,7 @@ class GoogleChatFootnoteFormatterTest {
         description: String,
         text: String,
         footnotes: List<Footnote>,
-        expectedResult: String
+        expectedResult: String,
     ) {
         val result = GoogleChatFootnoteFormatter.format(text, footnotes, condensed = true)
         assertEquals(expectedResult, result)
@@ -58,83 +57,85 @@ class GoogleChatFootnoteFormatterTest {
 
     companion object {
         @JvmStatic
-        fun detailedFormatTestCases(): Stream<Arguments> = Stream.of(
-            Arguments.of(
-                "keeps footnotes with same URL but different titles",
-                "Check this out",
-                listOf(
-                    Footnote("id1", "Title A", "https://example.com", null, null),
-                    Footnote("id2", "Title B", "https://example.com", null, null)
-                ),
-                """
-                Check this out
+        fun detailedFormatTestCases(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(
+                    "keeps footnotes with same URL but different titles",
+                    "Check this out",
+                    listOf(
+                        Footnote("id1", "Title A", "https://example.com", null, null),
+                        Footnote("id2", "Title B", "https://example.com", null, null),
+                    ),
+                    """
+                    Check this out
 
-                *Sources :*
-                <https://example.com|Title A>
-                <https://example.com|Title B>
-                """.trimIndent()
-            ),
-            Arguments.of(
-                "formats mix of footnotes with and without URL",
-                "Here's some info",
-                listOf(
-                    Footnote("id1", "Google", "https://google.com", null, null),
-                    Footnote("id2", "Just text", null, null, null)
+                    *Sources :*
+                    <https://example.com|Title A>
+                    <https://example.com|Title B>
+                    """.trimIndent(),
                 ),
-                """
-                Here's some info
+                Arguments.of(
+                    "formats mix of footnotes with and without URL",
+                    "Here's some info",
+                    listOf(
+                        Footnote("id1", "Google", "https://google.com", null, null),
+                        Footnote("id2", "Just text", null, null, null),
+                    ),
+                    """
+                    Here's some info
 
-                *Sources :*
-                <https://google.com|Google>
-                Just text
-                """.trimIndent()
-            ),
-            Arguments.of(
-                "does not deduplicate footnotes with same title and different URLs",
-                "Interesting links",
-                listOf(
-                    Footnote("id1", "Duplicate", "https://a.com", null, null),
-                    Footnote("id2", "Duplicate", "https://b.com", null, null)
+                    *Sources :*
+                    <https://google.com|Google>
+                    Just text
+                    """.trimIndent(),
                 ),
-                """
-                Interesting links
+                Arguments.of(
+                    "does not deduplicate footnotes with same title and different URLs",
+                    "Interesting links",
+                    listOf(
+                        Footnote("id1", "Duplicate", "https://a.com", null, null),
+                        Footnote("id2", "Duplicate", "https://b.com", null, null),
+                    ),
+                    """
+                    Interesting links
 
-                *Sources :*
-                <https://a.com|Duplicate>
-                <https://b.com|Duplicate>
-                """.trimIndent()
-            ),
-            Arguments.of(
-                "deduplicates footnotes based only on url and title ignoring other fields",
-                "References",
-                listOf(
-                    Footnote("id1", "Doc", "https://doc.com", "Content A", 0.9f),
-                    Footnote("id2", "Doc", "https://doc.com", "Content B", 0.2f)
+                    *Sources :*
+                    <https://a.com|Duplicate>
+                    <https://b.com|Duplicate>
+                    """.trimIndent(),
                 ),
-                """
-                References
+                Arguments.of(
+                    "deduplicates footnotes based only on url and title ignoring other fields",
+                    "References",
+                    listOf(
+                        Footnote("id1", "Doc", "https://doc.com", "Content A", 0.9f),
+                        Footnote("id2", "Doc", "https://doc.com", "Content B", 0.2f),
+                    ),
+                    """
+                    References
 
-                *Source :*
-                <https://doc.com|Doc>
-                """.trimIndent()
+                    *Source :*
+                    <https://doc.com|Doc>
+                    """.trimIndent(),
+                ),
             )
-        )
 
         @JvmStatic
-        fun condensedFormatTestCases(): Stream<Arguments> = Stream.of(
-            Arguments.of(
-                "generates numbered links with and without URLs",
-                "Sources below",
-                listOf(
-                    Footnote("id1", "Tock", "https://tock.ai", null, null),
-                    Footnote("id2", "Offline doc", null, null, null)
-                ),
-                """
-                Sources below
+        fun condensedFormatTestCases(): Stream<Arguments> =
+            Stream.of(
+                Arguments.of(
+                    "generates numbered links with and without URLs",
+                    "Sources below",
+                    listOf(
+                        Footnote("id1", "Tock", "https://tock.ai", null, null),
+                        Footnote("id2", "Offline doc", null, null, null),
+                    ),
+                    """
+                    Sources below
 
-                *Sources:* [[1]](https://tock.ai) [2]
-                """.trimIndent()
+                    *Sources:* [[1]](https://tock.ai) [2]
+                    """.trimIndent(),
+                ),
             )
-        )
     }
 }

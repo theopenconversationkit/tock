@@ -40,11 +40,13 @@ import java.util.Locale
  * Provided via [addAlexaConnector.alexaTockMapper] parameter.
  */
 open class AlexaTockMapper(val applicationId: String) {
-
     /**
      * Returns a Tock intent from an Alexa intent.
      */
-    open fun alexaIntentToTockIntent(request: IntentRequest, botDefinition: BotDefinition): String {
+    open fun alexaIntentToTockIntent(
+        request: IntentRequest,
+        botDefinition: BotDefinition,
+    ): String {
         val intentName = request.intent.name
         return if (intentName.endsWith("_intent")) {
             intentName.substring(0, intentName.length - "_intent".length)
@@ -60,7 +62,7 @@ open class AlexaTockMapper(val applicationId: String) {
         request: IntentRequest,
         intent: String,
         slot: String,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ): Entity? {
         val entityName = slot.substring(0, slot.length - "_slot".length)
         val namespace = botDefinition.namespace
@@ -75,13 +77,13 @@ open class AlexaTockMapper(val applicationId: String) {
         intent: String,
         slot: Slot,
         botDefinition: BotDefinition,
-        index: Int
+        index: Int,
     ): NlpEntityValue {
         val entity = alexaEntityToTockEntity(request, intent, slot.name, botDefinition)!!
         return NlpEntityValue(
             index,
             index + slot.value!!.length,
-            entity
+            entity,
         )
     }
 
@@ -96,7 +98,7 @@ open class AlexaTockMapper(val applicationId: String) {
     open fun toStartSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>): StartSessionEvent {
         return StartSessionEvent(
             PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
-            applicationId
+            applicationId,
         )
     }
 
@@ -106,23 +108,28 @@ open class AlexaTockMapper(val applicationId: String) {
     open fun toEndSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionEndedRequest>): EndSessionEvent {
         return EndSessionEvent(
             PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
-            applicationId
+            applicationId,
         )
     }
 
     /**
      * Returns an [Event] from an Alexa [IntentRequest].
      */
-    open fun toEvent(userId: String, request: IntentRequest, botDefinition: BotDefinition): Event {
+    open fun toEvent(
+        userId: String,
+        request: IntentRequest,
+        botDefinition: BotDefinition,
+    ): Event {
         val playerId = PlayerId(userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
         val namespace = botDefinition.namespace
         val intent = alexaIntentToTockIntent(request, botDefinition)
         var index = 0
 
-        val slots = getSlots(request)?.values
-            ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
-            ?: emptyList()
+        val slots =
+            getSlots(request)?.values
+                ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
+                ?: emptyList()
         val entityValues =
             slots.map {
                 val value = alexaEntityToTockEntityValue(request, intent, it, botDefinition, index)
@@ -130,27 +137,29 @@ open class AlexaTockMapper(val applicationId: String) {
                 value
             }
 
-        val precomputedNlp = NlpResult(
-            intent,
-            namespace,
-            Locale(request.locale.language),
-            entityValues,
-            emptyList(),
-            1.0,
-            1.0,
-            slots.joinToString(" ") { it.value!! }
-        )
+        val precomputedNlp =
+            NlpResult(
+                intent,
+                namespace,
+                Locale(request.locale.language),
+                entityValues,
+                emptyList(),
+                1.0,
+                1.0,
+                slots.joinToString(" ") { it.value!! },
+            )
         return SendSentence(
             playerId,
             applicationId,
             botId,
             null,
             messages = mutableListOf(AlexaInputMessage(request)),
-            state = EventState(
-                targetConnectorType = alexaConnectorType,
-                userInterface = alexaConnectorType.userInterfaceType
-            ),
-            precomputedNlp = precomputedNlp
+            state =
+                EventState(
+                    targetConnectorType = alexaConnectorType,
+                    userInterface = alexaConnectorType.userInterfaceType,
+                ),
+            precomputedNlp = precomputedNlp,
         )
     }
 }

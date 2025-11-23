@@ -51,5 +51,5 @@ data class UserData(
     /**
      * Is it a test user?
      */
-    var test: Boolean = false
+    var test: Boolean = false,
 )

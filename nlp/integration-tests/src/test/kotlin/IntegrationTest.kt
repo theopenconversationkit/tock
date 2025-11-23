@@ -37,7 +37,6 @@ import kotlin.test.assertEquals
  *
  */
 class IntegrationTest {
-
     companion object {
         @BeforeAll
         @JvmStatic
@@ -48,14 +47,15 @@ class IntegrationTest {
 
     @Test
     fun testOpenNlpSimpleRequest() {
-        val result = FrontClient.parse(
-            ParseQuery(
-                listOf("I want to go to Paris tomorrow"),
-                defaultNamespace,
-                "test",
-                QueryContext(Locale.ENGLISH, "clientTest")
+        val result =
+            FrontClient.parse(
+                ParseQuery(
+                    listOf("I want to go to Paris tomorrow"),
+                    defaultNamespace,
+                    "test",
+                    QueryContext(Locale.ENGLISH, "clientTest"),
+                ),
             )
-        )
         println(result)
         assertEquals("travel", result.intent)
         assertEquals(2, result.entities.size)
@@ -65,22 +65,26 @@ class IntegrationTest {
                 21,
                 Entity(EntityType("$defaultNamespace:locality"), "locality"),
                 null,
-                probability = 0.30666386016073854
+                probability = 0.30666386016073854,
             ),
-            result.firstValue("locality")
+            result.firstValue("locality"),
         )
         assertEquals(
             ParsedEntityValue(
-                22, 30, Entity(EntityType("duckling:datetime"), "datetime"),
+                22,
+                30,
+                Entity(EntityType("duckling:datetime"), "datetime"),
                 DateEntityValue(
                     ZonedDateTime.now().withZoneSameInstant(defaultZoneId).plusDays(1).withHour(0).withMinute(0).withSecond(
-                        0
+                        0,
                     ).withNano(0).withFixedOffsetZone(),
-                    DateEntityGrain.day
+                    DateEntityGrain.day,
                 ),
-                true, probability = 0.6447195532270447, mergeSupport = true
+                true,
+                probability = 0.6447195532270447,
+                mergeSupport = true,
             ),
-            result.firstValue("datetime")
+            result.firstValue("datetime"),
         )
     }
 }

@@ -45,7 +45,6 @@ import java.util.Locale
 import kotlin.test.assertEquals
 
 class FaqDefinitionMongoDAOTest : AbstractTest() {
-
     private val faqDefinitionDao: FaqDefinitionDAO get() = injector.provide()
     private val intentDefinitionDao: IntentDefinitionDAO get() = injector.provide()
     private val classifiedSentencesDao: ClassifiedSentenceDAO get() = injector.provide()
@@ -72,19 +71,20 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val faqCategory = "faq"
     private val userLogin: UserLogin = "whateverLogin"
 
-    private val mockedApplicationDefinition = ApplicationDefinition(_id= applicationId, name = botId,label=botId, namespace = namespace)
+    private val mockedApplicationDefinition = ApplicationDefinition(_id = applicationId, name = botId, label = botId, namespace = namespace)
 
     private val faqDefinition = FaqDefinition(faqId, botId, namespace, intentId, i18nId, tagList, true, now, now)
-    private val faq2Definition = FaqDefinition(faqId2,  botId,namespace, intentId2, i18nId2, tagList, true, now, now)
-    private val faq3Definition = FaqDefinition(faqId3,botId2,namespace, intentId3, i18nId3, tagList, true, now, now)
+    private val faq2Definition = FaqDefinition(faqId2, botId, namespace, intentId2, i18nId2, tagList, true, now, now)
+    private val faq3Definition = FaqDefinition(faqId3, botId2, namespace, intentId3, i18nId3, tagList, true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 
-    override fun moreBindingModules() = Kodein.Module {
-        bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
-        bind<ClassifiedSentenceDAO>() with provider { ClassifiedSentenceMongoDAO }
-        bind<IntentDefinitionDAO>() with provider { IntentDefinitionMongoDAO }
-    }
+    override fun moreBindingModules() =
+        Kodein.Module {
+            bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
+            bind<ClassifiedSentenceDAO>() with provider { ClassifiedSentenceMongoDAO }
+            bind<IntentDefinitionDAO>() with provider { IntentDefinitionMongoDAO }
+        }
 
     @AfterEach
     fun cleanup() {
@@ -109,27 +109,27 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = faqDefinition,
             actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId, namespace).first(),
-            message = "There should be something returned with an applicationId"
+            message = "There should be something returned with an applicationId",
         )
         assertEquals(
             expected = faqDefinition,
             actual = faqDefinitionDao.getFaqDefinitionByIntentId(intentId),
-            message = "There should be something returned with an intentId"
+            message = "There should be something returned with an intentId",
         )
         assertEquals(
             expected = faqDefinition,
             actual = faqDefinitionDao.getFaqDefinitionById(faqId),
-            message = "There should be something returned with an faqId"
+            message = "There should be something returned with an faqId",
         )
         assertEquals(
             expected = faqDefinition,
             actual = faqDefinitionDao.getFaqDefinitionByI18nIds(setOf(i18nId))?.first(),
-            message = "There should be something returned with an i18nIds"
+            message = "There should be something returned with an i18nIds",
         )
         assertEquals(
             expected = faqDefinition,
             actual = faqDefinitionDao.getFaqDefinitionByTags(tagList.toSet()).first(),
-            message = "There should be something returned with tags"
+            message = "There should be something returned with tags",
         )
         assertEquals(1, col.countDocuments())
     }
@@ -145,12 +145,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = 2,
             actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId, namespace).size,
-            message = "There should be something returned with an applicationId"
+            message = "There should be something returned with an applicationId",
         )
         assertEquals(
             expected = 1,
             actual = faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId2, namespace).size,
-            message = "There should be something returned with an applicationId"
+            message = "There should be something returned with an applicationId",
         )
     }
 
@@ -163,31 +163,31 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         assertEquals(
             expected = null,
             actual = faqDefinitionDao.getFaqDefinitionByIntentId(intentId),
-            message = "There should be something returned with an intentId"
+            message = "There should be something returned with an intentId",
         )
         assertEquals(
             expected = null,
             actual = faqDefinitionDao.getFaqDefinitionById(faqId),
-            message = "There should be something returned with an faqId"
+            message = "There should be something returned with an faqId",
         )
         assertEquals(
             expected = null,
             actual = faqDefinitionDao.getFaqDefinitionByI18nIds(setOf(i18nId))?.firstOrNull(),
-            message = "There should be something returned with an i18nIds"
+            message = "There should be something returned with an i18nIds",
         )
         assertEquals(
             expected = null,
             actual = faqDefinitionDao.getFaqDefinitionByTags(tagList.toSet()).firstOrNull(),
-            message = "There should be something returned with tags"
+            message = "There should be something returned with tags",
         )
     }
 
     @Test
     fun `Get a faqDefinition search filtered by tag`() {
-        //prepare a Faq save
+        // prepare a Faq save
         faqDefinitionDao.save(faqDefinition)
 
-        //another faq
+        // another faq
         val i18nId2 = "idI18n2".toId<I18nLabel>()
         val tagList2 = listOf("TAG1")
 
@@ -201,11 +201,11 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
                 tagList2,
                 true,
                 now.plusSeconds(1),
-                now.plusSeconds(1)
+                now.plusSeconds(1),
             )
         faqDefinitionDao.save(otherFaqDefinition)
 
-        //some another faq
+        // some another faq
         val i18nId3 = "idI18n3".toId<I18nLabel>()
         val tagList3 = listOf("TAG2")
 
@@ -219,14 +219,14 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
                 tagList3,
                 true,
                 now.plusSeconds(2),
-                now.plusSeconds(2)
+                now.plusSeconds(2),
             )
         faqDefinitionDao.save(someOtherFaqDefinition)
 
         assertEquals(
             expected = 2,
             actual = faqDefinitionDao.getFaqDefinitionByTags(setOf("TAG1")).size,
-            message = "There should be something returned with tags"
+            message = "There should be something returned with tags",
         )
     }
 
@@ -243,7 +243,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId1, namespace).size)
 
-        faqDefinitionDao.deleteFaqDefinitionByBotIdAndNamespace(botId1,namespace)
+        faqDefinitionDao.deleteFaqDefinitionByBotIdAndNamespace(botId1, namespace)
 
         assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId1, namespace).size)
         assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotIdAndNamespace(botId2, namespace).size)
@@ -251,18 +251,19 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
     @Test
     fun `FaqDefinition search by tag`() {
-        //prepare a Faq save
+        // prepare a Faq save
         faqDefinitionDao.save(faqDefinition)
 
-        val firstIntentWithIntentId = IntentDefinition(
-            "FAQ name",
-            namespace,
-            setOf(applicationId),
-            emptySet(),
-            label = "faqname",
-            category = faqCategory,
-            _id = intentId
-        )
+        val firstIntentWithIntentId =
+            IntentDefinition(
+                "FAQ name",
+                namespace,
+                setOf(applicationId),
+                emptySet(),
+                label = "faqname",
+                category = faqCategory,
+                _id = intentId,
+            )
 
         intentDefinitionDao.save(firstIntentWithIntentId)
 
@@ -279,18 +280,19 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
                 otherTagList,
                 true,
                 now.plusSeconds(2),
-                now.plusSeconds(2)
+                now.plusSeconds(2),
             )
 
-        val secondIntentWithIntentId3 = IntentDefinition(
-            "Faq name 2",
-            namespace,
-            setOf(applicationId),
-            emptySet(),
-            label = "faqname2",
-            category = faqCategory,
-            _id = intentId3
-        )
+        val secondIntentWithIntentId3 =
+            IntentDefinition(
+                "Faq name 2",
+                namespace,
+                setOf(applicationId),
+                emptySet(),
+                label = "faqname2",
+                category = faqCategory,
+                _id = intentId3,
+            )
 
         intentDefinitionDao.save(secondIntentWithIntentId3)
         faqDefinitionDao.save(secondFaqDefinition)
@@ -306,7 +308,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         createDataForFaqSearch(faqId2, intentId2, i18nId2, tagList2, applicationId, true)
 
-        //some another faq
+        // some another faq
         val i18nId3 = "idI18n3".toId<I18nLabel>()
         val tagList3 = listOf("TAG2")
 
@@ -318,7 +320,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             applicationId,
             true,
             "FAQ name 2",
-            utteranceText = "randomText2"
+            utteranceText = "randomText2",
         )
 
         // third FAQ
@@ -327,157 +329,77 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val tagListToDel = listOf("TAG2")
 
         // Faq Definition in deletion with build Worker schedule for example
-        val inDeletionFaqDefinition = createDataForFaqSearch(
-            faqId,
-            intentIdtoDel,
-            i18nIdToDel,
-            tagListToDel,
-            applicationId,
-            true,
-            "FAQ name in deletion",
-            utteranceText = "randomText3"
-        )
+        val inDeletionFaqDefinition =
+            createDataForFaqSearch(
+                faqId,
+                intentIdtoDel,
+                i18nIdToDel,
+                tagListToDel,
+                applicationId,
+                true,
+                "FAQ name in deletion",
+                utteranceText = "randomText3",
+            )
 
-        //delete the faq
+        // delete the faq
         faqDefinitionDao.deleteFaqDefinitionById(faqId)
         intentDefinitionDao.deleteIntentById(intentIdtoDel)
-        val inDeletionFaqDefUtterance = classifiedSentencesDao.getSentences(
-            setOf(inDeletionFaqDefinition.intentId),
-            Locale.FRENCH,
-            ClassifiedSentenceStatus.validated
-        )
+        val inDeletionFaqDefUtterance =
+            classifiedSentencesDao.getSentences(
+                setOf(inDeletionFaqDefinition.intentId),
+                Locale.FRENCH,
+                ClassifiedSentenceStatus.validated,
+            )
         classifiedSentencesDao.switchSentencesStatus(inDeletionFaqDefUtterance, ClassifiedSentenceStatus.deleted)
 
         // search the actual faq
-        val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
-            //no specific filtering
-            createFaqQuery(null, null),
-            mockedApplicationDefinition,
-            null
-        )
+        val searchFound =
+            faqDefinitionDao.getFaqDetailsWithCount(
+                // no specific filtering
+                createFaqQuery(null, null),
+                mockedApplicationDefinition,
+                null,
+            )
 
         assertEquals(
             expected = 2,
-            actual = classifiedSentencesDao.getSentences(
-                setOf(intentId3, intentId2, intentIdtoDel),
-                Locale.FRENCH,
-                ClassifiedSentenceStatus.validated
-            ).size,
-            message = "There should be two classified sentences"
+            actual =
+                classifiedSentencesDao.getSentences(
+                    setOf(intentId3, intentId2, intentIdtoDel),
+                    Locale.FRENCH,
+                    ClassifiedSentenceStatus.validated,
+                ).size,
+            message = "There should be two classified sentences",
         )
 
         assertEquals(
-            expected = 1, actual = classifiedSentencesDao.getSentences(
-                setOf(intentIdtoDel), Locale.FRENCH,
-                ClassifiedSentenceStatus.deleted
-            ).size, "There should be one classified sentences deleted"
+            expected = 1,
+            actual =
+                classifiedSentencesDao.getSentences(
+                    setOf(intentIdtoDel),
+                    Locale.FRENCH,
+                    ClassifiedSentenceStatus.deleted,
+                ).size,
+            "There should be one classified sentences deleted",
         )
 
         assertEquals(
             expected = 2,
             actual = intentDefinitionDao.getIntentByIds(setOf(intentId3, intentId2, intentIdtoDel))?.size,
-            message = "There should be two intents"
+            message = "There should be two intents",
         )
 
         assertEquals(searchFound.second, 2, "There should be 2 Faq")
-
     }
 
     @Test
     fun `A faqDefinition search with name with deleted utterances`() {
-
         val i18nId2 = "idI18n2".toId<I18nLabel>()
         val tagList2 = listOf("TAG1")
 
         createDataForFaqSearch(faqId2, intentId2, i18nId2, tagList2, applicationId, true)
 
-        //some another faq
-        val i18nId3 = "idI18n3".toId<I18nLabel>()
-        val tagList3 = listOf("TAG2")
-        val faqName2 = "FAQ name 2"
-
-        createDataForFaqSearch(
-            faqId3,
-            intentId3,
-            i18nId3,
-            tagList3,
-            applicationId,
-            true,
-            faqName2,
-            utteranceText = "randomText2"
-        )
-
-        // third FAQ
-        val intentIdtoDel = "intentIdtoDel".toId<IntentDefinition>()
-        val i18nIdToDel = "i18nIdtoDel".toId<I18nLabel>()
-        val tagListToDel = listOf("TAG2")
-
-        // Faq Definition in deletion with build Worker schedule for example
-        val inDeletionFaqDefinition = createDataForFaqSearch(
-            faqId,
-            intentIdtoDel,
-            i18nIdToDel,
-            tagListToDel,
-            applicationId,
-            true,
-            "FAQ name in deletion",
-            utteranceText = "randomText3"
-        )
-
-        //delete the faq
-        faqDefinitionDao.deleteFaqDefinitionById(faqId)
-        intentDefinitionDao.deleteIntentById(inDeletionFaqDefinition.intentId)
-        val classifiedSentenceToDelete = classifiedSentencesDao.getSentences(
-            setOf((inDeletionFaqDefinition.intentId)),
-            Locale.FRENCH,
-            ClassifiedSentenceStatus.validated
-        )
-        //delete the classified sentence for the faq
-        classifiedSentencesDao.switchSentencesStatus(classifiedSentenceToDelete, ClassifiedSentenceStatus.deleted)
-
-        // search the actual faq
-        val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
-            //filtering on faqName2
-            createFaqQuery(null, faqName2),
-            mockedApplicationDefinition,
-            null
-        )
-
-        assertEquals(
-            expected = 2,
-            actual = classifiedSentencesDao.getSentences(
-                setOf(intentId3, intentId2, intentIdtoDel),
-                Locale.FRENCH,
-                ClassifiedSentenceStatus.validated
-            ).size,
-            message = "There should be two classified sentences"
-        )
-
-        assertEquals(
-            expected = 1, actual = classifiedSentencesDao.getSentences(
-                setOf(intentIdtoDel), Locale.FRENCH,
-                ClassifiedSentenceStatus.deleted
-            ).size, "There should be one classified sentences deleted"
-        )
-
-        assertEquals(
-            expected = 2,
-            actual = intentDefinitionDao.getIntentByIds(setOf(intentId3, intentId2, intentIdtoDel))?.size,
-            message = "There should be two intents"
-        )
-
-        assertEquals(searchFound.second, 1, "There should be 1 Faq with the text 'FAQ name 2'")
-    }
-
-    @Test
-    fun `FaqDefinition search must be ordered by creationDate`() {
-
-        val i18nId2 = "idI18n2".toId<I18nLabel>()
-        val tagList2 = listOf("TAG1")
-
-        val firstFaq = createDataForFaqSearch(faqId2, intentId2, i18nId2, tagList2, applicationId, true)
-
-        //some another faq
+        // some another faq
         val i18nId3 = "idI18n3".toId<I18nLabel>()
         val tagList3 = listOf("TAG2")
         val faqName2 = "FAQ name 2"
@@ -491,7 +413,100 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             true,
             faqName2,
             utteranceText = "randomText2",
-            instant = now.plusSeconds(2)
+        )
+
+        // third FAQ
+        val intentIdtoDel = "intentIdtoDel".toId<IntentDefinition>()
+        val i18nIdToDel = "i18nIdtoDel".toId<I18nLabel>()
+        val tagListToDel = listOf("TAG2")
+
+        // Faq Definition in deletion with build Worker schedule for example
+        val inDeletionFaqDefinition =
+            createDataForFaqSearch(
+                faqId,
+                intentIdtoDel,
+                i18nIdToDel,
+                tagListToDel,
+                applicationId,
+                true,
+                "FAQ name in deletion",
+                utteranceText = "randomText3",
+            )
+
+        // delete the faq
+        faqDefinitionDao.deleteFaqDefinitionById(faqId)
+        intentDefinitionDao.deleteIntentById(inDeletionFaqDefinition.intentId)
+        val classifiedSentenceToDelete =
+            classifiedSentencesDao.getSentences(
+                setOf((inDeletionFaqDefinition.intentId)),
+                Locale.FRENCH,
+                ClassifiedSentenceStatus.validated,
+            )
+        // delete the classified sentence for the faq
+        classifiedSentencesDao.switchSentencesStatus(classifiedSentenceToDelete, ClassifiedSentenceStatus.deleted)
+
+        // search the actual faq
+        val searchFound =
+            faqDefinitionDao.getFaqDetailsWithCount(
+                // filtering on faqName2
+                createFaqQuery(null, faqName2),
+                mockedApplicationDefinition,
+                null,
+            )
+
+        assertEquals(
+            expected = 2,
+            actual =
+                classifiedSentencesDao.getSentences(
+                    setOf(intentId3, intentId2, intentIdtoDel),
+                    Locale.FRENCH,
+                    ClassifiedSentenceStatus.validated,
+                ).size,
+            message = "There should be two classified sentences",
+        )
+
+        assertEquals(
+            expected = 1,
+            actual =
+                classifiedSentencesDao.getSentences(
+                    setOf(intentIdtoDel),
+                    Locale.FRENCH,
+                    ClassifiedSentenceStatus.deleted,
+                ).size,
+            "There should be one classified sentences deleted",
+        )
+
+        assertEquals(
+            expected = 2,
+            actual = intentDefinitionDao.getIntentByIds(setOf(intentId3, intentId2, intentIdtoDel))?.size,
+            message = "There should be two intents",
+        )
+
+        assertEquals(searchFound.second, 1, "There should be 1 Faq with the text 'FAQ name 2'")
+    }
+
+    @Test
+    fun `FaqDefinition search must be ordered by creationDate`() {
+        val i18nId2 = "idI18n2".toId<I18nLabel>()
+        val tagList2 = listOf("TAG1")
+
+        val firstFaq = createDataForFaqSearch(faqId2, intentId2, i18nId2, tagList2, applicationId, true)
+
+        // some another faq
+        val i18nId3 = "idI18n3".toId<I18nLabel>()
+        val tagList3 = listOf("TAG2")
+        val faqName2 = "FAQ name 2"
+
+        createDataForFaqSearch(
+            faqId3,
+            intentId3,
+            i18nId3,
+            tagList3,
+            applicationId,
+            true,
+            faqName2,
+            utteranceText = "randomText2",
+            instant = now.plusSeconds(2),
         )
 
         // third FAQ
@@ -500,111 +515,114 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val tagList4 = listOf("TAG")
 
         // the last faq to be created
-        val lastFaq = createDataForFaqSearch(
-            faqId4,
-            intentId4,
-            i18nId4,
-            tagList4,
-            applicationId,
-            true,
-            "FAQ name 3",
-            utteranceText = "randomText3",
-            instant = now.plusSeconds(3)
-        )
+        val lastFaq =
+            createDataForFaqSearch(
+                faqId4,
+                intentId4,
+                i18nId4,
+                tagList4,
+                applicationId,
+                true,
+                "FAQ name 3",
+                utteranceText = "randomText3",
+                instant = now.plusSeconds(3),
+            )
 
         // search the actual faq
-        val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
-            //no specific filtering
-            createFaqQuery(null, null),
-            mockedApplicationDefinition,
-            null
-        )
+        val searchFound =
+            faqDefinitionDao.getFaqDetailsWithCount(
+                // no specific filtering
+                createFaqQuery(null, null),
+                mockedApplicationDefinition,
+                null,
+            )
 
         assertEquals(
             expected = 3,
-            actual = classifiedSentencesDao.getSentences(
-                setOf(intentId3, intentId2, intentId4),
-                Locale.FRENCH,
-                ClassifiedSentenceStatus.validated
-            ).size,
-            message = "There should be 3 classified sentences"
+            actual =
+                classifiedSentencesDao.getSentences(
+                    setOf(intentId3, intentId2, intentId4),
+                    Locale.FRENCH,
+                    ClassifiedSentenceStatus.validated,
+                ).size,
+            message = "There should be 3 classified sentences",
         )
 
         assertEquals(
             expected = 3,
             actual = intentDefinitionDao.getIntentByIds(setOf(intentId3, intentId2, intentId4))?.size,
-            message = "There should be two intents"
+            message = "There should be two intents",
         )
 
         assertEquals(
             expected = 3,
             actual = searchFound.second,
-            message = "There should be three faq"
+            message = "There should be three faq",
         )
 
-        //The last faq in the search list should be the first created because of the creation date order
+        // The last faq in the search list should be the first created because of the creation date order
         assertEquals(
-            //compare list of faq
+            // compare list of faq
             searchFound.first.last()._id,
             firstFaq._id,
-            "The last faq in the list should be the first created because of the creation date order"
+            "The last faq in the list should be the first created because of the creation date order",
         )
 
         assertEquals(
             searchFound.first.last().botId,
             firstFaq.botId,
-            "botId is different than expected"
+            "botId is different than expected",
         )
 
         assertEquals(
             searchFound.first.last().intentId,
             firstFaq.intentId,
-            "intentId is different than expected"
+            "intentId is different than expected",
         )
 
         assertEquals(
             searchFound.first.last().namespace,
             firstFaq.namespace,
-            "namespace is different than expected"
+            "namespace is different than expected",
         )
 
-        //The first faq in the list should be the last created because of the creation date order
+        // The first faq in the list should be the last created because of the creation date order
         assertEquals(
             searchFound.first.first()._id,
             lastFaq._id,
-            "The first faq in the list should be the last created because of the creation date order"
+            "The first faq in the list should be the last created because of the creation date order",
         )
 
         assertEquals(
             searchFound.first.first().intentId,
             lastFaq.intentId,
-            "intentId is different than expected"
+            "intentId is different than expected",
         )
 
         assertEquals(
             searchFound.first.first().botId,
             lastFaq.botId,
-            "The first faq in the list should be the last created because of the creation date order"
+            "The first faq in the list should be the last created because of the creation date order",
         )
 
         assertEquals(
             searchFound.first.first().namespace,
             lastFaq.namespace,
-            "namespace is different than expected"
+            "namespace is different than expected",
         )
-
     }
 
     private fun `A faqDefinition search with empty utterance`() {
         val createdFaq = createDataForFaqSearch(numberOfUtterances = 0)
 
         // search the actual faq
-        val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
-            //no specific filtering
-            createFaqQuery(null, null),
-            mockedApplicationDefinition,
-            null
-        )
+        val searchFound =
+            faqDefinitionDao.getFaqDetailsWithCount(
+                // no specific filtering
+                createFaqQuery(null, null),
+                mockedApplicationDefinition,
+                null,
+            )
 
         assertEquals(searchFound.first.size, searchFound.second.toInt())
         assertEquals(searchFound.first.size, 1)
@@ -652,25 +670,25 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         numberOfUtterances: Int = 1,
         utteranceText: String = "randomText",
         classifiedSentenceStatus: ClassifiedSentenceStatus = ClassifiedSentenceStatus.validated,
-        instant: Instant = now
+        instant: Instant = now,
     ): FaqDefinition {
-
         val faqDefinition =
-            FaqDefinition(faqId,  botId, namespace, intentId, i18nId, tagList, enabled, instant, instant)
+            FaqDefinition(faqId, botId, namespace, intentId, i18nId, tagList, enabled, instant, instant)
 
-        val createdIntent = IntentDefinition(
-            faqName,
-            namespace,
-            setOf(applicationId),
-            emptySet(),
-            label = StringUtils.lowerCase(faqName),
-            category = faqCategory,
-            _id = intentId
-        )
+        val createdIntent =
+            IntentDefinition(
+                faqName,
+                namespace,
+                setOf(applicationId),
+                emptySet(),
+                label = StringUtils.lowerCase(faqName),
+                category = faqCategory,
+                _id = intentId,
+            )
 
         intentDefinitionDao.save(createdIntent)
 
-        //create utterance according to the number of utterance
+        // create utterance according to the number of utterance
         for (number: Int in 1..numberOfUtterances) {
             val utterance = createUtterance("$utteranceText $number", intentId, classifiedSentenceStatus)
             classifiedSentencesDao.save(utterance)
@@ -681,7 +699,10 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         return faqDefinition
     }
 
-    private fun createFaqQuery(enabled: Boolean?, search: String?): FaqQuery {
+    private fun createFaqQuery(
+        enabled: Boolean?,
+        search: String?,
+    ): FaqQuery {
         return FaqQuery(
             0,
             10,
@@ -692,21 +713,24 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             userLogin,
             null,
             applicationId.toString(),
-            namespace
+            namespace,
         )
     }
 
-    private fun createUtterance(text: String, intentId: Id<IntentDefinition>, status: ClassifiedSentenceStatus) =
-        ClassifiedSentence(
-            text = text,
-            language = Locale.FRENCH,
-            applicationId = applicationId,
-            creationDate = Instant.now(),
-            updateDate = Instant.now(),
-            status = status,
-            classification = Classification(intentId, emptyList()),
-            lastIntentProbability = 1.0,
-            lastEntityProbability = 1.0,
-            qualifier = userLogin
-        )
+    private fun createUtterance(
+        text: String,
+        intentId: Id<IntentDefinition>,
+        status: ClassifiedSentenceStatus,
+    ) = ClassifiedSentence(
+        text = text,
+        language = Locale.FRENCH,
+        applicationId = applicationId,
+        creationDate = Instant.now(),
+        updateDate = Instant.now(),
+        status = status,
+        classification = Classification(intentId, emptyList()),
+        lastIntentProbability = 1.0,
+        lastEntityProbability = 1.0,
+        qualifier = userLogin,
+    )
 }

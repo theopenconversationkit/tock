@@ -19,6 +19,8 @@ package ai.tock.bot.connector.messenger.model.webhook
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AccountLinkingStatus {
-    linked, unlinked
+    linked,
+    unlinked,
 }

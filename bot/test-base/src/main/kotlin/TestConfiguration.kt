@@ -24,11 +24,12 @@ import java.util.ServiceLoader
  * Default connector used for tests.
  */
 @Volatile
-var defaultTestConnectorType: ConnectorType = ServiceLoader.load(ConnectorProvider::class.java).toList().run {
-    // legacy
-    firstOrNull { it.connectorType.id == "messenger" }?.connectorType
-        // takes the first
-        ?: filter { it.connectorType != ConnectorType.rest }.sortedBy { it.connectorType.id }.firstOrNull()?.connectorType
-        // default to rest
-        ?: ConnectorType.rest
-}
+var defaultTestConnectorType: ConnectorType =
+    ServiceLoader.load(ConnectorProvider::class.java).toList().run {
+        // legacy
+        firstOrNull { it.connectorType.id == "messenger" }?.connectorType
+            // takes the first
+            ?: filter { it.connectorType != ConnectorType.rest }.sortedBy { it.connectorType.id }.firstOrNull()?.connectorType
+            // default to rest
+            ?: ConnectorType.rest
+    }

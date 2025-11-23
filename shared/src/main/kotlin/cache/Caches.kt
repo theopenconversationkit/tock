@@ -34,7 +34,7 @@ private val inMemoryCache: Cache<Any, Any> =
         .maximumSize(longProperty("tock_cache_in_memory_maximum_size", 10000))
         .expireAfterAccess(
             longProperty("tock_cache_in_memory_expiration_in_ms", 1000 * 60 * 60L),
-            TimeUnit.MILLISECONDS
+            TimeUnit.MILLISECONDS,
         )
         .build()
 
@@ -51,14 +51,21 @@ private fun <T> Any?.replaceNotPresent(): T? {
     }
 }
 
-private fun <T : Any> inMemoryKey(id: Id<T>, type: String): Any = id to type
+private fun <T : Any> inMemoryKey(
+    id: Id<T>,
+    type: String,
+): Any = id to type
 
 /**
  * Returns the value for specified id and type.
  * If no value exists, [valueProvider] provides the value to cache.
  * If [valueProvider] throws exception or returns null, no value is cached and null is returned.
  */
-fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
+fun <T : Any> getOrCache(
+    id: Id<T>,
+    type: String,
+    valueProvider: () -> T?,
+): T? {
     return inMemoryCache.get(inMemoryKey(id, type)) {
         cache.get(id, type)
             ?: try {
@@ -77,7 +84,10 @@ fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
  * Returns the value for specified id and type.
  * If no value exists, null is returned.
  */
-fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
+fun <T : Any> getFromCache(
+    id: Id<T>,
+    type: String,
+): T? {
     return try {
         inMemoryCache.get(inMemoryKey(id, type)) {
             cache.get(id, type) ?: NOT_PRESENT
@@ -91,7 +101,11 @@ fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
 /**
  * Adds in cache the specified value.
  */
-fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
+fun <T : Any> putInCache(
+    id: Id<T>,
+    type: String,
+    value: T,
+) {
     try {
         if (value !is ByteArray) {
             inMemoryCache.put(inMemoryKey(id, type), value)
@@ -105,7 +119,10 @@ fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
 /**
  * Remove the value for specified id and type from cache.
  */
-fun <T : Any> removeFromCache(id: Id<T>, type: String) {
+fun <T : Any> removeFromCache(
+    id: Id<T>,
+    type: String,
+) {
     inMemoryCache.invalidate(inMemoryKey(id, type))
     cache.remove(id, type)
 }

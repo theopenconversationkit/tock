@@ -23,5 +23,5 @@ enum class ConnectorFeature {
     /**
      * Are Carousels supported ?
      */
-    CAROUSEL
+    CAROUSEL,
 }

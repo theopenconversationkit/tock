@@ -40,7 +40,6 @@ import org.litote.kmongo.save
  *
  */
 internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
-
     private val logger = KotlinLogging.logger {}
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {
@@ -69,7 +68,10 @@ internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
         return application
     }
 
-    override fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
+    override fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition? {
         return col.findOne(Name eq name, Namespace eq namespace)
     }
 
@@ -81,6 +83,5 @@ internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
         return col.find().toList()
     }
 
-    fun getApplicationsByNamespace(namespace: String): List<ApplicationDefinition> =
-        col.find(Namespace eq namespace).toList()
+    fun getApplicationsByNamespace(namespace: String): List<ApplicationDefinition> = col.find(Namespace eq namespace).toList()
 }

@@ -28,13 +28,12 @@ import ai.tock.shared.error
 import ai.tock.shared.namespace
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import java.util.*
+import java.util.Locale
 
 /**
  *
  */
 class BuildModelWorker {
-
     data class ModelRefreshKey(val applicationId: Id<ApplicationDefinition>, val language: Locale)
 
     companion object {
@@ -48,7 +47,10 @@ class BuildModelWorker {
             FrontClient.getApplications().forEach { updateApplicationModels(it) }
         }
 
-        private fun updateApplicationModels(app: ApplicationDefinition, onlyIfNotExists: Boolean = false) {
+        private fun updateApplicationModels(
+            app: ApplicationDefinition,
+            onlyIfNotExists: Boolean = false,
+        ) {
             logger.info { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
             app.supportedLocales.forEach { locale ->
                 front.updateIntentsModelForApplication(emptyList(), app, locale, app.nlpEngineType, onlyIfNotExists)
@@ -60,7 +62,7 @@ class BuildModelWorker {
                         intentId,
                         locale,
                         app.nlpEngineType,
-                        onlyIfNotExists
+                        onlyIfNotExists,
                     )
                 }
                 updateEntityModels(app, locale, emptyList(), onlyIfNotExists)
@@ -70,7 +72,7 @@ class BuildModelWorker {
         private fun updateModel(
             key: ModelRefreshKey,
             sentences: List<ClassifiedSentence>,
-            onlyIfNotExists: Boolean = false
+            onlyIfNotExists: Boolean = false,
         ) {
             try {
                 val app = front.getApplicationById(key.applicationId)
@@ -90,7 +92,7 @@ class BuildModelWorker {
                         intentId,
                         key.language,
                         app.nlpEngineType,
-                        onlyIfNotExists
+                        onlyIfNotExists,
                     )
                 }
 
@@ -109,7 +111,7 @@ class BuildModelWorker {
             app: ApplicationDefinition,
             locale: Locale,
             sentences: List<ClassifiedSentence>,
-            onlyIfNotExists: Boolean = false
+            onlyIfNotExists: Boolean = false,
         ) {
             front.getEntityTypes()
                 .filter { it.subEntities.isNotEmpty() }
@@ -124,7 +126,7 @@ class BuildModelWorker {
                             entityType,
                             locale,
                             app.nlpEngineType,
-                            onlyIfNotExists
+                            onlyIfNotExists,
                         )
                     }
                 }

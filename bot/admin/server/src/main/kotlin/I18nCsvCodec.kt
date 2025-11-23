@@ -31,14 +31,11 @@ import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.io.StringReader
 import java.util.Locale
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 /**
  *
  */
 object I18nCsvCodec {
-
     private val logger = KotlinLogging.logger {}
 
     private val i18nDAO: I18nDAO by injector.instance()
@@ -52,10 +49,13 @@ object I18nCsvCodec {
         Id,
         Validated,
         Connector,
-        Alternatives
+        Alternatives,
     }
 
-    fun exportCsv(namespace: String, query: I18LabelQuery? = null): String {
+    fun exportCsv(
+        namespace: String,
+        query: I18LabelQuery? = null,
+    ): String {
         val sb = StringBuilder()
         val printer = CsvCodec.newPrinter(sb)
         printer.printRecord(CsvColumn.values().map { it.name })
@@ -72,29 +72,34 @@ object I18nCsvCodec {
                                 localizedLabel.interfaceType,
                                 label._id,
                                 localizedLabel.validated,
-                                localizedLabel.connectorId ?: ""
+                                localizedLabel.connectorId ?: "",
                             ) + localizedLabel.alternatives
-                            ).toTypedArray()
+                        ).toTypedArray(),
                     )
                 }
             }
         return sb.toString()
     }
 
-    fun importCsv(namespace: String, content: String): Int {
+    fun importCsv(
+        namespace: String,
+        content: String,
+    ): Int {
         return try {
-            val parsedCsv = csvFormat().withFirstRecordAsHeader()
-                .parse(StringReader(content))
+            val parsedCsv =
+                csvFormat().withFirstRecordAsHeader()
+                    .parse(StringReader(content))
             val headers = parsedCsv.headerNames
             val isNamespaceInCsv = headers.contains(CsvColumn.Namespace.name)
             parsedCsv
                 .records
                 .mapNotNull {
                     I18nLabel(
-                        if (isNamespaceInCsv)
+                        if (isNamespaceInCsv) {
                             it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()
-                        else
-                            it.get(CsvColumn.Id.name).toId(),
+                        } else {
+                            it.get(CsvColumn.Id.name).toId()
+                        },
                         namespace,
                         it.get(CsvColumn.Category.name),
                         LinkedHashSet(
@@ -102,16 +107,18 @@ object I18nCsvCodec {
                                 I18nLocalizedLabel(
                                     Locale(it.get(CsvColumn.Language.name)),
                                     UserInterfaceType.valueOf(it.get(CsvColumn.Interface.name)),
-                                    it[0], // First header has a strange char before it, simpler with index
+                                    // First header has a strange char before it, simpler with index
+                                    it[0],
                                     it.get(CsvColumn.Validated.name)?.toBoolean() ?: false,
                                     it.get(CsvColumn.Connector.name).run { if (isBlank()) null else this },
-                                    if (it.size() < headers.indexOf(CsvColumn.Alternatives.name))
+                                    if (it.size() < headers.indexOf(CsvColumn.Alternatives.name)) {
                                         emptyList()
-                                    else
+                                    } else {
                                         (headers.indexOf(CsvColumn.Alternatives.name) until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
-                                )
-                            )
-                        )
+                                    },
+                                ),
+                            ),
+                        ),
                     )
                 }
                 .filter { it.i18n.any { it.validated } }
@@ -122,19 +129,20 @@ object I18nCsvCodec {
                         .run {
                             val localized = value.flatMap { it.i18n }
                             copy(
-                                i18n = LinkedHashSet(
-                                    localized +
-                                        (
-                                            i18nDAO.getLabelById(key)
-                                                ?.i18n
-                                                ?.filter { old ->
-                                                    localized.none {
-                                                        old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
+                                i18n =
+                                    LinkedHashSet(
+                                        localized +
+                                            (
+                                                i18nDAO.getLabelById(key)
+                                                    ?.i18n
+                                                    ?.filter { old ->
+                                                        localized.none {
+                                                            old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
+                                                        }
                                                     }
-                                                }
-                                                ?: emptyList()
-                                            )
-                                )
+                                                    ?: emptyList()
+                                            ),
+                                    ),
                             )
                         }
                 }.also {

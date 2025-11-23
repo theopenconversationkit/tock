@@ -30,7 +30,6 @@ import kotlin.test.assertTrue
  *
  */
 class ConfigurationRepositoryTest : AbstractTest() {
-
     val entityTypes = mutableListOf(EntityTypeDefinition("present"))
 
     @BeforeEach

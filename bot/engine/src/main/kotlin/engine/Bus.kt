@@ -28,7 +28,6 @@ import ai.tock.bot.engine.user.PlayerId
  * The bus is used by bot implementations to reply to the user request.
  */
 interface Bus<T : Bus<T>> : I18nTranslator {
-
     /**
      * The connector ID.
      */
@@ -96,12 +95,19 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
-    fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): T
+    fun withMessage(
+        connectorType: ConnectorType,
+        messageProvider: () -> ConnectorMessage,
+    ): T
 
     /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] and [connectorId] is compatible.
      */
-    fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): T
+    fun withMessage(
+        connectorType: ConnectorType,
+        connectorId: String,
+        messageProvider: () -> ConnectorMessage,
+    ): T
 
     /**
      * Sends previously registered [ConnectorMessage].
@@ -116,7 +122,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun send(
         i18nText: CharSequence,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
+        vararg i18nArgs: Any?,
     ): T {
         return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
@@ -124,7 +130,10 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Sends i18nText.
      */
-    fun send(i18nText: CharSequence, vararg i18nArgs: Any?): T {
+    fun send(
+        i18nText: CharSequence,
+        vararg i18nArgs: Any?,
+    ): T {
         return sendRawText(translate(i18nText, *i18nArgs))
     }
 
@@ -134,7 +143,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      */
     fun send(
         delay: Long = defaultDelay(currentAnswerIndex),
-        messageProvider: T.() -> Any?
+        messageProvider: T.() -> Any?,
     ): T {
         @Suppress("UNCHECKED_CAST")
         this as T
@@ -153,12 +162,18 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Send text that should not be translated.
      */
-    fun sendRawText(plainText: CharSequence?, delay: Long = defaultDelay(currentAnswerIndex)): T
+    fun sendRawText(
+        plainText: CharSequence?,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): T
 
     /**
      * Send debug data.
      */
-    fun sendDebugData(title: String, data: Any?): T
+    fun sendDebugData(
+        title: String,
+        data: Any?,
+    ): T
 
     /**
      * Sends i18nText as last bot answer.
@@ -166,7 +181,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun end(
         i18nText: CharSequence,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
+        vararg i18nArgs: Any?,
     ): T {
         return endRawText(translate(i18nText, *i18nArgs), delay)
     }
@@ -174,7 +189,10 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Sends i18nText as last bot answer.
      */
-    fun end(i18nText: CharSequence, vararg i18nArgs: Any?): T {
+    fun end(
+        i18nText: CharSequence,
+        vararg i18nArgs: Any?,
+    ): T {
         return endRawText(translate(i18nText, *i18nArgs))
     }
 
@@ -191,7 +209,7 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      */
     fun end(
         delay: Long = defaultDelay(currentAnswerIndex),
-        messageProvider: T.() -> Any?
+        messageProvider: T.() -> Any?,
     ): T {
         @Suppress("UNCHECKED_CAST")
         this as T
@@ -211,5 +229,8 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     /**
      * Sends text that should not be translated as last bot answer.
      */
-    fun endRawText(plainText: CharSequence?, delay: Long = defaultDelay(currentAnswerIndex)): T
+    fun endRawText(
+        plainText: CharSequence?,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): T
 }

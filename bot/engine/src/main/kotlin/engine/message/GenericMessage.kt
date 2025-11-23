@@ -33,9 +33,8 @@ data class GenericMessage(
     val locations: List<Location> = emptyList(),
     val metadata: Map<String, String> = emptyMap(),
     val subElements: List<GenericElement> = emptyList(),
-    @Transient private val connectorMessage: ConnectorMessage? = null
+    @Transient private val connectorMessage: ConnectorMessage? = null,
 ) {
-
     companion object {
         /**
          * A [texts] parameter for title.
@@ -60,7 +59,7 @@ data class GenericMessage(
         texts: Map<String, String> = emptyMap(),
         locations: List<Location> = emptyList(),
         metadata: Map<String, String> = emptyMap(),
-        subElements: List<GenericElement> = emptyList()
+        subElements: List<GenericElement> = emptyList(),
     ) : this(
         connectorMessage.connectorType,
         attachments,
@@ -69,7 +68,7 @@ data class GenericMessage(
         locations,
         metadata,
         subElements,
-        connectorMessage
+        connectorMessage,
     )
 
     internal fun findConnectorMessage() = connectorMessage
@@ -86,7 +85,7 @@ data class GenericMessage(
                     texts,
                     locations,
                     metadata,
-                    subElements
+                    subElements,
                 )
         }
 
