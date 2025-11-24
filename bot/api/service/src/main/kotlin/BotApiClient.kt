@@ -21,6 +21,7 @@ import ai.tock.bot.api.model.configuration.ResponseContextVersion
 import ai.tock.bot.api.model.configuration.ResponseContextVersion.V3
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
+import ai.tock.bot.api.service.WSHolder.Companion.getHolderIfPresent
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.create
@@ -150,7 +151,15 @@ internal class BotApiClient(baseUrl: String) {
                             logger.debug { "Message: ${messageEvent.data}" }
                             if (event == "message") {
                                 val message: ResponseData = mapper.readValue(messageEvent.data)
-                                sendResponse(message)
+                                val holder = getHolderIfPresent(message.requestId)
+                                if (holder == null) {
+                                    logger.warn { "unknown request ${message.requestId}" }
+                                    //fallback
+                                    sendResponse(message)
+                                } else {
+                                    holder.receive(message)
+                                }
+
                                 if (message.botResponse?.context?.lastResponse == true) {
                                     logger.debug { "Last sse answer" }
                                     closeListener.close()
