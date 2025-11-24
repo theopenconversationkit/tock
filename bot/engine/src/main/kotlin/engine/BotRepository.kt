@@ -46,13 +46,16 @@ import ai.tock.bot.engine.config.BotRAGConfigurationMonitor
 import ai.tock.bot.engine.config.BotVectorStoreConfigurationMonitor
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.monitoring.RequestTimer
+import ai.tock.bot.engine.nlp.AsyncNlpListener
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
+import ai.tock.bot.engine.nlp.LegacyNlpListenerAdapter
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.nlp.NlpListener
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -79,6 +82,7 @@ import org.litote.kmongo.Id
  *
  * [ai.tock.bot.registerAndInstallBot] method is the preferred way to start a bot in most use cases.
  */
+@OptIn(ExperimentalTockCoroutines::class)
 object BotRepository {
 
     private val logger = KotlinLogging.logger {}
@@ -90,7 +94,7 @@ object BotRepository {
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = CopyOnWriteArrayList()
-    private val nlpListeners: MutableList<NlpListener> = CopyOnWriteArrayList(listOf(BuiltInKeywordListener))
+    private val nlpListeners: MutableList<AsyncNlpListener> = CopyOnWriteArrayList(listOf(LegacyNlpListenerAdapter(BuiltInKeywordListener)))
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
@@ -99,7 +103,7 @@ object BotRepository {
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
 
     internal val detailedHealthcheckTasks: MutableList<Pair<String, () -> Boolean>> =
-        mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() });
+        mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() })
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
@@ -168,8 +172,8 @@ object BotRepository {
     /**
      * Calls the specified [action] for each registered [NlpListener].
      */
-    fun forEachNlpListener(action: (NlpListener) -> Unit) {
-        nlpListeners.forEach(action)
+    suspend fun forEachNlpListener(action: suspend (AsyncNlpListener) -> Unit) {
+        nlpListeners.forEach { action(it) }
     }
 
     /**
@@ -309,6 +313,14 @@ object BotRepository {
      * Registers a new [NlpListener].
      */
     fun registerNlpListener(listener: NlpListener) {
+        registerNlpListener(LegacyNlpListenerAdapter(listener))
+    }
+
+    /**
+     * Registers a new [AsyncNlpListener].
+     */
+    @ExperimentalTockCoroutines
+    fun registerNlpListener(listener: AsyncNlpListener) {
         nlpListeners.add(listener)
     }
 

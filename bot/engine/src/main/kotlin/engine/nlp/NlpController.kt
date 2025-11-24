@@ -35,7 +35,7 @@ interface NlpController {
     /**
      * Parses a sentence and set intent and entities in context.
      */
-    fun parseSentence(
+    suspend fun parseSentence(
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
