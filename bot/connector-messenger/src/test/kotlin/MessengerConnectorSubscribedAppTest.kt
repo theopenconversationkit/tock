@@ -40,23 +40,22 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class MessengerConnectorSubscribedAppTest {
-
     companion object {
-
         @BeforeAll
         @JvmStatic
         fun injectExecutor() {
-            tockInternalInjector = KodeinInjector().apply {
-                inject(
-                    Kodein {
-                        import(
-                            Kodein.Module {
-                                bind<Executor>() with singleton { SimpleExecutor(2) }
-                            }
-                        )
-                    }
-                )
-            }
+            tockInternalInjector =
+                KodeinInjector().apply {
+                    inject(
+                        Kodein {
+                            import(
+                                Kodein.Module {
+                                    bind<Executor>() with singleton { SimpleExecutor(2) }
+                                },
+                            )
+                        },
+                    )
+                }
         }
 
         @AfterAll
@@ -85,14 +84,16 @@ class MessengerConnectorSubscribedAppTest {
             Kodein {
                 import(sharedModule)
                 bind<UserTimelineDAO>() with singleton { mockk<UserTimelineDAO>() }
-            }
+            },
         )
-        every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns SuccessResponse(
-            true
-        )
-        every { messengerClient.subscribedApps(any(), any(), any()) } returns SuccessResponse(
-            true
-        )
+        every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns
+            SuccessResponse(
+                true,
+            )
+        every { messengerClient.subscribedApps(any(), any(), any()) } returns
+            SuccessResponse(
+                true,
+            )
     }
 
     @Test
@@ -113,9 +114,10 @@ class MessengerConnectorSubscribedAppTest {
         val response: SubscriptionsResponse =
             mapper.readValue(resourceAsStream("/get_subscribed_apps_filled_data_and_disabled.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
-            true
-        )
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns
+            SuccessResponse(
+                true,
+            )
 
         messengerConnector.checkWebhookSubscription()
 
@@ -125,7 +127,7 @@ class MessengerConnectorSubscribedAppTest {
                 eq(expectedCallbackUrl),
                 eq(expectedFields),
                 eq(verifyToken),
-                eq(appToken)
+                eq(appToken),
             )
         }
         verify(exactly = 1) { messengerClient.deleteSubscribedApps(eq(pageId), eq(expectedFields), eq(token)) }
@@ -137,9 +139,10 @@ class MessengerConnectorSubscribedAppTest {
         val response: SubscriptionsResponse =
             mapper.readValue(resourceAsStream("/get_subscribed_apps_filled_data_and_disabled.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
-            false
-        )
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns
+            SuccessResponse(
+                false,
+            )
 
         messengerConnector.checkWebhookSubscription()
 
@@ -149,7 +152,7 @@ class MessengerConnectorSubscribedAppTest {
                 eq(expectedCallbackUrl),
                 eq(expectedFields),
                 eq(verifyToken),
-                eq(appToken)
+                eq(appToken),
             )
         }
         verify(exactly = 0) { messengerClient.deleteSubscribedApps(any(), any(), any()) }
@@ -160,9 +163,10 @@ class MessengerConnectorSubscribedAppTest {
     fun `GIVEN empty data of subscribed app webhook WHEN subscription success THEN call webhook and page subscriptions`() {
         val response: SubscriptionsResponse = mapper.readValue(resourceAsStream("/get_subscribed_apps_empty_data.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
-            true
-        )
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns
+            SuccessResponse(
+                true,
+            )
 
         messengerConnector.checkWebhookSubscription()
 
@@ -172,7 +176,7 @@ class MessengerConnectorSubscribedAppTest {
                 eq(""),
                 eq(expectedFields),
                 eq(verifyToken),
-                eq(appToken)
+                eq(appToken),
             )
         }
         verify(exactly = 1) { messengerClient.deleteSubscribedApps(eq(pageId), eq(expectedFields), eq(token)) }

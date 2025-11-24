@@ -29,9 +29,8 @@ import java.util.Locale
  */
 data class LocationConfiguration(
     val location: UserLocation?,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : MessageConfiguration {
-
     override val eventType: EventType = EventType.location
 
     override fun toAction(
@@ -39,13 +38,13 @@ data class LocationConfiguration(
         applicationId: String,
         recipientId: PlayerId,
         locale: Locale,
-        userInterfaceType: UserInterfaceType
+        userInterfaceType: UserInterfaceType,
     ): Action {
         return SendLocation(
             playerId,
             applicationId,
             recipientId,
-            location
+            location,
         )
     }
 }

@@ -22,9 +22,9 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import kotlinx.coroutines.runBlocking
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * A dialog is a conversation between users and bots.
@@ -52,12 +52,9 @@ data class Dialog(
      * An optional group identifier.
      */
     val groupId: String? = null,
-
     var rating: Int? = null,
-
-    var review: String? = null
+    var review: String? = null,
 ) {
-
     companion object {
         /**
          * Init a new dialog from the specified dialog.
@@ -66,18 +63,19 @@ data class Dialog(
             return Dialog(
                 dialog.playerIds,
                 state = DialogState.initFromDialogState(dialog.state),
-                stories = listOfNotNull(
-                    dialog.stories.lastOrNull()?.run {
-                        val s = copy()
-                        s.actions.clear()
-                        if (actions.isNotEmpty()) {
-                            s.actions.addAll(actions.takeLast(5))
-                        }
-                        s
-                    }
-                ).toMutableList(),
+                stories =
+                    listOfNotNull(
+                        dialog.stories.lastOrNull()?.run {
+                            val s = copy()
+                            s.actions.clear()
+                            if (actions.isNotEmpty()) {
+                                s.actions.addAll(actions.takeLast(5))
+                            }
+                            s
+                        },
+                    ).toMutableList(),
                 rating = dialog.rating,
-                review = dialog.review
+                review = dialog.review,
             )
         }
     }
@@ -116,5 +114,4 @@ data class Dialog(
      * Current number of actions in dialog history.
      */
     val actionsSize: Int get() = stories.sumOf { it.actions.size }
-
 }

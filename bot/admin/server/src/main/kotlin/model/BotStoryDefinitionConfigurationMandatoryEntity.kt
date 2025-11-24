@@ -55,9 +55,8 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
     /**
      * Intent defined by the intent name.
      */
-    val intentDefinition: IntentDefinition? = null
+    val intentDefinition: IntentDefinition? = null,
 ) {
-
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationMandatoryEntity, readOnly: Boolean = false) :
         this(
             e.role,
@@ -65,6 +64,6 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
             e.intent,
             e.answers.mapAnswers(story.userSentenceLocale, readOnly),
             e.currentType,
-            story.category
+            story.category,
         )
 }

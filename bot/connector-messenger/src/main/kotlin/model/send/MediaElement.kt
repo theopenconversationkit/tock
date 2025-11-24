@@ -26,13 +26,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class MediaElement(
     @JsonProperty("media_type") val mediaType: MediaType,
     @JsonProperty("attachment_id") val attachmentId: String,
-    val buttons: List<Button>? = null
+    val buttons: List<Button>? = null,
 ) {
-
     fun toGenericElement(): GenericElement {
         return GenericElement(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
-            attachments = listOf(Attachment(attachmentId, mediaType.toAttachmentType()))
+            attachments = listOf(Attachment(attachmentId, mediaType.toAttachmentType())),
         )
     }
 }

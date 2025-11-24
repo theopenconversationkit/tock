@@ -29,38 +29,42 @@ import javax.crypto.spec.SecretKeySpec
  * Utility object : calculate HMAC signature (protocol used for iAdvize message authentication)
  */
 class IadvizeSecurity(private val secretToken: String) {
-
     companion object {
-        const val HMAC_SHA256   = "HmacSHA256"
-        const val HEADER_NAME   = "X-iAdvize-Signature"
+        const val HMAC_SHA256 = "HmacSHA256"
+        const val HEADER_NAME = "X-iAdvize-Signature"
         const val ERROR_MESSAGE = "IAdvize signature validation failed : Invalid hash"
     }
 
     private val logger = KotlinLogging.logger {}
 
-    fun validatePayloads(context: RoutingContext){
-        val payloads = if(HttpMethod.GET == context.request().method()){
-            // For GET requests, hash signature is computed by hashing the raw query string
-            context.request().query()
-        } else {
-            // For POST, PUT... requests, hash signature is computed by hashing the raw body string
-            context.body().asString()
-        } ?: ""
+    fun validatePayloads(context: RoutingContext) {
+        val payloads =
+            if (HttpMethod.GET == context.request().method()) {
+                // For GET requests, hash signature is computed by hashing the raw query string
+                context.request().query()
+            } else {
+                // For POST, PUT... requests, hash signature is computed by hashing the raw body string
+                context.body().asString()
+            } ?: ""
 
         val xIAdvizeSignatureComputed = calculateHmacSha256(secretToken, payloads)
-        val xIAdvizeSignatureHeader   = context.request().getHeader(HEADER_NAME)
+        val xIAdvizeSignatureHeader = context.request().getHeader(HEADER_NAME)
 
-        if(xIAdvizeSignatureComputed != xIAdvizeSignatureHeader){
-            val error = mapper.writeValueAsString(
-                Error(secretToken, payloads, xIAdvizeSignatureComputed, xIAdvizeSignatureHeader)
-            )
+        if (xIAdvizeSignatureComputed != xIAdvizeSignatureHeader) {
+            val error =
+                mapper.writeValueAsString(
+                    Error(secretToken, payloads, xIAdvizeSignatureComputed, xIAdvizeSignatureHeader),
+                )
 
             logger.error { "$ERROR_MESSAGE $error" }
             throw BadRequestException(ERROR_MESSAGE)
         }
     }
 
-    private fun calculateHmacSha256(secretKey: String, message: String): String {
+    private fun calculateHmacSha256(
+        secretKey: String,
+        message: String,
+    ): String {
         val mac = Mac.getInstance(HMAC_SHA256)
         val secretKeySpec = SecretKeySpec(secretKey.toByteArray(Charsets.UTF_8), HMAC_SHA256)
         mac.init(secretKeySpec)
@@ -70,7 +74,9 @@ class IadvizeSecurity(private val secretToken: String) {
     }
 }
 
-data class Error(val secretToken: String,
-                 val payloads: String,
-                 val xIAdvizeSignatureComputed: String,
-                 val xIAdvizeSignatureHeader: String)
+data class Error(
+    val secretToken: String,
+    val payloads: String,
+    val xIAdvizeSignatureComputed: String,
+    val xIAdvizeSignatureHeader: String,
+)

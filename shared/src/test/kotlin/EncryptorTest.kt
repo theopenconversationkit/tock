@@ -27,7 +27,6 @@ import kotlin.test.assertNotEquals
  *
  */
 class EncryptorTest {
-
     @Test
     fun testEncryptAndDecrypt() {
         val s = String(SecureRandom().generateSeed(30))

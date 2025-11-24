@@ -43,7 +43,7 @@ val slackConnectorType = ConnectorType(SLACK_CONNECTOR_TYPE_ID)
  */
 fun <T : Bus<T>> T.sendToSlack(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> SlackConnectorMessage
+    messageProvider: T.() -> SlackConnectorMessage,
 ): T {
     if (targetConnectorType == slackConnectorType) {
         withMessage(messageProvider(this))
@@ -57,7 +57,7 @@ fun <T : Bus<T>> T.sendToSlack(
  */
 fun <T : Bus<T>> T.endForSlack(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> SlackConnectorMessage
+    messageProvider: T.() -> SlackConnectorMessage,
 ): T {
     if (targetConnectorType == slackConnectorType) {
         withMessage(messageProvider(this))
@@ -78,12 +78,14 @@ fun I18nTranslator.textMessage(message: CharSequence): SlackMessageOut {
     return SlackMessageOut(translate(message).toString())
 }
 
-fun I18nTranslator.multiLineMessage(lines: List<CharSequence>, channel: String? = null): SlackMessageOut =
-    SlackMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
+fun I18nTranslator.multiLineMessage(
+    lines: List<CharSequence>,
+    channel: String? = null,
+): SlackMessageOut = SlackMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
 
 fun I18nTranslator.slackMessage(
     message: CharSequence,
-    vararg attachments: SlackMessageAttachment
+    vararg attachments: SlackMessageAttachment,
 ): SlackMessageOut {
     return slackMessage(message, null, attachments = *attachments)
 }
@@ -91,21 +93,17 @@ fun I18nTranslator.slackMessage(
 fun I18nTranslator.slackMessage(
     message: CharSequence,
     channel: String? = null,
-    vararg attachments: SlackMessageAttachment
+    vararg attachments: SlackMessageAttachment,
 ): SlackMessageOut {
     return SlackMessageOut(translate(message).toString(), channel, attachments.toList())
 }
 
 fun I18nTranslator.slackAttachment(
     text: CharSequence? = null,
-    vararg buttons: Button
-): SlackMessageAttachment =
-    slackAttachment(text, buttons.toList())
+    vararg buttons: Button,
+): SlackMessageAttachment = slackAttachment(text, buttons.toList())
 
-fun I18nTranslator.slackAttachment(
-    vararg buttons: Button
-): SlackMessageAttachment =
-    slackAttachment(buttons = buttons.toList())
+fun I18nTranslator.slackAttachment(vararg buttons: Button): SlackMessageAttachment = slackAttachment(buttons = buttons.toList())
 
 fun I18nTranslator.slackAttachment(
     text: CharSequence? = null,
@@ -113,12 +111,14 @@ fun I18nTranslator.slackAttachment(
     color: String = "good",
     pretext: String? = null,
     fallback: String = translate(text).toString(),
-    vararg fields: AttachmentField
-): SlackMessageAttachment =
-    SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text)?.toString(), pretext)
+    vararg fields: AttachmentField,
+): SlackMessageAttachment = SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text)?.toString(), pretext)
 
-fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField =
-    AttachmentField(translate(title).toString(), value, short)
+fun I18nTranslator.attachmentField(
+    title: String,
+    value: String,
+    short: Boolean = true,
+): AttachmentField = AttachmentField(translate(title).toString(), value, short)
 
 fun emojiMessage(emoji: SlackEmoji): SlackMessageOut = SlackMessageOut(emoji.format)
 
@@ -131,9 +131,8 @@ fun <T : Bus<T>> T.slackButton(
     title: CharSequence,
     targetIntent: IntentAware? = null,
     parameters: Parameters = Parameters(),
-    name: String = "default"
-): Button =
-    slackButton(title, targetIntent, null, parameters, name)
+    name: String = "default",
+): Button = slackButton(title, targetIntent, null, parameters, name)
 
 /**
  * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
@@ -143,9 +142,8 @@ fun <T : Bus<T>> T.slackButton(
     targetIntent: IntentAware?,
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
-    name: String = "default"
-): Button =
-    slackButton(title, targetIntent, step, *parameters.toArray(), name = name)
+    name: String = "default",
+): Button = slackButton(title, targetIntent, step, *parameters.toArray(), name = name)
 
 /**
  * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
@@ -155,13 +153,16 @@ fun <T : Bus<T>> T.slackButton(
     targetIntent: IntentAware?,
     step: StoryStepDef? = null,
     vararg parameters: Pair<String, String>,
-    name: String = "default"
+    name: String = "default",
 ): Button {
     val t = translate(title).toString()
     return Button(
         name,
         t,
-        if (targetIntent == null) SendChoice.encodeNlpChoiceId(t)
-        else SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
+        if (targetIntent == null) {
+            SendChoice.encodeNlpChoiceId(t)
+        } else {
+            SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
+        },
     )
 }

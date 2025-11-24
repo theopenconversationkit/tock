@@ -27,33 +27,35 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StoryTest {
-
     private val storyDefinition: StoryDefinition = mockk()
     private val userTimeline: UserTimeline = mockk()
     private val dialog: Dialog = mockk()
     private val action: Action = mockk()
 
-    private val story = Story(
-        storyDefinition,
-        Intent("starter"),
-    )
+    private val story =
+        Story(
+            storyDefinition,
+            Intent("starter"),
+        )
 
     private val newIntent = Intent("new")
 
     @Test
     fun `multi-entities triggers the step tree`() {
-        val secondLevelStep: StoryStep<*> = mockk {
-            every { name } returns "second level"
-            every { children } returns emptySet()
-            every { selectFromAction(any(), any(), any(), newIntent) } returns true
-            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
-        }
-        val firstLevelStep: StoryStep<*> = mockk {
-            every { children } returns setOf(secondLevelStep)
-            every { name } returns "first level"
-            every { selectFromAction(any(), any(), any(), newIntent) } returns true
-            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
-        }
+        val secondLevelStep: StoryStep<*> =
+            mockk {
+                every { name } returns "second level"
+                every { children } returns emptySet()
+                every { selectFromAction(any(), any(), any(), newIntent) } returns true
+                every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
+            }
+        val firstLevelStep: StoryStep<*> =
+            mockk {
+                every { children } returns setOf(secondLevelStep)
+                every { name } returns "first level"
+                every { selectFromAction(any(), any(), any(), newIntent) } returns true
+                every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
+            }
 
         every { storyDefinition.steps } returns setOf(firstLevelStep)
 
@@ -64,18 +66,20 @@ class StoryTest {
 
     @Test
     fun `multi-intent triggers the step tree`() {
-        val secondLevelStep: StoryStep<*> = mockk {
-            every { name } returns "second level"
-            every { children } returns emptySet()
-            every { selectFromAction(any(), any(), any(), newIntent) } returns true
-            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
-        }
-        val firstLevelStep: StoryStep<*> = mockk {
-            every { children } returns setOf(secondLevelStep)
-            every { name } returns "first level"
-            every { selectFromAction(any(), any(), any(), newIntent) } returns true
-            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
-        }
+        val secondLevelStep: StoryStep<*> =
+            mockk {
+                every { name } returns "second level"
+                every { children } returns emptySet()
+                every { selectFromAction(any(), any(), any(), newIntent) } returns true
+                every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
+            }
+        val firstLevelStep: StoryStep<*> =
+            mockk {
+                every { children } returns setOf(secondLevelStep)
+                every { name } returns "first level"
+                every { selectFromAction(any(), any(), any(), newIntent) } returns true
+                every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
+            }
 
         every { storyDefinition.steps } returns setOf(firstLevelStep)
 

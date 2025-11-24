@@ -18,7 +18,10 @@ package ai.tock.bot.connector.ga.model
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class GAInputValueDataType(@get:JsonValue val value: String) {
+@Suppress("ktlint:standard:enum-entry-name-case")
+enum class GAInputValueDataType(
+    @get:JsonValue val value: String,
+) {
     option("type.googleapis.com/google.actions.v2.OptionValueSpec"),
     confirmation("type.googleapis.com/google.actions.v2.ConfirmationValueSpec"),
     transactionRequirementsCheckV3("type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
@@ -27,5 +30,5 @@ enum class GAInputValueDataType(@get:JsonValue val value: String) {
     permission("type.googleapis.com/google.actions.v2.PermissionValueSpec"),
     datetime("type.googleapis.com/google.actions.v2.DateTimeValueSpec"),
     newSurface("type.googleapis.com/google.actions.v2.NewSurfaceValueSpec"),
-    mediaStatus("type.googleapis.com/google.actions.v2.MediaStatus")
+    mediaStatus("type.googleapis.com/google.actions.v2.MediaStatus"),
 }

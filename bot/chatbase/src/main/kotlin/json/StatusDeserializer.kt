@@ -23,8 +23,10 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 
 internal class StatusDeserializer : JacksonDeserializer<Status>() {
-
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Status? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Status? {
         val node: JsonNode = jp.codec.readTree(jp)
         val code: Int = node.asInt()
         return Status.findByCode(code)

@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class JacksonTest {
-
     @Test
     fun `I18nText has to be serialized without length property`() {
         val i18n = I18nText("a")

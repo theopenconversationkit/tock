@@ -28,5 +28,5 @@ class AccountLinkingWebhook(
     override val recipient: Recipient,
     override val timestamp: Long,
     @JsonProperty("account_linking")
-    val accountLinking: AccountLinking
+    val accountLinking: AccountLinking,
 ) : Webhook()

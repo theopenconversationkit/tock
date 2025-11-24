@@ -24,5 +24,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class Recipient(
     val id: String?,
     @JsonProperty("user_ref")
-    val userRef: String? = null
+    val userRef: String? = null,
 )

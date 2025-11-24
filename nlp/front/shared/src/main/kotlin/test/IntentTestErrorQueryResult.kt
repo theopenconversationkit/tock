@@ -21,5 +21,5 @@ package ai.tock.nlp.front.shared.test
  */
 data class IntentTestErrorQueryResult(
     val total: Int,
-    val data: List<IntentTestError>
+    val data: List<IntentTestError>,
 )

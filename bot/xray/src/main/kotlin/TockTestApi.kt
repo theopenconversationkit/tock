@@ -29,10 +29,13 @@ import retrofit2.http.Path
  *
  */
 interface TockTestApi {
-
     @POST("/rest/admin/test/plan/execute")
-    fun executeTestPlan(@Body testPlan: TestPlan): Call<TestPlanExecution>
+    fun executeTestPlan(
+        @Body testPlan: TestPlan,
+    ): Call<TestPlanExecution>
 
     @GET("/rest/admin/configuration/bots/{botId}")
-    fun getBotConfigurations(@Path("botId") botId: String): Call<List<BotApplicationConfiguration>>
+    fun getBotConfigurations(
+        @Path("botId") botId: String,
+    ): Call<List<BotApplicationConfiguration>>
 }

@@ -34,7 +34,6 @@ import kotlin.test.assertTrue
  *
  */
 class NlpClientIntegrationTest {
-
     val dumpStream = NlpClient::class.java.getResourceAsStream("/dump.json")
     val applicationNamespace = "test"
     val applicationName = "test"
@@ -47,19 +46,21 @@ class NlpClientIntegrationTest {
 
     @Test
     fun testImportNlpPlainDump() {
-        val dump = jacksonObjectMapper()
-            .findAndRegisterModules()
-            .registerModule(JavaTimeModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .readValue<ApplicationDump>(dumpStream)
-            .run {
-                copy(
-                    application = application.copy(
-                        _id = UUID.randomUUID().toString(),
-                        name = UUID.randomUUID().toString()
+        val dump =
+            jacksonObjectMapper()
+                .findAndRegisterModules()
+                .registerModule(JavaTimeModule())
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .readValue<ApplicationDump>(dumpStream)
+                .run {
+                    copy(
+                        application =
+                            application.copy(
+                                _id = UUID.randomUUID().toString(),
+                                name = UUID.randomUUID().toString(),
+                            ),
                     )
-                )
-            }
+                }
         assertTrue(TockNlpClient("http://localhost:8880").importNlpPlainDump(dump))
     }
 
@@ -69,8 +70,8 @@ class NlpClientIntegrationTest {
             2,
             TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
                 applicationNamespace,
-                applicationName
-            )!!.size
+                applicationName,
+            )!!.size,
         )
     }
 
@@ -80,8 +81,8 @@ class NlpClientIntegrationTest {
             0,
             TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
                 applicationNamespace,
-                unknownApplicationName
-            )!!.size
+                unknownApplicationName,
+            )!!.size,
         )
     }
 
@@ -94,8 +95,8 @@ class NlpClientIntegrationTest {
                     listOf("Bonjour"),
                     "app",
                     "bot_open_data",
-                    NlpQueryContext(Locale.FRENCH)
-                )
+                    NlpQueryContext(Locale.FRENCH),
+                ),
             )
         }
     }
@@ -109,9 +110,9 @@ class NlpClientIntegrationTest {
                     applicationNamespace,
                     applicationName,
                     Locale.FRENCH,
-                    size = Integer.MAX_VALUE
-                )
-            )!!.size
+                    size = Integer.MAX_VALUE,
+                ),
+            )!!.size,
         )
     }
 }

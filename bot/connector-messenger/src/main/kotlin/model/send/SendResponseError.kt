@@ -28,5 +28,5 @@ data class SendResponseError(
     @JsonProperty("error_subcode")
     val errorSubcode: Int?,
     @JsonProperty("fbtrace_id")
-    val traceId: String?
+    val traceId: String?,
 )

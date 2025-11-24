@@ -35,9 +35,8 @@ import java.time.Instant
 internal data class ArchivedEntityValuesCol(
     val _id: Id<ArchivedEntityValuesCol>,
     val values: List<ArchivedEntityValueWrapper>,
-    val lastUpdateDate: Instant = Instant.now()
+    val lastUpdateDate: Instant = Instant.now(),
 ) {
-
     constructor(values: List<ArchivedEntityValue>, id: Id<EntityStateValue>?) :
         this(id?.toString()?.toId() ?: newId(), values.map { ArchivedEntityValueWrapper(it) })
 
@@ -45,16 +44,15 @@ internal data class ArchivedEntityValuesCol(
     internal class ArchivedEntityValueWrapper(
         val entityValue: EntityValue?,
         val actionId: Id<Action>?,
-        val date: Instant = Instant.now()
+        val date: Instant = Instant.now(),
     ) {
-
         constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId(), value.date)
 
         fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue {
             return ArchivedEntityValue(
                 entityValue,
                 actionsMap[actionId ?: ""],
-                date
+                date,
             )
         }
     }

@@ -39,8 +39,8 @@ data class ActionReport(
     val userInterfaceType: UserInterfaceType,
     val test: Boolean = false,
     val id: Id<Action> = newId(),
-    val intent : String?,
-    val applicationId : String?,
+    val intent: String?,
+    val applicationId: String?,
     val metadata: ActionMetadata,
-    val annotation: BotAnnotation? = null
+    val annotation: BotAnnotation? = null,
 )

@@ -25,5 +25,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class ThreadControlRequest(
     val metadata: String,
     val recipient: Recipient?,
-    @JsonProperty("target_app_id") val targetAppId: String
+    @JsonProperty("target_app_id") val targetAppId: String,
 )

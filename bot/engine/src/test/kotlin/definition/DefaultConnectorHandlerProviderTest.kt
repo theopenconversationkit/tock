@@ -22,10 +22,10 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertInstanceOf
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTockCoroutines::class)
 class DefaultConnectorHandlerProviderTest {
@@ -55,9 +55,11 @@ class DefaultConnectorHandlerProviderTest {
 
     @TestHandler(TestConnDef::class)
     class TestDef(bus: BotBus) : HandlerDef<TestConnDef<HandlerDef<*>>>(bus)
+
     class TestConnDef<out T : StoryHandlerDefinition>(context: T) : ConnectorStoryHandlerBase<T>(context)
 
     class InvalidTestConnDef(provider: () -> TestDef) : ConnectorStoryHandlerBase<TestDef>(provider())
+
     @TestHandler(InvalidTestConnDef::class)
     class InvalidTestDef(bus: BotBus) : HandlerDef<InvalidTestConnDef>(bus)
 }

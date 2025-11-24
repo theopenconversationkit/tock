@@ -19,20 +19,23 @@ package ai.tock.translator.google
 import ai.tock.translator.TranslatorEngine
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
-
-import java.util.Locale
 import org.apache.commons.text.StringEscapeUtils
+import java.util.Locale
 
 internal object GoogleTranslatorEngine : TranslatorEngine {
-
     private val translate = TranslateOptions.getDefaultInstance().service
 
-    override fun translate(text: String, source: Locale, target: Locale): String {
-        val translation = translate.translate(
-            text,
-            TranslateOption.sourceLanguage(source.language),
-            TranslateOption.targetLanguage(target.language)
-        )
+    override fun translate(
+        text: String,
+        source: Locale,
+        target: Locale,
+    ): String {
+        val translation =
+            translate.translate(
+                text,
+                TranslateOption.sourceLanguage(source.language),
+                TranslateOption.targetLanguage(target.language),
+            )
         return StringEscapeUtils.unescapeHtml4(translation.translatedText)
     }
 

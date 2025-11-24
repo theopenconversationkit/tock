@@ -22,5 +22,5 @@ import ai.tock.shared.Dice
 data class GAConversation(
     val conversationId: String = Dice.newId(),
     val type: GAConversationType = TYPE_UNSPECIFIED,
-    val conversationToken: String? = null
+    val conversationToken: String? = null,
 )

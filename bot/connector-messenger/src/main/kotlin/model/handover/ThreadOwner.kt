@@ -21,4 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
-data class ThreadOwner(@JsonProperty("app_id") val appId: String)
+data class ThreadOwner(
+    @JsonProperty("app_id") val appId: String,
+)

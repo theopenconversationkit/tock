@@ -23,7 +23,11 @@ import java.util.Locale
  *
  */
 internal object NoOpTranslatorEngine : TranslatorEngine {
-    override fun translate(text: String, source: Locale, target: Locale): String {
+    override fun translate(
+        text: String,
+        source: Locale,
+        target: Locale,
+    ): String {
         return text
     }
 }

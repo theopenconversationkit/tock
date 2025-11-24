@@ -21,8 +21,10 @@ import ai.tock.bot.engine.user.PlayerId
 /**
  * An app role.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AppRole {
-    primaryReceiver, secondaryReceiver
+    primaryReceiver,
+    secondaryReceiver,
 }
 
 /**
@@ -40,9 +42,8 @@ class GetAppRolesEvent(
     /**
      * appId -> list of roles
      */
-    val appRoles: Map<String, Set<AppRole>>
+    val appRoles: Map<String, Set<AppRole>>,
 ) : Event(applicationId) {
-
     override fun toString(): String {
         return "[GetAppRolesEvent] for $recipientId and $applicationId with roles $appRoles"
     }

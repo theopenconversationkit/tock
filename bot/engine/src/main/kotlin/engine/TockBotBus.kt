@@ -66,9 +66,8 @@ internal class TockBotBus(
     override val dialog: Dialog,
     override val action: Action,
     override val connectorData: ConnectorData,
-    override var i18nProvider: I18nKeyProvider
+    override var i18nProvider: I18nKeyProvider,
 ) : BotBus {
-
     private val bot = connector.bot
 
     override val currentDialog: Dialog get() = userTimeline.currentDialog ?: dialog
@@ -136,7 +135,10 @@ internal class TockBotBus(
     /**
      * Updates the non persistent current context value.
      */
-    override fun setBusContextValue(key: String, value: Any?) {
+    override fun setBusContextValue(
+        key: String,
+        value: Any?,
+    ) {
         if (value == null) {
             context.contextMap.remove(key)
         } else {
@@ -144,7 +146,10 @@ internal class TockBotBus(
         }
     }
 
-    private fun answer(a: Action, delay: Long = 0): BotBus {
+    private fun answer(
+        a: Action,
+        delay: Long = 0,
+    ): BotBus {
         context.currentDelay += delay
         a.metadata.priority = context.priority
         a.metadata.visibility = context.visibility
@@ -172,7 +177,10 @@ internal class TockBotBus(
         return this
     }
 
-    fun doSend(actionToSend: Action, delay: Long) {
+    fun doSend(
+        actionToSend: Action,
+        delay: Long,
+    ) {
         connector.send(userTimeline, connectorData, action, actionToSend, delay)
     }
 
@@ -185,20 +193,32 @@ internal class TockBotBus(
         }
     }
 
-    override fun end(action: Action, delay: Long): BotBus {
+    override fun end(
+        action: Action,
+        delay: Long,
+    ): BotBus {
         action.metadata.lastAnswer = true
         return answer(action, delay)
     }
 
-    override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
+    override fun sendRawText(
+        plainText: CharSequence?,
+        delay: Long,
+    ): BotBus {
         return answer(SendSentence(botId, connectorId, userId, plainText), delay)
     }
 
-    override fun sendDebugData(title: String, data: Any?): BotBus {
+    override fun sendDebugData(
+        title: String,
+        data: Any?,
+    ): BotBus {
         return answer(SendDebug(botId, connectorId, userId, title, data), 0)
     }
 
-    override fun send(action: Action, delay: Long): BotBus {
+    override fun send(
+        action: Action,
+        delay: Long,
+    ): BotBus {
         return answer(action, delay)
     }
 
@@ -217,7 +237,10 @@ internal class TockBotBus(
         return this
     }
 
-    override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(
+        connectorType: ConnectorType,
+        messageProvider: () -> ConnectorMessage,
+    ): BotBus {
         if (isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
         }
@@ -227,7 +250,7 @@ internal class TockBotBus(
     override fun withMessage(
         connectorType: ConnectorType,
         connectorId: String,
-        messageProvider: () -> ConnectorMessage
+        messageProvider: () -> ConnectorMessage,
     ): BotBus {
         if (this.connectorId == connectorId && isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
@@ -261,9 +284,8 @@ internal class TockBotBus(
     fun deferMessageSending(
         scope: CoroutineScope,
         messageChannel: Channel<QueuedAction> = Channel(Channel.BUFFERED),
-        timeout: Duration = Duration.ofSeconds(cleanupTimeoutProperty)
+        timeout: Duration = Duration.ofSeconds(cleanupTimeoutProperty),
     ): () -> Unit {
-
         val closed = AtomicBoolean(false)
         customActionSender.set { action, delay ->
             // we queue in the current thread to preserve message ordering
@@ -289,7 +311,6 @@ internal class TockBotBus(
                         messageChannel.close()
                     }
                 }
-
             }
         }
     }

@@ -25,39 +25,45 @@ import ai.tock.shared.booleanProperty
 
 private val ducklingEnabled = booleanProperty("tock_duckling_enabled", true)
 
-private val entityTypes = setOf(
-    "duckling:datetime",
-    "duckling:temperature",
-    "duckling:number",
-    "duckling:ordinal",
-    "duckling:distance",
-    "duckling:volume",
-    "duckling:amount-of-money",
-    "duckling:duration",
-    "duckling:email",
-    "duckling:url",
-    "duckling:phone-number"
-)
+private val entityTypes =
+    setOf(
+        "duckling:datetime",
+        "duckling:temperature",
+        "duckling:number",
+        "duckling:ordinal",
+        "duckling:distance",
+        "duckling:volume",
+        "duckling:amount-of-money",
+        "duckling:duration",
+        "duckling:email",
+        "duckling:url",
+        "duckling:phone-number",
+    )
 
 /**
  *
  */
 internal class DucklingEntityTypeProvider : EntityTypeProvider {
-
     override fun supportedEntityTypes(): Set<String> = if (ducklingEnabled) entityTypes else emptySet()
 
     override fun getEntityTypeClassifier(): EntityTypeClassifier = DucklingParser
 
     override fun getEntityTypeEvaluator(): EntityTypeEvaluator = DucklingParser
 
-    override fun supportClassification(namespace: String, entityTypeName: String): Boolean = supportEvaluation(namespace, entityTypeName)
+    override fun supportClassification(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = supportEvaluation(namespace, entityTypeName)
 
-    override fun supportEvaluation(namespace: String, entityTypeName: String): Boolean =
-        ducklingEnabled && namespace == DUCKLING && dimensions.contains(entityTypeName)
+    override fun supportEvaluation(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = ducklingEnabled && namespace == DUCKLING && dimensions.contains(entityTypeName)
 
-    override fun supportValuesMerge(namespace: String, entityTypeName: String): Boolean =
-        ducklingEnabled && namespace == DUCKLING && entityTypeName == DucklingDimensions.DATETIME_DIMENSION
+    override fun supportValuesMerge(
+        namespace: String,
+        entityTypeName: String,
+    ): Boolean = ducklingEnabled && namespace == DUCKLING && entityTypeName == DucklingDimensions.DATETIME_DIMENSION
 
-    override fun healthcheck(): Boolean =
-        if (ducklingEnabled) DucklingClient.healthcheck() else true
+    override fun healthcheck(): Boolean = if (ducklingEnabled) DucklingClient.healthcheck() else true
 }

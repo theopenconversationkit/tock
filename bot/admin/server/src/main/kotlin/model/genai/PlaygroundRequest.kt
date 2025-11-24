@@ -23,9 +23,3 @@ data class PlaygroundRequest(
     val llmSetting: LLMSettingDTO,
     val prompt: PromptTemplate,
 )
-
-
-
-
-
-

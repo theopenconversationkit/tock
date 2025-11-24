@@ -21,5 +21,5 @@ enum class BotAnnotationEventType {
     STATE,
     REASON,
     GROUND_TRUTH,
-    DESCRIPTION
+    DESCRIPTION,
 }

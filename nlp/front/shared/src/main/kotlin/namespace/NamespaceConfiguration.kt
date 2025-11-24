@@ -20,17 +20,16 @@ package ai.tock.nlp.front.shared.namespace
  * A namespace configuration.
  */
 data class NamespaceConfiguration(
-   /**
+    /**
      * The applications namespace
      */
     val namespace: String,
-   /**
-    * Default exposure
-    */
+    /**
+     * Default exposure
+     */
     val defaultSharingConfiguration: NamespaceSharingConfiguration = NamespaceSharingConfiguration(),
-   /**
-    * Namespace import configuration
-    */
-    val namespaceImportConfiguration: Map<String, NamespaceSharingConfiguration> = emptyMap()
-
+    /**
+     * Namespace import configuration
+     */
+    val namespaceImportConfiguration: Map<String, NamespaceSharingConfiguration> = emptyMap(),
 )

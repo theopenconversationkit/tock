@@ -26,7 +26,8 @@ import retrofit2.http.POST
  *
  */
 internal interface KotlinCompilerService {
-
     @POST("compile")
-    fun compile(@Body file: KotlinFile): Call<KotlinFileCompilation>
+    fun compile(
+        @Body file: KotlinFile,
+    ): Call<KotlinFileCompilation>
 }

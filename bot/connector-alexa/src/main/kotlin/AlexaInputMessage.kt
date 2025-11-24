@@ -31,9 +31,8 @@ data class AlexaInputMessage(
     /**
      * The Alexa [IntentRequest] json serialized.
      */
-    val intentRequest: String
+    val intentRequest: String,
 ) : ConnectorMessage {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -44,14 +43,14 @@ data class AlexaInputMessage(
         } catch (e: Exception) {
             logger.error(e)
             "{}"
-        }
+        },
     )
 
     override val connectorType: ConnectorType = alexaConnectorType
 
     override fun toGenericMessage(): GenericMessage {
         return GenericMessage(
-            texts = mapOf("json" to intentRequest)
+            texts = mapOf("json" to intentRequest),
         )
     }
 }

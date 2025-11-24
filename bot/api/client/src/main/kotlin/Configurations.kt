@@ -23,10 +23,11 @@ import ai.tock.bot.api.model.configuration.StoryConfiguration
 
 fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
     ClientConfiguration(
-        stories = stories.map {
-            it.mapToStoryConfiguration()
-        },
-        version = ResponseContextVersion.V3
+        stories =
+            stories.map {
+                it.mapToStoryConfiguration()
+            },
+        version = ResponseContextVersion.V3,
     )
 
 private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration {
@@ -39,8 +40,8 @@ private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration 
                 step.name,
                 step.mainIntent.wrappedIntent().name,
                 step.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
-                step.secondaryIntents.map { it.wrappedIntent().name }.toSet()
+                step.secondaryIntents.map { it.wrappedIntent().name }.toSet(),
             )
-        }
+        },
     )
 }

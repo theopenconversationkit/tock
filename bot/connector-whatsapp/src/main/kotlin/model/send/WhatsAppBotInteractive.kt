@@ -23,14 +23,19 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppBotInteractiveType {
-    list, button, product, product_list
+    list,
+    button,
+    product,
+    product_list,
 }
 
 data class WhatsAppBotInteractive(
     var type: WhatsAppBotInteractiveType,
     val header: WhatsAppBotInteractiveHeader? = null,
-    val body: WhatsAppBotBody? = null, // optional for product type
+    // optional for product type
+    val body: WhatsAppBotBody? = null,
     val footer: WhatsAppBotFooter? = null,
     val action: WhatsAppBotAction? = null,
 )
@@ -40,11 +45,15 @@ data class WhatsAppBotInteractiveHeader(
     val document: WhatsAppBotMedia? = null,
     val image: WhatsAppBotMedia? = null,
     val video: WhatsAppBotMedia? = null,
-    val text: String? = null
+    val text: String? = null,
 )
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppBotHeaderType {
-    text, video, image, document
+    text,
+    video,
+    image,
+    document,
 }
 
 data class WhatsAppBotMedia(
@@ -56,11 +65,11 @@ data class WhatsAppBotMedia(
 )
 
 data class WhatsAppBotBody(
-    val text: String
+    val text: String,
 )
 
 data class WhatsAppBotFooter(
-    val text: String
+    val text: String,
 )
 
 data class WhatsAppBotAction(
@@ -82,7 +91,7 @@ data class WhatsAppBotActionButton(
             .let { (intent, params) ->
                 Choice(
                     intent,
-                    params + (SendChoice.TITLE_PARAMETER to reply.title)
+                    params + (SendChoice.TITLE_PARAMETER to reply.title),
                 )
             }
     }
@@ -105,12 +114,12 @@ data class WhatsAppBotRow(
     val title: String,
     val description: String? = null,
 ) {
-    fun toChoice() : Choice =
+    fun toChoice(): Choice =
         SendChoice.decodeChoiceId(id)
             .let { (intent, params) ->
                 Choice(
                     intent,
-                    params + (SendChoice.TITLE_PARAMETER to title)
+                    params + (SendChoice.TITLE_PARAMETER to title),
                 )
             }
 }

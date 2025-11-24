@@ -21,5 +21,5 @@ package ai.tock.bot.xray.model
  */
 data class XrayAttachment(
     val id: Long,
-    val fileName: String
+    val fileName: String,
 )

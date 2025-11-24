@@ -24,5 +24,5 @@ import java.util.Locale
 data class CreateStoryRequest(
     val story: BotStoryDefinitionConfiguration,
     val language: Locale,
-    val firstSentences: List<String>
+    val firstSentences: List<String>,
 )

@@ -23,9 +23,8 @@ import ai.tock.bot.engine.BotBus
  */
 internal class SimpleStoryHandlerDefinition(
     val bus: BotBus,
-    private val storyHandler: SimpleStoryHandlerBase
+    private val storyHandler: SimpleStoryHandlerBase,
 ) : BotBus by bus, StoryHandlerDefinition {
-
     override fun handle() {
         storyHandler.action(bus)
     }

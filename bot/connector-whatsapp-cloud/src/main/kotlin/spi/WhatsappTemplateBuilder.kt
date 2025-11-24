@@ -55,9 +55,12 @@ abstract class WhatsappTemplateBuilder(val name: String, val locale: Locale, con
         return Translator.translate(text, i18nContext).toString()
     }
 
-    protected open fun components(): List<TemplateComponent> = listOf(checkNotNull(body) {
-        "Missing 'body' field"
-    })
+    protected open fun components(): List<TemplateComponent> =
+        listOf(
+            checkNotNull(body) {
+                "Missing 'body' field"
+            },
+        )
 
     internal fun build() = WhatsappTemplate(name, templateLanguage, components(), category)
 }
@@ -76,8 +79,9 @@ class WhatsappCarouselBuilder(name: String, locale: Locale, connectorId: String)
     var carousel: TemplateCarousel? = null
 
     override fun components(): List<TemplateComponent> {
-        return super.components() + checkNotNull(carousel) {
-            "Missing 'carousel' field"
-        }
+        return super.components() +
+            checkNotNull(carousel) {
+                "Missing 'carousel' field"
+            }
     }
 }

@@ -16,29 +16,36 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
 enum class MessageStatus {
-
     /**
      * Message received by WhatsApp server. (One checkmark)
      */
-    @JsonProperty("sent") SENT,
+    @JsonProperty("sent")
+    SENT,
+
     /**
      * Message delivered to the recipient. (Two checkmarks)
      */
-    @JsonProperty("delivered") DELIVERED,
+    @JsonProperty("delivered")
+    DELIVERED,
+
     /**
      * Message read by recipient. (Two blue checkmarks)
      */
-    @JsonProperty("read") READ,
+    @JsonProperty("read")
+    READ,
+
     /**
      * Message failed to send.(Red error triangle)
      */
-    @JsonProperty("failed") FAILED,
+    @JsonProperty("failed")
+    FAILED,
+
     /**
      * Message deleted by the user. (	Message is replaced in WhatsApp mobile with the note "This message was deleted".)
      */
-    @JsonProperty("deleted") DELETED,
+    @JsonProperty("deleted")
+    DELETED,
 }

@@ -29,15 +29,14 @@ data class UserSearchResult(
     val userPreferences: UserPreferencesSearchResult,
     val userState: UserStateSearchResult,
     val lastUpdateDate: Instant,
-    val lastActionText: String?
+    val lastActionText: String?,
 ) {
-
     constructor(user: UserReport) : this(
         user.playerId,
         user.applicationIds,
         UserPreferencesSearchResult(user.userPreferences),
         UserStateSearchResult(user.userState),
         user.lastUpdateDate,
-        user.lastActionText
+        user.lastActionText,
     )
 }

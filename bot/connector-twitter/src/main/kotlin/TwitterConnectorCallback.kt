@@ -23,5 +23,5 @@ class TwitterConnectorCallback(
     override val applicationId: String,
     val visibility: ActionVisibility,
     val threadId: Long?,
-    val reply: Boolean
+    val reply: Boolean,
 ) : ConnectorCallbackBase(applicationId, twitterConnectorType)

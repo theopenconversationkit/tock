@@ -23,7 +23,7 @@ data class UpdateBot(
     val pseudo: String,
     val language: String,
     val distributionRules: List<DistributionRule>,
-    val external: BotId
+    val external: BotId,
 ) {
     data class BotId(val idBot: String)
 }

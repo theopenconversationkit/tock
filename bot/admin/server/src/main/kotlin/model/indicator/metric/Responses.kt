@@ -21,14 +21,15 @@ package model.indicator.metric
  */
 data class CustomMetricGroupResponse(
     val test: List<CustomMetricResponse>,
-    val prod: List<CustomMetricResponse>
+    val prod: List<CustomMetricResponse>,
 )
 
 /**
  * Custom Metric Response
  */
 data class CustomMetricResponse(
-    val row: Row, val count: Int
+    val row: Row,
+    val count: Int,
 )
 
 /**

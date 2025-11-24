@@ -18,5 +18,5 @@ package ai.tock.bot.definition
 
 data class DialogFlowDefinition(
     val states: Set<DialogFlowState>,
-    val transitions: Set<DialogFlowStateTransition>
+    val transitions: Set<DialogFlowStateTransition>,
 )

@@ -30,5 +30,5 @@ enum class GAActionType {
     CALL,
     REORDER,
     REVIEW,
-    CUSTOMER_SERVICE
+    CUSTOMER_SERVICE,
 }

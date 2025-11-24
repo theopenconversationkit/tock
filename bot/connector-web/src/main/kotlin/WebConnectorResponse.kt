@@ -34,9 +34,8 @@ data class OldWebMessage(
     val text: String? = null,
     val buttons: List<WebButton> = emptyList(),
     val card: MediaCard? = null,
-    val carousel: MediaCarousel? = null
+    val carousel: MediaCarousel? = null,
 ) : WebConnectorMessage {
-
     @get:JsonIgnore
     override val connectorType: ConnectorType = webConnectorType
 
@@ -46,13 +45,12 @@ data class OldWebMessage(
             ?: GenericMessage(
                 connectorType = webConnectorType,
                 texts = mapNotNullValues(TEXT_PARAM to text),
-                choices = buttons.map { it.toChoice() }
+                choices = buttons.map { it.toChoice() },
             )
 }
 
 @Deprecated("Use the WebBuilders methods to create buttons")
 data class WebButton(val title: String, val payload: String? = null, val imageUrl: String? = null) {
-
     fun toChoice(): Choice =
         if (payload == null) {
             Choice.fromText(title)
@@ -60,10 +58,11 @@ data class WebButton(val title: String, val payload: String? = null, val imageUr
             SendChoice.decodeChoiceId(payload).let { (intent, params) ->
                 Choice(
                     intent,
-                    params + mapNotNullValues(
-                        SendChoice.TITLE_PARAMETER to title,
-                        SendChoice.IMAGE_PARAMETER to imageUrl
-                    )
+                    params +
+                        mapNotNullValues(
+                            SendChoice.TITLE_PARAMETER to title,
+                            SendChoice.IMAGE_PARAMETER to imageUrl,
+                        ),
                 )
             }
         }
@@ -71,5 +70,5 @@ data class WebButton(val title: String, val payload: String? = null, val imageUr
 
 internal data class WebConnectorResponse(
     override val responses: List<WebMessage>,
-    override val metadata: Map<String,String> = emptyMap(),
+    override val metadata: Map<String, String> = emptyMap(),
 ) : WebConnectorResponseContract

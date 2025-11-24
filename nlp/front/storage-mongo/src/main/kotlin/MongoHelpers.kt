@@ -19,5 +19,4 @@ package ai.tock.nlp.front.storage.mongo
 import kotlin.math.min
 
 // wrapper to workaround the 1024 chars limit for String indexes
-internal fun textKey(text: String): String =
-    if (text.length > 512) text.substring(0, min(512, text.length)) else text
+internal fun textKey(text: String): String = if (text.length > 512) text.substring(0, min(512, text.length)) else text

@@ -21,10 +21,13 @@ import java.util.UUID
 data class AvailabilityStrategies(
     val strategy: Strategy,
     val distributionRulesToCheck: List<UUID>? = null,
-    val availability: Boolean?
-
+    val availability: Boolean?,
 ) {
+    @Suppress("ktlint:standard:enum-entry-name-case")
     enum class Strategy {
-        atLeastOne, all, notAvailable, customAvailability
+        atLeastOne,
+        all,
+        notAvailable,
+        customAvailability,
     }
 }

@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "clazz"
+    property = "clazz",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = PostbackButton::class, name = "postback_button"),
     JsonSubTypes.Type(value = QuickReply::class, name = "quick_reply"),
-    JsonSubTypes.Type(value = UrlButton::class, name = "url_button")
+    JsonSubTypes.Type(value = UrlButton::class, name = "url_button"),
 )
 abstract class Button(val type: ButtonType)

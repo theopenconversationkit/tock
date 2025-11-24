@@ -35,9 +35,8 @@ data class EntityType(
     /**
      * Is the entity has to be systematically obfuscated?
      */
-    val obfuscated: Boolean = false
+    val obfuscated: Boolean = false,
 ) {
-
     fun hasSubEntities(): Boolean = subEntities.isNotEmpty()
 
     fun findSubEntity(role: String): Entity? = subEntities.first { it.role == role }

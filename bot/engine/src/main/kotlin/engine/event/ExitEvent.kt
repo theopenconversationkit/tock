@@ -20,5 +20,5 @@ abstract class ExitEvent(
     /**
      * The bot application id.
      */
-    applicationId: String
+    applicationId: String,
 ) : Event(applicationId)

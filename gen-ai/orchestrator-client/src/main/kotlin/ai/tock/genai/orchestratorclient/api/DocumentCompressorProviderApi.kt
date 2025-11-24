@@ -28,8 +28,6 @@ internal interface DocumentCompressorProviderApi {
     @POST("/document-compressor-providers/{provider-id}/setting/status")
     fun checkDocumentCompressorSetting(
         @Body query: DocumentCompressorProviderSettingStatusRequest,
-        @Path("provider-id") providerId: DocumentCompressorProvider
+        @Path("provider-id") providerId: DocumentCompressorProvider,
     ): Call<ProviderSettingStatusResponse>
-
 }
-

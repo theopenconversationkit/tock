@@ -38,9 +38,8 @@ data class PlayerId(
     /**
      * The optional business client id.
      */
-    val clientId: String? = null
+    val clientId: String? = null,
 ) {
-
     override fun equals(other: Any?): Boolean = (other as? PlayerId)?.id == id
 
     override fun hashCode(): Int = id.hashCode()

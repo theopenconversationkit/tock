@@ -23,7 +23,6 @@ import ai.tock.nlp.model.EntityCallContextForEntity
  * Evaluate a text for the specified entity.
  */
 interface EntityTypeEvaluator {
-
     /**
      * Evaluates a text from the given entity context.
      *
@@ -31,11 +30,17 @@ interface EntityTypeEvaluator {
      * @param text the text to evaluate
      * @return the evaluation result - with null [EvaluationResult.value] if no value found
      */
-    fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult
+    fun evaluate(
+        context: EntityCallContextForEntity,
+        text: String,
+    ): EvaluationResult
 
     /**
      * Merge two or more [ValueDescriptor].
      * Returns null if the merge is not applicable.
      */
-    fun merge(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? = null
+    fun merge(
+        context: EntityCallContextForEntity,
+        values: List<ValueDescriptor>,
+    ): ValueDescriptor? = null
 }

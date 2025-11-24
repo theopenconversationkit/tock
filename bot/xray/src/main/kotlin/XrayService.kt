@@ -70,7 +70,8 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.OffsetDateTime.ofInstant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Base64
+import java.util.Locale
 
 /**
  *
@@ -81,7 +82,6 @@ class XrayService(
     private val testKeys: List<String> = listProperty("tock_bot_test_xray_test_keys", emptyList()),
     private val testedBotId: String = property("tock_bot_test_botId", "please set a bot id to test"),
 ) {
-
     private class TestPlanExecutionReport(
         val configuration: XrayExecutionConfiguration,
         val planKey: String,
@@ -122,7 +122,7 @@ class XrayService(
                 XrayPlanExecutionResult(
                     success = 0,
                     total = 0,
-                    errorMessage = "ERROR : Specify \"testPlanKey\" OR (xor) \"testKey\"."
+                    errorMessage = "ERROR : Specify \"testPlanKey\" OR (xor) \"testKey\".",
                 )
             }
         }
@@ -189,7 +189,7 @@ class XrayService(
                         XrayExecutionConfiguration(it, listOf(dummyTestPlanKey), jiraProject),
                         dummyTestPlanKey,
                         testKeys,
-                        executionId.toId()
+                        executionId.toId(),
                     )
                 }
                 .let {
@@ -214,8 +214,8 @@ class XrayService(
             .forEach { planKey, plans ->
                 // if it is a multi-connector test plan
                 if (plans.map { it.testPlan.dialogs.map { dialogExecutionReport -> dialogExecutionReport.id } }
-                    // no duplicate
-                    .run { toSet().size == size }
+                        // no duplicate
+                        .run { toSet().size == size }
                 ) {
                     val firstExecution = plans.map { it.execution.date }.minOrNull()!!
                     sendXrayExecution(
@@ -224,13 +224,13 @@ class XrayService(
                         ofInstant(
                             firstExecution.plus(
                                 plans.map { it.execution.duration.toMillis() }.sum(),
-                                ChronoUnit.MILLIS
+                                ChronoUnit.MILLIS,
                             ),
-                            defaultZoneId
+                            defaultZoneId,
                         ),
                         plans.map { it.configuration }.distinctBy { it.botConfiguration.name },
                         plans.flatMap { it.testPlan.dialogs },
-                        plans.flatMap { it.execution.dialogs }
+                        plans.flatMap { it.execution.dialogs },
                     )
                 } else {
                     plans.all {
@@ -240,7 +240,7 @@ class XrayService(
                             ofInstant(it.execution.date.plus(it.execution.duration), defaultZoneId),
                             listOf(it.configuration),
                             it.testPlan.dialogs,
-                            it.execution.dialogs
+                            it.execution.dialogs,
                         )
                     }
                 }
@@ -249,8 +249,9 @@ class XrayService(
         return XrayPlanExecutionResult(
             success = reports.sumOf { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
             total = reports.sumOf { it.execution.dialogs.size },
-            errorMessage = reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }
-                .toString()
+            errorMessage =
+                reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }
+                    .toString(),
         )
     }
 
@@ -274,89 +275,99 @@ class XrayService(
         executionDialogs: List<DialogExecutionReport>,
     ): Boolean {
         // try to get the jira identifier of the test plan
-        val testExecutionKeyIssue = XrayClient.getKeyOfSearchedIssue(
-            "project = \"${configurations[0].jiraTestProject.key}\" and " +
-                "issuetype = \"Test Execution\" and " +
-                "summary ~ \"$planKey ${configurations[0].botConfiguration.name}\""
-        )
+        val testExecutionKeyIssue =
+            XrayClient.getKeyOfSearchedIssue(
+                "project = \"${configurations[0].jiraTestProject.key}\" and " +
+                    "issuetype = \"Test Execution\" and " +
+                    "summary ~ \"$planKey ${configurations[0].botConfiguration.name}\"",
+            )
 
-        val testExecutionKey = when (testExecutionKeyIssue) {
-            TooMuchIssuesRetrieved -> error("too many test executions have been retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
-            NoIssueRetrieved -> {
-                XrayClient.createNewTestExecutionIssue(
-                    XrayTestExecutionCreation(
-                        XrayTextExecutionFields(
-                            configurations.get(0).jiraTestProject,
-                            "$planKey - ${
-                            configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()
-                            }",
-                            "Automatized Test Execution",
-                            JiraIssueType("Test Execution")
-                        )
-                    )
-                ).key
+        val testExecutionKey =
+            when (testExecutionKeyIssue) {
+                TooMuchIssuesRetrieved -> error("too many test executions have been retrieved with summary \"$planKey ${configurations[0].botConfiguration.name}\".")
+                NoIssueRetrieved -> {
+                    XrayClient.createNewTestExecutionIssue(
+                        XrayTestExecutionCreation(
+                            XrayTextExecutionFields(
+                                configurations.get(0).jiraTestProject,
+                                "$planKey - ${
+                                    configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()
+                                }",
+                                "Automatized Test Execution",
+                                JiraIssueType("Test Execution"),
+                            ),
+                        ),
+                    ).key
+                }
+                is IssueRetrieved -> testExecutionKeyIssue.key
             }
-            is IssueRetrieved -> testExecutionKeyIssue.key
-        }
 
         // gather test execution information
-        val xrayExecution = XrayTestExecution(
-            testExecutionKey,
-            XrayTestExecutionInfo(
-                "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
-                "Automatized Test Execution",
-                start,
-                end,
-                planKey,
-                configurations.map { it.environment }.toSortedSet().toList()
-
-            ),
-            executionDialogs
-                .sortedBy { it.dialogReportId.toString() }
-                .map { dialogReport ->
-                    val dialog = dialogs.firstOrNull {
-                        it.id == dialogReport.dialogReportId
-                    }
-                    var stepViewed = false
-                    XrayTestExecutionReport(
-                        testKey = dialogReport.dialogReportId.toString(),
-                        start = ofInstant(dialogReport.date, defaultZoneId),
-                        finish = ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                        comment = if (dialogReport.error) "Failed execution ${
-                        dialogReport.errorMessage
-                            ?: ""
-                        }" else "Successful execution",
-                        status = if (dialogReport.error) FAIL else PASS,
-                        steps = dialog?.actions?.filter {
-                            it.playerId.type == bot
-                        }?.map { testActionReport ->
-                            val status = when {
-                                !dialogReport.error -> PASS
-                                stepViewed -> TODO
-                                dialogReport.errorActionId == testActionReport.id -> {
-                                    stepViewed = true
-                                    FAIL
-                                }
-                                else -> PASS
+        val xrayExecution =
+            XrayTestExecution(
+                testExecutionKey,
+                XrayTestExecutionInfo(
+                    "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
+                    "Automatized Test Execution",
+                    start,
+                    end,
+                    planKey,
+                    configurations.map { it.environment }.toSortedSet().toList(),
+                ),
+                executionDialogs
+                    .sortedBy { it.dialogReportId.toString() }
+                    .map { dialogReport ->
+                        val dialog =
+                            dialogs.firstOrNull {
+                                it.id == dialogReport.dialogReportId
                             }
-                            XrayTestExecutionStepReport(
-                                when (status) {
-                                    PASS -> "Test successful"
-                                    TODO -> "Skipped"
-                                    FAIL ->
-                                        when {
-                                            dialogReport.returnedMessage != null -> "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
-                                            dialogReport.errorMessage != null -> "TestFailed : ${dialogReport.errorMessage}"
-                                            else -> "Test failed"
-                                        }
+                        var stepViewed = false
+                        XrayTestExecutionReport(
+                            testKey = dialogReport.dialogReportId.toString(),
+                            start = ofInstant(dialogReport.date, defaultZoneId),
+                            finish = ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
+                            comment =
+                                if (dialogReport.error) {
+                                    "Failed execution ${
+                                        dialogReport.errorMessage
+                                            ?: ""
+                                    }"
+                                } else {
+                                    "Successful execution"
                                 },
-                                status
-                            )
-                        }
-                            ?: emptyList()
-                    )
-                }
-        )
+                            status = if (dialogReport.error) FAIL else PASS,
+                            steps =
+                                dialog?.actions?.filter {
+                                    it.playerId.type == bot
+                                }?.map { testActionReport ->
+                                    val status =
+                                        when {
+                                            !dialogReport.error -> PASS
+                                            stepViewed -> TODO
+                                            dialogReport.errorActionId == testActionReport.id -> {
+                                                stepViewed = true
+                                                FAIL
+                                            }
+                                            else -> PASS
+                                        }
+                                    XrayTestExecutionStepReport(
+                                        when (status) {
+                                            PASS -> "Test successful"
+                                            TODO -> "Skipped"
+                                            FAIL ->
+                                                when {
+                                                    dialogReport.returnedMessage != null -> "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
+                                                    dialogReport.errorMessage != null -> "TestFailed : ${dialogReport.errorMessage}"
+                                                    else -> "Test failed"
+                                                }
+                                        },
+                                        status,
+                                    )
+                                }
+                                    ?: emptyList(),
+                        )
+                    },
+            )
         // and send the execution to xray
         return if (
             XrayClient.sendTestExecution(xrayExecution).isSuccessful &&
@@ -384,14 +395,15 @@ class XrayService(
             .mapNotNull { xrayPlanKey ->
                 logger.info { "Start plan $xrayPlanKey execution" }
                 try {
-                    val exec = TestPlanExecution(
-                        (xrayPlanKey + "_" + configuration.botConfiguration.applicationId).toId(),
-                        mutableListOf(),
-                        0,
-                        duration = Duration.between(Instant.now(), Instant.now()),
-                        _id = executionId,
-                        status = TestPlanExecutionStatus.PENDING
-                    )
+                    val exec =
+                        TestPlanExecution(
+                            (xrayPlanKey + "_" + configuration.botConfiguration.applicationId).toId(),
+                            mutableListOf(),
+                            0,
+                            duration = Duration.between(Instant.now(), Instant.now()),
+                            _id = executionId,
+                            status = TestPlanExecutionStatus.PENDING,
+                        )
                     // save the test plan execution into the database
                     saveTestPlanExecution(exec)
 
@@ -421,7 +433,6 @@ class XrayService(
         testKeys: List<String>,
         executionId: Id<TestPlanExecution>,
     ): List<TestPlanExecutionReport> {
-
         return configuration
             .xrayTestPlanKeys
             .mapNotNull { xrayPlanKey ->
@@ -464,7 +475,7 @@ class XrayService(
             configuration,
             xrayTestPlanKey,
             testPlan,
-            execution
+            execution,
         )
     }
 
@@ -475,7 +486,10 @@ class XrayService(
      * @param xrayPlanKey is the Xray identifier of the current test plan.
      * @return the current test plan as a common Test Plan understandable by Tock.
      */
-    private fun getTestPlanFromXray(configuration: XrayExecutionConfiguration, xrayPlanKey: String): TestPlan {
+    private fun getTestPlanFromXray(
+        configuration: XrayExecutionConfiguration,
+        xrayPlanKey: String,
+    ): TestPlan {
         // retrieve all tests of the test plan as XrayTest objects
         val xrayTests = XrayClient.getTestPlanTests(xrayPlanKey)
         // create the common Test Plan using the retrieved tests
@@ -484,11 +498,13 @@ class XrayService(
                 // retrieve all test steps
                 xrayTests
                     .filter {
-                        val connectorJiras = connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id]
-                            ?: emptyList()
-                        connectorJiras.isEmpty() || XrayClient.getLinkedIssues(it.key, linkedField).intersect(
-                            connectorJiras
-                        ).isNotEmpty()
+                        val connectorJiras =
+                            connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id]
+                                ?: emptyList()
+                        connectorJiras.isEmpty() ||
+                            XrayClient.getLinkedIssues(it.key, linkedField).intersect(
+                                connectorJiras,
+                            ).isNotEmpty()
                     }
                     .filter { it.supportConf(configuration.botConfiguration.name) }
                     // retrieve all steps of tests of the test plan
@@ -501,7 +517,7 @@ class XrayService(
                 locale,
                 if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
                 botConfiguration.targetConnectorType,
-                "${xrayPlanKey}_${configuration.botConfiguration.applicationId}".toId()
+                "${xrayPlanKey}_${configuration.botConfiguration.applicationId}".toId(),
             )
         }
     }
@@ -530,7 +546,7 @@ class XrayService(
                 locale,
                 if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
                 botConfiguration.targetConnectorType,
-                "${planKey}_${configuration.botConfiguration.applicationId}".toId()
+                "${planKey}_${configuration.botConfiguration.applicationId}".toId(),
             )
         }
     }
@@ -544,7 +560,10 @@ class XrayService(
      * @param xrayTest is the XrayTest to get its steps.
      * @return all the tests steps as a TestDialogReport to submit to the targeted bot.
      */
-    private fun getDialogReport(configuration: XrayExecutionConfiguration, xrayTest: XrayTest): TestDialogReport {
+    private fun getDialogReport(
+        configuration: XrayExecutionConfiguration,
+        xrayTest: XrayTest,
+    ): TestDialogReport {
         val userInterface = xrayTest.findUserInterface()
         val xraySteps = XrayClient.getTestSteps(xrayTest.key)
         return TestDialogReport(
@@ -556,7 +575,7 @@ class XrayService(
                         xrayTestStep.id,
                         userId,
                         xrayTestStep.data.raw,
-                        xrayTestStep.attachments.firstOrNull { it.fileName == "user.message" }
+                        xrayTestStep.attachments.firstOrNull { it.fileName == "user.message" },
                     ),
                     parseStepData(
                         configuration,
@@ -564,12 +583,12 @@ class XrayService(
                         xrayTestStep.id,
                         botId,
                         xrayTestStep.result.raw,
-                        xrayTestStep.attachments.firstOrNull { it.fileName == "bot.message" }
-                    )
+                        xrayTestStep.attachments.firstOrNull { it.fileName == "bot.message" },
+                    ),
                 )
             },
             userInterface,
-            xrayTest.key.toId()
+            xrayTest.key.toId(),
         )
     }
 
@@ -588,11 +607,12 @@ class XrayService(
         raw: String?,
         xrayAttachment: XrayAttachment?,
     ): TestActionReport? {
-        val message = if (xrayAttachment != null) {
-            XrayClient.getAttachmentToString(xrayAttachment)
-        } else {
-            raw
-        }
+        val message =
+            if (xrayAttachment != null) {
+                XrayClient.getAttachmentToString(xrayAttachment)
+            } else {
+                raw
+            }
         return message
             .takeUnless { it.isNullOrBlank() }
             ?.run {
@@ -602,7 +622,7 @@ class XrayService(
                     MessageParser.parse(replace(jiraRegisteredBotUrl, configuration.botUrl)),
                     configuration.botConfiguration.targetConnectorType,
                     userInterface,
-                    "${if (playerId.type == bot) "b" else "u"}$stepId".toId()
+                    "${if (playerId.type == bot) "b" else "u"}$stepId".toId(),
                 )
             }
     }
@@ -629,15 +649,16 @@ class XrayService(
 
         val labels = linkedJira?.let { XrayClient.getLabels(it) } ?: emptyList()
 
-        val test = JiraTest(
-            jiraProject,
-            testName.invoke(labels),
-            "",
-            listOf("automatisation"),
-            testTypeField,
-            manualStepsField,
-            "cucumber-tock"
-        )
+        val test =
+            JiraTest(
+                jiraProject,
+                testName.invoke(labels),
+                "",
+                listOf("automatisation"),
+                testTypeField,
+                manualStepsField,
+                "cucumber-tock",
+            )
         val jira = XrayClient.createTest(test)
         if (linkedJira != null) {
             XrayClient.linkTest(jira.key, linkedJira)
@@ -665,7 +686,10 @@ class XrayService(
         return XrayTest(jira.key)
     }
 
-    fun updateXrayTest(dialog: DialogReport, testKey: String): XrayTest? {
+    fun updateXrayTest(
+        dialog: DialogReport,
+        testKey: String,
+    ): XrayTest? {
         val steps = defineTestSteps(dialog)
 
         // call kept to check if issue exists
@@ -696,11 +720,14 @@ class XrayService(
             val mData = if (m.isSimpleMessage()) m.toPrettyString() else ""
             val mAttachments =
                 listOfNotNull(
-                    if (m.isSimpleMessage()) null
-                    else XrayBuildStepAttachment(
-                        String(Base64.getEncoder().encode(m.toPrettyString().toByteArray())),
-                        if (user) "user.message" else "bot.message"
-                    )
+                    if (m.isSimpleMessage()) {
+                        null
+                    } else {
+                        XrayBuildStepAttachment(
+                            String(Base64.getEncoder().encode(m.toPrettyString().toByteArray())),
+                            if (user) "user.message" else "bot.message",
+                        )
+                    },
                 )
 
             if (user) {
@@ -709,8 +736,8 @@ class XrayService(
                         (steps.size + 1).toString(),
                         mData,
                         "",
-                        mAttachments
-                    )
+                        mAttachments,
+                    ),
                 )
             } else {
                 steps.lastOrNull()?.apply {
@@ -720,16 +747,16 @@ class XrayService(
                                 (steps.size + 1).toString(),
                                 "",
                                 mData,
-                                mAttachments
-                            )
+                                mAttachments,
+                            ),
                         )
                     } else {
                         steps.removeAt(steps.size - 1)
                         steps.add(
                             copy(
                                 result = mData,
-                                attachments = attachments + mAttachments
-                            )
+                                attachments = attachments + mAttachments,
+                            ),
                         )
                     }
                 }
@@ -739,6 +766,5 @@ class XrayService(
         return steps
     }
 
-    private fun Message.isEmptyMessage() =
-        this == Sentence(text = null, messages = mutableListOf(), userInterface = null, delay = 0)
+    private fun Message.isEmptyMessage() = this == Sentence(text = null, messages = mutableListOf(), userInterface = null, delay = 0)
 }

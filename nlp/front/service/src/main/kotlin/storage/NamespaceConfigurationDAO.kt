@@ -22,12 +22,11 @@ import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
  *
  */
 interface NamespaceConfigurationDAO {
-
     fun saveNamespaceConfiguration(configuration: NamespaceConfiguration)
 
-    fun getNamespaceConfiguration(namespace: String) : NamespaceConfiguration?
+    fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration?
 
-    fun getSharableNamespaceConfiguration() : List<NamespaceConfiguration>
+    fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration>
 
     /**
      * Listen changes on namespace configurations.

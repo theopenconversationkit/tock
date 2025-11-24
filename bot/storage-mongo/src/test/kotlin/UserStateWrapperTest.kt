@@ -28,7 +28,6 @@ import kotlin.test.assertTrue
  *
  */
 class UserStateWrapperTest : AbstractTest() {
-
     @Test
     fun constructor_shouldEncryptProperty_whenEncryptedFlagIsSet() {
         val userState = UserState()

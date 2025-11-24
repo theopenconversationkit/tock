@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAUserNotification(
     val title: String,
-    val text: String
+    val text: String,
 )

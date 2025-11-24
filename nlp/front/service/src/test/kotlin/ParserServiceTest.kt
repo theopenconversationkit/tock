@@ -28,16 +28,15 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.name
 import io.mockk.every
 import io.mockk.verify
-import java.util.Locale
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
+import java.util.Locale
+import kotlin.test.assertEquals
 
 /**
  *
  */
 class ParserServiceTest : AbstractTest() {
-
     private val validatedSentence =
         defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
 
@@ -56,20 +55,22 @@ class ParserServiceTest : AbstractTest() {
 
     @Test
     fun findLanguage_shouldReturnDefault_WhenLocaleParameterIsNotSupportedAndDefaultIsSupported() {
-        val locale = ParserService.findLanguage(
-            ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(defaultLocale)),
-            Locale.JAPANESE
-        )
+        val locale =
+            ParserService.findLanguage(
+                ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(defaultLocale)),
+                Locale.JAPANESE,
+            )
 
         assertEquals(defaultLocale, locale)
     }
 
     @Test
     fun findLanguage_shouldReturnFirstFound_WhenLocaleParameterIsNotSupportedAndDefaultIsNotSupported() {
-        val locale = ParserService.findLanguage(
-            ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(Locale.ITALIAN)),
-            Locale.JAPANESE
-        )
+        val locale =
+            ParserService.findLanguage(
+                ApplicationDefinition("test", namespace = "test", supportedLocales = setOf(Locale.ITALIAN)),
+                Locale.JAPANESE,
+            )
 
         assertEquals(Locale.ITALIAN, locale)
     }
@@ -105,13 +106,13 @@ class ParserServiceTest : AbstractTest() {
     fun `GIVEN a parse request WHEN the sentence is validated but not in intentsSubset THEN the nlp model is used`() {
         every { context.config.search(any()) } returns SentencesQueryResult(1, listOf(intent2ClassifiedSentence))
         every { context.core.parse(any(), any(), any()) } returns
-                ParsingResult(
-                    defaultIntentName,
-                    emptyList(),
-                    emptyList(),
-                    1.0,
-                    1.0
-                )
+            ParsingResult(
+                defaultIntentName,
+                emptyList(),
+                emptyList(),
+                1.0,
+                1.0,
+            )
 
         val query = intentSubsetParseQuery.copy(intentsSubset = setOf(IntentQualifier(defaultIntentName, 0.0)))
         val result = ParserService.parse(query)

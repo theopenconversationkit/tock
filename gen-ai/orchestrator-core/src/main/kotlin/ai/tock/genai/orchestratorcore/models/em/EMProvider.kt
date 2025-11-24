@@ -16,10 +16,11 @@
 
 package ai.tock.genai.orchestratorcore.models.em
 
-enum class EMProvider{
+enum class EMProvider {
     OpenAI,
     AzureOpenAIService,
-    Ollama;
+    Ollama,
+    ;
 
     companion object {
         fun findByName(provider: String): EMProvider? {

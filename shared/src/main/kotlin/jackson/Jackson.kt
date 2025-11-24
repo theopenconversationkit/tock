@@ -124,10 +124,15 @@ inline fun <reified T : Any> JsonParser.readListValues(): List<T> {
 /**
  * Add a deserializer in the [SimpleModule].
  */
-fun <T : Any> SimpleModule.addDeserializer(type: KClass<T>, deser: JsonDeserializer<out T>) =
-    addDeserializer(type.java, deser)
+fun <T : Any> SimpleModule.addDeserializer(
+    type: KClass<T>,
+    deser: JsonDeserializer<out T>,
+) = addDeserializer(type.java, deser)
 
 /**
  * Add a serializer in the [SimpleModule].
  */
-fun <T : Any> SimpleModule.addSerializer(type: KClass<T>, ser: JsonSerializer<in T>) = addSerializer(type.java, ser)
+fun <T : Any> SimpleModule.addSerializer(
+    type: KClass<T>,
+    ser: JsonSerializer<in T>,
+) = addSerializer(type.java, ser)

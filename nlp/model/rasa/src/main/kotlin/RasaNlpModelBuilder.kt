@@ -28,26 +28,26 @@ import ai.tock.nlp.rasa.RasaClient.PutModelRequest
 import ai.tock.nlp.rasa.RasaClient.TrainModelRequest
 
 internal object RasaNlpModelBuilder : NlpEngineModelBuilder {
-
     override fun buildIntentModel(
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): IntentModelHolder {
         val conf = configuration.toRasaConfiguration()
         return RasaClientProvider.getClient(conf).run {
-            val modelFileName = train(
-                TrainModelRequest(
-                    domain = RasaMarkdown.toModelDomainMarkdown(context),
-                    config = conf.getMarkdownConfiguration(context.language),
-                    nlu = RasaMarkdown.toModelNluMarkdown(expressions)
+            val modelFileName =
+                train(
+                    TrainModelRequest(
+                        domain = RasaMarkdown.toModelDomainMarkdown(context),
+                        config = conf.getMarkdownConfiguration(context.language),
+                        nlu = RasaMarkdown.toModelNluMarkdown(expressions),
+                    ),
                 )
-            )
             setModel(PutModelRequest(conf.getModelFilePath(modelFileName)))
             IntentModelHolder(
                 application = context.application,
                 nativeModel = RasaModelConfiguration(modelFileName),
-                configuration = configuration
+                configuration = configuration,
             )
         }
     }
@@ -56,22 +56,23 @@ internal object RasaNlpModelBuilder : NlpEngineModelBuilder {
     override fun buildEntityModel(
         context: EntityBuildContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): EntityModelHolder =
         EntityModelHolder(
             nativeModel = NlpEngineType.rasa.name,
-            configuration = configuration
+            configuration = configuration,
         )
 
     override fun defaultNlpApplicationConfiguration(): NlpApplicationConfiguration =
         NlpApplicationConfiguration(
-            applicationConfiguration = NlpModelConfiguration(
-                hasProperties = true,
-                hasMarkdown = true
-            ),
+            applicationConfiguration =
+                NlpModelConfiguration(
+                    hasProperties = true,
+                    hasMarkdown = true,
+                ),
             hasTokenizerConfiguration = false,
             hasIntentConfiguration = false,
             hasEntityConfiguration = false,
-            hasApplicationConfiguration = true
+            hasApplicationConfiguration = true,
         )
 }

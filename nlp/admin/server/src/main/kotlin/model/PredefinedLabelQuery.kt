@@ -22,5 +22,5 @@ data class PredefinedLabelQuery(
     val entityTypeName: String,
     val predefinedValue: String,
     val locale: Locale,
-    val label: String
+    val label: String,
 )

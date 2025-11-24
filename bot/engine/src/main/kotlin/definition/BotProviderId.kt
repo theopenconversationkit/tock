@@ -31,5 +31,5 @@ data class BotProviderId(
     /**
      * The optional configuration name.
      */
-    val configurationName: String? = null
+    val configurationName: String? = null,
 )

@@ -27,6 +27,5 @@ data class CustomMetric(
     val emitterStoryId: String?,
     val trackedStoryId: String?,
     val applicationId: String?,
-    val count: Int = 0
+    val count: Int = 0,
 )
-

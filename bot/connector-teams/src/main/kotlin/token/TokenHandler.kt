@@ -36,7 +36,6 @@ import kotlin.concurrent.fixedRateTimer
  * This token is mandatory in request from bot to teams via microsoft-api
  */
 class TokenHandler(private val appId: String, private val password: String) {
-
     private val logger = KotlinLogging.logger {}
 
     @Volatile
@@ -45,26 +44,28 @@ class TokenHandler(private val appId: String, private val password: String) {
     @Volatile
     private var tokenExpiration: Instant? = null
 
-    private val logLevel = if (logger.isDebugEnabled) {
-        Level.BODY
-    } else {
-        Level.BASIC
-    }
+    private val logLevel =
+        if (logger.isDebugEnabled) {
+            Level.BODY
+        } else {
+            Level.BASIC
+        }
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(INSTANCE)
 
     @Volatile
     private lateinit var tokenTimerTask: Timer
 
-    var loginApi: LoginMicrosoftOnline = retrofitBuilderWithTimeoutAndLogger(
-        longProperty("tock_microsoft_request_timeout", 30000),
-        logger,
-        logLevel
-    )
-        .baseUrl("https://login.microsoftonline.com")
-        .addJacksonConverter(teamsMapper)
-        .build()
-        .create()
+    var loginApi: LoginMicrosoftOnline =
+        retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_microsoft_request_timeout", 30000),
+            logger,
+            logLevel,
+        )
+            .baseUrl("https://login.microsoftonline.com")
+            .addJacksonConverter(teamsMapper)
+            .build()
+            .create()
 
     fun checkToken() {
         if (this.token == null || isTokenExpired()) {
@@ -77,8 +78,8 @@ class TokenHandler(private val appId: String, private val password: String) {
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
                     10,
-                    ChronoUnit.SECONDS
-                )
+                    ChronoUnit.SECONDS,
+                ),
             )
         ) {
             return true
@@ -87,23 +88,29 @@ class TokenHandler(private val appId: String, private val password: String) {
     }
 
     private fun fetchToken() {
-        val response = loginApi.login(
-            clientId = appId, clientSecret = password
-        ).execute()
+        val response =
+            loginApi.login(
+                clientId = appId,
+                clientSecret = password,
+            ).execute()
         token = response.body()?.accessToken ?: error("empty access token")
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
-    fun launchTokenCollector(connectorId: String, msInterval: Long = 60 * 60 * 1000L) {
+    fun launchTokenCollector(
+        connectorId: String,
+        msInterval: Long = 60 * 60 * 1000L,
+    ) {
         try {
             checkToken()
-            tokenTimerTask = fixedRateTimer(
-                name = "microsoft-api-token-handling-$connectorId",
-                initialDelay = 0L,
-                period = msInterval
-            ) {
-                checkToken()
-            }
+            tokenTimerTask =
+                fixedRateTimer(
+                    name = "microsoft-api-token-handling-$connectorId",
+                    initialDelay = 0L,
+                    period = msInterval,
+                ) {
+                    checkToken()
+                }
         } catch (e: Exception) {
             logger.error(e)
         }

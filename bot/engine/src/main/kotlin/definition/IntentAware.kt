@@ -22,7 +22,6 @@ import ai.tock.shared.withoutNamespace
  * Convenient interface used to compare [Intent] with [StoryDefinition].
  */
 interface IntentAware {
-
     fun wrappedIntent(): Intent
 
     fun intentWithoutNamespace(): IntentWithoutNamespace = IntentWithoutNamespace(wrappedIntent().name.withoutNamespace())

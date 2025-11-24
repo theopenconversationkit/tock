@@ -29,9 +29,8 @@ data class WhatsAppMessages(
     val messages: List<WhatsAppMessage> = emptyList(),
     val statuses: List<WhatsAppStatus> = emptyList(),
     val errors: List<WhatsAppError> = emptyList(),
-    val contacts: List<WhatsAppContact> = emptyList()
+    val contacts: List<WhatsAppContact> = emptyList(),
 ) : ConnectorMessage {
-
     @get:JsonIgnore
     override val connectorType: ConnectorType
         get() = whatsAppConnectorType

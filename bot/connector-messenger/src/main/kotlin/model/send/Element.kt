@@ -29,26 +29,27 @@ data class Element(
     val title: String,
     @JsonProperty("image_url") val imageUrl: String? = null,
     val subtitle: String? = null,
-    val buttons: List<Button>? = null
+    val buttons: List<Button>? = null,
 ) {
-
     internal constructor(
         title: CharSequence,
         subtitle: CharSequence?,
         imageUrl: String?,
-        buttons: List<Button>?
+        buttons: List<Button>?,
     ) : this(title.toString(), imageUrl, subtitle?.toString(), buttons?.takeUnless { it.isEmpty() })
 
     fun toGenericElement(): GenericElement {
         return GenericElement(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
-            texts = mapNotNullValues(
-                Element::title.name to title,
-                Element::subtitle.name to subtitle
-            ),
-            attachments = imageUrl
-                ?.let { listOf(ai.tock.bot.engine.message.Attachment(imageUrl, image)) }
-                ?: emptyList()
+            texts =
+                mapNotNullValues(
+                    Element::title.name to title,
+                    Element::subtitle.name to subtitle,
+                ),
+            attachments =
+                imageUrl
+                    ?.let { listOf(ai.tock.bot.engine.message.Attachment(imageUrl, image)) }
+                    ?: emptyList(),
         )
     }
 

@@ -24,9 +24,7 @@ import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 
-
 object DocumentCompressorValidationService {
-
     private val documentCompressorProviderService: DocumentCompressorProviderService get() = injector.provide()
 
     fun validate(config: BotDocumentCompressorConfiguration): Set<ErrorMessage> {
@@ -35,15 +33,13 @@ object DocumentCompressorValidationService {
                 documentCompressorProviderService
                     .checkSetting(
                         DocumentCompressorProviderSettingStatusRequest(
-                            setting = config.setting
-                        )
+                            setting = config.setting,
+                        ),
                     )
-                    .getErrors("Document Compressor setting check failed")
+                    .getErrors("Document Compressor setting check failed"),
             )
         }
     }
 
-    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> =
-        this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
-
+    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }

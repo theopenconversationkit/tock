@@ -42,7 +42,6 @@ import kotlin.test.assertEquals
  *
  */
 class DialogFlowMongoDAOTest : AbstractTest() {
-
     val botApplicationConfiguration =
         BotApplicationConfiguration("appId", "botId", defaultNamespace, "botId", ConnectorType("test"))
 
@@ -60,25 +59,27 @@ class DialogFlowMongoDAOTest : AbstractTest() {
     }
 
     private fun setupData(vararg entities: String) {
-        val entityList = entities.map {
-            mockk<EntityValue>().apply {
-                val e = mockk<Entity>()
-                every { entity } returns e
-                every { e.role } returns it
+        val entityList =
+            entities.map {
+                mockk<EntityValue>().apply {
+                    val e = mockk<Entity>()
+                    every { entity } returns e
+                    every { e.role } returns it
+                }
             }
-        }
         val def = mockk<BotDefinition>()
         every { def.botId } returns "botId"
         every { def.namespace } returns defaultNamespace
         val dialog = mockk<Dialog>()
         every { dialog.id } returns "dialogId".toId()
-        val snapshotCol = SnapshotCol(
-            newId(),
-            listOf(
-                Snapshot(null, null, null, emptyList(), null),
-                Snapshot("b", "b", null, entityList, null)
+        val snapshotCol =
+            SnapshotCol(
+                newId(),
+                listOf(
+                    Snapshot(null, null, null, emptyList(), null),
+                    Snapshot("b", "b", null, entityList, null),
+                ),
             )
-        )
         val action = SendSentence(PlayerId("a"), "appId", PlayerId("appId", bot), "test")
         val user = UserTimeline(PlayerId("a"))
         DialogFlowMongoDAO.addFlowStat(user, def, action, dialog, snapshotCol)

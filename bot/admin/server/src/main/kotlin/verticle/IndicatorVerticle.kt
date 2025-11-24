@@ -42,7 +42,6 @@ import mu.KotlinLogging
  * IndicatorVerticle contains all the routes and actions associated with the indicators analytics
  */
 class IndicatorVerticle {
-
     companion object {
         const val PATH_PARAM_APPLICATION_NAME = "applicationName"
         const val PATH_PARAM_NAME = "name"
@@ -62,7 +61,6 @@ class IndicatorVerticle {
         val authorizedRoles = setOf(TockUserRole.botUser, TockUserRole.admin, TockUserRole.technicalAdmin)
 
         with(webVerticle) {
-
             /**
              * lamdba calling database to retrieve application definition from request context
              * @return [ApplicationDefinition]
@@ -73,14 +71,14 @@ class IndicatorVerticle {
                     getNamespace(context)?.let { namespace ->
                         front.getApplicationByNamespaceAndName(
                             namespace,
-                            appName
+                            appName,
                         )
-                    }?: throw NotFoundException(404, "Could not find $appName in namespace")
+                    } ?: throw NotFoundException(404, "Could not find $appName in namespace")
                 }
 
             blockingJsonPost(
                 INDICATORS_BY_APPLICATION_NAME_PATH,
-                authorizedRoles
+                authorizedRoles,
             ) { context: RoutingContext, request: SaveIndicatorRequest ->
                 checkNamespaceAndExecute(context, currentContextApp) {
                     tryExecute(context) {
@@ -93,7 +91,7 @@ class IndicatorVerticle {
 
             blockingJsonPut(
                 BY_APPLICATION_NAME_AND_BY_NAME_PATH,
-                authorizedRoles
+                authorizedRoles,
             ) { context: RoutingContext, request: UpdateIndicatorRequest ->
                 checkNamespaceAndExecute(context, currentContextApp) {
                     val name = context.path(PATH_PARAM_NAME)
@@ -151,7 +149,7 @@ class IndicatorVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) : String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
+    private fun getNamespace(context: RoutingContext): String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]
@@ -159,8 +157,11 @@ class IndicatorVerticle {
      * @param botId the bot id
      * @param filter a given [MetricFilter]
      */
-    private fun createFilterMetric(namespace: String, botId: String, filter: MetricFilter?)
-            = filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
+    private fun createFilterMetric(
+        namespace: String,
+        botId: String,
+        filter: MetricFilter?,
+    ) = filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
 }
 
 /**
@@ -174,7 +175,7 @@ class IndicatorVerticle {
 fun <T> WebVerticle.checkNamespaceAndExecute(
     context: RoutingContext,
     applicationDefinition: (RoutingContext) -> ApplicationDefinition?,
-    block: (ApplicationDefinition) -> T
+    block: (ApplicationDefinition) -> T,
 ): T? {
     val appFound = applicationDefinition.invoke(context)
     return if (context.organization == appFound?.namespace) {
@@ -191,7 +192,10 @@ data class ErrorMessage(val message: String? = "Unexpected error occurred")
  * @param context [RoutingContext] request context to be set
  * @param block code block invoked
  */
-private fun <T> tryExecute(context: RoutingContext, block: () -> T): T? {
+private fun <T> tryExecute(
+    context: RoutingContext,
+    block: () -> T,
+): T? {
     return try {
         // in case of success the status code is 201 for POST creation method in this Verticle
         if (context.request().method() == HttpMethod.POST) {
@@ -199,16 +203,16 @@ private fun <T> tryExecute(context: RoutingContext, block: () -> T): T? {
         }
         block.invoke()
     } catch (e: Exception) {
+        val statusCode =
+            when (e) {
+                is ValidationError -> 400
+                is IndicatorError.IndicatorDeletionFailed -> 409
+                is IndicatorError.IndicatorAlreadyExists -> 409
+                is IndicatorError.IndicatorNotFound -> 404
+                else -> 500
+            }
 
-        val statusCode = when (e) {
-            is ValidationError -> 400
-            is IndicatorError.IndicatorDeletionFailed -> 409
-            is IndicatorError.IndicatorAlreadyExists -> 409
-            is IndicatorError.IndicatorNotFound -> 404
-            else -> 500
-        }
-
-        KotlinLogging.logger{}.error { "Error ${e.message}" }
+        KotlinLogging.logger {}.error { "Error ${e.message}" }
 
         context.response()
             .setStatusCode(statusCode)

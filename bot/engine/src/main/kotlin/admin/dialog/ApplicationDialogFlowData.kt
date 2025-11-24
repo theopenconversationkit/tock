@@ -24,5 +24,5 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationFlowNode
 data class ApplicationDialogFlowData(
     val states: List<DialogFlowStateData>,
     val transitions: List<DialogFlowStateTransitionData>,
-    val configuredFlow: List<StoryDefinitionConfigurationFlowNode>
-) 
+    val configuredFlow: List<StoryDefinitionConfigurationFlowNode>,
+)

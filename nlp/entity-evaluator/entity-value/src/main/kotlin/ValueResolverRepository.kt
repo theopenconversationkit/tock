@@ -30,7 +30,6 @@ import kotlin.reflect.KClass
  * Repository used to register custom [Value] serializer/deserializer.
  */
 object ValueResolverRepository {
-
     private val idClassMap = ConcurrentHashMap<String, KClass<out Value>>()
     private val classIdMap = ConcurrentHashMap<KClass<out Value>, String>()
 
@@ -50,7 +49,7 @@ object ValueResolverRepository {
             CustomValueWrapper::class,
             UnknownValue::class,
             StringValue::class,
-            DurationValue::class
+            DurationValue::class,
         )
             .forEach { registerType(it) }
     }
@@ -83,7 +82,7 @@ object ValueResolverRepository {
                 className,
                 null as ResourceBundle?,
                 "${e.message}: Please call ValueResolverRepository#registerType during app initialization for value of type $id",
-                e
+                e,
             )
 
             UnknownValue::class

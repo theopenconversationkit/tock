@@ -17,13 +17,13 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send
 
 data class SendErrorResponse(
-        val error: ErrorDetail
+    val error: ErrorDetail,
 )
 
 data class ErrorDetail(
-        val message: String,
-        val type: String,
-        val code: Int,
-        val errorSubcode: Int?,
-        val fbtraceId: String
+    val message: String,
+    val type: String,
+    val code: Int,
+    val errorSubcode: Int?,
+    val fbtraceId: String,
 )

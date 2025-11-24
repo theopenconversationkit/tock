@@ -21,14 +21,22 @@ import ai.tock.bot.engine.event.Event
 import okhttp3.Interceptor
 
 internal class DefaultBusinessChatIntegrationService : BusinessChatIntegrationService {
-
     override val baseUrl: String = "https://mspgw.push.apple.com/v1/"
 
-    override fun parseThreadControl(message: ReceivedModel, connectorId: String): Event? = null
+    override fun parseThreadControl(
+        message: ReceivedModel,
+        connectorId: String,
+    ): Event? = null
 
     override fun authInterceptor(): Interceptor? = null
 
-    override fun passControl(sourceId: String, recipient: String) = Unit
+    override fun passControl(
+        sourceId: String,
+        recipient: String,
+    ) = Unit
 
-    override fun takeControl(sourceId: String, recipient: String) = Unit
+    override fun takeControl(
+        sourceId: String,
+        recipient: String,
+    ) = Unit
 }

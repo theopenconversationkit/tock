@@ -23,20 +23,21 @@ import ai.tock.shared.security.credentials.Credentials
 import ai.tock.shared.security.key.SecretKey
 
 // The expected values correspond to the names of the SecretManagerProviderType elements
-val genAISecretManagerProvider: String? = propertyOrNull(
-    name = "tock_gen_ai_secret_manager_provider"
-)
-val genAISecretPrefix: String = property(
-    name = "tock_gen_ai_secret_prefix",
-    defaultValue = "LOCAL/TOCK"
-)
+val genAISecretManagerProvider: String? =
+    propertyOrNull(
+        name = "tock_gen_ai_secret_manager_provider",
+    )
+val genAISecretPrefix: String =
+    property(
+        name = "tock_gen_ai_secret_prefix",
+        defaultValue = "LOCAL/TOCK",
+    )
 
 /**
  * The Secret Manager Service
  */
 interface SecretManagerService {
-
-    val type : SecretManagerProviderType
+    val type: SecretManagerProviderType
 
     /**
      * Retrieve credentials
@@ -57,7 +58,10 @@ interface SecretManagerService {
      * @param secretName the secret name
      * @param secretValue the secret value to store
      */
-    fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret)
+    fun createOrUpdateAIProviderSecret(
+        secretName: String,
+        secretValue: AIProviderSecret,
+    )
 
     /**
      * Generate a Secret Name
@@ -66,7 +70,11 @@ interface SecretManagerService {
      * @param feature the feature for which the secret will be created
      * @return the generate secret name
      */
-    fun generateSecretName(namespace: String, botId: String, feature: String): String
+    fun generateSecretName(
+        namespace: String,
+        botId: String,
+        feature: String,
+    ): String
 
     /**
      * Create a [SecretKey] instance.
@@ -82,7 +90,12 @@ interface SecretManagerService {
      * @param secretValue the secret value to store
      * @return [SecretKey]
      */
-    fun createOrUpdateSecretKey(namespace: String, botId: String, feature: String, secretValue: String): SecretKey {
+    fun createOrUpdateSecretKey(
+        namespace: String,
+        botId: String,
+        feature: String,
+        secretValue: String,
+    ): SecretKey {
         // Generate a unique name for the secret based on namespace, botId, and feature
         val secretName = generateSecretName(namespace, botId, feature)
         // Create or update the secret using
@@ -96,17 +109,16 @@ interface SecretManagerService {
      * @secret the secret to check
      * @return true if supported. Else no.
      */
-    fun isSecretTypeSupported(secret : SecretKey): Boolean
+    fun isSecretTypeSupported(secret: SecretKey): Boolean
 
     /**
      * Delete a secret
      */
     fun deleteSecret(secretName: String)
-
 }
 
 enum class SecretManagerProviderType {
     ENV,
     AWS_SECRETS_MANAGER,
-    GCP_SECRET_MANAGER
+    GCP_SECRET_MANAGER,
 }

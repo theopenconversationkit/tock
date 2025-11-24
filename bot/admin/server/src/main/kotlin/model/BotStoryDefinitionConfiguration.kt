@@ -30,7 +30,10 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
 
-internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?, readOnly: Boolean = false): List<BotAnswerConfiguration> =
+internal fun List<AnswerConfiguration>.mapAnswers(
+    locale: Locale?,
+    readOnly: Boolean = false,
+): List<BotAnswerConfiguration> =
     map {
         when (it) {
             is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale, readOnly)
@@ -67,9 +70,8 @@ data class BotStoryDefinitionConfiguration(
     val configuredSteps: List<BotConfiguredSteps> = emptyList(),
     val _id: Id<StoryDefinitionConfiguration> = newId(),
     val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList(),
-    val metricStory: Boolean = false
+    val metricStory: Boolean = false,
 ) {
-
     constructor(story: StoryDefinitionConfiguration, userLocale: Locale, readOnly: Boolean = false) : this(
         story.storyId,
         story.botId,
@@ -91,10 +93,10 @@ data class BotStoryDefinitionConfiguration(
         story.configuredSteps.mapSteps(story, readOnly),
         story._id,
         story.nextIntentsQualifiers,
-        story.metricStory
+        story.metricStory,
     )
 
-    fun validateMetrics() : Boolean {
+    fun validateMetrics(): Boolean {
         return if (metricStory) {
             steps.isNotEmpty() && steps.any { it.hasMetrics() }
         } else {

@@ -27,5 +27,5 @@ data class CallbackEvent(
     val teamId: String,
     @JsonProperty("api_app_id")
     val apiAppId: String,
-    val event: MessageEvent
+    val event: MessageEvent,
 ) : EventApiMessage()

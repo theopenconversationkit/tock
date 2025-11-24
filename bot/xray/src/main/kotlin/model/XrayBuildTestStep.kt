@@ -23,5 +23,5 @@ data class XrayBuildTestStep(
     val step: String,
     val data: String,
     val result: String,
-    val attachments: List<XrayBuildStepAttachment>
+    val attachments: List<XrayBuildStepAttachment>,
 )

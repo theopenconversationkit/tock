@@ -21,5 +21,5 @@ import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
 class LLMProviderSettingStatusRequest(
     val setting: LLMSetting,
-    val observabilitySetting: ObservabilitySetting?
+    val observabilitySetting: ObservabilitySetting?,
 )

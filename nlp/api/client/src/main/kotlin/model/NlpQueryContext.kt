@@ -34,5 +34,5 @@ data class NlpQueryContext(
     val referenceDate: ZonedDateTime = now(UTC),
     val referenceTimezone: ZoneId = UTC,
     val test: Boolean = false,
-    val registerQuery: Boolean = !test
+    val registerQuery: Boolean = !test,
 )

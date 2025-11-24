@@ -21,5 +21,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class SendResponse(
     @JsonProperty("recipient_id") val recipientId: String?,
     @JsonProperty("message_id") val messageId: String?,
-    @JsonProperty("attachment_id") val attachmentId: String?
+    @JsonProperty("attachment_id") val attachmentId: String?,
 )

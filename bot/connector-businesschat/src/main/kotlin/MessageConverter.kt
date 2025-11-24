@@ -28,7 +28,6 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 
 internal object MessageConverter {
-
     /**
      * Converts a [BotBus] [Action] to a [BusinessChatConnectorMessage]
      */
@@ -40,23 +39,29 @@ internal object MessageConverter {
                 BusinessChatConnectorTextMessage(
                     sourceId = action.playerId.id,
                     destinationId = action.recipientId.id,
-                    body = action.text.toString()
+                    body = action.text.toString(),
                 )
             }
-        } else null
+        } else {
+            null
+        }
     }
 
     /**
      * Converts a message to a [Event]
      */
-    fun toEvent(message: ReceivedModel, connectorId: String, businessChatClient: CSPBusinessChatClient): Event? =
+    fun toEvent(
+        message: ReceivedModel,
+        connectorId: String,
+        businessChatClient: CSPBusinessChatClient,
+    ): Event? =
         when (message.type) {
             MessageType.text -> {
                 SendSentence(
                     applicationId = connectorId,
                     playerId = PlayerId(message.sourceId, PlayerType.user),
                     recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                    text = message.body
+                    text = message.body,
                 )
             }
             MessageType.interactive -> {
@@ -66,7 +71,7 @@ internal object MessageConverter {
                         applicationId = connectorId,
                         playerId = PlayerId(message.sourceId, PlayerType.user),
                         recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                        text = listPickerChoice.text
+                        text = listPickerChoice.text,
                     )
                 } else {
                     null

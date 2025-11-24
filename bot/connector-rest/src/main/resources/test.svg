@@ -15,8 +15,8 @@
   - limitations under the License.
   -->
 
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="128px" height="128px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+     width="128px" height="128px" viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
 <g>
 	<circle style="fill:#88C5CC;" cx="64" cy="64" r="64"/>
 	<path style="fill:#80B9BF;" d="M110.723,107.716c-0.029-0.213-0.09-0.416-0.185-0.602c0.002-0.039,0.013-0.075,0.013-0.114

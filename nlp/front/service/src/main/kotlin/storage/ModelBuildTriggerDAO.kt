@@ -27,7 +27,6 @@ import java.util.Locale
  *
  */
 interface ModelBuildTriggerDAO {
-
     fun save(trigger: ModelBuildTrigger)
 
     fun deleteTrigger(trigger: ModelBuildTrigger)
@@ -36,5 +35,10 @@ interface ModelBuildTriggerDAO {
 
     fun save(build: ModelBuild)
 
-    fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult
+    fun builds(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        start: Int,
+        size: Int,
+    ): ModelBuildQueryResult
 }

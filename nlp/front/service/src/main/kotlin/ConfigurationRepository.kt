@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap
  * A configuration cache to improve performance on critical path.
  */
 internal object ConfigurationRepository {
-
     private val logger = KotlinLogging.logger {}
 
     private val core: NlpCore get() = injector.provide()
@@ -96,10 +95,10 @@ internal object ConfigurationRepository {
         applicationDAO
             .getApplications().forEach { app ->
                 val sharedIntents = ApplicationConfigurationService.getModelSharedIntents(app.namespace)
-                if(sharedIntents.isEmpty()) {
+                if (sharedIntents.isEmpty()) {
                     byApplicationId[app._id] = intentsByApplicationId[app._id] ?: emptyList()
                 } else {
-                    byApplicationId[app._id] =((intentsByApplicationId[app._id] ?: emptyList()) + sharedIntents).distinct()
+                    byApplicationId[app._id] = ((intentsByApplicationId[app._id] ?: emptyList()) + sharedIntents).distinct()
                 }
             }
 
@@ -113,7 +112,9 @@ internal object ConfigurationRepository {
         val entityTypesMap =
             entityTypesDefinitionMap.mapValues { (_, v) ->
                 EntityType(
-                    v.name, dictionary = v.dictionary, obfuscated = v.obfuscated
+                    v.name,
+                    dictionary = v.dictionary,
+                    obfuscated = v.obfuscated,
                 )
             }
 
@@ -122,18 +123,19 @@ internal object ConfigurationRepository {
             entityTypesMap
                 .mapValues { (_, v) ->
                     v.copy(
-                        subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
-                            entityTypesMap[it.entityTypeName]?.let { e ->
-                                Entity(e, it.role)
-                            }.apply {
-                                if (this == null) {
-                                    logger.error { "entity ${it.entityTypeName} not found" }
+                        subEntities =
+                            entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
+                                entityTypesMap[it.entityTypeName]?.let { e ->
+                                    Entity(e, it.role)
+                                }.apply {
+                                    if (this == null) {
+                                        logger.error { "entity ${it.entityTypeName} not found" }
+                                    }
                                 }
-                            }
-                        } ?: emptyList()
+                            } ?: emptyList(),
                     )
                 }
-                .toMap()
+                .toMap(),
         )
     }
 
@@ -149,13 +151,14 @@ internal object ConfigurationRepository {
 
     fun addNewEntityType(entityType: EntityTypeDefinition) {
         if (entityTypeByName(entityType.name) == null) {
-            entityTypes[entityType.name] = EntityType(
-                entityType.name,
-                entityType.subEntities.mapNotNull {
-                    it.toEntity()
-                },
-                entityType.dictionary
-            )
+            entityTypes[entityType.name] =
+                EntityType(
+                    entityType.name,
+                    entityType.subEntities.mapNotNull {
+                        it.toEntity()
+                    },
+                    entityType.dictionary,
+                )
         }
     }
 
@@ -163,19 +166,23 @@ internal object ConfigurationRepository {
         return entityTypeByName(entityType.name)
     }
 
-    fun toEntity(type: String, role: String): Entity? {
+    fun toEntity(
+        type: String,
+        role: String,
+    ): Entity? {
         return entityTypeByName(type)?.let { Entity(it, role) }
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = getSharedNamespaceIntentsByApplicationId(applicationDefinition._id)
-        val intents = intentDefinitions.map {
-            Intent(
-                it.qualifiedName,
-                it.entities.mapNotNull { e -> toEntityWithEntityTypesTree(e) },
-                it.entitiesRegexp.mapValues { r -> LinkedHashSet(r.value.map { v -> EntitiesRegexp(v.regexp) }) }
-            )
-        }
+        val intents =
+            intentDefinitions.map {
+                Intent(
+                    it.qualifiedName,
+                    it.entities.mapNotNull { e -> toEntityWithEntityTypesTree(e) },
+                    it.entitiesRegexp.mapValues { r -> LinkedHashSet(r.value.map { v -> EntitiesRegexp(v.regexp) }) },
+                )
+            }
         return Application(
             applicationDefinition.qualifiedName,
             intents,
@@ -192,26 +199,33 @@ internal object ConfigurationRepository {
         return entity
     }
 
-    private fun loadEntityTypesTree(entityType: EntityType, level: Int = 0): EntityType =
+    private fun loadEntityTypesTree(
+        entityType: EntityType,
+        level: Int = 0,
+    ): EntityType =
         // sanity check
         if (level > 10) {
             entityType
         } else {
             entityType.copy(
-                subEntities = entityType.subEntities.map { e ->
-                    val t = entityTypeByName(e.entityType.name)
-                    if (t != null) {
-                        e.copy(
-                            entityType = loadEntityTypesTree(t, level + 1)
-                        )
-                    } else {
-                        e
-                    }
-                }
+                subEntities =
+                    entityType.subEntities.map { e ->
+                        val t = entityTypeByName(e.entityType.name)
+                        if (t != null) {
+                            e.copy(
+                                entityType = loadEntityTypesTree(t, level + 1),
+                            )
+                        } else {
+                            e
+                        }
+                    },
             )
         }
 
-    fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
+    fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition? {
         return applicationsByNamespaceAndName[namespace]?.get(name)
             ?: config.getApplicationByNamespaceAndName(namespace, name)
     }

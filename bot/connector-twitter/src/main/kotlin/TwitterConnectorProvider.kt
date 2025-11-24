@@ -28,7 +28,6 @@ import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass
 
 internal object TwitterConnectorProvider : ConnectorProvider {
-
     private const val APP_ID = "appId"
     private const val ACCOUNT_ID = "accountId"
     private const val ENVIRONMENT = "develop"
@@ -59,8 +58,8 @@ internal object TwitterConnectorProvider : ConnectorProvider {
                     parameters.getValue(CONSUMER_KEY),
                     parameters.getValue(CONSUMER_SECRET),
                     parameters.getValue(TOKEN),
-                    parameters.getValue(SECRET)
-                )
+                    parameters.getValue(SECRET),
+                ),
             )
         }
     }
@@ -72,40 +71,40 @@ internal object TwitterConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Application Id",
                     APP_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Account Id",
                     ACCOUNT_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Environment",
                     ENVIRONMENT,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Consumer Key",
                     CONSUMER_KEY,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Consumer Secret",
                     CONSUMER_SECRET,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Token",
                     TOKEN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Secret",
                     SECRET,
-                    true
-                )
+                    true,
+                ),
             ),
-            resourceAsString("/twitter.svg")
+            resourceAsString("/twitter.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(OutcomingEvent::class)

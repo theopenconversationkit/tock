@@ -46,9 +46,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Convenient value to wait before next answer sentence.
      */
-    val breath: Long = defaultBreath
+    val breath: Long = defaultBreath,
 ) : I18nStoryHandler, IntentAware {
-
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -69,7 +68,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Instantiates new instance of [T].
      */
-    abstract fun newHandlerDefinition(bus: BotBus, data: Any? = null): T
+    abstract fun newHandlerDefinition(
+        bus: BotBus,
+        data: Any? = null,
+    ): T
 
     /**
      * Handles precondition like checking mandatory entities, and create [StoryHandlerDefinition].
@@ -91,17 +93,19 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     fun <T : StoryHandlerDefinition> selectStepFromStoryHandlerAndData(
         def: T,
         data: Any?,
-        storyDefinition: StoryDefinition?
+        storyDefinition: StoryDefinition?,
     ): StoryStep<*>? {
         storyDefinition?.steps?.also { steps ->
             for (s in steps) {
                 s as StoryStep<*>
 
-                @Suppress("UNCHECKED_CAST") val selected = if (s is StoryDataStep<*, *, *>) {
-                    (s as? StoryDataStep<in T, Any, *>)?.selectFromBusAndData()?.invoke(def, data) ?: false
-                } else {
-                    s.selectFromBus().invoke(def)
-                }
+                @Suppress("UNCHECKED_CAST")
+                val selected =
+                    if (s is StoryDataStep<*, *, *>) {
+                        (s as? StoryDataStep<in T, Any, *>)?.selectFromBusAndData()?.invoke(def, data) ?: false
+                    } else {
+                        s.selectFromBus().invoke(def)
+                    }
 
                 if (selected) {
                     return s
@@ -134,9 +138,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 // or if the [StoryStep.handle()] method of the current step returns null
                 if (step != null) {
                     @Suppress("UNCHECKED_CAST")
-                    val data = (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)
-                        ?.takeUnless { it is Unit }
-                        ?: mainData
+                    val data =
+                        (step as? StoryDataStep<T, Any, *>)?.checkPreconditions()?.invoke(handler, mainData)
+                            ?.takeUnless { it is Unit }
+                            ?: mainData
                     if (!isEndCalled(bus)) {
                         @Suppress("UNCHECKED_CAST")
                         if (step is StoryDataStep<*, *, *>) {
@@ -155,7 +160,10 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         }
     }
 
-    protected open fun checkEndCalled(bus: BotBus, storyDefinition: StoryDefinition?) {
+    protected open fun checkEndCalled(
+        bus: BotBus,
+        storyDefinition: StoryDefinition?,
+    ) {
         if (!bus.connectorData.skipAnswer &&
             !bus.hasCurrentSwitchStoryProcess &&
             !isEndCalled(bus)
@@ -174,8 +182,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: BotBus): StoryDefinition? =
-        bus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
 
     /**
      * Handles the action and switches the context to the underlying story definition.
@@ -195,21 +202,28 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      */
     private fun i18nKeyCategory(): String = findMainIntentName() ?: i18nNamespace
 
-    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+    override fun i18n(
+        defaultLabel: CharSequence,
+        args: List<Any?>,
+    ): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             generateKey(i18nNamespace, category, defaultLabel),
             i18nNamespace,
             category,
             defaultLabel,
-            args
+            args,
         )
     }
 
     /**
      * Gets an i18n label with the specified key. Current namespace is used for the categorization.
      */
-    override fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        vararg args: Any?,
+    ): I18nLabelValue {
         return i18nKey(key, defaultLabel, emptySet(), *args)
     }
 
@@ -220,7 +234,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         key: String,
         defaultLabel: CharSequence,
         defaultI18n: Set<I18nLocalizedLabel>,
-        vararg args: Any?
+        vararg args: Any?,
     ): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(

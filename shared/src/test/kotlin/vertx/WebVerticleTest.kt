@@ -24,7 +24,6 @@ import io.vertx.ext.web.RoutingContext
 import kotlin.test.Test
 
 class WebVerticleTest {
-
     // check that WebVerticleImpl does not need to implement healthcheck methods to compile
     class WebVerticleImpl : WebVerticle() {
         override fun configure() {}
@@ -33,12 +32,14 @@ class WebVerticleTest {
     @Test
     fun `GIVEN WebVerticle simple implementation THEN healthcheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
-        val response: HttpServerResponse = mockk {
-            every { end() } returns mockk()
-        }
-        val context: RoutingContext = mockk {
-            every { response() } returns response
-        }
+        val response: HttpServerResponse =
+            mockk {
+                every { end() } returns mockk()
+            }
+        val context: RoutingContext =
+            mockk {
+                every { response() } returns response
+            }
 
         verticle.healthcheck().invoke(context)
 
@@ -48,12 +49,14 @@ class WebVerticleTest {
     @Test
     fun `GIVEN WebVerticle simple implementation THEN livenesscheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
-        val response: HttpServerResponse = mockk {
-            every { end() } returns mockk()
-        }
-        val context: RoutingContext = mockk {
-            every { response() } returns response
-        }
+        val response: HttpServerResponse =
+            mockk {
+                every { end() } returns mockk()
+            }
+        val context: RoutingContext =
+            mockk {
+                every { response() } returns response
+            }
 
         verticle.livenesscheck().invoke(context)
 
@@ -63,12 +66,14 @@ class WebVerticleTest {
     @Test
     fun `GIVEN WebVerticle simple implementation THEN readinesscheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
-        val response: HttpServerResponse = mockk {
-            every { end() } returns mockk()
-        }
-        val context: RoutingContext = mockk {
-            every { response() } returns response
-        }
+        val response: HttpServerResponse =
+            mockk {
+                every { end() } returns mockk()
+            }
+        val context: RoutingContext =
+            mockk {
+                every { response() } returns response
+            }
 
         verticle.readinesscheck().invoke(context)
 

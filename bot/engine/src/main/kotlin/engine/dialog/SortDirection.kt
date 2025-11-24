@@ -18,5 +18,5 @@ package ai.tock.bot.engine.dialog
 
 enum class SortDirection {
     ASC,
-    DESC
+    DESC,
 }

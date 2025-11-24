@@ -33,16 +33,16 @@ data class ImportReport(
     var faqsImported: Long = 0L,
     var localeAdded: Boolean = false,
     var success: Boolean = true,
-    val errorMessages: MutableList<String> = mutableListOf()
+    val errorMessages: MutableList<String> = mutableListOf(),
 ) {
-
     val modified: Boolean
-        get() = applicationsImported.isNotEmpty() ||
-            entitiesImported.isNotEmpty() ||
-            intentsImported.isNotEmpty() ||
-            sentencesImported != 0L ||
-            faqsImported != 0L ||
-            localeAdded
+        get() =
+            applicationsImported.isNotEmpty() ||
+                entitiesImported.isNotEmpty() ||
+                intentsImported.isNotEmpty() ||
+                sentencesImported != 0L ||
+                faqsImported != 0L ||
+                localeAdded
 
     fun add(app: ApplicationDefinition) = applicationsImported.add(app.qualifiedName)
 

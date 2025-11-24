@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("ktlint:standard:property-naming")
 
 package ai.tock.bot.admin.functional
 
@@ -44,6 +45,7 @@ open class AbstractIntegrationTest {
     companion object {
         @JvmStatic
         protected lateinit var authCookie: String
+
         @JvmStatic
         protected lateinit var webClient: WebClient
 
@@ -70,21 +72,25 @@ open class AbstractIntegrationTest {
             }
             kodein = injector.kodein().value
             // rest client for integral tests
-            webClient = WebClient.create(
-                vertx, WebClientOptions()
-                    .setDefaultPort(8080)
-                    .setDefaultHost("localhost")
-            )
+            webClient =
+                WebClient.create(
+                    vertx,
+                    WebClientOptions()
+                        .setDefaultPort(8080)
+                        .setDefaultHost("localhost"),
+                )
             // Receive authentication header
             webClient.post("/rest/authenticate")
                 .sendBuffer(
-                    JsonObject().put("email", userLogin).put("password", "password").toBuffer()
+                    JsonObject().put("email", userLogin).put("password", "password").toBuffer(),
                 ).onComplete {
                     authCookie = it.result().cookies().first()
                     authCookieReceived.flag()
                 }
         }
+
         val container: MongoDBContainer = MongoDBContainer(DockerImageName.parse("mongo:4.4.24"))
+
         init {
             System.setProperty("tock_bot_encrypted_flags", "test1,test2")
             System.setProperty("tock_encrypt_pass", "dev")
@@ -103,7 +109,7 @@ open class AbstractIntegrationTest {
         /**
          * Generates the same type of IDs for MongoDB like the Backend apps do
          */
-        fun <T> newId() : StringId<T> {
+        fun <T> newId(): StringId<T> {
             return ObjectIdToStringGenerator.generateNewId()
         }
     }

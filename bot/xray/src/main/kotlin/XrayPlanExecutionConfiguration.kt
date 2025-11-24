@@ -23,5 +23,5 @@ data class XrayPlanExecutionConfiguration(
     val configurationId: String?,
     val testKey: String?,
     val testPlanKey: String?,
-    val testedBotId: String
+    val testedBotId: String,
 )

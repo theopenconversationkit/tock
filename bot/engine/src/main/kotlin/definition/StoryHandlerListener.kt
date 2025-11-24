@@ -23,17 +23,22 @@ import ai.tock.bot.engine.BotBus
  * Need to be registered using [ai.tock.bot.engine.BotRepository.registerStoryHandlerListener].
  */
 interface StoryHandlerListener {
-
     /**
      * Called before [StoryHandler.handle].
      * If it returns false, the [StoryHandlerListener]s registered after this listener
      * and the [StoryHandler] are not called.
      * (however [endAction] of each [StoryHandlerListener] is called].
      */
-    fun startAction(botBus: BotBus, handler: StoryHandler): Boolean = true
+    fun startAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ): Boolean = true
 
     /**
      * Called when [StoryHandler] handling is over.
      */
-    fun endAction(botBus: BotBus, handler: StoryHandler) = Unit
+    fun endAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ) = Unit
 }

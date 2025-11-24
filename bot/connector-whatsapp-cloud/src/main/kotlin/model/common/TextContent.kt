@@ -17,5 +17,5 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.common
 
 data class TextContent(
-        val body: String
+    val body: String,
 )

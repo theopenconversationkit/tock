@@ -21,6 +21,5 @@ package ai.tock.bot.admin.answer
  */
 data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>) :
     AnswerConfiguration(AnswerConfigurationType.simple) {
-
     override fun hasAnswer(): Boolean = answers.isNotEmpty()
 }

@@ -22,5 +22,5 @@ import ai.tock.bot.engine.BotBus
  * Base implementation of [ConnectorStoryHandler].
  */
 abstract class ConnectorStoryHandlerBase<out T : StoryHandlerDefinition>(
-    override val context: T
+    override val context: T,
 ) : BotBus by context, ConnectorStoryHandler<T>

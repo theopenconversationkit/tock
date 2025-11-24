@@ -32,7 +32,9 @@ data class WhatsappTemplate(
     val status: WhatsappTemplateStatus? = null,
 ) {
     constructor(name: String, language: String, vararg components: TemplateComponent) : this(
-        name, language, listOf(*components)
+        name,
+        language,
+        listOf(*components),
     )
 
     fun contentEquals(other: WhatsappTemplate): Boolean {
@@ -49,11 +51,15 @@ data class WhatsappTemplate(
 }
 
 enum class WhatsappTemplateCategory {
-    AUTHENTICATION, MARKETING, UTILITY
+    AUTHENTICATION,
+    MARKETING,
+    UTILITY,
 }
 
 enum class WhatsappTemplateStatus {
-    PENDING, APPROVED, REJECTED
+    PENDING,
+    APPROVED,
+    REJECTED,
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -62,24 +68,35 @@ sealed class TemplateComponent {
 }
 
 enum class TemplateHeaderFormat {
-    TEXT, LOCATION, IMAGE, VIDEO, DOCUMENT
+    TEXT,
+    LOCATION,
+    IMAGE,
+    VIDEO,
+    DOCUMENT,
 }
 
 @JsonTypeName("HEADER")
 data class TemplateHeader(val format: TemplateHeaderFormat, val text: String? = null, val example: BodyExample? = null) : TemplateComponent() {
     companion object {
-        fun text(text: String, example: BodyExample? = null) = TemplateHeader(TemplateHeaderFormat.TEXT, text, example)
+        fun text(
+            text: String,
+            example: BodyExample? = null,
+        ) = TemplateHeader(TemplateHeaderFormat.TEXT, text, example)
+
         fun location() = TemplateHeader(TemplateHeaderFormat.LOCATION)
+
         fun image(imageHandle: MetaUploadHandle) = TemplateHeader(TemplateHeaderFormat.IMAGE, example = BodyExample(imageHandle.value))
+
         fun video(videoHandle: MetaUploadHandle) = TemplateHeader(TemplateHeaderFormat.VIDEO, example = BodyExample(videoHandle.value))
+
         fun document(documentHandle: MetaUploadHandle) = TemplateHeader(TemplateHeaderFormat.DOCUMENT, example = BodyExample(documentHandle.value))
     }
 }
 
 @JsonTypeName("BODY")
 data class TemplateBody(val text: String, val example: BodyExample? = null) : TemplateComponent() {
-    constructor(text: String, singleVariableExample: String): this(text, BodyExample(singleVariableExample))
-    constructor(text: String, vararg variableExamples: String): this(text, BodyExample(*variableExamples))
+    constructor(text: String, singleVariableExample: String) : this(text, BodyExample(singleVariableExample))
+    constructor(text: String, vararg variableExamples: String) : this(text, BodyExample(*variableExamples))
 }
 
 @JsonTypeName("FOOTER")
@@ -90,20 +107,29 @@ data class TemplateButtons(val buttons: List<WhatsappTemplateButton>) : Template
     constructor(vararg buttons: WhatsappTemplateButton) : this(listOf(*buttons))
 }
 
-data class BodyExample(@JsonProperty("body_text") val bodyText: List<List<TemplateExampleVariable>>) {
-    constructor(vararg examples: List<String>) : this(examples.map { variables -> variables.map { TemplateExampleVariable.Positional(it)} })
+data class BodyExample(
+    @JsonProperty("body_text") val bodyText: List<List<TemplateExampleVariable>>,
+) {
+    constructor(vararg examples: List<String>) : this(examples.map { variables -> variables.map { TemplateExampleVariable.Positional(it) } })
     constructor(vararg exampleValues: String) : this(listOf(exampleValues.map { TemplateExampleVariable.Positional(it) }))
     constructor(vararg exampleValues: Pair<String, String>) : this(listOf(exampleValues.map { (key, value) -> TemplateExampleVariable.Named(key, value) }))
 }
 
 sealed interface TemplateExampleVariable {
-    data class Positional(@JsonValue val value: String) : TemplateExampleVariable
-    data class Named(@JsonProperty("param_name") val name: String, val example: String) : TemplateExampleVariable
+    data class Positional(
+        @JsonValue val value: String,
+    ) : TemplateExampleVariable
+
+    data class Named(
+        @JsonProperty("param_name") val name: String,
+        val example: String,
+    ) : TemplateExampleVariable
 
     companion object {
         @JsonCreator
         @JvmStatic
         fun readPositional(value: String): TemplateExampleVariable = Positional(value)
+
         @JsonCreator
         @JvmStatic
         fun readNamed(value: Named): TemplateExampleVariable = value
@@ -119,4 +145,4 @@ sealed interface WhatsappTemplateButton {
 data class TemplateQuickReply(override val text: String) : WhatsappTemplateButton
 
 @JsonTypeName("URL")
-data class TemplateUrlButton(override val text: String, val url: String): WhatsappTemplateButton
+data class TemplateUrlButton(override val text: String, val url: String) : WhatsappTemplateButton

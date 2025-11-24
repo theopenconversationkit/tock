@@ -23,9 +23,8 @@ data class WhatsAppInteractive(
     @get:JsonProperty("list_reply")
     val listReply: WhatsAppInteractiveListReply?,
     @get:JsonProperty("button_reply")
-    val buttonReply: WhatsAppInteractiveButtonReply?
+    val buttonReply: WhatsAppInteractiveButtonReply?,
 ) {
-
     val text: String?
         @JsonIgnore get() = listReply?.title ?: buttonReply?.title
 

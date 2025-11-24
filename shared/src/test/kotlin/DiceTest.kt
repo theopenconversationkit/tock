@@ -23,7 +23,6 @@ import kotlin.test.assertTrue
  *
  */
 class DiceTest {
-
     @Test
     fun newId_ShouldReturnAtLeats23CharsAndAtMost24() {
         Dice.newId().apply {

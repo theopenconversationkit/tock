@@ -31,5 +31,5 @@ data class EntityStepSelection(
     /**
      * The type of searched entity.
      */
-    val entityType: String = entityRole
+    val entityType: String = entityRole,
 )

@@ -25,7 +25,6 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
  */
 @ExperimentalTockCoroutines
 interface AsyncConnectorHandling<out T : AsyncStoryHandling> : ConnectorSpecificHandling {
-
     /**
      * The [AsyncStoryHandling] of this connector handler.
      */

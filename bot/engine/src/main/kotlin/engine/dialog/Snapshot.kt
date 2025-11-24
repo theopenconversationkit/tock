@@ -32,16 +32,15 @@ data class Snapshot(
     val entityValues: List<EntityValue>,
     val storyType: AnswerConfigurationType?,
     val storyName: String? = storyDefinitionId,
-    val date: Instant = now()
+    val date: Instant = now(),
 ) {
-
     constructor(dialog: Dialog) : this(
         dialog.currentStory?.definition?.id,
         dialog.state.currentIntent?.name,
         dialog.currentStory?.step,
         dialog.state.entityValues.values.mapNotNull { it.value },
         (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.answerType ?: AnswerConfigurationType.builtin,
-        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.name ?: dialog.currentStory?.definition?.id
+        (dialog.currentStory?.definition as? ConfiguredStoryDefinition)?.name ?: dialog.currentStory?.definition?.id,
     )
 
     /**

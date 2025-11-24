@@ -23,5 +23,5 @@ internal data class ValueWithRange(
     override val start: Int,
     override val end: Int,
     val value: Value,
-    val type: String
+    val type: String,
 ) : IntOpenRange

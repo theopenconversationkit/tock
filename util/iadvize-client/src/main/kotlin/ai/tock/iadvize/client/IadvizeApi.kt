@@ -16,7 +16,6 @@
 
 package ai.tock.iadvize.client
 
-
 import ai.tock.iadvize.client.authentication.models.AuthResponse
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataResult
@@ -32,9 +31,6 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import java.net.InetSocketAddress
-import java.net.Proxy
-
 
 /**
  * Iadvize API.
@@ -45,30 +41,36 @@ import java.net.Proxy
 interface IadvizeApi {
     @FormUrlEncoded
     @POST(TOKEN_ENDPOINT)
-    fun createToken(@Field(USERNAME) username: String,
-                    @Field(PASSWORD) password: String,
-                    @Field(GRANT_TYPE) grantType: String
+    fun createToken(
+        @Field(USERNAME) username: String,
+        @Field(PASSWORD) password: String,
+        @Field(GRANT_TYPE) grantType: String,
     ): Call<AuthResponse>
 
     @POST(GRAPHQL_ENDPOINT)
-    fun checkAvailability(@Body body: RequestBody) : Call<GraphQLResponse<RoutingRuleResult>>
+    fun checkAvailability(
+        @Body body: RequestBody,
+    ): Call<GraphQLResponse<RoutingRuleResult>>
 
     @POST(GRAPHQL_ENDPOINT)
-    fun getCustomData(@Body body: RequestBody) : Call<GraphQLResponse<CustomDataResult>>
+    fun getCustomData(
+        @Body body: RequestBody,
+    ): Call<GraphQLResponse<CustomDataResult>>
 
     @POST(GRAPHQL_ENDPOINT)
     @Headers("Accept: application/vnd.iadvize.automation-chatbot-conversation-preview+json")
-    fun sendProactiveMessage(@Body body: RequestBody) : Call<GraphQLResponse<SendProactiveMessageResult>>
-
+    fun sendProactiveMessage(
+        @Body body: RequestBody,
+    ): Call<GraphQLResponse<SendProactiveMessageResult>>
 }
-
 
 private const val TIMEOUT = 30000L
 
-var proxy = ProxyConfiguration.configure(
-    property(IADVIZE_PROXY_HOST),
-    intProperty(IADVIZE_PROXY_PORT),
-)
+var proxy =
+    ProxyConfiguration.configure(
+        property(IADVIZE_PROXY_HOST),
+        intProperty(IADVIZE_PROXY_PORT),
+    )
 
 /**
  * Create a new Iadvize api client.
@@ -76,8 +78,8 @@ var proxy = ProxyConfiguration.configure(
  * @param logger the logger
  * @return the new client
  */
-fun createApi(logger: KLogger): IadvizeApi = retrofitBuilderWithTimeoutAndLogger(TIMEOUT, logger
-        ,proxy = proxy)
+fun createApi(logger: KLogger): IadvizeApi =
+    retrofitBuilderWithTimeoutAndLogger(TIMEOUT, logger, proxy = proxy)
         .baseUrl(BASE_URL)
         .addConverterFactory(JacksonConverterFactory.create())
         .build()
@@ -89,10 +91,17 @@ fun createApi(logger: KLogger): IadvizeApi = retrofitBuilderWithTimeoutAndLogger
  * @param tokenProvider the token provider
  * @return the new client
  */
-fun createSecuredApi(logger: KLogger, tokenProvider: () -> String): IadvizeApi = retrofitBuilderWithTimeoutAndLogger(
-    TIMEOUT, logger, interceptors = listOf(tokenAuthenticationInterceptor(tokenProvider)),
-    proxy = proxy)
-    .baseUrl(BASE_URL)
-    .addConverterFactory(JacksonConverterFactory.create())
-    .build()
-    .create()
+fun createSecuredApi(
+    logger: KLogger,
+    tokenProvider: () -> String,
+): IadvizeApi =
+    retrofitBuilderWithTimeoutAndLogger(
+        TIMEOUT,
+        logger,
+        interceptors = listOf(tokenAuthenticationInterceptor(tokenProvider)),
+        proxy = proxy,
+    )
+        .baseUrl(BASE_URL)
+        .addConverterFactory(JacksonConverterFactory.create())
+        .build()
+        .create()

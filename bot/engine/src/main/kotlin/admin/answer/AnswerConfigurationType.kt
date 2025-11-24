@@ -19,9 +19,10 @@ package ai.tock.bot.admin.answer
 /**
  * The types of [AnswerConfiguration] available.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AnswerConfigurationType {
     simple,
     message,
     script,
-    builtin
+    builtin,
 }

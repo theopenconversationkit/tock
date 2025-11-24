@@ -20,7 +20,6 @@ package ai.tock.translator
  * A Translated sequence is a [CharSequence] that is already translated.
  */
 interface TranslatedSequence : CharSequence {
-
     /**
      * Returns a string obtained by concatenating this string with the string representation of the given [other] object.
      */

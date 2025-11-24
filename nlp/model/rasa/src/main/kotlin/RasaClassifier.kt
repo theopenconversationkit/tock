@@ -27,10 +27,13 @@ import ai.tock.nlp.model.service.engine.IntentClassifier
 import ai.tock.nlp.rasa.RasaClient.ParseRequest
 
 internal class RasaClassifier(private val conf: RasaModelConfiguration) : IntentClassifier, EntityClassifier {
-
     private val threadLocal = ThreadLocal<List<EntityRecognition>>()
 
-    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
+    override fun classifyIntent(
+        context: IntentContext,
+        text: String,
+        tokens: Array<String>,
+    ): IntentClassification {
         // TODO get RasaConfiguration ?
         return RasaClientProvider.getClient(RasaConfiguration()).parse(ParseRequest(text))
             .run {
@@ -46,17 +49,16 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
                                             EntityValue(
                                                 e.start,
                                                 e.end,
-                                                intentEntity
+                                                intentEntity,
                                             ),
-                                            e.confidence
+                                            e.confidence,
                                         )
                                     }
-                            }
+                            },
                         )
                     }
                 }
                 object : IntentClassification {
-
                     var probability = 0.0
                     val iterator = intent_ranking.iterator()
 
@@ -77,7 +79,7 @@ internal class RasaClassifier(private val conf: RasaModelConfiguration) : Intent
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
-        tokens: Array<String>
+        tokens: Array<String>,
     ): List<EntityRecognition> =
         when (context) {
             is EntityCallContextForIntent ->

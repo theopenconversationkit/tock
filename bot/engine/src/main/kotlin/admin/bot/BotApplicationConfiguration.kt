@@ -76,14 +76,13 @@ data class BotApplicationConfiguration(
     /**
      * The target configuration identifier (test case).
      */
-    val targetConfigurationId: Id<BotApplicationConfiguration>? = null
+    val targetConfigurationId: Id<BotApplicationConfiguration>? = null,
 ) {
-
     companion object {
         val defaultBaseUrl: String =
             property(
                 "tock_configuration_bot_default_base_url",
-                "http://${tryToFindLocalIp()}:${property("botverticle_port", "8080")}"
+                "http://${tryToFindLocalIp()}:${property("botverticle_port", "8080")}",
             )
     }
 
@@ -110,8 +109,7 @@ data class BotApplicationConfiguration(
             conf.parameters == parameters &&
             conf.path == path
 
-    internal fun toKey(): BotApplicationConfigurationKey =
-        BotApplicationConfigurationKey(applicationId = applicationId, botId = botId, namespace = namespace)
+    internal fun toKey(): BotApplicationConfigurationKey = BotApplicationConfigurationKey(applicationId = applicationId, botId = botId, namespace = namespace)
 }
 
 /**
@@ -129,12 +127,12 @@ data class BotApplicationConfigurationKey(
     /**
      * The namespace of the model.
      */
-    val namespace: String
+    val namespace: String,
 ) {
     constructor(applicationId: String, botDefinition: BotDefinition) : this(
         applicationId,
         botDefinition.botId,
-        botDefinition.namespace
+        botDefinition.namespace,
     )
 
     constructor(bus: BotBus) : this(bus.connectorId, bus.botDefinition)

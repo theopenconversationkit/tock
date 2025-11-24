@@ -27,5 +27,5 @@ data class SimpleAnswer(
     val key: I18nLabelValue,
     val delay: Long = 0,
     val mediaMessage: MediaMessageDescriptor? = null,
-    val footnotes: List<Footnote>? = null
+    val footnotes: List<Footnote>? = null,
 )

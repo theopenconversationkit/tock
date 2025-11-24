@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet
  *
  */
 internal object BotRAGConfigurationMonitor {
-
     private val logger = KotlinLogging.logger {}
 
     private val ragConfigurationDAO: BotRAGConfigurationDAO by injector.instance()
@@ -55,10 +54,11 @@ internal object BotRAGConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot RAG configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
-            bot.botDefinition.namespace,
-            bot.botDefinition.botId,
-            enabled = true
-        )
+        bot.botDefinition.ragConfiguration =
+            ragConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
+                bot.botDefinition.namespace,
+                bot.botDefinition.botId,
+                enabled = true,
+            )
     }
 }

@@ -82,9 +82,8 @@ data class ApplicationWithIntents(
     /**
      * The id of the app.
      */
-    val _id: Id<ApplicationDefinition>?
+    val _id: Id<ApplicationDefinition>?,
 ) {
-
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>, namespacesIntents: List<IntentDefinition>) :
         this(
             application.name,
@@ -100,7 +99,7 @@ data class ApplicationWithIntents(
             application.knownIntentThreshold,
             application.normalizeText,
             namespacesIntents.sortedWith(compareBy({ it.label }, { it.name })),
-            application._id
+            application._id,
         )
 
     fun toApplication(): ApplicationDefinition {
@@ -118,7 +117,7 @@ data class ApplicationWithIntents(
             unknownIntentThreshold,
             knownIntentThreshold,
             normalizeText,
-            _id ?: newId()
+            _id ?: newId(),
         )
     }
 }

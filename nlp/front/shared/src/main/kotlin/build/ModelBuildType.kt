@@ -19,6 +19,9 @@ package ai.tock.nlp.front.shared.build
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ModelBuildType {
-    intent, intentEntities, entityTypeEntities
+    intent,
+    intentEntities,
+    entityTypeEntities,
 }

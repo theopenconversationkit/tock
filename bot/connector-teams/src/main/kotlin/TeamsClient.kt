@@ -49,41 +49,47 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
 
     init {
 
-        connectorApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_whatsapp_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(customInterceptor)
-        )
-            .baseUrl("https://smba.trafficmanager.net/emea/")
-            .addJacksonConverter(tokenHandler.teamsMapper)
-            .build()
-            .create()
+        connectorApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_whatsapp_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(customInterceptor),
+            )
+                .baseUrl("https://smba.trafficmanager.net/emea/")
+                .addJacksonConverter(tokenHandler.teamsMapper)
+                .build()
+                .create()
     }
 
-    fun sendMessage(callbackActivity: Activity, event: TeamsBotMessage) {
+    fun sendMessage(
+        callbackActivity: Activity,
+        event: TeamsBotMessage,
+    ) {
         // construct request
         val url =
             "${callbackActivity.serviceUrl}/v3/conversations/${callbackActivity.conversation.id}/activities/${callbackActivity.id}"
 
         // construct callbackActivity
-        val activity = Activity(ActivityTypes.MESSAGE).apply {
-            text = activeLink(event.text)
-            textFormat = TextFormatTypes.MARKDOWN
-            recipient = callbackActivity.from
-            attachments = getAttachment(event)
-            from = callbackActivity.recipient
-            conversation = callbackActivity.conversation
-            replyToId = callbackActivity.id
-        }
+        val activity =
+            Activity(ActivityTypes.MESSAGE).apply {
+                text = activeLink(event.text)
+                textFormat = TextFormatTypes.MARKDOWN
+                recipient = callbackActivity.from
+                attachments = getAttachment(event)
+                from = callbackActivity.recipient
+                conversation = callbackActivity.conversation
+                replyToId = callbackActivity.id
+            }
 
         if (event is TeamsCarousel) {
             activity.attachmentLayout = AttachmentLayoutTypes.CAROUSEL
         }
         // send the message
-        val messageResponse = connectorApi.postResponse(
-            url,
-            activity
-        ).execute()
+        val messageResponse =
+            connectorApi.postResponse(
+                url,
+                activity,
+            ).execute()
         if (!messageResponse.isSuccessful) {
             logger.warn {
                 "Microsoft Login Api Error : ${messageResponse.code()} // ${messageResponse.errorBody()}"
@@ -96,15 +102,16 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
 
         when (event) {
             is TeamsCardAction -> {
-                val card = ThumbnailCard().apply {
-                    title = event.actionTitle
-                    buttons = event.buttons
-                }
+                val card =
+                    ThumbnailCard().apply {
+                        title = event.actionTitle
+                        buttons = event.buttons
+                    }
                 attachments.add(
                     Attachment().apply {
                         contentType = "application/vnd.microsoft.card.thumbnail"
                         content = card
-                    }
+                    },
                 )
             }
             is TeamsCarousel -> {
@@ -113,25 +120,26 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                 while (listElement.isNotEmpty()) {
                     attachments.addAll(
                         getAttachment(
-                            listElement.removeAt(0)
-                        )
+                            listElement.removeAt(0),
+                        ),
                     )
                 }
             }
             is TeamsHeroCard -> {
-                val card = HeroCard().apply {
-                    title = event.title
-                    subtitle = event.subtitle
-                    text = event.attachmentContent
-                    images = event.images
-                    buttons = event.buttons
-                    tap = event.tap
-                }
+                val card =
+                    HeroCard().apply {
+                        title = event.title
+                        subtitle = event.subtitle
+                        text = event.attachmentContent
+                        images = event.images
+                        buttons = event.buttons
+                        tap = event.tap
+                    }
                 attachments.add(
                     Attachment().apply {
                         contentType = "application/vnd.microsoft.card.hero"
                         content = card
-                    }
+                    },
                 )
             }
         }
@@ -142,24 +150,23 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
     private data class MessageResponse(val id: String)
 
     private interface ConnectorMicrosoftApi {
-
         @POST
         @Headers("Content-Type: application/json")
         fun postResponse(
             @Url url: String,
-            @Body activity: Activity
+            @Body activity: Activity,
         ): Call<MessageResponse>
     }
 
     private inner class CustomInterceptor : Interceptor {
-
         override fun intercept(chain: Interceptor.Chain): Response {
             tokenHandler.checkToken()
 
             var request = chain.request()
-            request = request.newBuilder()
-                .addHeader("Authorization", "Bearer ${tokenHandler.token}")
-                .build()
+            request =
+                request.newBuilder()
+                    .addHeader("Authorization", "Bearer ${tokenHandler.token}")
+                    .build()
             val response = chain.proceed(request)
             logger.debug { "Response sent to Teams : ${response.code} - ${response.message}" }
 

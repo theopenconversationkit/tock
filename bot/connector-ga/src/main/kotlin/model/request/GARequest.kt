@@ -30,9 +30,8 @@ data class GARequest(
     val conversation: GAConversation,
     val inputs: List<GAInput>,
     val isInSandbox: Boolean = false,
-    val availableSurfaces: List<GASurface> = emptyList()
+    val availableSurfaces: List<GASurface> = emptyList(),
 ) {
-
     fun getEventState(): EventState {
         val ui =
             if (surface.hasAudio()) {

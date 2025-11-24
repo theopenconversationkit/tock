@@ -16,10 +16,10 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.payload.GenericCardPayload
 import ai.tock.bot.connector.iadvize.model.payload.Payload
 import ai.tock.bot.connector.iadvize.model.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Action
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
@@ -31,23 +31,24 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
 
 internal object MediaConverter {
-
-    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (message) {
-            is MediaCard -> fromMediaCard(message)
-            else -> emptyList()
+    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (message) {
+                is MediaCard -> fromMediaCard(message)
+                else -> emptyList()
+            }
         }
-    }
 
     fun toSimpleMessage(
         message: CharSequence,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        val payload: Payload = TextPayload(translate(message).toString())
-        val quickReply: MutableList<QuickReply> = suggestionToQuickReplies(suggestions)
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            val payload: Payload = TextPayload(translate(message).toString())
+            val quickReply: MutableList<QuickReply> = suggestionToQuickReplies(suggestions)
 
-        IadvizeConnectorMessage(IadvizeMessage(payload, quickReply))
-    }
+            IadvizeConnectorMessage(IadvizeMessage(payload, quickReply))
+        }
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
         val title: String = translate(message.title).toString()
@@ -69,17 +70,17 @@ internal object MediaConverter {
 
     private fun BotBus.actionToQuickReplies(actions: List<MediaAction>): MutableList<QuickReply> {
         return actions.filter { isQuickReply(it) }
-                      .map { toQuickReplies(it) }
-                      .toMutableList()
+            .map { toQuickReplies(it) }
+            .toMutableList()
     }
 
     private fun BotBus.suggestionToQuickReplies(suggestions: List<CharSequence>): MutableList<QuickReply> {
         return suggestions.map { toQuickReplies(it) }
-                          .toMutableList()
+            .toMutableList()
     }
 
     private fun isQuickReply(action: MediaAction): Boolean {
-       return action.url == null
+        return action.url == null
     }
 
     private fun BotBus.toQuickReplies(action: MediaAction): QuickReply {
@@ -92,22 +93,28 @@ internal object MediaConverter {
 
     private fun BotBus.toActions(actions: List<MediaAction>): List<Action> {
         return actions.filter { it.url != null }
-                      .map {
-                          Action(translate(it.title).toString(), it.url!!)
-                      }
+            .map {
+                Action(translate(it.title).toString(), it.url!!)
+            }
     }
+
     private fun BotBus.toImage(file: MediaFile?): Image? {
-        return if(image.equals(file?.type)) {
-            //if equals true, file cannot be null
+        return if (image.equals(file?.type)) {
+            // if equals true, file cannot be null
             Image(file!!.url, file.name)
         } else {
             null
         }
     }
 
-    private fun getPayload(title: String, text: String, image: Image?, actions: List<Action>): Payload {
-        return if((title.isNotBlank() xor text.isNotBlank()) && image == null && actions.isEmpty()) {
-            //There are only one between title and text, and no image, and no action
+    private fun getPayload(
+        title: String,
+        text: String,
+        image: Image?,
+        actions: List<Action>,
+    ): Payload {
+        return if ((title.isNotBlank() xor text.isNotBlank()) && image == null && actions.isEmpty()) {
+            // There are only one between title and text, and no image, and no action
             // create a TextPayload by combine title and text, but only one is not empty
             TextPayload(title + text)
         } else {

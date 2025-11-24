@@ -22,6 +22,5 @@ import ai.tock.bot.connector.slack.SlackConnectorProvider
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 abstract class SlackConnectorMessage : ConnectorMessage {
-
     override val connectorType: ConnectorType @JsonIgnore get() = SlackConnectorProvider.connectorType
 }

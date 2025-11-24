@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
  *
  */
 class WhatsAppMessagesDeserializationTest {
-
     @Test
     fun `text message is deserialized`() {
         val json = resource("/model/webhook/texto.json")
@@ -39,17 +38,18 @@ class WhatsAppMessagesDeserializationTest {
                         WhatsAppTextBody("Hello this is an answer"),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1518694235"
-                    )
+                        "1518694235",
+                    ),
                 ),
-                contacts = listOf(
-                    WhatsAppContact(
-                        WhatsAppProfile("Kerry Fisher"),
-                        "16315551234"
-                    )
-                )
+                contacts =
+                    listOf(
+                        WhatsAppContact(
+                            WhatsAppProfile("Kerry Fisher"),
+                            "16315551234",
+                        ),
+                    ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -66,15 +66,15 @@ class WhatsAppMessagesDeserializationTest {
                             -131.9428612257,
                             "Main Street Beach, Santa Cruz, CA",
                             "Main Street Beach",
-                            "https://foursquare.com/v/4d7031d35b5df7744"
+                            "https://foursquare.com/v/4d7031d35b5df7744",
                         ),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1521497875"
-                    )
-                )
+                        "1521497875",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -91,15 +91,15 @@ class WhatsAppMessagesDeserializationTest {
                             "image/jpeg",
                             "29ed500fa64eb55fc19dc4124acb300e5dcc54a0f822a301ae99944db",
                             null,
-                            "Check out my new phone!"
+                            "Check out my new phone!",
                         ),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1521497954"
-                    )
-                )
+                        "1521497954",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -116,15 +116,15 @@ class WhatsAppMessagesDeserializationTest {
                             "application/pdf",
                             "3b11fa6ef2bde1dd14726e09d3edaf782120919d06f6484f32d5d5caa4b8e",
                             null,
-                            "80skaraokesonglistartist"
+                            "80skaraokesonglistartist",
                         ),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1522189546"
-                    )
-                )
+                        "1522189546",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -139,15 +139,15 @@ class WhatsAppMessagesDeserializationTest {
                         WhatsAppAttachment(
                             "463eb7ec-ff4e-4d9b-b110-1879cbd411b2",
                             "audio/ogg; codecs=opus",
-                            "fa9e1807d936b7cebe63654ea3a7912b1fa9479220258d823590521ef53b0710"
+                            "fa9e1807d936b7cebe63654ea3a7912b1fa9479220258d823590521ef53b0710",
                         ),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1521827831"
-                    )
-                )
+                        "1521827831",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -162,18 +162,19 @@ class WhatsAppMessagesDeserializationTest {
                         WhatsAppAttachment(
                             "abf599fa-c3e6-47b4-86fd-b413ed3411f1",
                             "audio/ogg; codecs=opus",
-                            "0ff1568e4a913fd5be9c9c4580f7b05b4dfa4cdcdd1ab1153245738da19bb32b"
+                            "0ff1568e4a913fd5be9c9c4580f7b05b4dfa4cdcdd1ab1153245738da19bb32b",
                         ),
                         "ABGGM2dhMilfAhD9Ph8NBcBsRwLJBj-Yylcs",
                         "33676112295",
-                        "1565076169"
-                    )
+                        "1565076169",
+                    ),
                 ),
-                contacts = listOf(
-                    WhatsAppContact(WhatsAppProfile("Julien"), "33676112295")
-                )
+                contacts =
+                    listOf(
+                        WhatsAppContact(WhatsAppProfile("Julien"), "33676112295"),
+                    ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -189,11 +190,11 @@ class WhatsAppMessagesDeserializationTest {
                         "gBEGkYiEB1VXAglK1ZEqA1YKPrU",
                         "16315551026",
                         "1518707853",
-                        groupId = "16504412845-1518707486"
-                    )
-                )
+                        groupId = "16504412845-1518707486",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 
@@ -209,16 +210,16 @@ class WhatsAppMessagesDeserializationTest {
                             WhatsAppError(
                                 501,
                                 "Unknown message type",
-                                "Message type is not currently supported"
-                            )
+                                "Message type is not currently supported",
+                            ),
                         ),
                         "ABGGFRBzFymPAgo6N9KKs7HsN6eB",
                         "16315555555",
-                        "1531933468"
-                    )
-                )
+                        "1531933468",
+                    ),
+                ),
             ),
-            messages
+            messages,
         )
     }
 }

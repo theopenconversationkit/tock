@@ -42,9 +42,8 @@ data class ConnectorConfiguration(
     /**
      * Additional parameters for this connector.
      */
-    val parameters: Map<String, String> = emptyMap()
+    val parameters: Map<String, String> = emptyMap(),
 ) {
-
     constructor(
         connectorId: String,
         path: String,
@@ -52,22 +51,23 @@ data class ConnectorConfiguration(
         applicationName: String,
         baseUrl: String?,
         ownerConnectorType: ConnectorType? = null,
-        parameters: Map<String, String> = emptyMap()
+        parameters: Map<String, String> = emptyMap(),
     ) :
         this(
             connectorId,
             path,
             type,
             ownerConnectorType,
-            parameters + mapNotNullValues(
-                APPLICATION_NAME to applicationName,
-                BASE_URL to baseUrl
-            )
+            parameters +
+                mapNotNullValues(
+                    APPLICATION_NAME to applicationName,
+                    BASE_URL to baseUrl,
+                ),
         )
 
     internal constructor(
         base: ConnectorConfiguration?,
-        botApplicationConfiguration: BotApplicationConfiguration
+        botApplicationConfiguration: BotApplicationConfiguration,
     ) : this(
         botApplicationConfiguration.applicationId,
         botApplicationConfiguration.path ?: base?.path ?: "/",
@@ -75,10 +75,11 @@ data class ConnectorConfiguration(
         botApplicationConfiguration.name,
         botApplicationConfiguration.baseUrl,
         botApplicationConfiguration.ownerConnectorType,
-        botApplicationConfiguration.parameters + mapNotNullValues(
-            APPLICATION_NAME to botApplicationConfiguration.name,
-            BASE_URL to botApplicationConfiguration.baseUrl
-        )
+        botApplicationConfiguration.parameters +
+            mapNotNullValues(
+                APPLICATION_NAME to botApplicationConfiguration.name,
+                BASE_URL to botApplicationConfiguration.baseUrl,
+            ),
     )
 
     internal constructor(botApplicationConfiguration: BotApplicationConfiguration) :
@@ -99,6 +100,5 @@ data class ConnectorConfiguration(
      */
     fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
 
-    internal fun parametersWithoutDefaultKeys(): Map<String, String> =
-        parameters.filterKeys { it != APPLICATION_NAME && it != BASE_URL }
+    internal fun parametersWithoutDefaultKeys(): Map<String, String> = parameters.filterKeys { it != APPLICATION_NAME && it != BASE_URL }
 }

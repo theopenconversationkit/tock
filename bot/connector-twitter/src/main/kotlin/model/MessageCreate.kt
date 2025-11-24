@@ -22,5 +22,5 @@ data class MessageCreate(
     val target: Recipient,
     @JsonProperty("sender_id") val senderId: String,
     @JsonProperty("source_app_id") val sourceAppId: String? = null,
-    @JsonProperty("message_data") val messageData: MessageData
+    @JsonProperty("message_data") val messageData: MessageData,
 )

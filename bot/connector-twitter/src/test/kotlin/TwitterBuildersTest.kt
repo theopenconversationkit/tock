@@ -31,18 +31,18 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class TwitterBuildersTest {
-
     val bus: BotBus = mockk(relaxed = true)
 
     @BeforeEach
     fun before() {
-        tockInternalInjector = KodeinInjector().apply {
-            inject(
-                Kodein {
-                    import(sharedTestModule)
-                }
-            )
-        }
+        tockInternalInjector =
+            KodeinInjector().apply {
+                inject(
+                    Kodein {
+                        import(sharedTestModule)
+                    },
+                )
+            }
 
         every { bus.targetConnectorType } returns twitterConnectorType
         every { bus.applicationId } returns "appId"

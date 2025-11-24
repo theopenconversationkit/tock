@@ -22,6 +22,8 @@ import ai.tock.nlp.model.EntityCallContext
  *
  */
 interface EntityTypeClassifier {
-
-    fun classifyEntities(context: EntityCallContext, text: String): List<EntityTypeRecognition>
+    fun classifyEntities(
+        context: EntityCallContext,
+        text: String,
+    ): List<EntityTypeRecognition>
 }

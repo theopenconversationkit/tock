@@ -46,5 +46,5 @@ data class ParseQuery(
      * If the set is empty, all intents of the application are allowed.
      */
     val intentsSubset: Set<IntentQualifier> = emptySet(),
-    val configuration: String? = null
+    val configuration: String? = null,
 )

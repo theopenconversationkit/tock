@@ -26,5 +26,5 @@ data class CallContext(
     val application: Application,
     val language: Locale,
     val engineType: NlpEngineType = opennlp,
-    val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()
+    val evaluationContext: EntityEvaluationContext = EntityEvaluationContext(),
 )

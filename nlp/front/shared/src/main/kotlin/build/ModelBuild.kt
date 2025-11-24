@@ -66,5 +66,5 @@ data class ModelBuild(
     /**
      * Date of the build.
      */
-    val date: Instant
+    val date: Instant,
 )

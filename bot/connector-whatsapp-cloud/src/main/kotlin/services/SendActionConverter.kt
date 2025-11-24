@@ -30,11 +30,13 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.error
 import mu.KotlinLogging
 
-
 object SendActionConverter {
     private val logger = KotlinLogging.logger {}
 
-    fun toBotMessage(whatsAppCloudApiService: WhatsAppCloudApiService, action: Action): WhatsAppCloudSendBotMessage? {
+    fun toBotMessage(
+        whatsAppCloudApiService: WhatsAppCloudApiService,
+        action: Action,
+    ): WhatsAppCloudSendBotMessage? {
         return if (action is SendSentence) {
             val whatsappMessage = action.message(whatsAppCloudConnectorType)
             val stringText = action.stringText
@@ -45,7 +47,7 @@ object SendActionConverter {
                 WhatsAppCloudSendBotTextMessage(
                     TextContent(stringText),
                     individual,
-                    UserHashedIdCache.getRealId(action.recipientId.id)
+                    UserHashedIdCache.getRealId(action.recipientId.id),
                 )
             } else {
                 throw ConnectorException("Action has neither bare text nor whatsapp-specific connector message: $action")
@@ -58,11 +60,12 @@ object SendActionConverter {
     private fun prepareBotMessage(
         message: WhatsAppCloudBotMessage,
         apiService: WhatsAppCloudApiService,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ) = try {
         message.prepareMessage(
             apiService,
-            (message.userId ?: recipientId.id).let { id -> UserHashedIdCache.getRealId(id) })
+            (message.userId ?: recipientId.id).let { id -> UserHashedIdCache.getRealId(id) },
+        )
     } catch (e: Exception) {
         logger.error(e)
         null

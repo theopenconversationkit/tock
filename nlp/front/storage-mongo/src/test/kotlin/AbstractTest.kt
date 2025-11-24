@@ -32,8 +32,9 @@ import org.junit.jupiter.api.BeforeEach
  *
  */
 abstract class AbstractTest {
-
+    @Suppress("ktlint:standard:property-naming")
     protected val TOCK_DOCUMENT_DB_ON_PROPERTY: String = "tock_document_db_on"
+
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
@@ -41,14 +42,15 @@ abstract class AbstractTest {
             Kodein {
                 import(sharedTestModule)
                 bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-                bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider {
-                    getAsyncDatabase(
-                        MONGO_DATABASE
-                    )
-                }
+                bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with
+                    provider {
+                        getAsyncDatabase(
+                            MONGO_DATABASE,
+                        )
+                    }
                 bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
                 import(moreBindingModules())
-            }
+            },
         )
     }
 

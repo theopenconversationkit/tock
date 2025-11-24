@@ -36,7 +36,6 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
  */
 @ExperimentalTockCoroutines
 interface AsyncNlpListener {
-
     /**
      * Used to handle "secret" keywords.
      *
@@ -53,7 +52,7 @@ interface AsyncNlpListener {
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ): NlpResult? = null
 
     /**
@@ -68,7 +67,7 @@ interface AsyncNlpListener {
         userTimeline: UserTimeline,
         dialog: Dialog,
         botDefinition: BotDefinition,
-        nlpQuery: NlpQuery
+        nlpQuery: NlpQuery,
     ): NlpQuery = nlpQuery
 
     /**
@@ -83,7 +82,7 @@ interface AsyncNlpListener {
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
-        nlpResult: NlpResult
+        nlpResult: NlpResult,
     ): IntentAware? = null
 
     /**
@@ -93,7 +92,7 @@ interface AsyncNlpListener {
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
-        nlpResult: NlpResult
+        nlpResult: NlpResult,
     ): List<EntityValue> = emptyList()
 
     /**
@@ -110,13 +109,16 @@ interface AsyncNlpListener {
     suspend fun mergeEntityValues(
         dialogState: DialogState,
         action: Action,
-        entityToMerge: NlpEntityMergeContext
+        entityToMerge: NlpEntityMergeContext,
     ): NlpEntityMergeContext = entityToMerge
 
     /**
      * Called when nlp request is successful.
      */
-    suspend fun onSuccess(query: NlpQuery, result: NlpResult) = Unit
+    suspend fun onSuccess(
+        query: NlpQuery,
+        result: NlpResult,
+    ) = Unit
 
     /**
      * Called when nlp request is throwing an error.
@@ -132,5 +134,9 @@ interface AsyncNlpListener {
      * }
      * ```
      */
-    suspend fun onError(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
+    suspend fun onError(
+        query: NlpQuery,
+        dialog: Dialog,
+        throwable: Throwable?,
+    ) = Unit
 }

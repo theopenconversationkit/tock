@@ -36,25 +36,26 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class WhatsAppBuilderTest {
-
     val bus: BotBus = mockk(relaxed = true)
-    val longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-        "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
-        "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
-        "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
-        "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
-        "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
-        "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus."
+    val longText =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+            "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
+            "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
+            "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
+            "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
+            "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
+            "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus."
 
     @BeforeEach
     fun before() {
-        tockInternalInjector = KodeinInjector().apply {
-            inject(
-                Kodein {
-                    import(sharedTestModule)
-                }
-            )
-        }
+        tockInternalInjector =
+            KodeinInjector().apply {
+                inject(
+                    Kodein {
+                        import(sharedTestModule)
+                    },
+                )
+            }
 
         every { bus.targetConnectorType } returns whatsAppConnectorType
         every { bus.isCompatibleWith(whatsAppConnectorType) } returns true

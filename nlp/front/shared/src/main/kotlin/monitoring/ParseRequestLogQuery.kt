@@ -39,5 +39,5 @@ data class ParseRequestLogQuery(
     /**
      * Display test logs.
      */
-    val displayTests: Boolean = false
+    val displayTests: Boolean = false,
 )

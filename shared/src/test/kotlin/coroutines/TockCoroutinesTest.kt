@@ -70,49 +70,52 @@ class TockCoroutinesTest {
             assertEquals(
                 threadPoolName,
                 threadName.take(threadPoolName.length),
-                "Expected thread $threadName to be part of test threadpool"
+                "Expected thread $threadName to be part of test threadpool",
             )
         }
     }
 
     @Test
-    fun `fireAndForget does not wait to finish the task`(): Unit = runBlocking {
-        var finished = false
-        val time = Instant.now()
-        fireAndForget {
-            delay(1000)
-            finished = true
+    fun `fireAndForget does not wait to finish the task`(): Unit =
+        runBlocking {
+            var finished = false
+            val time = Instant.now()
+            fireAndForget {
+                delay(1000)
+                finished = true
+            }
+            assertTrue { Instant.now() < time + ofSeconds(1) }
+            delay(1500)
+            assertTrue { finished }
         }
-        assertTrue { Instant.now() < time + ofSeconds(1) }
-        delay(1500)
-        assertTrue { finished }
-    }
 
     @Test
-    fun `fireAndForgetIO does not wait to finish the task`(): Unit = runBlocking {
-        var finished = false
-        val time = Instant.now()
-        fireAndForgetIO {
-            delay(1000)
-            finished = true
+    fun `fireAndForgetIO does not wait to finish the task`(): Unit =
+        runBlocking {
+            var finished = false
+            val time = Instant.now()
+            fireAndForgetIO {
+                delay(1000)
+                finished = true
+            }
+            assertTrue { Instant.now() < time + ofSeconds(1) }
+            delay(1500)
+            assertTrue { finished }
         }
-        assertTrue { Instant.now() < time + ofSeconds(1) }
-        delay(1500)
-        assertTrue { finished }
-    }
 
     @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun `waitForIO does not block the caller thread`() {
         val ticks = AtomicInteger(0)
-        val result = waitForIOCorouting(ticks) { f ->
-            waitForIO {
-                f()
+        val result =
+            waitForIOCorouting(ticks) { f ->
+                waitForIO {
+                    f()
+                }
             }
-        }
         assertTrue(
             "Caller dispatcher made no progress while IO was running (ticks=${ticks.get()})",
-            ticks.get() >= 1
+            ticks.get() >= 1,
         )
         assertEquals("OK", result)
     }
@@ -120,20 +123,24 @@ class TockCoroutinesTest {
     @Test
     fun `waitForCoroutineIO does block the caller thread`() {
         val ticks = AtomicInteger(0)
-        val result = waitForIOCorouting(ticks) { f ->
-            waitForCoroutineIO {
-                f()
+        val result =
+            waitForIOCorouting(ticks) { f ->
+                waitForCoroutineIO {
+                    f()
+                }
             }
-        }
         assertTrue(
             "Caller dispatcher made progress while IO was running (ticks=${ticks.get()})",
-            ticks.get() == 0
+            ticks.get() == 0,
         )
         assertEquals("OK", result)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
-    private fun waitForIOCorouting(ticks: AtomicInteger, f: suspend (suspend () -> String) -> String): String =
+    private fun waitForIOCorouting(
+        ticks: AtomicInteger,
+        f: suspend (suspend () -> String) -> String,
+    ): String =
         runBlocking {
             // Single-thread dispatcher to make the test deterministic: if blocked, nothing else runs.
             val callerDispatcher = newSingleThreadContext("caller-thread")
@@ -145,25 +152,27 @@ class TockCoroutinesTest {
                     val stop = CompletableDeferred<Unit>()
 
                     // Launch code BEFORE the function call; it starts working only when ioStarted is completed.
-                    val tickerJob = launch {
-                        // Wait until the IO block signals it has started (and is sleeping on Dispatchers.IO).
-                        ioStarted.await()
-                        // While IO is in progress, we keep making progress on the caller dispatcher.
-                        while (isActive && !stop.isCompleted) {
-                            ticks.incrementAndGet()
-                            // Suspend briefly to let the event loop schedule fairly.
-                            delay(10)
+                    val tickerJob =
+                        launch {
+                            // Wait until the IO block signals it has started (and is sleeping on Dispatchers.IO).
+                            ioStarted.await()
+                            // While IO is in progress, we keep making progress on the caller dispatcher.
+                            while (isActive && !stop.isCompleted) {
+                                ticks.incrementAndGet()
+                                // Suspend briefly to let the event loop schedule fairly.
+                                delay(10)
+                            }
                         }
-                    }
 
                     // Call the function under test. This coroutine will suspend and hop to Dispatchers.IO.
-                    val result = f {
-                        // Signal that we've switched to IO and are about to simulate blocking work.
-                        ioStarted.complete(Unit)
-                        // Simulate blocking I/O (e.g., JDBC, network, file).
-                        Thread.sleep(200)
-                        "OK"
-                    }
+                    val result =
+                        f {
+                            // Signal that we've switched to IO and are about to simulate blocking work.
+                            ioStarted.complete(Unit)
+                            // Simulate blocking I/O (e.g., JDBC, network, file).
+                            Thread.sleep(200)
+                            "OK"
+                        }
 
                     // IO is done; stop the ticker and wait for it to finish.
                     stop.complete(Unit)
@@ -175,5 +184,4 @@ class TockCoroutinesTest {
                 callerDispatcher.close()
             }
         }
-
 }

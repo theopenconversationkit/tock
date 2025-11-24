@@ -19,5 +19,5 @@ package ai.tock.translator
 enum class I18nLabelStateFilter {
     ALL,
     VALIDATED,
-    NOT_VALIDATED
+    NOT_VALIDATED,
 }

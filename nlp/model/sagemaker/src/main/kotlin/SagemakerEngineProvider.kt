@@ -30,10 +30,12 @@ import ai.tock.nlp.model.service.engine.Tokenizer
 import ai.tock.nlp.model.service.engine.TokenizerModelHolder
 
 class SagemakerEngineProvider : NlpEngineProvider {
-
     private val threadLocal = ThreadLocal<SagemakerIntentClassifier>()
 
-    private fun getSagemakerClassifier(conf: SagemakerModelConfiguration? = null, new: Boolean): SagemakerIntentClassifier =
+    private fun getSagemakerClassifier(
+        conf: SagemakerModelConfiguration? = null,
+        new: Boolean,
+    ): SagemakerIntentClassifier =
         if (new) {
             threadLocal.remove()
             SagemakerIntentClassifier(conf ?: error("no sagemaker configuration")).apply { threadLocal.set(this) }
@@ -48,33 +50,36 @@ class SagemakerEngineProvider : NlpEngineProvider {
 
     override val modelIo: NlpEngineModelIo = SagemakerNlpModelIo
 
-    override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier =
-        getSagemakerClassifier(model.nativeModel as SagemakerModelConfiguration, true)
+    override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier = getSagemakerClassifier(model.nativeModel as SagemakerModelConfiguration, true)
 
     override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier = SagemakerEntityClassifier(model)
 
-    override fun getTokenizer(model: TokenizerModelHolder): Tokenizer = object : Tokenizer {
-        // do not tokenize anything at this stage
-        override fun tokenize(context: TokenizerContext, text: String): Array<String> = arrayOf(text)
-    }
-
-    override fun healthcheck(): () -> NlpHealthcheckResult = {
-        val clients = SagemakerClientProvider.getAllClient()
-        if (clients.isEmpty()) {
-            NlpHealthcheckResult(
-                entityClassifier = false,
-                intentClassifier = false
-            )
-        } else {
-            val grouped = clients.groupBy { it.name }.withDefault { emptyList() }
-            val entityClients = grouped.getValue(SagemakerEntityClassifier.CLIENT_TYPE.clientName)
-            val intentClients = grouped.getValue(SagemakerIntentClassifier.CLIENT_TYPE.clientName)
-
-            NlpHealthcheckResult(
-                entityClassifier = entityClients.isNotEmpty() && entityClients.all { it.healthcheck() },
-                intentClassifier = intentClients.isNotEmpty() && intentClients.all { it.healthcheck() }
-            )
+    override fun getTokenizer(model: TokenizerModelHolder): Tokenizer =
+        object : Tokenizer {
+            // do not tokenize anything at this stage
+            override fun tokenize(
+                context: TokenizerContext,
+                text: String,
+            ): Array<String> = arrayOf(text)
         }
-    }
-}
 
+    override fun healthcheck(): () -> NlpHealthcheckResult =
+        {
+            val clients = SagemakerClientProvider.getAllClient()
+            if (clients.isEmpty()) {
+                NlpHealthcheckResult(
+                    entityClassifier = false,
+                    intentClassifier = false,
+                )
+            } else {
+                val grouped = clients.groupBy { it.name }.withDefault { emptyList() }
+                val entityClients = grouped.getValue(SagemakerEntityClassifier.CLIENT_TYPE.clientName)
+                val intentClients = grouped.getValue(SagemakerIntentClassifier.CLIENT_TYPE.clientName)
+
+                NlpHealthcheckResult(
+                    entityClassifier = entityClients.isNotEmpty() && entityClients.all { it.healthcheck() },
+                    intentClassifier = intentClients.isNotEmpty() && intentClients.all { it.healthcheck() },
+                )
+            }
+        }
+}

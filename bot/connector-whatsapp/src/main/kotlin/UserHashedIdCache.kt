@@ -22,7 +22,6 @@ import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
 
 object UserHashedIdCache {
-
     private val idCache: Cache<String, String> =
         CacheBuilder.newBuilder()
             .expireAfterAccess(2, TimeUnit.MINUTES)

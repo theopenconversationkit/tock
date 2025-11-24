@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class HandlerStoryDefinitionCreatorTest {
-
     private val bus = mockk<SubBotBus>(relaxed = true)
     private val data = StoryData("a", null)
 

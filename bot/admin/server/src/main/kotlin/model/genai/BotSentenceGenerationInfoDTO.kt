@@ -21,14 +21,11 @@ import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurati
 data class BotSentenceGenerationInfoDTO(
     val enabled: Boolean = false,
     val nbSentences: Int? = null,
-    val llmTemperature: String? = null
+    val llmTemperature: String? = null,
 ) {
-    constructor(configuration: BotSentenceGenerationConfiguration): this(
+    constructor(configuration: BotSentenceGenerationConfiguration) : this(
         configuration.enabled,
         configuration.nbSentences,
-        configuration.llmSetting.temperature
+        configuration.llmSetting.temperature,
     )
 }
-
-
-

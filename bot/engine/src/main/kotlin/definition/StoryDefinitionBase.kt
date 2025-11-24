@@ -24,16 +24,15 @@ import ai.tock.translator.UserInterfaceType
  * Default [StoryDefinition] implementation.
  */
 open class StoryDefinitionBase(
-        val name: String,
-        override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        unsupportedUserInterface: UserInterfaceType? = null,
-        override val tags: Set<StoryTag> = emptySet(),
-        val storyDefinitionConfiguration: StoryDefinitionConfiguration? = null,
+    val name: String,
+    override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    unsupportedUserInterface: UserInterfaceType? = null,
+    override val tags: Set<StoryTag> = emptySet(),
+    val storyDefinitionConfiguration: StoryDefinitionConfiguration? = null,
 ) : StoryDefinition {
-
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
         stepsList.onEach {
             if (it.intent == null) {

@@ -29,10 +29,12 @@ import ai.tock.nlp.model.service.engine.Tokenizer
 import ai.tock.nlp.model.service.engine.TokenizerModelHolder
 
 internal class RasaNlpEngineProvider : NlpEngineProvider {
-
     private val threadLocal = ThreadLocal<RasaClassifier>()
 
-    private fun getRasaClassifier(conf: RasaModelConfiguration? = null, new: Boolean = false): RasaClassifier =
+    private fun getRasaClassifier(
+        conf: RasaModelConfiguration? = null,
+        new: Boolean = false,
+    ): RasaClassifier =
         if (new) {
             threadLocal.remove()
             RasaClassifier(conf ?: error("no rasa configuration")).apply {
@@ -48,14 +50,16 @@ internal class RasaNlpEngineProvider : NlpEngineProvider {
 
     override val modelIo: NlpEngineModelIo = RasaNlpModelIo
 
-    override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier =
-        getRasaClassifier(model.nativeModel as RasaModelConfiguration, true)
+    override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier = getRasaClassifier(model.nativeModel as RasaModelConfiguration, true)
 
-    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier =
-        getRasaClassifier()
+    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier = getRasaClassifier()
 
-    override fun getTokenizer(model: TokenizerModelHolder): Tokenizer = object : Tokenizer {
-        // do not tokenize anything at this stage - rasa internals
-        override fun tokenize(context: TokenizerContext, text: String): Array<String> = arrayOf(text)
-    }
+    override fun getTokenizer(model: TokenizerModelHolder): Tokenizer =
+        object : Tokenizer {
+            // do not tokenize anything at this stage - rasa internals
+            override fun tokenize(
+                context: TokenizerContext,
+                text: String,
+            ): Array<String> = arrayOf(text)
+        }
 }

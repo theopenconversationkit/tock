@@ -17,7 +17,7 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 
 data class ErrorItem(
-        val code: Int,
-        val details: String,
-        val title: String
+    val code: Int,
+    val details: String,
+    val title: String,
 )

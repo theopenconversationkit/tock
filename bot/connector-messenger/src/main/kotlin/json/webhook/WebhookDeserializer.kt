@@ -50,12 +50,14 @@ import mu.KotlinLogging
  *
  */
 internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Webhook? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Webhook? {
         data class WebhookFields(
             var sender: Sender? = null,
             var recipient: Recipient? = null,
@@ -70,35 +72,35 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var requestThreadControl: RequestThreadControl? = null,
             var appRoles: Map<String, List<String>>? = null,
             var referral: Referral? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
         val (
             sender, recipient, timestamp,
             message, optin, postback,
             priorMessage, accountLinking,
-            passThreadControl, takeThreadControl, requestThreadControl, appRoles, referral
+            passThreadControl, takeThreadControl, requestThreadControl, appRoles, referral,
         ) =
-        jp.read<WebhookFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    Webhook::sender.name -> sender = jp.readValue()
-                    Webhook::recipient.name -> recipient = jp.readValue()
-                    Webhook::timestamp.name -> timestamp = jp.longValue
-                    MessageWebhook::message.name -> message = jp.readValue()
-                    OptinWebhook::optin.name -> optin = jp.readValue()
-                    PostbackWebhook::postback.name -> postback = jp.readValue()
-                    "prior_message" -> priorMessage = jp.readValue()
-                    "account_linking" -> accountLinking = jp.readValue()
-                    "pass_thread_control" -> passThreadControl = jp.readValue()
-                    "take_thread_control" -> takeThreadControl = jp.readValue()
-                    "request_thread_control" -> requestThreadControl = jp.readValue()
-                    "app_roles" -> appRoles = jp.readValue()
-                    "referral" -> referral = jp.readValue()
-                    else -> other = jp.readUnknownValue()
+            jp.read<WebhookFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        Webhook::sender.name -> sender = jp.readValue()
+                        Webhook::recipient.name -> recipient = jp.readValue()
+                        Webhook::timestamp.name -> timestamp = jp.longValue
+                        MessageWebhook::message.name -> message = jp.readValue()
+                        OptinWebhook::optin.name -> optin = jp.readValue()
+                        PostbackWebhook::postback.name -> postback = jp.readValue()
+                        "prior_message" -> priorMessage = jp.readValue()
+                        "account_linking" -> accountLinking = jp.readValue()
+                        "pass_thread_control" -> passThreadControl = jp.readValue()
+                        "take_thread_control" -> takeThreadControl = jp.readValue()
+                        "request_thread_control" -> requestThreadControl = jp.readValue()
+                        "app_roles" -> appRoles = jp.readValue()
+                        "referral" -> referral = jp.readValue()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         if (recipient == null || timestamp == null) {
             logger.warn { "invalid webhook $recipient $timestamp" }

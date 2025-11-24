@@ -17,7 +17,6 @@
 package ai.tock.bot.api.client
 
 interface ClientStoryHandler {
-
     /**
      * Receive a message from the bus.
      *

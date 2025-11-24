@@ -26,24 +26,24 @@ import kotlin.test.assertNotNull
  *
  */
 class I18nLabelTest {
-
     @Test
     fun findLabel_shouldFindALanguageOnlyLocalizedLabel_whenUsingALanguageAndCountryLocale() {
-        val label = I18nLabel(
-            "id".toId(),
-            defaultNamespace,
-            " category",
-            LinkedHashSet(
-                listOf(
-                    I18nLocalizedLabel(
-                        Locale.FRENCH,
-                        UserInterfaceType.textChat,
-                        "label",
-                        true
-                    )
-                )
+        val label =
+            I18nLabel(
+                "id".toId(),
+                defaultNamespace,
+                " category",
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            Locale.FRENCH,
+                            UserInterfaceType.textChat,
+                            "label",
+                            true,
+                        ),
+                    ),
+                ),
             )
-        )
         assertNotNull(label.findLabel(Locale.FRANCE, null))
         assertNotNull(label.findLabel(Locale.FRANCE, UserInterfaceType.textChat, null))
     }

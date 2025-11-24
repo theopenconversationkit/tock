@@ -64,9 +64,8 @@ open class BotDefinitionBase(
     override var ragConfiguration: BotRAGConfiguration? = null,
     override var vectorStoreConfiguration: BotVectorStoreConfiguration? = null,
     override var observabilityConfiguration: BotObservabilityConfiguration? = null,
-    override var documentCompressorConfiguration: BotDocumentCompressorConfiguration? = null
+    override var documentCompressorConfiguration: BotDocumentCompressorConfiguration? = null,
 ) : BotDefinition {
-
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -82,7 +81,7 @@ open class BotDefinitionBase(
                         bus.end(bus.botDefinition.defaultUnknownAnswer)
                     }
                 },
-                setOf(Intent.unknown)
+                setOf(Intent.unknown),
             )
 
         /**
@@ -96,7 +95,7 @@ open class BotDefinitionBase(
                         bus.end(bus.botDefinition.defaultRagExcludedAnswer)
                     }
                 },
-                setOf(Intent.ragexcluded)
+                setOf(Intent.ragexcluded),
             )
 
         val defaultRagStory =
@@ -123,11 +122,14 @@ open class BotDefinitionBase(
         /**
          * The default handler used to handle test context initialization.
          */
-        fun testContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
+        fun testContextKeywordHandler(
+            bus: BotBus,
+            sendEnd: Boolean = true,
+        ) {
             bus.userTimeline.dialogs.add(
                 Dialog(
-                    setOf(bus.userId, bus.botId)
-                )
+                    setOf(bus.userId, bus.botId),
+                ),
             )
             bus.botDefinition.testBehaviour.setup(bus)
             if (sendEnd) {
@@ -138,11 +140,14 @@ open class BotDefinitionBase(
         /**
          * The default handler used to cleanup test context.
          */
-        fun endTestContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
+        fun endTestContextKeywordHandler(
+            bus: BotBus,
+            sendEnd: Boolean = true,
+        ) {
             bus.userTimeline.dialogs.add(
                 Dialog(
-                    setOf(bus.userId, bus.botId)
-                )
+                    setOf(bus.userId, bus.botId),
+                ),
             )
             bus.botDefinition.testBehaviour.cleanup(bus)
             if (sendEnd) {
@@ -153,35 +158,38 @@ open class BotDefinitionBase(
         /**
          * The default handler used to delete the current user.
          */
-        fun deleteKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
+        fun deleteKeywordHandler(
+            bus: BotBus,
+            sendEnd: Boolean = true,
+        ) {
             bus.handleDelete()
             if (sendEnd) {
                 bus.end(
                     bus.baseI18nValue(
                         "user removed - {0} {1}",
                         bus.userTimeline.userPreferences.firstName,
-                        bus.userTimeline.userPreferences.lastName
-                    )
+                        bus.userTimeline.userPreferences.lastName,
+                    ),
                 )
             }
         }
 
         private fun BotBus.baseI18nValue(
             defaultLabel: String,
-            vararg args: Any?
+            vararg args: Any?,
         ): I18nLabelValue = i18nValue(botDefinition.namespace, defaultLabel, *args)
 
         private fun i18nValue(
             namespace: String,
             defaultLabel: String,
-            vararg args: Any?
+            vararg args: Any?,
         ): I18nLabelValue =
             I18nLabelValue(
                 generateKey(namespace, "keywords", defaultLabel),
                 namespace,
                 "keywords",
                 defaultLabel,
-                args.toList()
+                args.toList(),
             )
 
         private fun BotBus.handleDelete() {
@@ -198,7 +206,7 @@ open class BotDefinitionBase(
                             logger.error(e)
                         }
                     },
-                    false
+                    false,
                 )
             }
         }
@@ -222,10 +230,13 @@ open class BotDefinitionBase(
                         }
                     }
                 },
-                setOf(Intent.keyword)
+                setOf(Intent.keyword),
             )
 
-        fun handleWithKeywordListeners(bus: BotBus, keyword: String?): Boolean {
+        fun handleWithKeywordListeners(
+            bus: BotBus,
+            keyword: String?,
+        ): Boolean {
             if (keyword != null) {
                 keywordServices.firstNotNullOfOrNull { it.keywordHandler(keyword) }?.let { handler ->
                     handler(bus)

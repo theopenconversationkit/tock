@@ -32,7 +32,7 @@ val googleChatConnectorType = ConnectorType(GOOGLE_CHAT_CONNECTOR_TYPE_ID)
  */
 fun <T : Bus<T>> T.sendToGoogleChat(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> GoogleChatConnectorMessage
+    messageProvider: T.() -> GoogleChatConnectorMessage,
 ): T {
     if (targetConnectorType == googleChatConnectorType) {
         withMessage(messageProvider(this))
@@ -46,7 +46,7 @@ fun <T : Bus<T>> T.sendToGoogleChat(
  */
 fun <T : Bus<T>> T.endForGoogleChat(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> GoogleChatConnectorMessage
+    messageProvider: T.() -> GoogleChatConnectorMessage,
 ): T {
     if (targetConnectorType == googleChatConnectorType) {
         withMessage(messageProvider(this))
@@ -63,6 +63,9 @@ fun <T : Bus<T>> T.withGoogleChat(messageProvider: () -> GoogleChatConnectorMess
     return withMessage(googleChatConnectorType, messageProvider)
 }
 
-fun I18nTranslator.textMessage(message: CharSequence, vararg args: Any?): GoogleChatConnectorTextMessageOut {
+fun I18nTranslator.textMessage(
+    message: CharSequence,
+    vararg args: Any?,
+): GoogleChatConnectorTextMessageOut {
     return GoogleChatConnectorTextMessageOut(translate(message, args).toString())
 }

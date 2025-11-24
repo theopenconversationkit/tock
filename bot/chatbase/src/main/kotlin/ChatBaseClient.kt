@@ -30,13 +30,13 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 internal class ChatBaseClient {
-
-    private val BASE_URL = "https://www.chatbase.com/"
+    private val baseUrl = "https://www.chatbase.com/"
 
     interface GenericMessageApi {
-
         @POST("/api/message")
-        fun message(@Body message: Message): Call<Response>
+        fun message(
+            @Body message: Message,
+        ): Call<Response>
     }
 
     private val logger = KotlinLogging.logger {}
@@ -44,14 +44,15 @@ internal class ChatBaseClient {
     private val genericMessageApi: GenericMessageApi
 
     init {
-        genericMessageApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_chatbase_request_timeout_ms", 3000),
-            logger
-        )
-            .baseUrl(BASE_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        genericMessageApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_chatbase_request_timeout_ms", 3000),
+                logger,
+            )
+                .baseUrl(baseUrl)
+                .addJacksonConverter()
+                .build()
+                .create()
     }
 
     private fun retrofit2.Response<*>.logError() {

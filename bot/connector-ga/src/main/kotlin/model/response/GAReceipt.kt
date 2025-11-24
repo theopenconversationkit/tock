@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAReceipt(
     val confirmedActionOrderId: String,
-    val userVisibleOrderId: String
+    val userVisibleOrderId: String,
 )

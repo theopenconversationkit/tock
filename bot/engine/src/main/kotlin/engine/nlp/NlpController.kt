@@ -31,7 +31,6 @@ import java.io.InputStream
  * Sends NLP requests.
  */
 interface NlpController {
-
     /**
      * Parses a sentence and set intent and entities in context.
      */
@@ -40,7 +39,7 @@ interface NlpController {
         userTimeline: UserTimeline,
         dialog: Dialog,
         connector: ConnectorController,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     )
 
     /**
@@ -49,7 +48,7 @@ interface NlpController {
     fun markAsUnknown(
         sentence: SendSentence,
         userTimeline: UserTimeline,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     )
 
     /**
@@ -60,7 +59,10 @@ interface NlpController {
      *
      * @return List of IntentDefinition
      */
-    fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
+    fun getIntentsByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): List<IntentDefinition>?
 
     /**
      * Imports a NLP dump (configuration and sentences of NLP model).

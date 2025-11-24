@@ -31,15 +31,14 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.replaceOneWithFilter
 
-
 object FaqSettingsMongoDAO : FaqSettingsDAO {
-
     internal val col: MongoCollection<FaqSettings> by lazy {
-        val c = MongoFrontConfiguration.database.getCollection<FaqSettings>().apply {
-            ensureUniqueIndex(
-                FaqSettings::applicationId
-            )
-        }
+        val c =
+            MongoFrontConfiguration.database.getCollection<FaqSettings>().apply {
+                ensureUniqueIndex(
+                    FaqSettings::applicationId,
+                )
+            }
         c
     }
 
@@ -57,13 +56,11 @@ object FaqSettingsMongoDAO : FaqSettingsDAO {
                 FaqSettings::applicationId eq faqSettings.applicationId,
             ),
             faqSettings,
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
     override fun getFaqSettingsByApplicationId(id: Id<ApplicationDefinition>): FaqSettings? {
         return col.findOne(FaqSettings::applicationId eq id)
     }
-
 }
-

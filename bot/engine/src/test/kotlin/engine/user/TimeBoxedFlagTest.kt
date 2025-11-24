@@ -24,7 +24,6 @@ import kotlin.test.assertTrue
  *
  */
 class TimeBoxedFlagTest {
-
     @Test
     fun isValid_shouldReturnsTrue_WhenExpirationDateIsAfterNow() {
         val flag = TimeBoxedFlag("ok", Instant.now().plusSeconds(10))

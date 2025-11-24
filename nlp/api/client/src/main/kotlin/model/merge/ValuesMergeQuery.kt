@@ -27,5 +27,5 @@ data class ValuesMergeQuery(
     val applicationName: String,
     val context: NlpQueryContext,
     val entity: Entity,
-    val values: List<ValueToMerge>
+    val values: List<ValueToMerge>,
 )

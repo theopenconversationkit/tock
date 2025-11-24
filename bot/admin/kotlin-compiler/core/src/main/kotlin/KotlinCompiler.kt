@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.idea.MainFunctionDetector
 import org.jetbrains.kotlin.konan.file.File
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.LazyTopDownAnalyzer
 import org.jetbrains.kotlin.resolve.TopDownAnalysisMode
@@ -60,18 +61,13 @@ import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.ArrayList
 import java.util.Collections
-import java.util.Comparator
-import java.util.HashMap
 import java.util.stream.Collectors
-import org.jetbrains.kotlin.psi.KtNamedFunction
 
 /**
  * Kotlin source code compiler.
  */
 internal object KotlinCompiler {
-
     private val logger = KotlinLogging.logger {}
 
     fun init(classPath: List<String> = listProperty("tock_kotlin_compiler_classpath", emptyList())) {
@@ -86,7 +82,11 @@ internal object KotlinCompiler {
         }
     }
 
-    private fun loadPathFromClassLoader(classLoader: ClassLoader, paths: MutableList<Path>, classPath: List<String>) {
+    private fun loadPathFromClassLoader(
+        classLoader: ClassLoader,
+        paths: MutableList<Path>,
+        classPath: List<String>,
+    ) {
         logger.debug { "load paths from $classLoader" }
         val cp = System.getProperty("java.class.path")
         logger.debug { "classpath: $cp" }
@@ -98,7 +98,7 @@ internal object KotlinCompiler {
                     logger.debug { "load url $it" }
                     Paths.get(it.toURI())
                 }
-            // java 9
+                // java 9
                 ?: (classPath + cp.split(File.pathSeparator))
                     .flatMap {
                         Paths.get(it).let {
@@ -112,7 +112,7 @@ internal object KotlinCompiler {
                         }
                     }
                     .distinct()
-                    .apply { logger.info { "class path used : $this" } }
+                    .apply { logger.info { "class path used : $this" } },
         )
     }
 
@@ -125,7 +125,7 @@ internal object KotlinCompiler {
     fun compileCorrectFiles(
         projectFiles: Map<String, String>,
         fileName: String,
-        searchForMain: Boolean
+        searchForMain: Boolean,
     ): CompilationResult {
         val files = createPsiFiles(projectFiles)
         return compile(files, environment!!.project, environment!!.configuration, fileName, searchForMain)
@@ -136,7 +136,7 @@ internal object KotlinCompiler {
         currentProject: Project,
         configuration: CompilerConfiguration,
         fileName: String,
-        searchForMain: Boolean
+        searchForMain: Boolean,
     ): CompilationResult {
         val generationState = getGenerationState(currentPsiFiles, currentProject, configuration)
         val context = getBindingContext(currentPsiFiles, currentProject)
@@ -154,14 +154,14 @@ internal object KotlinCompiler {
     private fun getGenerationState(
         files: List<KtFile>,
         project: Project,
-        compilerConfiguration: CompilerConfiguration
+        compilerConfiguration: CompilerConfiguration,
     ): GenerationState {
         val analyzeExhaust = analyzeFileForJvm(files, project).getFirst()
         return GenerationState(
             project,
             analyzeExhaust.moduleDescriptor,
             compilerConfiguration,
-            ClassBuilderFactories.BINARIES
+            ClassBuilderFactories.BINARIES,
         )
     }
 
@@ -169,18 +169,21 @@ internal object KotlinCompiler {
         bindingContext: BindingContext,
         files: List<KtFile>,
         fileName: String,
-        searchForMain: Boolean
+        searchForMain: Boolean,
     ): String {
         val mainFunctionDetector = MainFunctionDetector(bindingContext, LanguageVersionSettingsImpl.DEFAULT)
         for (file in files) {
             if (file.name.contains(fileName)) {
-                if (!searchForMain || file.declarations.any {
-                        it is KtNamedFunction && try {
-                            mainFunctionDetector.isMain(it)
-                        } catch (e: Exception) {
-                            false
-                        }
-                    }) {
+                if (!searchForMain ||
+                    file.declarations.any {
+                        it is KtNamedFunction &&
+                            try {
+                                mainFunctionDetector.isMain(it)
+                            } catch (e: Exception) {
+                                false
+                            }
+                    }
+                ) {
                     return getMainClassName(file)
                 }
             }
@@ -188,11 +191,12 @@ internal object KotlinCompiler {
         return files
             .firstOrNull {
                 it.declarations.any {
-                    it is KtNamedFunction && try {
-                        mainFunctionDetector.isMain(it)
-                    } catch (e: Exception) {
-                        false
-                    }
+                    it is KtNamedFunction &&
+                        try {
+                            mainFunctionDetector.isMain(it)
+                        } catch (e: Exception) {
+                            false
+                        }
                 }
             }
             ?.let { getMainClassName(it) }
@@ -208,7 +212,11 @@ internal object KotlinCompiler {
             createFile(EnvironmentManager.environment!!.project, it.key, it.value)
         }
 
-    fun createFile(project: Project, name: String, text: String): KtFile? {
+    fun createFile(
+        project: Project,
+        name: String,
+        text: String,
+    ): KtFile? {
         var n = name
         if (!n.endsWith(".kt")) {
             n += ".kt"
@@ -219,32 +227,39 @@ internal object KotlinCompiler {
             virtualFile,
             KotlinLanguage.INSTANCE,
             true,
-            false
+            false,
         ) as KtFile?
     }
 
-    fun getBindingContext(files: List<KtFile>, project: Project): BindingContext {
+    fun getBindingContext(
+        files: List<KtFile>,
+        project: Project,
+    ): BindingContext {
         val result = analyzeFileForJvm(files, project)
         val analyzeExhaust = result.getFirst()
         return analyzeExhaust.bindingContext
     }
 
     @Synchronized
-    fun analyzeFileForJvm(files: List<KtFile>, project: Project): Pair<AnalysisResult, ComponentProvider> {
+    fun analyzeFileForJvm(
+        files: List<KtFile>,
+        project: Project,
+    ): Pair<AnalysisResult, ComponentProvider> {
         val environment = EnvironmentManager.environment!!
         val trace = CliBindingTrace(project)
 
         val configuration = environment.configuration
         // configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
 
-        val container = TopDownAnalyzerFacadeForJVM.createContainer(
-            environment.project,
-            files,
-            trace,
-            configuration,
-            { globalSearchScope -> environment.createPackagePartProvider(globalSearchScope) },
-            { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) }
-        )
+        val container =
+            TopDownAnalyzerFacadeForJVM.createContainer(
+                environment.project,
+                files,
+                trace,
+                configuration,
+                { globalSearchScope -> environment.createPackagePartProvider(globalSearchScope) },
+                { storageManager, ktFiles -> FileBasedDeclarationProviderFactory(storageManager, ktFiles) },
+            )
 
         container.getService(LazyTopDownAnalyzer::class.java)
             .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files, DataFlowInfo.EMPTY)
@@ -257,12 +272,11 @@ internal object KotlinCompiler {
 
         return Pair(
             AnalysisResult.success(trace.bindingContext, moduleDescriptor),
-            container
+            container,
         )
     }
 
     private class ErrorAnalyzer(private val currentPsiFiles: List<KtFile>, private val currentProject: Project) {
-
         fun getAllErrors(): Map<String, List<CompileError>> {
             try {
                 val errors = HashMap<String, MutableList<CompileError>>()
@@ -279,7 +293,7 @@ internal object KotlinCompiler {
 
         fun getErrorsFromDiagnostics(
             diagnostics: Collection<Diagnostic>,
-            errors: Map<String, MutableList<CompileError>>
+            errors: Map<String, MutableList<CompileError>>,
         ) {
             try {
                 for (diagnostic in diagnostics) {
@@ -303,17 +317,19 @@ internal object KotlinCompiler {
                         if (!(diagnostic.factory === Errors.UNRESOLVED_REFERENCE) && diagnostic.severity == org.jetbrains.kotlin.diagnostics.Severity.ERROR) {
                             className = "red_wavy_line"
                         }
-                        val interval = getInterval(
-                            firstRange.startOffset, firstRange.endOffset,
-                            diagnostic.psiFile.viewProvider.document!!
-                        )
+                        val interval =
+                            getInterval(
+                                firstRange.startOffset,
+                                firstRange.endOffset,
+                                diagnostic.psiFile.viewProvider.document!!,
+                            )
                         errors[diagnostic.psiFile.name]!!.add(
                             CompileError(
                                 interval,
                                 render,
                                 convertSeverity(diagnostic.severity),
-                                className
-                            )
+                                className,
+                            ),
                         )
                     }
                 }
@@ -336,7 +352,7 @@ internal object KotlinCompiler {
                                 }
                             }
                             -1
-                        }
+                        },
                     )
                 }
             } catch (e: Throwable) {
@@ -346,15 +362,16 @@ internal object KotlinCompiler {
 
         private fun getErrorsByVisitor(psiFile: PsiFile): MutableList<CompileError> {
             val errorElements = ArrayList<PsiErrorElement>()
-            val visitor = object : PsiElementVisitor() {
-                override fun visitElement(element: PsiElement) {
-                    element.acceptChildren(this)
-                }
+            val visitor =
+                object : PsiElementVisitor() {
+                    override fun visitElement(element: PsiElement) {
+                        element.acceptChildren(this)
+                    }
 
-                override fun visitErrorElement(element: PsiErrorElement) {
-                    errorElements.add(element)
+                    override fun visitErrorElement(element: PsiErrorElement) {
+                        errorElements.add(element)
+                    }
                 }
-            }
 
             val errors = ArrayList<CompileError>()
             visitor.visitFile(psiFile)
@@ -364,9 +381,11 @@ internal object KotlinCompiler {
                 val interval = getInterval(start, end, psiFile.viewProvider.document!!)
                 errors.add(
                     CompileError(
-                        interval, errorElement.errorDescription,
-                        convertSeverity(org.jetbrains.kotlin.diagnostics.Severity.ERROR), "red_wavy_line"
-                    )
+                        interval,
+                        errorElement.errorDescription,
+                        convertSeverity(org.jetbrains.kotlin.diagnostics.Severity.ERROR),
+                        "red_wavy_line",
+                    ),
                 )
             }
             return errors
@@ -381,7 +400,11 @@ internal object KotlinCompiler {
             }
         }
 
-        private fun getInterval(start: Int, end: Int, currentDocument: Document): TextInterval {
+        private fun getInterval(
+            start: Int,
+            end: Int,
+            currentDocument: Document,
+        ): TextInterval {
             val lineNumberForElementStart = currentDocument.getLineNumber(start)
             val lineNumberForElementEnd = currentDocument.getLineNumber(end)
             var charNumberForElementStart = start - currentDocument.getLineStartOffset(lineNumberForElementStart)
@@ -393,10 +416,11 @@ internal object KotlinCompiler {
                     charNumberForElementEnd++
                 }
             }
-            val startPosition = TextPosition(
-                lineNumberForElementStart,
-                charNumberForElementStart
-            )
+            val startPosition =
+                TextPosition(
+                    lineNumberForElementStart,
+                    charNumberForElementStart,
+                )
             val endPosition =
                 TextPosition(lineNumberForElementEnd, charNumberForElementEnd)
             return TextInterval(startPosition, endPosition)

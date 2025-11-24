@@ -24,7 +24,6 @@ import java.util.Locale
  * Tock model to Alexa model Codec.
  */
 interface AlexaCodec {
-
     /**
      * Export a Tock model to an Alexa model (Skill Builder format).
      */
@@ -48,8 +47,9 @@ interface AlexaCodec {
         /**
          * A model transformer to adapt the alexa model.
          */
-        transformer: AlexaModelTransformer = object : AlexaModelTransformer {
-            override fun transform(schema: AlexaIntentsSchema) = schema
-        }
+        transformer: AlexaModelTransformer =
+            object : AlexaModelTransformer {
+                override fun transform(schema: AlexaIntentsSchema) = schema
+            },
     ): AlexaIntentsSchema
 }

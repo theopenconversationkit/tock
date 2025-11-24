@@ -16,6 +16,17 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WebHookMessageType {
-    audio, button, document, text, image,  interactive, order, sticker, system, unknown, video
+    audio,
+    button,
+    document,
+    text,
+    image,
+    interactive,
+    order,
+    sticker,
+    system,
+    unknown,
+    video,
 }

@@ -20,6 +20,5 @@ import java.util.concurrent.ConcurrentHashMap
 internal object RasaClientProvider {
     private val clientMap = ConcurrentHashMap<RasaConfiguration, RasaClient>()
 
-    fun getClient(conf: RasaConfiguration): RasaClient =
-        clientMap.getOrPut(conf) { RasaClient(conf) }
+    fun getClient(conf: RasaConfiguration): RasaClient = clientMap.getOrPut(conf) { RasaClient(conf) }
 }

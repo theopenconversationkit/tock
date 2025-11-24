@@ -23,5 +23,5 @@ import java.util.Locale
  */
 data class PredefinedValue(
     val value: String,
-    val labels: Map<Locale, List<String>> = emptyMap()
+    val labels: Map<Locale, List<String>> = emptyMap(),
 )

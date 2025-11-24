@@ -49,34 +49,50 @@ fun <T : Bus<T>> T.withWeb(messageProvider: () -> WebConnectorMessage): T {
  * Creates a text with buttons.
  */
 @Deprecated("Use other methods to create buttons")
-fun I18nTranslator.webMessage(title: CharSequence, vararg buttons: WebButton): OldWebMessage =
+fun I18nTranslator.webMessage(
+    title: CharSequence,
+    vararg buttons: WebButton,
+): OldWebMessage =
     OldWebMessage(
-        translate(title).toString(), buttons.toList()
+        translate(title).toString(),
+        buttons.toList(),
     )
 
 /**
  * Creates a text with buttons.
  */
 @Deprecated("Use other methods to create buttons")
-fun I18nTranslator.webMessage(title: CharSequence, buttons: List<WebButton>): OldWebMessage =
+fun I18nTranslator.webMessage(
+    title: CharSequence,
+    buttons: List<WebButton>,
+): OldWebMessage =
     OldWebMessage(
-        translate(title).toString(), buttons
+        translate(title).toString(),
+        buttons,
     )
 
 /**
  * Creates a text with buttons.
  */
-fun I18nTranslator.webMessage(title: CharSequence, vararg buttons: Button): WebMessage =
+fun I18nTranslator.webMessage(
+    title: CharSequence,
+    vararg buttons: Button,
+): WebMessage =
     WebMessage(
-        translate(title).toString(), buttons.toList()
+        translate(title).toString(),
+        buttons.toList(),
     )
 
 /**
  * Creates a text with a list of buttons.
  */
-fun I18nTranslator.webMessage(title: CharSequence, buttons: List<Button> = emptyList()): WebMessage =
+fun I18nTranslator.webMessage(
+    title: CharSequence,
+    buttons: List<Button> = emptyList(),
+): WebMessage =
     WebMessage(
-        translate(title).toString(), buttons
+        translate(title).toString(),
+        buttons,
     )
 
 /**
@@ -88,12 +104,12 @@ fun <T : Bus<T>> T.webButton(
     targetIntent: IntentAware? = null,
     imageUrl: String? = null,
     step: StoryStepDef? = null,
-    parameters: Parameters = Parameters()
+    parameters: Parameters = Parameters(),
 ): WebButton =
     WebButton(
         translate(title).toString(),
         targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
-        imageUrl
+        imageUrl,
     )
 
 /**
@@ -110,9 +126,8 @@ fun <T : Bus<T>> T.webUrlButton(
     url: String,
     imageUrl: String? = null,
     target: HrefTargetType,
-    style: ButtonStyle
-): Button =
-    webUrlButton(title, url, imageUrl, target.name, style.name, null)
+    style: ButtonStyle,
+): Button = webUrlButton(title, url, imageUrl, target.name, style.name, null)
 
 /**
  * Creates a URL button
@@ -135,8 +150,7 @@ fun <T : Bus<T>> T.webUrlButton(
     target: String? = HrefTargetType._blank.name,
     style: ButtonStyle,
     windowFeatures: String? = null,
-): Button =
-    webUrlButton(title, url, imageUrl, target, style.name, windowFeatures)
+): Button = webUrlButton(title, url, imageUrl, target, style.name, windowFeatures)
 
 /**
  * Creates a URL button
@@ -152,9 +166,8 @@ fun <T : Bus<T>> T.webUrlButton(
     url: String,
     imageUrl: String? = null,
     target: HrefTargetType,
-    style: String? = ButtonStyle.primary.name
-): Button =
-    webUrlButton(title, url, imageUrl, target.name, style, null)
+    style: String? = ButtonStyle.primary.name,
+): Button = webUrlButton(title, url, imageUrl, target.name, style, null)
 
 /**
  * Creates a URL button
@@ -196,9 +209,8 @@ fun <T : Bus<T>> T.webPostbackButton(
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
     imageUrl: String? = null,
-    style: ButtonStyle
-): Button =
-    webPostbackButton(title, targetIntent, step, parameters, imageUrl, style.name)
+    style: ButtonStyle,
+): Button = webPostbackButton(title, targetIntent, step, parameters, imageUrl, style.name)
 
 /**
  * Creates a postback button
@@ -209,13 +221,13 @@ fun <T : Bus<T>> T.webPostbackButton(
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
     imageUrl: String? = null,
-    style: String? = ButtonStyle.primary.name
+    style: String? = ButtonStyle.primary.name,
 ): Button =
     PostbackButton(
         translate(title).toString(),
         targetIntent.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
         imageUrl,
-        style
+        style,
     )
 
 /**
@@ -227,12 +239,12 @@ fun <T : Bus<T>> T.webQuickReply(
     targetIntent: IntentAware? = null,
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
-    imageUrl: String? = null
+    imageUrl: String? = null,
 ): Button =
     QuickReply(
         translate(title).toString(),
         targetIntent?.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()) },
-        imageUrl
+        imageUrl,
     )
 
 /**
@@ -244,9 +256,8 @@ fun <T : Bus<T>> T.webIntentQuickReply(
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
     imageUrl: String? = null,
-    style: ButtonStyle
-): Button =
-    webIntentQuickReply(title, targetIntent, step, parameters, imageUrl, style.name)
+    style: ButtonStyle,
+): Button = webIntentQuickReply(title, targetIntent, step, parameters, imageUrl, style.name)
 
 /**
  * Creates a quickreply button with target intent
@@ -257,14 +268,14 @@ fun <T : Bus<T>> T.webIntentQuickReply(
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters(),
     imageUrl: String? = null,
-    style: String? = ButtonStyle.primary.name
+    style: String? = ButtonStyle.primary.name,
 ): Button =
     QuickReply(
         translate(title).toString(),
         SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap()),
         imageUrl,
         null,
-        style
+        style,
     )
 
 /**
@@ -274,9 +285,8 @@ fun <T : Bus<T>> T.webNlpQuickReply(
     title: CharSequence,
     nlpText: String? = null,
     imageUrl: String? = null,
-    style: ButtonStyle
-): Button =
-    webNlpQuickReply(title, nlpText, imageUrl, style.name)
+    style: ButtonStyle,
+): Button = webNlpQuickReply(title, nlpText, imageUrl, style.name)
 
 /**
  * Creates a quickreply button with target intent
@@ -285,21 +295,20 @@ fun <T : Bus<T>> T.webNlpQuickReply(
     title: CharSequence,
     nlpText: String? = null,
     imageUrl: String? = null,
-    style: String? = ButtonStyle.primary.name
+    style: String? = ButtonStyle.primary.name,
 ): Button =
     QuickReply(
         translate(title).toString(),
         null,
         imageUrl,
         nlpText,
-        style
+        style,
     )
 
 /**
  * Creates a button from a text.
  */
-fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton =
-    WebButton(translate(text).toString())
+fun <T : Bus<T>> T.webTextButton(text: CharSequence): WebButton = WebButton(translate(text).toString())
 
 /**
  * Creates a [WebMessage] from a [WebCard].
@@ -310,12 +319,13 @@ fun <T : Bus<T>> T.webCard(card: WebCard): WebMessage = WebMessage(card = card)
 fun <T : Bus<T>> T.webCard(
     title: CharSequence?,
     subTitle: CharSequence?,
-    buttons: List<Button> = emptyList()
-): WebCard = WebCard(
-    title = translate(title).toString(),
-    subTitle = translate(subTitle).toString(),
-    buttons = buttons
-)
+    buttons: List<Button> = emptyList(),
+): WebCard =
+    WebCard(
+        title = translate(title).toString(),
+        subTitle = translate(subTitle).toString(),
+        buttons = buttons,
+    )
 
 fun <T : Bus<T>> T.webCardWithAttachment(
     title: CharSequence?,
@@ -324,18 +334,19 @@ fun <T : Bus<T>> T.webCardWithAttachment(
     buttons: List<Button>,
     type: AttachmentType = AttachmentType.file,
     attachementName: String = "",
-    fileDescription: CharSequence? = null
+    fileDescription: CharSequence? = null,
 ): WebCard {
     return WebCard(
         title = translate(title).toString(),
         subTitle = translate(subTitle).toString(),
-        file = WebMediaFile(
-            attachmentUrl.toString(),
-            attachementName,
-            type,
-            if (fileDescription != null) translate(fileDescription).toString() else null
-        ),
-        buttons = buttons
+        file =
+            WebMediaFile(
+                attachmentUrl.toString(),
+                attachementName,
+                type,
+                if (fileDescription != null) translate(fileDescription).toString() else null,
+            ),
+        buttons = buttons,
     )
 }
 
@@ -351,17 +362,23 @@ fun <T : Bus<T>> T.webCardWithAttachment(
  * @param title a title for the image, which is also used as a file name and an alternative description when `description` is left unspecified
  * @param description the alternate description for the image
  */
-fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence, description: CharSequence? = null): WebMessage {
+fun <T : Bus<T>> T.webImage(
+    imageUrl: String,
+    title: CharSequence,
+    description: CharSequence? = null,
+): WebMessage {
     val translatedTitle = translate(title)
     return WebMessage(
-        image = WebImage(
-            WebMediaFile(
-                imageUrl,
-                translatedTitle.toString(),
-                AttachmentType.image,
-                if (description != null) translate(description).toString() else null
-            ), translatedTitle
-        )
+        image =
+            WebImage(
+                WebMediaFile(
+                    imageUrl,
+                    translatedTitle.toString(),
+                    AttachmentType.image,
+                    if (description != null) translate(description).toString() else null,
+                ),
+                translatedTitle,
+            ),
     )
 }
 
@@ -369,11 +386,15 @@ fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence, description: 
  * Creates a [WebMessage] from a [WebCarousel].
  */
 
-fun <T : Bus<T>> T.webCarousel(vararg cards: WebCard, buttons: List<Button> = emptyList()): WebMessage =
-    WebMessage(carousel = WebCarousel(cards = cards.toList()), buttons = buttons)
+fun <T : Bus<T>> T.webCarousel(
+    vararg cards: WebCard,
+    buttons: List<Button> = emptyList(),
+): WebMessage = WebMessage(carousel = WebCarousel(cards = cards.toList()), buttons = buttons)
 
-fun <T : Bus<T>> T.webCarousel(cards: List<WebCard>, buttons: List<Button> = emptyList()): WebMessage =
-    WebMessage(carousel = WebCarousel(cards = cards), buttons = buttons)
+fun <T : Bus<T>> T.webCarousel(
+    cards: List<WebCard>,
+    buttons: List<Button> = emptyList(),
+): WebMessage = WebMessage(carousel = WebCarousel(cards = cards), buttons = buttons)
 
 /**
  * Creates a [OldWebMessage] from a [MediaCard].
@@ -390,7 +411,9 @@ fun <T : Bus<T>> T.webCarousel(carousel: MediaCarousel): OldWebMessage = OldWebM
 /**
  * Creates a custom payload
  */
-fun <T : Bus<T>> T.webWidget(widget: WebWidget, buttons: List<Button> = emptyList()): WebMessage =
-    WebMessage(widget = widget, buttons = buttons)
+fun <T : Bus<T>> T.webWidget(
+    widget: WebWidget,
+    buttons: List<Button> = emptyList(),
+): WebMessage = WebMessage(widget = widget, buttons = buttons)
 
 fun <T : Bus<T>> T.webDeepLink(ref: String): WebMessage = WebMessage(deepLink = WebDeepLink(ref))

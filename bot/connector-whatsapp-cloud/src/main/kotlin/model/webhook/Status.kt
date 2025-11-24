@@ -20,26 +20,26 @@ import ai.tock.bot.connector.whatsapp.cloud.model.common.Error
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Status(
-        @JsonProperty("id") val id: String,
-        @JsonProperty("conversation") val conversation: Conversation?,
-        @JsonProperty("pricing") val pricing: Pricing?,
-        @JsonProperty("recipient_id") val recipientId: String,
-        @JsonProperty("status") val status: MessageStatus,
-        @JsonProperty("timestamp") val timestamp: String,
-        @JsonProperty("errors") val errors: List<Error> = emptyList()
+    @JsonProperty("id") val id: String,
+    @JsonProperty("conversation") val conversation: Conversation?,
+    @JsonProperty("pricing") val pricing: Pricing?,
+    @JsonProperty("recipient_id") val recipientId: String,
+    @JsonProperty("status") val status: MessageStatus,
+    @JsonProperty("timestamp") val timestamp: String,
+    @JsonProperty("errors") val errors: List<Error> = emptyList(),
 )
 
 data class Conversation(
-        @JsonProperty("expiration_timestamp") val expirationTimestamp: String?,
-        @JsonProperty("origin") val origin: Origin,
-        @JsonProperty("id") val id: String
+    @JsonProperty("expiration_timestamp") val expirationTimestamp: String?,
+    @JsonProperty("origin") val origin: Origin,
+    @JsonProperty("id") val id: String,
 )
 
-data class Origin (
-        @JsonProperty("type")val type : String
+data class Origin(
+    @JsonProperty("type")val type: String,
 )
 
 data class Pricing(
-        @JsonProperty("pricing_model") val pricingModel: String,
-        @JsonProperty("category") val category: String,
+    @JsonProperty("pricing_model") val pricingModel: String,
+    @JsonProperty("category") val category: String,
 )

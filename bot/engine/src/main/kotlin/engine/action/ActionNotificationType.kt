@@ -19,6 +19,7 @@ package ai.tock.bot.engine.action
 /**
  * ActionTag deals with type of message notification.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ActionNotificationType {
     accountUpdate,
     confirmedEventUpdate,

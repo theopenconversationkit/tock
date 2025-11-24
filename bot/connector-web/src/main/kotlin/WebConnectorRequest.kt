@@ -38,7 +38,6 @@ data class WebConnectorRequest(
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
 ) : WebConnectorRequestContract {
-
     fun toEvent(applicationId: String): Event =
         if (query != null) {
             SendSentence(
@@ -46,10 +45,12 @@ data class WebConnectorRequest(
                 applicationId,
                 PlayerId(applicationId, bot),
                 query,
-                metadata = ActionMetadata(
-                    returnsHistory = returnsHistory,
-                    sourceWithContent = sourceWithContent,
-                    streamedResponse = streamedResponse)
+                metadata =
+                    ActionMetadata(
+                        returnsHistory = returnsHistory,
+                        sourceWithContent = sourceWithContent,
+                        streamedResponse = streamedResponse,
+                    ),
             )
         } else if (payload != null) {
             val (intent, parameters) = SendChoice.decodeChoiceId(payload)
@@ -59,10 +60,11 @@ data class WebConnectorRequest(
                 recipientId = PlayerId(applicationId, bot),
                 intentName = intent,
                 parameters = parameters + (if (ref == null) emptyMap() else mapOf(REFERRAL_PARAMETER to ref)),
-                metadata = ActionMetadata(
-                    returnsHistory = returnsHistory,
-                    streamedResponse = streamedResponse
-                )
+                metadata =
+                    ActionMetadata(
+                        returnsHistory = returnsHistory,
+                        streamedResponse = streamedResponse,
+                    ),
             )
         } else {
             if (ref != null) {
@@ -70,7 +72,7 @@ data class WebConnectorRequest(
                     userId = PlayerId(userId),
                     recipientId = PlayerId(applicationId, bot),
                     applicationId = applicationId,
-                    ref = ref
+                    ref = ref,
                 )
             } else {
                 error("query & payload are both null")

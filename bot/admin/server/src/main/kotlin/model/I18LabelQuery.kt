@@ -25,12 +25,13 @@ data class I18LabelQuery(
     val label: String? = null,
     val category: String? = null,
     val state: I18nLabelStateQuery? = null,
-    val notUsedSince: Long? = null
+    val notUsedSince: Long? = null,
 ) {
-    fun toI18nLabelFilter(): I18nLabelFilter = I18nLabelFilter(
-        label = label,
-        category = category,
-        state = state?.filter ?: I18nLabelStateFilter.ALL,
-        notUsedSince = notUsedSince?.let { Instant.now().minus(it, ChronoUnit.DAYS) }
-    )
+    fun toI18nLabelFilter(): I18nLabelFilter =
+        I18nLabelFilter(
+            label = label,
+            category = category,
+            state = state?.filter ?: I18nLabelStateFilter.ALL,
+            notUsedSince = notUsedSince?.let { Instant.now().minus(it, ChronoUnit.DAYS) },
+        )
 }

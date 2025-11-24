@@ -26,5 +26,5 @@ import java.time.Instant
 data class NlpModelStream(
     val inputStream: InputStream,
     val updatedDate: Instant,
-    val configuration: NlpApplicationConfiguration?
+    val configuration: NlpApplicationConfiguration?,
 )

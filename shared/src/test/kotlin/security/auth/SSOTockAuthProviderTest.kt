@@ -19,10 +19,7 @@ package ai.tock.shared.security.auth
 import ai.tock.shared.VertxMock
 import ai.tock.shared.vertx.WebVerticle
 import io.mockk.mockk
-import io.vertx.core.AsyncResult
 import io.vertx.core.Future
-import io.vertx.core.Handler
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.User
 import io.vertx.ext.auth.authentication.Credentials
 import io.vertx.ext.web.handler.AuthenticationHandler
@@ -30,21 +27,20 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class SSOTockAuthProviderTest {
-
     @Test
     fun `excludedPaths match static files`() {
-        val sso = object : SSOTockAuthProvider(VertxMock()) {
+        val sso =
+            object : SSOTockAuthProvider(VertxMock()) {
+                fun test(verticle: WebVerticle): Set<Regex> {
+                    return super.excludedPaths(verticle)
+                }
 
-            fun test(verticle: WebVerticle): Set<Regex> {
-                return super.excludedPaths(verticle)
+                override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
+                    return mockk()
+                }
+
+                override fun authenticate(credentials: Credentials?): Future<User?> = mockk()
             }
-
-            override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
-                return mockk()
-            }
-
-            override fun authenticate(credentials: Credentials?): Future<User?> = mockk()
-        }
         val excluded = sso.test(mockk(relaxed = true))
         assertTrue { excluded.any { it.matches("5.dc9d94109f8f028b46a1.js") } }
         assertTrue { excluded.any { it.matches("Roboto-Medium.2741a14.woff2") } }

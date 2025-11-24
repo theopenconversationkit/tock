@@ -25,15 +25,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-private val LABEL = I18nLabel(
-    _id = "id".toId(),
-    namespace = "syntactic_namespace",
-    category = "syntactic_category",
-    i18n = LinkedHashSet()
-)
+private val LABEL =
+    I18nLabel(
+        _id = "id".toId(),
+        namespace = "syntactic_namespace",
+        category = "syntactic_category",
+        i18n = LinkedHashSet(),
+    )
 
 internal class BotMediaActionDescriptorTest {
-
     @Test
     internal fun `GIVEN BotMediaActionDescriptor with an empty url WHEN toDescriptor is called THEN transform to a null url`() {
         val descriptor = BotMediaActionDescriptor(title = LABEL, url = "")

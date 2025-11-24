@@ -24,7 +24,6 @@ import java.util.Locale
  *
  */
 interface EntityTypeDefinitionDAO {
-
     /**
      * Listen changes on entity type definitions.
      */
@@ -63,7 +62,15 @@ interface EntityTypeDefinitionDAO {
      */
     fun getDictionaryDataByNamespace(namespace: String): List<DictionaryData>
 
-    fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
+    fun deletePredefinedValueByName(
+        entityTypeName: String,
+        predefinedValue: String,
+    )
 
-    fun deletePredefinedValueLabelByName(entityTypeName: String, predefinedValue: String, locale: Locale, label: String)
+    fun deletePredefinedValueLabelByName(
+        entityTypeName: String,
+        predefinedValue: String,
+        locale: Locale,
+        label: String,
+    )
 }

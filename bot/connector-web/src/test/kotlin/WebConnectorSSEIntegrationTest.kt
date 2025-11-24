@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import ai.tock.bot.connector.web.WebConnectorRequest
 import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.engine.event.MetadataEvent
@@ -32,35 +31,35 @@ import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 class WebConnectorSSEIntegrationTest {
-
     @Test
     fun `send SSE message`() {
         // Creating the EventSource object
-        val eventSource = BackgroundEventSource
-            .Builder(
-                SseEventHandler(),
-                EventSource.Builder(
-                    ConnectStrategy
-                        .http(URI.create("http://localhost:8080/invictus/sse/direct").toURL())
-                        // Specifying custom request headers
-                        .header(
-                            "message",
-                            mapper.writeValueAsString(
-                                WebConnectorRequest(
-                                    userId = "userId",
-                                    locale = Locale.FRENCH,
-                                    streamedResponse = true,
-                                    query = "Bonjour"
-                                )
+        val eventSource =
+            BackgroundEventSource
+                .Builder(
+                    SseEventHandler(),
+                    EventSource.Builder(
+                        ConnectStrategy
+                            .http(URI.create("http://localhost:8080/invictus/sse/direct").toURL())
+                            // Specifying custom request headers
+                            .header(
+                                "message",
+                                mapper.writeValueAsString(
+                                    WebConnectorRequest(
+                                        userId = "userId",
+                                        locale = Locale.FRENCH,
+                                        streamedResponse = true,
+                                        query = "Bonjour",
+                                    ),
+                                ),
                             )
-                        )
-                        .connectTimeout(3, TimeUnit.SECONDS)
-                        // Setting the maximum connection time, longer than the maximum connection time set by the server
-                        .readTimeout(600, TimeUnit.SECONDS)
+                            .connectTimeout(3, TimeUnit.SECONDS)
+                            // Setting the maximum connection time, longer than the maximum connection time set by the server
+                            .readTimeout(600, TimeUnit.SECONDS),
+                    ),
                 )
-            )
-            .threadPriority(Thread.MAX_PRIORITY)
-            .build()
+                .threadPriority(Thread.MAX_PRIORITY)
+                .build()
 
         // Starting the EventSource connection
         eventSource.start()
@@ -69,7 +68,6 @@ class WebConnectorSSEIntegrationTest {
 }
 
 class SseEventHandler() : BackgroundEventHandler {
-
     override fun onOpen() {
         // Write logic for handling successful SSE connection
         println("open connection")
@@ -81,7 +79,10 @@ class SseEventHandler() : BackgroundEventHandler {
         exitProcess(0)
     }
 
-    override fun onMessage(event: String, messageEvent: MessageEvent) {
+    override fun onMessage(
+        event: String,
+        messageEvent: MessageEvent,
+    ) {
         // Write logic for handling arrival of SSE events
         println("Event: $event")
         println("Message: ${messageEvent.data}")

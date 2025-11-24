@@ -20,4 +20,3 @@ data class CompletionResponse(
     val answer: String,
     val observabilityInfo: ObservabilityInfo? = null,
 )
-

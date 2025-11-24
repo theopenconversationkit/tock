@@ -26,17 +26,19 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
  */
 data class ScriptAnswerConfigurationDump(
     val scriptVersions: List<ScriptAnswerVersionedConfigurationDump>,
-    val current: ScriptAnswerVersionedConfigurationDump = scriptVersions.maxByOrNull { it.date } ?: error("no script version found")
+    val current: ScriptAnswerVersionedConfigurationDump = scriptVersions.maxByOrNull { it.date } ?: error("no script version found"),
 ) : AnswerConfigurationDump(AnswerConfigurationType.script) {
-
     constructor(conf: ScriptAnswerConfiguration) : this(
-        conf.scriptVersions.map { ScriptAnswerVersionedConfigurationDump(it) }
+        conf.scriptVersions.map { ScriptAnswerVersionedConfigurationDump(it) },
     )
 
-    override fun toAnswer(currentType: AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController): AnswerConfiguration {
+    override fun toAnswer(
+        currentType: AnswerConfigurationType,
+        controller: StoryDefinitionConfigurationDumpController,
+    ): AnswerConfiguration {
         val newCurrent = current.toAnswer(controller, currentType == script)
         return ScriptAnswerConfiguration(
-            scriptVersions.map { if (it == current) newCurrent else it.toAnswer(controller) }
+            scriptVersions.map { if (it == current) newCurrent else it.toAnswer(controller) },
         )
     }
 }

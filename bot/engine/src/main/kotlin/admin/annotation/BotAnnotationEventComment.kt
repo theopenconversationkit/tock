@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.annotation
 
-import com.fasterxml.jackson.annotation.JsonTypeName
 import org.litote.kmongo.Id
 import java.time.Instant
 

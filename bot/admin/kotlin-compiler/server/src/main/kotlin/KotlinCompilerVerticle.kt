@@ -30,7 +30,6 @@ import mu.KotlinLogging
  *
  */
 class KotlinCompilerVerticle : WebVerticle() {
-
     override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {

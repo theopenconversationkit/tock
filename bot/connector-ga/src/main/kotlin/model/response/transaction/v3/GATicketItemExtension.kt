@@ -24,7 +24,7 @@ import ai.tock.bot.connector.ga.model.request.GALocation
 data class GATicketItemExtension(
     val ticketEvent: TicketEvent,
     val quantity: Int?,
-    val ticketType: String?
+    val ticketType: String?,
 )
 
 data class TicketEvent(
@@ -32,8 +32,7 @@ data class TicketEvent(
     val name: String,
     val description: String?,
     val url: String?,
-    val location: GALocation?
-
+    val location: GALocation?,
 )
 
 enum class TicketEventType {

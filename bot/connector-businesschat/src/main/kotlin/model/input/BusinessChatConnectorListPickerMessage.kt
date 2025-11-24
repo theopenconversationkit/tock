@@ -23,13 +23,13 @@ data class BusinessChatConnectorListPickerMessage(
     val subtitle: String?,
     val listDetails: String,
     val multipleSelection: Boolean,
-    val items: List<ListPickerItem>
+    val items: List<ListPickerItem>,
 ) : BusinessChatConnectorMessage()
 
 data class ListPickerItem(
     val title: String,
     val subtitle: String? = null,
-    val image: ByteArray? = null
+    val image: ByteArray? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -42,7 +42,9 @@ data class ListPickerItem(
         if (image != null) {
             if (other.image == null) return false
             if (!image.contentEquals(other.image)) return false
-        } else if (other.image != null) return false
+        } else if (other.image != null) {
+            return false
+        }
 
         return true
     }

@@ -48,40 +48,41 @@ import java.time.Instant
  *
  */
 internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
-
     private val logger = KotlinLogging.logger {}
     private const val MIN_BUILD_SIZE = 2
 
     override fun buildIntentModel(
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): IntentModelHolder {
         val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language, configuration))
         val tokenizerContext = TokenizerContext(context)
 
-        val model = if (expressions.size < MIN_BUILD_SIZE) {
-            GISModel(arrayOf(), arrayOf(), arrayOf())
-        } else {
-            val events = ObjectStreamUtils.createObjectStream(
-                expressions
-                    .map {
-                        Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
-                    }
-            )
-            val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
-            val param = TrainingParameters()
-            if (expressions.size < 1000) {
-                param.put(CUTOFF_PARAM, 1)
-            }
-            configuration.intentConfiguration.properties.forEach {
-                param.put(it.key.toString(), it.value?.toString())
-            }
+        val model =
+            if (expressions.size < MIN_BUILD_SIZE) {
+                GISModel(arrayOf(), arrayOf(), arrayOf())
+            } else {
+                val events =
+                    ObjectStreamUtils.createObjectStream(
+                        expressions
+                            .map {
+                                Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
+                            },
+                    )
+                val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
+                val param = TrainingParameters()
+                if (expressions.size < 1000) {
+                    param.put(CUTOFF_PARAM, 1)
+                }
+                configuration.intentConfiguration.properties.forEach {
+                    param.put(it.key.toString(), it.value?.toString())
+                }
 
-            dataIndexer.init(param, null)
-            dataIndexer.index(events)
-            GISTrainer().trainModel(1000, dataIndexer)
-        }
+                dataIndexer.init(param, null)
+                dataIndexer.index(events)
+                GISTrainer().trainModel(1000, dataIndexer)
+            }
 
         return IntentModelHolder(context.application, model, configuration, Instant.now())
     }
@@ -89,68 +90,71 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
     override fun buildEntityModel(
         context: EntityBuildContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): EntityModelHolder? {
-        val model = if (expressions.size < MIN_BUILD_SIZE) {
-            null
-        } else {
-            val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language, configuration))
-            val tokenizerContext = TokenizerContext(context)
-
-            val spanEntityMap = mutableMapOf<Span, SampleEntity>()
-
-            var entityCount = 0
-            val trainingEvents = expressions.mapNotNull { expression ->
-                val text = expression.text
-                val tokens = tokenizer.tokenize(tokenizerContext, text)
-                val spans = expression.entities.mapNotNull { e ->
-                    val start =
-                        if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
-                    val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
-                    if (start >= tokens.size || end > tokens.size) {
-                        null
-                    } else {
-                        entityCount++
-                        val roleSpan = Span(start, end, e.definition.role)
-                        spanEntityMap.put(roleSpan, e)
-                        roleSpan
-                    }
-                }.toTypedArray().sortedArray()
-
-                if (spans.size == expression.entities.size) {
-                    try {
-                        NameSample(
-                            tokens,
-                            spans,
-                            false
-                        )
-                    } catch (e: Exception) {
-                        logger.warn("error with $text when reunify entities", e)
-                        null
-                    }
-                } else {
-                    logger.warn { "error with $text when reunify entities" }
-                    null
-                }
-            }
-
-            if (entityCount < MIN_BUILD_SIZE) {
+        val model =
+            if (expressions.size < MIN_BUILD_SIZE) {
                 null
             } else {
-                val params = TrainingParameters()
-                configuration.entityConfiguration.properties.forEach {
-                    params.put(it.key.toString(), it.value?.toString())
-                }
+                val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language, configuration))
+                val tokenizerContext = TokenizerContext(context)
 
-                NameFinderME.train(
-                    context.language.language,
-                    null,
-                    ObjectStreamUtils.createObjectStream(trainingEvents),
-                    params,
-                    TokenNameFinderFactory(null, null, BilouCodec())
-                )
+                val spanEntityMap = mutableMapOf<Span, SampleEntity>()
+
+                var entityCount = 0
+                val trainingEvents =
+                    expressions.mapNotNull { expression ->
+                        val text = expression.text
+                        val tokens = tokenizer.tokenize(tokenizerContext, text)
+                        val spans =
+                            expression.entities.mapNotNull { e ->
+                                val start =
+                                    if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
+                                val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
+                                if (start >= tokens.size || end > tokens.size) {
+                                    null
+                                } else {
+                                    entityCount++
+                                    val roleSpan = Span(start, end, e.definition.role)
+                                    spanEntityMap.put(roleSpan, e)
+                                    roleSpan
+                                }
+                            }.toTypedArray().sortedArray()
+
+                        if (spans.size == expression.entities.size) {
+                            try {
+                                NameSample(
+                                    tokens,
+                                    spans,
+                                    false,
+                                )
+                            } catch (e: Exception) {
+                                logger.warn("error with $text when reunify entities", e)
+                                null
+                            }
+                        } else {
+                            logger.warn { "error with $text when reunify entities" }
+                            null
+                        }
+                    }
+
+                if (entityCount < MIN_BUILD_SIZE) {
+                    null
+                } else {
+                    val params = TrainingParameters()
+                    configuration.entityConfiguration.properties.forEach {
+                        params.put(it.key.toString(), it.value?.toString())
+                    }
+
+                    NameFinderME.train(
+                        context.language.language,
+                        null,
+                        ObjectStreamUtils.createObjectStream(trainingEvents),
+                        params,
+                        TokenNameFinderFactory(null, null, BilouCodec()),
+                    )
+                }
             }
-        }
 
         return if (model == null) null else EntityModelHolder(OpenNlpNameFinderME(model), configuration, Instant.now())
     }
@@ -171,6 +175,6 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
         NlpApplicationConfiguration(
             intentConfiguration = defaultIntentClassifierConfiguration,
             entityConfiguration = defaultEntityClassifierConfiguration,
-            hasTokenizerConfiguration = false
+            hasTokenizerConfiguration = false,
         )
 }

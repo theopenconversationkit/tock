@@ -20,11 +20,11 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 
 enum class MessageTag {
-
     CONFIRMED_EVENT_UPDATE,
     POST_PURCHASE_UPDATE,
     ACCOUNT_UPDATE,
-    HUMAN_AGENT;
+    HUMAN_AGENT,
+    ;
 
     companion object {
         fun toMessageTag(action: Action): MessageTag? {

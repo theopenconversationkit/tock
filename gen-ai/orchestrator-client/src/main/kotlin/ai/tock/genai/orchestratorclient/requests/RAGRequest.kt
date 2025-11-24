@@ -36,5 +36,3 @@ data class RAGRequest(
     val observabilitySetting: ObservabilitySetting?,
     val documentsRequired: Boolean = true,
 )
-
-

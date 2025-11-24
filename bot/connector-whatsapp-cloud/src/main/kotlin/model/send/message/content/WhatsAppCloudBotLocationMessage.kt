@@ -25,19 +25,22 @@ import ai.tock.bot.connector.whatsapp.cloud.services.WhatsAppCloudApiService
 import ai.tock.bot.engine.message.GenericMessage
 
 data class WhatsAppCloudBotLocationMessage(
-        val location: WhatsAppCloudBotLocation,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val userId: String? = null,
+    val location: WhatsAppCloudBotLocation,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val userId: String? = null,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.location, userId) {
-    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotLocationMessage(
-                    location,
-                    recipientType,
-                    recipientId
-            )
+    override fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String,
+    ): WhatsAppCloudSendBotMessage =
+        WhatsAppCloudSendBotLocationMessage(
+            location,
+            recipientType,
+            recipientId,
+        )
 
     override fun toGenericMessage(): GenericMessage? =
-            GenericMessage(
-                    texts = mapOf(GenericMessage.TEXT_PARAM to "location"),
-            )
+        GenericMessage(
+            texts = mapOf(GenericMessage.TEXT_PARAM to "location"),
+        )
 }

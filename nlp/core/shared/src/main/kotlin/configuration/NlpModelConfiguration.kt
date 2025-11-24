@@ -25,5 +25,5 @@ data class NlpModelConfiguration(
     val properties: Properties = Properties(),
     val markdown: String? = null,
     val hasProperties: Boolean = true,
-    val hasMarkdown: Boolean = false
+    val hasMarkdown: Boolean = false,
 )

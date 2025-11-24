@@ -26,10 +26,9 @@ import java.util.Locale
 import kotlin.text.RegexOption.IGNORE_CASE
 
 internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
-
     override fun classifyEntities(
         context: EntityCallContext,
-        text: String
+        text: String,
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, text.stripAccents().trim())
@@ -38,7 +37,10 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         }
     }
 
-    private fun classifyForIntent(context: EntityCallContextForIntent, text: String): List<EntityTypeRecognition> {
+    private fun classifyForIntent(
+        context: EntityCallContextForIntent,
+        text: String,
+    ): List<EntityTypeRecognition> {
         return context
             .intent
             .entities
@@ -64,20 +66,22 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
                                         .filterNotNull()
                                         .firstOrNull { it.value.equals(synonym, true) }
                                         ?.let { g ->
-                                            val predefinedValueOfSynonym = predefinedValueOfSynonym(
-                                                context.language,
-                                                labelsMap,
-                                                synonym
-                                            )
+                                            val predefinedValueOfSynonym =
+                                                predefinedValueOfSynonym(
+                                                    context.language,
+                                                    labelsMap,
+                                                    synonym,
+                                                )
                                             if (predefinedValueOfSynonym != null) {
                                                 EntityTypeRecognition(
                                                     EntityTypeValue(
                                                         g.range.first,
                                                         g.range.last + 1,
                                                         e,
-                                                        predefinedValueOfSynonym.value, true
+                                                        predefinedValueOfSynonym.value,
+                                                        true,
                                                     ),
-                                                    1.0
+                                                    1.0,
                                                 )
                                             } else {
                                                 null
@@ -97,7 +101,7 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
     private fun predefinedValueOfSynonym(
         locale: Locale,
         predefinedValues: Map<PredefinedValue, List<String>?>,
-        text: String
+        text: String,
     ): PredefinedValue? {
         for (predefinedValue in predefinedValues.keys) {
             val allValues = predefinedValues[predefinedValue]
@@ -110,5 +114,4 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         }
         return null
     }
-
 }

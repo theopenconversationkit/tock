@@ -17,7 +17,7 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.template.management
 
 data class CreateTemplateResponse(
-        val id: String,
-        val status: String,
-        val category: String
+    val id: String,
+    val status: String,
+    val category: String,
 )

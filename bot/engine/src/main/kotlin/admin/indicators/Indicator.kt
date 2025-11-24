@@ -38,5 +38,5 @@ data class Indicator(
     val namespace: String,
     val botId: String,
     val dimensions: Set<String> = mutableSetOf(),
-    val values: Set<IndicatorValue>
+    val values: Set<IndicatorValue>,
 )

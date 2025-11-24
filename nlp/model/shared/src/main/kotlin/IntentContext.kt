@@ -28,9 +28,8 @@ data class IntentContext(
     val application: Application,
     override val language: Locale,
     override val engineType: NlpEngineType,
-    override val applicationName: String = application.name
+    override val applicationName: String = application.name,
 ) : ClassifierContext<IntentContextKey> {
-
     constructor(callContext: CallContext) : this(callContext.application, callContext.language, callContext.engineType)
 
     constructor(testContext: TestContext) : this(testContext.callContext)
@@ -38,13 +37,13 @@ data class IntentContext(
     constructor(buildContext: BuildContext) : this(
         buildContext.application,
         buildContext.language,
-        buildContext.engineType
+        buildContext.engineType,
     )
 
     data class IntentContextKey(
         override val applicationName: String,
         val language: Locale,
-        override val engineType: NlpEngineType
+        override val engineType: NlpEngineType,
     ) : ClassifierContextKey {
         override fun id(): String {
             return "$applicationName-$language-${engineType.name}"

@@ -34,14 +34,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class LogObfuscationServiceTest {
-
     @BeforeTest
     fun beforeTest() {
         TockObfuscatorService.registerStringObfuscator(
             SimpleObfuscator(
                 "test@test.com".toRegex(),
-                "****@********"
-            )
+                "****@********",
+            ),
         )
     }
 
@@ -52,22 +51,26 @@ internal class LogObfuscationServiceTest {
 
     @Test
     fun `entities have to be also obfuscated`() {
-        val log = ParseRequestLog(
-            "appId".toId(),
-            ParseQuery(listOf("test@test.com"), "test", "test", QueryContext(defaultLocale),configuration = null),
-            ParseResult(
-                "intent",
-                "namespace",
-                defaultLocale,
-                listOf(
-                    ParsedEntityValue(
-                        0, "test@test.com".length, Entity(EntityType("entity"), "role"), EmailValue("test@test.com")
-                    )
+        val log =
+            ParseRequestLog(
+                "appId".toId(),
+                ParseQuery(listOf("test@test.com"), "test", "test", QueryContext(defaultLocale), configuration = null),
+                ParseResult(
+                    "intent",
+                    "namespace",
+                    defaultLocale,
+                    listOf(
+                        ParsedEntityValue(
+                            0,
+                            "test@test.com".length,
+                            Entity(EntityType("entity"), "role"),
+                            EmailValue("test@test.com"),
+                        ),
+                    ),
+                    retainedQuery = "test@test.com",
                 ),
-                retainedQuery = "test@test.com"
-            ),
-            100L
-        )
+                100L,
+            )
 
         val service = LogObfuscationService()
         val obfuscated = service.obfuscate(log)

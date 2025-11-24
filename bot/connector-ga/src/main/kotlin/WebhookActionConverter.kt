@@ -46,10 +46,9 @@ import ai.tock.bot.engine.user.UserLocation
  *
  */
 internal object WebhookActionConverter {
-
     fun toEvent(
         message: GARequest,
-        applicationId: String
+        applicationId: String,
     ): Event {
         val eventState = message.getEventState()
         val userInterface = eventState.userInterface
@@ -69,15 +68,16 @@ internal object WebhookActionConverter {
                         botId,
                         UserLocation(
                             latitude,
-                            longitude
-                        )
+                            longitude,
+                        ),
                     )
                 }
             } else if (input.arguments?.any { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
-                val params = SendChoice.decodeChoiceId(
-                    input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
-                        ?: error("no text value")
-                )
+                val params =
+                    SendChoice.decodeChoiceId(
+                        input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
+                            ?: error("no text value"),
+                    )
                 // Google assistant makes an somewhat erroneous nlp selection sometimes
                 // to avoid that, double check the label
                 if (input.rawInputs.firstOrNull()?.query?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false) {
@@ -87,7 +87,7 @@ internal object WebhookActionConverter {
                         botId,
                         params.first,
                         params.second,
-                        state = eventState
+                        state = eventState,
                     )
                 }
             } else if (input.rawInputs.any { it.inputType == URL }) {
@@ -96,10 +96,11 @@ internal object WebhookActionConverter {
                     applicationId,
                     botId,
                     input.intent.substringAfter("tock."),
-                    parameters = input.arguments?.filter { it.textValue != null }?.map {
-                        it.name to it.textValue!!
-                    }?.toMap().orEmpty(),
-                    state = eventState
+                    parameters =
+                        input.arguments?.filter { it.textValue != null }?.map {
+                            it.name to it.textValue!!
+                        }?.toMap().orEmpty(),
+                    state = eventState,
                 )
             }
 
@@ -112,27 +113,30 @@ internal object WebhookActionConverter {
                 GAIntent.main -> StartConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.cancel -> EndConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
-                GAIntent.newSurface -> NewDeviceEvent(
-                    playerId,
-                    botId,
-                    applicationId,
-                    (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.NEW_SURFACE }?.extension as GANewSurfaceValue).status.toString()
-                ).setEventState()
-                GAIntent.mediaStatus -> MediaStatusEvent(
-                    playerId,
-                    botId,
-                    applicationId,
-                    (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.MEDIA_STATUS }?.extension as GAMediaStatusValue).status.toString()
-                ).setEventState()
+                GAIntent.newSurface ->
+                    NewDeviceEvent(
+                        playerId,
+                        botId,
+                        applicationId,
+                        (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.NEW_SURFACE }?.extension as GANewSurfaceValue).status.toString(),
+                    ).setEventState()
+                GAIntent.mediaStatus ->
+                    MediaStatusEvent(
+                        playerId,
+                        botId,
+                        applicationId,
+                        (input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.MEDIA_STATUS }?.extension as GAMediaStatusValue).status.toString(),
+                    ).setEventState()
                 GAIntent.signIn -> {
                     when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {
-                        GASignInStatus.OK -> LoginEvent(
-                            playerId,
-                            botId,
-                            message.user.accessToken ?: "",
-                            applicationId,
-                            previousUserId = PlayerId(message.conversation.conversationId, PlayerType.user)
-                        )
+                        GASignInStatus.OK ->
+                            LoginEvent(
+                                playerId,
+                                botId,
+                                message.user.accessToken ?: "",
+                                applicationId,
+                                previousUserId = PlayerId(message.conversation.conversationId, PlayerType.user),
+                            )
                         else -> LogoutEvent(playerId, botId, applicationId)
                     }
                 }
@@ -149,7 +153,7 @@ internal object WebhookActionConverter {
                         botId,
                         text,
                         mutableListOf(GARequestConnectorMessage(message)),
-                        state = eventState
+                        state = eventState,
                     )
                 }
             }

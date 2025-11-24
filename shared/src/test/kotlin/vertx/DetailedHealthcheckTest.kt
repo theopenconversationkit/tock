@@ -33,13 +33,13 @@ import kotlin.test.assertTrue
 
 data class Task(
     var returnValue: Boolean,
-    var invoked: Boolean
+    var invoked: Boolean,
 )
 
 class DetailedHealthcheckTest {
-
     @RelaxedMockK
     lateinit var routingContext: RoutingContext
+
     @RelaxedMockK
     lateinit var response: HttpServerResponse
 
@@ -51,14 +51,27 @@ class DetailedHealthcheckTest {
     private val taskC = Task(true, false)
     private val selfCheck = Task(true, false)
 
-    private val healthcheck = detailedHealthcheck(
-        listOf(
-            Pair("a", { taskA.invoked = true; taskA.returnValue }),
-            Pair("b", { taskB.invoked = true; taskB.returnValue }),
-            Pair("c", { taskC.invoked = true; taskC.returnValue })
-        ),
-        selfCheck = { selfCheck.invoked = true; selfCheck.returnValue }
-    )
+    private val healthcheck =
+        detailedHealthcheck(
+            listOf(
+                Pair("a", {
+                    taskA.invoked = true
+                    taskA.returnValue
+                }),
+                Pair("b", {
+                    taskB.invoked = true
+                    taskB.returnValue
+                }),
+                Pair("c", {
+                    taskC.invoked = true
+                    taskC.returnValue
+                }),
+            ),
+            selfCheck = {
+                selfCheck.invoked = true
+                selfCheck.returnValue
+            },
+        )
 
     @BeforeEach
     fun beforeEach() {
@@ -82,7 +95,7 @@ class DetailedHealthcheckTest {
             taskA.invoked &&
                 taskB.invoked &&
                 taskC.invoked &&
-                selfCheck.invoked
+                selfCheck.invoked,
         )
     }
 
@@ -94,7 +107,7 @@ class DetailedHealthcheckTest {
             !taskA.invoked &&
                 !taskB.invoked &&
                 !taskC.invoked &&
-                selfCheck.invoked
+                selfCheck.invoked,
         )
     }
 

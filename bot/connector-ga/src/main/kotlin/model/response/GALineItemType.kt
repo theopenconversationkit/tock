@@ -27,5 +27,5 @@ enum class GALineItemType {
     GRATUITY,
     DELIVERY,
     SUBTOTAL,
-    FEE
+    FEE,
 }

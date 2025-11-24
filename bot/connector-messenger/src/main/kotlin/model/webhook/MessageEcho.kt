@@ -27,5 +27,5 @@ data class MessageEcho(
     override val attachments: List<Attachment> = emptyList(),
     @JsonProperty("is_echo") val echo: Boolean = true,
     @JsonProperty("app_id") val appId: Long,
-    val metadata: String? = null
+    val metadata: String? = null,
 ) : Message(mid, text, attachments)

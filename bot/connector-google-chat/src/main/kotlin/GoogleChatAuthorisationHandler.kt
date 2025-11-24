@@ -40,7 +40,7 @@ enum class VerificationFailure {
     CANNOT_BE_PARSED,
     GLOBAL_VERIFICATION_FAILED,
     AUDIENCE_VERIFICATION_FAILED,
-    ISSUER_VERIFICATION_FAILED
+    ISSUER_VERIFICATION_FAILED,
 }
 
 class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Handler<RoutingContext> {
@@ -51,29 +51,33 @@ class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Han
 
     init {
         jsonFactory = JacksonFactory()
-        verifier = GoogleIdTokenVerifier.Builder(
-            GooglePublicKeysManager.Builder(ApacheHttpTransport(), jsonFactory)
-                .setPublicCertsEncodedUrl(PUBLIC_CERT_URL_PREFIX + CHAT_ISSUER)
+        verifier =
+            GoogleIdTokenVerifier.Builder(
+                GooglePublicKeysManager.Builder(ApacheHttpTransport(), jsonFactory)
+                    .setPublicCertsEncodedUrl(PUBLIC_CERT_URL_PREFIX + CHAT_ISSUER)
+                    .build(),
+            ).setIssuer(CHAT_ISSUER)
                 .build()
-        ).setIssuer(CHAT_ISSUER)
-            .build()
     }
 
     override fun handle(routingContext: RoutingContext) {
-        val token = routingContext.request().getHeader("Authorization")?.takeIf { it.startsWith(BEARER_PREFIX) }
-            ?.substringAfter(BEARER_PREFIX)
-        if (hasFailure(token)?.also { logger.error { "Token ($token) verification failed. Cause : $it" } } != null)
+        val token =
+            routingContext.request().getHeader("Authorization")?.takeIf { it.startsWith(BEARER_PREFIX) }
+                ?.substringAfter(BEARER_PREFIX)
+        if (hasFailure(token)?.also { logger.error { "Token ($token) verification failed. Cause : $it" } } != null) {
             routingContext.response().setStatusCode(HttpStatus.SC_FORBIDDEN).end()
-        else
+        } else {
             routingContext.next()
+        }
     }
 
     private fun hasFailure(token: String?): VerificationFailure? {
-        val idToken: GoogleIdToken = GoogleIdToken.parse(
-            jsonFactory,
-            token ?: return VerificationFailure.NO_BEARER_AUTHORISATION
-        )
-            ?: return VerificationFailure.CANNOT_BE_PARSED
+        val idToken: GoogleIdToken =
+            GoogleIdToken.parse(
+                jsonFactory,
+                token ?: return VerificationFailure.NO_BEARER_AUTHORISATION,
+            )
+                ?: return VerificationFailure.CANNOT_BE_PARSED
 
         return when {
             !verifier.verify(idToken) -> VerificationFailure.GLOBAL_VERIFICATION_FAILED

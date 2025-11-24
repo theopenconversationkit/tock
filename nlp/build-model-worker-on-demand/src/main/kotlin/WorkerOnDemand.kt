@@ -18,5 +18,6 @@ package ai.tock.nlp.build.ondemand
 
 interface WorkerOnDemand {
     fun start(callback: (status: WorkerOnDemandStatus) -> Unit)
+
     fun summary(): WorkerOnDemandSummary
 }

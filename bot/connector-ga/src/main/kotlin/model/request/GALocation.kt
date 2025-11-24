@@ -24,5 +24,5 @@ data class GALocation(
     val postalAddress: GAPostalAddress?,
     val name: String?,
     val phoneNumber: String?,
-    val notes: String?
+    val notes: String?,
 )

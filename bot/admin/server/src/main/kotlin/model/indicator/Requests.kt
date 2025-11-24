@@ -29,9 +29,8 @@ abstract class BaseIndicatorRequest(
     open val label: String,
     open val description: String? = null,
     open val dimensions: Set<String> = mutableSetOf(),
-    open val values: Set<IndicatorValueRequest>
+    open val values: Set<IndicatorValueRequest>,
 ) : ToValidate {
-
     override fun validate(): List<String> {
         val errors = mutableListOf<String>()
         if (label.isBlank()) errors.add("Indicator's label is required")
@@ -56,9 +55,8 @@ data class SaveIndicatorRequest(
     override val label: String,
     override val description: String? = null,
     override val dimensions: Set<String> = mutableSetOf(),
-    override val values: Set<IndicatorValueRequest>
+    override val values: Set<IndicatorValueRequest>,
 ) : BaseIndicatorRequest(label, description, dimensions, values) {
-
     override fun validate(): List<String> {
         val errors = mutableListOf<String>()
         if (name.isBlank()) errors.add("Indicator's name is required")
@@ -92,7 +90,5 @@ data class UpdateIndicatorRequest(
     override val label: String,
     override val description: String? = null,
     override val dimensions: Set<String> = mutableSetOf(),
-    override val values: Set<IndicatorValueRequest>
+    override val values: Set<IndicatorValueRequest>,
 ) : BaseIndicatorRequest(label, description, dimensions, values)
-
-

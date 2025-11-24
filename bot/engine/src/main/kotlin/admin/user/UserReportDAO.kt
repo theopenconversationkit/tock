@@ -20,7 +20,7 @@ package ai.tock.bot.admin.user
  * To search users, everywhere.
  */
 interface UserReportDAO {
-
     fun search(query: UserReportQuery): UserReportQueryResult
+
     fun search(query: AnalyticsQuery): List<UserAnalytics>
 }

@@ -20,26 +20,24 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudM
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Value(
-        @JsonProperty("messaging_product") val messagingProduct: String,
-        @JsonProperty("metadata") val metadata: Metadata,
-        @JsonProperty("contacts") val contacts: List<Contact> = emptyList(),
-        @JsonProperty("messages") val messages: List<WhatsAppCloudMessage> = emptyList(),
-        @JsonProperty("statuses") val statuses: List<Status> = emptyList(),
-        @JsonProperty("errors") val errors: List<Error> = emptyList()
-
-        )
+    @JsonProperty("messaging_product") val messagingProduct: String,
+    @JsonProperty("metadata") val metadata: Metadata,
+    @JsonProperty("contacts") val contacts: List<Contact> = emptyList(),
+    @JsonProperty("messages") val messages: List<WhatsAppCloudMessage> = emptyList(),
+    @JsonProperty("statuses") val statuses: List<Status> = emptyList(),
+    @JsonProperty("errors") val errors: List<Error> = emptyList(),
+)
 
 data class Metadata(
-        @JsonProperty("display_phone_number") val displayPhoneNumber: String,
-        @JsonProperty("phone_number_id") val phoneNumberId: String
+    @JsonProperty("display_phone_number") val displayPhoneNumber: String,
+    @JsonProperty("phone_number_id") val phoneNumberId: String,
 )
 
 data class Contact(
-        @JsonProperty("profile") val profile: Profile,
-        @JsonProperty("wa_id") val waId: String
+    @JsonProperty("profile") val profile: Profile,
+    @JsonProperty("wa_id") val waId: String,
 )
 
-
 data class Profile(
-        @JsonProperty("name") val name: String
+    @JsonProperty("name") val name: String,
 )

@@ -28,13 +28,13 @@ import java.util.Locale
 data class SentencesDump(
     val applicationName: String,
     val language: Locale? = null,
-    val sentences: List<SentenceDump>
+    val sentences: List<SentenceDump>,
 )
 
 data class SentenceDump(
     val text: String,
     val intent: String,
-    val creationDate : Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS),
+    val creationDate: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS),
     val entities: List<SentenceEntityDump> = emptyList(),
     val language: Locale? = null,
     val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model,
@@ -47,16 +47,15 @@ data class SentenceEntityDump(
     val role: String,
     val subEntities: List<SentenceEntityDump> = emptyList(),
     val start: Int,
-    val end: Int
+    val end: Int,
 ) {
-
     constructor(entity: ClassifiedEntity) :
         this(
             entity.type,
             entity.role,
             entity.subEntities.map { SentenceEntityDump(it) },
             entity.start,
-            entity.end
+            entity.end,
         )
 
     fun toClassifiedEntity(): ClassifiedEntity {
@@ -65,7 +64,7 @@ data class SentenceEntityDump(
             role,
             start,
             end,
-            subEntities.map { it.toClassifiedEntity() }
+            subEntities.map { it.toClassifiedEntity() },
         )
     }
 }

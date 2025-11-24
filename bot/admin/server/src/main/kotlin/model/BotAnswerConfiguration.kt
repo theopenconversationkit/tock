@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "answerType"
+    property = "answerType",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "0"),
@@ -34,6 +34,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
     JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script"),
     JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "3"),
-    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin")
+    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin"),
 )
 abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType)

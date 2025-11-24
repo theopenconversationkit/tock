@@ -24,5 +24,5 @@ data class ClientGenericElement(
     val choices: List<ClientChoice> = emptyList(),
     val texts: Map<String, String> = emptyMap(),
     val locations: List<ClientLocation> = emptyList(),
-    val metadata: Map<String, String> = emptyMap()
+    val metadata: Map<String, String> = emptyMap(),
 )

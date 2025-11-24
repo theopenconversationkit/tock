@@ -22,9 +22,8 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 
 internal class WebMessageProcessor(private val processMarkdown: Boolean) {
-
     fun process(action: Action): WebMessage? {
-        return when(action){
+        return when (action) {
             is SendSentence -> {
                 val stringText = action.stringText
 
@@ -38,15 +37,17 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                 val stringText = action.text.toString()
                 WebMessage(
                     postProcess(stringText),
-                    footnotes = action.footnotes.map { footnote ->
-                        Footnote(
-                            footnote.identifier,
-                            footnote.title,
-                            footnote.url,
-                            footnote.content?.let { postProcess(it) },
-                            footnote.score
-                        )
-                    })
+                    footnotes =
+                        action.footnotes.map { footnote ->
+                            Footnote(
+                                footnote.identifier,
+                                footnote.title,
+                                footnote.url,
+                                footnote.content?.let { postProcess(it) },
+                                footnote.score,
+                            )
+                        },
+                )
             }
             else -> null
         }

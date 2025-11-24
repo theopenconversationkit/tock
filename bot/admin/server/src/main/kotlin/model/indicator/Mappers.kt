@@ -26,7 +26,11 @@ import ai.tock.bot.admin.indicators.IndicatorValue
  * @param request [SaveIndicatorRequest]
  * @return [Indicator]
  */
-fun toIndicator(namespace: String, botId: String, request: SaveIndicatorRequest): Indicator {
+fun toIndicator(
+    namespace: String,
+    botId: String,
+    request: SaveIndicatorRequest,
+): Indicator {
     return Indicator(
         name = request.name,
         label = request.label,
@@ -34,7 +38,7 @@ fun toIndicator(namespace: String, botId: String, request: SaveIndicatorRequest)
         namespace = namespace,
         botId = botId,
         dimensions = request.dimensions,
-        values = request.values.map { IndicatorValue(it.name, it.label) }.toSet()
+        values = request.values.map { IndicatorValue(it.name, it.label) }.toSet(),
     )
 }
 
@@ -43,12 +47,13 @@ fun toIndicator(namespace: String, botId: String, request: SaveIndicatorRequest)
  * @param indicator indicator
  * @return [IndicatorResponse]
  */
-fun toResponse(indicator: Indicator) : IndicatorResponse = IndicatorResponse(
-    id = indicator._id.toString(),
-    name = indicator.name,
-    label = indicator.label,
-    description = indicator.description,
-    applicationName = indicator.botId,
-    dimensions = indicator.dimensions,
-    values = indicator.values.map { IndicatorValueResponse(it.name, it.label) }.toSet()
-)
+fun toResponse(indicator: Indicator): IndicatorResponse =
+    IndicatorResponse(
+        id = indicator._id.toString(),
+        name = indicator.name,
+        label = indicator.label,
+        description = indicator.description,
+        applicationName = indicator.botId,
+        dimensions = indicator.dimensions,
+        values = indicator.values.map { IndicatorValueResponse(it.name, it.label) }.toSet(),
+    )

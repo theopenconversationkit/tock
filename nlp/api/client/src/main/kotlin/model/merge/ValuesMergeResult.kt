@@ -23,5 +23,5 @@ import ai.tock.nlp.entity.Value
  */
 data class ValuesMergeResult(
     val value: Value?,
-    val content: String? = null
+    val content: String? = null,
 )

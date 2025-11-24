@@ -95,7 +95,7 @@ fun bot(
     /**
      * Listener invoked when bot is enabled.
      */
-    botEnabledListener: (Action) -> Unit = {}
+    botEnabledListener: (Action) -> Unit = {},
 ): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
         intent as? StoryDefinition
@@ -103,7 +103,7 @@ fun bot(
                 stories,
                 intent?.wrappedIntent()?.name,
                 unknownStory,
-                keywordStory
+                keywordStory,
             ).let {
                 if (it == unknownStory || it == keywordStory) {
                     null
@@ -155,7 +155,7 @@ fun story(
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         handler.wrappedIntent().name,
@@ -163,7 +163,7 @@ fun story(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -193,7 +193,7 @@ fun story(
     /**
      * The handler for the story.
      */
-    handler: (BotBus).() -> Unit
+    handler: (BotBus).() -> Unit,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
@@ -203,7 +203,7 @@ fun story(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -229,7 +229,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         handler.wrappedIntent().name,
@@ -237,7 +237,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -273,7 +273,7 @@ inline fun <reified T : StoryHandlerDefinition, D> storyDef(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> D
+    noinline preconditionsChecker: BotBus.() -> D,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
@@ -281,7 +281,7 @@ inline fun <reified T : StoryHandlerDefinition, D> storyDef(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -316,7 +316,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Unit
+    noinline preconditionsChecker: BotBus.() -> Unit,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
@@ -324,7 +324,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -356,7 +356,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S, D> storyDefWithSteps(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> D
+    noinline preconditionsChecker: BotBus.() -> D,
 ): StoryDefinitionBase where S : Enum<S>, S : StoryStep<*> =
     StoryDefinitionBase(
         intentName,
@@ -364,7 +364,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S, D> storyDefWithSteps(
         otherStarterIntents,
         secondaryIntents,
         enumValues<S>().toList(),
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -395,7 +395,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: BotBus.() -> Unit
+    noinline preconditionsChecker: BotBus.() -> Unit,
 ): StoryDefinitionBase where S : Enum<S>, S : StoryStep<*> =
     StoryDefinitionBase(
         intentName,
@@ -403,7 +403,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
         otherStarterIntents,
         secondaryIntents,
         enumValues<S>().toList(),
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -433,7 +433,7 @@ fun story(
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intent.wrappedIntent().name,
@@ -441,7 +441,7 @@ fun story(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -463,7 +463,7 @@ inline fun <reified T> storyWithSteps(
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
 ): StoryDefinitionBase
         where T : Enum<T>, T : StoryStep<*> =
     story(
@@ -472,7 +472,7 @@ inline fun <reified T> storyWithSteps(
         otherStarterIntents,
         secondaryIntents,
         enumValues<T>().toList(),
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -498,7 +498,7 @@ inline fun <reified T> storyWithSteps(
     /**
      * Is this story unsupported for a [UserInterfaceType]?
      */
-    unsupportedUserInterface: UserInterfaceType? = null
+    unsupportedUserInterface: UserInterfaceType? = null,
 ): StoryDefinitionBase where T : Enum<T>, T : StoryStep<*> =
     story(
         intent,
@@ -506,7 +506,7 @@ inline fun <reified T> storyWithSteps(
         otherStarterIntents,
         secondaryIntents,
         enumValues<T>().toList(),
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -532,7 +532,7 @@ inline fun <reified T> storyWithSteps(
     /**
      * The handler for the story.
      */
-    noinline handler: (BotBus).() -> Unit
+    noinline handler: (BotBus).() -> Unit,
 ): StoryDefinitionBase where T : Enum<T>, T : StoryStep<*> =
     story(
         intentName,
@@ -540,7 +540,7 @@ inline fun <reified T> storyWithSteps(
         secondaryIntents,
         enumValues<T>().toList(),
         unsupportedUserInterface,
-        handler
+        handler,
     )
 
 /**
@@ -569,7 +569,7 @@ fun notify(
     parameters: Parameters = Parameters.EMPTY,
     stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
     notificationType: ActionNotificationType? = null,
-    errorListener: (Throwable) -> Unit = {}
+    errorListener: (Throwable) -> Unit = {},
 ) = BotRepository.notify(
     applicationId = applicationId,
     recipientId = recipientId,
@@ -580,5 +580,5 @@ fun notify(
     notificationType = notificationType,
     namespace = namespace,
     botId = botId,
-    errorListener = errorListener
+    errorListener = errorListener,
 )

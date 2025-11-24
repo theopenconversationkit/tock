@@ -22,9 +22,8 @@ import java.time.ZonedDateTime
 
 data class TestBuildQuery(
     val intentName: String? = null,
-    val after: ZonedDateTime? = null
+    val after: ZonedDateTime? = null,
 ) : PaginatedQuery() {
-
     fun toTestErrorQuery(app: ApplicationDefinition): TestErrorQuery =
         TestErrorQuery(
             app._id,
@@ -32,6 +31,6 @@ data class TestBuildQuery(
             intentName,
             after?.toInstant(),
             start,
-            size
+            size,
         )
 }

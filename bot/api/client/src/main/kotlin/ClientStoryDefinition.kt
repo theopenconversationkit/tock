@@ -25,11 +25,9 @@ class ClientStoryDefinition(
     val secondaryIntents: Set<IntentAware> = emptySet(),
     val steps: List<ClientStep> = emptyList(),
     val storyId: String = mainIntent.wrappedIntent().name,
-    val handler: ClientStoryHandler
+    val handler: ClientStoryHandler,
 ) : IntentAware {
-
     override fun wrappedIntent(): Intent = mainIntent.wrappedIntent()
 
-    fun isStarterIntent(intent: Intent): Boolean =
-        mainIntent.wrap(intent) || otherStarterIntents.any { it.wrap(intent) }
+    fun isStarterIntent(intent: Intent): Boolean = mainIntent.wrap(intent) || otherStarterIntents.any { it.wrap(intent) }
 }

@@ -16,6 +16,9 @@
 
 package ai.tock.bot.connector.messenger.model.send
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class QuickReplyContentType {
-    text, location, user_email
+    text,
+    location,
+    user_email,
 }

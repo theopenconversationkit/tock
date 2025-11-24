@@ -23,16 +23,15 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(name = "await", value = IadvizeAwait::class),
     JsonSubTypes.Type(name = "close", value = IadvizeClose::class),
     JsonSubTypes.Type(name = "message", value = IadvizeMessage::class),
-    JsonSubTypes.Type(name = "transfer", value = IadvizeTransfer::class)
+    JsonSubTypes.Type(name = "transfer", value = IadvizeTransfer::class),
 )
 abstract class IadvizeReply(val type: ReplyType) {
-
     /**
      * Convert the REST reply [IadvizeReply] to a GraphQL type [ChatbotActionOrMessageInput]
      */

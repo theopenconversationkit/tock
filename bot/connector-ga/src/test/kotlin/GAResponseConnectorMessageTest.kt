@@ -27,21 +27,21 @@ import kotlin.test.assertEquals
  *
  */
 class GAResponseConnectorMessageTest {
-
     @Test
     fun toSentenceElement_shouldRenderSimpleText() {
-        val r = GAResponseConnectorMessage(
-            finalResponse =
-            GAFinalResponse(
-                GARichResponse(
-                    listOf(
-                        GAItem(
-                            GASimpleResponse("ok computer")
-                        )
-                    )
-                )
+        val r =
+            GAResponseConnectorMessage(
+                finalResponse =
+                    GAFinalResponse(
+                        GARichResponse(
+                            listOf(
+                                GAItem(
+                                    GASimpleResponse("ok computer"),
+                                ),
+                            ),
+                        ),
+                    ),
             )
-        )
         val e = r.toGenericMessage()
         assertEquals(mapOf("textToSpeech" to "ok computer"), e!!.texts)
     }

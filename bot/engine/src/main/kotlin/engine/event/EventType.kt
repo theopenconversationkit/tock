@@ -19,86 +19,105 @@ package ai.tock.bot.engine.event
 /**
  * Define default event types.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class EventType(val action: Boolean = true) {
-
     /**
      * [SendSentence] action type.
      */
     sentence,
+
     /**
-      * [SentenceWithFootnotes] action type.
+     * [SentenceWithFootnotes] action type.
      */
     sentenceWithFootnotes,
+
     /**
      * [SendChoice] action type.
      */
     choice,
+
     /**
      * [SendAttachment] action type.
      */
     attachment,
+
     /**
      * [SendLocation] action type.
      */
     location,
+
     /**
      * [Debug] event type.
      */
     debug,
+
     /**
      * [SubscribingEvent] event type.
      */
     subscribing(false),
+
     /**
      * [TypingOnEvent] event type.
      */
     typingOn(false),
+
     /**
      * [TypingOffEvent] event type.
      */
     typingOff(false),
+
     /**
      * [MarkSeenEvent] event type.
      */
     markSeen(false),
+
     /**
      * [StartConversationEvent] event type.
      */
     startConversation(false),
+
     /**
      * [EndConversationEvent] event type.
      */
     endConversation(false),
+
     /**
      * [NoInputEvent] event type.
      */
     noInput(false),
+
     /**
      * [StartSessionEvent] event type.
      */
     startSession(false),
+
     /**
      * [EndSessionEvent] event type.
      */
     endSession(false),
+
     /**
      * [GetAppRolesEvent] event type.
      */
     getAppRoles(false),
+
     /**
      * [PassThreadControlEvent] event type.
      */
     passThreadControl(false),
+
     /**
      * [RequestThreadControlEvent] event type.
      */
     requestThreadControl(false),
+
     /**
      * [TakeThreadControlEvent] event type.
      */
     takeThreadControl(false),
+
     /**
      * [ReferralParamtersEvent] event type.
      */
-    referralParamters(false)
+    referralParamters(false),
 }

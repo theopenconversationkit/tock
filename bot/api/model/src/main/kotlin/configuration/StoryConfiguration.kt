@@ -21,5 +21,5 @@ data class StoryConfiguration(
     val otherStarterIntents: Set<String> = emptySet(),
     val secondaryIntents: Set<String> = emptySet(),
     val steps: List<StepConfiguration> = emptyList(),
-    val name: String = mainIntent
+    val name: String = mainIntent,
 )

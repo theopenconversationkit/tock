@@ -27,5 +27,5 @@ data class EntityTypeValue(
     override val end: Int,
     val entityType: EntityType,
     val value: Any? = null,
-    val evaluated: Boolean = false
+    val evaluated: Boolean = false,
 ) : IntOpenRange

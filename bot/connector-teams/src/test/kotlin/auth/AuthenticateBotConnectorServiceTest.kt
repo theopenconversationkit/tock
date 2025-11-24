@@ -45,36 +45,38 @@ import kotlin.test.assertFailsWith
 @NotThreadSafe
 @TestInstance(Lifecycle.PER_CLASS)
 class AuthenticateBotConnectorServiceTest {
-
-    private val activity = Activity.createMessageActivity().apply {
-        channelId = "msteams"
-        serviceUrl = "https://serviceurl"
-    }
+    private val activity =
+        Activity.createMessageActivity().apply {
+            channelId = "msteams"
+            serviceUrl = "https://serviceurl"
+        }
     private var authenticateBotConnectorService: AuthenticateBotConnectorService =
         AuthenticateBotConnectorService("fakeAppId")
 
     private val notBefore = Instant.now().minus(10, ChronoUnit.SECONDS)
     private val expirationDate = Instant.now().plus(60, ChronoUnit.SECONDS)
-    private val validJsonPayload: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-        "{\"iss\":\"https://api.botframework.com\"," +
+    private val validJsonPayload: JSONObject =
+        JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+            "{\"iss\":\"https://api.botframework.com\"," +
                 "\"iat\":${notBefore.epochSecond}," +
                 "\"nbf\":${notBefore.epochSecond}" +
                 ",\"exp\":${expirationDate.epochSecond}," +
                 "\"aud\":\"fakeAppId\"," +
                 "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
-    ) as JSONObject
+                "\"serviceurl\": \"https://serviceurl\"}",
+        ) as JSONObject
 
-    private val validJsonPayloadFromBotFwkEmulator: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-        "{\"iss\":\"https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0\"," +
+    private val validJsonPayloadFromBotFwkEmulator: JSONObject =
+        JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+            "{\"iss\":\"https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0\"," +
                 "\"iat\":${notBefore.epochSecond}," +
                 "\"nbf\":${notBefore.epochSecond}" +
                 ",\"exp\":${expirationDate.epochSecond}," +
                 "\"aud\":\"fakeAppId\"," +
                 "\"azp\":\"fakeAppId\"," +
                 "\"sub\":\"test\"," +
-                "\"serviceurl\": \"https://serviceurl\"}"
-    ) as JSONObject
+                "\"serviceurl\": \"https://serviceurl\"}",
+        ) as JSONObject
 
     private lateinit var server: MockWebServer
 
@@ -96,11 +98,11 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun tokenMustBeValid() {
-
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(validJsonPayload)
-        )
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(validJsonPayload),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -132,18 +134,20 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToMissingIssuerClaim() {
-        val jsonPayloadWithoutIssuer: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-            "{\"iat\":${notBefore.epochSecond}," +
+        val jsonPayloadWithoutIssuer: JSONObject =
+            JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+                "{\"iat\":${notBefore.epochSecond}," +
                     "\"nbf\":${notBefore.epochSecond}" +
                     ",\"exp\":${expirationDate.epochSecond}," +
                     "\"aud\":\"fakeAppId\"," +
                     "\"sub\":\"test\"," +
-                    "\"serviceurl\": \"https://serviceurl\"}"
-        ) as JSONObject
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(jsonPayloadWithoutIssuer)
-        )
+                    "\"serviceurl\": \"https://serviceurl\"}",
+            ) as JSONObject
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(jsonPayloadWithoutIssuer),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -157,19 +161,21 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToWrongAudienceClaim() {
-        val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-            "{\"iss\":\"https://api.botframework.com\"," +
+        val jsonPayloadWithWrongAppId: JSONObject =
+            JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+                "{\"iss\":\"https://api.botframework.com\"," +
                     "\"iat\":${notBefore.epochSecond}," +
                     "\"nbf\":${notBefore.epochSecond}" +
                     ",\"exp\":${expirationDate.epochSecond}," +
                     "\"aud\":\"wrongAppId\"," +
                     "\"sub\":\"test\"," +
-                    "\"serviceurl\": \"https://serviceurl\"}"
-        ) as JSONObject
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(jsonPayloadWithWrongAppId)
-        )
+                    "\"serviceurl\": \"https://serviceurl\"}",
+            ) as JSONObject
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(jsonPayloadWithWrongAppId),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -183,19 +189,21 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToExpiredToken() {
-        val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-            "{\"iss\":\"https://api.botframework.com\"," +
+        val jsonPayloadWithWrongAppId: JSONObject =
+            JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+                "{\"iss\":\"https://api.botframework.com\"," +
                     "\"iat\":${notBefore.epochSecond}," +
                     "\"nbf\":${notBefore.epochSecond}" +
                     ",\"exp\":${notBefore.epochSecond}," +
                     "\"aud\":\"fakeAppId\"," +
                     "\"sub\":\"test\"," +
-                    "\"serviceurl\": \"https://serviceurl\"}"
-        ) as JSONObject
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(jsonPayloadWithWrongAppId)
-        )
+                    "\"serviceurl\": \"https://serviceurl\"}",
+            ) as JSONObject
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(jsonPayloadWithWrongAppId),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -209,19 +217,21 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToNotValidYetToken() {
-        val jsonPayloadWithWrongAppId: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-            "{\"iss\":\"https://api.botframework.com\"," +
+        val jsonPayloadWithWrongAppId: JSONObject =
+            JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+                "{\"iss\":\"https://api.botframework.com\"," +
                     "\"iat\":${notBefore.epochSecond}," +
                     "\"nbf\":${expirationDate.epochSecond}" +
                     ",\"exp\":${expirationDate.epochSecond}," +
                     "\"aud\":\"fakeAppId\"," +
                     "\"sub\":\"test\"," +
-                    "\"serviceurl\": \"https://serviceurl\"}"
-        ) as JSONObject
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(jsonPayloadWithWrongAppId)
-        )
+                    "\"serviceurl\": \"https://serviceurl\"}",
+            ) as JSONObject
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(jsonPayloadWithWrongAppId),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -235,14 +245,16 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToNotValidKey() {
-        val anotherJwk = RSAKeyGenerator(2048)
-            .keyUse(KeyUse.SIGNATURE)
-            .keyID(UUID.randomUUID().toString())
-            .generate()
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(validJsonPayload)
-        )
+        val anotherJwk =
+            RSAKeyGenerator(2048)
+                .keyUse(KeyUse.SIGNATURE)
+                .keyID(UUID.randomUUID().toString())
+                .generate()
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(validJsonPayload),
+            )
         jwsObject.sign(RSASSASigner(anotherJwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -256,14 +268,16 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun unauthorizedDueToDifferentServiceUrl() {
-        val otherActivity = Activity.createMessageActivity().apply {
-            channelId = "msteams"
-            serviceUrl = "https://wrongServiceurl"
-        }
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(validJsonPayload)
-        )
+        val otherActivity =
+            Activity.createMessageActivity().apply {
+                channelId = "msteams"
+                serviceUrl = "https://wrongServiceurl"
+            }
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(validJsonPayload),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"
@@ -277,10 +291,11 @@ class AuthenticateBotConnectorServiceTest {
 
     @Test
     fun testRequestFromTheBotConnectorService() {
-        val jwsObject = JWSObject(
-            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
-            Payload(validJsonPayloadFromBotFwkEmulator)
-        )
+        val jwsObject =
+            JWSObject(
+                JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+                Payload(validJsonPayloadFromBotFwkEmulator),
+            )
         jwsObject.sign(RSASSASigner(jwk))
         val token = jwsObject.serialize()
         val bearerAuthorization = "Bearer $token"

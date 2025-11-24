@@ -19,5 +19,5 @@ package ai.tock.bot.connector.whatsapp.model.send
 internal data class WhatsAppSendBotImageMessage(
     val image: WhatsAppBotAttachment,
     override val recipientType: WhatsAppBotRecipientType,
-    override val to: String
+    override val to: String,
 ) : WhatsAppSendBotMessage(WhatsAppBotMessageType.image)

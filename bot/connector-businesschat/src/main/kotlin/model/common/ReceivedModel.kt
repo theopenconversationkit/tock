@@ -35,7 +35,7 @@ class ReceivedModel(
     val interactiveDataRef: InteractiveDataRef?,
     val richLinkData: RichLinkData?,
     @JsonProperty("data")
-    val handoverData: HandoverData?
+    val handoverData: HandoverData?,
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)
 
 data class HandoverData(
@@ -45,11 +45,13 @@ data class HandoverData(
     val recipientId: String?,
     val metadata: String?,
     @JsonProperty("recipient_user_id")
-    val recipientUserId: String?
+    val recipientUserId: String?,
 )
 
 class InteractiveData(val data: Data)
+
 class Data(val replyMessage: ReplyMessage?)
+
 class ReplyMessage(val title: String)
 
 class InteractiveDataRef(
@@ -60,10 +62,10 @@ class InteractiveDataRef(
     val key: String,
     val signature: String,
     val owner: String,
-    val size: Int
+    val size: Int,
 )
 
 class RichLinkData(
     val url: String,
-    val title: String
+    val title: String,
 )

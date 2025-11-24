@@ -38,16 +38,15 @@ import ai.tock.nlp.entity.Value
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.junit.jupiter.api.Test
 
 /**
  *
  */
 class NlpTest : BotEngineTest() {
-
     @Test
     suspend fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
@@ -75,7 +74,6 @@ class NlpTest : BotEngineTest() {
 
     @Test
     suspend fun parseSentence_shouldNotRegisterQuery_whenBotIsDisabled() {
-
         userTimeline.userState.botDisabled = true
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
@@ -90,7 +88,6 @@ class NlpTest : BotEngineTest() {
 
     @Test
     suspend fun parseSentence_shouldRegisterQuery_whenBotIsNotDisabledAndItIsNotATestContext() {
-
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
         val slot = slot<NlpQuery>()
@@ -104,21 +101,21 @@ class NlpTest : BotEngineTest() {
 
     @Test
     suspend fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
-
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
 
         val customValue = EntityValue(entityB, object : Value {}, "b")
-        val nlpListener = object : NlpListener {
-            override fun evaluateEntities(
-                userTimeline: UserTimeline,
-                dialog: Dialog,
-                event: Event,
-                nlpResult: NlpResult
-            ): List<EntityValue> {
-                return listOf(customValue)
+        val nlpListener =
+            object : NlpListener {
+                override fun evaluateEntities(
+                    userTimeline: UserTimeline,
+                    dialog: Dialog,
+                    event: Event,
+                    nlpResult: NlpResult,
+                ): List<EntityValue> {
+                    return listOf(customValue)
+                }
             }
-        }
         BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
@@ -130,20 +127,20 @@ class NlpTest : BotEngineTest() {
 
     @Test
     suspend fun `parseSentence uses NlpListener#findIntent when available`() {
-
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
 
-        val nlpListener = object : NlpListener {
-            override fun findIntent(
-                userTimeline: UserTimeline,
-                dialog: Dialog,
-                event: Event,
-                nlpResult: NlpResult
-            ): IntentAware? {
-                return test2
+        val nlpListener =
+            object : NlpListener {
+                override fun findIntent(
+                    userTimeline: UserTimeline,
+                    dialog: Dialog,
+                    event: Event,
+                    nlpResult: NlpResult,
+                ): IntentAware? {
+                    return test2
+                }
             }
-        }
         BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
@@ -160,23 +157,23 @@ class NlpTest : BotEngineTest() {
         every { nlpClient.mergeValues(capture(mergeQuery)) } returns null
 
         val customInitialValue = EntityStateValue(EntityValue(entityWithMergeSupport, object : Value {}, "Z"))
-        val nlpListener = object : NlpListener {
-
-            override fun mergeEntityValues(
-                dialogState: DialogState,
-                action: Action,
-                entityToMerge: NlpEntityMergeContext
-            ): NlpEntityMergeContext =
-                if (entityToMerge.entityRole == entityWithMergeSupport.role) {
-                    NlpEntityMergeContext(
-                        entityWithMergeSupport.role,
-                        EntityStateValue(customInitialValue.value),
-                        entityToMerge.newValues
-                    )
-                } else {
-                    entityToMerge
-                }
-        }
+        val nlpListener =
+            object : NlpListener {
+                override fun mergeEntityValues(
+                    dialogState: DialogState,
+                    action: Action,
+                    entityToMerge: NlpEntityMergeContext,
+                ): NlpEntityMergeContext =
+                    if (entityToMerge.entityRole == entityWithMergeSupport.role) {
+                        NlpEntityMergeContext(
+                            entityWithMergeSupport.role,
+                            EntityStateValue(customInitialValue.value),
+                            entityToMerge.newValues,
+                        )
+                    } else {
+                        entityToMerge
+                    }
+            }
         BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 

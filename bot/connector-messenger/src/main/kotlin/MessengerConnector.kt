@@ -72,6 +72,9 @@ import ai.tock.shared.property
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
 import java.time.ZoneOffset
 import java.util.Locale
@@ -79,9 +82,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import mu.KotlinLogging
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.lang3.LocaleUtils
 
 /**
  * Contains built-in checks to ensure that two [MessageRequest] for the same recipient are sent sequentially.
@@ -97,9 +97,8 @@ class MessengerConnector internal constructor(
     internal val client: MessengerClient,
     @Volatile
     private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled,
-    private val personaId: String? = null
+    private val personaId: String? = null,
 ) : ConnectorBase(MessengerConnectorProvider.connectorType, setOf(CAROUSEL)) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         internal val pageIdConnectorIdMap: MutableMap<String, MutableSet<String>> = ConcurrentHashMap()
@@ -173,13 +172,16 @@ class MessengerConnector internal constructor(
                                 {
                                     try {
                                         MessengerConnectorHandler(
-                                            applicationId, controller, request, requestTimerData
+                                            applicationId,
+                                            controller,
+                                            request,
+                                            requestTimerData,
                                         ).handleRequest()
                                     } catch (e: Throwable) {
                                         logger.logError(e, requestTimerData)
                                     }
                                 },
-                                false
+                                false,
                             )
                         } catch (t: Throwable) {
                             logger.logError(t, requestTimerData)
@@ -226,7 +228,7 @@ class MessengerConnector internal constructor(
         transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
         postMessage: (String) -> Unit = {},
         transformActionRequest: (ActionRequest) -> ActionRequest = { it },
-        errorListener: (Throwable) -> Unit = {}
+        errorListener: (Throwable) -> Unit = {},
     ): SendResponse? {
         return try {
             if (event is Action) {
@@ -251,32 +253,34 @@ class MessengerConnector internal constructor(
                                             AttachmentMessage(
                                                 Attachment(
                                                     AttachmentType.fromTockAttachmentType(
-                                                        firstElement.mediaType.toAttachmentType()
+                                                        firstElement.mediaType.toAttachmentType(),
                                                     ),
                                                     UrlPayload(
                                                         url,
                                                         null,
-                                                        true
-                                                    )
-                                                )
+                                                        true,
+                                                    ),
+                                                ),
                                             ),
-                                            personaId
-                                        )
+                                            personaId,
+                                        ),
                                     )!!
                                         .apply {
                                             setAttachmentId(event.applicationId, url, attachmentId!!)
                                         }
                                         .attachmentId!!
                                 }
-                        message = message.copy(
-                            message = AttachmentMessage(
-                                Attachment(
-                                    AttachmentType.template,
-                                    payload.copy(elements = listOf(firstElement.copy(attachmentId = attachmentId)))
-                                ),
-                                attachmentMessage.quickReplies
+                        message =
+                            message.copy(
+                                message =
+                                    AttachmentMessage(
+                                        Attachment(
+                                            AttachmentType.template,
+                                            payload.copy(elements = listOf(firstElement.copy(attachmentId = attachmentId))),
+                                        ),
+                                        attachmentMessage.quickReplies,
+                                    ),
                             )
-                        )
                     }
 
                     val response = client.sendMessage(token, message)
@@ -323,7 +327,7 @@ class MessengerConnector internal constructor(
             transformActionRequest = { request ->
                 // need to use the user_ref here
                 request.copy(recipient = Recipient(null, request.recipient.id))
-            }
+            },
         ) ?: error("message $event not delivered")
     }
 
@@ -356,28 +360,38 @@ class MessengerConnector internal constructor(
     /**
      * Sends a request to get thread control.
      */
-    fun requestThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+    fun requestThreadControl(
+        userId: PlayerId,
+        metadata: String? = null,
+    ): SendResponse? =
         client.requestThreadControl(
             token,
-            RequestThreadControlRequest(Recipient(userId.id), metadata)
+            RequestThreadControlRequest(Recipient(userId.id), metadata),
         )
 
     /**
      * Takes the thread control.
      */
-    fun takeThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+    fun takeThreadControl(
+        userId: PlayerId,
+        metadata: String? = null,
+    ): SendResponse? =
         client.takeThreadControl(
             token,
-            TakeThreadControlRequest(Recipient(userId.id), metadata)
+            TakeThreadControlRequest(Recipient(userId.id), metadata),
         )
 
     /**
      * Passes thread control.
      */
-    fun passThreadControl(userId: PlayerId, targetAppId: String, metadata: String? = null): SendResponse? =
+    fun passThreadControl(
+        userId: PlayerId,
+        targetAppId: String,
+        metadata: String? = null,
+    ): SendResponse? =
         client.passThreadControl(
             token,
-            PassThreadControlRequest(Recipient(userId.id), targetAppId, metadata)
+            PassThreadControlRequest(Recipient(userId.id), targetAppId, metadata),
         )
 
     /**
@@ -388,23 +402,26 @@ class MessengerConnector internal constructor(
      */
     private fun sendSimpleEvent(
         event: Event,
-        transformActionRequest: (ActionRequest) -> ActionRequest = { it }
+        transformActionRequest: (ActionRequest) -> ActionRequest = { it },
     ): SendResponse? =
         when (event) {
-            is TypingOnEvent -> client.sendAction(
-                getToken(event),
-                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on, personaId))
-            )
+            is TypingOnEvent ->
+                client.sendAction(
+                    getToken(event),
+                    transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on, personaId)),
+                )
 
-            is TypingOffEvent -> client.sendAction(
-                getToken(event),
-                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off, personaId))
-            )
+            is TypingOffEvent ->
+                client.sendAction(
+                    getToken(event),
+                    transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off, personaId)),
+                )
 
-            is MarkSeenEvent -> client.sendAction(
-                getToken(event),
-                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen))
-            )
+            is MarkSeenEvent ->
+                client.sendAction(
+                    getToken(event),
+                    transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen)),
+                )
 
             else -> {
                 logger.warn { "unsupported event $event" }
@@ -416,7 +433,11 @@ class MessengerConnector internal constructor(
      * Send the event to messenger asynchronously.
      * Contains checks to ensure that two [Action] for the same recipient are sent sequentially.
      */
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         val delay = Duration.ofMillis(delayInMs)
         val messengerCallback = callback as? MessengerConnectorCallback
         if (event is Action) {
@@ -457,7 +478,7 @@ class MessengerConnector internal constructor(
                                 }
                             }
                         },
-                    errorListener = messengerCallback?.errorListener ?: {}
+                    errorListener = messengerCallback?.errorListener ?: {},
                 )
             }
         } else {
@@ -465,7 +486,7 @@ class MessengerConnector internal constructor(
                 executor.executeBlocking(delay) {
                     sendEvent(
                         event = event,
-                        errorListener = messengerCallback?.errorListener ?: {}
+                        errorListener = messengerCallback?.errorListener ?: {},
                     )
                 }
             }
@@ -476,7 +497,10 @@ class MessengerConnector internal constructor(
         client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_off, personaId))
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences {
         try {
             val userProfile =
                 client.getUserProfile(connectorIdTokenMap.getValue(callback.applicationId), Recipient(userId.id))
@@ -489,7 +513,7 @@ class MessengerConnector internal constructor(
                 userProfile.locale?.let { getLocale(it) } ?: defaultLocale,
                 userProfile.profilePic,
                 userProfile.gender,
-                initialLocale = userProfile.locale?.let { getLocale(it) } ?: defaultLocale
+                initialLocale = userProfile.locale?.let { getLocale(it) } ?: defaultLocale,
             )
         } catch (e: Exception) {
             logger.error(e)
@@ -506,7 +530,10 @@ class MessengerConnector internal constructor(
         }
     }
 
-    override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? =
+    override fun refreshProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? =
         loadProfile(callback, userId).run {
             // refresh only picture, locale & timezone
             if (picture != null) {
@@ -520,7 +547,7 @@ class MessengerConnector internal constructor(
 
     private fun getToken(connectorId: String): String =
         connectorIdTokenMap[connectorId]
-        // TODO remove this when backward compatibility is no more assured (20.3)
+            // TODO remove this when backward compatibility is no more assured (20.3)
             ?: pageIdConnectorIdMap[connectorId]?.takeUnless { it.isEmpty() }?.let {
                 logger.warn { "use pageId as connectorId for $connectorId" }
                 connectorIdTokenMap[it.first()]
@@ -528,11 +555,17 @@ class MessengerConnector internal constructor(
             ?: getAllConnectors().find { it.applicationId == connectorId }?.appToken
             ?: error("$connectorId not found")
 
-    private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
+    private fun isSignedByFacebook(
+        payload: String,
+        facebookSignature: String,
+    ): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
     }
 
-    private fun sha1(payload: String, key: String): String {
+    private fun sha1(
+        payload: String,
+        key: String,
+    ): String {
         val k = SecretKeySpec(key.toByteArray(), "HmacSHA1")
         val mac = Mac.getInstance("HmacSHA1")
         mac.init(k)
@@ -557,20 +590,23 @@ class MessengerConnector internal constructor(
                 val getSubscriptionsResponse = client.getSubscriptions(applicationId, appToken)
                 if (getSubscriptionsResponse?.data?.size == 0 || getSubscriptionsResponse?.data?.firstOrNull()?.active == false) {
                     logger.info { "Get disabled webhook subscription, response: $getSubscriptionsResponse" }
-                    val fields = getSubscriptionsResponse.data.firstOrNull()?.fields?.let {
-                        it.map { it.name }.joinToString(",")
-                    } ?: defaultFields
-                    val callbackUrl = property(
-                        "tock_messenger_webhook_url",
-                        getSubscriptionsResponse.data.firstOrNull()?.callbackUrl ?: ""
-                    )
-                    val subscriptionsRequest = client.subscriptions(
-                        applicationId,
-                        callbackUrl,
-                        fields,
-                        verifyToken ?: "",
-                        appToken
-                    )
+                    val fields =
+                        getSubscriptionsResponse.data.firstOrNull()?.fields?.let {
+                            it.map { it.name }.joinToString(",")
+                        } ?: defaultFields
+                    val callbackUrl =
+                        property(
+                            "tock_messenger_webhook_url",
+                            getSubscriptionsResponse.data.firstOrNull()?.callbackUrl ?: "",
+                        )
+                    val subscriptionsRequest =
+                        client.subscriptions(
+                            applicationId,
+                            callbackUrl,
+                            fields,
+                            verifyToken ?: "",
+                            appToken,
+                        )
                     if (subscriptionsRequest?.success == true) {
                         client.deleteSubscribedApps(pageId, fields, token)
                         client.subscribedApps(pageId, fields, token)
@@ -589,7 +625,7 @@ class MessengerConnector internal constructor(
         step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit
+        errorListener: (Throwable) -> Unit,
     ) {
         controller.handle(
             SendChoice(
@@ -598,29 +634,33 @@ class MessengerConnector internal constructor(
                 PlayerId(pageId, bot),
                 intent.wrappedIntent().name,
                 step,
-                parameters
+                parameters,
             ),
             ConnectorData(
-                MessengerConnectorCallback(connectorId, notificationType, errorListener)
-            )
+                MessengerConnectorCallback(connectorId, notificationType, errorListener),
+            ),
         )
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        text(text, suggestions.map { nlpQuickReply(it) })
-    }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            text(text, suggestions.map { nlpQuickReply(it) })
+        }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        if (message is Message && message.quickReplies.isNullOrEmpty()) {
-            message.copy(suggestions.map { nlpQuickReply(it) })
-        } else {
-            message
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            if (message is Message && message.quickReplies.isNullOrEmpty()) {
+                message.copy(suggestions.map { nlpQuickReply(it) })
+            } else {
+                message
+            }
         }
-    }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
-        MessengerMediaConverter.toConnectorMessage(message)
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = MessengerMediaConverter.toConnectorMessage(message)
 }

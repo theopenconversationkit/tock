@@ -32,9 +32,8 @@ data class UpdateSentencesQuery(
     val newEntity: EntityDefinition?,
     val searchQuery: SearchQuery?,
     val selectedSentences: List<SentenceReport> = emptyList(),
-    val newStatus: ClassifiedSentenceStatus? = null
+    val newStatus: ClassifiedSentenceStatus? = null,
 ) : ApplicationScopedQuery() {
-
     val unknownNewIntent: Boolean get() = UNKNOWN_INTENT_NAME == newIntentId?.toString()
     val ragExcludedNewIntent: Boolean get() = RAG_EXCLUDED_INTENT_NAME == newIntentId?.toString()
 }

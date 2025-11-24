@@ -19,5 +19,5 @@ package ai.tock.bot.connector.twitter.model
 internal data class RequestToken(
     val oauthToken: String,
     val oauthTokenSecret: String,
-    val oauthCallbackConfirmed: Boolean
+    val oauthCallbackConfirmed: Boolean,
 )

@@ -20,13 +20,11 @@ import ai.tock.bot.mongo.StoryDefinitionConfigurationMongoDAO.customRegexToFindW
 import junit.framework.TestCase.assertEquals
 import org.junit.jupiter.api.Test
 
-
-class StoryDefinitionConfigurationMongoDAOTest: AbstractTest() {
-
+class StoryDefinitionConfigurationMongoDAOTest : AbstractTest() {
     @Test
     fun `TEST custom Text Search`() {
-        assertEquals(customRegexToFindWord("Action"),"^(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
-        assertEquals(customRegexToFindWord("story action "),"^(.*?(st[oòóôõöø]ry)[^\$]*)(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
-        assertEquals(customRegexToFindWord(""),"")
+        assertEquals(customRegexToFindWord("Action"), "^(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
+        assertEquals(customRegexToFindWord("story action "), "^(.*?(st[oòóôõöø]ry)[^\$]*)(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
+        assertEquals(customRegexToFindWord(""), "")
     }
 }

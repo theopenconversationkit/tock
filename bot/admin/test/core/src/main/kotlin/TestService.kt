@@ -23,11 +23,9 @@ import org.litote.kmongo.Id
 /**
  * Retrieve a test service from [ServiceLoader].
  */
-fun findTestService(): TestService =
-    Loader.loadServices<TestService>().maxByOrNull { it.priority() } ?: error("no test service found")
+fun findTestService(): TestService = Loader.loadServices<TestService>().maxByOrNull { it.priority() } ?: error("no test service found")
 
 interface TestService {
-
     fun registerServices(): (AdminVerticle).() -> Unit
 
     fun priority(): Int
@@ -37,5 +35,9 @@ interface TestService {
      * executes all test contained in the common test plan.
      *
      */
-    fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution
+    fun saveAndExecuteTestPlan(
+        namespace: String,
+        testPlan: TestPlan,
+        executionId: Id<TestPlanExecution>,
+    ): TestPlanExecution
 }

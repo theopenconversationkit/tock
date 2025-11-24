@@ -18,5 +18,5 @@ package ai.tock.bot.connector.twitter.model
 
 data class PollOption(
     val position: Int,
-    val text: String
+    val text: String,
 )

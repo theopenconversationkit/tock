@@ -54,7 +54,6 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.Base64
 import java.util.Date
-import java.util.LinkedHashMap
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import ai.tock.bot.connector.twitter.model.Tweet as InputTweet
@@ -68,19 +67,19 @@ internal class TwitterClient(
     val consumerKey: String,
     val consumerSecret: String,
     token: String? = null,
-    secret: String? = null
+    secret: String? = null,
 ) {
-
-    private val BASE_URL = "https://api.twitter.com"
-    private val BASE_MEDIA_URL = "https://upload.twitter.com"
-    private val MEDIA_CHUNK_SIZE = 1024 * 500
+    companion object {
+        private const val BASE_URL = "https://api.twitter.com"
+        private const val BASE_MEDIA_URL = "https://upload.twitter.com"
+        private const val MEDIA_CHUNK_SIZE = 1024 * 500
+    }
 
     /**
      * @see https://developer.twitter.com/en/docs/basics/authentication/api-reference/authenticate
      *
      */
     interface OAuthApi {
-
         @POST("/oauth/request_token")
         fun requestToken(): Call<String>
 
@@ -93,9 +92,10 @@ internal class TwitterClient(
      *
      */
     interface UserApi {
-
         @GET("/1.1/users/show.json")
-        fun user(@Query("user_id") userId: String): Call<User>
+        fun user(
+            @Query("user_id") userId: String,
+        ): Call<User>
     }
 
     /***
@@ -103,21 +103,32 @@ internal class TwitterClient(
      *
      */
     interface AccountActivityApi {
-
         @POST("/1.1/account_activity/all/{environment}/webhooks.json")
-        fun registerWebhook(@Path("environment") environment: String, @Query("url") url: String): Call<Webhook>
+        fun registerWebhook(
+            @Path("environment") environment: String,
+            @Query("url") url: String,
+        ): Call<Webhook>
 
         @POST("/1.1/account_activity/all/{environment}/subscriptions.json")
-        fun subscribe(@Path("environment") environment: String): Call<Unit>
+        fun subscribe(
+            @Path("environment") environment: String,
+        ): Call<Unit>
 
         @GET("/1.1/account_activity/all/{environment}/subscriptions.json")
-        fun subscriptions(@Path("environment") environment: String): Call<Unit>
+        fun subscriptions(
+            @Path("environment") environment: String,
+        ): Call<Unit>
 
         @DELETE("/1.1/account_activity/all/{environment}/webhooks/{webhook_id}.json")
-        fun unregisterWebhook(@Path("environment") environment: String, @Path("webhook_id") webhookId: String): Call<Unit>
+        fun unregisterWebhook(
+            @Path("environment") environment: String,
+            @Path("webhook_id") webhookId: String,
+        ): Call<Unit>
 
         @GET("/1.1/account_activity/all/{environment}/webhooks.json")
-        fun webhooks(@Path("environment") environment: String): Call<List<Webhook>>
+        fun webhooks(
+            @Path("environment") environment: String,
+        ): Call<List<Webhook>>
     }
 
     /**
@@ -125,9 +136,10 @@ internal class TwitterClient(
      *
      */
     interface DirectMessageApi {
-
         @POST("/1.1/direct_messages/events/new.json")
-        fun new(@Body OutcomingEvent: OutcomingEvent): Call<Unit>
+        fun new(
+            @Body OutcomingEvent: OutcomingEvent,
+        ): Call<Unit>
 
         @GET("/1.1/direct_messages/events/show.json")
         fun show(): Call<Unit>
@@ -144,14 +156,13 @@ internal class TwitterClient(
      *
      */
     interface MediaApi {
-
         @POST("/1.1/media/upload.json")
         fun init(
             @Query("command") command: Command = Command.INIT,
             @Query("total_bytes") totalBytes: Long,
             @Query("media_type") mediaTYpe: String,
             @Query("media_category") mediaCategory: String?,
-            @Query("additional_owners") additionalOwners: String?
+            @Query("additional_owners") additionalOwners: String?,
         ): Call<MediaUpload>
 
         @Multipart
@@ -160,24 +171,23 @@ internal class TwitterClient(
             @Query("command") command: Command = Command.APPEND,
             @Query("media_id") mediaId: String,
             @Query("segment_index") segmentIndex: Int,
-            @Part file: MultipartBody.Part
+            @Part file: MultipartBody.Part,
         ): Call<Unit>
 
         @POST("/1.1/media/upload.json")
         fun finalize(
             @Query("command") command: Command = Command.FINALIZE,
-            @Query("media_id") mediaId: String
+            @Query("media_id") mediaId: String,
         ): Call<MediaUpload>
     }
 
     interface StatusApi {
-
         @POST("/1.1/statuses/update.json")
         fun status(
             @Query("status") statusMessage: String,
             @Query("in_reply_to_status_id") replyStatusId: String? = null,
             @Query("auto_populate_reply_metadata") autoPopulateMetadata: String = "true",
-            @Query("enable_dmcommands") enableDM: String = "false"
+            @Query("enable_dmcommands") enableDM: String = "false",
         ): Call<InputTweet>
     }
 
@@ -200,55 +210,60 @@ internal class TwitterClient(
             twitterOAuthConsumer.setTokenWithSecret(token, secret)
         }
 
-        accountActivityApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        accountActivityApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addJacksonConverter()
+                .build()
+                .create()
 
-        directMessageApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        directMessageApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addJacksonConverter()
+                .build()
+                .create()
 
-        userApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        userApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addJacksonConverter()
+                .build()
+                .create()
 
-        mediaApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
-        )
-            .baseUrl(BASE_MEDIA_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        mediaApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
+            )
+                .baseUrl(BASE_MEDIA_URL)
+                .addJacksonConverter()
+                .build()
+                .create()
 
-        statusApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addJacksonConverter()
-            .build()
-            .create()
+        statusApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(twitterOAuthConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addJacksonConverter()
+                .build()
+                .create()
     }
 
     private fun defaultUser(): User {
@@ -284,15 +299,16 @@ internal class TwitterClient(
         httpParameters.put("oauth_callback", "oob")
         oAuthApiConsumer.setAdditionalParameters(httpParameters)
 
-        val oAuthApi: OAuthApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-            .create()
+        val oAuthApi: OAuthApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(oAuthApiConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build()
+                .create()
 
         return try {
             val response = oAuthApi.requestToken().execute()
@@ -303,7 +319,7 @@ internal class TwitterClient(
                     RequestToken(
                         queryPairs.get("oauth_token") ?: "",
                         queryPairs.get("oauth_token_secret") ?: "",
-                        queryPairs.get("oauth_callback_confirmed")?.toBoolean() ?: false
+                        queryPairs.get("oauth_callback_confirmed")?.toBoolean() ?: false,
                     )
                 }
             } else {
@@ -331,23 +347,26 @@ internal class TwitterClient(
      *
      * @return user accessToken null if failed
      */
-    fun accessToken(requestToken: RequestToken, oauthVerifier: String): AccessToken? {
-
+    fun accessToken(
+        requestToken: RequestToken,
+        oauthVerifier: String,
+    ): AccessToken? {
         val oAuthApiConsumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
         oAuthApiConsumer.setTokenWithSecret(requestToken.oauthToken, requestToken.oauthTokenSecret)
         val httpParameters = HttpParameters()
         httpParameters.put("oauth_verifier", oauthVerifier)
         oAuthApiConsumer.setAdditionalParameters(httpParameters)
 
-        val oAuthApi: OAuthApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_twitter_request_timeout_ms", 30000),
-            logger,
-            interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
-        )
-            .baseUrl(BASE_URL)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-            .create()
+        val oAuthApi: OAuthApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_twitter_request_timeout_ms", 30000),
+                logger,
+                interceptors = listOf(SigningInterceptor(oAuthApiConsumer)),
+            )
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build()
+                .create()
 
         return try {
             val response = oAuthApi.accessToken().execute()
@@ -359,7 +378,7 @@ internal class TwitterClient(
                         queryPairs["oauth_token"] ?: "",
                         queryPairs["oauth_token_secret"] ?: "",
                         queryPairs.get("user_id") ?: "",
-                        queryPairs["screen_name"] ?: ""
+                        queryPairs["screen_name"] ?: "",
                     )
                 }
             } else {
@@ -497,64 +516,74 @@ internal class TwitterClient(
      *
      * @return list of webhooks
      */
-    fun webhooks(): List<Webhook> = try {
-        val response = accountActivityApi.webhooks(environment).execute()
-        if (response.isSuccessful) {
-            response.body()?.also {
-                logger.debug { it }
-            } ?: emptyList()
-        } else {
-            response.logError()
+    fun webhooks(): List<Webhook> =
+        try {
+            val response = accountActivityApi.webhooks(environment).execute()
+            if (response.isSuccessful) {
+                response.body()?.also {
+                    logger.debug { it }
+                } ?: emptyList()
+            } else {
+                response.logError()
+                emptyList()
+            }
+        } catch (e: Exception) {
+            // log and ignore
+            logger.error(e)
             emptyList()
         }
-    } catch (e: Exception) {
-        // log and ignore
-        logger.error(e)
-        emptyList()
-    }
 
-    fun sendDirectMessage(outcomingEvent: OutcomingEvent): Boolean = try {
-        val response = directMessageApi.new(outcomingEvent).execute()
-        if (!response.isSuccessful) {
-            response.logError()
+    fun sendDirectMessage(outcomingEvent: OutcomingEvent): Boolean =
+        try {
+            val response = directMessageApi.new(outcomingEvent).execute()
+            if (!response.isSuccessful) {
+                response.logError()
+                false
+            } else {
+                true
+            }
+        } catch (e: Exception) {
+            // log and ignore
+            logger.error(e)
             false
-        } else {
-            true
-        }
-    } catch (e: Exception) {
-        // log and ignore
-        logger.error(e)
-        false
-    }
-
-    fun sendTweet(tweet: OutputTweet, threadId: Long?): Boolean = try {
-        val enableDM = tweet.dmRecipientID != null
-        val enableWelcomeMessage = tweet.welcomeMessageID != null
-        val enableDefaultMessage = tweet.defaultMessage != null
-        val message = if (enableDM) {
-            tweet.text +
-                " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID +
-                (if (enableWelcomeMessage) "&welcome_message_id=" + tweet.welcomeMessageID else "") +
-                (if (enableDefaultMessage) "&text=" + URLEncoder.encode(tweet.defaultMessage, "UTF-8") else "")
-        } else {
-            tweet.text
         }
 
-        val response = statusApi.status(message, threadId?.toString(), enableDM = enableDM.toString()).execute()
-        if (!response.isSuccessful) {
-            response.logError()
+    fun sendTweet(
+        tweet: OutputTweet,
+        threadId: Long?,
+    ): Boolean =
+        try {
+            val enableDM = tweet.dmRecipientID != null
+            val enableWelcomeMessage = tweet.welcomeMessageID != null
+            val enableDefaultMessage = tweet.defaultMessage != null
+            val message =
+                if (enableDM) {
+                    tweet.text +
+                        " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID +
+                        (if (enableWelcomeMessage) "&welcome_message_id=" + tweet.welcomeMessageID else "") +
+                        (if (enableDefaultMessage) "&text=" + URLEncoder.encode(tweet.defaultMessage, "UTF-8") else "")
+                } else {
+                    tweet.text
+                }
+
+            val response = statusApi.status(message, threadId?.toString(), enableDM = enableDM.toString()).execute()
+            if (!response.isSuccessful) {
+                response.logError()
+                false
+            } else {
+                true
+            }
+        } catch (e: Exception) {
+            // log and ignore
+            logger.error(e)
             false
-        } else {
-            true
         }
-    } catch (e: Exception) {
-        // log and ignore
-        logger.error(e)
-        false
-    }
 
-    fun createAttachment(mediaCategory: MediaCategory, contentType: String, data: ByteArray): Attachment {
-
+    fun createAttachment(
+        mediaCategory: MediaCategory,
+        contentType: String,
+        data: ByteArray,
+    ): Attachment {
         val mediaUploadInit = uploadMediaInit(mediaCategory, contentType, data.size.toLong())
 
         uploadMedia(data, mediaUploadInit.mediaIdString)
@@ -564,8 +593,10 @@ internal class TwitterClient(
         return Attachment(type = "media", media = AttachmentMedia(mediaUpload.mediaIdString))
     }
 
-    private fun uploadMedia(data: ByteArray, mediaId: String) {
-
+    private fun uploadMedia(
+        data: ByteArray,
+        mediaId: String,
+    ) {
         var segmentIndex = 0
         val segmentCount = (data.size + MEDIA_CHUNK_SIZE - 1) / MEDIA_CHUNK_SIZE
 
@@ -582,7 +613,11 @@ internal class TwitterClient(
         }
     }
 
-    private fun uploadMediaInit(mediaCategory: MediaCategory, contentType: String, totalBytes: Long): MediaUpload {
+    private fun uploadMediaInit(
+        mediaCategory: MediaCategory,
+        contentType: String,
+        totalBytes: Long,
+    ): MediaUpload {
         val response = mediaApi.init(Command.INIT, totalBytes, contentType, mediaCategory.mediaCategory, null).execute()
         if (response.isSuccessful) {
             return response.body()?.also {
@@ -594,12 +629,16 @@ internal class TwitterClient(
         }
     }
 
-    private fun uploadMediaAppend(mediaId: String, segmentIndex: Int, chunk: ByteArray): Boolean {
-
-        val requestChunk: RequestBody = RequestBody.create(
-            "application/octet-stream".toMediaType(),
-            chunk
-        )
+    private fun uploadMediaAppend(
+        mediaId: String,
+        segmentIndex: Int,
+        chunk: ByteArray,
+    ): Boolean {
+        val requestChunk: RequestBody =
+            RequestBody.create(
+                "application/octet-stream".toMediaType(),
+                chunk,
+            )
 
         val body = MultipartBody.Part.createFormData("media", "chunk-segment-$segmentIndex", requestChunk)
 
@@ -613,7 +652,6 @@ internal class TwitterClient(
     }
 
     private fun uploadMediaFinalize(mediaId: String): MediaUpload {
-
         val response = mediaApi.finalize(Command.FINALIZE, mediaId).execute()
 
         if (response.isSuccessful) {
@@ -627,10 +665,11 @@ internal class TwitterClient(
     }
 
     fun b64HmacSHA256(payload: String): String {
-        val signingKey = SecretKeySpec(
-            consumerSecret.toByteArray(),
-            "HmacSHA256"
-        )
+        val signingKey =
+            SecretKeySpec(
+                consumerSecret.toByteArray(),
+                "HmacSHA256",
+            )
 
         val mac = Mac.getInstance("HmacSHA256")
         mac.init(signingKey)

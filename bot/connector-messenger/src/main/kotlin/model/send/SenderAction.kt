@@ -19,7 +19,9 @@ package ai.tock.bot.connector.messenger.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class SenderAction {
-
-    typing_on, typing_off, mark_seen
+    typing_on,
+    typing_off,
+    mark_seen,
 }

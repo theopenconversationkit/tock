@@ -77,5 +77,5 @@ data class TestBuild(
     /**
      * Number of entity errors by intent.
      */
-    val entityErrorsByIntent: Map<String, Int> = emptyMap()
+    val entityErrorsByIntent: Map<String, Int> = emptyMap(),
 )

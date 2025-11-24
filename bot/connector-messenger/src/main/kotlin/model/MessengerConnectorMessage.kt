@@ -26,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
  *
  */
 abstract class MessengerConnectorMessage : ConnectorMessage {
-
     override val connectorType: ConnectorType @JsonIgnore get() = MessengerConnectorProvider.connectorType
 
     /**

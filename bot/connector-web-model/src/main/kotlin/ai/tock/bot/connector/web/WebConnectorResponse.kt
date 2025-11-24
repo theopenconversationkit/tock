@@ -21,10 +21,10 @@ import ai.tock.bot.connector.web.send.WebMessageContract
 
 interface WebConnectorResponseContract {
     val responses: List<WebMessageContract>
-    val metadata: Map<String,String>
+    val metadata: Map<String, String>
 }
 
 data class WebConnectorResponseContent(
     override val responses: List<WebMessageContent>,
-    override val metadata: Map<String,String> = emptyMap()
+    override val metadata: Map<String, String> = emptyMap(),
 ) : WebConnectorResponseContract

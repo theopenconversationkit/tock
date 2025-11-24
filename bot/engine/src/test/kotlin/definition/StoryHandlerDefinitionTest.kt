@@ -29,7 +29,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class StoryHandlerDefinitionTest {
-
     @Test
     fun `answerWith returning a ConnectorMessage send a final message with this connector message`() {
         val bus = mockk<BotBus>(relaxed = true)

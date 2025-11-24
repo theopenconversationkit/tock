@@ -36,9 +36,8 @@ import java.util.Locale
  */
 open class TockJUnit4Rule<out T : TestContext>(
     val botDefinition: BotDefinition,
-    @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)
+    @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T),
 ) : TestRule {
-
     /**
      * The [TestContext].
      */
@@ -51,9 +50,8 @@ open class TockJUnit4Rule<out T : TestContext>(
         story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         locale: Locale = testContext.defaultLocale(),
-        userId: PlayerId = testContext.defaultPlayerId()
-    ):
-        BotBusMock = newBusMock(story, connectorType, locale, userId).run()
+        userId: PlayerId = testContext.defaultPlayerId(),
+    ): BotBusMock = newBusMock(story, connectorType, locale, userId).run()
 
     /**
      * Provides a mock initialized with the specified [StoryDefinition].
@@ -62,9 +60,8 @@ open class TockJUnit4Rule<out T : TestContext>(
         story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         locale: Locale = testContext.defaultLocale(),
-        userId: PlayerId = testContext.defaultPlayerId()
-    ):
-        BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
+        userId: PlayerId = testContext.defaultPlayerId(),
+    ): BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
 
     /**
      * Provides a mock context initialized with the specified [StoryDefinition].
@@ -73,12 +70,13 @@ open class TockJUnit4Rule<out T : TestContext>(
         story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         locale: Locale = testContext.defaultLocale(),
-        userId: PlayerId = testContext.defaultPlayerId()
-    ): BotBusMockContext = botDefinition.newBusMockContext(testContext, story, connectorType, locale, userId)
-        .apply {
-            testContext.botBusMockContext = this
-            lifecycle.configureTestIoc()
-        }
+        userId: PlayerId = testContext.defaultPlayerId(),
+    ): BotBusMockContext =
+        botDefinition.newBusMockContext(testContext, story, connectorType, locale, userId)
+            .apply {
+                testContext.botBusMockContext = this
+                lifecycle.configureTestIoc()
+            }
 
     /**
      * Provides a mock context initialized with the current [testContext] and runs the bus.
@@ -90,7 +88,10 @@ open class TockJUnit4Rule<out T : TestContext>(
      */
     fun busMock(): BotBusMock = BotBusMock(testContext.botBusMockContext)
 
-    override fun apply(base: Statement, description: Description): Statement {
+    override fun apply(
+        base: Statement,
+        description: Description,
+    ): Statement {
         return object : Statement() {
             override fun evaluate() {
                 lifecycle.start()

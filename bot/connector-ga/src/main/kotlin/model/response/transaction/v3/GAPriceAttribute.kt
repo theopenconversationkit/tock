@@ -24,7 +24,7 @@ data class GAPriceAttribute(
     val name: String,
     val state: GAPriceState,
     val taxIncluded: Boolean?,
-    val amount: GAMoneyV3?
+    val amount: GAMoneyV3?,
 )
 
 enum class GAMoneyType {
@@ -36,16 +36,16 @@ enum class GAMoneyType {
     SUBTOTAL,
     FEE,
     GRATUITY,
-    TOTAL
+    TOTAL,
 }
 
 enum class GAPriceState {
     STATE_UNSPECIFIED,
     ESTIMATE,
-    ACTUAL
+    ACTUAL,
 }
 
 data class GAPriceMoney(
     val currencyCode: String,
-    val amountInMicros: String
+    val amountInMicros: String,
 )

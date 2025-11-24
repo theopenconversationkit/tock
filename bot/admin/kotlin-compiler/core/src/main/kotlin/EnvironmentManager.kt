@@ -27,10 +27,8 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.extensions.ExtensionsArea
 import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Computable
-import com.intellij.openapi.util.Getter
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.FileContextProvider
 import com.intellij.psi.PsiElement
@@ -54,7 +52,6 @@ import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
-import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import java.io.File
 import java.nio.file.Path
 
@@ -81,8 +78,8 @@ internal object EnvironmentManager {
         configuration.put(
             CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
             object : MessageCollector {
-
                 private var error: Boolean = false
+
                 override fun clear() {
                     error = false
                 }
@@ -94,12 +91,12 @@ internal object EnvironmentManager {
                 override fun report(
                     severity: CompilerMessageSeverity,
                     message: String,
-                    location: CompilerMessageSourceLocation?
+                    location: CompilerMessageSourceLocation?,
                 ) {
                     logger.error { "$severity $message $location" }
                     error = true
                 }
-            }
+            },
         )
 
         configuration.put(CommonConfigurationKeys.MODULE_NAME, "tockScript")
@@ -108,7 +105,7 @@ internal object EnvironmentManager {
             KotlinCoreEnvironment.createForProduction(
                 disposable,
                 configuration,
-                EnvironmentConfigFiles.JVM_CONFIG_FILES
+                EnvironmentConfigFiles.JVM_CONFIG_FILES,
             )
         val project = environment.project as MockProject
 
@@ -130,7 +127,10 @@ internal object EnvironmentManager {
         registerExtensionPoint(area, ClsCustomNavigationPolicy.EP_NAME, ClsCustomNavigationPolicy::class.java)
     }
 
-    private fun getClasspath(arguments: K2JVMCompilerArguments, libraries: List<Path>): List<File> {
+    private fun getClasspath(
+        arguments: K2JVMCompilerArguments,
+        libraries: List<Path>,
+    ): List<File> {
         val classpath = Lists.newArrayList<File>()
         // classpath.addAll(PathUtil.getJdkClassesRoots(File(CommonSettings.JAVA_HOME)))
         for (library in libraries) {
@@ -155,58 +155,107 @@ private class DummyCodeStyleManager : CodeStyleManager() {
         return psiElement
     }
 
-    override fun reformat(psiElement: PsiElement, b: Boolean): PsiElement {
+    override fun reformat(
+        psiElement: PsiElement,
+        b: Boolean,
+    ): PsiElement {
         return psiElement
     }
 
-    override fun reformatRange(psiElement: PsiElement, i: Int, i1: Int): PsiElement {
+    override fun reformatRange(
+        psiElement: PsiElement,
+        i: Int,
+        i1: Int,
+    ): PsiElement {
         return psiElement
     }
 
-    override fun reformatRange(psiElement: PsiElement, i: Int, i1: Int, b: Boolean): PsiElement {
+    override fun reformatRange(
+        psiElement: PsiElement,
+        i: Int,
+        i1: Int,
+        b: Boolean,
+    ): PsiElement {
         return psiElement
     }
 
-    override fun reformatText(psiFile: PsiFile, i: Int, i1: Int) {
+    override fun reformatText(
+        psiFile: PsiFile,
+        i: Int,
+        i1: Int,
+    ) {
     }
 
-    override fun reformatText(psiFile: PsiFile, collection: Collection<TextRange>) {
+    override fun reformatText(
+        psiFile: PsiFile,
+        collection: Collection<TextRange>,
+    ) {
     }
 
-    override fun reformatTextWithContext(psiFile: PsiFile, changedRangesInfo: ChangedRangesInfo) {
+    override fun reformatTextWithContext(
+        psiFile: PsiFile,
+        changedRangesInfo: ChangedRangesInfo,
+    ) {
     }
 
-    override fun reformatTextWithContext(psiFile: PsiFile, collection: Collection<TextRange>) {
+    override fun reformatTextWithContext(
+        psiFile: PsiFile,
+        collection: Collection<TextRange>,
+    ) {
     }
 
-    override fun adjustLineIndent(psiFile: PsiFile, textRange: TextRange) {
+    override fun adjustLineIndent(
+        psiFile: PsiFile,
+        textRange: TextRange,
+    ) {
     }
 
-    override fun adjustLineIndent(psiFile: PsiFile, i: Int): Int {
+    override fun adjustLineIndent(
+        psiFile: PsiFile,
+        i: Int,
+    ): Int {
         return i
     }
 
-    override fun adjustLineIndent(document: Document, i: Int): Int {
+    override fun adjustLineIndent(
+        document: Document,
+        i: Int,
+    ): Int {
         return i
     }
 
-    override fun isLineToBeIndented(psiFile: PsiFile, i: Int): Boolean {
+    override fun isLineToBeIndented(
+        psiFile: PsiFile,
+        i: Int,
+    ): Boolean {
         return false
     }
 
-    override fun getLineIndent(psiFile: PsiFile, i: Int): String? {
+    override fun getLineIndent(
+        psiFile: PsiFile,
+        i: Int,
+    ): String? {
         return null
     }
 
-    override fun getLineIndent(document: Document, i: Int): String? {
+    override fun getLineIndent(
+        document: Document,
+        i: Int,
+    ): String? {
         return null
     }
 
-    override fun getIndent(s: String, fileType: FileType): Indent? {
+    override fun getIndent(
+        s: String,
+        fileType: FileType,
+    ): Indent? {
         return null
     }
 
-    override fun fillIndent(indent: Indent, fileType: FileType): String? {
+    override fun fillIndent(
+        indent: Indent,
+        fileType: FileType,
+    ): String? {
         return null
     }
 
@@ -214,7 +263,10 @@ private class DummyCodeStyleManager : CodeStyleManager() {
         return null
     }
 
-    override fun reformatNewlyAddedElement(astNode: ASTNode, astNode1: ASTNode) {
+    override fun reformatNewlyAddedElement(
+        astNode: ASTNode,
+        astNode1: ASTNode,
+    ) {
     }
 
     override fun isSequentialProcessingAllowed(): Boolean {

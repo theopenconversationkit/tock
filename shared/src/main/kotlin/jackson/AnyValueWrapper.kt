@@ -36,13 +36,16 @@ import kotlin.reflect.KClass
 @JsonDeserialize(using = AnyValueDeserializer::class)
 @JsonSerialize(using = AnyValueSerializer::class)
 data class AnyValueWrapper(val klass: String, val value: Any?) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     internal class AnyValueSerializer : JsonSerializer<AnyValueWrapper>() {
-        override fun serialize(value: AnyValueWrapper, gen: JsonGenerator, serializers: SerializerProvider) {
+        override fun serialize(
+            value: AnyValueWrapper,
+            gen: JsonGenerator,
+            serializers: SerializerProvider,
+        ) {
             gen.writeStartObject()
             gen.writeFieldName(AnyValueWrapper::klass.name)
             gen.writeString(value.klass)
@@ -52,8 +55,10 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
     }
 
     internal class AnyValueDeserializer : JsonDeserializer<AnyValueWrapper>() {
-
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): AnyValueWrapper? {
+        override fun deserialize(
+            jp: JsonParser,
+            context: DeserializationContext,
+        ): AnyValueWrapper? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
                 val classValue: Class<*>? =

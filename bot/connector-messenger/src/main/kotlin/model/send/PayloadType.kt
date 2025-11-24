@@ -19,6 +19,10 @@ package ai.tock.bot.connector.messenger.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class PayloadType {
-    button, generic, list, media
+    button,
+    generic,
+    list,
+    media,
 }

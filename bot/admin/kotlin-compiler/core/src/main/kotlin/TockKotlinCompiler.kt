@@ -20,7 +20,6 @@ package ai.tock.bot.admin.kotlin.compiler
  * Compile a Kotlin script.
  */
 object TockKotlinCompiler {
-
     init {
         KotlinCompiler.init()
     }
@@ -29,7 +28,10 @@ object TockKotlinCompiler {
      * Compile a Kotlin script with a specified [fileName].
      * @return the name of the file class with the compiled code
      */
-    fun compile(script: String, fileName: String): CompilationResult {
+    fun compile(
+        script: String,
+        fileName: String,
+    ): CompilationResult {
         val sourceCode = mapOf(fileName to script)
         val errors = KotlinCompiler.getErrors(sourceCode)[fileName]!!
         if (errors.isNotEmpty()) {

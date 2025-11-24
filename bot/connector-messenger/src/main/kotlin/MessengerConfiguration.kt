@@ -22,6 +22,5 @@ import ai.tock.shared.booleanProperty
  * To handle messenger behaviour.
  */
 internal object MessengerConfiguration {
-
     val reuseAttachmentByDefault: Boolean = booleanProperty("tock_bot_messenger_reuse_attachment", true)
 }

@@ -22,7 +22,7 @@ import ai.tock.bot.connector.whatsapp.cloud.database.model.PayloadWhatsAppCloud
  * In order to workaround the characters limit of the WhatsApp API, the payloads are stored in the database.
  */
 interface PayloadWhatsAppCloudDAO {
-
     fun getPayloadById(id: String): String?
+
     fun save(payloadWhatsAppCloud: PayloadWhatsAppCloud)
 }

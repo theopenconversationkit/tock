@@ -28,9 +28,7 @@ class RAGStoryDefinition(handler: StoryHandler) : SimpleStoryDefinition(
     starterIntents = setOf(Intent.unknown),
     storyHandler = handler,
 ) {
-
     companion object {
         const val RAG_STORY_NAME = "tock_rag_story"
     }
-
 }

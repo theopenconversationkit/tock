@@ -25,17 +25,17 @@ import kotlin.test.assertTrue
  *
  */
 class ParserRequestDataTest : AbstractTest() {
-
     @Test
     fun isStateEnabledForIntentId_shouldReturnTrue_whenIntentIsEnabledAndIntentSupportState() {
         val testState = "testState"
-        val data = ParserRequestData(
-            app,
-            parseQuery.copy(state = QueryState(setOf(testState))),
-            defaultClassifiedSentence,
-            setOf(IntentQualifier(defaultIntentName, 0.2)),
-            listOf(defaultIntentDefinition)
-        )
+        val data =
+            ParserRequestData(
+                app,
+                parseQuery.copy(state = QueryState(setOf(testState))),
+                defaultClassifiedSentence,
+                setOf(IntentQualifier(defaultIntentName, 0.2)),
+                listOf(defaultIntentDefinition),
+            )
         assertTrue(data.isStateEnabledForIntentId(defaultIntentDefinition._id))
     }
 }

@@ -23,7 +23,6 @@ import kotlin.test.assertEquals
  *
  */
 class TextAndVoiceTranslatedStringTest {
-
     @Test
     fun toString_shouldReturn_Text() {
         assertEquals("ok", TextAndVoiceTranslatedString("ok", "voice").toString())

@@ -59,9 +59,8 @@ data class StoryDefinitionConfigurationStepDump(
     /**
      * Entity selection.
      */
-    val entity: EntityStepSelection? = null
+    val entity: EntityStepSelection? = null,
 ) {
-
     constructor(def: StoryDefinitionConfigurationStep, namespace: String, category: String) :
         this(
             def.name,
@@ -74,11 +73,11 @@ data class StoryDefinitionConfigurationStepDump(
                     I18nKeyProvider.generateKey(namespace, category, def.userSentence),
                     namespace,
                     category,
-                    def.userSentenceLabel?.defaultLabel ?: def.userSentence
+                    def.userSentenceLabel?.defaultLabel ?: def.userSentence,
                 ),
             def.children.map { StoryDefinitionConfigurationStepDump(it, namespace, category) },
             def.level,
-            def.entity
+            def.entity,
         )
 
     fun toStep(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfigurationStep =
@@ -92,6 +91,6 @@ data class StoryDefinitionConfigurationStepDump(
             userSentenceLabel?.withNamespace(controller.targetNamespace),
             children.map { it.toStep(controller) },
             level,
-            entity
+            entity,
         )
 }

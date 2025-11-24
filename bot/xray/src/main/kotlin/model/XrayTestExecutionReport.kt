@@ -27,5 +27,5 @@ data class XrayTestExecutionReport(
     val finish: OffsetDateTime,
     val comment: String,
     val status: XrayStatus,
-    val steps: List<XrayTestExecutionStepReport>
+    val steps: List<XrayTestExecutionStepReport>,
 )

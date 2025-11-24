@@ -23,5 +23,5 @@ data class Mention(
     val name: String,
     val id: String,
     @JsonProperty("id_str") val idStr: String,
-    override val indices: List<Int>
+    override val indices: List<Int>,
 ) : Entity()

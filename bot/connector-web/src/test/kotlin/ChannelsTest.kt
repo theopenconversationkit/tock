@@ -33,15 +33,16 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-
 internal class ChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()
 
     @BeforeEach
     fun setUp() {
-        injector.inject(Kodein {
-            bind<ChannelDAO>() with singleton { channelDaoMock }
-        })
+        injector.inject(
+            Kodein {
+                bind<ChannelDAO>() with singleton { channelDaoMock }
+            },
+        )
     }
 
     @Test
@@ -49,13 +50,15 @@ internal class ChannelsTest {
         val listenerSlot = slot<ChannelEvent.Handler>()
         val appId = "my-app"
         val recipientId = "user1"
-        val expectedMissedResponses = listOf(
-            WebConnectorResponse(listOf(WebMessage("Hello, are you still there?"))),
-            WebConnectorResponse(listOf(WebMessage("I think the connection broke")))
-        )
-        val expectedNewResponses = listOf(
-            WebConnectorResponse(listOf(WebMessage("Welcome back")))
-        )
+        val expectedMissedResponses =
+            listOf(
+                WebConnectorResponse(listOf(WebMessage("Hello, are you still there?"))),
+                WebConnectorResponse(listOf(WebMessage("I think the connection broke"))),
+            )
+        val expectedNewResponses =
+            listOf(
+                WebConnectorResponse(listOf(WebMessage("Welcome back"))),
+            )
         every { channelDaoMock.listenChanges(capture(listenerSlot)) } just runs
         every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } answers {
             val handler = thirdArg<ChannelEvent.Handler>()

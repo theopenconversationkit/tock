@@ -17,8 +17,8 @@
 package ai.tock.env
 
 import ai.tock.env.secretmanager.EnvSecretManagerService
-import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
@@ -28,8 +28,10 @@ class IOCModulesService : BotAdditionalModulesService {
     override fun customModules(): Set<Module> = setOf(envModules)
 }
 
-val envModules = Module {
-    bind<SecretManagerService>(tag = SecretManagerProviderType.ENV.name) with singleton {
-        EnvSecretManagerService()
+val envModules =
+    Module {
+        bind<SecretManagerService>(tag = SecretManagerProviderType.ENV.name) with
+            singleton {
+                EnvSecretManagerService()
+            }
     }
-}

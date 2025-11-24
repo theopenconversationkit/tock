@@ -22,17 +22,13 @@ package ai.tock.bot.admin.dialog
  *
  */
 data class DialogRating(
-
-
     /**
      *  [rating] is the rating given by the user
      *  the rating can be a number between 1 and 5
      */
     var rating: Double? = null,
-
-
     /**
      * [nbUsers] is the number of users who gave this rating to the dialog
      */
-    var nbUsers: Int? = null
+    var nbUsers: Int? = null,
 )

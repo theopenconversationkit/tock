@@ -27,7 +27,6 @@ import kotlin.test.assertTrue
  *
  */
 class UnknownValueDeserializationTest {
-
     @Test
     fun testSerializeAndDeserialize() {
         val v = UnknownValue()
@@ -44,10 +43,11 @@ class UnknownValueDeserializationTest {
 
     @Test
     fun testDeserializeListOfUnknown() {
-        val r = mapper.readValue(
-            """{"a":{"@type":"a","k":"c"},"b":{"@type":"a","h":"c"},"c":{"@type":"ai.tock.nlp.entity.StringValue","value":"v"}}""",
-            V::class.java
-        )
+        val r =
+            mapper.readValue(
+                """{"a":{"@type":"a","k":"c"},"b":{"@type":"a","h":"c"},"c":{"@type":"ai.tock.nlp.entity.StringValue","value":"v"}}""",
+                V::class.java,
+            )
         assertTrue(r.a is UnknownValue)
         assertTrue(r.b is UnknownValue)
         assertEquals(StringValue("v"), r.c)

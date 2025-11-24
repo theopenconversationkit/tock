@@ -24,5 +24,5 @@ enum class GAState {
     IN_TRANSIT,
     RETURNED,
     FULFILLED,
-    CHANGE_REQUESTED
+    CHANGE_REQUESTED,
 }

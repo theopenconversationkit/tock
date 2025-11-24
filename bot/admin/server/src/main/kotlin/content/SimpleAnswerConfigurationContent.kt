@@ -22,9 +22,11 @@ import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
 import java.util.Locale
 
 class SimpleAnswerConfigurationContent(val answers: List<SimpleAnswerContent>) : AnswerConfigurationContent(AnswerConfigurationType.simple) {
-
-    override fun toBotAnswerConfiguration(namespace: String, locale: Locale): BotAnswerConfiguration =
-            BotSimpleAnswerConfiguration(
-                    answers = answers.map { it.toBotSimpleAnswer(namespace, locale) }
-            )
+    override fun toBotAnswerConfiguration(
+        namespace: String,
+        locale: Locale,
+    ): BotAnswerConfiguration =
+        BotSimpleAnswerConfiguration(
+            answers = answers.map { it.toBotSimpleAnswer(namespace, locale) },
+        )
 }

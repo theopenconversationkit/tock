@@ -1,6 +1,20 @@
 package ai.tock.bot.connector.googlechat
 
-import org.commonmark.node.*
+import org.commonmark.node.AbstractVisitor
+import org.commonmark.node.BulletList
+import org.commonmark.node.Code
+import org.commonmark.node.Emphasis
+import org.commonmark.node.FencedCodeBlock
+import org.commonmark.node.HardLineBreak
+import org.commonmark.node.Heading
+import org.commonmark.node.IndentedCodeBlock
+import org.commonmark.node.Link
+import org.commonmark.node.ListItem
+import org.commonmark.node.OrderedList
+import org.commonmark.node.Paragraph
+import org.commonmark.node.SoftLineBreak
+import org.commonmark.node.StrongEmphasis
+import org.commonmark.node.Text
 import org.commonmark.parser.Parser
 
 /**
@@ -15,7 +29,6 @@ import org.commonmark.parser.Parser
  * - Paragraphs and line breaks
  */
 object GoogleChatMarkdown {
-
     private val parser: Parser = Parser.builder().build()
 
     fun toGoogleChat(markdown: String): String {
@@ -135,11 +148,13 @@ object GoogleChatMarkdown {
         private fun extractLinkText(link: Link): String {
             val textBuilder = StringBuilder()
 
-            link.accept(object : AbstractVisitor() {
-                override fun visit(text: Text) {
-                    textBuilder.append(text.literal)
-                }
-            })
+            link.accept(
+                object : AbstractVisitor() {
+                    override fun visit(text: Text) {
+                        textBuilder.append(text.literal)
+                    }
+                },
+            )
 
             return textBuilder.toString()
         }

@@ -28,7 +28,6 @@ internal interface EMProviderApi {
     @POST("/em-providers/{provider-id}/setting/status")
     fun checkEMSetting(
         @Body query: EMProviderSettingStatusRequest,
-        @Path("provider-id") providerId: EMProvider
+        @Path("provider-id") providerId: EMProvider,
     ): Call<ProviderSettingStatusResponse>
-
 }

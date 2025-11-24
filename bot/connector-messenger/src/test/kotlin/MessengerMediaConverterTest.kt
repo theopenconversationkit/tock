@@ -33,7 +33,6 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 
 class MessengerMediaConverterTest {
-
     @Test
     fun `MediaCard does not generate generic template with empty buttons`() {
         val bus = mockk<BotBus>()
@@ -43,16 +42,17 @@ class MessengerMediaConverterTest {
             Translator.formatMessage(
                 args[0].toString(),
                 I18nContext(defaultLocale, textChat, null),
-                args.subList(1, args.size)
+                args.subList(1, args.size),
             ).raw
         }
 
-        val mediaCard = MediaCard(
-            "title",
-            "subtitle",
-            MediaFile("https://a/image.png", "image", description = "description File"),
-            listOf(MediaAction("Test"))
-        )
+        val mediaCard =
+            MediaCard(
+                "title",
+                "subtitle",
+                MediaFile("https://a/image.png", "image", description = "description File"),
+                listOf(MediaAction("Test")),
+            )
         val result = MessengerMediaConverter.toConnectorMessage(mediaCard).invoke(bus)
         assertNull(((result.first() as AttachmentMessage).attachment.payload as GenericPayload).elements.first().buttons)
     }

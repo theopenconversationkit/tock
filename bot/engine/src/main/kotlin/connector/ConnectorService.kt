@@ -24,9 +24,11 @@ import ai.tock.bot.engine.ConnectorController
  * Need to be registered using [ai.tock.bot.engine.BotRepository.registerConnectorService].
  */
 interface ConnectorService {
-
     /**
      * Install service.
      */
-    fun install(controller: ConnectorController, configuration: BotApplicationConfiguration)
+    fun install(
+        controller: ConnectorController,
+        configuration: BotApplicationConfiguration,
+    )
 }

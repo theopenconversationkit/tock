@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = WebUrl::class, name = "web_url")
+    JsonSubTypes.Type(value = WebUrl::class, name = "web_url"),
 )
 abstract class CTA {
     abstract fun toChoice(): Choice

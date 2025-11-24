@@ -25,5 +25,5 @@ data class BotAdminConfiguration(
     val botApiSupport: Boolean = booleanProperty("tock_bot_api", false),
     val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
     val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
-    val botApiBaseUrl: String = defaultBaseUrl
+    val botApiBaseUrl: String = defaultBaseUrl,
 )

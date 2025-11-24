@@ -27,11 +27,10 @@ data class MicrosoftOpenidMetadata(
     val authorizationEndpoint: String,
     val jwksUri: String,
     val idTokenSigningAlgValuesSupported: ArrayList<String>,
-    val tokenEndpointAuthMethodsSupported: List<String>
+    val tokenEndpointAuthMethodsSupported: List<String>,
 )
 
 internal interface MicrosoftOpenIdMetadataApi {
-
     @GET(".well-known/openidconfiguration/")
     fun getMicrosoftOpenIdMetadata(): Call<MicrosoftOpenidMetadata>
 
@@ -40,7 +39,7 @@ internal interface MicrosoftOpenIdMetadataApi {
 }
 
 data class MicrosoftValidSigningKeys(
-    val keys: List<MicrosoftValidSigningKey>
+    val keys: List<MicrosoftValidSigningKey>,
 ) : Serializable
 
 data class MicrosoftValidSigningKey(
@@ -51,18 +50,16 @@ data class MicrosoftValidSigningKey(
     val n: String,
     val e: String,
     val x5c: List<String>?,
-    val endorsements: List<String>?
+    val endorsements: List<String>?,
 ) : Serializable {
-
     override fun toString(): String {
         return Gson().toJson(this)
     }
 }
 
 internal interface MicrosoftJwksApi {
-
     @GET
     fun getJwk(
-        @Url url: String
+        @Url url: String,
     ): Call<MicrosoftValidSigningKeys>
 }

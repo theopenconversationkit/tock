@@ -22,15 +22,16 @@ import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 data class WhatsAppBotMessageInteractiveMessage(
     val interactive: WhatsAppBotInteractive,
     override val recipientType: WhatsAppBotRecipientType,
-    override val userId: String? = null
+    override val userId: String? = null,
 ) : WhatsAppBotMessage(WhatsAppBotMessageType.interactive, userId) {
     override fun toGenericMessage(): GenericMessage? {
         val texts = mapOf(TEXT_PARAM to (interactive.body?.text ?: ""))
         return GenericMessage(
             texts = texts,
-            choices = interactive.action?.buttons?.map { it.toChoice() }
-                ?: interactive.action?.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
-                ?: listOf()
+            choices =
+                interactive.action?.buttons?.map { it.toChoice() }
+                    ?: interactive.action?.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
+                    ?: listOf(),
         )
     }
 
@@ -38,6 +39,6 @@ data class WhatsAppBotMessageInteractiveMessage(
         WhatsAppSendBotMessageInteractiveMessage(
             interactive,
             recipientType,
-            recipientId
+            recipientId,
         )
 }

@@ -33,7 +33,6 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
  *
  */
 internal object EntityCoreService : EntityCore {
-
     private val logger = KotlinLogging.logger {}
 
     private val entityTypeProviders: List<EntityTypeProvider> by lazy(PUBLICATION) { SupportedEntityTypeProviders.providers() }
@@ -52,7 +51,7 @@ internal object EntityCoreService : EntityCore {
 
     override fun classifyEntityTypes(
         context: EntityCallContext,
-        text: String
+        text: String,
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text)
@@ -63,7 +62,7 @@ internal object EntityCoreService : EntityCore {
 
     private fun classifyEntityTypesForIntent(
         context: EntityCallContextForIntent,
-        text: String
+        text: String,
     ): List<EntityTypeRecognition> {
         return context.intent
             .entities
@@ -79,7 +78,7 @@ internal object EntityCoreService : EntityCore {
     private fun classifyEntities(
         classifier: EntityTypeClassifier,
         context: EntityCallContext,
-        text: String
+        text: String,
     ): List<EntityTypeRecognition> {
         return try {
             classifier.classifyEntities(context, text)
@@ -92,30 +91,36 @@ internal object EntityCoreService : EntityCore {
     override fun evaluateEntities(
         context: CallContext,
         text: String,
-        entitiesRecognition: List<EntityRecognition>
+        entitiesRecognition: List<EntityRecognition>,
     ): List<EntityRecognition> = entitiesRecognition.map { e -> evaluate(context, text, e) }
 
-    private fun evaluate(context: CallContext, text: String, e: EntityRecognition): EntityRecognition {
+    private fun evaluate(
+        context: CallContext,
+        text: String,
+        e: EntityRecognition,
+    ): EntityRecognition {
         if (e.value.evaluated) {
             return e
         }
-        val root = getEntityEvaluator(e.entityType)?.let { evaluator ->
-            evaluate(
-                evaluator,
-                EntityCallContextForEntity(context, e.value.entity),
-                e.value.textValue(text)
-            )
-        }
+        val root =
+            getEntityEvaluator(e.entityType)?.let { evaluator ->
+                evaluate(
+                    evaluator,
+                    EntityCallContextForEntity(context, e.value.entity),
+                    e.value.textValue(text),
+                )
+            }
 
         return if (e.value.subEntities.isNotEmpty()) {
             val t = e.textValue(text)
             e.copy(
                 probability = if (root == null) 1.0 else e.probability,
-                value = e.value.copy(
-                    value = root?.value,
-                    evaluated = root?.evaluated == true,
-                    subEntities = e.value.subEntities.map { evaluate(context, t, it) }
-                )
+                value =
+                    e.value.copy(
+                        value = root?.value,
+                        evaluated = root?.evaluated == true,
+                        subEntities = e.value.subEntities.map { evaluate(context, t, it) },
+                    ),
             )
         } else {
             root?.let { e.copy(probability = it.probability, value = e.value.copy(value = it.value, evaluated = it.evaluated)) }
@@ -126,7 +131,7 @@ internal object EntityCoreService : EntityCore {
     private fun evaluate(
         evaluator: EntityTypeEvaluator,
         context: EntityCallContextForEntity,
-        text: String
+        text: String,
     ): EvaluationResult {
         return try {
             evaluator.evaluate(context, text)
@@ -136,7 +141,10 @@ internal object EntityCoreService : EntityCore {
         }
     }
 
-    override fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
+    override fun mergeValues(
+        context: EntityCallContextForEntity,
+        values: List<ValueDescriptor>,
+    ): ValueDescriptor? {
         return getEntityEvaluator(context.entityType)?.merge(context, values)
     }
 

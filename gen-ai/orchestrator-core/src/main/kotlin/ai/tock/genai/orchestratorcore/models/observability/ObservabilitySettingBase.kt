@@ -16,7 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.models.observability
 
-
 import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
@@ -26,13 +25,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "provider"
+    property = "provider",
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = LangfuseObservabilitySetting::class, name = Constants.LANGFUSE)
+    JsonSubTypes.Type(value = LangfuseObservabilitySetting::class, name = Constants.LANGFUSE),
 )
 abstract class ObservabilitySettingBase<T>(
-    val provider: ObservabilityProvider
+    val provider: ObservabilityProvider,
 )
 
 typealias ObservabilitySettingDTO = ObservabilitySettingBase<String>

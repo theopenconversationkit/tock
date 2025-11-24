@@ -25,7 +25,7 @@ data class BusinessChatConnectorImageMessage(
     override val sourceId: String,
     override val destinationId: String,
     val bytes: ByteArray,
-    val mimeType: String
+    val mimeType: String,
 ) : BusinessChatConnectorMessage() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

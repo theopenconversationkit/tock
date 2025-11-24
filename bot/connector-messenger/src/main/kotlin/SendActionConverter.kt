@@ -37,10 +37,12 @@ import mu.KotlinLogging
  *
  */
 object SendActionConverter {
-
     private val logger = KotlinLogging.logger {}
 
-    fun toMessageRequest(action: Action, personaId: String? = null): MessageRequest? {
+    fun toMessageRequest(
+        action: Action,
+        personaId: String? = null,
+    ): MessageRequest? {
         return when (action) {
             is SendSentence ->
                 if (action.hasMessage(MessengerConnectorProvider.connectorType)) {
@@ -49,12 +51,13 @@ object SendActionConverter {
                     TextMessage(action.stringText ?: "")
                 }
 
-            is SendAttachment -> AttachmentMessage(
-                Attachment(
-                    AttachmentType.fromTockAttachmentType(action.type),
-                    UrlPayload.getUrlPayload(action)
+            is SendAttachment ->
+                AttachmentMessage(
+                    Attachment(
+                        AttachmentType.fromTockAttachmentType(action.type),
+                        UrlPayload.getUrlPayload(action),
+                    ),
                 )
-            )
             else -> {
                 logger.warn { "action not supported : $action " }
                 null
@@ -67,7 +70,7 @@ object SendActionConverter {
                 if (messageTag == null) RESPONSE else MESSAGE_TAG,
                 NotificationType.toNotificationType(action),
                 messageTag,
-                personaId
+                personaId,
             )
         }
     }

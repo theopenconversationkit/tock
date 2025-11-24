@@ -53,8 +53,8 @@ import ai.tock.shared.listProperty
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
-import java.util.ServiceLoader
 import mu.KotlinLogging
+import java.util.ServiceLoader
 
 class WhatsAppConnectorCloudConnector internal constructor(
     val connectorId: String,
@@ -66,14 +66,14 @@ class WhatsAppConnectorCloudConnector internal constructor(
     private val requestFilter: RequestFilter,
     client: WhatsAppCloudApiClient,
 ) : ConnectorBase(whatsAppCloudConnectorType) {
-
     companion object {
         private const val WEBHOOK_SUBSCRIBE_MODE = "subscribe"
 
         private val logger = KotlinLogging.logger {}
         private val syncTemplates = booleanProperty("tock_whatsapp_sync_templates", false)
-        private val restrictedPhoneNumbers = listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList())
-            .toSet().takeIf { it.isNotEmpty() }
+        private val restrictedPhoneNumbers =
+            listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList())
+                .toSet().takeIf { it.isNotEmpty() }
         private val templateProviders: List<WhatsappTemplateProvider> by lazy {
             ServiceLoader.load(WhatsappTemplateProvider::class.java).toList()
         }
@@ -99,7 +99,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     } else {
                         context.response().end("Invalid verify token")
                     }
-
                 } catch (e: Throwable) {
                     logger.error(e)
                     context.fail(500)
@@ -118,7 +117,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     val requestBody = mapper.readValue<WebHookEventReceiveMessage>(body)
 
                     handleWebHook(requestBody, controller)
-
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -129,7 +127,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
                         logger.error(e)
                     }
                 }
-
             }
             router.post("/create_template").handler { context ->
                 if (!requestFilter.accept(context.request())) {
@@ -145,7 +142,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
 
                     logger.info { "ok" }
-
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -156,18 +152,19 @@ class WhatsAppConnectorCloudConnector internal constructor(
                         logger.error(e)
                     }
                 }
-
             }
         }
 
         if (syncTemplates && metaApplicationId != null) {
             executor.executeBlocking {
-                generateAndSyncTemplates(TemplateGenerationContext(
-                    connectorId,
-                    whatsAppBusinessAccountId,
-                    metaApplicationId,
-                    whatsAppCloudApiService,
-                ))
+                generateAndSyncTemplates(
+                    TemplateGenerationContext(
+                        connectorId,
+                        whatsAppBusinessAccountId,
+                        metaApplicationId,
+                        whatsAppCloudApiService,
+                    ),
+                )
             }
         }
     }
@@ -195,16 +192,20 @@ class WhatsAppConnectorCloudConnector internal constructor(
             }
         }
 
-    private fun gatherDeletedTemplates(context: TemplateManagementContext) = templateProviders.flatMapTo(mutableSetOf()) {
-        try {
-            it.getRemovedTemplateNames(context)
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to get removed templates from $it" }
-            emptyList()
+    private fun gatherDeletedTemplates(context: TemplateManagementContext) =
+        templateProviders.flatMapTo(mutableSetOf()) {
+            try {
+                it.getRemovedTemplateNames(context)
+            } catch (e: Exception) {
+                logger.error(e) { "Failed to get removed templates from $it" }
+                emptyList()
+            }
         }
-    }
 
-    private fun handleWebHook(requestBody: WebHookEventReceiveMessage, controller: ConnectorController) {
+    private fun handleWebHook(
+        requestBody: WebHookEventReceiveMessage,
+        controller: ConnectorController,
+    ) {
         requestBody.entry.forEach { entry: Entry ->
             entry.changes.filter {
                 it.value.metadata.phoneNumberId == phoneNumberId
@@ -216,15 +217,17 @@ class WhatsAppConnectorCloudConnector internal constructor(
                         val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
                         if (event != null) {
                             executor.executeBlocking {
-                                whatsAppCloudApiService.sendTypingIndicator(message.from,message.id)
+                                whatsAppCloudApiService.sendTypingIndicator(message.from, message.id)
                             }
                             controller.handle(
                                 event,
-                                ConnectorData(WhatsAppConnectorCloudCallback(
-                                    applicationId = event.connectorId,
-                                    phoneNumber = message.from,
-                                    username = change.value.contacts.find { it.waId == message.from }?.profile?.name,
-                                ))
+                                ConnectorData(
+                                    WhatsAppConnectorCloudCallback(
+                                        applicationId = event.connectorId,
+                                        phoneNumber = message.from,
+                                        username = change.value.contacts.find { it.waId == message.from }?.profile?.name,
+                                    ),
+                                ),
                             )
                         } else {
                             logger.warn("unable to convert $message to event")
@@ -235,7 +238,11 @@ class WhatsAppConnectorCloudConnector internal constructor(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         if (event is Action) {
             messageQueue.add(event, delayInMs, prepare = { action ->
                 SendActionConverter.toBotMessage(whatsAppCloudApiService, action)
@@ -252,7 +259,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit
+        errorListener: (Throwable) -> Unit,
     ) {
         controller.handle(
             SendChoice(
@@ -264,16 +271,21 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 parameters,
             ),
             ConnectorData(
-                WhatsAppConnectorCloudCallback(connectorId)
-            )
+                WhatsAppConnectorCloudCallback(connectorId),
+            ),
         )
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? {
         return (callback as? WhatsAppConnectorCloudCallback)
-            ?.run {  UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
+            ?.run { UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
-        { whatsAppCloudReplyButtonMessage(text.toString(), suggestions.map { whatsAppCloudNlpQuickReply(it) }) }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? = { whatsAppCloudReplyButtonMessage(text.toString(), suggestions.map { whatsAppCloudNlpQuickReply(it) }) }
 }

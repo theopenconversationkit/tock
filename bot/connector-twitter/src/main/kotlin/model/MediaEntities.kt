@@ -24,5 +24,5 @@ data class MediaEntities(
     val expanded_url: String,
     val indices: List<Int>,
     val media_url: String,
-    val media_url_https: String
+    val media_url_https: String,
 )

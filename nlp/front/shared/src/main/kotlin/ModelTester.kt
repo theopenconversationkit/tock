@@ -28,16 +28,23 @@ import java.util.Locale
  *
  */
 interface ModelTester {
-
     fun testModels()
 
     fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult
 
     fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult
 
-    fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
+    fun deleteTestIntentError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    )
 
-    fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
+    fun deleteTestEntityError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    )
 
     fun getTestBuilds(query: TestErrorQuery): List<TestBuild>
 }

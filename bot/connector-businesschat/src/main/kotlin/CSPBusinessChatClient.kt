@@ -68,27 +68,25 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegrationService) {
-
     private val logger = KotlinLogging.logger { }
     private val businessChatClientApi: BusinessChatClientApi
 
     private interface BusinessChatClientApi {
-
         @POST("message")
         fun sendMessage(
-            @Body message: Message
+            @Body message: Message,
         ): Call<ResponseBody>
 
         @GET("preUpload")
         fun preUploadAttachment(
             @Header("Source-Id") sourceId: String,
-            @Header("MMCS-Size") payloadSize: Int
+            @Header("MMCS-Size") payloadSize: Int,
         ): Call<PreUploadResponse>
 
         @POST("message")
         fun sendAttachment(
             @Header("MMCS-Size") payloadSize: Int,
-            @Body attachment: Attachment
+            @Body attachment: Attachment,
         ): Call<ResponseBody>
 
         @GET("preDownload")
@@ -97,17 +95,17 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
             // @retrofit2.http.Header("Destination-Id") destinationId: String,
             @Header("url") url: String,
             @Header("signature") signature: String,
-            @Header("owner") owner: String
+            @Header("owner") owner: String,
         ): Call<PreDownloadResponse>
 
         @POST("message")
         fun sendListPicker(
-            @Body listPicker: ListPickerMessage
+            @Body listPicker: ListPickerMessage,
         ): Call<ResponseBody>
 
         @POST("message")
         fun sendRichLink(
-            @Body richLink: RichLinkMessage
+            @Body richLink: RichLinkMessage,
         ): Call<ResponseBody>
 
         @Headers("Content-Type: application/x-www-form-urlencoded", "accept: */*")
@@ -115,28 +113,32 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         fun decodePayload(
             @Header("bid") bid: String,
             @Header("source-id") sourceId: String,
-            @Body payload: RequestBody
+            @Body payload: RequestBody,
         ): Call<DecodePayloadResponse>
     }
 
     private data class FileChecksum(val fileChecksum: String, val size: Int, val receipt: String)
+
     private data class UploadResponse(val singleFile: FileChecksum)
+
     private data class PreUploadResponse(
         @JsonProperty("upload-url")
         val uploadUrl: String,
         @JsonProperty("mmcs-url")
         val mmcsUrl: String,
         @JsonProperty("mmcs-owner")
-        val mmcsOwner: String
+        val mmcsOwner: String,
     )
 
     private data class PreDownloadResponse(
         @JsonProperty("download-url")
-        val downloadUrl: String
+        val downloadUrl: String,
     )
 
     private data class DecodePayloadResponse(val data: DecodePayloadData)
+
     private data class DecodePayloadData(val replyMessage: DecodePayloadReplyMessage)
+
     private data class DecodePayloadReplyMessage(val title: String)
 
     init {
@@ -150,8 +152,8 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                     Message(
                         message.sourceId,
                         message.destinationId,
-                        message.body
-                    )
+                        message.body,
+                    ),
                 ).execute()
         if (response.isSuccessful) {
             logger.info { "successful call to business chat " }
@@ -161,7 +163,6 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
     }
 
     fun sendAttachment(attachment: BusinessChatConnectorImageMessage) {
-
         val rawKey = ByteArray(32)
         SecureRandom.getInstanceStrong().nextBytes(rawKey)
         val key = SecretKeySpec(rawKey, "AES")
@@ -177,15 +178,16 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
         // upload
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
-        val client = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .connectionSpecs(
-                listOf(
-                    ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
-                        .tlsVersions(TlsVersion.TLS_1_2)
-                        .build()
-                )
-            ).build()
+        val client =
+            OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .connectionSpecs(
+                    listOf(
+                        ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_2)
+                            .build(),
+                    ),
+                ).build()
 
         val upload =
             Request
@@ -212,38 +214,43 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                         signatureBase64 = fileChecksum,
                         url = preUploadResponse.mmcsUrl,
                         owner = preUploadResponse.mmcsOwner,
-                        key = hexKey
-                    )
-                )
-            )
+                        key = hexKey,
+                    ),
+                ),
+            ),
         ).execute()
     }
 
-    private fun encryptAttachment(attachment: ByteArray, key: Key): ByteArray {
+    private fun encryptAttachment(
+        attachment: ByteArray,
+        key: Key,
+    ): ByteArray {
         val cipher = Cipher.getInstance("AES/CTR/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(ByteArray(16)))
         return cipher.doFinal(attachment)
     }
 
     fun sendListPicker(listPicker: BusinessChatConnectorListPickerMessage) {
-
-        val listPickerItemsIndexed = listPicker.items
-            .mapIndexed { index, item ->
-                val identifier = UUID.randomUUID().toString()
-                Pair(
-                    ListPickerItem(
-                        index.toString(),
-                        identifier,
-                        index,
-                        item.subtitle,
-                        item.title
-                    ),
-                    if (item.image != null)
-                        Image(identifier, Base64.getEncoder().encodeToString(item.image))
-                    else null
-                )
-            }
-            .unzip()
+        val listPickerItemsIndexed =
+            listPicker.items
+                .mapIndexed { index, item ->
+                    val identifier = UUID.randomUUID().toString()
+                    Pair(
+                        ListPickerItem(
+                            index.toString(),
+                            identifier,
+                            index,
+                            item.subtitle,
+                            item.title,
+                        ),
+                        if (item.image != null) {
+                            Image(identifier, Base64.getEncoder().encodeToString(item.image))
+                        } else {
+                            null
+                        },
+                    )
+                }
+                .unzip()
 
         val response =
             businessChatClientApi
@@ -254,22 +261,24 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                         InteractiveData(
                             ListPickerData(
                                 images = listPickerItemsIndexed.second.filterNotNull(),
-                                listPicker = ListPicker(
-                                    sections = listOf(
-                                        ListPickerSection(
-                                            items = listPickerItemsIndexed.first,
-                                            order = 0,
-                                            title = listPicker.listDetails
-                                        )
-                                    )
-                                )
+                                listPicker =
+                                    ListPicker(
+                                        sections =
+                                            listOf(
+                                                ListPickerSection(
+                                                    items = listPickerItemsIndexed.first,
+                                                    order = 0,
+                                                    title = listPicker.listDetails,
+                                                ),
+                                            ),
+                                    ),
                             ),
                             ReceivedMessage(
                                 listPicker.title,
-                                listPicker.subtitle
-                            )
-                        )
-                    )
+                                listPicker.subtitle,
+                            ),
+                        ),
+                    ),
                 ).execute()
         if (response.isSuccessful) {
             logger.info { "successful call to business chat " }
@@ -279,7 +288,6 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
     }
 
     fun receiveListPickerChoice(receivedModel: ReceivedModel): ListPickerChoice? {
-
         when {
             isListPickerReply(receivedModel) -> {
                 with(receivedModel.interactiveData!!.data.replyMessage!!.title) {
@@ -287,32 +295,33 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                 }
             }
             isComplexListPickerReply(receivedModel) -> {
-
                 // Payload is encrypted and has to be downloaded
                 // see https://developer.apple.com/documentation/businesschatapi/messages_sent/interactive_messages/receiving_large_interactive_data_payloads
                 val dataRef = receivedModel.interactiveDataRef!!
                 val businessId = receivedModel.destinationId
 
                 // getting the download url
-                val preDownloadResponse = businessChatClientApi.preDownloadAttachment(
-                    businessId,
-                    dataRef.url,
-                    dataRef.signatureBase64,
-                    dataRef.owner
-                ).execute().body()
+                val preDownloadResponse =
+                    businessChatClientApi.preDownloadAttachment(
+                        businessId,
+                        dataRef.url,
+                        dataRef.signatureBase64,
+                        dataRef.owner,
+                    ).execute().body()
 
                 // download the encrypted payload
                 val logging = HttpLoggingInterceptor()
                 logging.level = HttpLoggingInterceptor.Level.BODY
-                val client = OkHttpClient.Builder().addInterceptor(logging)
-                    .connectionSpecs(
-                        listOf(
-                            ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
-                                .tlsVersions(TlsVersion.TLS_1_2)
-                                .build()
+                val client =
+                    OkHttpClient.Builder().addInterceptor(logging)
+                        .connectionSpecs(
+                            listOf(
+                                ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                                    .tlsVersions(TlsVersion.TLS_1_2)
+                                    .build(),
+                            ),
                         )
-                    )
-                    .build()
+                        .build()
 
                 val download =
                     Request
@@ -336,15 +345,19 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
 
                 val unzippedResult = ungzip(decryptedAttachment)
 
-                val payload = businessChatClientApi.decodePayload(
-                    dataRef.bid,
-                    businessId,
-                    RequestBody.create("application/x-www-form-urlencoded".toMediaType(), unzippedResult)
-                ).execute().run {
-                    body()
-                        ?: errorBody()?.string()?.let { logger.error("body is empty, then use errorBody"); mapper.readValue<DecodePayloadResponse>(it) }
-                        ?: error("payload is null")
-                }
+                val payload =
+                    businessChatClientApi.decodePayload(
+                        dataRef.bid,
+                        businessId,
+                        RequestBody.create("application/x-www-form-urlencoded".toMediaType(), unzippedResult),
+                    ).execute().run {
+                        body()
+                            ?: errorBody()?.string()?.let {
+                                logger.error("body is empty, then use errorBody")
+                                mapper.readValue<DecodePayloadResponse>(it)
+                            }
+                            ?: error("payload is null")
+                    }
                 with(payload.data.replyMessage.title) {
                     return ListPickerChoice(this)
                 }
@@ -367,21 +380,22 @@ internal class CSPBusinessChatClient(val integrationService: BusinessChatIntegra
                     Assets(
                         ai.tock.bot.connector.businesschat.model.csp.richLink.Image(
                             richLink.image,
-                            richLink.mimeType
-                        )
-                    )
-                )
-            )
+                            richLink.mimeType,
+                        ),
+                    ),
+                ),
+            ),
         ).execute()
     }
 
-    private fun isListPickerReply(receivedModel: ReceivedModel) =
-        receivedModel.interactiveData != null && receivedModel.interactiveData.data.replyMessage != null
+    private fun isListPickerReply(receivedModel: ReceivedModel) = receivedModel.interactiveData != null && receivedModel.interactiveData.data.replyMessage != null
 
-    private fun isComplexListPickerReply(receivedModel: ReceivedModel) =
-        receivedModel.interactiveDataRef != null
+    private fun isComplexListPickerReply(receivedModel: ReceivedModel) = receivedModel.interactiveDataRef != null
 
-    private fun decryptAttachement(attachment: ByteArray, key: Key): ByteArray {
+    private fun decryptAttachement(
+        attachment: ByteArray,
+        key: Key,
+    ): ByteArray {
         val cipher = Cipher.getInstance("AES/CTR/NoPadding")
         cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(ByteArray(16)))
         return cipher.doFinal(attachment)

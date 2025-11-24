@@ -22,6 +22,6 @@ data class GAMediaObject(
     val contentUrl: String? = null,
     // Union field image can be only one of the following:
     val largeImage: GAImage? = null,
-    val icon: GAImage? = null
+    val icon: GAImage? = null,
     // End of list of possible types for union field image.
 )

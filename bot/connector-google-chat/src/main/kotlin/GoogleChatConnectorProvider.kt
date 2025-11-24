@@ -43,12 +43,10 @@ private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 
 internal object GoogleChatConnectorProvider : ConnectorProvider {
-
     override val connectorType: ConnectorType get() = googleChatConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
-
             val credentialInputStream =
                 connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
                     ?.let { resourceAsStream(it) }
@@ -62,25 +60,27 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             val useCondensedFootnotes =
                 connectorConfiguration.parameters[CONDENSED_FOOTNOTES_PARAMETER] == "1"
 
-            val chatService = HangoutsChat.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance(),
-                requestInitializer
-            )
-                .setApplicationName(connectorId)
-                .build()
+            val chatService =
+                HangoutsChat.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    JacksonFactory.getDefaultInstance(),
+                    requestInitializer,
+                )
+                    .setApplicationName(connectorId)
+                    .build()
 
-            val authorisationHandler = GoogleChatAuthorisationHandler(
-                connectorConfiguration.parameters[BOT_PROJECT_NUMBER_PARAMETER]
-                    ?: error("Parameter Bot project number not present")
-            )
+            val authorisationHandler =
+                GoogleChatAuthorisationHandler(
+                    connectorConfiguration.parameters[BOT_PROJECT_NUMBER_PARAMETER]
+                        ?: error("Parameter Bot project number not present"),
+                )
 
             return GoogleChatConnector(
                 connectorId,
                 path,
                 chatService,
                 authorisationHandler,
-                useCondensedFootnotes
+                useCondensedFootnotes,
             )
         }
     }
@@ -97,25 +97,25 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Bot project number (application ID in google hangouts configuration page)",
                     BOT_PROJECT_NUMBER_PARAMETER,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Service account credential file path (default : /service-account-{connectorId}.json)",
                     SERVICE_CREDENTIAL_PATH_PARAMETER,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Service account credential json content",
                     SERVICE_CREDENTIAL_CONTENT_PARAMETER,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Use condensed footnotes (true = 1, false = 0)",
                     CONDENSED_FOOTNOTES_PARAMETER,
-                    false
-                )
+                    false,
+                ),
             ),
-            svgIcon = resourceAsString("/google_chat.svg")
+            svgIcon = resourceAsString("/google_chat.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =

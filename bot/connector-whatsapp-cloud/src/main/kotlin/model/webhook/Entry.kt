@@ -19,11 +19,11 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Entry(
-        @JsonProperty("id") val id: String,
-        @JsonProperty("changes") val changes: List<Change>
+    @JsonProperty("id") val id: String,
+    @JsonProperty("changes") val changes: List<Change>,
 )
 
 data class Change(
-        @JsonProperty("value") val value: Value,
-        @JsonProperty("field") val field: String
+    @JsonProperty("value") val value: Value,
+    @JsonProperty("field") val field: String,
 )

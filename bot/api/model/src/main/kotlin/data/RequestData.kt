@@ -22,5 +22,5 @@ import ai.tock.shared.Dice
 data class RequestData(
     val botRequest: UserRequest? = null,
     val configuration: Boolean? = null,
-    val requestId: String = Dice.newId()
+    val requestId: String = Dice.newId(),
 )

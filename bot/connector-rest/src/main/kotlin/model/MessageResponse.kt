@@ -32,10 +32,9 @@ internal data class MessageResponse(
     val applicationId: String,
     val userActionId: String = Dice.newId(),
     val userLocale: Locale? = null,
-    val hasNlpStats: Boolean = false
+    val hasNlpStats: Boolean = false,
 ) : ConnectorMessage {
     override val connectorType: ConnectorType = ConnectorType.rest
 
-    override fun toGenericMessage(): GenericMessage? =
-        messages.filterIsInstance<Sentence>().firstOrNull()?.messages?.firstOrNull()
+    override fun toGenericMessage(): GenericMessage? = messages.filterIsInstance<Sentence>().firstOrNull()?.messages?.firstOrNull()
 }

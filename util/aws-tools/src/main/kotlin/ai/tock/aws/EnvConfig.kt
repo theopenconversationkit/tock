@@ -18,10 +18,9 @@ package ai.tock.aws
 
 import ai.tock.shared.property
 
-
 const val AWS_SECRET_VERSION = "aws_secret_manager_secret_version"
 const val AWS_ASSUMED_ROLE_PROPERTY = "aws_secret_manager_assumed_role_arn"
-const val AWS_ASSUMED_ROLE_SESSION_NAME_PROPERTY =  "aws_secret_manager_assumed_role_session_name"
+const val AWS_ASSUMED_ROLE_SESSION_NAME_PROPERTY = "aws_secret_manager_assumed_role_session_name"
 
 object EnvConfig {
     /**

@@ -36,24 +36,24 @@ import kotlin.system.exitProcess
  *
  */
 object FrontIoc {
-
     private val logger = KotlinLogging.logger {}
 
-    private val coreModules: List<Module> = run {
-        val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
-        listOf(
-            sharedModule,
-            coreModule,
-            modelMongoModule,
-            modelModule,
-            frontMongoModule,
-            frontModule,
-            ducklingModule
-        ).plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
-            // Add custom modules/services to override default modules/services.
-            // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
-            .plus(additionalModulesService.flatMap { it.customModules() }.toList())
-    }
+    private val coreModules: List<Module> =
+        run {
+            val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
+            listOf(
+                sharedModule,
+                coreModule,
+                modelMongoModule,
+                modelModule,
+                frontMongoModule,
+                frontModule,
+                ducklingModule,
+            ).plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
+                // Add custom modules/services to override default modules/services.
+                // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
+                .plus(additionalModulesService.flatMap { it.customModules() }.toList())
+        }
 
     fun setup(vararg modules: Module) {
         setup(modules.toList())
@@ -71,9 +71,9 @@ object FrontIoc {
                         import(it, allowOverride = true)
                     }
                 }
-            }
+            },
         )
-        if(!FrontClient.initializeConfiguration()) {
+        if (!FrontClient.initializeConfiguration()) {
             logger.error("configuration not initialized - exit application")
             exitProcess(1)
         }

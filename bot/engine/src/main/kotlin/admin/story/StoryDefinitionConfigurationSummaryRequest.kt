@@ -33,10 +33,10 @@ data class StoryDefinitionConfigurationExtendedSummaryRequest(
     override val botId: String,
     override val category: String?,
     val textSearch: String?,
-    val onlyConfiguredStory: Boolean
+    val onlyConfiguredStory: Boolean,
 ) : StoryDefinitionConfigurationSummaryRequest
 
-interface StoryDefinitionConfigurationSummaryRequest{
+interface StoryDefinitionConfigurationSummaryRequest {
     val namespace: String
     val botId: String
     val category: String?

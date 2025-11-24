@@ -23,7 +23,6 @@ import ai.tock.bot.engine.event.Event
  * Used by connector implementations to check lifecycle of an user event.
  */
 interface ConnectorCallback {
-
     /**
      * The application id.
      */
@@ -52,5 +51,8 @@ interface ConnectorCallback {
     /**
      * Called by [ConnectorController.handle] when an exception is thrown.
      */
-    fun exceptionThrown(event: Event, throwable: Throwable)
+    fun exceptionThrown(
+        event: Event,
+        throwable: Throwable,
+    )
 }

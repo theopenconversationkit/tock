@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
  *
  */
 class KotlinClientIntegrationTest {
-
     @Test
     fun test() {
         KotlinCompilerClient.compile(
@@ -32,8 +31,8 @@ class KotlinClientIntegrationTest {
                 fun main(args: Array<String>) {
                     println("Hello World")
                 }""",
-                "ClassToBeCompiled.kt"
-            )
+                "ClassToBeCompiled.kt",
+            ),
         )
     }
 }

@@ -25,9 +25,8 @@ import io.vertx.core.Vertx
  * NOTE: Intended to be implemented in another JAR as SPI (Service Provider Interface)
  */
 interface CASAuthProviderFactory {
-
     /**
      * Creates CAS Authentication provider
      */
-    fun getCasAuthProvider(vertx: Vertx): CASAuthProvider;
+    fun getCasAuthProvider(vertx: Vertx): CASAuthProvider
 }

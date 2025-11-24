@@ -20,13 +20,13 @@ package ai.tock.nlp.core
  * To select the best intent match - default take the highest probability.
  */
 interface IntentSelector {
-
     companion object {
-        val defaultIntentSelector = object : IntentSelector {
-            override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
-                return if (classification.hasNext()) classification.next() to classification.probability() else null
+        val defaultIntentSelector =
+            object : IntentSelector {
+                override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
+                    return if (classification.hasNext()) classification.next() to classification.probability() else null
+                }
             }
-        }
     }
 
     fun selectIntent(classification: IntentClassification): Pair<Intent, Double>?

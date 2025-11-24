@@ -25,13 +25,12 @@ import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import mu.KotlinLogging
 
 internal object MattermostMessageConverter {
-
     val logger = KotlinLogging.logger {}
 
     fun toMessageOut(
         action: Action,
         channelId: String? = null,
-        tockUsername: String? = null
+        tockUsername: String? = null,
     ): MattermostConnectorMessage? {
         return when (action) {
             is SendSentence ->
@@ -39,11 +38,15 @@ internal object MattermostMessageConverter {
                     action.message(MattermostConnectorProvider.connectorType) as MattermostConnectorMessage
                 } else {
                     action.stringText?.run {
-                        if (isBlank()) null else MattermostMessageOut(
-                            this,
-                            channel = channelId,
-                            username = tockUsername
-                        )
+                        if (isBlank()) {
+                            null
+                        } else {
+                            MattermostMessageOut(
+                                this,
+                                channel = channelId,
+                                username = tockUsername,
+                            )
+                        }
                     }
                 }
 
@@ -53,15 +56,17 @@ internal object MattermostMessageConverter {
                     stringText,
                     channel = channelId,
                     username = tockUsername,
-                    footnotes = action.footnotes.map { footnote ->
-                        Footnote(
-                            footnote.identifier,
-                            footnote.title,
-                            footnote.url,
-                            footnote.content,
-                            footnote.score
-                        )
-                    })
+                    footnotes =
+                        action.footnotes.map { footnote ->
+                            Footnote(
+                                footnote.identifier,
+                                footnote.title,
+                                footnote.url,
+                                footnote.content,
+                                footnote.score,
+                            )
+                        },
+                )
             }
 
             else -> {

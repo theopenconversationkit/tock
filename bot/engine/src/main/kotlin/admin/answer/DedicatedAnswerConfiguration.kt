@@ -26,8 +26,10 @@ import ai.tock.bot.engine.BotBus
 class DedicatedAnswerConfiguration(
     val botConfiguration: String,
     override val currentType: AnswerConfigurationType,
-    override val answers: List<AnswerConfiguration>
+    override val answers: List<AnswerConfiguration>,
 ) : StoryDefinitionAnswersContainer {
-    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
-        story.findNextSteps(bus, story)
+    override fun findNextSteps(
+        bus: BotBus,
+        story: StoryDefinitionConfiguration,
+    ): List<CharSequence> = story.findNextSteps(bus, story)
 }

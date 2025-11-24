@@ -34,16 +34,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verifyOrder
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class MessengerConnectorTest {
-
     companion object {
         private fun clearState() {
             pageIdConnectorIdMap.clear()
@@ -55,17 +54,18 @@ internal class MessengerConnectorTest {
         @BeforeAll
         @JvmStatic
         fun injectExecutor() {
-            tockInternalInjector = KodeinInjector().apply {
-                inject(
-                    Kodein {
-                        import(
-                            Kodein.Module {
-                                bind<Executor>() with singleton { SimpleExecutor(2) }
-                            }
-                        )
-                    }
-                )
-            }
+            tockInternalInjector =
+                KodeinInjector().apply {
+                    inject(
+                        Kodein {
+                            import(
+                                Kodein.Module {
+                                    bind<Executor>() with singleton { SimpleExecutor(2) }
+                                },
+                            )
+                        },
+                    )
+                }
         }
 
         @AfterAll
@@ -91,9 +91,10 @@ internal class MessengerConnectorTest {
 
     val messengerConnector1: MessengerConnector =
         MessengerConnector(connectorId1, appId1, path1, pageId1, appToken1, token1, verifyToken1, messengerClient)
-    val controller1 = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector1
-    }
+    val controller1 =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector1
+        }
 
     @AfterEach
     fun afterEach() {
@@ -102,9 +103,10 @@ internal class MessengerConnectorTest {
 
     @Test
     fun `GIVEN one messenger connector WHEN registering a new version of this connector and unregistering the old version THEN the new version is correctly registered`() {
-        val controller2 = mockk<ConnectorController>(relaxed = true).apply {
-            every { connector } returns messengerConnector1
-        }
+        val controller2 =
+            mockk<ConnectorController>(relaxed = true).apply {
+                every { connector } returns messengerConnector1
+            }
 
         messengerConnector1.register(controller1)
         assertEquals(controller1, connectorIdConnectorControllerMap[connectorId1])
@@ -130,14 +132,16 @@ internal class MessengerConnectorTest {
     fun `GIVEN two actions of same user WHEN sending the two actions THEN the second action wait the first to be sent`() {
         val connector = spyk(messengerConnector1)
         val userId = PlayerId("userId")
-        val action1 = mockk<Action> {
-            every { recipientId } returns userId
-            every { metadata } returns ActionMetadata(lastAnswer = false)
-        }
-        val action2 = mockk<Action> {
-            every { recipientId } returns userId
-            every { metadata } returns ActionMetadata(lastAnswer = true)
-        }
+        val action1 =
+            mockk<Action> {
+                every { recipientId } returns userId
+                every { metadata } returns ActionMetadata(lastAnswer = false)
+            }
+        val action2 =
+            mockk<Action> {
+                every { recipientId } returns userId
+                every { metadata } returns ActionMetadata(lastAnswer = true)
+            }
         val callback = MessengerConnectorCallback("appId")
 
         var time: Long? = null

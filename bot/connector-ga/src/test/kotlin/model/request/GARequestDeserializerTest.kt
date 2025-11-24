@@ -27,7 +27,6 @@ import kotlin.test.assertNotNull
  *
  */
 class GARequestDeserializerTest {
-
     @Test
     fun testGARequestDeserializer() {
         val json = resource("/request.json")
@@ -56,55 +55,60 @@ class GARequestDeserializerTest {
         assertEquals(
             GARequest(
                 user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US", userVerificationStatus = GAUserVerificationStatus.UNKNOWN),
-                device = GADevice(
-                    location = GALocation(
-                        coordinates = GALatLng(
-                            latitude = 37.4219806,
-                            longitude = -122.0841979
+                device =
+                    GADevice(
+                        location =
+                            GALocation(
+                                coordinates =
+                                    GALatLng(
+                                        latitude = 37.4219806,
+                                        longitude = -122.0841979,
+                                    ),
+                                formattedAddress = null,
+                                zipCode = null,
+                                city = null,
+                                postalAddress = null,
+                                name = null,
+                                phoneNumber = null,
+                                notes = null,
+                            ),
+                    ),
+                surface =
+                    GASurface(
+                        capabilities =
+                            listOf(
+                                GACapability(name = "actions.capability.AUDIO_OUTPUT"),
+                                GACapability(name = "actions.capability.SCREEN_OUTPUT"),
+                            ),
+                    ),
+                conversation =
+                    GAConversation(
+                        conversationId = "1505388822587",
+                        type = GAConversationType.NEW,
+                        conversationToken = null,
+                    ),
+                inputs =
+                    listOf(
+                        GAInput(
+                            rawInputs = listOf(GARawInput(createTime = null, inputType = GAInputType.VOICE, query = "yes")),
+                            intent = "actions.intent.PERMISSION",
+                            arguments =
+                                listOf(
+                                    GAArgument(
+                                        name = "PERMISSION",
+                                        rawText = null,
+                                        boolValue = null,
+                                        textValue = "true",
+                                        datetimeValue = null,
+                                        extension = null,
+                                    ),
+                                ),
                         ),
-                        formattedAddress = null,
-                        zipCode = null,
-                        city = null,
-                        postalAddress = null,
-                        name = null,
-                        phoneNumber = null,
-                        notes = null
-                    )
-                ),
-                surface = GASurface(
-                    capabilities = listOf(
-                        GACapability(name = "actions.capability.AUDIO_OUTPUT"),
-                        GACapability(name = "actions.capability.SCREEN_OUTPUT")
-                    )
-                ),
-                conversation = GAConversation(
-                    conversationId = "1505388822587",
-                    type = GAConversationType.NEW,
-                    conversationToken = null
-                ),
-                inputs = listOf(
-                    GAInput(
-                        rawInputs = listOf(GARawInput(createTime = null, inputType = GAInputType.VOICE, query = "yes")),
-                        intent = "actions.intent.PERMISSION",
-                        arguments =
-                        listOf(
-                            GAArgument
-                            (
-                                name = "PERMISSION",
-                                rawText = null,
-                                boolValue = null,
-                                textValue = "true",
-                                datetimeValue = null,
-                                extension = null
-                            )
-                        )
-                    )
-                ),
+                    ),
                 isInSandbox = true,
-                availableSurfaces = emptyList()
-
+                availableSurfaces = emptyList(),
             ),
-            request
+            request,
         )
     }
 
@@ -116,48 +120,52 @@ class GARequestDeserializerTest {
             GARequest(
                 user = GAUser(profile = null, accessToken = null, permissions = null, locale = "en-US"),
                 device = GADevice(),
-                surface = GASurface(
-                    capabilities = listOf(
-                        GACapability(name = "actions.capability.SCREEN_OUTPUT"),
-                        GACapability(name = "actions.capability.AUDIO_OUTPUT"),
-                        GACapability(name = "actions.capability.WEB_BROWSER")
-                    )
-                ),
-                conversation = GAConversation(
-                    conversationId = "1505388822587",
-                    type = GAConversationType.NEW,
-                    conversationToken = null
-                ),
-                inputs = listOf(
-                    GAInput(
-                        rawInputs = listOf(),
-                        intent = "new_surface_intent",
-                        arguments =
-                        listOf(
-                            GAArgument
-                            (
-                                name = "NEW_SURFACE",
-                                rawText = null,
-                                boolValue = null,
-                                textValue = null,
-                                datetimeValue = null,
-                                extension = GANewSurfaceValue(GANewSurfaceStatus.OK)
-                            )
-                        )
-                    )
-                ),
-                isInSandbox = true,
-                availableSurfaces = listOf(
+                surface =
                     GASurface(
-                        listOf(
-                            GACapability(name = "actions.capability.SCREEN_OUTPUT"),
-                            GACapability(name = "actions.capability.AUDIO_OUTPUT"),
-                            GACapability(name = "actions.capability.WEB_BROWSER")
-                        )
-                    )
-                )
+                        capabilities =
+                            listOf(
+                                GACapability(name = "actions.capability.SCREEN_OUTPUT"),
+                                GACapability(name = "actions.capability.AUDIO_OUTPUT"),
+                                GACapability(name = "actions.capability.WEB_BROWSER"),
+                            ),
+                    ),
+                conversation =
+                    GAConversation(
+                        conversationId = "1505388822587",
+                        type = GAConversationType.NEW,
+                        conversationToken = null,
+                    ),
+                inputs =
+                    listOf(
+                        GAInput(
+                            rawInputs = listOf(),
+                            intent = "new_surface_intent",
+                            arguments =
+                                listOf(
+                                    GAArgument(
+                                        name = "NEW_SURFACE",
+                                        rawText = null,
+                                        boolValue = null,
+                                        textValue = null,
+                                        datetimeValue = null,
+                                        extension = GANewSurfaceValue(GANewSurfaceStatus.OK),
+                                    ),
+                                ),
+                        ),
+                    ),
+                isInSandbox = true,
+                availableSurfaces =
+                    listOf(
+                        GASurface(
+                            listOf(
+                                GACapability(name = "actions.capability.SCREEN_OUTPUT"),
+                                GACapability(name = "actions.capability.AUDIO_OUTPUT"),
+                                GACapability(name = "actions.capability.WEB_BROWSER"),
+                            ),
+                        ),
+                    ),
             ),
-            request
+            request,
         )
     }
 }

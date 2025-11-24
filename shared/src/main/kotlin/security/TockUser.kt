@@ -29,20 +29,19 @@ data class TockUser(
     val namespace: String,
     var roles: Set<String>,
     val registered: Boolean = false,
-
     // Délégation vers une impl officielle sans dépendre de classes impl.* internes
-    private val delegate: User = User.create(JsonObject().put("username", user.toString()))
+    private val delegate: User = User.create(JsonObject().put("username", user.toString())),
 ) : User by delegate {
-
     init {
         // Normalisation des rôles historiques
-        this.roles = roles.map { role ->
-            when (role) {
-                TockUserRole.faqBotUser.name -> TockUserRole.botUser.name
-                TockUserRole.faqNlpUser.name -> TockUserRole.nlpUser.name
-                else -> role
-            }
-        }.toSet()
+        this.roles =
+            roles.map { role ->
+                when (role) {
+                    TockUserRole.faqBotUser.name -> TockUserRole.botUser.name
+                    TockUserRole.faqNlpUser.name -> TockUserRole.nlpUser.name
+                    else -> role
+                }
+            }.toSet()
 
         // Publier les rôles sous forme d'Authorizations Vert.x (API v5: put(...), pas add(...))
         val authzs: MutableSet<Authorization> = mutableSetOf()
@@ -56,5 +55,6 @@ data class TockUser(
 
     /** Utilitaires métier si besoin, en remplacement de l'ancien isAuthorized(...) supprimé en v5. */
     fun hasRole(authority: String): Boolean = roles.contains(authority)
+
     fun hasAnyRole(vararg authorities: String): Boolean = authorities.any { roles.contains(it) }
 }

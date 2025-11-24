@@ -22,14 +22,13 @@ import ai.tock.bot.engine.message.GenericMessage.Companion.TEXT_PARAM
 import ai.tock.shared.security.TockObfuscatorService
 
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
-
     override fun toGenericMessage(): GenericMessage? {
         val texts = mapOf(TEXT_PARAM to text)
         return if (quickReplies?.isNotEmpty() == true) {
             GenericMessage(
                 texts = texts,
                 choices = quickReplies.mapNotNull { it.toChoice() },
-                locations = quickReplies.mapNotNull { it.toLocation() }
+                locations = quickReplies.mapNotNull { it.toLocation() },
             )
         } else {
             GenericMessage(texts = texts)

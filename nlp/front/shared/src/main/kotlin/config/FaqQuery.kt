@@ -26,5 +26,5 @@ class FaqQuery(
     val user: String?,
     val allButUser: String?,
     val applicationName: String,
-    val namespace: String
+    val namespace: String,
 )

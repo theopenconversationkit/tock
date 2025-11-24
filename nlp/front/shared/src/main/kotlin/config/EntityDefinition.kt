@@ -34,9 +34,8 @@ data class EntityDefinition(
     /**
      * To evaluate time for entity date types.
      */
-    val atStartOfDay: Boolean? = null
+    val atStartOfDay: Boolean? = null,
 ) {
-
     constructor(entity: Entity) : this(entity.entityType.name, entity.role)
 
     constructor(entityType: EntityTypeDefinition, role: String) : this(entityType.name, role)

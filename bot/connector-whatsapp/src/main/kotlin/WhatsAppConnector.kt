@@ -45,9 +45,8 @@ class WhatsAppConnector(
     url: String,
     login: String,
     password: String,
-    private val requestFilter: RequestFilter
+    private val requestFilter: RequestFilter,
 ) : ConnectorBase(whatsAppConnectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -77,11 +76,11 @@ class WhatsAppConnector(
                                     WhatsAppConnectorData(
                                         WhatsAppConnectorCallback(
                                             applicationId,
-                                            if (m.groupId == null) individual else group
+                                            if (m.groupId == null) individual else group,
                                         ),
                                         m.groupId,
-                                        m.from
-                                    )
+                                        m.from,
+                                    ),
                                 )
                             }
                         }
@@ -100,7 +99,11 @@ class WhatsAppConnector(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         if (event is Action) {
             SendActionConverter.toBotMessage(event)
                 ?.also {

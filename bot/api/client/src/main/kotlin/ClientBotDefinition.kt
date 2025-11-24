@@ -24,5 +24,5 @@ package ai.tock.bot.api.client
 class ClientBotDefinition(
     val apiKey: String,
     val stories: List<ClientStoryDefinition>,
-    val unknownStory: ClientStoryDefinition
+    val unknownStory: ClientStoryDefinition,
 )

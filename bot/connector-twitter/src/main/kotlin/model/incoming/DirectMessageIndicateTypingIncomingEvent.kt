@@ -28,7 +28,7 @@ data class DirectMessageIndicateTypingIncomingEvent(
     override val forUserId: String,
     override val users: Map<String, User>,
     @JsonProperty("direct_message_indicate_typing_events")
-    val directMessagesIndicateTyping: List<DirectMessageIndicateTyping>
+    val directMessagesIndicateTyping: List<DirectMessageIndicateTyping>,
 ) : IncomingEvent() {
     override val ignored: Boolean
         get() = true

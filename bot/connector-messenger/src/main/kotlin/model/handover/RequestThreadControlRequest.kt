@@ -23,5 +23,5 @@ import ai.tock.bot.connector.messenger.model.Recipient
  */
 data class RequestThreadControlRequest(
     val recipient: Recipient,
-    val metadata: String? = null
+    val metadata: String? = null,
 )

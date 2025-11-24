@@ -21,5 +21,5 @@ package ai.tock.bot.admin.kotlin.compiler
  */
 data class KotlinFileCompilation(
     val compilationResult: CompilationResult? = null,
-    val errors: List<CompileError> = emptyList()
+    val errors: List<CompileError> = emptyList(),
 )

@@ -33,28 +33,43 @@ fun propertyExists(name: String): Boolean = propertyOrNull(name) != null
 /**
  * Return an env or system String property.
  */
-fun property(name: String, defaultValue: String): String = propertyOrNull(name) ?: defaultValue
+fun property(
+    name: String,
+    defaultValue: String,
+): String = propertyOrNull(name) ?: defaultValue
 
 /**
  * Return an env or system Int property.
  */
-fun intProperty(name: String, defaultValue: Int): Int = propertyOrNull(name)?.toInt() ?: defaultValue
+fun intProperty(
+    name: String,
+    defaultValue: Int,
+): Int = propertyOrNull(name)?.toInt() ?: defaultValue
 
 /**
  * Return an env or system Long property.
  */
-fun longProperty(name: String, defaultValue: Long): Long = propertyOrNull(name)?.toLong() ?: defaultValue
+fun longProperty(
+    name: String,
+    defaultValue: Long,
+): Long = propertyOrNull(name)?.toLong() ?: defaultValue
 
 /**
  * Return an env or system Boolean property.
  */
-fun booleanProperty(name: String, defaultValue: Boolean): Boolean = propertyOrNull(name)?.toBoolean() ?: defaultValue
+fun booleanProperty(
+    name: String,
+    defaultValue: Boolean,
+): Boolean = propertyOrNull(name)?.toBoolean() ?: defaultValue
 
 /**
  * Return an env or system List property.
  */
-fun listProperty(name: String, defaultValue: List<String>, separator: String = ","): List<String> =
-    propertyOrNull(name)?.split(separator) ?: defaultValue
+fun listProperty(
+    name: String,
+    defaultValue: List<String>,
+    separator: String = ",",
+): List<String> = propertyOrNull(name)?.split(separator) ?: defaultValue
 
 /**
  * Return an env or system Map property.
@@ -63,7 +78,7 @@ fun mapProperty(
     name: String,
     defaultValue: Map<String, String>,
     entrySeparator: String = "|",
-    keyValueSeparator: String = "="
+    keyValueSeparator: String = "=",
 ): Map<String, String> =
     propertyOrNull(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1] } }?.toMap()
         ?: defaultValue
@@ -76,20 +91,19 @@ fun mapListProperty(
     defaultValue: Map<String, List<String>>,
     entrySeparator: String = "|",
     keyValueSeparator: String = "=",
-    listSeparator: String = ","
-): Map<String, List<String>> = propertyOrNull(name)?.split(entrySeparator)?.map {
-    it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
-}?.toMap() ?: defaultValue
+    listSeparator: String = ",",
+): Map<String, List<String>> =
+    propertyOrNull(name)?.split(entrySeparator)?.map {
+        it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
+    }?.toMap() ?: defaultValue
 
 /**
  * Load a [Properties] for classpath.
  */
-fun loadProperties(fileInClasspath: String): Properties =
-    Properties().apply { load(resourceAsStream(fileInClasspath)) }
+fun loadProperties(fileInClasspath: String): Properties = Properties().apply { load(resourceAsStream(fileInClasspath)) }
 
 /**
  * Return true is the current environment is a dev environment.
  * Use "tock_env" property to know the environment - if not set or if the value is "dev", this is a dev environment.
  */
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"
-

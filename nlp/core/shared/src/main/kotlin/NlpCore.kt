@@ -23,7 +23,6 @@ import ai.tock.nlp.core.merge.ValueDescriptor
  * The main entry point for NLP.
  */
 interface NlpCore {
-
     /**
      * Returns all built-in entities.
      *
@@ -37,9 +36,8 @@ interface NlpCore {
     fun parse(
         context: CallContext,
         text: String,
-        intentSelector: IntentSelector = defaultIntentSelector
-    ):
-        ParsingResult
+        intentSelector: IntentSelector = defaultIntentSelector,
+    ): ParsingResult
 
     /**
      * Supported nlp engines.
@@ -58,7 +56,7 @@ interface NlpCore {
     fun evaluateEntities(
         context: CallContext,
         text: String,
-        entities: List<EntityRecognition>
+        entities: List<EntityRecognition>,
     ): List<EntityRecognition>
 
     /**
@@ -69,7 +67,11 @@ interface NlpCore {
     /**
      * Merge two or more values for the given [Entity].
      */
-    fun mergeValues(context: CallContext, entity: Entity, values: List<ValueDescriptor>): ValueDescriptor?
+    fun mergeValues(
+        context: CallContext,
+        entity: Entity,
+        values: List<ValueDescriptor>,
+    ): ValueDescriptor?
 
     /**
      * Check engines availability.

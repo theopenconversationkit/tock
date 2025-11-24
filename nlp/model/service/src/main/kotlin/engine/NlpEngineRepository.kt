@@ -30,7 +30,6 @@ import ai.tock.shared.ThreadSafe
  */
 @ThreadSafe
 internal object NlpEngineRepository {
-
     private val repository: Map<NlpEngineType, NlpEngineProvider> =
         SupportedNlpEnginesProvider.engines().associateBy { it.type }
 
@@ -47,8 +46,8 @@ internal object NlpEngineRepository {
             it.getTokenizer(
                 NlpModelRepository.getTokenizerModelHolder(
                     TokenizerContext(context),
-                    NlpModelRepository.getConfiguration(context, it)
-                )
+                    NlpModelRepository.getConfiguration(context, it),
+                ),
             )
         }
     }
@@ -58,8 +57,8 @@ internal object NlpEngineRepository {
             it.getTokenizer(
                 NlpModelRepository.getTokenizerModelHolder(
                     TokenizerContext(context),
-                    NlpModelRepository.getConfiguration(context, it)
-                )
+                    NlpModelRepository.getConfiguration(context, it),
+                ),
             )
         }
     }
@@ -70,7 +69,10 @@ internal object NlpEngineRepository {
         }
     }
 
-    fun getIntentClassifier(context: IntentContext, modelHolder: IntentModelHolder): IntentClassifier {
+    fun getIntentClassifier(
+        context: IntentContext,
+        modelHolder: IntentModelHolder,
+    ): IntentClassifier {
         return getProvider(context.engineType).getIntentClassifier(modelHolder)
     }
 
@@ -82,14 +84,16 @@ internal object NlpEngineRepository {
         }
     }
 
-    fun getEntityClassifier(context: EntityCallContext, modelHolder: EntityModelHolder?): EntityClassifier? {
+    fun getEntityClassifier(
+        context: EntityCallContext,
+        modelHolder: EntityModelHolder?,
+    ): EntityClassifier? {
         return getProvider(context.engineType).let { provider ->
             modelHolder?.let { model ->
                 provider.getEntityClassifier(model)
             }
         }
     }
-
 
     fun <T : ClassifierContextKey> getModelBuilder(context: ClassifierContext<T>): NlpEngineModelBuilder {
         return getProvider(context.engineType).modelBuilder

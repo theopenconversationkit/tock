@@ -45,12 +45,10 @@ data class StoryDefinitionConfiguration(
      * The story definition identifier.
      */
     val storyId: String,
-
     /**
      * The bot identifier.
      */
     val botId: String,
-
     /**
      * The target main intent.
      */
@@ -127,14 +125,11 @@ data class StoryDefinitionConfiguration(
      * To filter/re-qualify next intents
      */
     val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList(),
-
     /**
      * True if the story handle metrics and is not a main tracked story
      */
-    val metricStory: Boolean = false
-
+    val metricStory: Boolean = false,
 ) : StoryDefinitionAnswersContainer {
-
     constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :
         this(
             storyId = storyDefinition.id,
@@ -145,11 +140,13 @@ data class StoryDefinitionConfiguration(
             answers = listOf(BuiltInAnswerConfiguration(storyDefinition.javaClass.kotlin.qualifiedName)),
             namespace = botDefinition.namespace,
             configurationName = configurationName,
-            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) }
+            steps = storyDefinition.steps.map { StoryDefinitionConfigurationStep(it) },
         )
 
-    override fun findNextSteps(bus: BotBus, story: StoryDefinitionConfiguration): List<CharSequence> =
-        findSteps(BotApplicationConfigurationKey(bus)).map { it.userSentenceLabel ?: it.userSentence }
+    override fun findNextSteps(
+        bus: BotBus,
+        story: StoryDefinitionConfiguration,
+    ): List<CharSequence> = findSteps(BotApplicationConfigurationKey(bus)).map { it.userSentenceLabel ?: it.userSentence }
 
     internal fun findSteps(key: BotApplicationConfigurationKey?): List<StoryDefinitionConfigurationStep> =
         (
@@ -158,20 +155,21 @@ data class StoryDefinitionConfiguration(
                     BotRepository.getConfigurationByApplicationId(key)?.name
                 configuredSteps.firstOrNull { it.botConfiguration == configurationName }?.steps
             } ?: steps
-            )
+        )
 
     private fun findFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> =
         when {
             features.isEmpty() -> emptyList()
             applicationId == null -> features.filter { it.botApplicationConfigurationId == null }
             else -> {
-                val app = BotRepository.getConfigurationByApplicationId(
-                    BotApplicationConfigurationKey(
-                        applicationId = applicationId,
-                        namespace = namespace,
-                        botId = botId
+                val app =
+                    BotRepository.getConfigurationByApplicationId(
+                        BotApplicationConfigurationKey(
+                            applicationId = applicationId,
+                            namespace = namespace,
+                            botId = botId,
+                        ),
                     )
-                )
                 features.filter { it.supportConfiguration(app) }
             }
         }
@@ -200,40 +198,42 @@ data class StoryDefinitionConfiguration(
         val features = findEnabledFeatures(applicationId)
 
         // search first for dedicated features
-        val dedicatedFeature = applicationId.getApp()?.let { app ->
-            features.find { feature ->
-                feature.switchToStoryId != null && feature.supportDedicatedConfiguration(app)
+        val dedicatedFeature =
+            applicationId.getApp()?.let { app ->
+                features.find { feature ->
+                    feature.switchToStoryId != null && feature.supportDedicatedConfiguration(app)
+                }
             }
-        }
 
         return dedicatedFeature?.switchToStoryId ?: features.find { it.switchToStoryId != null }?.switchToStoryId
     }
 
-     fun findEnabledEndWithStoryId(applicationId: String?): String? {
+    fun findEnabledEndWithStoryId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 
         // search first for dedicated features
-        val dedicatedFeature = applicationId.getApp()?.let { app ->
-            features.find { feature ->
-                feature.endWithStoryId != null && feature.supportDedicatedConfiguration(app)
+        val dedicatedFeature =
+            applicationId.getApp()?.let { app ->
+                features.find { feature ->
+                    feature.endWithStoryId != null && feature.supportDedicatedConfiguration(app)
+                }
             }
-        }
 
         return dedicatedFeature?.endWithStoryId ?: features.find { it.endWithStoryId != null }?.endWithStoryId
     }
 
-    private fun String?.getApp(): BotApplicationConfiguration? = this?.let {
-        BotRepository.getConfigurationByApplicationId(
-            BotApplicationConfigurationKey(
-                applicationId = this,
-                namespace = namespace,
-                botId = botId
+    private fun String?.getApp(): BotApplicationConfiguration? =
+        this?.let {
+            BotRepository.getConfigurationByApplicationId(
+                BotApplicationConfigurationKey(
+                    applicationId = this,
+                    namespace = namespace,
+                    botId = botId,
+                ),
             )
-        )
-    }
+        }
 
-    private fun findEnabledFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> =
-        findFeatures(applicationId).filter { it.enabled }
+    private fun findEnabledFeatures(applicationId: String?): List<StoryDefinitionConfigurationFeature> = findFeatures(applicationId).filter { it.enabled }
 
     @Transient
     internal val mainIntent: Intent = intent.intent(namespace)

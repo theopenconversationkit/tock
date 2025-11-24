@@ -22,14 +22,14 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.DialogFlowStateTransitionType
 import ai.tock.bot.definition.DialogFlowStateTransitionType.nlp
 import ai.tock.bot.engine.dialog.Dialog
-import java.time.Instant
-import java.time.Instant.now
-import java.time.LocalDateTime
-import java.util.Locale
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
+import java.time.Instant.now
+import java.time.LocalDateTime
+import java.util.Locale
 
 /**
  *
@@ -45,7 +45,7 @@ internal data class DialogFlowStateCol(
     val entities: Set<String> = emptySet(),
     val _id: Id<DialogFlowStateCol> = newId(),
     val storyType: AnswerConfigurationType? = null,
-    val storyName: String = storyDefinitionId
+    val storyName: String = storyDefinitionId,
 )
 
 @Data(internal = true)
@@ -59,7 +59,7 @@ internal data class DialogFlowStateTransitionCol(
     val step: String?,
     val newEntities: Set<String> = emptySet(),
     val type: DialogFlowStateTransitionType = nlp,
-    val _id: Id<DialogFlowStateTransitionCol> = newId()
+    val _id: Id<DialogFlowStateTransitionCol> = newId(),
 )
 
 @Data(internal = true)
@@ -134,6 +134,6 @@ internal data class DialogFlowAggregateApplicationIdResult(
 @Data(internal = true)
 @JacksonData(internal = true)
 internal data class DialogFlowConfiguration(
-    val _id : String,
-    val currentProcessedLevel: Int = DialogFlowMongoDAO.currentProcessedLevel
+    val _id: String,
+    val currentProcessedLevel: Int = DialogFlowMongoDAO.CURRENT_PROCESS_LEVEL,
 )

@@ -56,9 +56,14 @@ const val MAX_METADATA = 1000
 
 internal fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
     if (maxCharacter >= 0 && this.length > maxCharacter) {
-        if (maxCharacter > 3) this.substring(0, maxCharacter - 3) + "..."
-        else this.substring(0, maxCharacter)
-    } else this.toString()
+        if (maxCharacter > 3) {
+            this.substring(0, maxCharacter - 3) + "..."
+        } else {
+            this.substring(0, maxCharacter)
+        }
+    } else {
+        this.toString()
+    }
 
 /**
  * Creates a direct message with only text
@@ -70,42 +75,48 @@ fun <T : Bus<T>> T.directMessage(message: CharSequence): OutcomingEvent =
                 target = Recipient(userId.id),
                 sourceAppId = applicationId,
                 senderId = botId.id,
-                messageData = MessageData(translate(message).toString())
-            )
-        )
+                messageData = MessageData(translate(message).toString()),
+            ),
+        ),
     )
 
 /**
  * Creates a direct message with Buttons
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
-fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithButtons(
+    message: CharSequence,
+    ctas: List<CTA>,
+): OutcomingEvent =
     OutcomingEvent(
         DirectMessageOutcomingEvent(
             MessageCreate(
                 target = Recipient(userId.id),
                 sourceAppId = applicationId,
                 senderId = botId.id,
-                messageData = MessageData(
-                    translate(message).toString(),
-                    ctas = if (ctas.isNotEmpty()) ctas else null
-                )
-            )
-        )
+                messageData =
+                    MessageData(
+                        translate(message).toString(),
+                        ctas = if (ctas.isNotEmpty()) ctas else null,
+                    ),
+            ),
+        ),
     )
 
 /**
  * Creates a direct message with Buttons
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
-fun <T : Bus<T>> T.directMessageWithButtons(message: CharSequence, vararg ctas: CTA): OutcomingEvent =
-    directMessageWithButtons(message, ctas.toList())
+fun <T : Bus<T>> T.directMessageWithButtons(
+    message: CharSequence,
+    vararg ctas: CTA,
+): OutcomingEvent = directMessageWithButtons(message, ctas.toList())
 
 private fun <T : Bus<T>> T.directMessageBuidler(message: CharSequence): DirectMessageOutcomingEvent.Builder =
     DirectMessageOutcomingEvent.builder(
         target = Recipient(userId.id),
         senderId = botId.id,
-        text = translate(message).toString()
+        text = translate(message).toString(),
     )
         .withSourceAppId(applicationId)
 
@@ -113,22 +124,28 @@ private fun <T : Bus<T>> T.directMessageBuidler(message: CharSequence): DirectMe
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithOptions(
+    message: CharSequence,
+    vararg options: Option,
+): OutcomingEvent =
     OutcomingEvent(
         directMessageBuidler(message)
             .withOptions(*options)
-            .build()
+            .build(),
     )
 
 /**
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun <T : Bus<T>> T.directMessageWithOptions(message: CharSequence, vararg options: OptionWithoutDescription): OutcomingEvent =
+fun <T : Bus<T>> T.directMessageWithOptions(
+    message: CharSequence,
+    vararg options: OptionWithoutDescription,
+): OutcomingEvent =
     OutcomingEvent(
         directMessageBuidler(message)
             .withOptions(*options)
-            .build()
+            .build(),
     )
 
 /**
@@ -140,17 +157,18 @@ fun <T : Bus<T>> T.directMessageWithAttachment(
     mediaCategory: MediaCategory,
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
-): OutcomingEvent = OutcomingEvent(
-    directMessageBuidler(message)
-        .withOptions(*options)
-        .build(),
-    AttachmentData(
-        mediaCategory,
-        contentType,
-        bytes
+    vararg options: Option,
+): OutcomingEvent =
+    OutcomingEvent(
+        directMessageBuidler(message)
+            .withOptions(*options)
+            .build(),
+        AttachmentData(
+            mediaCategory,
+            contentType,
+            bytes,
+        ),
     )
-)
 
 /**
  * Creates a direct message with an attachment
@@ -161,17 +179,18 @@ fun <T : Bus<T>> T.directMessageWithAttachment(
     mediaCategory: MediaCategory,
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
-): OutcomingEvent = OutcomingEvent(
-    directMessageBuidler(message)
-        .withOptions(*options)
-        .build(),
-    AttachmentData(
-        mediaCategory,
-        contentType,
-        bytes
+    vararg options: OptionWithoutDescription,
+): OutcomingEvent =
+    OutcomingEvent(
+        directMessageBuidler(message)
+            .withOptions(*options)
+            .build(),
+        AttachmentData(
+            mediaCategory,
+            contentType,
+            bytes,
+        ),
     )
-)
 
 /**
  * Creates a direct message with a gif (Max 15MB)
@@ -181,7 +200,7 @@ fun <T : Bus<T>> T.directMessageWithGIF(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.GIF, contentType, bytes, *options)
 
 /**
@@ -192,7 +211,7 @@ fun <T : Bus<T>> T.directMessageWithGIF(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.GIF, contentType, bytes, *options)
 
 /**
@@ -202,7 +221,7 @@ fun <T : Bus<T>> T.directMessageWithGIF(
 fun <T : Bus<T>> T.directMessageWithGIF(
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -212,7 +231,7 @@ fun <T : Bus<T>> T.directMessageWithGIF(
 fun <T : Bus<T>> T.directMessageWithGIF(
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -223,7 +242,7 @@ fun <T : Bus<T>> T.directMessageWithImage(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.IMAGE, contentType, bytes, *options)
 
 /**
@@ -234,7 +253,7 @@ fun <T : Bus<T>> T.directMessageWithImage(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.IMAGE, contentType, bytes, *options)
 
 /**
@@ -244,7 +263,7 @@ fun <T : Bus<T>> T.directMessageWithImage(
 fun <T : Bus<T>> T.directMessageWithImage(
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -254,7 +273,7 @@ fun <T : Bus<T>> T.directMessageWithImage(
 fun <T : Bus<T>> T.directMessageWithImage(
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
 
 /**
@@ -265,7 +284,7 @@ fun <T : Bus<T>> T.directMessageWithVideo(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.VIDEO, contentType, bytes, *options)
 
 /**
@@ -276,7 +295,7 @@ fun <T : Bus<T>> T.directMessageWithVideo(
     message: CharSequence,
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.VIDEO, contentType, bytes, *options)
 
 /**
@@ -286,7 +305,7 @@ fun <T : Bus<T>> T.directMessageWithVideo(
 fun <T : Bus<T>> T.directMessageWithVideo(
     contentType: String,
     bytes: ByteArray,
-    vararg options: Option
+    vararg options: Option,
 ): OutcomingEvent = directMessageWithVideo("", contentType, bytes, *options)
 
 /**
@@ -296,7 +315,7 @@ fun <T : Bus<T>> T.directMessageWithVideo(
 fun <T : Bus<T>> T.directMessageWithVideo(
     contentType: String,
     bytes: ByteArray,
-    vararg options: OptionWithoutDescription
+    vararg options: OptionWithoutDescription,
 ): OutcomingEvent = directMessageWithVideo("", contentType, bytes, *options)
 
 /**
@@ -305,7 +324,7 @@ fun <T : Bus<T>> T.directMessageWithVideo(
  */
 fun <T : Bus<T>> T.webUrl(
     label: CharSequence,
-    url: CharSequence
+    url: CharSequence,
 ): WebUrl {
     val l = translate(label)
     if (l.length > MAX_OPTION_LABEL) {
@@ -324,9 +343,8 @@ fun <T : Bus<T>> T.option(
     description: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    vararg parameters: Pair<String, String>
-): Option =
-    option(label, description, targetIntent.wrappedIntent(), step, parameters.toMap())
+    vararg parameters: Pair<String, String>,
+): Option = option(label, description, targetIntent.wrappedIntent(), step, parameters.toMap())
 
 /**
  * Creates an Option Quick Reply without description
@@ -336,9 +354,8 @@ fun <T : Bus<T>> T.option(
     label: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    vararg parameters: Pair<String, String>
-): OptionWithoutDescription =
-    option(label, targetIntent.wrappedIntent(), step, parameters.toMap())
+    vararg parameters: Pair<String, String>,
+): OptionWithoutDescription = option(label, targetIntent.wrappedIntent(), step, parameters.toMap())
 
 /**
  * Creates an Option Quick Reply
@@ -349,7 +366,7 @@ fun <T : Bus<T>> T.option(
     description: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    parameters: Map<String, String>
+    parameters: Map<String, String>,
 ): Option =
     option(label, description, targetIntent, step, parameters) { intent, s, params ->
         SendChoice.encodeChoiceId(this, intent, s, params)
@@ -363,7 +380,7 @@ fun <T : Bus<T>> T.option(
     label: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
-    parameters: Map<String, String>
+    parameters: Map<String, String>,
 ): OptionWithoutDescription =
     option(label, targetIntent, step, parameters) { intent, s, params ->
         SendChoice.encodeChoiceId(this, intent, s, params)
@@ -379,7 +396,7 @@ private fun <T : Bus<T>> T.option(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Map<String, String>,
-    metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+    metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String,
 ): Option = Option.of(translate(label).toString(), translate(description).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
 
 /**
@@ -391,7 +408,7 @@ private fun <T : Bus<T>> T.option(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Map<String, String>,
-    metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+    metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String,
 ): OptionWithoutDescription = OptionWithoutDescription.of(translate(label).toString(), metadataEncoder.invoke(targetIntent, step, parameters))
 
 /**
@@ -407,7 +424,10 @@ fun I18nTranslator.nlpOption(label: CharSequence): OptionWithoutDescription {
  * Creates a NLP Option Quick Reply without description
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun I18nTranslator.nlpOption(label: CharSequence, description: CharSequence): Option {
+fun I18nTranslator.nlpOption(
+    label: CharSequence,
+    description: CharSequence,
+): Option {
     val l = translate(label).toString()
     val d = translate(description).toString()
     return Option.of(l, SendChoice.encodeNlpChoiceId(l), d)
@@ -430,7 +450,10 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
  * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the current connector is [connectorId].
  * You need to call [<T : Bus<T>> T.send] or [<T : Bus<T>> T.end] later to send this message.
  */
-fun BotBus.withTwitter(connectorId: String, messageProvider: () -> TwitterConnectorMessage): BotBus {
+fun BotBus.withTwitter(
+    connectorId: String,
+    messageProvider: () -> TwitterConnectorMessage,
+): BotBus {
     withVisibility(actionVisibility(this))
     return if (actionVisibility(this) != ActionVisibility.PUBLIC) {
         withMessage(twitterConnectorType, connectorId, messageProvider)
@@ -478,6 +501,10 @@ fun BotBus.tweet(message: CharSequence): Tweet {
  * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
  * @see https://developer.twitter.com/en/docs/direct-messages/welcome-messages/guides/deeplinking-to-welcome-message
  */
-fun BotBus.tweetWithInviteForDM(message: CharSequence, welcomeMessageID: String? = null, defaultMessage: String? = null): Tweet {
+fun BotBus.tweetWithInviteForDM(
+    message: CharSequence,
+    welcomeMessageID: String? = null,
+    defaultMessage: String? = null,
+): Tweet {
     return Tweet(translate(message).toString(), botId.id, welcomeMessageID, defaultMessage)
 }

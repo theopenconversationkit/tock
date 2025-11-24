@@ -27,5 +27,5 @@ data class UserAnalytics(
     val playerId: PlayerId,
     val applicationIds: MutableSet<String>,
     val lastUserActionDate: LocalDate = LocalDate.now(),
-    val lastUserActionDateTime: LocalDateTime = LocalDateTime.now()
+    val lastUserActionDateTime: LocalDateTime = LocalDateTime.now(),
 )

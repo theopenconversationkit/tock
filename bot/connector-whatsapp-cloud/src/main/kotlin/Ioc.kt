@@ -23,11 +23,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 
-val WhatsAppCloudConnectorModule = Kodein.Module {
-    bind<PayloadWhatsAppCloudDAO>() with singleton {
-        PayloadWhatsAppCloudMongoDAO
+val WhatsAppCloudConnectorModule =
+    Kodein.Module {
+        bind<PayloadWhatsAppCloudDAO>() with
+            singleton {
+                PayloadWhatsAppCloudMongoDAO
+            }
     }
-}
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService
 class IOCModulesService : BotAdditionalModulesService {

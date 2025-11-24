@@ -26,28 +26,27 @@ data class StoryDefinitionConfigurationFeature(
     val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
     val enabled: Boolean = true,
     val switchToStoryId: String?,
-    val endWithStoryId: String?
+    val endWithStoryId: String?,
 ) {
     constructor(
         botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
         enabled: Boolean = true,
-        switchToStoryId: String?
+        switchToStoryId: String?,
     ) : this(botApplicationConfigurationId, enabled, switchToStoryId, null)
 
     constructor(
         botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
         enabled: Boolean = true,
         endingRedirection: Boolean,
-        switchToStoryId: String?
+        switchToStoryId: String?,
     ) : this(
         botApplicationConfigurationId,
         enabled,
         switchToStoryId.takeUnless { endingRedirection },
-        switchToStoryId.takeIf { endingRedirection }
+        switchToStoryId.takeIf { endingRedirection },
     )
 
-    internal fun supportConfiguration(conf: BotApplicationConfiguration?): Boolean =
-        botApplicationConfigurationId == null || (conf != null && supportDedicatedConfiguration(conf))
+    internal fun supportConfiguration(conf: BotApplicationConfiguration?): Boolean = botApplicationConfigurationId == null || (conf != null && supportDedicatedConfiguration(conf))
 
     internal fun supportDedicatedConfiguration(conf: BotApplicationConfiguration): Boolean =
         botApplicationConfigurationId == conf._id ||

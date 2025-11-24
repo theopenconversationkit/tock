@@ -22,6 +22,5 @@ import ai.tock.bot.connector.twitter.TwitterConnectorProvider
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 abstract class TwitterConnectorMessage : ConnectorMessage {
-
     override val connectorType: ConnectorType @JsonIgnore get() = TwitterConnectorProvider.connectorType
 }

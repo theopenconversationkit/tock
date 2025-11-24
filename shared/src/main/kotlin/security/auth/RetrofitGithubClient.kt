@@ -29,13 +29,13 @@ import retrofit2.http.Header
  *
  */
 internal object RetrofitGithubClient {
-
     data class GithubUser(val login: String)
 
     private interface GithubApi {
-
         @GET("/user")
-        fun user(@Header("Authorization") authorization: String): Call<GithubUser>
+        fun user(
+            @Header("Authorization") authorization: String,
+        ): Call<GithubUser>
     }
 
     private val api: GithubApi
@@ -43,14 +43,15 @@ internal object RetrofitGithubClient {
 
     init {
 
-        api = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_github_api_request_timeout_ms", 5000),
-            logger
-        )
-            .baseUrl("https://api.github.com")
-            .addJacksonConverter()
-            .build()
-            .create()
+        api =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_github_api_request_timeout_ms", 5000),
+                logger,
+            )
+                .baseUrl("https://api.github.com")
+                .addJacksonConverter()
+                .build()
+                .create()
     }
 
     fun login(token: String): String {

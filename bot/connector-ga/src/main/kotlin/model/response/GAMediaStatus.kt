@@ -25,11 +25,11 @@ import ai.tock.bot.connector.ga.model.request.GAArgumentValueType
 enum class GAMediaStatus {
     STATUS_UNSPECIFIED,
     FINISHED, // Media has stopped because playback finished.
-    FAILED // Failed to play media
+    FAILED, // Failed to play media
 }
 
 data class GAMediaStatusValue(
-    val status: GAMediaStatus
+    val status: GAMediaStatus,
 ) : GAArgumentValue(
-    GAArgumentValueType.mediaStatus
-)
+        GAArgumentValueType.mediaStatus,
+    )

@@ -28,13 +28,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 @JsonTypeInfo(
     use = NAME,
     include = PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     value = [
         Type(UrlVerificationEvent::class, name = "url_verification"),
         Type(CallbackEvent::class, name = "event_callback"),
-        Type(InteractiveMessageEvent::class, name = "interactive_message")
-    ]
+        Type(InteractiveMessageEvent::class, name = "interactive_message"),
+    ],
 )
-abstract class EventApiMessage : SlackConnectorMessage() 
+abstract class EventApiMessage : SlackConnectorMessage()

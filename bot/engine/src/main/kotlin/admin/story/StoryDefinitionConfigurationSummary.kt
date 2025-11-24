@@ -29,6 +29,7 @@ import java.time.ZonedDateTime
  * - lastEdited
  */
 data class StoryDefinitionConfigurationSummaryExtended(
+    @Suppress("ktlint:standard:property-naming")
     override val _id: Id<StoryDefinitionConfiguration>,
     override val storyId: String,
     val botId: String,
@@ -37,7 +38,7 @@ data class StoryDefinitionConfigurationSummaryExtended(
     override val name: String = storyId,
     override val category: String = "default",
     val description: String = "",
-    val lastEdited: ZonedDateTime? = null
+    val lastEdited: ZonedDateTime? = null,
 ) : StoryDefinitionConfigurationSummaryBase
 
 /**
@@ -45,16 +46,18 @@ data class StoryDefinitionConfigurationSummaryExtended(
  * - isMetricStory
  */
 data class StoryDefinitionConfigurationSummaryMinimumMetrics(
+    @Suppress("ktlint:standard:property-naming")
     override val _id: Id<StoryDefinitionConfiguration>,
     override val storyId: String,
     override val intent: IntentWithoutNamespace,
     override val currentType: AnswerConfigurationType,
     override val name: String = storyId,
     override val category: String = "default",
-    val metricStory: Boolean
+    val metricStory: Boolean,
 ) : StoryDefinitionConfigurationSummaryBase
 
 interface StoryDefinitionConfigurationSummaryBase {
+    @Suppress("ktlint:standard:property-naming")
     val _id: Id<StoryDefinitionConfiguration>
     val storyId: String
     val intent: IntentWithoutNamespace

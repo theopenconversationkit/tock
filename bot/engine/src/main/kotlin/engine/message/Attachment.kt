@@ -28,22 +28,21 @@ import ai.tock.bot.engine.user.PlayerId
 data class Attachment(
     val url: String,
     val type: AttachmentType,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : Message {
-
     override val eventType: EventType = EventType.attachment
 
     override fun toAction(
         playerId: PlayerId,
         applicationId: String,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ): Action {
         return SendAttachment(
             playerId,
             applicationId,
             recipientId,
             url,
-            type
+            type,
         )
     }
 

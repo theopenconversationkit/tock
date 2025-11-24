@@ -21,7 +21,6 @@ import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQueryResult
 
 interface UserActionLogDAO {
-
     fun save(log: UserActionLog)
 
     fun search(query: UserActionLogQuery): UserActionLogQueryResult

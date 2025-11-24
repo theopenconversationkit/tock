@@ -22,5 +22,5 @@ package ai.tock.bot.xray.model
 data class XrayTestExecution(
     val testExecutionKey: String,
     val info: XrayTestExecutionInfo,
-    val tests: List<XrayTestExecutionReport>
+    val tests: List<XrayTestExecutionReport>,
 )

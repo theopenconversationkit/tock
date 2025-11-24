@@ -19,8 +19,11 @@ package ai.tock.nlp.front.shared.codec
 /**
  * Only full supported for now.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class DumpType {
-    full, obfuscated;
+    full,
+    obfuscated,
+    ;
 
     companion object {
         fun parseDumpType(s: String): DumpType = values().firstOrNull { it.name == s } ?: obfuscated

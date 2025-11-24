@@ -26,7 +26,7 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.video
 enum class MediaCategory(val mediaCategory: String) {
     GIF("dm_gif"),
     IMAGE("dm_image"),
-    VIDEO("dm_video")
+    VIDEO("dm_video"),
 }
 
 fun MediaFile.toMediaCategory(): MediaCategory? =

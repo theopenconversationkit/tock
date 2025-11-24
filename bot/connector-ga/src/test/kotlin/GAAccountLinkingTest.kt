@@ -41,7 +41,6 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -50,47 +49,51 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class GAAccountLinkingTest {
-
     private val userTimelineDAO: UserTimelineDAO = mockk()
 
     init {
-        tockInternalInjector = KodeinInjector().apply {
-            inject(
-                Kodein {
-                    bind<UserTimelineDAO>() with singleton { userTimelineDAO }
-                }
-            )
-        }
+        tockInternalInjector =
+            KodeinInjector().apply {
+                inject(
+                    Kodein {
+                        bind<UserTimelineDAO>() with singleton { userTimelineDAO }
+                    },
+                )
+            }
     }
 
-    private val connectedUserRequest = GARequest(
-        GAUser(accessToken = "userId|token"),
-        surface = GASurface(emptyList()),
-        conversation = GAConversation(
-            "conversationId"
-        ),
-        inputs = emptyList(),
-        device = null,
-        availableSurfaces = emptyList()
-    )
+    private val connectedUserRequest =
+        GARequest(
+            GAUser(accessToken = "userId|token"),
+            surface = GASurface(emptyList()),
+            conversation =
+                GAConversation(
+                    "conversationId",
+                ),
+            inputs = emptyList(),
+            device = null,
+            availableSurfaces = emptyList(),
+        )
 
-    private val notConnectedUserRequest = GARequest(
-        GAUser(),
-        surface = GASurface(emptyList()),
-        conversation = GAConversation(
-            "conversationId"
-        ),
-        inputs = emptyList(),
-        device = null,
-        availableSurfaces = emptyList()
-    )
+    private val notConnectedUserRequest =
+        GARequest(
+            GAUser(),
+            surface = GASurface(emptyList()),
+            conversation =
+                GAConversation(
+                    "conversationId",
+                ),
+            inputs = emptyList(),
+            device = null,
+            availableSurfaces = emptyList(),
+        )
 
     @Test
     fun `GIVEN access token THEN user is authenticated`() {
         assertTrue(
             isUserAuthenticated(
-                connectedUserRequest
-            )
+                connectedUserRequest,
+            ),
         )
     }
 
@@ -98,8 +101,8 @@ internal class GAAccountLinkingTest {
     fun `GIVEN no access token THEN user is not authenticated`() {
         assertFalse(
             isUserAuthenticated(
-                notConnectedUserRequest
-            )
+                notConnectedUserRequest,
+            ),
         )
     }
 
@@ -108,8 +111,8 @@ internal class GAAccountLinkingTest {
         assertEquals(
             "userId",
             getUserId(
-                connectedUserRequest
-            )
+                connectedUserRequest,
+            ),
         )
     }
 
@@ -118,54 +121,57 @@ internal class GAAccountLinkingTest {
         assertEquals(
             "conversationId",
             getUserId(
-                notConnectedUserRequest
-            )
+                notConnectedUserRequest,
+            ),
         )
     }
 
     @Test
-    fun `GIVEN new userId THEN new timeline is created with previous params and dialog`() = runBlocking {
-        val previousUserId = PlayerId("previousUserId")
-        val previousUserPreferences = UserPreferences()
-        val previousUserState = UserState(Instant.now())
-        val previousDialogs = mutableListOf(
-            Dialog(playerIds = setOf(previousUserId))
-        )
+    fun `GIVEN new userId THEN new timeline is created with previous params and dialog`() =
+        runBlocking {
+            val previousUserId = PlayerId("previousUserId")
+            val previousUserPreferences = UserPreferences()
+            val previousUserState = UserState(Instant.now())
+            val previousDialogs =
+                mutableListOf(
+                    Dialog(playerIds = setOf(previousUserId)),
+                )
 
-        val previousTimeline = UserTimeline(
-            previousUserId,
-            dialogs = previousDialogs,
-            userPreferences = previousUserPreferences,
-            userState = previousUserState
-        )
+            val previousTimeline =
+                UserTimeline(
+                    previousUserId,
+                    dialogs = previousDialogs,
+                    userPreferences = previousUserPreferences,
+                    userState = previousUserState,
+                )
 
-        val newUserId = PlayerId("newUserId")
+            val newUserId = PlayerId("newUserId")
 
-        coEvery {
-            userTimelineDAO.loadWithLastValidDialog(
-                any(),
-                previousUserId,
-                storyDefinitionProvider = any()
-            )
-        } returns previousTimeline
+            coEvery {
+                userTimelineDAO.loadWithLastValidDialog(
+                    any(),
+                    previousUserId,
+                    storyDefinitionProvider = any(),
+                )
+            } returns previousTimeline
 
-        val capturedTimeline = slot<UserTimeline>()
-        coEvery {
-            userTimelineDAO.save(any(), any<BotDefinition>())
-        } answers {}
+            val capturedTimeline = slot<UserTimeline>()
+            coEvery {
+                userTimelineDAO.save(any(), any<BotDefinition>())
+            } answers {}
 
-        val controller: ConnectorController = mockk()
-        val botDefinition: BotDefinition = mockk()
-        every { controller.storyDefinitionLoader(any()) } returns { mockk() }
-        every { controller.botDefinition } returns botDefinition
-        every { botDefinition.namespace } returns "namespace"
+            val controller: ConnectorController = mockk()
+            val botDefinition: BotDefinition = mockk()
+            every { controller.storyDefinitionLoader(any()) } returns { mockk() }
+            every { controller.botDefinition } returns botDefinition
+            every { botDefinition.namespace } returns "namespace"
 
-        switchTimeLine("appId", newUserId, previousUserId, controller)
+            switchTimeLine("appId", newUserId, previousUserId, controller)
 
-        coVerify { userTimelineDAO.save(capture(capturedTimeline), any<BotDefinition>()) }
-        assertEquals(newUserId, capturedTimeline.captured.playerId)
-        assertEquals(previousUserPreferences, capturedTimeline.captured.userPreferences)
-        assertEquals(previousUserState, capturedTimeline.captured.userState)
-        assertEquals(newUserId, capturedTimeline.captured.dialogs.first().playerIds.first())
-    }
+            coVerify { userTimelineDAO.save(capture(capturedTimeline), any<BotDefinition>()) }
+            assertEquals(newUserId, capturedTimeline.captured.playerId)
+            assertEquals(previousUserPreferences, capturedTimeline.captured.userPreferences)
+            assertEquals(previousUserState, capturedTimeline.captured.userState)
+            assertEquals(newUserId, capturedTimeline.captured.dialogs.first().playerIds.first())
+        }
 }

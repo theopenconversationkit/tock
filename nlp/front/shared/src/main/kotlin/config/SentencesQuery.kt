@@ -63,5 +63,5 @@ data class SentencesQuery(
     val maxIntentProbability: Float = 1f,
     val minIntentProbability: Float = 0f,
     val normalizeText: Boolean = false,
-    val configuration: String? = null
+    val configuration: String? = null,
 )

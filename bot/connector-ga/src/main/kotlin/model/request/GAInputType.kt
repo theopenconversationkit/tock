@@ -21,5 +21,5 @@ enum class GAInputType {
     TOUCH,
     VOICE,
     KEYBOARD,
-    URL
+    URL,
 }

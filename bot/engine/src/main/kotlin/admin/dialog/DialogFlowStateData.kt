@@ -28,5 +28,5 @@ data class DialogFlowStateData(
     val storyType: AnswerConfigurationType?,
     val storyName: String = storyDefinitionId,
     val count: Long = 0,
-    val _id: Id<DialogFlowStateData> = newId()
+    val _id: Id<DialogFlowStateData> = newId(),
 )

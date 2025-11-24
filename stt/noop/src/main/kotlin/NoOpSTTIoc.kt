@@ -24,6 +24,7 @@ import com.github.salomonbrys.kodein.provider
 /**
  *
  */
-val noOpSTTModule = Kodein.Module {
-    bind<STT>() with provider { NoOpSTT }
-}
+val noOpSTTModule =
+    Kodein.Module {
+        bind<STT>() with provider { NoOpSTT }
+    }

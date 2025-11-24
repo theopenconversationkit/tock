@@ -22,15 +22,14 @@ import java.util.Locale
 
 internal class DefaultDateTemplate(
     private val date: TemporalAccessor?,
-    private val formatterProvider: DateTimeFormatterProvider
+    private val formatterProvider: DateTimeFormatterProvider,
 ) : DateTemplate {
-
     constructor(date: TemporalAccessor?, dateFormatter: DateTimeFormatter) :
         this(
             date,
             object : DateTimeFormatterProvider {
                 override fun provide(locale: Locale): DateTimeFormatter = dateFormatter.withLocale(locale)
-            }
+            },
         )
 
     override fun format(locale: Locale): String {

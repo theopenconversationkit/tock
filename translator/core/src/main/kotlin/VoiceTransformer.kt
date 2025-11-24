@@ -22,11 +22,14 @@ import java.util.Locale
  * Transform an object (usually a [CharSequence]) to be more suitable for voice.
  */
 interface VoiceTransformer {
-
     /**
      * Transforms an argument passed to a [Translator].
      *
      * @return the new argument
      */
-    fun transformArg(arg: Any, locale: Locale, userInterfaceType: UserInterfaceType): Any
+    fun transformArg(
+        arg: Any,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType,
+    ): Any
 }

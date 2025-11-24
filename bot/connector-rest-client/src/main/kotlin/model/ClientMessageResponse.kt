@@ -26,5 +26,5 @@ data class ClientMessageResponse(
     val applicationId: String? = null,
     val userActionId: String? = null,
     val userLocale: Locale? = null,
-    val hasNlpStats: Boolean = false
+    val hasNlpStats: Boolean = false,
 )

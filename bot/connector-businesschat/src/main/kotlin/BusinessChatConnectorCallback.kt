@@ -22,5 +22,5 @@ import ai.tock.bot.connector.ConnectorCallbackBase
  * The BusinessChat [ConnectorCallback].
  */
 internal class BusinessChatConnectorCallback(
-    applicationId: String
+    applicationId: String,
 ) : ConnectorCallbackBase(applicationId, businessChatConnectorType)

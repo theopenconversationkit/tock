@@ -27,17 +27,16 @@ import ai.tock.bot.orchestration.shared.SecondaryBotAvailableResponse
 import ai.tock.bot.orchestration.shared.SecondaryBotNoResponse
 
 open class OrchestratorService(
-    private val orchestratedBots: OrchestratedRuntimeBots
+    private val orchestratedBots: OrchestratedRuntimeBots,
 ) {
-
     fun askOrchestration(request: AskEligibilityToOrchestratorRequest): OrchestrationResponse {
-
         val eligibleBots = request.eligibleTargetBots.mapNotNull { eligibleBot -> orchestratedBots.get(eligibleBot) }
 
         return when (val response = getTheBestAnswer(eligibleBots, request)) {
-            null -> NoOrchestrationResponse(
-                status = NOT_AVAILABLE
-            )
+            null ->
+                NoOrchestrationResponse(
+                    status = NOT_AVAILABLE,
+                )
             else -> response
         }
     }
@@ -56,7 +55,7 @@ open class OrchestratorService(
 
     protected open fun getTheBestAnswer(
         eligibleBots: List<OrchestratedRuntimeBot>,
-        request: AskEligibilityToOrchestratorRequest
+        request: AskEligibilityToOrchestratorRequest,
     ): OrchestrationResponse? {
         return eligibleBots
             .map { it to it.askOrchestration(request.toBotRequest()) } // TODO to run in parallel
@@ -65,9 +64,10 @@ open class OrchestratorService(
             ?.let { (bot, response) -> response.toOrchestratorResponse(bot.target) }
     }
 
-    private fun AskEligibilityToOrchestratorRequest.toBotRequest() = AskEligibilityToOrchestratedBotRequest(
-        data = data,
-        action = action,
-        metadata = metadata
-    )
+    private fun AskEligibilityToOrchestratorRequest.toBotRequest() =
+        AskEligibilityToOrchestratedBotRequest(
+            data = data,
+            action = action,
+            metadata = metadata,
+        )
 }

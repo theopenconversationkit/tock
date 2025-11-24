@@ -17,7 +17,6 @@
 package ai.tock.genai.orchestratorcore.utils
 
 object PGVectorUtils {
-
     /**
      * Normalize the document index name
      * Here, PostgeSQL rules are used
@@ -26,7 +25,11 @@ object PGVectorUtils {
      * @param botId the bot ID
      * @param indexSessionId the index session ID
      */
-    fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String {
+    fun normalizeDocumentIndexName(
+        namespace: String,
+        botId: String,
+        indexSessionId: String,
+    ): String {
         // Convert to lowercase
         var normalized = "ns-$namespace-bot-$botId-session-$indexSessionId".lowercase()
 
@@ -40,5 +43,4 @@ object PGVectorUtils {
 
         return normalized
     }
-
 }

@@ -21,5 +21,5 @@ package ai.tock.bot.xray.model
  */
 data class XrayUpdateTest(
     val add: List<String> = emptyList(),
-    val remove: List<String> = emptyList()
+    val remove: List<String> = emptyList(),
 )

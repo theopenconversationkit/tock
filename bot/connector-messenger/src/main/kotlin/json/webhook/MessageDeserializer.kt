@@ -32,12 +32,14 @@ import mu.KotlinLogging
  *
  */
 internal class MessageDeserializer : JacksonDeserializer<Message>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Message? {
         data class MessageFields(
             var mid: String? = null,
             var seq: Long? = null,
@@ -47,24 +49,24 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
             var appId: Long? = null,
             var metadata: String? = null,
             var quickReply: UserActionPayload? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
         val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply) =
-        jp.read<MessageFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    Message::mid.name -> mid = jp.valueAsString
-                    Message::text.name -> text = jp.valueAsString
-                    Message::attachments.name -> attachments = jp.readListValues<Attachment>().filterNotNull()
-                    "is_echo" -> isEcho = jp.booleanValue
-                    "app_id" -> appId = jp.longValue
-                    MessageEcho::metadata.name -> metadata = jp.valueAsString
-                    "quick_reply" -> quickReply = jp.readValue()
-                    else -> other = jp.readUnknownValue()
+            jp.read<MessageFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        Message::mid.name -> mid = jp.valueAsString
+                        Message::text.name -> text = jp.valueAsString
+                        Message::attachments.name -> attachments = jp.readListValues<Attachment>().filterNotNull()
+                        "is_echo" -> isEcho = jp.booleanValue
+                        "app_id" -> appId = jp.longValue
+                        MessageEcho::metadata.name -> metadata = jp.valueAsString
+                        "quick_reply" -> quickReply = jp.readValue()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         if (mid == null || (text == null && attachments?.isEmpty() != false && quickReply == null)) {
             logger.warn { "invalid message $mid $text $attachments" }

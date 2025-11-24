@@ -18,5 +18,5 @@ package ai.tock.bot.connector.web.send
 
 data class WebImage(
     val file: WebMediaFile,
-    val title: CharSequence
+    val title: CharSequence,
 )

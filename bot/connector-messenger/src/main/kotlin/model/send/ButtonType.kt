@@ -19,7 +19,11 @@ package ai.tock.bot.connector.messenger.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ButtonType {
-
-    web_url, postback, account_link, account_unlink, phone_number
+    web_url,
+    postback,
+    account_link,
+    account_unlink,
+    phone_number,
 }

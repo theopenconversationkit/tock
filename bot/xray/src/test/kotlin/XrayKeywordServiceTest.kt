@@ -25,7 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 class XrayKeywordServiceTest {
-
     @Test
     fun `GIVEN a keyword WHEN this keywords do not belong to keywords list THEN keyword is not recognized and return an error`() {
         val keyword = "_toto_"

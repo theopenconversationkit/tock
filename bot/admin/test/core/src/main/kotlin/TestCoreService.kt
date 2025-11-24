@@ -46,121 +46,125 @@ import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 class TestCoreService : TestService {
-
     private val logger = KotlinLogging.logger {}
     private val defaultRestConnectorBaseUrl =
         property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
     private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
 
-    override fun registerServices(): (AdminVerticle).() -> Unit = {
+    override fun registerServices(): (AdminVerticle).() -> Unit =
+        {
+            fun RoutingContext.loadTestPlan(): TestPlan {
+                return TestPlanService.getTestPlan(pathId("planId"))?.run {
+                    if (organization != namespace) {
+                        Companion.unauthorized()
+                    } else {
+                        this
+                    }
+                } ?: Companion.notFound()
+            }
 
-        fun RoutingContext.loadTestPlan(): TestPlan {
-            return TestPlanService.getTestPlan(pathId("planId"))?.run {
-                if (organization != namespace) {
-                    Companion.unauthorized()
+            blockingJsonGet("/test/plans", botUser) { context ->
+                TestPlanService.getTestPlansByNamespace(context.organization)
+            }
+
+            blockingJsonGet("/test/plan/:planId", botUser) { context ->
+                context.loadTestPlan()
+            }
+
+            blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
+                TestPlanService.getPlanExecutions(context.loadTestPlan())
+            }
+
+            blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
+                TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
+            }
+
+            blockingJsonPost(
+                "/test/plan",
+                botUser,
+                logger<TestPlanUpdate>("Update Test Plan") { _, p ->
+                    p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
+                },
+            ) { context, plan: TestPlanUpdate ->
+                if (context.organization == plan.namespace) {
+                    TestPlanService.saveTestPlan(plan.toTestPlan())
                 } else {
-                    this
+                    WebVerticle.unauthorized()
                 }
-            } ?: Companion.notFound()
-        }
-
-        blockingJsonGet("/test/plans", botUser) { context ->
-            TestPlanService.getTestPlansByNamespace(context.organization)
-        }
-
-        blockingJsonGet("/test/plan/:planId", botUser) { context ->
-            context.loadTestPlan()
-        }
-
-        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
-            TestPlanService.getPlanExecutions(context.loadTestPlan())
-        }
-
-        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
-            TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
-        }
-
-        blockingJsonPost(
-            "/test/plan",
-            botUser,
-            logger<TestPlanUpdate>("Update Test Plan") { _, p ->
-                p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
-        ) { context, plan: TestPlanUpdate ->
-            if (context.organization == plan.namespace) {
-                TestPlanService.saveTestPlan(plan.toTestPlan())
-            } else {
-                WebVerticle.unauthorized()
+
+            blockingDelete(
+                "/test/plan/:planId",
+                botUser,
+                simpleLogger("Delete Test Plan", { it.path("planId") to true }),
+            ) { context ->
+                TestPlanService.removeTestPlan(context.loadTestPlan())
             }
-        }
 
-        blockingDelete(
-            "/test/plan/:planId",
-            botUser,
-            simpleLogger("Delete Test Plan", { it.path("planId") to true })
-        ) { context ->
-            TestPlanService.removeTestPlan(context.loadTestPlan())
-        }
+            blockingJsonPost(
+                "/test/plan/:planId/dialog/:dialogId",
+                botUser,
+                simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") }),
+            ) { context, _: ApplicationScopedQuery ->
+                TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
+            }
 
-        blockingJsonPost(
-            "/test/plan/:planId/dialog/:dialogId",
-            botUser,
-            simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
-            TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
-        }
+            blockingJsonPost(
+                "/test/plan/:planId/dialog/delete/:dialogId",
+                botUser,
+                simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") }),
+            ) { context, _: ApplicationScopedQuery ->
+                TestPlanService.removeDialogFromTestPlan(
+                    context.loadTestPlan(),
+                    context.pathId("dialogId"),
+                )
+            }
 
-        blockingJsonPost(
-            "/test/plan/:planId/dialog/delete/:dialogId",
-            botUser,
-            simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
-            TestPlanService.removeDialogFromTestPlan(
-                context.loadTestPlan(),
-                context.pathId("dialogId")
-            )
-        }
+            blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
+                saveAndExecuteTestPlan(context.organization, testPlan, newId())
+            }
 
-        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            saveAndExecuteTestPlan(context.organization, testPlan, newId())
-        }
+            /**
+             * Triggered on click on "Launch" button.
+             */
+            blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
+                context.loadTestPlan().run {
+                    executeTestPlan(this)
+                }
+            }
 
-        /**
-         * Triggered on click on "Launch" button.
-         */
-        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
-            context.loadTestPlan().run {
-                executeTestPlan(this)
+            blockingJsonPost("/test/talk", setOf(botUser)) { context, query: BotDialogRequest ->
+                if (context.organization == query.namespace) {
+                    val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
+                    val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
+                    talk(query, debugEnabled, sourceWithContent)
+                } else {
+                    Companion.unauthorized()
+                }
             }
         }
 
-        blockingJsonPost("/test/talk", setOf(botUser)) { context, query: BotDialogRequest ->
-            if (context.organization == query.namespace) {
-                val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
-                val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
-                talk(query, debugEnabled, sourceWithContent)
-            } else {
-                Companion.unauthorized()
-            }
-        }
-    }
-
-    private fun talk(request: BotDialogRequest, debugEnabled: Boolean, sourceWithContent: Boolean): BotDialogResponse {
+    private fun talk(
+        request: BotDialogRequest,
+        debugEnabled: Boolean,
+        sourceWithContent: Boolean,
+    ): BotDialogResponse {
         val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
         return try {
             val restClient = getRestClient(conf)
-            val response = restClient.talk(
-                conf.path ?: conf.applicationId,
-                request.currentLanguage,
-                ClientMessageRequest(
-                    "test_${conf._id}_${request.currentLanguage}_${request.userIdModifier}",
-                    "test_bot_${conf._id}_${request.currentLanguage}",
-                    request.message.toClientMessage(),
-                    conf.targetConnectorType.toClientConnectorType(),
-                    debugEnabled = debugEnabled,
-                    sourceWithContent = sourceWithContent
+            val response =
+                restClient.talk(
+                    conf.path ?: conf.applicationId,
+                    request.currentLanguage,
+                    ClientMessageRequest(
+                        "test_${conf._id}_${request.currentLanguage}_${request.userIdModifier}",
+                        "test_bot_${conf._id}_${request.currentLanguage}",
+                        request.message.toClientMessage(),
+                        conf.targetConnectorType.toClientConnectorType(),
+                        debugEnabled = debugEnabled,
+                        sourceWithContent = sourceWithContent,
+                    ),
                 )
-            )
 
             if (response.isSuccessful) {
                 response.body()?.run {
@@ -188,19 +192,23 @@ class TestCoreService : TestService {
      * executes all test contained in the common test plan.
      *
      */
-    override fun saveAndExecuteTestPlan(namespace: String, testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution =
+    override fun saveAndExecuteTestPlan(
+        namespace: String,
+        testPlan: TestPlan,
+        executionId: Id<TestPlanExecution>,
+    ): TestPlanExecution =
         getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
             .let {
                 TestPlanService.saveAndRunTestPlan(
                     getRestClient(it),
                     testPlan,
-                    executionId
+                    executionId,
                 )
             }
 
     private fun getBotConfiguration(
         botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        namespace: String
+        namespace: String,
     ): BotApplicationConfiguration {
         val applicationConfigurationDAO: BotApplicationConfigurationDAO = injector.provide()
         val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
@@ -212,25 +220,26 @@ class TestCoreService : TestService {
 
     private fun executeTestPlan(testPlan: TestPlan): Id<TestPlanExecution> {
         val executionId = Dice.newId()
-        val exec = TestPlanExecution(
-            testPlanId = testPlan._id,
-            dialogs = mutableListOf(),
-            nbErrors = 0,
-            duration = Duration.between(Instant.now(), Instant.now()),
-            _id = executionId.toId(),
-            status = TestPlanExecutionStatus.PENDING
-        )
+        val exec =
+            TestPlanExecution(
+                testPlanId = testPlan._id,
+                dialogs = mutableListOf(),
+                nbErrors = 0,
+                duration = Duration.between(Instant.now(), Instant.now()),
+                _id = executionId.toId(),
+                status = TestPlanExecutionStatus.PENDING,
+            )
         // save the test plan execution into the database
         TestPlanService.saveTestPlanExecution(exec)
         TestPlanService.runTestPlan(
             getRestClient(
                 getBotConfiguration(
                     testPlan.botApplicationConfigurationId,
-                    testPlan.namespace
-                )
+                    testPlan.namespace,
+                ),
             ),
             testPlan,
-            executionId.toId()
+            executionId.toId(),
         )
         return executionId.toId()
     }

@@ -46,7 +46,6 @@ import java.util.Locale
  *
  */
 object ModelTesterService : ModelTester {
-
     private val logger = KotlinLogging.logger {}
 
     private val config = ApplicationConfigurationService
@@ -65,24 +64,28 @@ object ModelTesterService : ModelTester {
         }
     }
 
-    private fun testApplicationModel(application: ApplicationDefinition, locale: Locale) {
+    private fun testApplicationModel(
+        application: ApplicationDefinition,
+        locale: Locale,
+    ) {
         val sentences = config.getSentences(application.intents, locale, ClassifiedSentenceStatus.model)
         // at least 100 validated sentences to test the model
         if (sentences.size > 100) {
             logger.info { "Start testing model for $application and locale $locale" }
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
-            val report = model.testModel(
-                TestContext(
-                    CallContext(
-                        toApplication(application),
-                        locale,
-                        application.nlpEngineType,
-                        EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)
+            val report =
+                model.testModel(
+                    TestContext(
+                        CallContext(
+                            toApplication(application),
+                            locale,
+                            application.nlpEngineType,
+                            EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes),
+                        ),
+                        0.9F,
                     ),
-                    0.9F
-                ),
-                sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
-            )
+                    sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) },
+                )
             modelDAO.saveTestBuild(
                 TestBuild(
                     application._id,
@@ -97,8 +100,8 @@ object ModelTesterService : ModelTester {
                     report.entityErrors.size,
                     report.expressionsTested.groupBy { it.intent.name }.mapValues { it.value.size },
                     report.intentErrors.groupBy { it.expression.intent.name }.mapValues { it.value.size },
-                    report.entityErrors.groupBy { it.expression.intent.name }.mapValues { it.value.size }
-                )
+                    report.entityErrors.groupBy { it.expression.intent.name }.mapValues { it.value.size },
+                ),
             )
 
             val sentencesMap = sentences.map { it.text to it }.toMap()
@@ -114,8 +117,8 @@ object ModelTesterService : ModelTester {
                         it.expression.intent.name,
                         it.intent,
                         it.intentProbability,
-                        1
-                    )
+                        1,
+                    ),
                 )
             }
             report.expressionsTested.forEach {
@@ -128,8 +131,8 @@ object ModelTesterService : ModelTester {
                             "",
                             "",
                             0.0,
-                            0
-                        )
+                            0,
+                        ),
                     )
                 }
             }
@@ -143,8 +146,8 @@ object ModelTesterService : ModelTester {
                         sentencesMap[it.expression.text]!!.classification.intentId,
                         it.entities.map { ClassifiedEntity(it.value) },
                         if (it.entities.isEmpty()) 1.0 else it.entities.map { it.probability }.average(),
-                        1
-                    )
+                        1,
+                    ),
                 )
             }
 
@@ -158,8 +161,8 @@ object ModelTesterService : ModelTester {
                             null,
                             emptyList(),
                             0.0,
-                            0
-                        )
+                            0,
+                        ),
                     )
                 }
             }
@@ -176,11 +179,19 @@ object ModelTesterService : ModelTester {
         return modelDAO.searchTestEntityErrors(query)
     }
 
-    override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
+    override fun deleteTestIntentError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    ) {
         modelDAO.deleteTestIntentError(applicationId, language, text)
     }
 
-    override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
+    override fun deleteTestEntityError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    ) {
         modelDAO.deleteTestEntityError(applicationId, language, text)
     }
 

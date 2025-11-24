@@ -27,7 +27,7 @@ data class SentencesDump(
      * If restricted to a language.
      */
     val language: Locale? = null,
-    val sentences: List<SentenceDump>
+    val sentences: List<SentenceDump>,
 )
 
 data class SentenceDump(
@@ -38,7 +38,7 @@ data class SentenceDump(
      * If null and if [SentencesDump.language] is also null, an error will be thrown.
      */
     val language: Locale? = null,
-    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model
+    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model,
 )
 
 data class SentenceEntityDump(
@@ -46,5 +46,5 @@ data class SentenceEntityDump(
     val role: String,
     val subEntities: List<SentenceEntityDump> = emptyList(),
     val start: Int,
-    val end: Int
+    val end: Int,
 )

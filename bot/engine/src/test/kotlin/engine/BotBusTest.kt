@@ -40,20 +40,25 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.verify
-import java.util.Locale
-import kotlin.test.BeforeTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.Locale
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
  */
 class BotBusTest : BotEngineTest() {
-    private fun Bot.handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+    private fun Bot.handle(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData,
+    ) {
         @OptIn(ExperimentalTockCoroutines::class)
         runBlocking {
             handleAction(action, userTimeline, connector, connectorData)
@@ -117,7 +122,7 @@ class BotBusTest : BotEngineTest() {
                 match<SendSentence> {
                     it.text.toString() == "StoryHandler2Test"
                 },
-                any()
+                any(),
             )
         }
     }
@@ -166,9 +171,9 @@ class BotBusTest : BotEngineTest() {
                 "a",
                 "app",
                 "test",
-                "b"
+                "b",
             ),
-            v
+            v,
         )
     }
 
@@ -179,7 +184,7 @@ class BotBusTest : BotEngineTest() {
             connector.send(
                 match { param -> param is SendSentence && param.stringText == "StoryHandlerTest" },
                 any(),
-                any()
+                any(),
             )
         }
     }
@@ -192,13 +197,16 @@ class BotBusTest : BotEngineTest() {
             connector.send(
                 match { param -> param is SendSentence && param.stringText == "new response" },
                 any(),
-                any()
+                any(),
             )
         }
     }
 
     class SimpleBotAnswerInterceptor : BotAnswerInterceptor {
-        override fun handle(action: Action, bus: BotBus): Action {
+        override fun handle(
+            action: Action,
+            bus: BotBus,
+        ): Action {
             return Sentence("new response").toAction(PlayerId(""), "applicationId", PlayerId(""))
         }
     }

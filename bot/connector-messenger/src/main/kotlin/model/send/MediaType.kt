@@ -21,8 +21,11 @@ import ai.tock.bot.engine.action.SendAttachment
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class MediaType {
-    image, video;
+    image,
+    video,
+    ;
 
     fun toAttachmentType(): SendAttachment.AttachmentType =
         when (this) {

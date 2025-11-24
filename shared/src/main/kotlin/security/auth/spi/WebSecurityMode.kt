@@ -19,12 +19,17 @@ package ai.tock.shared.security.auth.spi
 enum class WebSecurityMode {
     // If "env.tock_web_cookie_auth" is set to true, the WebSecurityMode.COOKIES mode is applied, otherwise nothing (PASSTHROUGH mode).
     DEFAULT,
+
     // Get tock_user_id cookie
     COOKIES,
+
     // Pass the interceptor without any changes
     PASSTHROUGH,
+
     // Parse the JWT, to validate signature, check token revocation and manage authorization
-    JWT;
+    JWT,
+
+    ;
 
     companion object {
         fun findByName(mode: String): WebSecurityMode? {

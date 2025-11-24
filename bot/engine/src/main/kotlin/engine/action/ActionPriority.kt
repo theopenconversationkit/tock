@@ -19,7 +19,9 @@ package ai.tock.bot.engine.action
 /**
  * To manage notification types.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ActionPriority {
-
-    normal, high, urgent
+    normal,
+    high,
+    urgent,
 }

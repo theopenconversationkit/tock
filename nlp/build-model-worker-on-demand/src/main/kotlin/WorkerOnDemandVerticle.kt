@@ -23,23 +23,22 @@ import mu.KotlinLogging
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
+@Suppress("ktlint:standard:multiline-expression-wrapping")
 class WorkerOnDemandVerticle(
     private val workerOnDemandType: WorkerOnDemandType,
     private val buildType: String,
     private val delayBetweenJob: Long,
-    private val timeFrame: List<Int>
+    private val timeFrame: List<Int>,
 ) : AbstractVerticle() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
 
-    private val logger = KotlinLogging.logger {}
-
-    private val PREFIX = "tock_worker_ondemand"
-
-    private val BUILD_TYPE_ARG = "TOCK_BUILD_TYPE"
-
-    private val BUILD_WORKER_MODE_ENV = "tock_build_worker_mode"
-    private val BUILD_WORKER_VERTICLE_ENABLED_ENV = "tock_build_worker_verticle_enabled"
-
-    private val DEFAULT_WORKER_MODE = "COMMAND_LINE"
+        private const val PREFIX = "tock_worker_ondemand"
+        private const val BUILD_TYPE_ARG = "TOCK_BUILD_TYPE"
+        private const val BUILD_WORKER_MODE_ENV = "tock_build_worker_mode"
+        private const val BUILD_WORKER_VERTICLE_ENABLED_ENV = "tock_build_worker_verticle_enabled"
+        private const val DEFAULT_WORKER_MODE = "COMMAND_LINE"
+    }
 
     private var handler: Handler<Long>? = null
 
@@ -50,7 +49,7 @@ class WorkerOnDemandVerticle(
 
         workerOnDemand = WorkerOnDemandProvider.provide(
             type = workerOnDemandType,
-            properties = workerProperties()
+            properties = workerProperties(),
         )?.apply {
             logger.info { "WorkerOnDemand ${this@WorkerOnDemandVerticle.javaClass.simpleName} loaded for $buildType" }
             handler = Handler {
@@ -72,12 +71,12 @@ class WorkerOnDemandVerticle(
     }
 
     fun name(): String = "worker-on-demand-$buildType"
+
     fun isLoaded(): Boolean = workerOnDemand != null
 
     private fun ZonedDateTime.isInTimeFrame(): Boolean = (hour >= timeFrame[0] && hour <= timeFrame[1] && minute % 1 == 0)
 
     private fun workerProperties(): WorkerProperties {
-
         return (System.getProperties() + System.getenv())
             .filterKeys { it.toString().startsWith(PREFIX) }
             .entries.associate {
@@ -86,9 +85,9 @@ class WorkerOnDemandVerticle(
                     .replace("tock_JAVA_ARGS", "JAVA_ARGS") to it.value.toString()
             } + mapOf(
             BUILD_WORKER_MODE_ENV to DEFAULT_WORKER_MODE,
-            BUILD_WORKER_VERTICLE_ENABLED_ENV to "false"
+            BUILD_WORKER_VERTICLE_ENABLED_ENV to "false",
         ) + mapOf(
-            BUILD_TYPE_ARG to buildType
+            BUILD_TYPE_ARG to buildType,
         )
     }
 }

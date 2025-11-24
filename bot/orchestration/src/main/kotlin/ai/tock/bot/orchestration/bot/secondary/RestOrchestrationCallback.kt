@@ -40,9 +40,8 @@ open class RestOrchestrationCallback(
     applicationId: String,
     private val context: RoutingContext,
     override val actions: MutableList<Action> = mutableListOf(),
-    private val orchestrationMapper: ObjectMapper = mapper
+    private val orchestrationMapper: ObjectMapper = mapper,
 ) : OrchestrationCallback, ConnectorCallbackBase(applicationId, connectorType) {
-
     private val logger = KotlinLogging.logger {}
 
     override fun sendResponse() {
@@ -63,21 +62,28 @@ open class RestOrchestrationCallback(
             INTERNAL_SERVER_ERROR,
             SecondaryBotNoResponse(
                 status = ERROR,
-                metaData = OrchestrationMetaData(
-                    playerId = PlayerId("unknownWithError"),
-                    applicationId = applicationId,
-                    recipientId = PlayerId("bot")
-                )
-            )
+                metaData =
+                    OrchestrationMetaData(
+                        playerId = PlayerId("unknownWithError"),
+                        applicationId = applicationId,
+                        recipientId = PlayerId("bot"),
+                    ),
+            ),
         )
     }
 
-    override fun exceptionThrown(event: Event, throwable: Throwable) {
+    override fun exceptionThrown(
+        event: Event,
+        throwable: Throwable,
+    ) {
         super.exceptionThrown(event, throwable)
         sendError()
     }
 
-    private fun sendHttpResponse(httpCode: HttpResponseStatus, response: SecondaryBotResponse) {
+    private fun sendHttpResponse(
+        httpCode: HttpResponseStatus,
+        response: SecondaryBotResponse,
+    ) {
         val res = context.response()
         res.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
         res.statusCode = httpCode.code()

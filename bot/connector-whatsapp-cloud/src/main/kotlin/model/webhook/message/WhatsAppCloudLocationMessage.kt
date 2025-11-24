@@ -18,16 +18,15 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ContextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.LocationContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
 
 data class WhatsAppCloudLocationMessage(
-        val location: LocationContent,
-        override val id: String,
-        override val from: String,
-        override val timestamp: String,
-        override val context: ContextContent? = null,
-        override val referral: Referral? = null,
-        override val errors: List<ErrorItem>? = emptyList()
+    val location: LocationContent,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val context: ContextContent? = null,
+    override val referral: Referral? = null,
+    override val errors: List<ErrorItem>? = emptyList(),
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.location)
-

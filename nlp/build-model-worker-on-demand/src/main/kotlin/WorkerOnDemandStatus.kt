@@ -17,5 +17,8 @@
 package ai.tock.nlp.build.ondemand
 
 enum class WorkerOnDemandStatus {
-    FAILED, RUNNING, SUCCEEDED, WAITING
+    FAILED,
+    RUNNING,
+    SUCCEEDED,
+    WAITING,
 }

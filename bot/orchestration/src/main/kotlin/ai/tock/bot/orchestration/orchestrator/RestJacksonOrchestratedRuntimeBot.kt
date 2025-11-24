@@ -45,37 +45,42 @@ class RestJacksonOrchestratedRuntimeBot(
     target: OrchestrationTargetedBot,
     urlBot: String,
     timeoutMs: Long,
-    serialisationModules: List<Module>
+    serialisationModules: List<Module>,
 ) : OrchestratedRuntimeBot(target) {
-
     private val targetBotClient = BotRestClient.create(urlBot, timeoutMs, serialisationModules)
 
     override fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse {
         return targetBotClient.askOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.NOT_AVAILABLE,
-            metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator"))
+            metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator")),
         )
     }
 
     override fun resumeOrchestration(request: ResumeOrchestrationRequest): SecondaryBotResponse {
         return targetBotClient.resumeOrchestration(request).execute().body() ?: SecondaryBotNoResponse(
             status = NoOrchestrationStatus.END,
-            metaData = request.metadata
+            metaData = request.metadata,
         )
     }
 }
 
 interface BotRestClient {
-
     @POST("orchestration/eligibility")
-    fun askOrchestration(@Body request: AskEligibilityToOrchestratedBotRequest): Call<SecondaryBotResponse>
+    fun askOrchestration(
+        @Body request: AskEligibilityToOrchestratedBotRequest,
+    ): Call<SecondaryBotResponse>
 
     @POST("orchestration/proxy")
-    fun resumeOrchestration(@Body request: ResumeOrchestrationRequest): Call<SecondaryBotResponse>
+    fun resumeOrchestration(
+        @Body request: ResumeOrchestrationRequest,
+    ): Call<SecondaryBotResponse>
 
     companion object {
-
-        fun create(url: String, timeout: Long = 30000L, serialisationModules: List<Module> = emptyList()): BotRestClient =
+        fun create(
+            url: String,
+            timeout: Long = 30000L,
+            serialisationModules: List<Module> = emptyList(),
+        ): BotRestClient =
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(Level.BODY))
                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
@@ -97,8 +102,8 @@ interface BotRestClient {
                             .configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false)
                             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                             .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-                            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-                    )
+                            .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false),
+                    ),
                 )
                 .build()
                 .create(BotRestClient::class.java)

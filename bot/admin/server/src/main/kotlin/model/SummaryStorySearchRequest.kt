@@ -26,9 +26,10 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 class SummaryStorySearchRequest(
     val category: String? = null,
 ) : ApplicationScopedQuery() {
-
     fun toSummaryRequest(): StoryDefinitionConfigurationMinimalSummaryRequest =
         StoryDefinitionConfigurationMinimalSummaryRequest(
-            namespace, applicationName, category
+            namespace,
+            applicationName,
+            category,
         )
 }

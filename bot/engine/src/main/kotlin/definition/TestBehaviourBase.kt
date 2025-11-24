@@ -22,7 +22,6 @@ import ai.tock.shared.property
  * Base implementation of [TestBehaviour].
  */
 open class TestBehaviourBase : TestBehaviour {
-
     override val firstName = property("tock_bot_test_first_name", "Joe")
 
     override val lastName = property("tock_bot_test_last_name", "Hisaishi")

@@ -27,7 +27,6 @@ import ai.tock.nlp.model.EntityCallContextForEntity
  *
  */
 internal interface EntityCore {
-
     /**
      * Does the given [EntityType] supports values merge?
      */
@@ -36,7 +35,10 @@ internal interface EntityCore {
     /**
      * Classifies entity types.
      */
-    fun classifyEntityTypes(context: EntityCallContext, text: String): List<EntityTypeRecognition>
+    fun classifyEntityTypes(
+        context: EntityCallContext,
+        text: String,
+    ): List<EntityTypeRecognition>
 
     /**
      * Evaluate entity values.
@@ -47,12 +49,19 @@ internal interface EntityCore {
      *
      * @return the evaluated entities
      */
-    fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition>
+    fun evaluateEntities(
+        context: CallContext,
+        text: String,
+        entitiesRecognition: List<EntityRecognition>,
+    ): List<EntityRecognition>
 
     /**
      * Merge two or more values for the given [context].
      */
-    fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor?
+    fun mergeValues(
+        context: EntityCallContextForEntity,
+        values: List<ValueDescriptor>,
+    ): ValueDescriptor?
 
     /**
      * Check entity model providers availability.

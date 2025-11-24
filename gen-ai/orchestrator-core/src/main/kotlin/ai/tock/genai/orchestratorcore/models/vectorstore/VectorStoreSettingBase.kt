@@ -16,7 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.models.vectorstore
 
-
 import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
@@ -26,25 +25,29 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "provider"
+    property = "provider",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OpenSearchVectorStoreSetting::class, name = Constants.OPEN_SEARCH),
-    JsonSubTypes.Type(value = PGVectorStoreSetting::class, name = Constants.PG_VECTOR)
+    JsonSubTypes.Type(value = PGVectorStoreSetting::class, name = Constants.PG_VECTOR),
 )
 abstract class VectorStoreSettingBase<T>(
     val provider: VectorStoreProvider,
     open val host: String,
     open val port: Int,
     open val username: String,
-    open val password: T
-){
+    open val password: T,
+) {
     /**
      * Normalize the document index name
      * @param namespace the namespace
      * @param botId the bot ID
      */
-    abstract fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String
+    abstract fun normalizeDocumentIndexName(
+        namespace: String,
+        botId: String,
+        indexSessionId: String,
+    ): String
 
     /**
      * Get search params (filter) params

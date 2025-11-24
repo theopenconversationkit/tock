@@ -26,7 +26,6 @@ import mu.KotlinLogging
  * Convenient base class for jackson [JsonDeserializer].
  */
 abstract class JacksonDeserializer<T> : JsonDeserializer<T>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }

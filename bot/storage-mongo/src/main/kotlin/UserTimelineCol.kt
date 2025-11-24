@@ -62,28 +62,28 @@ internal data class UserTimelineCol(
     val lastUpdateDate: Instant = Instant.now(),
     var lastUserActionDate: Instant = lastUpdateDate,
     val namespace: String? = null,
-    val creationDate: Instant = Instant.now()
+    val creationDate: Instant = Instant.now(),
 ) {
-
     constructor(timelineId: String, namespace: String, newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
         timelineId.toId(),
         newTimeline.playerId,
         UserPreferencesWrapper(newTimeline.userPreferences),
         UserStateWrapper(newTimeline.userState),
         newTimeline.temporaryIds,
-        namespace = namespace
+        namespace = namespace,
     ) {
         // register last action
         newTimeline.lastUserAction
             ?.let {
                 lastUserActionDate = it.date
-                lastActionText = when (it) {
-                    is SendSentence -> obfuscate(it.stringText, it.nlpStats?.obfuscatedRanges() ?: emptyList())
-                    is SendChoice -> "(click) ${it.intentName}"
-                    is SendAttachment -> "(send) ${it.url}"
-                    is SendLocation -> "(send user location)"
-                    else -> null
-                }
+                lastActionText =
+                    when (it) {
+                        is SendSentence -> obfuscate(it.stringText, it.nlpStats?.obfuscatedRanges() ?: emptyList())
+                        is SendChoice -> "(click) ${it.intentName}"
+                        is SendAttachment -> "(send) ${it.url}"
+                        is SendLocation -> "(send user location)"
+                        else -> null
+                    }
             }
         // register application id
         oldTimeline?.let {
@@ -99,7 +99,7 @@ internal data class UserTimelineCol(
             playerId,
             userPreferences.toUserPreferences(),
             userState.toUserState(),
-            temporaryIds = temporaryIds
+            temporaryIds = temporaryIds,
         )
     }
 
@@ -111,7 +111,7 @@ internal data class UserTimelineCol(
             userState.toUserState(),
             lastUpdateDate,
             lastActionText,
-            lastUserActionDate
+            lastUserActionDate,
         )
     }
 
@@ -121,7 +121,7 @@ internal data class UserTimelineCol(
             playerId,
             applicationIds,
             LocalDateTime.ofInstant(lastUserActionDate, zoneId).toLocalDate(),
-            LocalDateTime.ofInstant(lastUserActionDate, zoneId)
+            LocalDateTime.ofInstant(lastUserActionDate, zoneId),
         )
     }
 
@@ -140,9 +140,8 @@ internal data class UserTimelineCol(
          * Is it a test user?
          */
         val test: Boolean = false,
-        val encrypted: Boolean = false
+        val encrypted: Boolean = false,
     ) {
-
         constructor(pref: UserPreferences) : this(
             pref.firstName?.let { if (encryptionEnabled) encrypt(it) else it },
             pref.lastName?.let { if (encryptionEnabled) encrypt(it) else it },
@@ -153,7 +152,7 @@ internal data class UserTimelineCol(
             pref.gender?.let { if (encryptionEnabled) encrypt(it) else it },
             pref.initialLocale,
             pref.test,
-            encryptionEnabled
+            encryptionEnabled,
         )
 
         fun toUserPreferences(): UserPreferences {
@@ -166,7 +165,7 @@ internal data class UserTimelineCol(
                 picture?.let { if (encrypted) decrypt(it) else it },
                 gender?.let { if (encrypted) decrypt(it) else it },
                 test,
-                initialLocale
+                initialLocale,
             )
         }
     }
@@ -176,7 +175,7 @@ internal data class UserTimelineCol(
         val creationDate: Instant = Instant.now(),
         val lastUpdateDate: Instant = creationDate,
         @JsonDeserialize(using = FlagsDeserializer::class)
-        val flags: Map<String, TimeBoxedFlagWrapper>
+        val flags: Map<String, TimeBoxedFlagWrapper>,
     ) {
         constructor(state: UserState) :
             this(
@@ -185,15 +184,15 @@ internal data class UserTimelineCol(
                 state.flags.mapValues {
                     TimeBoxedFlagWrapper(
                         it.value,
-                        MongoBotConfiguration.hasToEncryptFlag(it.key)
+                        MongoBotConfiguration.hasToEncryptFlag(it.key),
                     )
-                }
+                },
             )
 
         fun toUserState(): UserState {
             return UserState(
                 creationDate,
-                flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap()
+                flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap(),
             )
         }
     }
@@ -201,19 +200,19 @@ internal data class UserTimelineCol(
     data class TimeBoxedFlagWrapper(
         val encrypted: Boolean = false,
         val value: String,
-        val expirationDate: Instant? = Instant.now()
+        val expirationDate: Instant? = Instant.now(),
     ) {
-
         constructor(flag: TimeBoxedFlag, doEncrypt: Boolean) : this(
             doEncrypt,
             if (doEncrypt) encrypt(flag.value) else flag.value,
-            flag.expirationDate
+            flag.expirationDate,
         )
 
-        fun toTimeBoxedFlag(): TimeBoxedFlag = TimeBoxedFlag(
-            decryptValue(),
-            expirationDate
-        )
+        fun toTimeBoxedFlag(): TimeBoxedFlag =
+            TimeBoxedFlag(
+                decryptValue(),
+                expirationDate,
+            )
 
         fun decryptValue(): String {
             return if (encrypted) {
@@ -225,12 +224,14 @@ internal data class UserTimelineCol(
     }
 
     class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
-
         companion object {
             val reference = object : TypeReference<Map<String, TimeBoxedFlagWrapper>>() {}
         }
 
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): Map<String, TimeBoxedFlagWrapper> {
+        override fun deserialize(
+            jp: JsonParser,
+            context: DeserializationContext,
+        ): Map<String, TimeBoxedFlagWrapper> {
             val mapper = jp.getCodec()
             return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
                 mapper.readValue(jp, reference)

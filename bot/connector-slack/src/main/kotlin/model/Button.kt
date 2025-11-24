@@ -26,15 +26,14 @@ data class Button(
     val name: String,
     val text: String = "",
     val value: String,
-    val type: String = "button"
+    val type: String = "button",
 ) {
-
     fun toChoice(): Choice {
         return SendChoice.decodeChoiceId(value)
             .let { (intent, params) ->
                 Choice(
                     intent,
-                    params + (SendChoice.TITLE_PARAMETER to text)
+                    params + (SendChoice.TITLE_PARAMETER to text),
                 )
             }
     }

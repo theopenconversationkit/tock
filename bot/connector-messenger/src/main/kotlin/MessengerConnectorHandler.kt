@@ -37,9 +37,8 @@ internal class MessengerConnectorHandler(
     val applicationId: String,
     val controller: ConnectorController,
     val request: CallbackRequest,
-    val requestTimerData: RequestTimerData
+    val requestTimerData: RequestTimerData,
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -57,14 +56,18 @@ internal class MessengerConnectorHandler(
                 }
 
                 // retrieve the controller from the page id
-                val c = pageIdConnectorIdMap[pageId]
-                    ?.firstOrNull { connectorIdApplicationIdMap[it] == applicationId }
-                    ?.let { connectorIdConnectorControllerMap[it] }
-                    ?: controller
+                val c =
+                    pageIdConnectorIdMap[pageId]
+                        ?.firstOrNull { connectorIdApplicationIdMap[it] == applicationId }
+                        ?.let { connectorIdConnectorControllerMap[it] }
+                        ?: controller
                 val conn = c.connector as MessengerConnector
                 val targetConnectorId = conn.connectorId
 
-                fun handle(m: Webhook, notifiedOnly: Boolean = false) {
+                fun handle(
+                    m: Webhook,
+                    notifiedOnly: Boolean = false,
+                ) {
                     try {
                         handleMessage(c, targetConnectorId, m, notifiedOnly) {
                             try {
@@ -85,7 +88,7 @@ internal class MessengerConnectorHandler(
                             controller.errorMessage(
                                 m.playerId(bot),
                                 applicationId,
-                                m.recipientId(user)
+                                m.recipientId(user),
                             ).let {
                                 conn.sendEvent(it)
                                 conn.endTypingAnswer(it)
@@ -109,7 +112,7 @@ internal class MessengerConnectorHandler(
         applicationId: String,
         webhook: Webhook,
         notifiedOnly: Boolean,
-        threadOwnerRetriever: () -> String?
+        threadOwnerRetriever: () -> String?,
     ) {
         val event = WebhookActionConverter.toEvent(webhook, applicationId)
 
@@ -128,10 +131,10 @@ internal class MessengerConnectorHandler(
                     webhook.priorMessage?.identifier?.let {
                         PlayerId(
                             it,
-                            temporary
+                            temporary,
                         )
-                    }
-                )
+                    },
+                ),
             )
         } else {
             logger.warn("unable to convert $webhook to event")

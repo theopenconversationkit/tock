@@ -50,7 +50,6 @@ class MattermostConnector(
     private val outgoingToken: String,
     private val tockUsername: String? = null,
 ) : ConnectorBase(mattermostConnectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -66,17 +65,18 @@ class MattermostConnector(
                 // see https://developers.mattermost.com/integrate/webhooks/outgoing/
                 val requestTimerData = BotRepository.requestTimer.start("mattermost_webhook")
                 try {
-                    val body = when (context.request().getHeader("Content-Type")) {
-                        "application/x-www-form-urlencoded" -> {
-                            val metadata: JsonObject = JsonObject()
-                            for ((key, value) in context.request().formAttributes().entries()) {
-                                metadata.put(key, value)
+                    val body =
+                        when (context.request().getHeader("Content-Type")) {
+                            "application/x-www-form-urlencoded" -> {
+                                val metadata: JsonObject = JsonObject()
+                                for ((key, value) in context.request().formAttributes().entries()) {
+                                    metadata.put(key, value)
+                                }
+                                Json.encode(metadata)
                             }
-                            Json.encode(metadata)
+                            // else consider application/json
+                            else -> context.body().asString()
                         }
-                        // else consider application/json
-                        else -> context.body().asString()
-                    }
 
                     val message: MattermostMessageIn = mapper.readValue(body)
 
@@ -105,7 +105,11 @@ class MattermostConnector(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         logger.debug { "event: $event" }
         if (event is Action) {
             val message = MattermostMessageConverter.toMessageOut(event, channelId, tockUsername)
@@ -115,32 +119,36 @@ class MattermostConnector(
         }
     }
 
-    private fun sendMessage(message: MattermostConnectorMessage, delayInMs: Long) {
+    private fun sendMessage(
+        message: MattermostConnectorMessage,
+        delayInMs: Long,
+    ) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
             client.sendMessage(message as MattermostMessageOut)
         }
     }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        val messages = mutableListOf<ConnectorMessage>()
-        if (message is MediaCard) {
-            val title = message.title
-            val subTitle = message.subTitle
-            if (message.actions.isEmpty()) {
-                if (title != null && subTitle != null) {
-                    messages.add(textMessage(title, channelId, tockUsername))
-                }
-            } else {
-                messages.add(
-                    textMessageLinks(
-                        subTitle ?: title ?: "",
-                        channelId,
-                        tockUsername,
-                        message.actions.filterNot { it.url == null }.map { mattermostLink(it.title, it.url ?: "") }
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            val messages = mutableListOf<ConnectorMessage>()
+            if (message is MediaCard) {
+                val title = message.title
+                val subTitle = message.subTitle
+                if (message.actions.isEmpty()) {
+                    if (title != null && subTitle != null) {
+                        messages.add(textMessage(title, channelId, tockUsername))
+                    }
+                } else {
+                    messages.add(
+                        textMessageLinks(
+                            subTitle ?: title ?: "",
+                            channelId,
+                            tockUsername,
+                            message.actions.filterNot { it.url == null }.map { mattermostLink(it.title, it.url ?: "") },
+                        ),
                     )
-                )
+                }
             }
+            messages
         }
-        messages
-    }
 }

@@ -26,5 +26,5 @@ internal data class Webhook(
     val valid: Boolean,
     @get:JsonProperty("created_timestamp")
     @get:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    val createdTimestamp: Date
+    val createdTimestamp: Date,
 )

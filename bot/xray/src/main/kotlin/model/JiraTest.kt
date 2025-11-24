@@ -29,7 +29,7 @@ data class JiraTest(val fields: Map<String, Any>) {
         labels: List<String>,
         testTypeField: String,
         stepField: String,
-        customfield: String
+        customfield: String,
     ) :
         this(
             mapOf(
@@ -40,7 +40,7 @@ data class JiraTest(val fields: Map<String, Any>) {
                 "issuetype" to JiraIssueType("Test"),
                 testTypeField to mapOf("value" to "Manual"),
                 stepField to mapOf("steps" to emptyList<XrayAttachment>()),
-                property("tock_bot_test_jira_xray_automation_type_field", "please set an automation framework") to mapOf("value" to customfield)
-            )
+                property("tock_bot_test_jira_xray_automation_type_field", "please set an automation framework") to mapOf("value" to customfield),
+            ),
         )
 }

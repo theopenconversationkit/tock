@@ -71,9 +71,8 @@ data class ParsedEntityValue(
     /**
      * Does this entity value support merge with other values ?
      */
-    val mergeSupport: Boolean = false
+    val mergeSupport: Boolean = false,
 ) : IntOpenRange {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -86,7 +85,7 @@ data class ParsedEntityValue(
         evaluated: Boolean = false,
         subEntities: List<ParsedEntityValue>,
         probability: Double = 1.0,
-        mergeSupport: Boolean = false
+        mergeSupport: Boolean = false,
     ) :
         this(start, end, entity, wrapNullableValue(value), evaluated, subEntities, probability, mergeSupport)
 
@@ -98,7 +97,7 @@ data class ParsedEntityValue(
         entityValue.evaluated,
         entityValue.subEntities.map { ParsedEntityValue(it.value, it.probability, false) },
         probability,
-        mergeSupport
+        mergeSupport,
     )
 
     /**
@@ -106,7 +105,7 @@ data class ParsedEntityValue(
      */
     fun obfuscate(obfuscatedQuery: String): ParsedEntityValue =
         copy(
-            value = value.obfuscate(obfuscatedQuery)
+            value = value.obfuscate(obfuscatedQuery),
         )
 
     private fun Value?.obfuscate(obfuscatedQuery: String): Value? =

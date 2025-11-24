@@ -19,7 +19,6 @@ package ai.tock.nlp.front.service.storage
 import ai.tock.nlp.front.shared.user.UserNamespace
 
 interface UserNamespaceDAO {
-
     /**
      * Returns all the namespaces of a user.
      */
@@ -38,22 +37,34 @@ interface UserNamespaceDAO {
     /**
      * Delete namespace.
      */
-    fun deleteNamespace(user: String, namespace: String)
+    fun deleteNamespace(
+        user: String,
+        namespace: String,
+    )
 
     /**
      * Set current namespace for selected user.
      */
-    fun setCurrentNamespace(user: String, namespace: String)
+    fun setCurrentNamespace(
+        user: String,
+        namespace: String,
+    )
 
     /**
      * Is it the namespace owner ?
      */
-    fun isNamespaceOwner(user: String, namespace: String): Boolean
+    fun isNamespaceOwner(
+        user: String,
+        namespace: String,
+    ): Boolean
 
     /**
      * Is this user has the namespace ?
      */
-    fun hasNamespace(user: String, namespace: String): Boolean
+    fun hasNamespace(
+        user: String,
+        namespace: String,
+    ): Boolean
 
     /**
      * Is this namespace exists ?

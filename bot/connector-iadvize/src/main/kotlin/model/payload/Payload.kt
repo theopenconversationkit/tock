@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "contentType"
+    property = "contentType",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(name = "bundle/card", value = CardBundlePayload::class),
@@ -30,8 +30,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(name = "card/content", value = GenericCardPayload::class),
     JsonSubTypes.Type(name = "bundle/product-offer", value = ProductOfferBundlePayload::class),
     JsonSubTypes.Type(name = "product-offer", value = ProductOfferPayload::class),
-    JsonSubTypes.Type(name = "text", value = TextPayload::class)
+    JsonSubTypes.Type(name = "text", value = TextPayload::class),
 )
-abstract class Payload(val contentType: String) {
-
-}
+abstract class Payload(val contentType: String)

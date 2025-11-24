@@ -33,5 +33,5 @@ class WhatsAppConnectorData(
     /**
      * The original (not encrypted) user Id.
      */
-    val originalUserId: String
+    val originalUserId: String,
 ) : ConnectorData(callback, groupId = groupId)

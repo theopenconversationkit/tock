@@ -19,14 +19,15 @@ package ai.tock.genai.orchestratorclient.retrofit
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
 
 class HTTPValidationErrorResponse(val detail: List<HTTPValidationError>)
+
 class HTTPValidationError(val loc: List<String>, val msg: String, val type: String)
 
 class GenAIOrchestratorBusinessError(
     override val message: String = "Generative AI Orchestrator business error",
-    val error: ErrorResponse
-): Exception(message)
+    val error: ErrorResponse,
+) : Exception(message)
 
 class GenAIOrchestratorValidationError(
     override val message: String = "Generative AI Orchestrator validation error",
-    val detail: List<HTTPValidationError> = emptyList()
-): Exception(message)
+    val detail: List<HTTPValidationError> = emptyList(),
+) : Exception(message)

@@ -20,33 +20,42 @@ package ai.tock.translator
  * An i18n key generator. Used to generate an unique id from a default label.
  */
 interface I18nKeyProvider {
-
     companion object {
-
         /**
          * Simple key provider depending of a namespace and a category.
          */
-        fun simpleKeyProvider(namespace: String, category: String): I18nKeyProvider =
+        fun simpleKeyProvider(
+            namespace: String,
+            category: String,
+        ): I18nKeyProvider =
             object : I18nKeyProvider {
-                override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
+                override fun i18n(
+                    defaultLabel: CharSequence,
+                    args: List<Any?>,
+                ): I18nLabelValue =
                     I18nLabelValue(
                         generateKey(namespace, category, defaultLabel),
                         namespace,
                         category,
                         defaultLabel,
-                        args
+                        args,
                     )
             }
 
         /**
          * Generates a label key from a namespace, a category and a default label.
          */
-        fun generateKey(namespace: String, category: String, defaultLabel: CharSequence): String {
-            val prefix = if (category.isEmpty()) {
-                namespace
-            } else {
-                "${namespace}_$category"
-            }
+        fun generateKey(
+            namespace: String,
+            category: String,
+            defaultLabel: CharSequence,
+        ): String {
+            val prefix =
+                if (category.isEmpty()) {
+                    namespace
+                } else {
+                    "${namespace}_$category"
+                }
             return "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}"
         }
     }
@@ -55,10 +64,16 @@ interface I18nKeyProvider {
      * Gets an [I18nLabelValue] from a default label and option args.
      * This is the method to implement for this interface.
      */
-    fun i18n(defaultLabel: CharSequence, args: List<Any?> = emptyList()): I18nLabelValue
+    fun i18n(
+        defaultLabel: CharSequence,
+        args: List<Any?> = emptyList(),
+    ): I18nLabelValue
 
     /**
      * Shortcut method of [i18n] with varargs.
      */
-    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue = i18n(defaultLabel, args.toList())
+    fun i18n(
+        defaultLabel: CharSequence,
+        vararg args: Any?,
+    ): I18nLabelValue = i18n(defaultLabel, args.toList())
 }

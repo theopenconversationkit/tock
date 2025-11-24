@@ -40,14 +40,14 @@ private val logger = KotlinLogging.logger {}
 fun I18nTranslator.gaMessage(
     gaRichResponse: GARichResponse,
     listItems: List<GAListItem>,
-    title: CharSequence? = null
+    title: CharSequence? = null,
 ): GAResponseConnectorMessage =
     gaMessage(
         inputPrompt(gaRichResponse),
         listOf(
             expectedTextIntent(),
-            expectedIntentForList(listItems, title)
-        )
+            expectedIntentForList(listItems, title),
+        ),
     )
 
 /**
@@ -56,7 +56,7 @@ fun I18nTranslator.gaMessage(
 fun I18nTranslator.gaMessageForList(
     items: List<GAListItem>,
     title: CharSequence? = null,
-    suggestions: List<CharSequence> = emptyList()
+    suggestions: List<CharSequence> = emptyList(),
 ): GAResponseConnectorMessage = gaMessage(richResponse(emptyList(), suggestions), items, title)
 
 /**
@@ -77,7 +77,7 @@ fun I18nTranslator.gaFlexibleMessageForList(
     oneItemTitle: CharSequence? = null,
     oneItemSubtitle: CharSequence? = null,
     oneItemDescription: CharSequence? = null,
-    oneItemSuggestions: List<CharSequence> = emptyList()
+    oneItemSuggestions: List<CharSequence> = emptyList(),
 ): GAResponseConnectorMessage {
     return if (items.size == 1) {
         val one = items.first()
@@ -87,10 +87,10 @@ fun I18nTranslator.gaFlexibleMessageForList(
                     oneItemTitle ?: one.title.raw,
                     if (one.image != null) oneItemSubtitle ?: title else title,
                     if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
-                    one.image
+                    one.image,
                 ),
-                suggestions + oneItemSuggestions
-            )
+                suggestions + oneItemSuggestions,
+            ),
         )
     } else {
         gaMessageForList(items, title, suggestions)
@@ -100,7 +100,10 @@ fun I18nTranslator.gaFlexibleMessageForList(
 /**
  * Provides a [GAExpectedIntent] with a [GAListSelect].
  */
-fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSequence? = null): GAExpectedIntent {
+fun I18nTranslator.expectedIntentForList(
+    items: List<GAListItem>,
+    title: CharSequence? = null,
+): GAExpectedIntent {
     if (items.size < 2) {
         error("must have at least 2 - current size = ${items.size}")
     } else {
@@ -109,16 +112,17 @@ fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSeq
         return GAExpectedIntent(
             GAIntent.option,
             optionValueSpec(
-                listSelect = GAListSelect(
-                    t?.toString(),
-                    if (items.size > 30) {
-                        logger.warn { "too many items $items - keep only first 30" }
-                        items.subList(0, 30)
-                    } else {
-                        items
-                    }
-                )
-            )
+                listSelect =
+                    GAListSelect(
+                        t?.toString(),
+                        if (items.size > 30) {
+                            logger.warn { "too many items $items - keep only first 30" }
+                            items.subList(0, 30)
+                        } else {
+                            items
+                        },
+                    ),
+            ),
         )
     }
 }
@@ -129,7 +133,7 @@ fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSeq
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GAListItem = listItem<T>(title, targetIntent, null, null, null, *parameters)
 
 /**
@@ -140,7 +144,7 @@ fun <T : Bus<T>> T.listItem(
     targetIntent: IntentAware,
     description: CharSequence,
     imageUrl: String? = null,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GAListItem = listItem(title, targetIntent, null, description, imageUrl, *parameters)
 
 /**
@@ -149,7 +153,7 @@ fun <T : Bus<T>> T.listItem(
 fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    parameters: Parameters
+    parameters: Parameters,
 ): GAListItem = listItem(title, targetIntent, null, null, parameters)
 
 /**
@@ -160,7 +164,7 @@ fun <T : Bus<T>> T.listItem(
     targetIntent: IntentAware,
     description: CharSequence?,
     imageUrl: String? = null,
-    parameters: Parameters
+    parameters: Parameters,
 ): GAListItem = listItem(title, targetIntent, null, description, imageUrl, *parameters.toArray())
 
 /**
@@ -170,7 +174,7 @@ fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStepDef?,
-    parameters: Parameters
+    parameters: Parameters,
 ): GAListItem = listItem(title, targetIntent, step, null, null, parameters)
 
 /**
@@ -180,7 +184,7 @@ fun <T : Bus<T>> T.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStepDef?,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GAListItem = listItem<T>(title, targetIntent, step, null, null, *parameters)
 
 /**
@@ -192,7 +196,7 @@ fun <T : Bus<T>> T.listItem(
     step: StoryStepDef?,
     description: CharSequence? = null,
     imageUrl: String? = null,
-    parameters: Parameters
+    parameters: Parameters,
 ): GAListItem = listItem(title, targetIntent, step, description, imageUrl, *parameters.toArray())
 
 /**
@@ -204,7 +208,7 @@ fun <T : Bus<T>> T.listItem(
     step: StoryStepDef?,
     description: CharSequence? = null,
     imageUrl: String? = null,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GAListItem {
     val t = translate(title)
     val d = translateAndReturnBlankAsNull(description)
@@ -213,10 +217,10 @@ fun <T : Bus<T>> T.listItem(
             t,
             targetIntent,
             step,
-            *parameters
+            *parameters,
         ),
         t.toString(),
         d?.toString(),
-        if (imageUrl == null) null else GAImage(imageUrl, t.toString())
+        if (imageUrl == null) null else GAImage(imageUrl, t.toString()),
     )
 }

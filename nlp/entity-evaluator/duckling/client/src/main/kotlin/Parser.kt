@@ -22,6 +22,10 @@ import java.time.ZonedDateTime
  *
  */
 internal interface Parser {
-
-    fun parse(language: String, dimension: String, referenceDate: ZonedDateTime, textToParse: String): List<ValueWithRange>
+    fun parse(
+        language: String,
+        dimension: String,
+        referenceDate: ZonedDateTime,
+        textToParse: String,
+    ): List<ValueWithRange>
 }

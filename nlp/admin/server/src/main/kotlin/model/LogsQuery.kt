@@ -24,7 +24,6 @@ import org.litote.kmongo.Id
  *
  */
 data class LogsQuery(val search: String?, val test: Boolean = false) : PaginatedQuery() {
-
     fun toParseRequestLogQuery(applicationId: Id<ApplicationDefinition>): ParseRequestLogQuery =
         ParseRequestLogQuery(
             applicationId,
@@ -33,6 +32,6 @@ data class LogsQuery(val search: String?, val test: Boolean = false) : Paginated
             size,
             search,
             searchMark = searchMark,
-            displayTests = test
+            displayTests = test,
         )
 }

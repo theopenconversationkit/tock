@@ -20,24 +20,27 @@ import ai.tock.nlp.front.shared.monitoring.ParseRequestLog
 import ai.tock.shared.security.TockObfuscatorService
 
 internal class LogObfuscationService {
-
     fun obfuscate(log: ParseRequestLog): ParseRequestLog {
-        val obfuscatedRanges = log.result?.entities
-            ?.filter { it.entity.entityType.obfuscated }
-            ?.map { it.toClosedRange() }
-            ?: emptyList()
+        val obfuscatedRanges =
+            log.result?.entities
+                ?.filter { it.entity.entityType.obfuscated }
+                ?.map { it.toClosedRange() }
+                ?: emptyList()
         return log.copy(
-            query = log.query.copy(
-                queries = TockObfuscatorService.obfuscate(
-                    texts = log.query.queries,
-                    obfuscatedRanges = log.result?.retainedQuery
-                        ?.let { log.query.queries.indexOf(it) }
-                        ?.takeUnless { i -> i == -1 }
-                        ?.let { mapOf(it to obfuscatedRanges) }
-                        ?: emptyMap()
-                )
-            ),
-            result = log.result?.obfuscate(obfuscatedRanges)
+            query =
+                log.query.copy(
+                    queries =
+                        TockObfuscatorService.obfuscate(
+                            texts = log.query.queries,
+                            obfuscatedRanges =
+                                log.result?.retainedQuery
+                                    ?.let { log.query.queries.indexOf(it) }
+                                    ?.takeUnless { i -> i == -1 }
+                                    ?.let { mapOf(it to obfuscatedRanges) }
+                                    ?: emptyMap(),
+                        ),
+                ),
+            result = log.result?.obfuscate(obfuscatedRanges),
         )
     }
 }

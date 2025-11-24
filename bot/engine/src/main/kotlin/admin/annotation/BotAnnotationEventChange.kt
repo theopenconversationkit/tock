@@ -26,5 +26,5 @@ abstract class BotAnnotationEventChange(
     lastUpdateDate: Instant,
     user: String,
     open val before: String?,
-    open val after: String?
+    open val after: String?,
 ) : BotAnnotationEvent(eventId, type, creationDate, lastUpdateDate, user)

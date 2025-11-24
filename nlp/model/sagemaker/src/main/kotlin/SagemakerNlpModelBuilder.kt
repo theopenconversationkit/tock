@@ -29,34 +29,35 @@ internal object SagemakerNlpModelBuilder : NlpEngineModelBuilder {
     override fun buildIntentModel(
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): IntentModelHolder {
         return IntentModelHolder(
             application = context.application,
             nativeModel = SagemakerModelConfiguration(),
-            configuration = configuration
+            configuration = configuration,
         )
     }
 
     override fun buildEntityModel(
         context: EntityBuildContext,
         configuration: NlpApplicationConfiguration,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): EntityModelHolder =
         EntityModelHolder(
             nativeModel = NlpEngineType.bgem3.name,
-            configuration = configuration
+            configuration = configuration,
         )
 
     override fun defaultNlpApplicationConfiguration(): NlpApplicationConfiguration =
         NlpApplicationConfiguration(
-            applicationConfiguration = NlpModelConfiguration(
-                hasProperties = true,
-                hasMarkdown = true
-            ),
+            applicationConfiguration =
+                NlpModelConfiguration(
+                    hasProperties = true,
+                    hasMarkdown = true,
+                ),
             hasTokenizerConfiguration = false,
             hasIntentConfiguration = false,
             hasEntityConfiguration = false,
-            hasApplicationConfiguration = true
+            hasApplicationConfiguration = true,
         )
 }

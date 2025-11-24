@@ -36,7 +36,6 @@ import java.util.Locale
  * Wraps calls to the NLP stack. [TockNlpClient] is the provided implementation.
  */
 interface NlpClient {
-
     /**
      * Analyses a sentence and returns the result.
      */
@@ -65,7 +64,10 @@ interface NlpClient {
      *
      * @return List of IntentDefinition
      */
-    fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
+    fun getIntentsByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): List<IntentDefinition>?
 
     /**
      * Returns an application for the specified namespace and name.
@@ -75,13 +77,20 @@ interface NlpClient {
      *
      * @return the application if any
      */
-    fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
+    fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition?
 
     /**
      * Creates an application if it does not exists.
      * @return the new application, null if it already exists.
      */
-    fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition?
+    fun createApplication(
+        namespace: String,
+        name: String,
+        locale: Locale,
+    ): ApplicationDefinition?
 
     /**
      * Imports a NLP dump (configuration and sentences of the NLP model).

@@ -23,7 +23,6 @@ import org.litote.kmongo.Id
  *
  */
 interface ApplicationDefinitionDAO {
-
     /**
      * Listen changes on entity type definitions.
      */
@@ -33,7 +32,10 @@ interface ApplicationDefinitionDAO {
 
     fun deleteApplicationById(id: Id<ApplicationDefinition>)
 
-    fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
+    fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition?
 
     fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition?
 

@@ -29,16 +29,15 @@ data class BotMediaCardDescriptor(
     val subTitle: I18nLabel?,
     val file: MediaFileDescriptor?,
     val actions: List<BotMediaActionDescriptor> = emptyList(),
-    val fillCarousel: Boolean = false
+    val fillCarousel: Boolean = false,
 ) : BotMediaMessageDescriptor {
-
     constructor(desc: MediaCardDescriptor, readOnly: Boolean = false) :
         this(
             desc.title?.let { Translator.saveIfNotExist(it, readOnly) },
             desc.subTitle?.let { Translator.saveIfNotExist(it, readOnly) },
             desc.file,
             desc.actions.map { BotMediaActionDescriptor(it, readOnly) },
-            desc.fillCarousel
+            desc.fillCarousel,
         )
 
     override val type: MediaMessageType = card
@@ -49,6 +48,6 @@ data class BotMediaCardDescriptor(
             subTitle?.let { I18nLabelValue(it) },
             file,
             actions.map { it.toDescriptor() },
-            fillCarousel
+            fillCarousel,
         )
 }

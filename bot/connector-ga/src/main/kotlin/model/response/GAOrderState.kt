@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAOrderState(
     val state: GAState,
-    val label: String
+    val label: String,
 )

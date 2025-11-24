@@ -22,7 +22,6 @@ import org.litote.kmongo.Id
  *
  */
 interface TestPlanDAO {
-
     /**
      * Save the given common test plan into the mongo database.
      *
@@ -54,5 +53,8 @@ interface TestPlanDAO {
 
     fun getPlanExecution(testPlanId: Id<TestPlan>): TestPlanExecution?
 
-    fun getTestPlanExecution(testPlan: TestPlan, testPlanExecutionId: Id<TestPlanExecution>): TestPlanExecution?
+    fun getTestPlanExecution(
+        testPlan: TestPlan,
+        testPlanExecutionId: Id<TestPlanExecution>,
+    ): TestPlanExecution?
 }

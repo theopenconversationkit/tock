@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class WebHookEventReceiveMessage(
     @JsonProperty("object")
-    val typeObject : String?,
+    val typeObject: String?,
     @JsonProperty("entry")
-    val entry : List<Entry>
+    val entry: List<Entry>,
 )

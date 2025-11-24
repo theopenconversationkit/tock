@@ -28,12 +28,12 @@ import kotlin.test.assertNull
  *
  */
 class AnyValueWrapperTest {
-
     data class Custom(val name: String)
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
     sealed class Either {
         data class ThisOne(val anyProperty: String) : Either()
+
         data class AnotherOne(val anyProperty: String, val otherProperty: Int) : Either()
     }
 

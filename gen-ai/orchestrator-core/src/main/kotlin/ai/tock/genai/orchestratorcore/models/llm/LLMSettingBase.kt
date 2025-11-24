@@ -16,8 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.models.llm
 
-
-import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
@@ -27,19 +25,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "provider"
+    property = "provider",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OpenAILLMSetting::class, name = Constants.OPEN_AI),
     JsonSubTypes.Type(value = OllamaLLMSetting::class, name = Constants.OLLAMA),
-    JsonSubTypes.Type(value = AzureOpenAILLMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE)
+    JsonSubTypes.Type(value = AzureOpenAILLMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE),
 )
 abstract class LLMSettingBase<T>(
     val provider: LLMProvider,
     open val apiKey: T? = null,
     open val temperature: String,
     @Deprecated("use PromptTemplate#prompt")
-    open val prompt: String? = null
+    open val prompt: String? = null,
 ) {
     abstract fun copyWithTemperature(temperature: String): LLMSettingBase<T>
 }

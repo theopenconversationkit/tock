@@ -40,7 +40,7 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ): NlpResult? {
         return wrapped.precompute(sentence, userTimeline, dialog, botDefinition)
     }
@@ -50,7 +50,7 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
         userTimeline: UserTimeline,
         dialog: Dialog,
         botDefinition: BotDefinition,
-        nlpQuery: NlpQuery
+        nlpQuery: NlpQuery,
     ): NlpQuery {
         return wrapped.updateQuery(sentence, userTimeline, dialog, botDefinition, nlpQuery)
     }
@@ -59,7 +59,7 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
-        nlpResult: NlpResult
+        nlpResult: NlpResult,
     ): IntentAware? {
         return wrapped.findIntent(userTimeline, dialog, event, nlpResult)
     }
@@ -68,7 +68,7 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
-        nlpResult: NlpResult
+        nlpResult: NlpResult,
     ): List<EntityValue> {
         return wrapped.evaluateEntities(userTimeline, dialog, event, nlpResult)
     }
@@ -80,14 +80,14 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
     override suspend fun mergeEntityValues(
         dialogState: DialogState,
         action: Action,
-        entityToMerge: NlpEntityMergeContext
+        entityToMerge: NlpEntityMergeContext,
     ): NlpEntityMergeContext {
         return wrapped.mergeEntityValues(dialogState, action, entityToMerge)
     }
 
     override suspend fun onSuccess(
         query: NlpQuery,
-        result: NlpResult
+        result: NlpResult,
     ) {
         wrapped.success(query, result)
     }
@@ -95,7 +95,7 @@ internal class LegacyNlpListenerAdapter(private val wrapped: NlpListener) : Asyn
     override suspend fun onError(
         query: NlpQuery,
         dialog: Dialog,
-        throwable: Throwable?
+        throwable: Throwable?,
     ) {
         wrapped.error(query, dialog, throwable)
     }

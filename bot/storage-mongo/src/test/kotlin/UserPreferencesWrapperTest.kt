@@ -27,7 +27,6 @@ import kotlin.test.assertTrue
  *
  */
 class UserPreferencesWrapperTest : AbstractTest() {
-
     @Test
     fun testUserPreferencesEncryption() {
         val u = UserPreferences("a", "b", "c", picture = "z", gender = "e")

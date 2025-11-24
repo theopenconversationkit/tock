@@ -23,7 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Helpers for stt.
  */
 object SttService {
-
     private val listeners = CopyOnWriteArrayList<SttListener>()
 
     fun addListener(listener: SttListener) {
@@ -34,7 +33,10 @@ object SttService {
         listeners.remove(listener)
     }
 
-    fun transform(stt: String, locale: Locale): String {
+    fun transform(
+        stt: String,
+        locale: Locale,
+    ): String {
         var t = stt
         listeners.forEach {
             t = it.transform(stt, locale)

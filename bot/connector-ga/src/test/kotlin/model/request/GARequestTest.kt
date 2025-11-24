@@ -25,18 +25,18 @@ import kotlin.test.assertEquals
  *
  */
 class GARequestTest {
-
     @Test
     fun getEventState_shouldReturnsVoiceAssistant_whenOnlyAudioCapability() {
-        val request = GARequest(
-            GAUser(),
-            GADevice(),
-            GASurface(listOf(GACapability(AUDIO_OUTPUT))),
-            GAConversation(),
-            emptyList(),
-            false,
-            emptyList()
-        )
+        val request =
+            GARequest(
+                GAUser(),
+                GADevice(),
+                GASurface(listOf(GACapability(AUDIO_OUTPUT))),
+                GAConversation(),
+                emptyList(),
+                false,
+                emptyList(),
+            )
 
         assertEquals(UserInterfaceType.voiceAssistant, request.getEventState().userInterface)
     }

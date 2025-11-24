@@ -26,7 +26,6 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
     mainIntent: Intent?,
 ) : AsyncStoryHandlerBase(mainIntent) {
-
     /**
      * Checks preconditions - if [AsyncBus.end] is called,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
@@ -59,7 +58,7 @@ abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
         context: T,
         preconditionResult: D,
     ): Boolean {
-        return with (context) {
+        return with(context) {
             if (s is AsyncStoryDataStep<*, *, *>) {
                 @Suppress("UNCHECKED_CAST")
                 with(s as AsyncStoryDataStep<T, D, *>) {
@@ -92,18 +91,25 @@ abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
         }
     }
 
-    abstract fun newHandlerDefinition(bus: AsyncBus, preconditionResult: D): T
+    abstract fun newHandlerDefinition(
+        bus: AsyncBus,
+        preconditionResult: D,
+    ): T
 
-    protected open suspend fun T.handleStep(bus: AsyncBus, step: AsyncStoryStep<T>, preconditionResult: D) {
+    protected open suspend fun T.handleStep(
+        bus: AsyncBus,
+        step: AsyncStoryStep<T>,
+        preconditionResult: D,
+    ) {
         if (step is AsyncStoryDataStep<*, *, *>) {
             @Suppress("UNCHECKED_CAST")
             handleDataStep(
                 step as AsyncStoryDataStep<T, D, *>,
                 preconditionResult,
-                bus
+                bus,
             )
         } else {
-            with (step) {
+            with(step) {
                 answer()
             }
         }
@@ -112,9 +118,9 @@ abstract class AsyncDelegatingStoryHandlerBase<T : AsyncStoryHandling, D>(
     private suspend fun <TD> T.handleDataStep(
         step: AsyncStoryDataStep<T, D, TD>,
         preconditionResult: D,
-        bus: AsyncBus
+        bus: AsyncBus,
     ) {
-        with (step) {
+        with(step) {
             val data = checkPreconditions(preconditionResult)
 
             if (!bus.isEndCalled()) {

@@ -18,5 +18,5 @@ package ai.tock.bot.connector.twitter.model
 
 data class Hashtag(
     val text: String,
-    override val indices: List<Int>
+    override val indices: List<Int>,
 ) : Entity()

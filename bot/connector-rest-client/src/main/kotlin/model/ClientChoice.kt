@@ -21,5 +21,5 @@ package ai.tock.bot.connector.rest.client.model
  */
 data class ClientChoice(
     val intentName: String,
-    val parameters: Map<String, String> = emptyMap()
+    val parameters: Map<String, String> = emptyMap(),
 ) : ClientMessage(ClientEventType.choice)

@@ -47,13 +47,14 @@ private val logger = KotlinLogging.logger {}
 /**
  * default vert.x options in Tock.
  */
-var defaultVertxOptions = VertxOptions().apply {
-    maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
-    workerPoolSize = intProperty("tock_vertx_worker_pool_size", DEFAULT_WORKER_POOL_SIZE)
-    if (devEnvironment) {
-        warningExceptionTime = 1000L * 1000 * 1000000
+var defaultVertxOptions =
+    VertxOptions().apply {
+        maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
+        workerPoolSize = intProperty("tock_vertx_worker_pool_size", DEFAULT_WORKER_POOL_SIZE)
+        if (devEnvironment) {
+            warningExceptionTime = 1000L * 1000 * 1000000
+        }
     }
-}
 
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
@@ -62,11 +63,12 @@ internal interface VertxProvider {
 }
 
 internal object TockVertxProvider : VertxProvider {
-    override fun vertx(): Vertx = Vertx.vertx(defaultVertxOptions).apply {
-        exceptionHandler { t ->
-            logger.error(t)
+    override fun vertx(): Vertx =
+        Vertx.vertx(defaultVertxOptions).apply {
+            exceptionHandler { t ->
+                logger.error(t)
+            }
         }
-    }
 }
 
 private val internalVertx: Vertx by lazy {
@@ -86,7 +88,7 @@ val vertx: Vertx get() = internalVertx
  */
 fun <T> Vertx.blocking(
     blockingHandler: (Promise<T>) -> Unit,
-    resultHandler: (AsyncResult<T>) -> Unit
+    resultHandler: (AsyncResult<T>) -> Unit,
 ) {
     val p: Promise<T> = Promise.promise()
     var res: T? = null
@@ -110,7 +112,8 @@ fun <T> Vertx.blocking(
             }
             err?.let { throw it }
             res
-        }, false
+        },
+        false,
     ).onComplete { ar ->
         try {
             resultHandler.invoke(ar)
@@ -141,11 +144,17 @@ private val VERTX_MIN_DELAY = Duration.ofMillis(1)
 
 internal fun vertxExecutor(): Executor {
     return object : Executor {
-        override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        override fun executeBlocking(
+            delay: Duration,
+            runnable: () -> Unit,
+        ) {
             executeBlockingTask(delay, runnable)
         }
 
-        override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> {
+        override fun <T> executeBlockingTask(
+            delay: Duration,
+            task: () -> T,
+        ): CompletableFuture<T> {
             val future = newIncompleteFuture<T>()
             if (delay < VERTX_MIN_DELAY) {
                 future.completeAsync(task)
@@ -169,11 +178,14 @@ internal fun vertxExecutor(): Executor {
                         promise.tryComplete()
                     }
                 },
-                { _: AsyncResult<Unit> -> }
+                { _: AsyncResult<Unit> -> },
             )
         }
 
-        override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+        override fun <T> executeBlocking(
+            blocking: Callable<T>,
+            result: (T?) -> Unit,
+        ) {
             val loggingContext = MDCContext().contextMap
             vertx.blocking<T>(
                 { promise ->
@@ -194,11 +206,15 @@ internal fun vertxExecutor(): Executor {
                     } else {
                         result.invoke(null)
                     }
-                }
+                },
             )
         }
 
-        override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+        override fun setPeriodic(
+            initialDelay: Duration,
+            delay: Duration,
+            runnable: () -> Unit,
+        ): Long {
             val loggingContext = MDCContext().contextMap
             return vertx.setTimer(initialDelay.toMillis()) {
                 invokeWithLoggingContext(loggingContext) {
@@ -212,15 +228,19 @@ internal fun vertxExecutor(): Executor {
             }
         }
 
-        private fun catchableRunnable(runnable: () -> Unit): () -> Unit = {
-            try {
-                runnable.invoke()
-            } catch (throwable: Throwable) {
-                logger.error(throwable)
+        private fun catchableRunnable(runnable: () -> Unit): () -> Unit =
+            {
+                try {
+                    runnable.invoke()
+                } catch (throwable: Throwable) {
+                    logger.error(throwable)
+                }
             }
-        }
 
-        private fun invokeWithLoggingContext(loggingContext: MDCContextMap, runnable: () -> Unit) {
+        private fun invokeWithLoggingContext(
+            loggingContext: MDCContextMap,
+            runnable: () -> Unit,
+        ) {
             val r = catchableRunnable(runnable)
             loggingContext.let { context ->
                 if (context == null) {
@@ -236,7 +256,7 @@ internal fun vertxExecutor(): Executor {
 fun HttpServerResponse.setupSSE(
     addEndHandler: Boolean = false,
     keepAlive: Boolean = true,
-    closeHandler: () -> Unit = {}
+    closeHandler: () -> Unit = {},
 ): CompositeFuture {
     isChunked = true
     headers().apply {
@@ -245,13 +265,14 @@ fun HttpServerResponse.setupSSE(
         add("Cache-Control", "no-cache")
         add("X-Accel-Buffering", "no")
     }
-    val timerId = if (keepAlive) {
-        vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
-            sendSsePing()
+    val timerId =
+        if (keepAlive) {
+            vertx.setPeriodic(Duration.ofSeconds(sseKeepaliveDelay).toMillis()) {
+                sendSsePing()
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
     if (addEndHandler) {
         endHandler {
             closeHandler()

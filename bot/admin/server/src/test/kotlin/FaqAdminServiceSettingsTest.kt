@@ -45,32 +45,31 @@ import java.time.Instant
 import kotlin.test.assertEquals
 
 class FaqAdminServiceSettingsTest : AbstractTest() {
-
     private val faqDefinitionDAO: FaqDefinitionDAO = mockk(relaxed = false)
 
     init {
         // IOC
         tockInternalInjector = KodeinInjector()
-        val specificModule = Kodein.Module {
-            bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
-            bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
-        }
+        val specificModule =
+            Kodein.Module {
+                bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
+                bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
+            }
         tockInternalInjector.inject(
             Kodein {
                 import(defaultModulesBinding())
                 import(specificModule)
-            }
+            },
         )
     }
 
     private val namespace = "test"
     val applicationDefinition = ApplicationDefinition("my App", namespace = namespace)
 
-
     private fun initMock(
         intent: IntentDefinition,
         faqs: List<FaqDefinition>,
-        stories: List<StoryDefinitionConfiguration>
+        stories: List<StoryDefinitionConfiguration>,
     ) {
         every { faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(any(), any()) } answers { faqs }
 
@@ -80,7 +79,7 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
             storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
                 any(),
                 any(),
-                any()
+                any(),
             )
         } returnsMany stories
 
@@ -93,29 +92,35 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
             name = "name-$intentId",
             namespace = "namespace-$intentId",
             applications = setOf("appId-$intentId".toId()),
-            entities = emptySet<EntityDefinition>()
+            entities = emptySet<EntityDefinition>(),
         )
     }
 
-    private fun generateStory(intent: IntentDefinition, storyId: String): StoryDefinitionConfiguration {
+    private fun generateStory(
+        intent: IntentDefinition,
+        storyId: String,
+    ): StoryDefinitionConfiguration {
         return StoryDefinitionConfiguration(
             _id = storyId.toId(),
             storyId = storyId,
             botId = "bot-$storyId",
             intent = IntentWithoutNamespace(intent.name),
             currentType = AnswerConfigurationType.simple,
-            answers = emptyList()
+            answers = emptyList(),
         )
     }
 
-    private fun generateFAQ(intent: IntentDefinition, faqId: String): FaqDefinition {
+    private fun generateFAQ(
+        intent: IntentDefinition,
+        faqId: String,
+    ): FaqDefinition {
         return FaqDefinition(
             _id = faqId.toId(),
             "botId",
             namespace,
             intentId = intent._id,
             i18nId = "i18nId-$faqId".toId(),
-            emptyList(), true, Instant.now(), Instant.now()
+            emptyList(), true, Instant.now(), Instant.now(),
         )
     }
 
@@ -127,19 +132,20 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         initMock(
             intent = intent0,
             faqs = listOf(generateFAQ(intent1, "faq1"), generateFAQ(intent2, "faq2")),
-            stories = listOf(generateStory(intent1, "story1"), generateStory(intent2, "story2"))
+            stories = listOf(generateStory(intent1, "story1"), generateStory(intent2, "story2")),
         )
     }
 
     @Test
     fun `GIVEN save faq settings WHEN satisfaction enabled THEN add ending rule to the story`() {
-        val faqSettings = FaqSettings(
-            applicationId = "appId".toId(),
-            satisfactionEnabled = true,
-            satisfactionStoryId = "mySatisfactionStoryId",
-            creationDate = Instant.now(),
-            updateDate = Instant.now(),
-        )
+        val faqSettings =
+            FaqSettings(
+                applicationId = "appId".toId(),
+                satisfactionEnabled = true,
+                satisfactionStoryId = "mySatisfactionStoryId",
+                creationDate = Instant.now(),
+                updateDate = Instant.now(),
+            )
         val slotStory = mutableListOf<StoryDefinitionConfiguration>()
 
         val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
@@ -151,24 +157,25 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         assertEquals(slotStory[0].features.size, 1)
         assertEquals(
             slotStory[0].features.count { feature -> feature.endWithStoryId == faqSettings.satisfactionStoryId },
-            1
+            1,
         )
         assertEquals(slotStory[1].features.size, 1)
         assertEquals(
             slotStory[1].features.count { feature -> feature.endWithStoryId == faqSettings.satisfactionStoryId },
-            1
+            1,
         )
     }
 
     @Test
     fun `GIVEN save faq settings WHEN satisfaction disabled THEN remove ending rule from the story`() {
-        val faqSettings = FaqSettings(
-            applicationId = "appId".toId(),
-            satisfactionEnabled = false,
-            satisfactionStoryId = null,
-            creationDate = Instant.now(),
-            updateDate = Instant.now(),
-        )
+        val faqSettings =
+            FaqSettings(
+                applicationId = "appId".toId(),
+                satisfactionEnabled = false,
+                satisfactionStoryId = null,
+                creationDate = Instant.now(),
+                updateDate = Instant.now(),
+            )
         val slotStory = mutableListOf<StoryDefinitionConfiguration>()
 
         val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
@@ -180,6 +187,4 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         assertEquals(slotStory[0].features.size, 0)
         assertEquals(slotStory[1].features.size, 0)
     }
-
-
 }

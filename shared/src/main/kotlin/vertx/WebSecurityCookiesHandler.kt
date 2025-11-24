@@ -16,7 +16,6 @@
 
 package ai.tock.shared.vertx
 
-
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import ai.tock.shared.longProperty
@@ -32,7 +31,6 @@ import java.util.UUID
 
 private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
 private val cookieAuthPath = propertyOrNull("tock_web_cookie_auth_path")
-
 
 class WebSecurityCookiesHandler : WebSecurityHandler {
     private val logger = KotlinLogging.logger {}
@@ -65,10 +63,11 @@ class WebSecurityCookiesHandler : WebSecurityHandler {
         } else {
             val cookieValue = tockUserId ?: UUID.randomUUID().toString()
 
-            val cookie = Cookie.cookie(TOCK_USER_ID, cookieValue)
-                .setHttpOnly(true)
-                .setSecure(true)
-                .setSameSite(CookieSameSite.NONE)   // bot backend may not be on the same domain as the website frontend
+            val cookie =
+                Cookie.cookie(TOCK_USER_ID, cookieValue)
+                    .setHttpOnly(true)
+                    .setSecure(true)
+                    .setSameSite(CookieSameSite.NONE) // bot backend may not be on the same domain as the website frontend
 
             if (cookieAuthMaxAge >= 0) {
                 cookie.setMaxAge(cookieAuthMaxAge)

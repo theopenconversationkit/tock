@@ -28,7 +28,6 @@ import kotlin.test.assertTrue
  *
  */
 class MongoCacheDataSerializationTest {
-
     @Test
     fun `test serialize and deserialize`() {
         val data =

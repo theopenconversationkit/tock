@@ -24,7 +24,6 @@ import kotlin.test.assertTrue
  *
  */
 class IntentDefinitionTest {
-
     @Test
     fun `supportStates is not case sensitive`() {
         val intent = IntentDefinition("a", "b", emptySet(), emptySet(), mandatoryStates = setOf("state"))

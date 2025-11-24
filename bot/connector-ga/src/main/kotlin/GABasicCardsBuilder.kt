@@ -29,9 +29,8 @@ fun I18nTranslator.basicCard(
     subtitle: CharSequence?,
     formattedText: CharSequence?,
     image: GAImage?,
-    buttons: List<GAButton>
+    buttons: List<GAButton>,
 ): GABasicCard {
-
     val t = translateAndReturnBlankAsNull(title)
     val s = translateAndReturnBlankAsNull(subtitle)
     val f = translateAndReturnBlankAsNull(formattedText)
@@ -47,7 +46,7 @@ fun I18nTranslator.basicCard(
     subtitle: CharSequence? = null,
     formattedText: CharSequence? = null,
     image: GAImage? = null,
-    button: GAButton? = null
+    button: GAButton? = null,
 ): GABasicCard = basicCard(title, subtitle, formattedText, image, listOfNotNull(button))
 
 /**
@@ -57,31 +56,41 @@ fun I18nTranslator.basicCard(
     title: CharSequence,
     subtitle: CharSequence,
     image: GAImage,
-    button: GAButton
+    button: GAButton,
 ): GABasicCard = basicCard(title, subtitle, null, image, button)
 
 /**
  * Provides a [GABasicCard] with title and button.
  */
-fun I18nTranslator.basicCard(title: CharSequence, button: GAButton): GABasicCard =
-    basicCard(title, null, button = button)
+fun I18nTranslator.basicCard(
+    title: CharSequence,
+    button: GAButton,
+): GABasicCard = basicCard(title, null, button = button)
 
 /**
  * Provides a [GABasicCard] with title and subtitle.
  */
-fun I18nTranslator.basicCard(title: CharSequence, subtitle: CharSequence): GABasicCard =
-    basicCard(title, subtitle, null)
+fun I18nTranslator.basicCard(
+    title: CharSequence,
+    subtitle: CharSequence,
+): GABasicCard = basicCard(title, subtitle, null)
 
 /**
  * Provides a [GABasicCard] with title and image.
  */
-fun I18nTranslator.basicCard(title: CharSequence, image: GAImage): GABasicCard = basicCard(title, null, null, image)
+fun I18nTranslator.basicCard(
+    title: CharSequence,
+    image: GAImage,
+): GABasicCard = basicCard(title, null, null, image)
 
 /**
  * Provides a [GABasicCard] with title, subtitle and image.
  */
-fun I18nTranslator.basicCard(title: CharSequence, subtitle: CharSequence, image: GAImage): GABasicCard =
-    basicCard(title, subtitle, null, image)
+fun I18nTranslator.basicCard(
+    title: CharSequence,
+    subtitle: CharSequence,
+    image: GAImage,
+): GABasicCard = basicCard(title, subtitle, null, image)
 
 /**
  * Provides a [GABasicCard] with an image.

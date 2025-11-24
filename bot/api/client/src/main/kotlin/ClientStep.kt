@@ -23,5 +23,5 @@ class ClientStep(
     val name: String,
     val mainIntent: IntentAware = Intent(name),
     val otherStarterIntents: Set<IntentAware> = emptySet(),
-    val secondaryIntents: Set<IntentAware> = emptySet()
+    val secondaryIntents: Set<IntentAware> = emptySet(),
 )

@@ -105,7 +105,9 @@
         <plugin.resources>3.3.0</plugin.resources>
         <plugin.deploy>3.0.0</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
-        <plugin.ktlint>1.15.2</plugin.ktlint>
+        <plugin.ant>3.1.0</plugin.ant>
+        <plugin.ktlint>0.51.0-FINAL</plugin.ktlint>
+
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
 
@@ -867,6 +869,55 @@
                 <configuration>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${plugin.ant}</version>
+                <executions>
+                    <execution>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+
+                                    <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED"/>
+                                    <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ktlint-format</id>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
+                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED"/>
+                                    <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
+                                    <arg value="-F"/>
+                                    <arg value="src/**/*.kt"/>
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>${plugin.ktlint}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -927,20 +978,6 @@
                         <failOnNoGitDirectory>false</failOnNoGitDirectory>
                         <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.gantsign.maven</groupId>
-                    <artifactId>ktlint-maven-plugin</artifactId>
-                    <version>${plugin.ktlint}</version>
-                    <executions>
-                        <execution>
-                            <id>format-and-check</id>
-                            <goals>
-                                <!--goal>format</goal-->
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

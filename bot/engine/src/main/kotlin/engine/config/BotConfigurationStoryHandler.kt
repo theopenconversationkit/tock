@@ -19,7 +19,6 @@ package ai.tock.bot.engine.config
 import ai.tock.bot.engine.BotBus
 
 interface BotConfigurationStoryHandler {
-
     /**
      * The id of the story.
      */
@@ -33,7 +32,7 @@ interface BotConfigurationStoryHandler {
     fun handle(bus: BotBus)
 }
 
-open class BotConfigurationStoryHandlerBase(override val id:String, private val handler: (BotBus).() -> Unit) : BotConfigurationStoryHandler {
+open class BotConfigurationStoryHandlerBase(override val id: String, private val handler: (BotBus).() -> Unit) : BotConfigurationStoryHandler {
     override fun handle(bus: BotBus) {
         handler(bus)
     }

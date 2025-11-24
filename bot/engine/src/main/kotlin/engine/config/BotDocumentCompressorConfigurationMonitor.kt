@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet
  *
  */
 internal object BotDocumentCompressorConfigurationMonitor {
-
     private val logger = KotlinLogging.logger {}
 
     private val documentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO by injector.instance()
@@ -55,10 +54,11 @@ internal object BotDocumentCompressorConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot document compressor configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.documentCompressorConfiguration = documentCompressorConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
-            bot.botDefinition.namespace,
-            bot.botDefinition.botId,
-            enabled = true
-        )
+        bot.botDefinition.documentCompressorConfiguration =
+            documentCompressorConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
+                bot.botDefinition.namespace,
+                bot.botDefinition.botId,
+                enabled = true,
+            )
     }
 }

@@ -22,6 +22,8 @@ import java.util.Locale
  * When you need to fix the stt input.
  */
 interface SttListener {
-
-    fun transform(stt: String, locale: Locale): String
+    fun transform(
+        stt: String,
+        locale: Locale,
+    ): String
 }

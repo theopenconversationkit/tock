@@ -28,5 +28,5 @@ data class GAResponse(
     val finalResponse: GAFinalResponse? = null,
     val responseMetadata: GAResponseMetadata? = null,
     @get:JsonProperty("isInSandbox")
-    val isInSandbox: Boolean
+    val isInSandbox: Boolean,
 )

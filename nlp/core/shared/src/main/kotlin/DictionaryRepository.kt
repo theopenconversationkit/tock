@@ -20,7 +20,6 @@ package ai.tock.nlp.core
  * Data Dictionary access.
  */
 interface DictionaryRepository {
-
     /**
      * Update dictionary data.
      */

@@ -32,23 +32,20 @@ import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import com.mongodb.client.MongoCollection
 import org.litote.kmongo.Id
-import org.litote.kmongo.`in`
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
-import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.`in`
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
-import java.util.ArrayList
 
 /**
  *
  */
 internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
-
     private val col: MongoCollection<IntentDefinition> by lazy {
         val c = database.getCollection<IntentDefinition>()
         c.ensureIndex(Applications)
@@ -68,14 +65,19 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         return col.find(Applications contains applicationId).toList()
     }
 
-    override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> =
-        col.find(Namespace eq namespace).toList()
+    override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> = col.find(Namespace eq namespace).toList()
 
-    override fun getIntentsByApplicationIdAndCategory(applicationId: Id<ApplicationDefinition>, category:String): List<IntentDefinition> {
+    override fun getIntentsByApplicationIdAndCategory(
+        applicationId: Id<ApplicationDefinition>,
+        category: String,
+    ): List<IntentDefinition> {
         return col.find(Applications contains applicationId).filter(Category eq category).toList()
     }
 
-    override fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition? {
+    override fun getIntentByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): IntentDefinition? {
         return col.findOne(Name eq name, Namespace eq namespace)
     }
 
@@ -99,6 +101,5 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         return col.find(Entities.entityTypeName eq entityType).toList()
     }
 
-    fun getIntentsByNames(names: List<String>): List<IntentDefinition> =
-        col.find(Name `in` names).toList()
+    fun getIntentsByNames(names: List<String>): List<IntentDefinition> = col.find(Name `in` names).toList()
 }

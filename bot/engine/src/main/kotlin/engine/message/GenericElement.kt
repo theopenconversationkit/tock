@@ -24,9 +24,8 @@ data class GenericElement(
     val choices: List<Choice> = emptyList(),
     val texts: Map<String, String> = emptyMap(),
     val locations: List<Location> = emptyList(),
-    val metadata: Map<String, String> = emptyMap()
+    val metadata: Map<String, String> = emptyMap(),
 ) {
-
     /**
      * Transforms a [GenericMessage] into a [GenericElement].
      */
@@ -35,6 +34,6 @@ data class GenericElement(
         message.choices,
         message.texts,
         message.locations,
-        message.metadata
+        message.metadata,
     )
 }

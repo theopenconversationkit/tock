@@ -29,17 +29,14 @@ data class FaqQueryResult(
      * The unique [Id] of the faq.
      */
     val _id: Id<FaqDefinition>?,
-
     /**
      * The bot id (that corresponds to the application name).
      */
     val botId: String,
-
     /**
      * The bot namespace
      */
     val namespace: String,
-
     /**
      * The intent id.
      */
@@ -48,12 +45,10 @@ data class FaqQueryResult(
      * The i18n label id.
      */
     val i18nId: Id<I18nLabel>,
-
     /**
      * List of tags for better Faq categorisation
      */
     val tags: List<String>,
-
     /**
      * Is the Faq enabled?
      */
@@ -62,26 +57,22 @@ data class FaqQueryResult(
      * Faq creation date
      */
     val creationDate: Instant,
-
     /**
      * Faq update date
      */
     val updateDate: Instant,
-
     /**
      * Questions/Utterances list inspired by [ClassifiedSentence]
      */
     val utterances: List<ClassifiedSentence>,
-
     /**
      * The [IntentDefinition] identity of the faq
      */
     val faq: IntentDefinition,
-
     /**
      * The [StoryDefinitionBase] name of the faq
      */
-    val storyName: String?=null,
+    val storyName: String? = null,
 ) {
     /**
      * Convert [FaqQueryResult] to [FaqDefinitionDetailed] with [I18nLabel]
@@ -89,7 +80,10 @@ data class FaqQueryResult(
      * @param : [I18nLabel]
      * @return [FaqDefinitionDetailed]
      */
-    fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel): FaqDefinitionDetailed {
+    fun toFaqDefinitionDetailed(
+        faqQueryResult: FaqQueryResult,
+        i18nLabel: I18nLabel,
+    ): FaqDefinitionDetailed {
         return FaqDefinitionDetailed(
             faqQueryResult._id,
             faqQueryResult.botId,
@@ -103,8 +97,7 @@ data class FaqQueryResult(
             faqQueryResult.utterances,
             faqQueryResult.faq,
             i18nLabel,
-            faqQueryResult.storyName
+            faqQueryResult.storyName,
         )
     }
-
 }

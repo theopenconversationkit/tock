@@ -44,12 +44,12 @@ import ai.tock.shared.provide
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.I18nLocalizedLabel
 import ai.tock.translator.UserInterfaceType
-import java.util.Locale
-import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.safeCast
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
+import java.util.Locale
+import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.safeCast
 
 @ExperimentalTockCoroutines
 open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
@@ -113,7 +113,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
 
     override fun <T : Value> entityValue(
         role: String,
-        valueTransformer: (EntityValue) -> T?
+        valueTransformer: (EntityValue) -> T?,
     ): T? {
         return synchronized(botBus) { botBus.entityValue(role, valueTransformer) }
     }
@@ -122,11 +122,17 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         return synchronized(botBus) { botBus.entityValueDetails(role) }
     }
 
-    override fun changeEntityValue(role: String, newValue: EntityValue?) {
+    override fun changeEntityValue(
+        role: String,
+        newValue: EntityValue?,
+    ) {
         synchronized(botBus) { botBus.changeEntityValue(role, newValue) }
     }
 
-    override fun changeEntityValue(entity: Entity, newValue: Value?) {
+    override fun changeEntityValue(
+        entity: Entity,
+        newValue: Value?,
+    ) {
         return synchronized(botBus) { botBus.changeEntityValue(entity, newValue) }
     }
 
@@ -141,11 +147,17 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         return botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
     }
 
-    override fun <T : Any> setContextValue(key: DialogContextKey<T>, value: T?) {
+    override fun <T : Any> setContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
+    ) {
         botBus.dialog.state.setContextValue(key, value)
     }
 
-    override fun <T : Any> setBusContextValue(key: DialogContextKey<T>, value: T?) {
+    override fun <T : Any> setBusContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
+    ) {
         botBus.setBusContextValue(key.name, value)
     }
 
@@ -155,7 +167,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
 
     override suspend fun isFeatureEnabled(
         feature: FeatureType,
-        default: Boolean
+        default: Boolean,
     ): Boolean =
         featureDao.isEnabled(
             botBus.botDefinition.botId,
@@ -163,7 +175,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
             feature,
             connectorId,
             default,
-            userId.id
+            userId.id,
         )
 
     override suspend fun handleAndSwitchStory(
@@ -183,7 +195,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     override fun i18nWithKey(
         key: String,
         defaultLabel: String,
-        vararg args: Any?
+        vararg args: Any?,
     ): I18nLabelValue {
         return botBus.i18nKey(key, defaultLabel, *args)
     }
@@ -192,19 +204,22 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         key: String,
         defaultLabel: String,
         defaultI18n: Set<I18nLocalizedLabel>,
-        vararg args: Any?
+        vararg args: Any?,
     ): I18nLabelValue {
         return botBus.i18nKey(key, defaultLabel, defaultI18n, *args)
     }
 
     override fun i18n(
         defaultLabel: CharSequence,
-        args: List<Any?>
+        args: List<Any?>,
     ): I18nLabelValue {
         return botBus.i18n(defaultLabel, args)
     }
 
-    override suspend fun send(i18nText: CharSequence, delay: Long) {
+    override suspend fun send(
+        i18nText: CharSequence,
+        delay: Long,
+    ) {
         withContext(executor.asCoroutineDispatcher()) {
             synchronized(botBus) {
                 botBus.send(i18nText, delay = delay)
@@ -212,7 +227,10 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         }
     }
 
-    override suspend fun send(i18nText: String, vararg i18nArgs: Any?) {
+    override suspend fun send(
+        i18nText: String,
+        vararg i18nArgs: Any?,
+    ) {
         withContext(executor.asCoroutineDispatcher()) {
             synchronized(botBus) {
                 botBus.send(i18nText, *i18nArgs)
@@ -220,7 +238,10 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         }
     }
 
-    override suspend fun end(i18nText: CharSequence, delay: Long) {
+    override suspend fun end(
+        i18nText: CharSequence,
+        delay: Long,
+    ) {
         withContext(executor.asCoroutineDispatcher()) {
             synchronized(botBus) {
                 botBus.end(i18nText, delay = delay)
@@ -228,7 +249,10 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         }
     }
 
-    override suspend fun end(i18nText: String, vararg i18nArgs: Any?) {
+    override suspend fun end(
+        i18nText: String,
+        vararg i18nArgs: Any?,
+    ) {
         withContext(executor.asCoroutineDispatcher()) {
             synchronized(botBus) {
                 botBus.end(i18nText, *i18nArgs)
@@ -236,7 +260,10 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         }
     }
 
-    override suspend fun send(delay: Long, messageProvider: Bus<*>.() -> Any?) {
+    override suspend fun send(
+        delay: Long,
+        messageProvider: Bus<*>.() -> Any?,
+    ) {
         val messages = toMessageList(messageProvider)
         synchronized(botBus) {
             if (messages.messages.isEmpty()) {
@@ -247,7 +274,10 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         }
     }
 
-    override suspend fun end(delay: Long, messageProvider: Bus<*>.() -> Any?) {
+    override suspend fun end(
+        delay: Long,
+        messageProvider: Bus<*>.() -> Any?,
+    ) {
         val messages = toMessageList(messageProvider)
         synchronized(botBus) {
             if (messages.messages.isEmpty()) {
@@ -259,7 +289,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
     }
 
     protected open suspend fun toMessageList(messageProvider: Bus<*>.() -> Any?): MessagesList =
-    // calls to `translate` are blocking (database and possibly translator API),
+        // calls to `translate` are blocking (database and possibly translator API),
         // so we ensure they are done in a worker thread
         withContext(executor.asCoroutineDispatcher()) {
             toMessageList(null, botBus, messageProvider)

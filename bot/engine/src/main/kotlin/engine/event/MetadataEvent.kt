@@ -22,11 +22,15 @@ import java.util.UUID
 
 class MetadataEvent(val type: String, val value: String, applicationId: String) : Event(applicationId) {
     companion object {
+        fun intent(
+            intent: Intent,
+            applicationId: String,
+        ) = MetadataEvent(INTENT_METADATA, intent.name, applicationId)
 
-        fun intent(intent: Intent, applicationId: String) = MetadataEvent(INTENT_METADATA, intent.name, applicationId)
-
-        fun responseId(uuid: UUID, applicationId: String) =
-            MetadataEvent(RESPONSE_ID_METADATA, uuid.toString(), applicationId)
+        fun responseId(
+            uuid: UUID,
+            applicationId: String,
+        ) = MetadataEvent(RESPONSE_ID_METADATA, uuid.toString(), applicationId)
 
         fun lastAnswer(applicationId: String) = MetadataEvent(LAST_ANSWER_METADATA, "true", applicationId)
 
@@ -37,7 +41,6 @@ class MetadataEvent(val type: String, val value: String, applicationId: String) 
     }
 
     fun isEndStreamMetadata(): Boolean = type == STREAM_RESPONSE_METADATA && value != "true"
-
 }
 
 fun Map<String, String>.hasStreamMetadata(): Boolean = this[STREAM_RESPONSE_METADATA] == "true"

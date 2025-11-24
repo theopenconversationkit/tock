@@ -24,12 +24,11 @@ import ai.tock.nlp.core.Intent
  *
  */
 internal interface EntityMerge {
-
     fun mergeEntityTypes(
         callContext: CallContext,
         text: String,
         intent: Intent,
         entities: List<EntityRecognition>,
-        entityTypes: List<EntityTypeRecognition>
+        entityTypes: List<EntityTypeRecognition>,
     ): List<EntityRecognition>
 }

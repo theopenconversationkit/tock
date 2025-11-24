@@ -30,7 +30,6 @@ val EMPTY_TRANSLATED_STRING: TranslatedSequence = RawString("")
  */
 data class RawString(private val wrapped: CharSequence) :
     CharSequence by wrapped, TranslatedSequence {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -39,7 +38,10 @@ data class RawString(private val wrapped: CharSequence) :
         return wrapped.toString()
     }
 
-    override fun subSequence(startIndex: Int, endIndex: Int): TranslatedSequence {
+    override fun subSequence(
+        startIndex: Int,
+        endIndex: Int,
+    ): TranslatedSequence {
         return RawString(wrapped.subSequence(startIndex, endIndex))
     }
 

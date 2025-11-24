@@ -20,10 +20,7 @@ import ai.tock.nlp.core.BuildContext
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityEvaluationContext
-import ai.tock.nlp.core.Intent
-import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT
 import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
-import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
@@ -72,7 +69,6 @@ import java.util.Locale
  *
  */
 object ParserService : Parser {
-
     private val logger = KotlinLogging.logger {}
     private val tabCarriageRegexp = "[\\n\\r\\t]+".toRegex()
 
@@ -104,14 +100,17 @@ object ParserService : Parser {
         val application: ApplicationDefinition,
         val language: Locale,
         val referenceDate: ZonedDateTime,
-        val intentsQualifiers: Set<IntentQualifier>
+        val intentsQualifiers: Set<IntentQualifier>,
     )
 
     internal fun formatQuery(query: String): String {
         return query.replace(tabCarriageRegexp, "").trim()
     }
 
-    internal fun findLanguage(application: ApplicationDefinition, locale: Locale): Locale {
+    internal fun findLanguage(
+        application: ApplicationDefinition,
+        locale: Locale,
+    ): Locale {
         return application.supportedLocales.let { locales ->
             if (locales.contains(locale)) {
                 locale
@@ -153,8 +152,8 @@ object ParserService : Parser {
                             application._id,
                             query,
                             result,
-                            System.currentTimeMillis() - time
-                        )
+                            System.currentTimeMillis() - time,
+                        ),
                     )
                 }
             }
@@ -163,18 +162,22 @@ object ParserService : Parser {
 
     private fun getReferenceDateByEntityMap(
         intents: List<IntentDefinition>,
-        referenceDate: ZonedDateTime
-    ): Map<Entity, ZonedDateTime>? = intents
-        .flatMap { it.entities }
-        .asSequence()
-        .distinct()
-        .filter { it.atStartOfDay == true }
-        .mapNotNull { it.toEntity() }
-        .map { it to referenceDate.truncatedTo(ChronoUnit.DAYS) }
-        .toMap()
-        .takeUnless { it.isEmpty() }
+        referenceDate: ZonedDateTime,
+    ): Map<Entity, ZonedDateTime>? =
+        intents
+            .flatMap { it.entities }
+            .asSequence()
+            .distinct()
+            .filter { it.atStartOfDay == true }
+            .mapNotNull { it.toEntity() }
+            .map { it to referenceDate.truncatedTo(ChronoUnit.DAYS) }
+            .toMap()
+            .takeUnless { it.isEmpty() }
 
-    private fun parse(query: ParseQuery, metadata: CallMetadata): ParseResult {
+    private fun parse(
+        query: ParseQuery,
+        metadata: CallMetadata,
+    ): ParseResult {
         with(query) {
             val (application, language, referenceDate, intentsQualifiers) = metadata
 
@@ -191,54 +194,58 @@ object ParserService : Parser {
                     0.0,
                     0.0,
                     q,
-                    emptyMap()
+                    emptyMap(),
                 )
             }
 
-            val validatedSentence = config
-                .search(
-                    SentencesQuery(
-                        application._id,
-                        language,
-                        search = q,
-                        status = setOf(validated, model),
-                        onlyExactMatch = true,
-                        normalizeText = application.normalizeText,
+            val validatedSentence =
+                config
+                    .search(
+                        SentencesQuery(
+                            application._id,
+                            language,
+                            search = q,
+                            status = setOf(validated, model),
+                            onlyExactMatch = true,
+                            normalizeText = application.normalizeText,
+                        ),
                     )
-                )
-                .sentences
-                .firstOrNull()
+                    .sentences
+                    .firstOrNull()
 
             val intents = ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id)
 
-            val callContext = CallContext(
-                toApplication(application),
-                language,
-                application.nlpEngineType,
-                EntityEvaluationContext(
-                    referenceDate,
-                    application.mergeEngineTypes,
-                    application.useEntityModels,
-                    getReferenceDateByEntityMap(intents, referenceDate)
+            val callContext =
+                CallContext(
+                    toApplication(application),
+                    language,
+                    application.nlpEngineType,
+                    EntityEvaluationContext(
+                        referenceDate,
+                        application.mergeEngineTypes,
+                        application.useEntityModels,
+                        getReferenceDateByEntityMap(intents, referenceDate),
+                    ),
                 )
-            )
 
-            val data = ParserRequestData(
-                application,
-                query,
-                validatedSentence,
-                intentsQualifiers,
-                intents
-            )
+            val data =
+                ParserRequestData(
+                    application,
+                    query,
+                    validatedSentence,
+                    intentsQualifiers,
+                    intents,
+                )
 
             if (isValidClassifiedSentence(data)) {
-                val entityValues = core.evaluateEntities(
-                    callContext,
-                    q,
-                    validatedSentence!!.classification
-                        .entities
-                        .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) }
-                )
+                val entityValues =
+                    core.evaluateEntities(
+                        callContext,
+                        q,
+                        validatedSentence!!.classification
+                            .entities
+                            .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) },
+                    )
                 val intent = ConfigurationRepository.getIntentById(validatedSentence.classification.intentId)
 
                 return ParseResult(
@@ -255,56 +262,58 @@ object ParserService : Parser {
                     1.0,
                     1.0,
                     q,
-                    emptyMap()
+                    emptyMap(),
                 )
             }
 
             val intentSelector = IntentSelectorService.selector(data)
-            val result = core.parse(callContext, q, intentSelector)
-                .run {
-                    var realIntent = intent
-                    var realIntentProbability = intentProbability
-                    val realOtherIntents = intentSelector.otherIntents
-                    if(intentsQualifiers.isEmpty() && intentProbability < application.unknownIntentThreshold) {
-                        // Force the real intent to UNKNOWN
-                        realIntent = UNKNOWN_INTENT_NAME
-                        // Set the probability of the real intent at 100%
-                        realIntentProbability = 1.0
-                        // Add to otherIntents, the real intention and its probability, so as not to lose this statistic
-                        intentSelector.otherIntents[intent] = intentProbability
-                    }
+            val result =
+                core.parse(callContext, q, intentSelector)
+                    .run {
+                        var realIntent = intent
+                        var realIntentProbability = intentProbability
+                        val realOtherIntents = intentSelector.otherIntents
+                        if (intentsQualifiers.isEmpty() && intentProbability < application.unknownIntentThreshold) {
+                            // Force the real intent to UNKNOWN
+                            realIntent = UNKNOWN_INTENT_NAME
+                            // Set the probability of the real intent at 100%
+                            realIntentProbability = 1.0
+                            // Add to otherIntents, the real intention and its probability, so as not to lose this statistic
+                            intentSelector.otherIntents[intent] = intentProbability
+                        }
 
-                    ParseResult(
-                        realIntent.withoutNamespace(),
-                        realIntent.namespace(),
-                        language,
-                        entities.map {
-                            ParsedEntityValue(
-                                it.value,
-                                it.probability,
-                                core.supportValuesMerge(it.entityType)
-                            )
-                        },
-                        notRetainedEntities.map {
-                            ParsedEntityValue(
-                                it.value,
-                                it.probability,
-                                core.supportValuesMerge(it.entityType)
-                            )
-                        },
-                        realIntentProbability,
-                        entitiesProbability,
-                        q,
-                        // Sort the other real intentions in descending order of probability.
-                        realOtherIntents.toList().sortedByDescending { it.second }.toMap(),
-                        intentSelector.originalIntents.toList().sortedByDescending { it.second }.toMap()
-                    )
-                }
+                        ParseResult(
+                            realIntent.withoutNamespace(),
+                            realIntent.namespace(),
+                            language,
+                            entities.map {
+                                ParsedEntityValue(
+                                    it.value,
+                                    it.probability,
+                                    core.supportValuesMerge(it.entityType),
+                                )
+                            },
+                            notRetainedEntities.map {
+                                ParsedEntityValue(
+                                    it.value,
+                                    it.probability,
+                                    core.supportValuesMerge(it.entityType),
+                                )
+                            },
+                            realIntentProbability,
+                            entitiesProbability,
+                            q,
+                            // Sort the other real intentions in descending order of probability.
+                            realOtherIntents.toList().sortedByDescending { it.second }.toMap(),
+                            intentSelector.originalIntents.toList().sortedByDescending { it.second }.toMap(),
+                        )
+                    }
 
             fun toClassifiedSentence(): ClassifiedSentence {
                 val intentName = result.intent.withNamespace(result.intentNamespace)
-                val intentId = config.getIntentIdByQualifiedName(intentName)
-                    ?: error("unknown intent: $intentName")
+                val intentId =
+                    config.getIntentIdByQualifiedName(intentName)
+                        ?: error("unknown intent: $intentName")
                 return ClassifiedSentence(
                     result,
                     language,
@@ -312,7 +321,7 @@ object ParserService : Parser {
                     intentId,
                     result.intentProbability,
                     result.entitiesProbability,
-                    query.configuration
+                    query.configuration,
                 )
             }
 
@@ -336,7 +345,7 @@ object ParserService : Parser {
     internal fun saveSentence(
         application: ApplicationDefinition,
         newSentence: ClassifiedSentence,
-        validatedSentence: ClassifiedSentence?
+        validatedSentence: ClassifiedSentence?,
     ) {
         with(newSentence) {
             if (validatedSentence?.status != validated &&
@@ -344,8 +353,12 @@ object ParserService : Parser {
                 !hasSameContent(application, validatedSentence)
             ) {
                 // do not persist analysis if intent probability is < 0.1
-                val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
-                else copy(classification = classification.copy(UNKNOWN_INTENT_NAME.toId(), emptyList()))
+                val sentence =
+                    if ((lastIntentProbability ?: 0.0) > 0.1) {
+                        this
+                    } else {
+                        copy(classification = classification.copy(UNKNOWN_INTENT_NAME.toId(), emptyList()))
+                    }
 
                 config.save(sentence)
             }
@@ -355,17 +368,20 @@ object ParserService : Parser {
     /**
      * Check if the sentence has the same content (status, creation & update dates excluded)
      */
-    private fun ClassifiedSentence.hasSameContent(app: ApplicationDefinition, sentence: ClassifiedSentence?): Boolean {
+    private fun ClassifiedSentence.hasSameContent(
+        app: ApplicationDefinition,
+        sentence: ClassifiedSentence?,
+    ): Boolean {
         return copy(text = if (app.normalizeText) text.normalize(language) else text) ==
-                sentence?.copy(
-                    text = if (app.normalizeText) sentence.text.normalize(language) else sentence.text,
-                    status = status,
-                    creationDate = creationDate,
-                    updateDate = updateDate,
-                    lastIntentProbability = lastIntentProbability,
-                    lastEntityProbability = lastEntityProbability,
-                    otherIntentsProbabilities = otherIntentsProbabilities
-                )
+            sentence?.copy(
+                text = if (app.normalizeText) sentence.text.normalize(language) else sentence.text,
+                status = status,
+                creationDate = creationDate,
+                updateDate = updateDate,
+                lastIntentProbability = lastIntentProbability,
+                lastEntityProbability = lastEntityProbability,
+                otherIntentsProbabilities = otherIntentsProbabilities,
+            )
     }
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult {
@@ -376,27 +392,30 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(
-                toApplication(application),
-                language,
-                application.nlpEngineType,
-                EntityEvaluationContext(
-                    referenceDate,
-                    referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
-                        referenceDate
-                    )
+            val callContext =
+                CallContext(
+                    toApplication(application),
+                    language,
+                    application.nlpEngineType,
+                    EntityEvaluationContext(
+                        referenceDate,
+                        referenceDateByEntityMap =
+                            getReferenceDateByEntityMap(
+                                ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
+                                referenceDate,
+                            ),
+                    ),
                 )
-            )
 
-            val result = core.evaluateEntities(
-                callContext,
-                text,
-                query.entities.map { it.toEntityRecognition() }
-            )
+            val result =
+                core.evaluateEntities(
+                    callContext,
+                    text,
+                    query.entities.map { it.toEntityRecognition() },
+                )
 
             return EntityEvaluationResult(
-                result.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) }
+                result.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
             )
         }
     }
@@ -409,18 +428,20 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(
-                toApplication(application),
-                language,
-                application.nlpEngineType,
-                EntityEvaluationContext(
-                    referenceDate,
-                    referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
-                        referenceDate
-                    )
+            val callContext =
+                CallContext(
+                    toApplication(application),
+                    language,
+                    application.nlpEngineType,
+                    EntityEvaluationContext(
+                        referenceDate,
+                        referenceDateByEntityMap =
+                            getReferenceDateByEntityMap(
+                                ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
+                                referenceDate,
+                            ),
+                    ),
                 )
-            )
 
             val result = core.mergeValues(callContext, entity, values.map { it.toValueDescriptor() })
 
@@ -438,7 +459,10 @@ object ParserService : Parser {
         }
     }
 
-    private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition =
+    private fun loadApplication(
+        namespace: String,
+        applicationName: String,
+    ): ApplicationDefinition =
         ConfigurationRepository.getApplicationByNamespaceAndName(namespace, applicationName)
             ?: throw UnknownApplicationException(namespace, applicationName)
 

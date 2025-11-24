@@ -35,9 +35,8 @@ internal data class BusMockData(
     var notificationType: ActionNotificationType? = null,
     var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
     var replyMessage: ActionReply = ActionReply.UNKNOWN,
-    var quoteMessage: ActionQuote = ActionQuote.UNKNOWN
+    var quoteMessage: ActionQuote = ActionQuote.UNKNOWN,
 ) {
-
     fun clear() {
         connectorMessages.clear()
         priority = ActionPriority.normal

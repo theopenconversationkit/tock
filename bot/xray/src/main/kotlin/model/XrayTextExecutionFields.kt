@@ -20,5 +20,5 @@ data class XrayTextExecutionFields(
     val project: JiraTestProject,
     val summary: String,
     val description: String,
-    val issuetype: JiraIssueType
+    val issuetype: JiraIssueType,
 )

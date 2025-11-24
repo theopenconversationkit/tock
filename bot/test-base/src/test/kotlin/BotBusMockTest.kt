@@ -36,19 +36,19 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 /**
  *
  */
 class BotBusMockTest {
-
-    enum class Step : SimpleStoryStep { a }
+    @Suppress("ktlint:standard:enum-entry-name-case")
+    enum class Step : SimpleStoryStep { a, }
 
     val intent = Intent("main")
     val storyHandler: SimpleStoryHandlerBase = mockk()
@@ -62,7 +62,7 @@ class BotBusMockTest {
         BotBusMockContext(
             botDefinition,
             storyDefinition,
-            testContext = testContext
+            testContext = testContext,
         )
     }
 
@@ -70,10 +70,10 @@ class BotBusMockTest {
     fun before() {
         every { storyHandler.handle(any()) } answers {}
         // Mockk is a bit lost when it comes to overloads+varargs
-        every { storyHandler.i18nKey(key = any(), defaultLabel =  any(), any() )} answers {
+        every { storyHandler.i18nKey(key = any(), defaultLabel = any(), any()) } answers {
             I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
         }
-        every { storyHandler.i18nKey(any(), any(), any(), any(), any())} answers {
+        every { storyHandler.i18nKey(any(), any(), any(), any(), any()) } answers {
             I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
         }
 
@@ -144,7 +144,7 @@ class BotBusMockTest {
         botBus.run()
 
         assertThrows(
-            IllegalStateException::class.java
+            IllegalStateException::class.java,
         ) { botBus.checkEndCalled() }
     }
 
@@ -163,7 +163,7 @@ class BotBusMockTest {
         botBus.run()
 
         assertThrows(
-            IllegalStateException::class.java
+            IllegalStateException::class.java,
         ) { botBus.checkEndCalled() }
     }
 
@@ -212,15 +212,35 @@ class BotBusMockTest {
     @Test
     fun `translate uses default localizations`() {
         val botBus = BotBusMock(context)
-        val inner = botBus.i18nKey("inner", "this is inner text default", localizedDefaults = setOf(
-            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is inner text")
-        ))
-        val innerNamed = botBus.i18nKey("inner-named", "this is named inner text default", localizedDefaults = setOf(
-            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is named inner text")
-        ))
-        val outer = botBus.i18nKey("outer", "I have a default message: {0} and {:named}", localizedDefaults = setOf(
-            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "I have a message: “{0}” and “{:named}”")
-        ), "named" to innerNamed, inner)
+        val inner =
+            botBus.i18nKey(
+                "inner",
+                "this is inner text default",
+                localizedDefaults =
+                    setOf(
+                        I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is inner text"),
+                    ),
+            )
+        val innerNamed =
+            botBus.i18nKey(
+                "inner-named",
+                "this is named inner text default",
+                localizedDefaults =
+                    setOf(
+                        I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is named inner text"),
+                    ),
+            )
+        val outer =
+            botBus.i18nKey(
+                "outer",
+                "I have a default message: {0} and {:named}",
+                localizedDefaults =
+                    setOf(
+                        I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "I have a message: “{0}” and “{:named}”"),
+                    ),
+                "named" to innerNamed,
+                inner,
+            )
         val translated = botBus.translate(outer)
         assertIs<TranslatedSequence>(translated)
         assertEquals("I have a message: “this is inner text” and “this is named inner text”", translated.toString())

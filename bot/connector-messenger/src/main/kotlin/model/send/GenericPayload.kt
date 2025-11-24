@@ -22,10 +22,9 @@ import ai.tock.bot.engine.message.GenericMessage
  *
  */
 data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadType.generic) {
-
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-            subElements = elements.map { it.toGenericElement() }
+            subElements = elements.map { it.toGenericElement() },
         )
     }
 

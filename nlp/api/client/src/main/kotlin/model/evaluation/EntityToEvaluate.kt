@@ -25,5 +25,5 @@ data class EntityToEvaluate(
     val start: Int,
     val end: Int,
     val entity: Entity,
-    val subEntities: List<EntityToEvaluate> = emptyList()
+    val subEntities: List<EntityToEvaluate> = emptyList(),
 )

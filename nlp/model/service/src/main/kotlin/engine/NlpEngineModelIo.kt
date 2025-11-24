@@ -23,7 +23,6 @@ import java.io.OutputStream
  * Manages native model io.
  */
 interface NlpEngineModelIo {
-
     /**
      * Loads a tokenizer model from an input stream.
      */
@@ -42,15 +41,24 @@ interface NlpEngineModelIo {
     /**
      * Sends a tokenizer model to an output stream.
      */
-    fun copyTokenizerModel(model: Any, output: OutputStream)
+    fun copyTokenizerModel(
+        model: Any,
+        output: OutputStream,
+    )
 
     /**
      * Sends an intent model to an output stream.
      */
-    fun copyIntentModel(model: Any, output: OutputStream)
+    fun copyIntentModel(
+        model: Any,
+        output: OutputStream,
+    )
 
     /**
      * Sends an entity model to an output stream.
      */
-    fun copyEntityModel(model: Any, output: OutputStream)
+    fun copyEntityModel(
+        model: Any,
+        output: OutputStream,
+    )
 }

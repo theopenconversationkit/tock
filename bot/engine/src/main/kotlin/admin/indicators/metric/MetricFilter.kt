@@ -32,4 +32,3 @@ data class MetricFilter(
     val creationDateSince: Instant? = null,
     val creationDateUntil: Instant? = null,
 )
-

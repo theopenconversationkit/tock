@@ -27,5 +27,5 @@ data class WhatsAppAttachment(
     val mimeType: String,
     val sha256: String,
     val filename: String? = null,
-    val caption: String? = null
+    val caption: String? = null,
 )

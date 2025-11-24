@@ -17,8 +17,8 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
 data class WhatsAppCloudBotLocation(
-        val longitude: Double,
-        val latitude: Double,
-        val name: String?,
-        val address: String?
+    val longitude: Double,
+    val latitude: Double,
+    val name: String?,
+    val address: String?,
 )

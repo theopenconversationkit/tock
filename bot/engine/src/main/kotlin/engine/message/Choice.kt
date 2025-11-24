@@ -29,9 +29,8 @@ import ai.tock.bot.engine.user.PlayerId
 data class Choice(
     val intentName: String,
     val parameters: Map<String, String> = emptyMap(),
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : Message {
-
     companion object {
         /**
          * Returns a choice from text that will be analyzed by the NLP engine.
@@ -39,11 +38,11 @@ data class Choice(
         fun fromText(
             text: String,
             nlpText: String? = null,
-            imageUrl: String? = null
+            imageUrl: String? = null,
         ): Choice =
             Choice(
                 "",
-                SendChoice.nlpParametersMap(text, nlpText, imageUrl)
+                SendChoice.nlpParametersMap(text, nlpText, imageUrl),
             )
     }
 
@@ -51,7 +50,7 @@ data class Choice(
         intentName: String,
         step: StoryStepDef,
         parameters: Map<String, String> = emptyMap(),
-        delay: Long = 0
+        delay: Long = 0,
     ) :
         this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)
 
@@ -60,14 +59,14 @@ data class Choice(
     override fun toAction(
         playerId: PlayerId,
         applicationId: String,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ): Action {
         return SendChoice(
             playerId,
             applicationId,
             recipientId,
             intentName,
-            parameters
+            parameters,
         )
     }
 

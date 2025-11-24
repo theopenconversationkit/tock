@@ -63,9 +63,8 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
 class GAConnector internal constructor(
     val applicationId: String,
     val path: String,
-    val allowedProjectIds: Set<String>
+    val allowedProjectIds: Set<String>,
 ) : ConnectorBase(GAConnectorProvider.connectorType, setOf(CAROUSEL)) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -98,7 +97,7 @@ class GAConnector internal constructor(
     internal fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
-        body: String
+        body: String,
     ) {
         val timerData = BotRepository.requestTimer.start("ga_webhook")
         try {
@@ -125,19 +124,20 @@ class GAConnector internal constructor(
                                 PlayerId(applicationId, PlayerType.bot),
                                 request.user.accessToken ?: error("Access token can't be null"),
                                 applicationId,
-                                checkLogin = true
+                                checkLogin = true,
                             ),
-                            ConnectorData(object : ConnectorCallbackBase(applicationId, gaConnectorType) {
+                            ConnectorData(
+                                object : ConnectorCallbackBase(applicationId, gaConnectorType) {
+                                    // send 401 for revoke token and logout google assistant user
+                                    override fun eventSkipped(event: Event) {
+                                        context.fail(401)
+                                    }
 
-                                // send 401 for revoke token and logout google assistant user
-                                override fun eventSkipped(event: Event) {
-                                    context.fail(401)
-                                }
-
-                                override fun eventAnswered(event: Event) {
-                                    sendRequest()
-                                }
-                            })
+                                    override fun eventAnswered(event: Event) {
+                                        sendRequest()
+                                    }
+                                },
+                            ),
                         )
                     }
                     else -> sendRequest()
@@ -170,7 +170,11 @@ class GAConnector internal constructor(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         val c = callback as? GAConnectorCallback
         c?.addAction(event, delayInMs)
         if (event is Action) {
@@ -182,7 +186,10 @@ class GAConnector internal constructor(
         }
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? {
         val c = callback as? GAConnectorCallback
         return c?.request?.user?.profile?.run {
             if (givenName != null) {
@@ -193,114 +200,138 @@ class GAConnector internal constructor(
         }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        gaMessage(richResponse(text, suggestions))
-    }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            gaMessage(richResponse(text, suggestions))
+        }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        if (message is GAResponseConnectorMessage) {
-            val m = message.expectedInputs.lastOrNull()?.inputPrompt?.richInitialPrompt
-            if (m != null && m.suggestions.isEmpty()) {
-                message.copy(
-                    expectedInputs = message.expectedInputs.take(message.expectedInputs.size - 1) +
-                        message.expectedInputs.last().copy(
-                            inputPrompt = message.expectedInputs.last().inputPrompt.copy(
-                                richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) })
-                            )
-                        )
-                )
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            if (message is GAResponseConnectorMessage) {
+                val m = message.expectedInputs.lastOrNull()?.inputPrompt?.richInitialPrompt
+                if (m != null && m.suggestions.isEmpty()) {
+                    message.copy(
+                        expectedInputs =
+                            message.expectedInputs.take(message.expectedInputs.size - 1) +
+                                message.expectedInputs.last().copy(
+                                    inputPrompt =
+                                        message.expectedInputs.last().inputPrompt.copy(
+                                            richInitialPrompt = m.copy(suggestions = suggestions.map { suggestion(it) }),
+                                        ),
+                                ),
+                    )
+                } else {
+                    null
+                }
             } else {
                 null
             }
-        } else {
-            null
         }
-    }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        if (message is MediaCard) {
-            val title = message.title
-            val subTitle = message.subTitle
-            val image = message.file?.takeIf { it.type == image }
-            val card = if (image != null) basicCard(title, null, subTitle, gaImage(image.url, image.name))
-            else if (title != null) if (subTitle == null) basicCard(formattedText = title) else basicCard(
-                title,
-                formattedText = subTitle
-            )
-            else if (subTitle != null) basicCard(formattedText = subTitle)
-            else null
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            if (message is MediaCard) {
+                val title = message.title
+                val subTitle = message.subTitle
+                val image = message.file?.takeIf { it.type == image }
+                val card =
+                    if (image != null) {
+                        basicCard(title, null, subTitle, gaImage(image.url, image.name))
+                    } else if (title != null) {
+                        if (subTitle == null) {
+                            basicCard(formattedText = title)
+                        } else {
+                            basicCard(
+                                title,
+                                formattedText = subTitle,
+                            )
+                        }
+                    } else if (subTitle != null) {
+                        basicCard(formattedText = subTitle)
+                    } else {
+                        null
+                    }
 
-            val requiredTextToSpeech = title ?: subTitle ?: "default_ga_card_title"
+                val requiredTextToSpeech = title ?: subTitle ?: "default_ga_card_title"
 
-            if (card != null) {
-                val actions = message.actions
-                val suggestions = actions.filter { it.url == null }.map { it.title }
-                val redirect = actions.firstOrNull { it.url != null }?.let { gaButton(it.title, it.url!!) }
-                listOf(
-                    gaMessage(
-                        richResponse(
-                            i18nKey("default_ga_card_title", requiredTextToSpeech),
-                            card.copy(buttons = listOfNotNull(redirect)),
-                            suggestions
-                        )
+                if (card != null) {
+                    val actions = message.actions
+                    val suggestions = actions.filter { it.url == null }.map { it.title }
+                    val redirect = actions.firstOrNull { it.url != null }?.let { gaButton(it.title, it.url!!) }
+                    listOf(
+                        gaMessage(
+                            richResponse(
+                                i18nKey("default_ga_card_title", requiredTextToSpeech),
+                                card.copy(buttons = listOfNotNull(redirect)),
+                                suggestions,
+                            ),
+                        ),
                     )
-                )
+                } else {
+                    emptyList()
+                }
+            } else if (message is MediaCarousel) {
+                when {
+                    message.cards.size > 1 -> {
+                        val suggestions = ArrayList<String>()
+                        val items =
+                            message.cards.map { card ->
+                                val title = translate(card.title)
+                                val subTitle = translate(card.subTitle)
+
+                                suggestions.addAll(card.actions.filter { it.url == null }.map { it.title.toString() })
+                                GACarouselItem(
+                                    optionInfo =
+                                        GAOptionInfo(
+                                            key = SendChoice.encodeNlpChoiceId(title.toString()),
+                                            synonyms = emptyList(),
+                                        ),
+                                    title = title.toString(),
+                                    description = subTitle.toString(),
+                                    image = card.file?.takeIf { it.type == image }?.let { gaImage(it.url, it.name) },
+                                )
+                            }
+                        val carouselMessage =
+                            gaMessage(
+                                inputPrompt =
+                                    inputPrompt(
+                                        richResponse(
+                                            items =
+                                                listOf(
+                                                    GAItem(
+                                                        GASimpleResponse(
+                                                            translate("default_ga_carousel_title").toString(),
+                                                        ),
+                                                    ),
+                                                ),
+                                            suggestions = suggestions,
+                                        ),
+                                    ),
+                                possibleIntents =
+                                    listOf(
+                                        expectedTextIntent(),
+                                        expectedIntentForCarousel(items),
+                                    ),
+                            )
+                        listOf(
+                            carouselMessage,
+                        )
+                    }
+                    message.cards.size == 1 -> {
+                        toConnectorMessage(message.cards.first()).invoke(this)
+                    }
+                    else -> {
+                        emptyList()
+                    }
+                }
             } else {
                 emptyList()
             }
-        } else if (message is MediaCarousel) {
-            when {
-                message.cards.size > 1 -> {
-                    val suggestions = ArrayList<String>()
-                    val items = message.cards.map { card ->
-                        val title = translate(card.title)
-                        val subTitle = translate(card.subTitle)
-
-                        suggestions.addAll(card.actions.filter { it.url == null }.map { it.title.toString() })
-                        GACarouselItem(
-                            optionInfo = GAOptionInfo(
-                                key = SendChoice.encodeNlpChoiceId(title.toString()),
-                                synonyms = emptyList()
-                            ),
-                            title = title.toString(),
-                            description = subTitle.toString(),
-                            image = card.file?.takeIf { it.type == image }?.let { gaImage(it.url, it.name) }
-                        )
-                    }
-                    val carouselMessage = gaMessage(
-                        inputPrompt = inputPrompt(
-                            richResponse(
-                                items = listOf(
-                                    GAItem(
-                                        GASimpleResponse(
-                                            translate("default_ga_carousel_title").toString()
-                                        )
-                                    )
-                                ),
-                                suggestions = suggestions
-                            )
-                        ),
-                        possibleIntents = listOf(
-                            expectedTextIntent(),
-                            expectedIntentForCarousel(items)
-                        )
-                    )
-                    listOf(
-                        carouselMessage
-                    )
-                }
-                message.cards.size == 1 -> {
-                    toConnectorMessage(message.cards.first()).invoke(this)
-                }
-                else -> {
-                    emptyList()
-                }
-            }
-        } else {
-            emptyList()
         }
-    }
 }

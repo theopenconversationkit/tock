@@ -69,33 +69,32 @@ private val supportUnstreamed = booleanProperty("tock_openai_support_unstreamed"
 class OpenAIConnector internal constructor(
     val connectorId: String,
     val path: String,
-    private val webSecurityHandler: WebSecurityHandler
+    private val webSecurityHandler: WebSecurityHandler,
 ) : ConnectorBase(openAIConnectorType, setOf(CAROUSEL)) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         internal val defaultModel = Model(id = ModelId("tock"))
     }
 
     override fun register(controller: ConnectorController) {
-
         controller.registerServices(path) { router ->
             logger.debug("deploy Open API connector services for root path $path ")
 
-            val corsHandler = CorsHandler.create()
-                .addOriginWithRegex(corsPattern)
-                .allowedMethods(setOf(OPTIONS, GET, POST))
-                .allowedHeader("Access-Control-Allow-Origin")
-                .allowedHeader("Content-Type")
-                .allowedHeader("X-Requested-With")
-                .allowedHeader("Accept-Language")
-                .allowedHeader("X-OpenWebUI-Chat-Id")
-                .allowedHeader("X-OpenWebUI-User-Name")
-                .allowedHeader("X-OpenWebUI-User-Id")
-                .allowedHeader("X-OpenWebUI-User-Email")
-                .allowedHeader("X-OpenWebUI-User-Role")
-                // browsers do not send or save cookies unless credentials are allowed
-                .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
+            val corsHandler =
+                CorsHandler.create()
+                    .addOriginWithRegex(corsPattern)
+                    .allowedMethods(setOf(OPTIONS, GET, POST))
+                    .allowedHeader("Access-Control-Allow-Origin")
+                    .allowedHeader("Content-Type")
+                    .allowedHeader("X-Requested-With")
+                    .allowedHeader("Accept-Language")
+                    .allowedHeader("X-OpenWebUI-Chat-Id")
+                    .allowedHeader("X-OpenWebUI-User-Name")
+                    .allowedHeader("X-OpenWebUI-User-Id")
+                    .allowedHeader("X-OpenWebUI-User-Email")
+                    .allowedHeader("X-OpenWebUI-User-Role")
+                    // browsers do not send or save cookies unless credentials are allowed
+                    .allowCredentials(webSecurityHandler is WebSecurityCookiesHandler)
 
             router
                 .route("$path*")
@@ -138,7 +137,7 @@ class OpenAIConnector internal constructor(
     private fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
-        body: String
+        body: String,
     ) {
         val timerData = BotRepository.requestTimer.start("openai_webhook")
         try {
@@ -149,15 +148,16 @@ class OpenAIConnector internal constructor(
                 response.setupSSE(addEndHandler = true, keepAlive = false)
             } else {
                 if (!supportUnstreamed) {
-                    //TODO Open WebUI send a not streamed system prompt - for now just ignore
+                    // TODO Open WebUI send a not streamed system prompt - for now just ignore
                     logger.debug { "ignore unstreamed message" }
                     context.end()
                     return
                 }
             }
             val chatId = context.request().getHeader("X-OpenWebUI-Chat-Id")
-            val locale = context.request().getHeader("Accept-Language")
-                ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
+            val locale =
+                context.request().getHeader("Accept-Language")
+                    ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
             val event = request.toEvent(connectorId, chatId)
             handleEvent(connectorId, locale, event, controller, context, emptyMap())
         } catch (t: Throwable) {
@@ -176,19 +176,20 @@ class OpenAIConnector internal constructor(
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
     ) {
-        val callback = OpenAIConnectorCallback(
-            applicationId = applicationId,
-            locale = locale,
-            context = context,
-            eventId = event.id.toString(),
-            streamedResponse = (event as? Action)?.metadata?.streamedResponse == true
-        )
+        val callback =
+            OpenAIConnectorCallback(
+                applicationId = applicationId,
+                locale = locale,
+                context = context,
+                eventId = event.id.toString(),
+                streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
+            )
         controller.handle(
             event,
             ConnectorData(
                 callback = callback,
-                metadata = headersMetadata
-            )
+                metadata = headersMetadata,
+            ),
         )
     }
 
@@ -199,7 +200,7 @@ class OpenAIConnector internal constructor(
         step: StoryStepDef?,
         parameters: Map<String, String>,
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit
+        errorListener: (Throwable) -> Unit,
     ) {
         if (!sseEnabled) {
             throw UnsupportedOperationException("OpenAI Connector only supports notifications when SSE is enabled")
@@ -207,21 +208,26 @@ class OpenAIConnector internal constructor(
         handleEvent(
             applicationId = connectorId,
             locale = defaultLocale,
-            event = SendChoice(
-                recipientId,
-                connectorId,
-                PlayerId(connectorId, bot),
-                intent.wrappedIntent().name,
-                step,
-                parameters
-            ),
+            event =
+                SendChoice(
+                    recipientId,
+                    connectorId,
+                    PlayerId(connectorId, bot),
+                    intent.wrappedIntent().name,
+                    step,
+                    parameters,
+                ),
             controller = controller,
             context = null,
             headersMetadata = emptyMap(),
         )
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         when (event) {
             is Action -> {
                 when (callback) {
@@ -237,7 +243,10 @@ class OpenAIConnector internal constructor(
         }
     }
 
-    private fun handleCallback(callback: OpenAIConnectorCallback, event: Action) {
+    private fun handleCallback(
+        callback: OpenAIConnectorCallback,
+        event: Action,
+    ) {
         if (callback.streamedResponse) {
             callback.sendStreamedResponse(event)
         } else {
@@ -250,7 +259,10 @@ class OpenAIConnector internal constructor(
 
     override val persistProfileLoaded: Boolean = booleanProperty("tock_openai_connector_persist_profile", false)
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences {
         return when (callback) {
             is OpenAIConnectorCallback -> UserPreferences().apply { locale = callback.locale }
             else -> UserPreferences()
@@ -259,19 +271,22 @@ class OpenAIConnector internal constructor(
 
     override fun addSuggestions(
         text: CharSequence,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        OpenAIConnectorMessage(text.toString(), suggestions.map { it.toString() })
-    }
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            OpenAIConnectorMessage(text.toString(), suggestions.map { it.toString() })
+        }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        (message as? OpenAIConnectorMessage)?.run { copy(suggestions = this.suggestions + suggestions.map { it.toString() }) }
-    }
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            (message as? OpenAIConnectorMessage)?.run { copy(suggestions = this.suggestions + suggestions.map { it.toString() }) }
+        }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        listOf(OpenAIConnectorMessage(mediaMessage = message))
-    }
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            listOf(OpenAIConnectorMessage(mediaMessage = message))
+        }
 }

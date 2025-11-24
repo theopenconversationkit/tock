@@ -31,22 +31,24 @@ import kotlin.test.assertEquals
  *
  */
 internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
-
-    private val entityType = EntityTypeDefinition(
-        "test:desc",
-        "desc",
-        dictionary = true
-    )
-
-    private val dictionary = DictionaryData(
-        "test", "desc",
-        listOf(
-            PredefinedValue(
-                "A",
-                mapOf(ENGLISH to listOf("B", "C"))
-            )
+    private val entityType =
+        EntityTypeDefinition(
+            "test:desc",
+            "desc",
+            dictionary = true,
         )
-    )
+
+    private val dictionary =
+        DictionaryData(
+            "test",
+            "desc",
+            listOf(
+                PredefinedValue(
+                    "A",
+                    mapOf(ENGLISH to listOf("B", "C")),
+                ),
+            ),
+        )
 
     private val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 
@@ -72,7 +74,7 @@ internal class EntityTypeDefinitionMongoDAOTest : AbstractTest() {
         entityTypeDAO.deletePredefinedValueLabelByName(entityType.name, "A", ENGLISH, "C")
         assertEquals(
             listOf("B"),
-            entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values?.first()?.labels?.get(ENGLISH)
+            entityTypeDAO.getDictionaryDataByEntityName(entityType.name)?.values?.first()?.labels?.get(ENGLISH),
         )
     }
 }

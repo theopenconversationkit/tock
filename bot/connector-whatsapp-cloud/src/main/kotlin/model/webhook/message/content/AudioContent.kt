@@ -19,6 +19,6 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AudioContent(
-        val id: String,
-        @JsonProperty("mime_type") val mimeType: String
+    val id: String,
+    @JsonProperty("mime_type") val mimeType: String,
 )

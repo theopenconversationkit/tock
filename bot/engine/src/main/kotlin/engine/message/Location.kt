@@ -27,21 +27,20 @@ import ai.tock.bot.engine.user.UserLocation
  */
 data class Location(
     val location: UserLocation?,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : Message {
-
     override val eventType: EventType = EventType.location
 
     override fun toAction(
         playerId: PlayerId,
         applicationId: String,
-        recipientId: PlayerId
+        recipientId: PlayerId,
     ): Action {
         return SendLocation(
             playerId,
             applicationId,
             recipientId,
-            location
+            location,
         )
     }
 

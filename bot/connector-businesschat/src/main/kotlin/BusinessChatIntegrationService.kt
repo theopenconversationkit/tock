@@ -36,18 +36,29 @@ import kotlin.reflect.KClass
  * In order to manage CSP BusinessChat integration.
  */
 interface BusinessChatIntegrationService {
-
     val baseUrl: String
 
-    fun parseThreadControl(message: ReceivedModel, connectorId: String): Event?
+    fun parseThreadControl(
+        message: ReceivedModel,
+        connectorId: String,
+    ): Event?
 
     fun authInterceptor(): Interceptor?
 
-    fun passControl(sourceId: String, recipient: String)
+    fun passControl(
+        sourceId: String,
+        recipient: String,
+    )
 
-    fun takeControl(sourceId: String, recipient: String)
+    fun takeControl(
+        sourceId: String,
+        recipient: String,
+    )
 
-    fun <T : Any> createClient(clazz: KClass<T>, logger: KLogger): T {
+    fun <T : Any> createClient(
+        clazz: KClass<T>,
+        logger: KLogger,
+    ): T {
         fun bodyToString(request: RequestBody?): String? {
             return try {
                 val buffer = Buffer()
@@ -60,29 +71,33 @@ interface BusinessChatIntegrationService {
             }
         }
 
-        val headerInterceptor = Interceptor { chain ->
-            val original = chain.request()
-            val request = try {
-                val bodyString = bodyToString(original.body)
-                if (bodyString != null) {
-                    val message = mapper.readValue<BusinessChatCommonModel>(bodyString)
-                    original.newBuilder()
-                        .addHeader("id", message.id)
-                        .addHeader("Source-Id", message.sourceId)
-                        .addHeader("Destination-Id", message.destinationId)
-                        .method(original.method, original.body)
-                        .build()
-                } else null
-            } catch (e: Exception) {
-                logger.debug("error in deserialising json object")
-                original
+        val headerInterceptor =
+            Interceptor { chain ->
+                val original = chain.request()
+                val request =
+                    try {
+                        val bodyString = bodyToString(original.body)
+                        if (bodyString != null) {
+                            val message = mapper.readValue<BusinessChatCommonModel>(bodyString)
+                            original.newBuilder()
+                                .addHeader("id", message.id)
+                                .addHeader("Source-Id", message.sourceId)
+                                .addHeader("Destination-Id", message.destinationId)
+                                .method(original.method, original.body)
+                                .build()
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
+                        logger.debug("error in deserialising json object")
+                        original
+                    }
+                chain.proceed(request ?: original)
             }
-            chain.proceed(request ?: original)
-        }
         return retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_business_chat_request_timeout_ms", 30000),
             logger,
-            interceptors = listOfNotNull(authInterceptor(), headerInterceptor)
+            interceptors = listOfNotNull(authInterceptor(), headerInterceptor),
         )
             .baseUrl(baseUrl)
             .addJacksonConverter()

@@ -15,13 +15,13 @@
  */
 package ai.tock.bot.connector.iadvize
 
-import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.ConnectorConfiguration
-import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.ConnectorTypeConfigurationField
-import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
 import java.util.Properties
@@ -47,54 +47,61 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
                 parameters.getOrDefault(DISTRIBUTION_RULE, null),
                 parameters.getOrDefault(SECRET_TOKEN, null),
                 parameters.getValue(DISTRIBUTION_RULE_UNAVAILABLE_MESSAGE),
-                parameters.getOrDefault(LOCALE_CODE, null)
+                parameters.getOrDefault(LOCALE_CODE, null),
             )
         }
     }
 
     override fun configuration(): ConnectorTypeConfiguration {
         val properties: Properties = loadProperties("/iadvize.properties")
-        val editorUrlField = ConnectorTypeConfigurationField(
-            properties.getProperty(EDITOR_URL),
-            EDITOR_URL,
-            true
-        )
-        val firstMessageField = ConnectorTypeConfigurationField(
-            properties.getProperty(FIRST_MESSAGE),
-            FIRST_MESSAGE,
-            true
-        )
-        val distributionRuleField = ConnectorTypeConfigurationField(
-            properties.getProperty(DISTRIBUTION_RULE),
-            DISTRIBUTION_RULE,
-            false
-        )
-        val secretToken = ConnectorTypeConfigurationField(
-            properties.getProperty(SECRET_TOKEN),
-            SECRET_TOKEN,
-            false
-        )
-        val distributionRuleUnvailableMessageField = ConnectorTypeConfigurationField(
-            properties.getProperty(DISTRIBUTION_RULE_UNAVAILABLE_MESSAGE),
-            DISTRIBUTION_RULE_UNAVAILABLE_MESSAGE,
-            true
-        )
-        val localeCode = ConnectorTypeConfigurationField(
-            properties.getProperty(LOCALE_CODE),
-            LOCALE_CODE,
-            false
-        )
+        val editorUrlField =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(EDITOR_URL),
+                EDITOR_URL,
+                true,
+            )
+        val firstMessageField =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(FIRST_MESSAGE),
+                FIRST_MESSAGE,
+                true,
+            )
+        val distributionRuleField =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(DISTRIBUTION_RULE),
+                DISTRIBUTION_RULE,
+                false,
+            )
+        val secretToken =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(SECRET_TOKEN),
+                SECRET_TOKEN,
+                false,
+            )
+        val distributionRuleUnvailableMessageField =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(DISTRIBUTION_RULE_UNAVAILABLE_MESSAGE),
+                DISTRIBUTION_RULE_UNAVAILABLE_MESSAGE,
+                true,
+            )
+        val localeCode =
+            ConnectorTypeConfigurationField(
+                properties.getProperty(LOCALE_CODE),
+                LOCALE_CODE,
+                false,
+            )
 
         return ConnectorTypeConfiguration(
             connectorType,
-            listOf(editorUrlField,
+            listOf(
+                editorUrlField,
                 firstMessageField,
                 distributionRuleField,
                 secretToken,
                 distributionRuleUnvailableMessageField,
-                localeCode
+                localeCode,
             ),
-            resourceAsString("/iadvize.svg")
+            resourceAsString("/iadvize.svg"),
         )
     }
 

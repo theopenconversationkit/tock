@@ -31,7 +31,6 @@ import java.util.Locale
  *
  */
 class FrontIocIntegrationTest {
-
     val invocationName = property("test_application_name", "")
     val applicationId = property("test_app_id", "")
     val rootFile = File(property("test_export_dir", ""))
@@ -45,14 +44,17 @@ class FrontIocIntegrationTest {
     @Test
     fun generateAlexaSchema() {
         val filterFile = File(rootFile, "alexa.json")
-        val export = AlexaCodecService.exportIntentsSchema(
-            invocationName,
-            applicationId.toId(),
-            localeToExport,
-            if (filterFile.exists())
-                mapper.readValue(filterFile, AlexaFilter::class.java)
-            else null
-        )
+        val export =
+            AlexaCodecService.exportIntentsSchema(
+                invocationName,
+                applicationId.toId(),
+                localeToExport,
+                if (filterFile.exists()) {
+                    mapper.readValue(filterFile, AlexaFilter::class.java)
+                } else {
+                    null
+                },
+            )
         mapper.writeValue(File(rootFile, "schema.json"), export)
     }
 }

@@ -25,5 +25,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class PassThreadControlRequest(
     val recipient: Recipient,
     @JsonProperty("target_app_id") val targetAppId: String? = null,
-    val metadata: String? = null
+    val metadata: String? = null,
 )

@@ -20,5 +20,5 @@ enum class Command(val command: String) {
     APPEND("APPEND"),
     FINALIZE("FINALIZE"),
     INIT("INIT"),
-    STATUS("STATUS")
+    STATUS("STATUS"),
 }

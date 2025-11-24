@@ -18,17 +18,21 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
-import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
-import org.litote.kmongo.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.save
 
 internal object BotSentenceGenerationConfigurationMongoDAO : BotSentenceGenerationConfigurationDAO {
-
     private const val COLLECTION_NAME = "bot_sentence_generation_configuration"
     internal val col = database.getCollection<BotSentenceGenerationConfiguration>(COLLECTION_NAME)
     private val asyncCol = asyncDatabase.getCollection<BotSentenceGenerationConfiguration>()
@@ -43,7 +47,7 @@ internal object BotSentenceGenerationConfigurationMongoDAO : BotSentenceGenerati
 
     override fun findByNamespaceAndBotId(
         namespace: String,
-        botId: String
+        botId: String,
     ): BotSentenceGenerationConfiguration? {
         return col.findOne(Namespace eq namespace, BotId eq botId)
     }
@@ -56,5 +60,4 @@ internal object BotSentenceGenerationConfigurationMongoDAO : BotSentenceGenerati
     override fun delete(id: Id<BotSentenceGenerationConfiguration>) {
         col.deleteOneById(id)
     }
-
 }

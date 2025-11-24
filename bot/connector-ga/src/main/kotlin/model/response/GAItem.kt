@@ -22,9 +22,8 @@ data class GAItem(
     val simpleResponse: GASimpleResponse? = null,
     val basicCard: GABasicCard? = null,
     val structuredResponse: GAStructuredResponse? = null,
-    val mediaResponse: GAMediaResponse? = null
+    val mediaResponse: GAMediaResponse? = null,
 ) {
-
     fun toGenericMessage(): GenericMessage? {
         return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
     }

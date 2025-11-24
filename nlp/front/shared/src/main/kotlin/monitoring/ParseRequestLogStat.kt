@@ -27,5 +27,5 @@ data class ParseRequestLogStat(
     val count: Int,
     val averageDuration: Double,
     val averageIntentProbability: Double,
-    val averageEntitiesProbability: Double
+    val averageEntitiesProbability: Double,
 )

@@ -24,7 +24,6 @@ import ai.tock.bot.connector.media.MediaMessageType.carousel
  * The [MediaCarousel] descriptor.
  */
 data class MediaCarouselDescriptorDump(val cards: List<MediaCardDescriptorDump>) : MediaMessageDescriptorDump {
-
     override val type: MediaMessageType = carousel
 
     constructor(media: MediaCarouselDescriptor) : this(media.cards.map { MediaCardDescriptorDump(it) })

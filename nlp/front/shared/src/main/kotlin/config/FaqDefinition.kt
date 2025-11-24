@@ -22,50 +22,40 @@ import org.litote.kmongo.newId
 import java.time.Instant
 
 data class FaqDefinition(
-
     /**
      * The unique [Id] of the faq.
      */
     val _id: Id<FaqDefinition> = newId(),
-
     /**
      * The bot id (that corresponds to the application name).
      */
     val botId: String,
-
     /**
      * The bot namespace
      */
     val namespace: String,
-
     /**
      * The intent id.
      */
     val intentId: Id<IntentDefinition>,
-
     /**
      * The i18n label id.
      */
     val i18nId: Id<I18nLabel>,
-
     /**
      * List of tags for better Faq categorisation
      */
     val tags: List<String>,
-
     /**
      * Is the Faq enabled?
      */
     val enabled: Boolean,
-
     /**
      * Faq creation date
      */
     val creationDate: Instant,
-
     /**
      * Faq update date
      */
     val updateDate: Instant,
-
-    )
+)

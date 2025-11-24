@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class SlackBuildersTest {
-
     val bus: BotBus = mockk(relaxed = true)
 
     @BeforeEach

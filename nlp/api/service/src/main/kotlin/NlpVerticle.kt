@@ -16,10 +16,6 @@
 
 package ai.tock.nlp.api
 
-/**
- *
- */
-// Add this import at the top with the other imports
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.UnknownApplicationException
 import ai.tock.nlp.front.shared.codec.ApplicationDump
@@ -52,7 +48,6 @@ import org.litote.kmongo.Id
 import java.util.Locale
 
 class NlpVerticle : WebVerticle() {
-
     private val protectPath = verticleBooleanProperty("tock_nlp_protect_path", false)
 
     private val checkEntitiesDefaultHealthcheck = verticleBooleanProperty("tock_nlp_check_healthcheck", false)
@@ -153,8 +148,8 @@ class NlpVerticle : WebVerticle() {
                             query.name,
                             query.label ?: query.name,
                             query.namespace,
-                            supportedLocales = setOf(query.locale)
-                        )
+                            supportedLocales = setOf(query.locale),
+                        ),
                     )
                 } else {
                     null
@@ -169,7 +164,7 @@ class NlpVerticle : WebVerticle() {
                 front.import(
                     dump.application.namespace,
                     dump,
-                    ApplicationImportConfiguration(defaultModelMayExist = true)
+                    ApplicationImportConfiguration(defaultModelMayExist = true),
                 ).modified
             }
         }
@@ -181,7 +176,7 @@ class NlpVerticle : WebVerticle() {
                 front.import(
                     dump.application.namespace,
                     dump,
-                    ApplicationImportConfiguration(defaultModelMayExist = true)
+                    ApplicationImportConfiguration(defaultModelMayExist = true),
                 ).modified
             }
         }
@@ -208,7 +203,7 @@ class NlpVerticle : WebVerticle() {
             } else {
                 try {
                     val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-                    if(app == null) {
+                    if (app == null) {
                         unauthorized()
                     } else {
                         front.search(query.toParseRequestLogCountQuery(app._id)).logs
@@ -232,13 +227,14 @@ class NlpVerticle : WebVerticle() {
         }
     }
 
-    override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        listOf(
-            Pair("duckling_service", { FrontClient.healthcheck() }),
-            Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
-            Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) })
-        ) + NlpClassifierService.healthcheck()
-    )
+    override fun detailedHealthcheck(): (RoutingContext) -> Unit =
+        detailedHealthcheck(
+            listOf(
+                Pair("duckling_service", { FrontClient.healthcheck() }),
+                Pair("tock_front_database", { pingMongoDatabase(TOCK_FRONT_DATABASE) }),
+                Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) }),
+            ) + NlpClassifierService.healthcheck(),
+        )
 }
 
 internal data class ParseRequestLogCountQueryModel(
@@ -259,5 +255,4 @@ internal data class ParseRequestLogCountQueryModel(
             start = start,
             size = size,
         )
-
 }

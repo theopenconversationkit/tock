@@ -18,7 +18,9 @@ package ai.tock.bot.connector.mattermost
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.mattermost.model.*
+import ai.tock.bot.connector.mattermost.model.Link
+import ai.tock.bot.connector.mattermost.model.MattermostConnectorMessage
+import ai.tock.bot.connector.mattermost.model.MattermostMessageOut
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 
@@ -37,7 +39,7 @@ val mattermostConnectorType = ConnectorType(MATTERMOST_CONNECTOR_TYPE_ID)
  */
 fun <T : Bus<T>> T.sendToMattermost(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> MattermostConnectorMessage
+    messageProvider: T.() -> MattermostConnectorMessage,
 ): T {
     if (targetConnectorType == mattermostConnectorType) {
         withMessage(messageProvider(this))
@@ -51,7 +53,7 @@ fun <T : Bus<T>> T.sendToMattermost(
  */
 fun <T : Bus<T>> T.endForMattermost(
     delay: Long = defaultDelay(currentAnswerIndex),
-    messageProvider: T.() -> MattermostConnectorMessage
+    messageProvider: T.() -> MattermostConnectorMessage,
 ): T {
     if (targetConnectorType == mattermostConnectorType) {
         withMessage(messageProvider(this))
@@ -71,7 +73,7 @@ fun <T : Bus<T>> T.withMattermost(messageProvider: () -> MattermostConnectorMess
 fun I18nTranslator.textMessage(
     message: CharSequence,
     channel: String? = null,
-    username: String? = null
+    username: String? = null,
 ): MattermostMessageOut {
     return MattermostMessageOut(translate(message).toString(), channel = channel, username = username)
 }
@@ -80,36 +82,37 @@ fun I18nTranslator.textMessageLinks(
     message: CharSequence,
     channel: String? = null,
     username: String? = null,
-    links: List<Link> = emptyList()
+    links: List<Link> = emptyList(),
 ): MattermostMessageOut {
     val t = translate(message).toString()
 
     return MattermostMessageOut(t, channel = channel, username = username, links = links)
 }
 
-fun I18nTranslator.multiLineMessage(lines: List<CharSequence>, channel: String? = null): MattermostMessageOut =
-    MattermostMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
+fun I18nTranslator.multiLineMessage(
+    lines: List<CharSequence>,
+    channel: String? = null,
+): MattermostMessageOut = MattermostMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
 
 fun I18nTranslator.mattermostMessage(
     message: CharSequence,
     channel: String? = null,
-    username: String? = null
+    username: String? = null,
 ): MattermostMessageOut {
     return MattermostMessageOut(
         translate(message).toString(),
         channel = channel,
-        username = username
+        username = username,
     )
 }
 
 fun I18nTranslator.mattermostLink(
     title: CharSequence,
-    url: String
+    url: String,
 ): Link {
     val t = translate(title).toString()
     return Link(
         t,
-        url
+        url,
     )
 }
-

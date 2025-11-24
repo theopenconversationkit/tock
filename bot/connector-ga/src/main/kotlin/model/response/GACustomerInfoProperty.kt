@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 enum class GACustomerInfoProperty {
     CUSTOMER_INFO_PROPERTY_UNSPECIFIED,
-    EMAIL
+    EMAIL,
 }

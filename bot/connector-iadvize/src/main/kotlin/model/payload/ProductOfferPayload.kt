@@ -20,18 +20,19 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.payload.generic
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
 import com.fasterxml.jackson.annotation.JsonFormat
 
-data class ProductOfferPayload(val name: String,
-                               val price: String,
-                               val offerPrice: String?,
-                               val description: String,
-                               val availability: AvailabilityStatus,
-                               val image: Image?,
-                               val actions: MutableList<Action> = mutableListOf())
-    : Payload("product-offer") {
-
+data class ProductOfferPayload(
+    val name: String,
+    val price: String,
+    val offerPrice: String?,
+    val description: String,
+    val availability: AvailabilityStatus,
+    val image: Image?,
+    val actions: MutableList<Action> = mutableListOf(),
+) :
+    Payload("product-offer") {
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     enum class AvailabilityStatus(val status: String) {
         AVAILABLE("available"),
-        UNAVAILABLE("unavailable")
+        UNAVAILABLE("unavailable"),
     }
 }

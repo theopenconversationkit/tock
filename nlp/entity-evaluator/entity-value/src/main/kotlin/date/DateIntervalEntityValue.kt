@@ -25,9 +25,8 @@ import java.time.ZonedDateTime
  */
 data class DateIntervalEntityValue(
     val date: DateEntityValue,
-    val toDate: DateEntityValue
+    val toDate: DateEntityValue,
 ) : DateEntityRange {
-
     override fun start(): ZonedDateTime {
         return date.date
     }

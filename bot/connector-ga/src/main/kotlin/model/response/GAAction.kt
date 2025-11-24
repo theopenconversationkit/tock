@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAAction(
     val type: GAActionType,
-    val button: GAButton
+    val button: GAButton,
 )

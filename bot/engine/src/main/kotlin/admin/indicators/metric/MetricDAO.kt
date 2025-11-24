@@ -37,20 +37,28 @@ interface MetricDAO {
      * @param namespace the namespace
      * @param botId the bot id
      */
-    fun findAllByBotId(namespace: String, botId: String): List<Metric>
+    fun findAllByBotId(
+        namespace: String,
+        botId: String,
+    ): List<Metric>
 
     /**
      * Find all metrics by filtering and grouping data
      * @param filter the [MetricFilter]
      * @param groupBy list of [MetricGroupBy]
      */
-    fun filterAndGroupBy(filter: MetricFilter, groupBy: List<MetricGroupBy>): List<CustomMetric>
+    fun filterAndGroupBy(
+        filter: MetricFilter,
+        groupBy: List<MetricGroupBy>,
+    ): List<CustomMetric>
 
     /**
      * Delete a metric by namespace and its application name
      * @param namespace the namespace
      * @param botId the application name
      */
-    fun deleteByApplicationName(namespace: String, botId: String): Boolean
-
+    fun deleteByApplicationName(
+        namespace: String,
+        botId: String,
+    ): Boolean
 }

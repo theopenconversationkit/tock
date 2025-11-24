@@ -96,10 +96,8 @@ data class ClassifiedSentence(
      * Other intents with significant probabilities.
      */
     val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
-
-    val configuration : String? = null
+    val configuration: String? = null,
 ) {
-
     constructor(
         result: ParseResult,
         language: Locale,
@@ -128,21 +126,21 @@ data class ClassifiedSentence(
         intentId: Id<IntentDefinition>,
         lastIntentProbability: Double,
         lastEntityProbability: Double,
-        configuration: String?
+        configuration: String?,
     ) :
-            this(
-                result.retainedQuery,
-                language,
-                applicationId,
-                Instant.now(),
-                Instant.now(),
-                ClassifiedSentenceStatus.inbox,
-                Classification(result, intentId),
-                lastIntentProbability,
-                lastEntityProbability,
-                otherIntentsProbabilities = result.otherIntentsProbabilities,
-                configuration = configuration
-            )
+        this(
+            result.retainedQuery,
+            language,
+            applicationId,
+            Instant.now(),
+            Instant.now(),
+            ClassifiedSentenceStatus.inbox,
+            Classification(result, intentId),
+            lastIntentProbability,
+            lastEntityProbability,
+            otherIntentsProbabilities = result.otherIntentsProbabilities,
+            configuration = configuration,
+        )
 
     /**
      * Build an expression from this sentence.
@@ -152,7 +150,7 @@ data class ClassifiedSentence(
      */
     fun toSampleExpression(
         intentProvider: (Id<IntentDefinition>) -> Intent,
-        entityTypeProvider: (String) -> EntityType?
+        entityTypeProvider: (String) -> EntityType?,
     ): SampleExpression {
         return SampleExpression(
             text,
@@ -160,11 +158,14 @@ data class ClassifiedSentence(
             classification.entities.mapNotNull {
                 toSampleEntity(it, entityTypeProvider)
             },
-            SampleContext(language)
+            SampleContext(language),
         )
     }
 
-    private fun toSampleEntity(entity: ClassifiedEntity, entityTypeProvider: (String) -> EntityType?): SampleEntity? {
+    private fun toSampleEntity(
+        entity: ClassifiedEntity,
+        entityTypeProvider: (String) -> EntityType?,
+    ): SampleEntity? {
         return entityTypeProvider
             .invoke(entity.type)
             ?.run {
@@ -172,7 +173,7 @@ data class ClassifiedSentence(
                     Entity(this, entity.role),
                     entity.subEntities.mapNotNull { toSampleEntity(it, entityTypeProvider) },
                     entity.start,
-                    entity.end
+                    entity.end,
                 )
             }
     }

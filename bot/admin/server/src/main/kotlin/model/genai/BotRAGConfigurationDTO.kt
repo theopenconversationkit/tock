@@ -57,8 +57,9 @@ data class BotRAGConfigurationDTO(
         questionCondensingLlmSetting = configuration.questionCondensingLlmSetting?.toDTO(),
         questionCondensingPrompt = configuration.questionCondensingPrompt,
         questionAnsweringLlmSetting = configuration.getQuestionAnsweringLLMSetting().toDTO(),
-        questionAnsweringPrompt = configuration.questionAnsweringPrompt
-            ?: configuration.initQuestionAnsweringPrompt(),
+        questionAnsweringPrompt =
+            configuration.questionAnsweringPrompt
+                ?: configuration.initQuestionAnsweringPrompt(),
         emSetting = configuration.emSetting.toDTO(),
         indexSessionId = configuration.indexSessionId,
         indexName = configuration.generateIndexName(),
@@ -76,26 +77,29 @@ data class BotRAGConfigurationDTO(
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            questionCondensingLlmSetting = LLMSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_RAG_QUESTION_CONDENSING,
-                dto = questionCondensingLlmSetting!!
-            ),
+            questionCondensingLlmSetting =
+                LLMSettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_RAG_QUESTION_CONDENSING,
+                    dto = questionCondensingLlmSetting!!,
+                ),
             questionCondensingPrompt = questionCondensingPrompt,
-            questionAnsweringLlmSetting = LLMSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_RAG_QUESTION_ANSWERING,
-                dto = questionAnsweringLlmSetting
-            ),
+            questionAnsweringLlmSetting =
+                LLMSettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_RAG_QUESTION_ANSWERING,
+                    dto = questionAnsweringLlmSetting,
+                ),
             questionAnsweringPrompt = questionAnsweringPrompt,
-            emSetting = EMSettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_RAG_EMBEDDING_QUESTION,
-                dto = emSetting
-            ),
+            emSetting =
+                EMSettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_RAG_EMBEDDING_QUESTION,
+                    dto = emSetting,
+                ),
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
             noAnswerStoryId = noAnswerStoryId,
@@ -114,10 +118,7 @@ private fun BotRAGConfiguration.generateIndexName(): String? {
             it,
             maxDocumentsRetrieved,
             VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
-                ?.setting
+                ?.setting,
         ).second
     }
 }
-
-
-

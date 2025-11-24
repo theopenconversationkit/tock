@@ -25,15 +25,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class DirectMessage(
     val id: String,
     @JsonProperty("created_timestamp") val created: Long,
-    @JsonProperty("message_create") val messageCreated: MessageCreate
+    @JsonProperty("message_create") val messageCreated: MessageCreate,
 ) {
-    fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(messageCreated.senderId, playerType)
+    fun playerId(playerType: PlayerType): PlayerId = PlayerId(messageCreated.senderId, playerType)
 
-    fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
-        messageCreated.target.recipientId,
-        playerType
-    )
+    fun recipientId(playerType: PlayerType): PlayerId =
+        PlayerId(
+            messageCreated.target.recipientId,
+            playerType,
+        )
 
     @JsonIgnore
     fun getMessageId(): String =
@@ -45,8 +45,7 @@ data class DirectMessage(
             }
         }
 
-    fun isQuote(): Boolean =
-        textWithoutUrls().isBlank() && messageCreated.messageData.entities?.urls?.all { url -> url.url.startsWith("https://t.co/") } ?: false
+    fun isQuote(): Boolean = textWithoutUrls().isBlank() && messageCreated.messageData.entities?.urls?.all { url -> url.url.startsWith("https://t.co/") } ?: false
 
     fun textWithoutUrls(): String {
         val messageData = messageCreated.messageData

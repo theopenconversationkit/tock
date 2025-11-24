@@ -27,8 +27,9 @@ import com.google.api.gax.core.GoogleCredentialsProvider
 /**
  * The DialogFlow Nlp client module.
  */
-val dialogFlowModule = Kodein.Module {
-    bind<NlpClient>(overrides = true) with singleton { TockDialogflowNlpClient() }
-    bind<NlpController>(overrides = true) with singleton { DialogflowNlp() }
-    bind<CredentialsProvider>() with singleton { GoogleCredentialsProvider.newBuilder().setScopesToApply(emptyList()).build() }
-}
+val dialogFlowModule =
+    Kodein.Module {
+        bind<NlpClient>(overrides = true) with singleton { TockDialogflowNlpClient() }
+        bind<NlpController>(overrides = true) with singleton { DialogflowNlp() }
+        bind<CredentialsProvider>() with singleton { GoogleCredentialsProvider.newBuilder().setScopesToApply(emptyList()).build() }
+    }

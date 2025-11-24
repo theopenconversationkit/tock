@@ -19,6 +19,9 @@ package ai.tock.nlp.entity.temperature
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class TemperatureUnit {
-    celsius, fahrenheit, degree
+    celsius,
+    fahrenheit,
+    degree,
 }

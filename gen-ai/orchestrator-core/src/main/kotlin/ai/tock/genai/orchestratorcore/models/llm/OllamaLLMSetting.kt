@@ -24,7 +24,7 @@ data class OllamaLLMSetting<T>(
     val baseUrl: String,
 ) : LLMSettingBase<T>(provider = LLMProvider.Ollama, temperature = temperature, prompt = prompt) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
-        return this.copy(temperature=temperature)
+        return this.copy(temperature = temperature)
     }
 }
 

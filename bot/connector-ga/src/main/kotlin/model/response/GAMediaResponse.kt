@@ -16,9 +16,9 @@
 
 package ai.tock.bot.connector.ga.model.response
 
-import ai.tock.bot.connector.ga.model.response.GAMediaType.*
+import ai.tock.bot.connector.ga.model.response.GAMediaType.MEDIA_TYPE_UNSPECIFIED
 
 data class GAMediaResponse(
     val mediaType: GAMediaType = MEDIA_TYPE_UNSPECIFIED,
-    val mediaObjects: List<GAMediaObject> = emptyList()
+    val mediaObjects: List<GAMediaObject> = emptyList(),
 )

@@ -55,10 +55,12 @@ import org.litote.kmongo.toId
  *
  */
 internal object WebhookActionConverter {
-
     private val logger = KotlinLogging.logger {}
 
-    fun toEvent(message: Webhook, applicationId: String): Event? {
+    fun toEvent(
+        message: Webhook,
+        applicationId: String,
+    ): Event? {
         return when (message) {
             is MessageWebhook ->
                 with(message.message) {
@@ -73,7 +75,7 @@ internal object WebhookActionConverter {
                                         payload,
                                         message.playerId(PlayerType.user),
                                         applicationId,
-                                        message.recipientId(PlayerType.bot)
+                                        message.recipientId(PlayerType.bot),
                                     )
                                 }
                         }
@@ -100,7 +102,7 @@ internal object WebhookActionConverter {
                         message.playerId(PlayerType.user),
                         applicationId,
                         message.recipientId(PlayerType.bot),
-                        message.postback.referral?.ref
+                        message.postback.referral?.ref,
                     )
                 }
             }
@@ -109,21 +111,22 @@ internal object WebhookActionConverter {
                     message.playerId(PlayerType.user),
                     message.recipientId(PlayerType.bot),
                     message.optin.ref,
-                    applicationId
+                    applicationId,
                 )
             is AccountLinkingWebhook -> {
                 when (message.accountLinking.status) {
-                    AccountLinkingStatus.linked -> LoginEvent(
-                        message.playerId(PlayerType.user),
-                        message.recipientId(PlayerType.bot),
-                        message.accountLinking.authorizationCode!!,
-                        applicationId
-                    )
+                    AccountLinkingStatus.linked ->
+                        LoginEvent(
+                            message.playerId(PlayerType.user),
+                            message.recipientId(PlayerType.bot),
+                            message.accountLinking.authorizationCode!!,
+                            applicationId,
+                        )
                     AccountLinkingStatus.unlinked ->
                         LogoutEvent(
                             message.playerId(PlayerType.user),
                             message.recipientId(PlayerType.bot),
-                            applicationId
+                            applicationId,
                         )
                 }
             }
@@ -145,7 +148,7 @@ internal object WebhookActionConverter {
                                 }
                             }
                                 .toSet()
-                        }
+                        },
                 )
             }
             is RequestThreadControlWebhook -> {
@@ -154,7 +157,7 @@ internal object WebhookActionConverter {
                     message.recipientId(PlayerType.bot),
                     applicationId,
                     message.requestThreadControl.requestOwnerAppId,
-                    message.requestThreadControl.metadata
+                    message.requestThreadControl.metadata,
                 )
             }
             is PassThreadControlWebhook -> {
@@ -163,7 +166,7 @@ internal object WebhookActionConverter {
                     message.recipientId(PlayerType.bot),
                     applicationId,
                     message.passThreadControl.newOwnerAppId,
-                    message.passThreadControl.metadata
+                    message.passThreadControl.metadata,
                 )
             }
             is TakeThreadControlWebhook -> {
@@ -172,7 +175,7 @@ internal object WebhookActionConverter {
                     message.recipientId(PlayerType.bot),
                     applicationId,
                     message.takeThreadControl.previousOwnerAppId,
-                    message.takeThreadControl.metadata
+                    message.takeThreadControl.metadata,
                 )
             }
             is ReferralParametersWebhook -> {
@@ -180,7 +183,7 @@ internal object WebhookActionConverter {
                     message.playerId(PlayerType.user),
                     message.recipientId(PlayerType.bot),
                     applicationId,
-                    message.referral.ref
+                    message.referral.ref,
                 )
             }
             else -> {
@@ -190,25 +193,32 @@ internal object WebhookActionConverter {
         }
     }
 
-    private fun readSentence(message: MessageWebhook, applicationId: String): SendSentence {
+    private fun readSentence(
+        message: MessageWebhook,
+        applicationId: String,
+    ): SendSentence {
         return SendSentence(
             message.playerId(PlayerType.user),
             applicationId,
             message.recipientId(PlayerType.bot),
             message.message.text ?: "",
             mutableListOf(message),
-            message.getMessageId().toId()
+            message.getMessageId().toId(),
         )
     }
 
-    private fun readLocation(message: MessageWebhook, attachment: Attachment, applicationId: String): SendLocation {
+    private fun readLocation(
+        message: MessageWebhook,
+        attachment: Attachment,
+        applicationId: String,
+    ): SendLocation {
         logger.debug { "read location attachment : $attachment" }
         return SendLocation(
             message.playerId(PlayerType.user),
             applicationId,
             message.recipientId(PlayerType.bot),
             (attachment.payload as LocationPayload).coordinates.toUserLocation(),
-            message.getMessageId().toId()
+            message.getMessageId().toId(),
         )
     }
 
@@ -216,7 +226,7 @@ internal object WebhookActionConverter {
         message: MessageWebhook,
         attachment: Attachment,
         applicationId: String,
-        attachmentType: SendAttachment.AttachmentType
+        attachmentType: SendAttachment.AttachmentType,
     ): SendAttachment {
         logger.debug { "read attachment : $attachment" }
         return SendAttachment(
@@ -225,7 +235,7 @@ internal object WebhookActionConverter {
             message.recipientId(PlayerType.bot),
             (attachment.payload as UrlPayload).url,
             attachmentType,
-            message.getMessageId().toId()
+            message.getMessageId().toId(),
         )
     }
 }

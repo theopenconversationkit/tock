@@ -24,11 +24,10 @@ import java.time.Instant
  */
 data class UserStateSearchResult(
     val creationDate: Instant,
-    val flags: Set<String>
+    val flags: Set<String>,
 ) {
-
     constructor(state: UserState) : this(
         state.creationDate,
-        state.flags.filter { it.value.isValid() }.keys
+        state.flags.filter { it.value.isValid() }.keys,
     )
 }

@@ -25,6 +25,9 @@ import ai.tock.shared.ThreadSafe
  */
 @ThreadSafe
 interface IntentClassifier {
-
-    fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification
+    fun classifyIntent(
+        context: IntentContext,
+        text: String,
+        tokens: Array<String>,
+    ): IntentClassification
 }

@@ -19,7 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplate
 
 data class WhatsAppCloudSendBotTemplateMessage(
-        val template: WhatsAppCloudBotTemplate,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val to: String,
+    val template: WhatsAppCloudBotTemplate,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val to: String,
 ) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.template)

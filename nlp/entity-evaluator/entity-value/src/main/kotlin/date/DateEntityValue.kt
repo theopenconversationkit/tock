@@ -24,7 +24,6 @@ import java.time.ZonedDateTime
  * Wraps a [ZonedDateTime] with a [DateEntityGrain].
  */
 data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) : DateEntityRange {
-
     override fun start(): ZonedDateTime {
         return date
     }

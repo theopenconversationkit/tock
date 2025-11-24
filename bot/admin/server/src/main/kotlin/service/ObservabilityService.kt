@@ -34,15 +34,18 @@ import mu.KotlinLogging
  * Service that manage the observability functionality
  */
 object ObservabilityService {
-
     private val logger: KLogger = KotlinLogging.logger {}
     private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
+
     /**
      * Get the Observability configuration
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun getObservabilityConfiguration(namespace: String, botId: String): BotObservabilityConfiguration? {
+    fun getObservabilityConfiguration(
+        namespace: String,
+        botId: String,
+    ): BotObservabilityConfiguration? {
         return observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
@@ -52,7 +55,11 @@ object ObservabilityService {
      * @param botId: the botId
      * @param enabled: the observability activation (enabled or not)
      */
-    fun getObservabilityConfiguration(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration? {
+    fun getObservabilityConfiguration(
+        namespace: String,
+        botId: String,
+        enabled: Boolean,
+    ): BotObservabilityConfiguration? {
         return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
     }
 
@@ -61,9 +68,13 @@ object ObservabilityService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun deleteConfig(namespace: String, botId: String) {
-        val observabilityConfig = observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
+    fun deleteConfig(
+        namespace: String,
+        botId: String,
+    ) {
+        val observabilityConfig =
+            observabilityConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
 
         logger.info { "Deleting the Observability Configuration [namespace: $namespace, botId: $botId]" }
         observabilityConfigurationDAO.delete(observabilityConfig._id)
@@ -81,9 +92,7 @@ object ObservabilityService {
      * @throws [BadRequestException] if the observability configuration is invalid
      * @return [BotObservabilityConfiguration]
      */
-    fun saveObservability(
-        observabilityConfig: BotObservabilityConfigurationDTO
-    ): BotObservabilityConfiguration {
+    fun saveObservability(observabilityConfig: BotObservabilityConfigurationDTO): BotObservabilityConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(observabilityConfig.namespace, observabilityConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${observabilityConfig.namespace}, botId = ${observabilityConfig.botId}]")
         return saveObservabilityConfiguration(observabilityConfig)
@@ -93,13 +102,11 @@ object ObservabilityService {
      * Save the Observability configuration
      * @param observabilityConfiguration [BotObservabilityConfigurationDTO]
      */
-    private fun saveObservabilityConfiguration(
-        observabilityConfiguration: BotObservabilityConfigurationDTO
-    ): BotObservabilityConfiguration {
+    private fun saveObservabilityConfiguration(observabilityConfiguration: BotObservabilityConfigurationDTO): BotObservabilityConfiguration {
         val observabilityConfig = observabilityConfiguration.toBotObservabilityConfiguration()
 
         // Check validity of the observability configuration
-        if(observabilityConfig.enabled) {
+        if (observabilityConfig.enabled) {
             ObservabilityValidationService.validate(observabilityConfig).let { errors ->
                 if (errors.isNotEmpty()) {
                     throw BadRequestException(errors)
@@ -115,5 +122,4 @@ object ObservabilityService {
             throw BadRequestException(e.message ?: "Observability Configuration: registration failed ")
         }
     }
-
 }

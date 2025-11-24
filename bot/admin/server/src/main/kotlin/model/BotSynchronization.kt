@@ -19,11 +19,11 @@ package ai.tock.bot.admin.model
 data class BotSynchronization(
     val source: BotSynchronizationConfig,
     val target: BotSynchronizationConfig,
-    val withInboxMessages: Boolean = false
+    val withInboxMessages: Boolean = false,
 )
 
 data class BotSynchronizationConfig(
     val namespace: String,
     val applicationName: String,
-    val applicationId: String
+    val applicationId: String,
 )

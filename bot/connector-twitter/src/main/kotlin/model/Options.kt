@@ -21,6 +21,5 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 
 @JsonTypeName("options")
 data class Options(val options: List<AbstractOption>) : QuickReply() {
-    override fun toChoices(): List<Choice> =
-        options.mapNotNull { it.toChoice() }
+    override fun toChoices(): List<Choice> = options.mapNotNull { it.toChoice() }
 }

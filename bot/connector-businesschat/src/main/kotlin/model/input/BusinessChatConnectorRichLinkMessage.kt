@@ -27,9 +27,8 @@ data class BusinessChatConnectorRichLinkMessage(
     val url: String,
     val title: String,
     val image: ByteArray,
-    val mimeType: String
+    val mimeType: String,
 ) : BusinessChatConnectorMessage() {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

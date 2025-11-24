@@ -23,13 +23,18 @@ data class WhatsAppComponent(
     @get:JsonProperty("sub_type")
     val subType: WhatsAppComponentSubType? = null,
     val index: Int? = null,
-    val parameters: List<WhatsAppParameter>
+    val parameters: List<WhatsAppParameter>,
 )
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppComponentType {
-    header, body, button
+    header,
+    body,
+    button,
 }
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppComponentSubType {
-    url, quick_reply
+    url,
+    quick_reply,
 }

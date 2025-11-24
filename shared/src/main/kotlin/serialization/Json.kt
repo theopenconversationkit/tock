@@ -16,7 +16,6 @@
 
 package ai.tock.shared.serialization
 
-
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -79,7 +78,10 @@ class AnySerializer : KSerializer<Any> {
         }
     }
 
-    override fun deserialize(decoder: Decoder): Any = error("Deserialization is not supported for AnySerializer - this serializer is for encoding only")
+    override fun deserialize(decoder: Decoder): Any =
+        error(
+            "Deserialization is not supported for AnySerializer - this serializer is for encoding only",
+        )
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -99,4 +101,3 @@ inline fun <reified T : Any> writeJson(
 ) = json.encodeToStream(content, output)
 
 inline fun <reified T : Any> writeJson(content: T): String = json.encodeToString(content)
-

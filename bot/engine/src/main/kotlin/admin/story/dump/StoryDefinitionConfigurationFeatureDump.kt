@@ -24,14 +24,14 @@ data class StoryDefinitionConfigurationFeatureDump(
     val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
     val enabled: Boolean = true,
     val switchToStoryId: String? = null,
-    val endWithStoryId: String? = null
+    val endWithStoryId: String? = null,
 ) {
     constructor(def: StoryDefinitionConfigurationFeature) :
         this(
             def.botApplicationConfigurationId,
             def.enabled,
             def.switchToStoryId,
-            def.endWithStoryId
+            def.endWithStoryId,
         )
 
     fun toFeature(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfigurationFeature? =
@@ -40,7 +40,7 @@ data class StoryDefinitionConfigurationFeatureDump(
                 botApplicationConfigurationId,
                 enabled,
                 switchToStoryId,
-                endWithStoryId
+                endWithStoryId,
             )
         } else {
             null

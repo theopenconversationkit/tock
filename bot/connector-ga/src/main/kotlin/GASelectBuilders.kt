@@ -34,8 +34,8 @@ fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAE
     return GAExpectedIntent(
         GAIntent.option,
         optionValueSpec(
-            simpleSelect = GASimpleSelect(items)
-        )
+            simpleSelect = GASimpleSelect(items),
+        ),
     )
 }
 
@@ -45,7 +45,7 @@ fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAE
 fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GASelectItem = selectItem<T>(title, targetIntent, null, null, *parameters)
 
 /**
@@ -55,7 +55,7 @@ fun <T : Bus<T>> T.selectItem(
     title: CharSequence,
     targetIntent: IntentAware,
     optionTitle: CharSequence? = null,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GASelectItem = selectItem(title, targetIntent, null, optionTitle, *parameters)
 
 /**
@@ -66,7 +66,7 @@ fun <T : Bus<T>> T.selectItem(
     targetIntent: IntentAware,
     step: StoryStepDef,
     optionTitle: CharSequence? = null,
-    parameters: Parameters
+    parameters: Parameters,
 ): GASelectItem = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
 
 /**
@@ -77,15 +77,15 @@ fun <T : Bus<T>> T.selectItem(
     targetIntent: IntentAware,
     step: StoryStepDef? = null,
     optionTitle: CharSequence? = null,
-    vararg parameters: Pair<String, String>
+    vararg parameters: Pair<String, String>,
 ): GASelectItem {
     return GASelectItem(
         optionInfo(
             title,
             targetIntent,
             step,
-            *parameters
+            *parameters,
         ),
-        optionTitle?.let { translate(it).toString() }
+        optionTitle?.let { translate(it).toString() },
     )
 }

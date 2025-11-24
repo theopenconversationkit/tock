@@ -24,7 +24,6 @@ import ai.tock.bot.engine.BotBus
  * Story handlers should usually not directly extend this class, but instead extend [StoryHandlerBase].
  */
 interface StoryHandler {
-
     /**
      * Receive a message from the bus.
      *

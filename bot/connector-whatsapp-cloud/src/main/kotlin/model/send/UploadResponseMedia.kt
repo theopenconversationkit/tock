@@ -19,5 +19,5 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class UploadResponseMedia(
-        @JsonProperty("id") val id: String
+    @JsonProperty("id") val id: String,
 )

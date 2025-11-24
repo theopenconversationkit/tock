@@ -21,5 +21,5 @@ import ai.tock.translator.I18nLabelStateFilter
 enum class I18nLabelStateQuery(val filter: I18nLabelStateFilter) {
     ALL(I18nLabelStateFilter.ALL),
     VALIDATED(I18nLabelStateFilter.VALIDATED),
-    NOT_VALIDATED(I18nLabelStateFilter.NOT_VALIDATED);
+    NOT_VALIDATED(I18nLabelStateFilter.NOT_VALIDATED),
 }

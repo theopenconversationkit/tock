@@ -22,5 +22,5 @@ data class PredefinedValueQuery(
     val entityTypeName: String,
     val predefinedValue: String,
     val locale: Locale,
-    val oldPredefinedValue: String?
+    val oldPredefinedValue: String?,
 )

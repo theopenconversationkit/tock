@@ -32,52 +32,64 @@ data class WhatsAppCloudBotInteractiveMessage(
     override val userId: String? = null,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.interactive, userId) {
     override fun toGenericMessage(): GenericMessage {
-        val texts = listOfNotNull(
-            interactive.header?.text?.let { GenericMessage.TITLE_PARAM to it },
-            GenericMessage.TEXT_PARAM to (interactive.body?.text ?: "")
-        ).toMap()
+        val texts =
+            listOfNotNull(
+                interactive.header?.text?.let { GenericMessage.TITLE_PARAM to it },
+                GenericMessage.TEXT_PARAM to (interactive.body?.text ?: ""),
+            ).toMap()
         return GenericMessage(
             texts = texts,
-            attachments = listOfNotNull(
-                interactive.header?.image?.id?.let { Attachment(it, SendAttachment.AttachmentType.image) },
-                interactive.header?.video?.id?.let { Attachment(it, SendAttachment.AttachmentType.video) },
-            ),
-            choices = interactive.action.buttons?.map { it.toChoice() }
-                ?: interactive.action.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
-                ?: listOf()
+            attachments =
+                listOfNotNull(
+                    interactive.header?.image?.id?.let { Attachment(it, SendAttachment.AttachmentType.image) },
+                    interactive.header?.video?.id?.let { Attachment(it, SendAttachment.AttachmentType.video) },
+                ),
+            choices =
+                interactive.action.buttons?.map { it.toChoice() }
+                    ?: interactive.action.sections?.flatMap { it.rows ?: listOf() }?.map { it.toChoice() }
+                    ?: listOf(),
         )
     }
 
     override fun prepareMessage(
         apiService: WhatsAppCloudApiService,
-        recipientId: String
+        recipientId: String,
     ): WhatsAppCloudSendBotMessage {
         val action = interactive.action
-        val updatedButtons = action.buttons.takeIf { !it.isNullOrEmpty() }?.map { btn ->
-            btn.copy(reply = btn.reply.copy(id = apiService.shortenPayload(btn.reply.id)))
-        }
-        val updatedSections = action.sections.takeIf { !it.isNullOrEmpty() }?.map { section ->
-            section.copy(rows = section.rows?.map { row ->
-                row.copy(id = apiService.shortenPayload(row.id))
-            })
-        }
-        val updatedHeader = interactive.header?.let { header ->
-            if (header.image != null) {
-                header.copy(
-                    image = WhatsAppCloudBotMediaImage(
-                        id = apiService.getUploadedImageId(
-                            header.image.id
-                        )
-                    )
-                )
-            } else {
-                header
+        val updatedButtons =
+            action.buttons.takeIf { !it.isNullOrEmpty() }?.map { btn ->
+                btn.copy(reply = btn.reply.copy(id = apiService.shortenPayload(btn.reply.id)))
             }
-        }
-        val updatedAction = interactive.action.copy(
-            buttons = updatedButtons,
-            sections = updatedSections,
-        )
+        val updatedSections =
+            action.sections.takeIf { !it.isNullOrEmpty() }?.map { section ->
+                section.copy(
+                    rows =
+                        section.rows?.map { row ->
+                            row.copy(id = apiService.shortenPayload(row.id))
+                        },
+                )
+            }
+        val updatedHeader =
+            interactive.header?.let { header ->
+                if (header.image != null) {
+                    header.copy(
+                        image =
+                            WhatsAppCloudBotMediaImage(
+                                id =
+                                    apiService.getUploadedImageId(
+                                        header.image.id,
+                                    ),
+                            ),
+                    )
+                } else {
+                    header
+                }
+            }
+        val updatedAction =
+            interactive.action.copy(
+                buttons = updatedButtons,
+                sections = updatedSections,
+            )
         return WhatsAppCloudSendBotInteractiveMessage(
             interactive.copy(header = updatedHeader, action = updatedAction),
             recipientType,

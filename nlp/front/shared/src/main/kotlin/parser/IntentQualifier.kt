@@ -29,5 +29,5 @@ data class IntentQualifier(
      * If positive, the probability of the intent is increased.
      * If negative, the probability of the intent is decreased.
      */
-    val modifier: Double = 0.0
+    val modifier: Double = 0.0,
 )

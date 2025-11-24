@@ -18,10 +18,9 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-
 data class StickerContent(
-        @JsonProperty("mime_type") val mimeType: String,
-        val sha256: String,
-        val id: String,
-        val animated: Boolean
+    @JsonProperty("mime_type") val mimeType: String,
+    val sha256: String,
+    val id: String,
+    val animated: Boolean,
 )

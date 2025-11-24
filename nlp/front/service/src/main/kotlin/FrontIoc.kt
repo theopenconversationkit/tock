@@ -32,13 +32,14 @@ import com.github.salomonbrys.kodein.provider
 /**
  *
  */
-val frontModule = Kodein.Module {
-    bind<ApplicationConfiguration>() with provider { ApplicationConfigurationService }
-    bind<Parser>() with provider { ParserService }
-    bind<ModelUpdater>() with provider { ModelUpdaterService }
-    bind<ApplicationCodec>() with provider { ApplicationCodecService }
-    bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
-    bind<ModelTester>() with provider { ModelTesterService }
-    bind<AlexaCodec>() with provider { AlexaCodecService }
-    bind<TockUserListener>(overrides = true) with provider { AdminTockUserListener }
-}
+val frontModule =
+    Kodein.Module {
+        bind<ApplicationConfiguration>() with provider { ApplicationConfigurationService }
+        bind<Parser>() with provider { ParserService }
+        bind<ModelUpdater>() with provider { ModelUpdaterService }
+        bind<ApplicationCodec>() with provider { ApplicationCodecService }
+        bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
+        bind<ModelTester>() with provider { ModelTesterService }
+        bind<AlexaCodec>() with provider { AlexaCodecService }
+        bind<TockUserListener>(overrides = true) with provider { AdminTockUserListener }
+    }

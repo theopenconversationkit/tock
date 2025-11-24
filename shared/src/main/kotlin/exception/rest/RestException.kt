@@ -24,5 +24,6 @@ import io.netty.handler.codec.http.HttpResponseStatus
  */
 open class RestException(
     val httpResponseBody: ErrorMessageWrapper = ErrorMessageWrapper(),
-    val httpResponseStatus: HttpResponseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR)
-    : Exception(httpResponseStatus.reasonPhrase())
+    val httpResponseStatus: HttpResponseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR,
+) :
+    Exception(httpResponseStatus.reasonPhrase())

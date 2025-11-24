@@ -24,39 +24,39 @@ import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import ai.tock.bot.engine.BotBus
 
-
 object WhatsAppMediaConverter {
-
-    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (message) {
-            is MediaCard -> fromMediaCard(message)
-            is MediaCarousel -> fromMediaCarousel(message)
-            else -> emptyList()
+    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (message) {
+                is MediaCard -> fromMediaCard(message)
+                is MediaCarousel -> fromMediaCarousel(message)
+                else -> emptyList()
+            }
         }
-    }
 
-    private fun BotBus.fromMediaCarousel(message: MediaCarousel): List<ConnectorMessage> =
-        message.cards.flatMap { fromMediaCard(it) }
+    private fun BotBus.fromMediaCarousel(message: MediaCarousel): List<ConnectorMessage> = message.cards.flatMap { fromMediaCard(it) }
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
-        val text = listOfNotNull(
-            message.title,
-            message.subTitle,).joinToString("\n\n")
+        val text =
+            listOfNotNull(
+                message.title,
+                message.subTitle,
+            ).joinToString("\n\n")
         val (nlpActions, links) = message.actions.partition { it.url == null }
         return if (nlpActions.isNotEmpty()) {
             listOf(
-                replyButtonMessage(text, nlpActions.map { nlpQuickReply(it.title) })
+                replyButtonMessage(text, nlpActions.map { nlpQuickReply(it.title) }),
             ) + toTextMessages(links)
-            }
-         else {
+        } else {
             listOf(whatsAppText(text)) + toTextMessages(links)
         }
     }
 
-    private fun BotBus.toTextMessages(links: List<MediaAction>): List<WhatsAppBotTextMessage> = links.map { link ->
-        whatsAppText(
-            text = "${link.title} :\n${link.url}",
-            previewUrl = true,
-        )
-    }
+    private fun BotBus.toTextMessages(links: List<MediaAction>): List<WhatsAppBotTextMessage> =
+        links.map { link ->
+            whatsAppText(
+                text = "${link.title} :\n${link.url}",
+                previewUrl = true,
+            )
+        }
 }

@@ -41,7 +41,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant.now
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -50,7 +50,6 @@ import kotlin.test.assertTrue
  *
  */
 class ApplicationCodecServiceTest : AbstractTest() {
-
     private val logger = KotlinLogging.logger {}
     val now = now().truncatedTo(ChronoUnit.MILLIS)
 
@@ -71,19 +70,20 @@ class ApplicationCodecServiceTest : AbstractTest() {
     fun `export sentence fails WHEN sentence intent is unknown`() {
         val appId = "id".toId<ApplicationDefinition>()
         val app = ApplicationDefinition("test", namespace = "test", _id = appId)
-        val sentences = listOf(
-            ClassifiedSentence(
-                "text",
-                defaultLocale,
-                appId,
-                now(),
-                now(),
-                ClassifiedSentenceStatus.model,
-                Classification("unknwIntentId".toId(), emptyList()),
-                null,
-                null
+        val sentences =
+            listOf(
+                ClassifiedSentence(
+                    "text",
+                    defaultLocale,
+                    appId,
+                    now(),
+                    now(),
+                    ClassifiedSentenceStatus.model,
+                    Classification("unknwIntentId".toId(), emptyList()),
+                    null,
+                    null,
+                ),
             )
-        )
 
         every { context.config.getApplicationById(appId) } returns app
         every { context.config.getIntentsByApplicationId(appId) } returns emptyList()
@@ -107,31 +107,32 @@ class ApplicationCodecServiceTest : AbstractTest() {
                 match<ApplicationDefinition> {
                     it.supportedLocales.contains(newLocale) &&
                         it.supportedLocales.contains(defaultLocale)
-                }
+                },
             )
         }
     }
 
     @Test
     fun `GIVEN existing app WHEN importing with a new faq SHOULD import the new faq`() {
+        val faq =
+            FaqDefinition(
+                botId = app.name,
+                namespace = namespace,
+                intentId = defaultIntentDefinition._id,
+                i18nId = newId<I18nLabel>(),
+                tags = listOf("TAG1", "TAG2"),
+                enabled = false,
+                creationDate = now,
+                updateDate = now,
+            )
+        val dump =
+            ApplicationDump(
+                application = app,
+                intents = listOf(defaultIntentDefinition),
+                faqs = listOf(faq),
+            )
 
-        val faq = FaqDefinition(
-            botId = app.name,
-            namespace = namespace,
-            intentId= defaultIntentDefinition._id,
-            i18nId= newId<I18nLabel>(),
-            tags = listOf("TAG1", "TAG2"),
-            enabled = false,
-            creationDate= now,
-            updateDate = now,
-        )
-        val dump = ApplicationDump(
-            application = app,
-            intents = listOf(defaultIntentDefinition),
-            faqs = listOf(faq)
-        )
-
-        every { context.config.getFaqDefinitionByIntentId(any())} returns null
+        every { context.config.getFaqDefinitionByIntentId(any()) } returns null
         val report = ApplicationCodecService.import(namespace, dump)
         assertTrue(report.modified)
         verify {
@@ -140,31 +141,32 @@ class ApplicationCodecServiceTest : AbstractTest() {
                     it.tags.containsAll(listOf("TAG1", "TAG2"))
                     it.namespace === "namespace"
                     it.i18nId.toString().startsWith(namespace)
-                }
+                },
             )
         }
     }
 
     @Test
-    fun `GIVEN existing app WHEN importing with a new faq with other namespace for i18nId SHOULD update the i18n according to the current application`(){
+    fun `GIVEN existing app WHEN importing with a new faq with other namespace for i18nId SHOULD update the i18n according to the current application`() {
+        val faq =
+            FaqDefinition(
+                botId = app.name,
+                namespace = namespace,
+                intentId = defaultIntentDefinition._id,
+                i18nId = "otherNamespace_faq_theI18nd".toId(),
+                tags = listOf("TAG1", "TAG2"),
+                enabled = false,
+                creationDate = now,
+                updateDate = now,
+            )
+        val dump =
+            ApplicationDump(
+                application = app,
+                intents = listOf(defaultIntentDefinition),
+                faqs = listOf(faq),
+            )
 
-        val faq = FaqDefinition(
-            botId = app.name,
-            namespace = namespace,
-            intentId= defaultIntentDefinition._id,
-            i18nId= "otherNamespace_faq_theI18nd".toId(),
-            tags = listOf("TAG1", "TAG2"),
-            enabled = false,
-            creationDate= now,
-            updateDate = now,
-        )
-        val dump = ApplicationDump(
-            application = app,
-            intents = listOf(defaultIntentDefinition),
-            faqs = listOf(faq)
-        )
-
-        every { context.config.getFaqDefinitionByIntentId(any())} returns null
+        every { context.config.getFaqDefinitionByIntentId(any()) } returns null
         val report = ApplicationCodecService.import(namespace, dump)
         assertTrue(report.modified)
         verify {
@@ -173,7 +175,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
                     it.tags.containsAll(listOf("TAG1", "TAG2"))
                     it.namespace === namespace
                     it.i18nId.toString().startsWith(namespace)
-                }
+                },
             )
         }
     }
@@ -192,7 +194,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
                 match<ApplicationDefinition> {
                     it.supportedLocales.contains(newLocale) &&
                         !it.supportedLocales.contains(defaultLocale)
-                }
+                },
             )
         }
     }
@@ -208,18 +210,21 @@ class ApplicationCodecServiceTest : AbstractTest() {
         logger.debug { otherIntent }
         logger.debug { andOtherIntent }
 
-        val app = app.copy(
-            supportedLocales = setOf(newLocale),
-            intents = setOf(defaultIntentDefinition._id, otherIntent._id, andOtherIntent._id)
-        )
-        val dump = ApplicationDump(
-            app,
-            intents = listOf(
-                defaultIntentDefinition.copy(sharedIntents = setOf(otherIntent._id)),
-                otherIntent,
-                andOtherIntent
+        val app =
+            app.copy(
+                supportedLocales = setOf(newLocale),
+                intents = setOf(defaultIntentDefinition._id, otherIntent._id, andOtherIntent._id),
             )
-        )
+        val dump =
+            ApplicationDump(
+                app,
+                intents =
+                    listOf(
+                        defaultIntentDefinition.copy(sharedIntents = setOf(otherIntent._id)),
+                        otherIntent,
+                        andOtherIntent,
+                    ),
+            )
 
         val report = ApplicationCodecService.import(namespace, dump)
         assertTrue(report.modified)
@@ -230,7 +235,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
                     it.name == defaultIntentDefinition.name &&
                         it._id == defaultIntentDefinition._id &&
                         it.sharedIntents.isEmpty()
-                }
+                },
             )
         }
         var newOtherIntentId: Id<IntentDefinition>? = null
@@ -242,9 +247,9 @@ class ApplicationCodecServiceTest : AbstractTest() {
                             it._id != otherIntent._id &&
                             it.sharedIntents.size == 1 &&
                             it.sharedIntents.contains(defaultIntentDefinition._id)
-                        )
+                    )
                         .apply { if (this) newOtherIntentId = it._id }
-                }
+                },
             )
         }
         verify {
@@ -254,17 +259,18 @@ class ApplicationCodecServiceTest : AbstractTest() {
                         it._id != andOtherIntent._id &&
                         it.sharedIntents.size == 1 &&
                         it.sharedIntents.contains(newOtherIntentId)
-                }
+                },
             )
         }
     }
 
     @Test
     fun `import sentence flagged of a Locale with country use the Locale language only`() {
-        val dump = SentencesDump(
-            app.qualifiedName,
-            sentences = listOf(SentenceDump("a", "a", now, emptyList(), Locale.FRANCE))
-        )
+        val dump =
+            SentencesDump(
+                app.qualifiedName,
+                sentences = listOf(SentenceDump("a", "a", now, emptyList(), Locale.FRANCE)),
+            )
         ApplicationCodecService.importSentences(app.namespace, dump)
         verify {
             context.config.save(match<ClassifiedSentence> { it.language == Locale.FRENCH })
@@ -273,42 +279,44 @@ class ApplicationCodecServiceTest : AbstractTest() {
 
     @Test
     fun `import sentence with sub entities create the sub entities`() {
-        val dump = SentencesDump(
-            app.qualifiedName,
-            sentences = listOf(
-                SentenceDump(
-                    "a",
-                    "a",
-                    now,
+        val dump =
+            SentencesDump(
+                app.qualifiedName,
+                sentences =
                     listOf(
-                        SentenceEntityDump(
-                            "test:e1",
-                            "r1",
+                        SentenceDump(
+                            "a",
+                            "a",
+                            now,
                             listOf(
                                 SentenceEntityDump(
-                                    "test:e2",
-                                    "r2",
+                                    "test:e1",
+                                    "r1",
                                     listOf(
                                         SentenceEntityDump(
-                                            "test:e3",
-                                            "r3",
-                                            emptyList(),
+                                            "test:e2",
+                                            "r2",
+                                            listOf(
+                                                SentenceEntityDump(
+                                                    "test:e3",
+                                                    "r3",
+                                                    emptyList(),
+                                                    0,
+                                                    1,
+                                                ),
+                                            ),
                                             0,
-                                            1
-                                        )
+                                            1,
+                                        ),
                                     ),
                                     0,
-                                    1
-                                )
+                                    1,
+                                ),
                             ),
-                            0,
-                            1
-                        )
+                            Locale.FRANCE,
+                        ),
                     ),
-                    Locale.FRANCE
-                )
             )
-        )
         val report = ApplicationCodecService.importSentences(app.namespace, dump)
         // note that the entity namespace has changed
         assertEquals(setOf("namespace:e1", "namespace:e2", "namespace:e3"), report.entitiesImported)

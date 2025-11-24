@@ -24,6 +24,8 @@ import ai.tock.shared.ThreadSafe
  */
 @ThreadSafe
 interface Tokenizer {
-
-    fun tokenize(context: TokenizerContext, text: String): Array<String>
+    fun tokenize(
+        context: TokenizerContext,
+        text: String,
+    ): Array<String>
 }

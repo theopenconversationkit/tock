@@ -26,7 +26,6 @@ import ai.tock.bot.engine.user.UserTimeline
  * @see AsyncStoryStep
  */
 interface StoryStepDef {
-
     /**
      * The name of the step.
      */
@@ -62,25 +61,35 @@ interface StoryStepDef {
      *
      * @return true if the step should be selected
      */
-    fun selectFromAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent?): Boolean =
-        intent != null && selectFromActionAndEntityStepSelection(action, intent) ?: supportStarterIntent(intent)
+    fun selectFromAction(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+        intent: Intent?,
+    ): Boolean = intent != null && selectFromActionAndEntityStepSelection(action, intent) ?: supportStarterIntent(intent)
 
     /**
      * Does this step hast to be selected from its [entityStepSelection]?
      * Returns null if there is no [entityStepSelection].
      */
-    fun selectFromActionAndEntityStepSelection(action: Action, intent: Intent? = null): Boolean? =
+    fun selectFromActionAndEntityStepSelection(
+        action: Action,
+        intent: Intent? = null,
+    ): Boolean? =
         entityStepSelection?.let { e ->
-            if (intent != null && this.intent != null && !supportStarterIntent(intent)) false
-            else if (e.value == null) action.hasEntity(e.entityRole)
-            else action.hasEntityPredefinedValue(e.entityRole, e.value)
+            if (intent != null && this.intent != null && !supportStarterIntent(intent)) {
+                false
+            } else if (e.value == null) {
+                action.hasEntity(e.entityRole)
+            } else {
+                action.hasEntityPredefinedValue(e.entityRole, e.value)
+            }
         }
 
     /**
      * Does this step support this intent as starter intent?
      */
-    fun supportStarterIntent(i: Intent): Boolean =
-        intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
+    fun supportStarterIntent(i: Intent): Boolean = intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
 
     /**
      * Does this step support this intent?

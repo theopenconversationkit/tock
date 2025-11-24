@@ -27,13 +27,14 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import mu.KotlinLogging
 
 internal class MediaDeserializer : JacksonDeserializer<Media>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Media? {
-
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Media? {
         data class MediaFields(
             var image: String? = null,
             var video: String? = null,
@@ -41,22 +42,23 @@ internal class MediaDeserializer : JacksonDeserializer<Media>() {
             var width: Int? = null,
             var height: Int? = null,
             var videoType: String? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (image, video, imageType, width, height, videoType) = jp.read<MediaFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    "image" -> image = jp.readValue()
-                    "video" -> video = jp.readValue()
-                    "image_type" -> imageType = jp.readValue()
-                    "w" -> width = jp.readValue()
-                    "h" -> height = jp.readValue()
-                    "video_type" -> videoType = jp.readValue()
-                    else -> other = jp.readUnknownValue()
+        val (image, video, imageType, width, height, videoType) =
+            jp.read<MediaFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        "image" -> image = jp.readValue()
+                        "video" -> video = jp.readValue()
+                        "image_type" -> imageType = jp.readValue()
+                        "w" -> width = jp.readValue()
+                        "h" -> height = jp.readValue()
+                        "video_type" -> videoType = jp.readValue()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (image != null) {
             Image(imageType!!, width!!, height!!)

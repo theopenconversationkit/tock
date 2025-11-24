@@ -26,7 +26,7 @@ data class CustomEventRequest(
     val event: String = "CUSTOM_APP_EVENTS",
     @JsonProperty("advertiser_tracking_enabled") val advertiserTrackingEnabled: Short = 0,
     @JsonProperty("application_tracking_enabled") val applicationTrackingEnabled: Short = 1,
-    val extinfo: String = mapper.writeValueAsString(listOf("mb1"))
+    val extinfo: String = mapper.writeValueAsString(listOf("mb1")),
 ) {
     constructor(
         customEvent: CustomEvent,
@@ -35,7 +35,7 @@ data class CustomEventRequest(
         event: String = "CUSTOM_APP_EVENTS",
         advertiserTrackingEnabled: Short = 0,
         applicationTrackingEnabled: Short = 1,
-        extinfo: String = mapper.writeValueAsString(listOf("mb1"))
+        extinfo: String = mapper.writeValueAsString(listOf("mb1")),
     ) : this(
         listOf(customEvent),
         pageId,
@@ -43,6 +43,6 @@ data class CustomEventRequest(
         event,
         advertiserTrackingEnabled,
         applicationTrackingEnabled,
-        extinfo
+        extinfo,
     )
 }

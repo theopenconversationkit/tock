@@ -67,7 +67,6 @@ import org.junit.jupiter.api.BeforeEach
  *
  */
 abstract class BotEngineTest {
-
     val userLock: UserLock = mockk(relaxed = true)
     val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
@@ -87,8 +86,8 @@ abstract class BotEngineTest {
     val translator: TranslatorEngine = mockk(relaxed = true)
     val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
     val featureDAO: FeatureDAO = mockk(relaxed = true)
-    val botObservabilityConfigurationDAO : BotObservabilityConfigurationDAO = mockk(relaxed = true)
-    val botDocumentCompressorConfigurationDAO : BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
+    val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
+    val botDocumentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
@@ -100,17 +99,18 @@ abstract class BotEngineTest {
     val entityWithMergeSupportValue1 = NlpEntityValue(6, 7, entityWithMergeSupport, StringValue("d"), mergeSupport = true)
     val entityWithMergeSupportValue2 = NlpEntityValue(8, 9, entityWithMergeSupport, StringValue("e"), mergeSupport = true)
 
-    val nlpResult = NlpResult(
-        test.name,
-        "test",
-        defaultLocale,
-        listOf(entityAValue, entityBValue, entityCValue, entityWithMergeSupportValue1, entityWithMergeSupportValue2),
-        emptyList(),
-        1.0,
-        1.0,
-        "a b c d e",
-        emptyMap()
-    )
+    val nlpResult =
+        NlpResult(
+            test.name,
+            "test",
+            defaultLocale,
+            listOf(entityAValue, entityBValue, entityCValue, entityWithMergeSupportValue1, entityWithMergeSupportValue2),
+            emptyList(),
+            1.0,
+            1.0,
+            "a b c d e",
+            emptyMap(),
+        )
 
     val nlpClient: NlpClient = mockk(relaxed = true)
     val nlp: NlpController = mockk(relaxed = true)
@@ -149,7 +149,7 @@ abstract class BotEngineTest {
         injector.inject(
             Kodein {
                 import(baseModule(), allowOverride = true)
-            }
+            },
         )
 
         every { connector.loadProfile(any(), any()) } returns null
@@ -178,7 +178,7 @@ abstract class BotEngineTest {
             connector,
             BotVerticle(false, false),
             botDefinition,
-            connectorConfiguration
+            connectorConfiguration,
         )
     }
 

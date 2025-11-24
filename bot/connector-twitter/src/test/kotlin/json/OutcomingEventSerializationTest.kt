@@ -35,11 +35,12 @@ internal class OutcomingEventSerializationTest {
 
     @Test
     fun testOutcomingEventSerialization() {
-        val outcomingEvent = OutcomingEvent(
-            DirectMessageOutcomingEvent(
-                MessageCreate(Recipient("recipientId"), "senderId", "sourceAppId", MessageData("text"))
+        val outcomingEvent =
+            OutcomingEvent(
+                DirectMessageOutcomingEvent(
+                    MessageCreate(Recipient("recipientId"), "senderId", "sourceAppId", MessageData("text")),
+                ),
             )
-        )
         val s = mapper.writeValueAsString(outcomingEvent)
         kotlin.test.assertEquals(outcomingEvent, mapper.readValue(s))
     }

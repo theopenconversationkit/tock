@@ -27,8 +27,7 @@ import kotlinx.serialization.json.Json
 /**
  * Implementation of the Secret Manager Service based on environment variables
  */
-class EnvSecretManagerService: SecretManagerService {
-
+class EnvSecretManagerService : SecretManagerService {
     override val type: SecretManagerProviderType
         get() = SecretManagerProviderType.ENV
 
@@ -36,20 +35,28 @@ class EnvSecretManagerService: SecretManagerService {
         Json.decodeFromString(
             property(
                 name = secretName,
-                defaultValue = "{\"username\": \"\", \"password\": \"\"}")
+                defaultValue = "{\"username\": \"\", \"password\": \"\"}",
+            ),
         )
 
     override fun getAIProviderSecret(secretName: String): AIProviderSecret =
         Json.decodeFromString(
             property(
                 name = secretName,
-                defaultValue = "{\"secret\": \"\"}")
+                defaultValue = "{\"secret\": \"\"}",
+            ),
         )
 
-    override fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret) =
-        error("Not supported")
+    override fun createOrUpdateAIProviderSecret(
+        secretName: String,
+        secretValue: AIProviderSecret,
+    ) = error("Not supported")
 
-    override fun generateSecretName(namespace: String, botId: String, feature: String) = error("Not supported")
+    override fun generateSecretName(
+        namespace: String,
+        botId: String,
+        feature: String,
+    ) = error("Not supported")
 
     override fun createSecretKeyInstance(secretName: String) = error("Not supported")
 

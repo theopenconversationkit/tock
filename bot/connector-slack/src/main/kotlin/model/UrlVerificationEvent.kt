@@ -21,5 +21,5 @@ package ai.tock.bot.connector.slack.model
  */
 data class UrlVerificationEvent(
     val token: String,
-    val challenge: String
+    val challenge: String,
 ) : EventApiMessage()

@@ -27,13 +27,12 @@ import com.google.protobuf.Value
 import java.util.Locale
 
 internal class DialogflowTockMapper {
-
     /**
      * Returns a Tock entity from a Dialogflow Value.
      */
     private fun dialogflowEntityToTockEntity(
         parameterName: String,
-        namespace: String
+        namespace: String,
     ): Entity? {
         return Entity(EntityType("$namespace:$parameterName"), parameterName)
     }
@@ -43,17 +42,23 @@ internal class DialogflowTockMapper {
      */
     private fun dialogflowEntityToTockEntityValue(
         parameter: Map.Entry<String, Value>,
-        namespace: String
+        namespace: String,
     ): NlpEntityValue? {
         val entity = dialogflowEntityToTockEntity(parameter.key, namespace)!!
-        val value: ai.tock.nlp.entity.Value? = when (parameter.value.kindCase) {
-            Value.KindCase.NUMBER_VALUE -> NumberValue(parameter.value.numberValue)
-            Value.KindCase.STRING_VALUE -> if (parameter.value.stringValue.trim().isEmpty()) null else StringValue(
-                parameter.value.stringValue
-            )
-            Value.KindCase.BOOL_VALUE -> StringValue(parameter.value.boolValue.toString())
-            else -> null
-        }
+        val value: ai.tock.nlp.entity.Value? =
+            when (parameter.value.kindCase) {
+                Value.KindCase.NUMBER_VALUE -> NumberValue(parameter.value.numberValue)
+                Value.KindCase.STRING_VALUE ->
+                    if (parameter.value.stringValue.trim().isEmpty()) {
+                        null
+                    } else {
+                        StringValue(
+                            parameter.value.stringValue,
+                        )
+                    }
+                Value.KindCase.BOOL_VALUE -> StringValue(parameter.value.boolValue.toString())
+                else -> null
+            }
 
         if (value.toString().trim().isEmpty() || value == null) {
             return null
@@ -63,19 +68,23 @@ internal class DialogflowTockMapper {
             0,
             0,
             entity,
-            value
+            value,
         )
     }
 
-    fun toNlpResult(queryResult: QueryResult, namespace: String): NlpResult {
+    fun toNlpResult(
+        queryResult: QueryResult,
+        namespace: String,
+    ): NlpResult {
         val intent = queryResult.intent.displayName
 
-        val parameters = queryResult.parameters?.fieldsMap?.filter {
-            !it.value.hasStructValue() && !it.value.hasListValue() && dialogflowEntityToTockEntity(
-                it.key,
-                namespace
-            ) != null
-        } ?: emptyMap()
+        val parameters =
+            queryResult.parameters?.fieldsMap?.filter {
+                !it.value.hasStructValue() && !it.value.hasListValue() && dialogflowEntityToTockEntity(
+                    it.key,
+                    namespace,
+                ) != null
+            } ?: emptyMap()
         val entityValues =
             parameters.map {
                 dialogflowEntityToTockEntityValue(it, namespace)
@@ -90,7 +99,7 @@ internal class DialogflowTockMapper {
             queryResult.intentDetectionConfidence.toDouble(),
             1.0,
             queryResult.queryText,
-            staticResponse = queryResult.fulfillmentText.takeIf { it.trim().isNotEmpty() }
+            staticResponse = queryResult.fulfillmentText.takeIf { it.trim().isNotEmpty() },
         )
     }
 }

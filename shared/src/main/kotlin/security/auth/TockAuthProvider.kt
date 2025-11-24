@@ -27,18 +27,18 @@ import io.vertx.ext.web.handler.SessionHandler
  * Base interface for [AuthenticationProvider] in Tock framework.
  */
 interface TockAuthProvider : AuthenticationProvider {
-
     /**
      * The tock session cookie name.
      */
     val sessionCookieName: String get() = "tock-session"
 
-    fun defaultExcludedPaths(verticle: WebVerticle): Set<Regex> = listOfNotNull(
-        verticle.healthcheckPath?.toRegex(),
-        verticle.livenesscheckPath?.toRegex(),
-        verticle.readinesscheckPath?.toRegex(),
-        ".*\\.(css|html|js|ico|woff2?|ttf|eot)".toRegex()
-    ).toSet()
+    fun defaultExcludedPaths(verticle: WebVerticle): Set<Regex> =
+        listOfNotNull(
+            verticle.healthcheckPath?.toRegex(),
+            verticle.livenesscheckPath?.toRegex(),
+            verticle.readinesscheckPath?.toRegex(),
+            ".*\\.(css|html|js|ico|woff2?|ttf|eot)".toRegex(),
+        ).toSet()
 
     /**
      * Paths to exclude.
@@ -52,7 +52,7 @@ interface TockAuthProvider : AuthenticationProvider {
     fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        sessionHandler: SessionHandler
+        sessionHandler: SessionHandler,
     ): AuthenticationHandler
 
     /**

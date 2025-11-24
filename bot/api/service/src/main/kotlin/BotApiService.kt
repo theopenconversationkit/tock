@@ -24,9 +24,10 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 internal interface BotApiService {
-
     @POST("webhook")
-    fun send(@Body request: RequestData): Call<ResponseData>
+    fun send(
+        @Body request: RequestData,
+    ): Call<ResponseData>
 
     @GET("healthcheck")
     fun healthcheck(): Call<ResponseBody>

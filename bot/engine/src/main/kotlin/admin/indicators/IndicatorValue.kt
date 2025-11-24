@@ -18,7 +18,7 @@ package ai.tock.bot.admin.indicators
 
 data class IndicatorValue(
     val name: String,
-    val label: String
+    val label: String,
 ) : Comparable<IndicatorValue> {
     override fun compareTo(other: IndicatorValue): Int {
         return name.compareTo(other.name)

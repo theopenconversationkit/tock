@@ -41,16 +41,15 @@ data class StoryDefinitionConfigurationMandatoryEntityDump(
     /**
      * The type of answer configuration.
      */
-    val currentType: AnswerConfigurationType
+    val currentType: AnswerConfigurationType,
 ) {
-
     constructor(def: StoryDefinitionConfigurationMandatoryEntity) :
         this(
             def.role,
             def.entityType,
             def.intent,
             toDump(def.answers),
-            def.currentType
+            def.currentType,
         )
 
     fun toEntity(controller: StoryDefinitionConfigurationDumpController): StoryDefinitionConfigurationMandatoryEntity =
@@ -59,6 +58,6 @@ data class StoryDefinitionConfigurationMandatoryEntityDump(
             entityType,
             controller.checkIntent(intent)!!,
             answers.map { it.toAnswer(currentType, controller) },
-            currentType
+            currentType,
         )
 }

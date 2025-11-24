@@ -36,16 +36,15 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
-import java.util.Locale
 import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  *
  */
 internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotApplicationConfiguration, val supportedLocales: Set<Locale> = emptySet()) {
-
     companion object {
         private val currentBus = ThreadLocal<BotBus>()
 
@@ -63,7 +62,12 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
 
     val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
-    suspend fun support(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData): Double {
+    suspend fun support(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData,
+    ): Double {
         connector as TockConnectorController
 
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
@@ -83,7 +87,12 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
      * Handle the user action.
      */
     @ExperimentalTockCoroutines
-    suspend fun handleAction(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+    suspend fun handleAction(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData,
+    ) {
         connector as TockConnectorController
 
         loadProfileIfNotSet(connectorData, action, userTimeline, connector)
@@ -104,8 +113,8 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
             if (!shouldRespondBeforeDisabling) {
                 userTimeline.userState.botDisabled = true
             }
-        } // if user state has changed, always persist the user. If not, test if the state is persisted
-        else if (!botDefinition.hasToPersistAction(userTimeline, action)) {
+        } else if (!botDefinition.hasToPersistAction(userTimeline, action)) {
+            // if user state has changed, always persist the user. If not, test if the state is persisted
             connectorData.saveTimeline = false
         }
 
@@ -141,37 +150,55 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    private fun getDialog(action: Action, userTimeline: UserTimeline): Dialog {
+    private fun getDialog(
+        action: Action,
+        userTimeline: UserTimeline,
+    ): Dialog {
         return userTimeline.currentDialog ?: createDialog(action, userTimeline)
     }
 
-    private fun createDialog(action: Action, userTimeline: UserTimeline): Dialog {
+    private fun createDialog(
+        action: Action,
+        userTimeline: UserTimeline,
+    ): Dialog {
         val newDialog = Dialog(setOf(userTimeline.playerId, action.recipientId))
         userTimeline.dialogs.add(newDialog)
         return newDialog
     }
 
-    private fun getStory(userTimeline: UserTimeline, dialog: Dialog, action: Action): Story {
+    private fun getStory(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+    ): Story {
         val newIntent = dialog.state.currentIntent
         val previousStory = dialog.currentStory
 
-        val story = if (previousStory == null || (newIntent != null && (!previousStory.supportAction(userTimeline, dialog, action, newIntent)))) {
-            val storyDefinition: StoryDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
-            val newStory = Story(storyDefinition, if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
-            else storyDefinition.mainIntent())
+        val story =
+            if (previousStory == null || (newIntent != null && (!previousStory.supportAction(userTimeline, dialog, action, newIntent)))) {
+                val storyDefinition: StoryDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
+                val newStory =
+                    Story(
+                        storyDefinition,
+                        if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) {
+                            newIntent
+                        } else {
+                            storyDefinition.mainIntent()
+                        },
+                    )
 
-            if (previousStory?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && dialog.state.askAgainRound > 0 && !previousStory.supportIntent(newStory.definition.wrappedIntent())) {
-                dialog.state.askAgainRound--
-                dialog.state.hasCurrentAskAgainProcess = true
-                dialog.stories.add(previousStory)
-                previousStory
+                if (previousStory?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && dialog.state.askAgainRound > 0 && !previousStory.supportIntent(newStory.definition.wrappedIntent())) {
+                    dialog.state.askAgainRound--
+                    dialog.state.hasCurrentAskAgainProcess = true
+                    dialog.stories.add(previousStory)
+                    previousStory
+                } else {
+                    dialog.stories.add(newStory)
+                    newStory
+                }
             } else {
-                dialog.stories.add(newStory)
-                newStory
+                previousStory
             }
-        } else {
-            previousStory
-        }
 
         story.computeCurrentStep(userTimeline, dialog, action, newIntent)
 
@@ -184,7 +211,12 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         return story
     }
 
-    private suspend fun parseAction(action: Action, userTimeline: UserTimeline, dialog: Dialog, connector: TockConnectorController) {
+    private suspend fun parseAction(
+        action: Action,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        connector: TockConnectorController,
+    ) {
         try {
             when (action) {
                 is SendChoice -> {
@@ -213,7 +245,10 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    private fun parseAttachment(attachment: SendAttachment, dialog: Dialog) {
+    private fun parseAttachment(
+        attachment: SendAttachment,
+        dialog: Dialog,
+    ) {
         botDefinition.handleAttachmentStory?.let { definition ->
             definition.mainIntent().let {
                 dialog.state.currentIntent = it
@@ -221,7 +256,10 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    private fun parseLocation(location: SendLocation, dialog: Dialog) {
+    private fun parseLocation(
+        location: SendLocation,
+        dialog: Dialog,
+    ) {
         botDefinition.userLocationStory?.let { definition ->
             definition.mainIntent().let {
                 dialog.state.currentIntent = it
@@ -229,7 +267,10 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    private fun parseChoice(choice: SendChoice, dialog: Dialog) {
+    private fun parseChoice(
+        choice: SendChoice,
+        dialog: Dialog,
+    ) {
         botDefinition.findIntent(choice.intentName, choice.applicationId).let { intent ->
             // restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
@@ -254,7 +295,12 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    private fun loadProfileIfNotSet(connectorData: ConnectorData, action: Action, userTimeline: UserTimeline, connector: TockConnectorController) {
+    private fun loadProfileIfNotSet(
+        connectorData: ConnectorData,
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: TockConnectorController,
+    ) {
         with(userTimeline) {
             val persistProfile = connector.connector.persistProfileLoaded
             if (!persistProfile || !userState.profileLoaded) {
@@ -279,7 +325,10 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
         }
     }
 
-    fun markAsUnknown(sendSentence: SendSentence, userTimeline: UserTimeline) {
+    fun markAsUnknown(
+        sendSentence: SendSentence,
+        userTimeline: UserTimeline,
+    ) {
         nlp.markAsUnknown(sendSentence, userTimeline, botDefinition)
     }
 

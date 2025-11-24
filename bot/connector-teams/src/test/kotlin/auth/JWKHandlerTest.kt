@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JWKHandlerTest {
-
     private var authenticateBotConnectorService: AuthenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
     private lateinit var server: MockWebServer
     private val jwkHandler = JWKHandler()
@@ -53,7 +52,6 @@ class JWKHandlerTest {
      */
     @Test
     fun testJWKCacheSystem() {
-
         // check that it does not fail
         val firstRecordedRequest = server.takeRequest()
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)

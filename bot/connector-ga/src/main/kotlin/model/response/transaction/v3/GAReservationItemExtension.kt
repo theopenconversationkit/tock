@@ -31,16 +31,16 @@ data class GAReservationItemExtension(
     val userAcceptableTimeRange: GATime? = null,
     val partySize: Int? = null,
     val staffFacilitators: List<GAStaffFacilitator>? = null,
-    val location: GALocation? = null
+    val location: GALocation? = null,
 )
 
 data class GATime(
-    val timeIso8601: String
+    val timeIso8601: String,
 )
 
 data class GAStaffFacilitator(
     val name: String?,
-    val image: GAImage?
+    val image: GAImage?,
 )
 
 enum class GAReservationStatus {
@@ -50,9 +50,9 @@ enum class GAReservationStatus {
     CANCELLED,
     FULFILLED,
     CHANGE_REQUESTED,
-    REJECTED
+    REJECTED,
 }
 
 enum class GAReservationType {
-    RESERVATION_TYPE_UNSPECIFIED
+    RESERVATION_TYPE_UNSPECIFIED,
 }

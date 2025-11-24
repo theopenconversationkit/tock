@@ -27,7 +27,7 @@ data class NlpApplicationConfiguration(
     val hasTokenizerConfiguration: Boolean = true,
     val hasIntentConfiguration: Boolean = true,
     val hasEntityConfiguration: Boolean = true,
-    val hasApplicationConfiguration: Boolean = false
+    val hasApplicationConfiguration: Boolean = false,
 ) {
     companion object {
         val EMPTY_CONFIGURATION = NlpApplicationConfiguration()

@@ -25,11 +25,14 @@ import ai.tock.nlp.admin.model.PaginatedQuery
 class StorySearchRequest(
     val category: String? = null,
     val textSearch: String? = null,
-    val onlyConfiguredStory: Boolean = true
+    val onlyConfiguredStory: Boolean = true,
 ) : PaginatedQuery() {
-
     fun toSummaryRequest(): StoryDefinitionConfigurationExtendedSummaryRequest =
         StoryDefinitionConfigurationExtendedSummaryRequest(
-            namespace, applicationName, category, textSearch, onlyConfiguredStory
+            namespace,
+            applicationName,
+            category,
+            textSearch,
+            onlyConfiguredStory,
         )
 }

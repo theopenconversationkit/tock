@@ -25,14 +25,13 @@ data class SentencesReport(
     val sentences: List<SentenceReport>,
     val total: Long,
     val start: Long,
-    val end: Long
+    val end: Long,
 ) {
-
     constructor(start: Long, result: SentencesQueryResult) :
         this(
             result.sentences.map { SentenceReport(it) },
             result.total,
             start,
-            start + result.sentences.size
+            start + result.sentences.size,
         )
 }

@@ -41,43 +41,45 @@ import java.util.TimeZone
 internal class WorkerOnAwsBatch(
     private val workerOnAwsBatchProperties: WorkerOnAwsBatchProperties,
     private val workerProperties: WorkerProperties,
-    private val batchClient: AWSBatch = AWSBatchClientBuilder.defaultClient()
+    private val batchClient: AWSBatch = AWSBatchClientBuilder.defaultClient(),
 ) : WorkerOnDemand {
-
     private val logger = KotlinLogging.logger {}
 
-    private var workerOnDemandSummary = WorkerOnDemandSummary(
-        name = workerOnAwsBatchProperties.jobName,
-        status = WorkerOnDemandStatus.WAITING
-    )
+    private var workerOnDemandSummary =
+        WorkerOnDemandSummary(
+            name = workerOnAwsBatchProperties.jobName,
+            status = WorkerOnDemandStatus.WAITING,
+        )
 
     private val submitJobRequest: SubmitJobRequest
-        get() = SubmitJobRequest()
-            .withJobName(workerOnAwsBatchProperties.jobName)
-            .withJobDefinition(workerOnAwsBatchProperties.jobDefinitionName)
-            .withJobQueue(workerOnAwsBatchProperties.jobQueueName)
-            .withTimeout(JobTimeout().withAttemptDurationSeconds(workerOnAwsBatchProperties.attemptDurationSeconds))
-            .withContainerOverrides(
-                ContainerOverrides()
-                    .withEnvironment(
-                        *workerProperties.toKeyValuePairs().toTypedArray()
-                    )
-                    .withVcpus(workerOnAwsBatchProperties.vcpus)
-                    .withMemory(workerOnAwsBatchProperties.memory)
-            )
+        get() =
+            SubmitJobRequest()
+                .withJobName(workerOnAwsBatchProperties.jobName)
+                .withJobDefinition(workerOnAwsBatchProperties.jobDefinitionName)
+                .withJobQueue(workerOnAwsBatchProperties.jobQueueName)
+                .withTimeout(JobTimeout().withAttemptDurationSeconds(workerOnAwsBatchProperties.attemptDurationSeconds))
+                .withContainerOverrides(
+                    ContainerOverrides()
+                        .withEnvironment(
+                            *workerProperties.toKeyValuePairs().toTypedArray(),
+                        )
+                        .withVcpus(workerOnAwsBatchProperties.vcpus)
+                        .withMemory(workerOnAwsBatchProperties.memory),
+                )
 
-    private fun summary(jobId: String): WorkerOnDemandSummary = batchClient
-        .describeJobs(
-            DescribeJobsRequest().withJobs(jobId)
-        )
-        .run {
-            jobs
-                .first { it.jobId == jobId }
-                .apply {
-                    logger.info { "Job $jobName with id $jobId is $status" }
-                }
-                .toWorkerOnDemandSummary()
-        }
+    private fun summary(jobId: String): WorkerOnDemandSummary =
+        batchClient
+            .describeJobs(
+                DescribeJobsRequest().withJobs(jobId),
+            )
+            .run {
+                jobs
+                    .first { it.jobId == jobId }
+                    .apply {
+                        logger.info { "Job $jobName with id $jobId is $status" }
+                    }
+                    .toWorkerOnDemandSummary()
+            }
 
     private fun runningJob(): JobSummary? =
         jobSummaryByStatus(JobStatus.RUNNING)
@@ -91,7 +93,7 @@ internal class WorkerOnAwsBatch(
             .listJobs(
                 ListJobsRequest()
                     .withJobQueue(workerOnAwsBatchProperties.jobQueueName)
-                    .withJobStatus(jobStatus)
+                    .withJobStatus(jobStatus),
             )
             .run {
                 this.jobSummaryList.firstOrNull { it.jobName == workerOnAwsBatchProperties.jobName }
@@ -101,8 +103,9 @@ internal class WorkerOnAwsBatch(
     override fun start(callback: (status: WorkerOnDemandStatus) -> Unit) {
         logger.info("WorkerOnAwsBatch starting for ${workerProperties["TOCK_BUILD_TYPE"]} build type")
 
-        val jobId = runningJob()?.jobId
-            ?: batchClient.submitJob(submitJobRequest).jobId
+        val jobId =
+            runningJob()?.jobId
+                ?: batchClient.submitJob(submitJobRequest).jobId
 
         vertx.setPeriodic(Duration.ofSeconds(10).toMillis()) { periodicId ->
 
@@ -131,28 +134,35 @@ internal class WorkerOnAwsBatch(
 
     override fun summary(): WorkerOnDemandSummary = workerOnDemandSummary
 
-    private fun WorkerProperties.toKeyValuePairs() = map {
-        KeyValuePair().withName(it.key).withValue(it.value)
-    }
+    private fun WorkerProperties.toKeyValuePairs() =
+        map {
+            KeyValuePair().withName(it.key).withValue(it.value)
+        }
 
-    private fun workerOnDemandSummary(jobName: String, jobId: String, createdAt: Long, status: String) = WorkerOnDemandSummary(
+    private fun workerOnDemandSummary(
+        jobName: String,
+        jobId: String,
+        createdAt: Long,
+        status: String,
+    ) = WorkerOnDemandSummary(
         name = jobName,
         id = jobId,
-        startingDate = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(createdAt),
-            TimeZone.getDefault().toZoneId()
-        ),
-        status = when (JobStatus.fromValue(status)) {
-            JobStatus.SUBMITTED -> WorkerOnDemandStatus.RUNNING
-            JobStatus.PENDING -> WorkerOnDemandStatus.RUNNING
-            JobStatus.RUNNABLE -> WorkerOnDemandStatus.RUNNING
-            JobStatus.STARTING -> WorkerOnDemandStatus.RUNNING
-            JobStatus.RUNNING -> WorkerOnDemandStatus.RUNNING
-            JobStatus.SUCCEEDED -> WorkerOnDemandStatus.SUCCEEDED
-            else -> WorkerOnDemandStatus.FAILED
-        }
+        startingDate =
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(createdAt),
+                TimeZone.getDefault().toZoneId(),
+            ),
+        status =
+            when (JobStatus.fromValue(status)) {
+                JobStatus.SUBMITTED -> WorkerOnDemandStatus.RUNNING
+                JobStatus.PENDING -> WorkerOnDemandStatus.RUNNING
+                JobStatus.RUNNABLE -> WorkerOnDemandStatus.RUNNING
+                JobStatus.STARTING -> WorkerOnDemandStatus.RUNNING
+                JobStatus.RUNNING -> WorkerOnDemandStatus.RUNNING
+                JobStatus.SUCCEEDED -> WorkerOnDemandStatus.SUCCEEDED
+                else -> WorkerOnDemandStatus.FAILED
+            },
     )
 
-    private fun JobDetail.toWorkerOnDemandSummary() =
-        workerOnDemandSummary(jobName, jobId, createdAt, status)
+    private fun JobDetail.toWorkerOnDemandSummary() = workerOnDemandSummary(jobName, jobId, createdAt, status)
 }

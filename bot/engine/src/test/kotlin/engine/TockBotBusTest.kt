@@ -28,27 +28,28 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class TockBotBusTest : BotEngineTest() {
-
     @BeforeEach
     fun beforeTest() {
         TestExecutorRecorder.clear()
     }
 
     @Test
-    fun `deferMessageSending close messageChanel asynchronously WHERE not closed before`() = runBlocking {
-        val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
-        val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
-        close.invoke()
-        assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 1 }
-    }
+    fun `deferMessageSending close messageChanel asynchronously WHERE not closed before`() =
+        runBlocking {
+            val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
+            val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
+            close.invoke()
+            assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 1 }
+        }
 
     @Test
-    fun `deferMessageSending does not close messageChanel asynchronously WHERE closed before`() = runBlocking {
-        val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
-        val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
-        bus.end()
-        delay(100)
-        close.invoke()
-        assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 0 }
-    }
+    fun `deferMessageSending does not close messageChanel asynchronously WHERE closed before`() =
+        runBlocking {
+            val messageChannel: Channel<QueuedAction> = mockk(relaxed = true)
+            val close = (bus as TockBotBus).deferMessageSending(this, messageChannel, Duration.ofMillis(50))
+            bus.end()
+            delay(100)
+            close.invoke()
+            assertTrue { TestExecutorRecorder.executeBlockingDuration.size == 0 }
+        }
 }

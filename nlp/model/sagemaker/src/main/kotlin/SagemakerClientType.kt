@@ -20,7 +20,8 @@ package ai.tock.nlp.sagemaker
  */
 enum class SagemakerClientType(val clientName: String) {
     INTENT_CLASSIFICATION("intent-classification"),
-    ENTITY_CLASSIFICATION("entity-classification");
+    ENTITY_CLASSIFICATION("entity-classification"),
+    ;
 
     override fun toString(): String = clientName
 }

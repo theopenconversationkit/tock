@@ -30,16 +30,15 @@ data class UrlButton(
     val title: String,
     @JsonProperty("webview_height_ratio") val webviewHeightRatio: String? = null,
     @JsonProperty("messenger_extensions") val messengerExtensions: String? = null,
-    @JsonProperty("fallback_url") val fallBackUrl: String? = null
+    @JsonProperty("fallback_url") val fallBackUrl: String? = null,
 ) : Button(ButtonType.web_url) {
-
     override fun toChoice(): Choice {
         return Choice(
             EXIT_INTENT,
             mapOf(
                 URL_PARAMETER to url,
-                TITLE_PARAMETER to title
-            )
+                TITLE_PARAMETER to title,
+            ),
         )
     }
 }

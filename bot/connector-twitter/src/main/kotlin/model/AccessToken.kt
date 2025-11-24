@@ -20,5 +20,5 @@ internal data class AccessToken(
     val oauthToken: String,
     val oauthTokenSecret: String,
     val userId: String,
-    val screenName: String
+    val screenName: String,
 )

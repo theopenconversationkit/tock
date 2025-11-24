@@ -45,7 +45,6 @@ import io.vertx.ext.web.RoutingContext
  * [GenAIVerticle] contains all the routes and actions associated with the AI tasks
  */
 class GenAIVerticle {
-
     companion object {
         // Configuration
         private const val PATH_CONFIG_RAG = "/gen-ai/bots/:botId/configuration/rag"
@@ -72,25 +71,27 @@ class GenAIVerticle {
                 val botId = context.pathParam("botId")
                 getNamespace(context)?.let { namespace ->
                     front.getApplicationByNamespaceAndName(
-                        namespace, botId
+                        namespace, botId,
                     )
-                }?: throw NotFoundException(404, "Could not find $botId in namespace")
+                } ?: throw NotFoundException(404, "Could not find $botId in namespace")
             }
 
             // --------------------------------------- Config - RAG ----------------------------------------
             blockingJsonPost(
-                PATH_CONFIG_RAG, admin
+                PATH_CONFIG_RAG,
+                admin,
             ) { context: RoutingContext, request: BotRAGConfigurationDTO ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
                     logger.info { "Saving 'RAG' configuration..." }
                     BotRAGConfigurationDTO(
-                        RAGService.saveRag(request)
+                        RAGService.saveRag(request),
                     )
                 }
             }
 
             blockingJsonGet(
-                PATH_CONFIG_RAG, admin
+                PATH_CONFIG_RAG,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'RAG' configuration..." }
@@ -99,7 +100,8 @@ class GenAIVerticle {
             }
 
             blockingDelete(
-                PATH_CONFIG_RAG, admin
+                PATH_CONFIG_RAG,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Deleting 'RAG' configuration..." }
@@ -109,18 +111,20 @@ class GenAIVerticle {
 
             // ---------------------------------- Config - Sentence Generation -----------------------------
             blockingJsonPost(
-                PATH_CONFIG_SENTENCE_GENERATION, admin
+                PATH_CONFIG_SENTENCE_GENERATION,
+                admin,
             ) { context: RoutingContext, request: BotSentenceGenerationConfigurationDTO ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
                     logger.info { "Saving 'Sentence Generation' configuration..." }
                     BotSentenceGenerationConfigurationDTO(
-                        SentenceGenerationService.saveSentenceGeneration(request)
+                        SentenceGenerationService.saveSentenceGeneration(request),
                     )
                 }
             }
 
             blockingJsonGet(
-                PATH_CONFIG_SENTENCE_GENERATION, admin
+                PATH_CONFIG_SENTENCE_GENERATION,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'Sentence Generation' configuration..." }
@@ -130,7 +134,8 @@ class GenAIVerticle {
             }
 
             blockingJsonGet(
-                PATH_CONFIG_SENTENCE_GENERATION_INFO, nlpUser
+                PATH_CONFIG_SENTENCE_GENERATION_INFO,
+                nlpUser,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'Sentence Generation' configuration info..." }
@@ -140,7 +145,8 @@ class GenAIVerticle {
             }
 
             blockingDelete(
-                PATH_CONFIG_SENTENCE_GENERATION, admin
+                PATH_CONFIG_SENTENCE_GENERATION,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Deleting 'Sentence Generation' configuration..." }
@@ -150,18 +156,20 @@ class GenAIVerticle {
 
             // ----------------------------------- Config - Vector Store -----------------------------------
             blockingJsonPost(
-                PATH_CONFIG_VECTOR_STORE, admin
+                PATH_CONFIG_VECTOR_STORE,
+                admin,
             ) { context: RoutingContext, request: BotVectorStoreConfigurationDTO ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
                     logger.info { "Saving 'Vector Store' configuration..." }
                     BotVectorStoreConfigurationDTO(
-                        VectorStoreService.saveVectorStore(request)
+                        VectorStoreService.saveVectorStore(request),
                     )
                 }
             }
 
             blockingJsonGet(
-                PATH_CONFIG_VECTOR_STORE, admin
+                PATH_CONFIG_VECTOR_STORE,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'Vector Store' configuration..." }
@@ -171,7 +179,8 @@ class GenAIVerticle {
             }
 
             blockingDelete(
-                PATH_CONFIG_VECTOR_STORE, admin
+                PATH_CONFIG_VECTOR_STORE,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Deleting 'Vector Store' configuration..." }
@@ -181,18 +190,20 @@ class GenAIVerticle {
 
             // ----------------------------------- Config - Observability ------------------------------------
             blockingJsonPost(
-                PATH_CONFIG_VECTOR_OBSERVABILITY, admin
+                PATH_CONFIG_VECTOR_OBSERVABILITY,
+                admin,
             ) { context: RoutingContext, request: BotObservabilityConfigurationDTO ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
                     logger.info { "Saving 'Observability' configuration..." }
                     BotObservabilityConfigurationDTO(
-                        ObservabilityService.saveObservability(request)
+                        ObservabilityService.saveObservability(request),
                     )
                 }
             }
 
             blockingJsonGet(
-                PATH_CONFIG_VECTOR_OBSERVABILITY, admin
+                PATH_CONFIG_VECTOR_OBSERVABILITY,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'Observability' configuration..." }
@@ -202,7 +213,8 @@ class GenAIVerticle {
             }
 
             blockingDelete(
-                PATH_CONFIG_VECTOR_OBSERVABILITY, admin
+                PATH_CONFIG_VECTOR_OBSERVABILITY,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Deleting 'Observability' configuration..." }
@@ -212,18 +224,20 @@ class GenAIVerticle {
 
             // ---------------------------------- Config - Document Compressor -------------------------------
             blockingJsonPost(
-                PATH_CONFIG_DOCUMENT_COMPRESSOR, admin
+                PATH_CONFIG_DOCUMENT_COMPRESSOR,
+                admin,
             ) { context: RoutingContext, request: BotDocumentCompressorConfigurationDTO ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
                     logger.info { "Saving 'Document Compressor' configuration..." }
                     BotDocumentCompressorConfigurationDTO(
-                        DocumentCompressorService.saveDocumentCompressor(request)
+                        DocumentCompressorService.saveDocumentCompressor(request),
                     )
                 }
             }
 
             blockingJsonGet(
-                PATH_CONFIG_DOCUMENT_COMPRESSOR, admin
+                PATH_CONFIG_DOCUMENT_COMPRESSOR,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Retrieving 'Document Compressor' configuration..." }
@@ -233,7 +247,8 @@ class GenAIVerticle {
             }
 
             blockingDelete(
-                PATH_CONFIG_DOCUMENT_COMPRESSOR, admin
+                PATH_CONFIG_DOCUMENT_COMPRESSOR,
+                admin,
             ) { context: RoutingContext ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "Deleting 'Document Compressor' configuration..." }
@@ -243,7 +258,8 @@ class GenAIVerticle {
 
             // ------------------------------- Generation - Sentence Generation --------------------------
             blockingJsonPost(
-                PATH_COMPLETION_SENTENCE_GENERATION, botUser
+                PATH_COMPLETION_SENTENCE_GENERATION,
+                botUser,
             ) { context: RoutingContext, request: SentenceGenerationRequest ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "GEN AI - Generating sentences..." }
@@ -253,7 +269,8 @@ class GenAIVerticle {
 
             // ---------------------------------- Generation - Playground --------------------------
             blockingJsonPost(
-                PATH_COMPLETION_PLAYGROUND, admin
+                PATH_COMPLETION_PLAYGROUND,
+                admin,
             ) { context: RoutingContext, request: PlaygroundRequest ->
                 return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) { app ->
                     logger.info { "GEN AI - Playground..." }
@@ -267,7 +284,7 @@ class GenAIVerticle {
      * Get the namespace from the context
      * @param context : the vertx routing context
      */
-    private fun getNamespace(context: RoutingContext) : String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
+    private fun getNamespace(context: RoutingContext): String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]
@@ -275,7 +292,9 @@ class GenAIVerticle {
      * @param botId the bot id
      * @param filter a given [MetricFilter]
      */
-    private fun createFilterMetric(namespace: String, botId: String, filter: MetricFilter?) =
-        filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
+    private fun createFilterMetric(
+        namespace: String,
+        botId: String,
+        filter: MetricFilter?,
+    ) = filter?.copy(namespace = namespace, botId = botId) ?: MetricFilter(namespace, botId)
 }
-

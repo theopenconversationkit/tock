@@ -16,8 +16,9 @@
 
 package ai.tock.genai.orchestratorcore.models.compressor
 
-enum class DocumentCompressorProvider{
-    BloomzRerank;
+enum class DocumentCompressorProvider {
+    BloomzRerank,
+    ;
 
     companion object {
         fun findByName(provider: String): DocumentCompressorProvider? {

@@ -31,48 +31,53 @@ abstract class StoryDataStepBase<T : StoryHandlerDefinition, TD, D>(
         @Suppress("UNCHECKED_CAST")
         EmptyData as D
     },
-    private val reply: T.(D) -> Any?
+    private val reply: T.(D) -> Any?,
 ) : StoryDataStep<T, TD, D> {
-
     fun select(): TD.(T) -> Boolean = select
 
     fun setup(): T.(TD) -> D = setup
 
     fun reply(): T.(D) -> Any? = reply
 
-    fun execute(storyDef: T, configuration: TD): Any? {
+    fun execute(
+        storyDef: T,
+        configuration: TD,
+    ): Any? {
         storyDef.step = this
         val d = setup()(storyDef, configuration)
         return reply()(storyDef, d)
     }
 
-    final override fun selectFromBusAndData(): T.(TD?) -> Boolean = {
-        if (it == null) {
-            error("story data has to be not null")
+    final override fun selectFromBusAndData(): T.(TD?) -> Boolean =
+        {
+            if (it == null) {
+                error("story data has to be not null")
+            }
+            select()(it, this)
         }
-        select()(it, this)
-    }
 
-    final override fun checkPreconditions(): T.(TD?) -> D? = {
-        if (it == null) {
-            error("story data has to be not null")
+    final override fun checkPreconditions(): T.(TD?) -> D? =
+        {
+            if (it == null) {
+                error("story data has to be not null")
+            }
+            setup()(this, it)
         }
-        setup()(this, it)
-    }
 
-    final override fun handler(): T.(D?) -> Any? = {
-        val c = this
-        if (it == null) {
-            error("data step has to be not null")
-        }
-        val reply = reply()(c, it)
-        // in order to manage switch inside the reply
-        if (!isEndCalled(c)) {
-            end {
-                reply
+    final override fun handler(): T.(D?) -> Any? =
+        {
+            val c = this
+            if (it == null) {
+                error("data step has to be not null")
+            }
+            val reply = reply()(c, it)
+            // in order to manage switch inside the reply
+            if (!isEndCalled(c)) {
+                end {
+                    reply
+                }
             }
         }
-    }
 
     override val name: String get() = this::class.simpleName!!
 }

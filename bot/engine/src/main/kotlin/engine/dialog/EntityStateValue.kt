@@ -50,9 +50,8 @@ data class EntityStateValue(
     /**
      * Old action map in order to retrieve lazily the history.
      */
-    private val oldActionsMap: Map<Id<Action>, Action> = emptyMap()
+    private val oldActionsMap: Map<Id<Action>, Action> = emptyMap(),
 ) {
-
     private var updated: Instant = initialUpdate
     private var loaded: Boolean = stateValueId == null
     internal var multiRequestedValues: List<EntityValue>? = null
@@ -66,11 +65,18 @@ data class EntityStateValue(
         currentHistory.add(ArchivedEntityValue(currentValue, null, updated))
     }
 
-    internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
+    internal fun changeValue(
+        entity: Entity,
+        newValue: Value?,
+        action: Action? = null,
+    ): EntityStateValue {
         return changeValue(EntityValue(entity, newValue), action)
     }
 
-    internal fun changeValue(newValue: EntityValue?, action: Action? = null): EntityStateValue {
+    internal fun changeValue(
+        newValue: EntityValue?,
+        action: Action? = null,
+    ): EntityStateValue {
         updated = now()
         currentValue = newValue
         // do not change history if previous value is exactly the same

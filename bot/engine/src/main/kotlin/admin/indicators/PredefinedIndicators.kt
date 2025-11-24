@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.indicators
 
 enum class Dimensions(val value: String) {
-    GEN_AI("Gen AI")
+    GEN_AI("Gen AI"),
 }
 
 enum class IndicatorValues(val value: IndicatorValue) {
@@ -32,17 +32,23 @@ enum class Indicators(val value: Indicator) {
             name = "rag",
             label = "RAG",
             description = "Predefined indicator for the RAG Story.",
-            namespace = "", // A predefined indicator does not have a namespace.
-            botId = "", // A predefined indicator does not have a botId.
+            // A predefined indicator does not have a namespace.
+            namespace = "",
+            // A predefined indicator does not have a botId.
+            botId = "",
             dimensions = setOf(Dimensions.GEN_AI.value),
-            values = setOf(
-                IndicatorValues.SUCCESS.value, IndicatorValues.FAILURE.value, IndicatorValues.NO_ANSWER.value
-            )
-        )
-    )
+            values =
+                setOf(
+                    IndicatorValues.SUCCESS.value,
+                    IndicatorValues.FAILURE.value,
+                    IndicatorValues.NO_ANSWER.value,
+                ),
+        ),
+    ),
 }
 
 object PredefinedIndicators {
     val indicators = Indicators.entries.map { it.value }.toSet()
+
     fun has(name: String) = indicators.any { it.name.equals(name, ignoreCase = true) }
 }

@@ -38,7 +38,6 @@ import org.litote.kmongo.getCollection
  *
  */
 internal object MongoCache : TockCache {
-
     private const val MONGO_DATABASE: String = TOCK_CACHE_DATABASE
 
     private val logger = KotlinLogging.logger {}
@@ -61,7 +60,10 @@ internal object MongoCache : TockCache {
             as Map<Id<T>, Any>
     }
 
-    override fun <T> get(id: Id<T>, type: String): T? {
+    override fun <T> get(
+        id: Id<T>,
+        type: String,
+    ): T? {
         @Suppress("UNCHECKED_CAST")
         return try {
             col.findOne(MongoCacheData_.Id eq id, Type eq type)?.toValue() as T?
@@ -72,15 +74,22 @@ internal object MongoCache : TockCache {
         }
     }
 
-    override fun <T : Any> put(id: Id<T>, type: String, data: T) {
+    override fun <T : Any> put(
+        id: Id<T>,
+        type: String,
+        data: T,
+    ) {
         col.replaceOne(
             and(MongoCacheData_.Id eq id, Type eq type),
             MongoCacheData.fromValue(id, type, data),
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
-    override fun <T> remove(id: Id<T>, type: String) {
+    override fun <T> remove(
+        id: Id<T>,
+        type: String,
+    ) {
         col.deleteOne(MongoCacheData_.Id eq id, Type eq type)
     }
 }

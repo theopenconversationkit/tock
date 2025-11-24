@@ -28,35 +28,38 @@ import kotlin.test.assertEquals
  *
  */
 class AlexaMessageTest {
-
     @Test
     fun `toSentenceElement provides reprompt and images`() {
-        val m = AlexaMessage(
-            true,
-            StandardCard().apply {
-                title = "title"
-                image = Image().apply {
-                    smallImageUrl = "url1"
-                    largeImageUrl = "url2"
-                    text = "text"
-                }
-            },
-            "hey?"
-        )
+        val m =
+            AlexaMessage(
+                true,
+                StandardCard().apply {
+                    title = "title"
+                    image =
+                        Image().apply {
+                            smallImageUrl = "url1"
+                            largeImageUrl = "url2"
+                            text = "text"
+                        }
+                },
+                "hey?",
+            )
         val e = m.toGenericMessage()
         assertEquals(
             GenericMessage(
-                attachments = listOf(
-                    Attachment("url1", SendAttachment.AttachmentType.image)
-                ),
-                texts = mapOf(
-                    "reprompt" to "hey?",
-                    "title" to "title",
-                    "text" to "text"
-                ),
-                metadata = mapOf("end" to "true")
+                attachments =
+                    listOf(
+                        Attachment("url1", SendAttachment.AttachmentType.image),
+                    ),
+                texts =
+                    mapOf(
+                        "reprompt" to "hey?",
+                        "title" to "title",
+                        "text" to "text",
+                    ),
+                metadata = mapOf("end" to "true"),
             ),
-            e
+            e,
         )
     }
 }

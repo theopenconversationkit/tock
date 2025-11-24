@@ -35,10 +35,10 @@ import mu.KotlinLogging
 class ImageGeneratorHandler<T : Any>(
     private val imageGenerator: ImageGenerator<T>,
     private val paramExtractor: ImageParametersExtractor<T>,
-    private val executor: Executor = injector.provide()
+    private val executor: Executor = injector.provide(),
 ) : Handler<RoutingContext> {
-
     private val logger = KotlinLogging.logger {}
+
     override fun handle(context: RoutingContext) {
         executor.executeBlocking {
             try {
@@ -47,11 +47,12 @@ class ImageGeneratorHandler<T : Any>(
                 if (imageParams == null) {
                     context.response().setStatusCode(404).end()
                 } else {
-                    val format = requestParams["format"]?.let {
-                        ImageFormat.findByCode(
-                            it
-                        )
-                    } ?: ImageFormat.PNG
+                    val format =
+                        requestParams["format"]?.let {
+                            ImageFormat.findByCode(
+                                it,
+                            )
+                        } ?: ImageFormat.PNG
                     val data = imageGenerator.generate(imageParams, format)
                     context.response().putHeader(HttpHeaders.CONTENT_LENGTH, data.size.toString())
                     context.response().putHeader(HttpHeaders.CONTENT_TYPE, format.contentType)

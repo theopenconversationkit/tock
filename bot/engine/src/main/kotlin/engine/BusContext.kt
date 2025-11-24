@@ -34,7 +34,7 @@ internal data class BusContext(
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = normal,
     var notificationType: ActionNotificationType? = null,
-    var visibility: ActionVisibility = ActionVisibility.UNKNOWN
+    var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
 ) {
     companion object {
         val logger: KLogger = KotlinLogging.logger {}

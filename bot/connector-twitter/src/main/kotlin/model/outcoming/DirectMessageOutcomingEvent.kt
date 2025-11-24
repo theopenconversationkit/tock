@@ -33,18 +33,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 @JsonTypeName("message_create")
 data class DirectMessageOutcomingEvent(
     @JsonProperty("message_create")
-    val messageCreate: MessageCreate
+    val messageCreate: MessageCreate,
 ) : AbstractOutcomingEvent() {
-    override fun toGenericMessage(): GenericMessage =
-        messageCreate.messageData.toGenericMessage()
+    override fun toGenericMessage(): GenericMessage = messageCreate.messageData.toGenericMessage()
 
-    override fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(messageCreate.senderId, playerType)
+    override fun playerId(playerType: PlayerType): PlayerId = PlayerId(messageCreate.senderId, playerType)
 
-    override fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
-        messageCreate.target.recipientId,
-        playerType
-    )
+    override fun recipientId(playerType: PlayerType): PlayerId =
+        PlayerId(
+            messageCreate.target.recipientId,
+            playerType,
+        )
 
     override fun toString(): String = messageCreate.messageData.text
 
@@ -52,16 +51,15 @@ data class DirectMessageOutcomingEvent(
         fun builder(
             target: Recipient,
             senderId: String,
-            text: String
+            text: String,
         ) = Builder(target, senderId, text)
     }
 
     class Builder(
         val target: Recipient,
         val senderId: String,
-        val text: String
+        val text: String,
     ) {
-
         var sourceAppId: String? = null
         var options: List<Option> = listOf()
         var optionsWithoutDescription: List<OptionWithoutDescription> = listOf()
@@ -72,16 +70,19 @@ data class DirectMessageOutcomingEvent(
                     target = target,
                     sourceAppId = sourceAppId,
                     senderId = senderId,
-                    messageData = MessageData(
-                        text = text,
-                        quickReply =
-                        if (!options.isEmpty())
-                            Options(options)
-                        else if (!optionsWithoutDescription.isEmpty())
-                            Options(optionsWithoutDescription)
-                        else null
-                    )
-                )
+                    messageData =
+                        MessageData(
+                            text = text,
+                            quickReply =
+                                if (!options.isEmpty()) {
+                                    Options(options)
+                                } else if (!optionsWithoutDescription.isEmpty()) {
+                                    Options(optionsWithoutDescription)
+                                } else {
+                                    null
+                                },
+                        ),
+                ),
             )
         }
 

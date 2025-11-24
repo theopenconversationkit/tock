@@ -29,7 +29,6 @@ interface SerializableConnectorMessage : ConnectorMessage
  * Connector specific message format.
  */
 interface ConnectorMessage : ConnectorMessageProvider {
-
     /**
      * The connector type.
      */

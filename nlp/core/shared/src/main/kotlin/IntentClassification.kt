@@ -20,7 +20,6 @@ package ai.tock.nlp.core
  * Sorted by probability - the first is the better.
  */
 interface IntentClassification : Iterator<Intent> {
-
     /**
      * Returns the probability [0..1] of the current intent.
      */

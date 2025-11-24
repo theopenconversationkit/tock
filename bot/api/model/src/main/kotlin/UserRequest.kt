@@ -25,5 +25,5 @@ data class UserRequest(
     val message: UserMessage,
     val storyId: String,
     val step: String?,
-    val context: RequestContext
+    val context: RequestContext,
 )

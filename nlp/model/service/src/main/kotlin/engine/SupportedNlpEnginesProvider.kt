@@ -22,7 +22,6 @@ import ai.tock.shared.Loader
  * Provides all supported nlp engines.
  */
 internal object SupportedNlpEnginesProvider {
-
     /**
      * Returns the list of all supported [NlpEngineProvider].
      */

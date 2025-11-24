@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonDeserialize(using = PayloadDeserializer::class)
 abstract class Payload {
-
     open fun toGenericMessage(): GenericMessage? = null
 
     open fun obfuscate(): Payload = this

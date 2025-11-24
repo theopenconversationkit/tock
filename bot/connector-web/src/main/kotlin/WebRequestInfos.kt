@@ -25,11 +25,16 @@ import java.util.concurrent.TimeUnit
 object WebRequestInfosByEvent {
     private val cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build<String, WebRequestInfos>()
 
-    internal fun put(eventId: String, webRequestInfos: WebRequestInfos) = cache.put(eventId, webRequestInfos)
+    internal fun put(
+        eventId: String,
+        webRequestInfos: WebRequestInfos,
+    ) = cache.put(eventId, webRequestInfos)
+
     internal fun invalidate(eventId: String) = cache.invalidate(eventId)
+
     fun get(eventId: String): WebRequestInfos? = cache.getIfPresent(eventId)
-    internal fun getOrPut(eventId: String): WebRequestInfos =
-        get(eventId) ?: (WebRequestInfos().apply { put(eventId, this) })
+
+    internal fun getOrPut(eventId: String): WebRequestInfos = get(eventId) ?: (WebRequestInfos().apply { put(eventId, this) })
 }
 
 data class WebRequestInfos(
@@ -40,8 +45,11 @@ data class WebRequestInfos(
     internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookies())
 
     fun firstHeader(name: String): String? = headers.get(name)
+
     fun headers(name: String): List<String> = headers.getAll(name) ?: emptyList()
+
     fun firstCookie(name: String): String? = cookies.firstOrNull { it.name == name }?.value
+
     internal fun addStreamedResponse(response: String?): String {
         if (response != null) {
             streamedResponse.append(response)

@@ -19,5 +19,5 @@ package ai.tock.genai.orchestratorclient.requests
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
 class ObservabilityProviderSettingStatusRequest(
-    val setting: ObservabilitySetting
+    val setting: ObservabilitySetting,
 )

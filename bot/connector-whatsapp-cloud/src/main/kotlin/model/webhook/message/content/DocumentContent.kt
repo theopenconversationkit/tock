@@ -19,9 +19,9 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class DocumentContent(
-        val caption: String,
-        val filename: String,
-        val sha256: String,
-        @JsonProperty("mime_type") val mimeType: String,
-        val id: String
+    val caption: String,
+    val filename: String,
+    val sha256: String,
+    @JsonProperty("mime_type") val mimeType: String,
+    val id: String,
 )

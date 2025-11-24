@@ -28,16 +28,15 @@ data class MediaCardDescriptorDump(
     val title: I18nLabelValue?,
     val subTitle: I18nLabelValue?,
     val file: MediaFileDescriptorDump?,
-    val actions: List<MediaActionDescriptorDump> = emptyList()
+    val actions: List<MediaActionDescriptorDump> = emptyList(),
 ) : MediaMessageDescriptorDump {
-
     override val type: MediaMessageType = card
 
     constructor(media: MediaCardDescriptor) : this(
         media.title,
         media.subTitle,
         media.file?.let { MediaFileDescriptorDump(it) },
-        media.actions.map { MediaActionDescriptorDump(it) }
+        media.actions.map { MediaActionDescriptorDump(it) },
     )
 
     override fun toMedia(controller: StoryDefinitionConfigurationDumpController): MediaCardDescriptor =
@@ -45,6 +44,6 @@ data class MediaCardDescriptorDump(
             title?.withNamespace(controller.targetNamespace),
             subTitle?.withNamespace(controller.targetNamespace),
             file?.toFile(controller),
-            actions.map { it.toMedia(controller) }
+            actions.map { it.toMedia(controller) },
         )
 }

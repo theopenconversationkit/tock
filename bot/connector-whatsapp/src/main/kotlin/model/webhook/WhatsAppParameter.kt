@@ -18,8 +18,13 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppParameterType {
-    text, image, payload, currency, date_time,
+    text,
+    image,
+    payload,
+    currency,
+    date_time,
 }
 
 data class WhatsAppParameter(
@@ -27,7 +32,7 @@ data class WhatsAppParameter(
     val text: String? = null,
     val image: WhatsAppImageParameter? = null,
     val currency: String? = null,
-    val payload: String? = null
+    val payload: String? = null,
 )
 
 data class WhatsAppImageParameter(val link: String)
@@ -37,7 +42,7 @@ data class WhatsAppCurrencyParameter(
     val fallbackValue: String,
     val code: String,
     @get:JsonProperty("amount_1000")
-    val amount: Int
+    val amount: Int,
 )
 
 data class WhatsAppDateTimeParameter(
@@ -51,5 +56,5 @@ data class WhatsAppDateTimeParameter(
     val month: Int? = null,
     val hour: Int? = null,
     val minute: Int? = null,
-    val timestamp: Int? = null
+    val timestamp: Int? = null,
 )

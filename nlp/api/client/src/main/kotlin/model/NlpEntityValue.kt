@@ -29,5 +29,5 @@ data class NlpEntityValue(
     val evaluated: Boolean = false,
     val subEntities: List<NlpEntityValue> = emptyList(),
     val probability: Double = 1.0,
-    val mergeSupport: Boolean = false
+    val mergeSupport: Boolean = false,
 )

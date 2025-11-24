@@ -29,14 +29,17 @@ data class WhatsAppCloudBotTemplateMessage(
     override val recipientType: WhatsAppCloudBotRecipientType,
     override val userId: String? = null,
 ) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.template, userId) {
-    override fun prepareMessage(apiService: WhatsAppCloudApiService, recipientId: String): WhatsAppCloudSendBotMessage {
+    override fun prepareMessage(
+        apiService: WhatsAppCloudApiService,
+        recipientId: String,
+    ): WhatsAppCloudSendBotMessage {
         val updatedComponents = template.components
         apiService.replaceWithRealImageId(updatedComponents, recipientId)
 
         return WhatsAppCloudSendBotTemplateMessage(
             template.copy(components = updatedComponents),
             recipientType,
-            recipientId
+            recipientId,
         )
     }
 

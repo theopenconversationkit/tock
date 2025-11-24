@@ -69,9 +69,7 @@ data class UserPreferences(
      * Phone number of the user of application in E.164 format : +33612345678.
      */
     var phoneNumber: String? = null,
-
-    ) {
-
+) {
     /**
      * Fill the current [UserPreferences] with the specified [UserPreferences].
      */

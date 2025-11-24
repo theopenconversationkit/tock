@@ -26,11 +26,11 @@ import java.util.Locale
 class BotConfiguredAnswer(
     val botConfiguration: String,
     val currentType: AnswerConfigurationType,
-    val answers: List<BotAnswerConfiguration>
+    val answers: List<BotAnswerConfiguration>,
 ) {
     constructor(conf: DedicatedAnswerConfiguration, locale: Locale?, readOnly: Boolean = false) : this(
         conf.botConfiguration,
         conf.currentType,
-        conf.answers.mapAnswers(locale, readOnly)
+        conf.answers.mapAnswers(locale, readOnly),
     )
 }

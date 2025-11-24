@@ -25,7 +25,6 @@ import java.util.Locale
  *
  */
 class GoogleSpeechClientIntegrationTest {
-
     @Test
     fun testBasicFile() {
         val filePath = property("audio_test_file", "Please provide a local file path")

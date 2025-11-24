@@ -20,15 +20,12 @@ import ai.tock.nlp.entity.Value
 import org.junit.jupiter.api.Test
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
-import java.time.temporal.ChronoUnit.MINUTES
 import kotlin.test.assertEquals
 
 /**
  *
  */
 class DateEntityValueDateSerializationTest {
-
     @Test
     fun testSerializeAndDeserialize() {
         val v = DateEntityValue(ZonedDateTime.now(ZoneId.of("Z")), DateEntityGrain.day)

@@ -28,10 +28,12 @@ import ai.tock.bot.engine.user.PlayerType.bot
 import mu.KotlinLogging
 
 internal object SlackRequestConverter {
-
     private val logger = KotlinLogging.logger {}
 
-    fun toEvent(event: EventApiMessage, applicationId: String): Event? =
+    fun toEvent(
+        event: EventApiMessage,
+        applicationId: String,
+    ): Event? =
         if (event is InteractiveMessageEvent) {
             val params = SendChoice.decodeChoiceId(event.actions.first().value)
             SendChoice(
@@ -39,24 +41,30 @@ internal object SlackRequestConverter {
                 applicationId,
                 PlayerId(applicationId, bot),
                 params.first,
-                params.second
+                params.second,
             )
         } else if (event is CallbackEvent) {
             event.event.let { message ->
-                if (message.user == null) null
-                else SendSentence(
-                    PlayerId(message.user),
-                    applicationId,
-                    PlayerId(applicationId, bot),
-                    message.text
-                )
+                if (message.user == null) {
+                    null
+                } else {
+                    SendSentence(
+                        PlayerId(message.user),
+                        applicationId,
+                        PlayerId(applicationId, bot),
+                        message.text,
+                    )
+                }
             }
         } else {
             logger.warn { "unhandled event: $event" }
             null
         }
 
-    fun toEvent(message: SlackMessageIn, applicationId: String): Event? {
+    fun toEvent(
+        message: SlackMessageIn,
+        applicationId: String,
+    ): Event? {
         val safeMessage = message
         safeMessage.text = message.getRealMessage()
         return SendSentence(
@@ -64,7 +72,7 @@ internal object SlackRequestConverter {
             applicationId,
             PlayerId("", bot),
             safeMessage.text,
-            mutableListOf(safeMessage)
+            mutableListOf(safeMessage),
         )
     }
 }

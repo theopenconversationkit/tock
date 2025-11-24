@@ -23,11 +23,10 @@ import ai.tock.shared.security.TockObfuscatorService
  * See [https://developers.facebook.com/docs/messenger-platform/send-messages/template/button]
  */
 data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(PayloadType.button) {
-
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             texts = mapOf(ButtonPayload::text.name to text),
-            choices = buttons.map { it.toChoice() }
+            choices = buttons.map { it.toChoice() },
         )
     }
 
