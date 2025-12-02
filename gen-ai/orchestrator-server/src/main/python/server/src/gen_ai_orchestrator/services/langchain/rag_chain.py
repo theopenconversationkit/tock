@@ -41,8 +41,8 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 from langchain_core.vectorstores import VectorStoreRetriever
-from typing_extensions import Any
 from langfuse import get_client, propagate_attributes
+from typing_extensions import Any
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
