@@ -41,7 +41,7 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 from langchain_core.vectorstores import VectorStoreRetriever
-from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
+from langfuse import get_client, propagate_attributes
 from typing_extensions import Any
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -131,7 +131,7 @@ async def execute_rag_chain(
                 message_history.add_ai_message(msg.text)
         session_id = (request.dialog.dialog_id,)
         user_id = (request.dialog.user_id,)
-        tags = (request.dialog.tags,)
+        tags = (request.dialog.tags,) or []
 
     logger.debug(
         'RAG chain - Use chat history: %s',
@@ -160,16 +160,23 @@ async def execute_rag_chain(
         # Langfuse callback handler
         observability_handler = create_observability_callback_handler(
             observability_setting=request.observability_setting,
-            trace_name=ObservabilityTrace.RAG.value,
-            session_id=session_id,
-            user_id=user_id,
-            tags=tags,
         )
         callback_handlers.append(observability_handler)
 
+    metadata = {}
+    if user_id is not None:
+        metadata['langfuse_user_id'] = str(user_id)
+    if session_id is not None:
+        metadata['langfuse_session_id'] = str(session_id)
+    if tags:
+        metadata['langfuse_tags'] = list(tags)
+
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
-        config={'callbacks': callback_handlers},
+        config={
+            'callbacks': callback_handlers,
+            'metadata': metadata,
+        },
     )
 
     # RAG Guard
@@ -204,7 +211,10 @@ async def execute_rag_chain(
                 )
             ),
         ),
-        observability_info=get_observability_info(observability_handler),
+        observability_info=get_observability_info(
+            observability_handler,
+            ObservabilityTrace.RAG.value if observability_handler is not None else None,
+        ),
         debug=get_rag_debug_data(request, records_callback_handler, rag_duration)
         if debug
         else None,
