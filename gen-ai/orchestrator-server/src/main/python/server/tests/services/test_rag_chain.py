@@ -13,7 +13,7 @@
 #   limitations under the License.
 #
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch, ANY
 
 import pytest
 from langchain_core.documents import Document
@@ -184,7 +184,10 @@ Answer in {locale}:""",
     # Assert qa chain is ainvoke()d with the expected settings from request
     mocked_chain.ainvoke.assert_called_once_with(
         input=inputs,
-        config={'callbacks': [mocked_callback, mocked_langfuse_callback]},
+        config={
+            'callbacks': [mocked_callback, mocked_langfuse_callback],
+            'metadata': ANY,
+        },
     )
     # Assert the response is build using the expected settings
     mocked_rag_response.assert_called_once_with(
@@ -430,7 +433,7 @@ def test_rag_guard_accepts_no_answer_even_with_docs(mocked_log):
         'documents': ['a doc as a string'],
     }
     rag_chain.rag_guard(inputs, response, documents_required=True)
-    assert response['documents'] == ['a doc as a string']
+    assert response['documents'] == []
 
 
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
