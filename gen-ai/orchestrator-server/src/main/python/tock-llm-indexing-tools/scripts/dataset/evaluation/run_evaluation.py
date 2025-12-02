@@ -34,12 +34,12 @@ Examples:
     python run_evaluation.py --json-config-file=path/to/config-file.json
 """
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from docopt import docopt
 from langfuse import Langfuse
+from langfuse._client.datasets import DatasetItemClient
 from langfuse.api import DatasetRunItem, TraceWithFullDetails
-from langfuse.client import DatasetItemClient
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import ActivityStatus, StatusWithReason
 from scripts.dataset.evaluation.models import (
@@ -55,15 +55,19 @@ from gen_ai_orchestrator.services.security.security_service import (
 )
 
 
-def get_trace_if_exists(logger, client, dataset_name, experiment_name, _dataset_run,
-                        item) -> [Optional[DatasetRunItem], Optional[TraceWithFullDetails]]:
+def get_trace_if_exists(
+    logger, client, dataset_name, experiment_name, _dataset_run, item
+) -> Tuple[Optional[DatasetRunItem], Optional[TraceWithFullDetails]]:
     item_run = next((r for r in _dataset_run if r.dataset_item_id == item.id), None)
 
     if item_run:
-        return item_run, client.get_trace(item_run.trace_id)
+        return item_run, client.api.trace.get(item_run.trace_id)
 
-    logger.info(f"No trace found for '{item.id}' of dataset '{dataset_name}' in experiment '{experiment_name}!")
+    logger.info(
+        f"No trace found for '{item.id}' of dataset '{dataset_name}' in experiment '{experiment_name}!"
+    )
     return None, None
+
 
 def main():
     start_time = datetime.now()
@@ -82,52 +86,75 @@ def main():
         client = Langfuse(
             host=str(input_config.observability_setting.url),
             public_key=input_config.observability_setting.public_key,
-            secret_key=fetch_secret_key_value(input_config.observability_setting.secret_key),
+            secret_key=fetch_secret_key_value(
+                input_config.observability_setting.secret_key
+            ),
         )
-        ragas_evaluator = RagasEvaluator(langfuse_client=client, evaluation_input=input_config)
+        ragas_evaluator = RagasEvaluator(
+            langfuse_client=client, evaluation_input=input_config
+        )
 
-        dataset_experiment=input_config.dataset_experiment
-        dataset_name=dataset_experiment.dataset_name
-        experiment_name=dataset_experiment.experiment_name
+        dataset_experiment = input_config.dataset_experiment
+        dataset_name = dataset_experiment.dataset_name
+        experiment_name = dataset_experiment.experiment_name
         dataset = client.get_dataset(name=dataset_name)
         dataset_items = dataset.items
+        dataset_run = client.api.datasets.get_run(
+            dataset_name=dataset_name,
+            run_name=experiment_name,
+        )
         for item in dataset_items:
-            dataset_run = client.get_dataset_run(
-                dataset_name=dataset_name,
-                dataset_run_name=experiment_name
+            run_item, run_trace_details = get_trace_if_exists(
+                logger,
+                client,
+                dataset_name,
+                experiment_name,
+                dataset_run.dataset_run_items,
+                item,
             )
-            run_item, run_trace_details = get_trace_if_exists(logger, client, dataset_name, experiment_name, dataset_run.dataset_run_items, item)
-            if run_trace_details and len(run_trace_details.scores) == 0 and run_trace_details.output and isinstance(run_trace_details.output, dict):
+            if (
+                run_trace_details
+                and len(run_trace_details.scores) == 0
+                and run_trace_details.output
+                and isinstance(run_trace_details.output, dict)
+            ):
                 metric_scores = ragas_evaluator.score_with_ragas(
                     item=item,
                     run_trace_details=run_trace_details,
-                    experiment_name=experiment_name
+                    experiment_name=experiment_name,
                 )
                 experiment_scores.append(
                     DatasetExperimentItemScores(
                         run_item_id=run_item.id,
                         run_trace_id=run_trace_details.id,
-                        metric_scores=metric_scores
+                        metric_scores=metric_scores,
                     )
                 )
             else:
-                logger.warn(f"Impossible to evaluate item '{item.id}' of dataset '{dataset_name}' in experiment '{experiment_name}'!")
+                logger.warn(
+                    f"Impossible to evaluate item '{item.id}' of dataset '{dataset_name}' in experiment '{experiment_name}'!"
+                )
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
     except Exception as e:
         full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
-        activity_status = StatusWithReason(status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}")
+        activity_status = StatusWithReason(
+            status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}"
+        )
         logger.error(e, exc_info=True)
 
     len_dataset_items = len(dataset_items)
     output = RunEvaluationOutput(
-        status = activity_status,
+        status=activity_status,
         dataset_experiment=dataset_experiment,
         dataset_experiment_scores=experiment_scores,
-        duration = datetime.now() - start_time,
+        duration=datetime.now() - start_time,
         items_count=len(dataset_items),
-        success_rate=100 * (len(experiment_scores) / len_dataset_items) if len_dataset_items > 0 else 0
+        success_rate=100 * (len(experiment_scores) / len_dataset_items)
+        if len_dataset_items > 0
+        else 0,
     )
     logger.debug(f"\n{output.format()}")
+
 
 if __name__ == '__main__':
     main()

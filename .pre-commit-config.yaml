@@ -45,5 +45,5 @@ repos:
       - id: pip-audit
         additional_dependencies:
           - "pip>=25.3"
-          - "filelock>=3.20.1"
+          - "filelock==3.20.3"
           - "urllib3>=2.6.3"
