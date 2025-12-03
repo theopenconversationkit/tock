@@ -20,5 +20,5 @@ import ai.tock.bot.engine.nlp.NlpStats
 
 data class DialogWithNlpStats(
     val dialog: DialogReport,
-    val nlpStats: List<NlpStats>
+    val nlpStats: List<NlpStats>,
 )
