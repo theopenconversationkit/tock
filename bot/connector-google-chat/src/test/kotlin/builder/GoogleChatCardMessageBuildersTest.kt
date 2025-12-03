@@ -34,8 +34,8 @@ internal class GoogleChatCardMessageBuildersTest {
             every { translate(text = any()) } answers { TranslatedString(arg(0)) }
         }
 
-    private fun buildCard(): GoogleChatConnectorCardMessageOut {
-        return i18nTranslator.card {
+    private fun buildCard(): GoogleChatConnectorCardMessageOut =
+        i18nTranslator.card {
             header("Pizza Bot Customer Support", "pizzabot@example.com", "https://goo.gl/aeDtrS")
             section {
                 keyValue("Order No.", "12345", action = { nlpAction("Voir ma commande") })
@@ -60,7 +60,6 @@ internal class GoogleChatCardMessageBuildersTest {
                 }
             }
         }
-    }
 
     @Test
     internal fun `should build complete card`() {

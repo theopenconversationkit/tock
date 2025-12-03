@@ -126,7 +126,8 @@ object GoogleChatMarkdown {
         override fun visit(link: Link) {
             val linkText = extractLinkText(link)
 
-            output.append('<')
+            output
+                .append('<')
                 .append(link.destination)
                 .append('|')
                 .append(linkText.ifBlank { link.destination })

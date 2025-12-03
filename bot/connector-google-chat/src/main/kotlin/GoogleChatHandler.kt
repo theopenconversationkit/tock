@@ -30,4 +30,6 @@ import kotlin.reflect.KClass
 @ConnectorHandler(connectorTypeId = GOOGLE_CHAT_CONNECTOR_TYPE_ID)
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class GoogleChatHandler(val value: KClass<out ConnectorSpecificHandling>)
+annotation class GoogleChatHandler(
+    val value: KClass<out ConnectorSpecificHandling>,
+)

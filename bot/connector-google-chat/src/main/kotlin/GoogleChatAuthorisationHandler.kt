@@ -43,7 +43,9 @@ enum class VerificationFailure {
     ISSUER_VERIFICATION_FAILED,
 }
 
-class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Handler<RoutingContext> {
+class GoogleChatAuthorisationHandler(
+    private val botProjectNumber: String,
+) : Handler<RoutingContext> {
     private val logger = KotlinLogging.logger {}
 
     private val jsonFactory: JsonFactory
@@ -52,17 +54,22 @@ class GoogleChatAuthorisationHandler(private val botProjectNumber: String) : Han
     init {
         jsonFactory = JacksonFactory()
         verifier =
-            GoogleIdTokenVerifier.Builder(
-                GooglePublicKeysManager.Builder(ApacheHttpTransport(), jsonFactory)
-                    .setPublicCertsEncodedUrl(PUBLIC_CERT_URL_PREFIX + CHAT_ISSUER)
-                    .build(),
-            ).setIssuer(CHAT_ISSUER)
+            GoogleIdTokenVerifier
+                .Builder(
+                    GooglePublicKeysManager
+                        .Builder(ApacheHttpTransport(), jsonFactory)
+                        .setPublicCertsEncodedUrl(PUBLIC_CERT_URL_PREFIX + CHAT_ISSUER)
+                        .build(),
+                ).setIssuer(CHAT_ISSUER)
                 .build()
     }
 
     override fun handle(routingContext: RoutingContext) {
         val token =
-            routingContext.request().getHeader("Authorization")?.takeIf { it.startsWith(BEARER_PREFIX) }
+            routingContext
+                .request()
+                .getHeader("Authorization")
+                ?.takeIf { it.startsWith(BEARER_PREFIX) }
                 ?.substringAfter(BEARER_PREFIX)
         if (hasFailure(token)?.also { logger.error { "Token ($token) verification failed. Cause : $it" } } != null) {
             routingContext.response().setStatusCode(HttpStatus.SC_FORBIDDEN).end()

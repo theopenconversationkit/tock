@@ -46,7 +46,9 @@ internal const val GOOGLE_CHAT_ACTION_INTENT_PARAMETER = "INTENT"
 annotation class CardElementMarker
 
 @CardElementMarker
-abstract class ChatCardElement(val i18nTranslator: I18nTranslator) : I18nTranslator by i18nTranslator {
+abstract class ChatCardElement(
+    val i18nTranslator: I18nTranslator,
+) : I18nTranslator by i18nTranslator {
     val children: MutableList<ChatCardElement> = arrayListOf()
 
     protected fun <T : ChatCardElement> initElement(
@@ -67,7 +69,9 @@ fun I18nTranslator.card(init: ChatCard.() -> Unit): GoogleChatConnectorCardMessa
     return GoogleChatConnectorCardMessageOut(card)
 }
 
-class ChatCard(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTranslator) {
+class ChatCard(
+    i18nTranslator: I18nTranslator,
+) : ChatCardElement(i18nTranslator) {
     fun header(
         title: CharSequence,
         subtitle: CharSequence? = null,
@@ -107,10 +111,12 @@ class ChatHeader(
     val imageUrl: String?,
     val imageStyle: ChatImageStyle,
     i18nTranslator: I18nTranslator,
-) :
-    ChatCardElement(i18nTranslator)
+) : ChatCardElement(i18nTranslator)
 
-class ChatSection(val header: CharSequence?, i18nTranslator: I18nTranslator) : ChatCardElement(i18nTranslator) {
+class ChatSection(
+    val header: CharSequence?,
+    i18nTranslator: I18nTranslator,
+) : ChatCardElement(i18nTranslator) {
     fun textParagraph(text: CharSequence) = initElement(ChatTextParagraph(translate(text), i18nTranslator), { })
 
     fun keyValue(
@@ -153,9 +159,14 @@ class ChatSection(val header: CharSequence?, i18nTranslator: I18nTranslator) : C
     fun buttons(init: ChatButtons.() -> Unit) = initElement(ChatButtons(i18nTranslator), init)
 }
 
-sealed class ChatWidget(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTranslator)
+sealed class ChatWidget(
+    i18nTranslator: I18nTranslator,
+) : ChatCardElement(i18nTranslator)
 
-class ChatTextParagraph(val text: CharSequence, i18nTranslator: I18nTranslator) : ChatWidget(i18nTranslator)
+class ChatTextParagraph(
+    val text: CharSequence,
+    i18nTranslator: I18nTranslator,
+) : ChatWidget(i18nTranslator)
 
 class ChatKeyValue(
     val topLabel: CharSequence?,
@@ -168,10 +179,14 @@ class ChatKeyValue(
     i18nTranslator: I18nTranslator,
 ) : ChatButtons(i18nTranslator)
 
-class ChatImage(val imageButton: ChatButton.ChatIconExternalButton, i18nTranslator: I18nTranslator) :
-    ChatWidget(i18nTranslator)
+class ChatImage(
+    val imageButton: ChatButton.ChatIconExternalButton,
+    i18nTranslator: I18nTranslator,
+) : ChatWidget(i18nTranslator)
 
-open class ChatButtons(i18nTranslator: I18nTranslator) : ChatWidget(i18nTranslator) {
+open class ChatButtons(
+    i18nTranslator: I18nTranslator,
+) : ChatWidget(i18nTranslator) {
     fun textButton(
         text: CharSequence,
         init: ChatButton.() -> Unit,
@@ -230,7 +245,9 @@ enum class ChatIcon {
     VIDEO_PLAY,
 }
 
-sealed class ChatButton(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTranslator) {
+sealed class ChatButton(
+    i18nTranslator: I18nTranslator,
+) : ChatCardElement(i18nTranslator) {
     lateinit var buttonAction: ChatButtonAction
 
     fun link(linkUrl: String) {
@@ -254,9 +271,15 @@ sealed class ChatButton(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTr
         mapOf(GOOGLE_CHAT_ACTION_INTENT_PARAMETER to intent.name) + parameters.toMap(),
     )
 
-    class ChatTextButton(val text: CharSequence, i18nTranslator: I18nTranslator) : ChatButton(i18nTranslator)
+    class ChatTextButton(
+        val text: CharSequence,
+        i18nTranslator: I18nTranslator,
+    ) : ChatButton(i18nTranslator)
 
-    class ChatIconExternalButton(val iconUrl: String, i18nTranslator: I18nTranslator) : ChatButton(i18nTranslator)
+    class ChatIconExternalButton(
+        val iconUrl: String,
+        i18nTranslator: I18nTranslator,
+    ) : ChatButton(i18nTranslator)
 
     class ChatIconEmbeddedButton(
         val icon: ChatIcon,
@@ -265,9 +288,14 @@ sealed class ChatButton(i18nTranslator: I18nTranslator) : ChatCardElement(i18nTr
 }
 
 sealed class ChatButtonAction {
-    class ChatLink(val link: String) : ChatButtonAction()
+    class ChatLink(
+        val link: String,
+    ) : ChatButtonAction()
 
-    class ChatAction(val action: String, val parameters: Map<String, String>) : ChatButtonAction()
+    class ChatAction(
+        val action: String,
+        val parameters: Map<String, String>,
+    ) : ChatButtonAction()
 }
 
 fun ChatCard.toCardMessage(): Message =
@@ -280,22 +308,30 @@ fun ChatCard.toCardMessage(): Message =
     )
 
 private fun ChatHeader.toCardHeader() =
-    CardHeader().setTitle(title.toString()).setSubtitle(subtitle?.toString()).setImageUrl(imageUrl)
+    CardHeader()
+        .setTitle(title.toString())
+        .setSubtitle(subtitle?.toString())
+        .setImageUrl(imageUrl)
         .setImageStyle(imageStyle.name)
 
-private fun ChatSection.toSection(): Section {
-    return Section().setHeader(header?.toString())
+private fun ChatSection.toSection(): Section =
+    Section()
+        .setHeader(header?.toString())
         .setWidgets(children.mapNotNull { it as? ChatWidget }.map { it.toWidget() })
-}
 
-private fun ChatWidget.toWidget(): WidgetMarkup {
-    return when (this) {
-        is ChatTextParagraph -> WidgetMarkup().setTextParagraph(TextParagraph().setText(text.toString()))
-        is ChatImage ->
+private fun ChatWidget.toWidget(): WidgetMarkup =
+    when (this) {
+        is ChatTextParagraph -> {
+            WidgetMarkup().setTextParagraph(TextParagraph().setText(text.toString()))
+        }
+
+        is ChatImage -> {
             WidgetMarkup().setImage(
                 Image().setImageUrl(imageButton.iconUrl).setOnClick(imageButton.buttonAction.toOnClick()),
             )
-        is ChatKeyValue ->
+        }
+
+        is ChatKeyValue -> {
             WidgetMarkup().setKeyValue(
                 KeyValue()
                     .setTopLabel(topLabel?.toString())
@@ -307,32 +343,45 @@ private fun ChatWidget.toWidget(): WidgetMarkup {
                     .setIcon(icon?.name)
                     .setButton(children.mapNotNull { it as? ChatButton }.lastOrNull()?.toButton()),
             )
-        is ChatButtons -> WidgetMarkup().setButtons(children.mapNotNull { it as? ChatButton }.map { it.toButton() })
+        }
+
+        is ChatButtons -> {
+            WidgetMarkup().setButtons(children.mapNotNull { it as? ChatButton }.map { it.toButton() })
+        }
     }
-}
 
 private fun ChatButton.toButton(): Button =
     when (this) {
-        is ChatButton.ChatTextButton ->
+        is ChatButton.ChatTextButton -> {
             Button().setTextButton(
                 TextButton().setText(text.toString()).setOnClick(buttonAction.toOnClick()),
             )
-        is ChatButton.ChatIconExternalButton ->
+        }
+
+        is ChatButton.ChatIconExternalButton -> {
             Button().setImageButton(
                 ImageButton().setIconUrl(iconUrl).setOnClick(buttonAction.toOnClick()),
             )
-        is ChatButton.ChatIconEmbeddedButton ->
+        }
+
+        is ChatButton.ChatIconEmbeddedButton -> {
             Button().setImageButton(
                 ImageButton().setIcon(icon.name).setOnClick(buttonAction.toOnClick()),
             )
+        }
     }
 
 private fun ChatButtonAction.toOnClick(): OnClick =
     when (this) {
-        is ChatButtonAction.ChatLink -> OnClick().setOpenLink(OpenLink().setUrl(link))
-        is ChatButtonAction.ChatAction ->
+        is ChatButtonAction.ChatLink -> {
+            OnClick().setOpenLink(OpenLink().setUrl(link))
+        }
+
+        is ChatButtonAction.ChatAction -> {
             OnClick().setAction(
-                FormAction().setActionMethodName(action)
+                FormAction()
+                    .setActionMethodName(action)
                     .setParameters(parameters.map { ActionParameter().setKey(it.key).setValue(it.value) }),
             )
+        }
     }
