@@ -102,15 +102,16 @@ class GoogleChatConnector(
                             "Message content: ${message.toGoogleMessage()}"
                         }
 
-                        val response = chatService
-                            .spaces()
-                            .messages()
-                            .create(
-                                callback.spaceName,
-                                message.toGoogleMessage().setThread(Thread().setName(callback.threadName))
-                            )
-                            .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
-                            .execute()
+                        val response =
+                            chatService
+                                .spaces()
+                                .messages()
+                                .create(
+                                    callback.spaceName,
+                                    message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
+                                )
+                                .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                                .execute()
 
                         logger.info { "Google Chat API response: ${response?.name}" }
                     } catch (e: Exception) {

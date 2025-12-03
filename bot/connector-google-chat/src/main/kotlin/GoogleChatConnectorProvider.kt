@@ -45,25 +45,30 @@ private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 
-internal object GoogleChatConnectorProvider : ConnectorProvider {
+// Lifetime (in seconds) of each impersonated access token.
+// This is the TTL of a single token, not a hard limit on the connector:
+// HttpCredentialsAdapter + ImpersonatedCredentials automatically refresh
+// tokens when they expire, as long as the source credentials remain valid.
+private const val IMPERSONATION_TOKEN_LIFETIME_SECONDS = 3600
 
+internal object GoogleChatConnectorProvider : ConnectorProvider {
     private val logger = KotlinLogging.logger {}
 
     override val connectorType: ConnectorType get() = googleChatConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
-
             val gsaToImpersonate = connectorConfiguration.parameters[GSA_TO_IMPERSONATE_PARAMETER]
 
-            val credentials: GoogleCredentials = if (gsaToImpersonate.isNullOrBlank()) {
-                logger.info { "Using classic authentication mode with JSON credentials" }
-                val credentialInputStream = getCredentialInputStream(connectorConfiguration)
-                loadCredentials(credentialInputStream)
-            } else {
-                logger.info { "Using impersonation mode with GSA: $gsaToImpersonate" }
-                createImpersonatedCredentials(connectorConfiguration, gsaToImpersonate)
-            }
+            val credentials: GoogleCredentials =
+                if (gsaToImpersonate.isNullOrBlank()) {
+                    logger.info { "Using classic authentication mode with JSON credentials" }
+                    val credentialInputStream = getCredentialInputStream(connectorConfiguration)
+                    loadCredentials(credentialInputStream)
+                } else {
+                    logger.info { "Using impersonation mode with GSA: $gsaToImpersonate" }
+                    createImpersonatedCredentials(connectorConfiguration, gsaToImpersonate)
+                }
 
             try {
                 val token = credentials.refreshAccessToken()
@@ -104,9 +109,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
     private fun createImpersonatedCredentials(
         connectorConfiguration: ConnectorConfiguration,
-        targetServiceAccount: String
+        targetServiceAccount: String,
     ): GoogleCredentials {
-
         val sourceCredentials = getSourceCredentials(connectorConfiguration)
 
         logger.info { "Source credentials: ${(sourceCredentials as? ServiceAccountCredentials)?.clientEmail}" }
@@ -117,16 +121,17 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             targetServiceAccount,
             null,
             listOf(CHAT_SCOPE),
-            3600,
-            null
+            IMPERSONATION_TOKEN_LIFETIME_SECONDS,
+            null,
         )
     }
 
     private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials {
         return try {
             val credentialInputStream = getCredentialInputStream(connectorConfiguration)
-            val creds = ServiceAccountCredentials.fromStream(credentialInputStream)
-                .createScoped("https://www.googleapis.com/auth/cloud-platform")
+            val creds =
+                ServiceAccountCredentials.fromStream(credentialInputStream)
+                    .createScoped("https://www.googleapis.com/auth/cloud-platform")
 
             logger.info { "Loaded explicit service account: ${(creds as ServiceAccountCredentials).clientEmail}" }
 
@@ -145,8 +150,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
             ?: error(
                 "Service credential missing: either " +
-                        "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
-                        "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided"
+                    "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
+                    "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
     }
 
@@ -167,7 +172,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Service account email to impersonate (if provided, priority over JSON credentials)",
                     GSA_TO_IMPERSONATE_PARAMETER,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Service account credential file path (default : /service-account-{connectorId}.json)",
