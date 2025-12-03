@@ -71,7 +71,8 @@ class DialogVerticle {
                     val sb = StringBuilder()
                     val printer = CsvCodec.newPrinter(sb)
                     printer.printRecord(listOf("Timestamp", "Dialog ID", "Note", "Commentaire"))
-                    BotAdminService.search(query)
+                    BotAdminService
+                        .search(query)
                         .dialogs
                         .forEach { label ->
                             printer.printRecord(
@@ -103,7 +104,8 @@ class DialogVerticle {
                             "Message",
                         ),
                     )
-                    BotAdminService.search(query)
+                    BotAdminService
+                        .search(query)
                         .dialogs
                         .forEach { dialog ->
                             dialog.actions.forEach {
@@ -120,7 +122,9 @@ class DialogVerticle {
                                                 " ",
                                             )
                                         } else {
-                                            (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }
+                                            (it.message as Sentence)
+                                                .messages
+                                                .joinToString { it.texts.values.joinToString() }
                                                 .replace("\n", " ")
                                         },
                                     ),
@@ -136,16 +140,20 @@ class DialogVerticle {
             blockingJsonGet(PATH_DIALOG, setOf(TockUserRole.botUser)) { context ->
                 val app = FrontClient.getApplicationById(context.pathId("applicationId"))
                 if (context.organization == app?.namespace) {
-                    val dialog = BotAdminService.getDialogWithCommentRights(
-                        context.path("dialogId").toId(),
-                        context.userLogin,
-                    )
+                    val dialog =
+                        BotAdminService.getDialogWithCommentRights(
+                            context.path("dialogId").toId(),
+                            context.userLogin,
+                        )
                     dialog?.let {
-                        val stats = BotAdminService.dialogReportDAO
-                            .getNlpStats(listOf(it.id), app.namespace)
+                        val stats =
+                            BotAdminService.dialogReportDAO
+                                .getNlpStats(listOf(it.id), app.namespace)
                         DialogWithNlpStats(it, stats)
                     }
-                } else unauthorized()
+                } else {
+                    unauthorized()
+                }
             }
 
             blockingJsonPost(PATH_DIALOG_SATISFACTION, setOf(TockUserRole.botUser)) { context, query: Set<String> ->
