@@ -23,29 +23,25 @@ import ai.tock.bot.api.model.BotResponse
 import ai.tock.bot.api.model.merge
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
-import ai.tock.shared.Executor
-import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.provide
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.setupSSE
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
-import java.time.Duration
 
 internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
-
     override fun configure() {
         blocking(HttpMethod.POST, "/webhook") { context ->
             val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 var botResponse: BotResponse? = null
-                val bus = TockClientBus(botDefinition, request) { response ->
-                    botResponse = merge(botResponse, response)
-                }
+                val bus =
+                    TockClientBus(botDefinition, request) { response ->
+                        botResponse = merge(botResponse, response)
+                    }
                 bus.handle()
                 context.response().end(mapper.writeValueAsString(ResponseData(request.requestId, botResponse)))
             } else if (request.configuration != null) {
@@ -53,9 +49,9 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
                     mapper.writeValueAsString(
                         ResponseData(
                             request.requestId,
-                            botConfiguration = botDefinition.toConfiguration()
-                        )
-                    )
+                            botConfiguration = botDefinition.toConfiguration(),
+                        ),
+                    ),
                 )
             } else {
                 error("unknown request: $content")
@@ -66,16 +62,17 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
             val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
-                context.response().setupSSE()
-                val bus = TockClientBus(botDefinition, request) { response ->
-                    context.response()
-                        .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))
-                    if (response.context.lastResponse) {
-                        vertx.setTimer(1000) {
-                            context.response().end()
+                context.response().setupSSE(addEndHandler = true)
+                val bus =
+                    TockClientBus(botDefinition, request) { response ->
+                        context.response()
+                            .sendSseMessage(mapper.writeValueAsString(ResponseData(request.requestId, response)))
+                        if (response.context.lastResponse) {
+                            vertx.setTimer(1000) {
+                                context.response().end()
+                            }
                         }
                     }
-                }
                 bus.handle()
             } else {
                 error("unknown request: $content")

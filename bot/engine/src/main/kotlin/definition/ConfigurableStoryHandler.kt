@@ -44,10 +44,12 @@ open class ConfigurableStoryHandler<out T : StoryHandlerDefinition>(
     /**
      * Convenient value to wait before next answer sentence.
      */
-    breath: Long = BotDefinition.defaultBreath
+    breath: Long = BotDefinition.defaultBreath,
 ) : StoryHandlerBase<T>(mainIntentName, i18nNamespace, breath) {
-
-    override fun newHandlerDefinition(bus: BotBus, data: Any?): T = handlerDefCreator.create(bus, data)
+    override fun newHandlerDefinition(
+        bus: BotBus,
+        data: Any?,
+    ): T = handlerDefCreator.create(bus, data)
 
     override fun checkPreconditions(): BotBus.() -> Any? = preconditionsChecker
 }

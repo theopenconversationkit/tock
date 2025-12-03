@@ -21,7 +21,6 @@ import ai.tock.bot.engine.AsyncBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import kotlin.reflect.KClass
 
-
 @ExperimentalTockCoroutines
 class AsyncDef(private val bus: AsyncBus) : AsyncStoryHandling {
     override suspend fun handle() {

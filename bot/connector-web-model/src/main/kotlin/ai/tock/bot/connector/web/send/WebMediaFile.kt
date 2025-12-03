@@ -20,5 +20,5 @@ data class WebMediaFile(
     val url: String,
     val name: String,
     val type: String,
-    val description: CharSequence? = null
+    val description: CharSequence? = null,
 )

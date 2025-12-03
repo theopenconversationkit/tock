@@ -20,5 +20,5 @@ class UnsupportedRequest(override val idOperator: String, override val idConvers
     data class UnsupportedRequestJson(val idOperator: String)
 
     constructor(unsupportedRequestJson: UnsupportedRequestJson, idConversation: String, type: String) :
-            this(unsupportedRequestJson.idOperator, idConversation, type)
+        this(unsupportedRequestJson.idOperator, idConversation, type)
 }

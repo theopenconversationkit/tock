@@ -35,5 +35,5 @@ data class EntityTestError(
     val averageErrorProbability: Double,
     val count: Int = 0,
     val total: Int = 1,
-    val firstDetectionDate: Instant = Instant.now()
+    val firstDetectionDate: Instant = Instant.now(),
 )

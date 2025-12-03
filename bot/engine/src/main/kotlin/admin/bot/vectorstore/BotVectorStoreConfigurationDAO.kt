@@ -19,14 +19,20 @@ package ai.tock.bot.admin.bot.vectorstore
 import org.litote.kmongo.Id
 
 interface BotVectorStoreConfigurationDAO {
-
     fun listenChanges(listener: () -> Unit)
 
     fun save(conf: BotVectorStoreConfiguration): BotVectorStoreConfiguration
 
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotVectorStoreConfiguration?
+    fun findByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): BotVectorStoreConfiguration?
 
-    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotVectorStoreConfiguration?
+    fun findByNamespaceAndBotIdAndEnabled(
+        namespace: String,
+        botId: String,
+        enabled: Boolean,
+    ): BotVectorStoreConfiguration?
 
     fun delete(id: Id<BotVectorStoreConfiguration>)
 }

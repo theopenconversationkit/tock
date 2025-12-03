@@ -34,7 +34,7 @@ import mu.KotlinLogging
  */
 data class TweetIncomingEvent(
     @JsonProperty("for_user_id") override val forUserId: String,
-    @JsonProperty("tweet_create_events") val tweets: List<Tweet>
+    @JsonProperty("tweet_create_events") val tweets: List<Tweet>,
 ) : IncomingEvent() {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -46,8 +46,7 @@ data class TweetIncomingEvent(
     override val users: Map<String, User>
         get() = mapOf(Pair(tweets.first().user.id, tweets.first().user))
 
-    override fun playerId(playerType: PlayerType): PlayerId =
-        tweets.first().playerId(playerType)
+    override fun playerId(playerType: PlayerType): PlayerId = tweets.first().playerId(playerType)
 
     override fun toEvent(applicationId: String): Event? {
         val tweet = tweets.first()
@@ -62,11 +61,12 @@ data class TweetIncomingEvent(
                 PlayerId(forUserId, PlayerType.bot),
                 // extended entities and full_text
                 tweet.extendedTweet?.text ?: tweet.text,
-                metadata = ActionMetadata(
-                    visibility = ActionVisibility.PUBLIC,
-                    replyMessage = if (isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
-                    quoteMessage = if (tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE
-                )
+                metadata =
+                    ActionMetadata(
+                        visibility = ActionVisibility.PUBLIC,
+                        replyMessage = if (isReplyMessage) ActionReply.ISREPLY else ActionReply.NOREPLY,
+                        quoteMessage = if (tweet.isQuote) ActionQuote.ISQUOTE else ActionQuote.NOQUOTE,
+                    ),
             )
         } else {
             logger.debug { "ignore event $this with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }

@@ -35,7 +35,6 @@ import java.io.InputStream
 import java.util.Locale
 
 internal class TockDialogflowNlpClient : NlpClient {
-
     private val projectId = property("dialogflow_project_id", "please set a google project id")
 
     override fun parse(query: NlpQuery): NlpResult? {
@@ -43,7 +42,7 @@ internal class TockDialogflowNlpClient : NlpClient {
             projectId,
             query.queries.firstOrNull() ?: "",
             query.context.dialogId,
-            query.context.language.toString()
+            query.context.language.toString(),
         )?.let {
             DialogflowTockMapper().toNlpResult(it, query.namespace)
         }
@@ -59,11 +58,21 @@ internal class TockDialogflowNlpClient : NlpClient {
 
     override fun markAsUnknown(query: MarkAsUnknownQuery) = Unit
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? = null
+    override fun getIntentsByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): List<IntentDefinition>? = null
 
-    override fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? = null
+    override fun getApplicationByNamespaceAndName(
+        namespace: String,
+        name: String,
+    ): ApplicationDefinition? = null
 
-    override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? = null
+    override fun createApplication(
+        namespace: String,
+        name: String,
+        locale: Locale,
+    ): ApplicationDefinition? = null
 
     override fun importNlpDump(stream: InputStream): Boolean = false
 

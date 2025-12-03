@@ -20,5 +20,5 @@ data class GATimeOfDay(
     val hours: Int,
     val minutes: Int,
     val seconds: Int,
-    val nanos: Int
+    val nanos: Int,
 )

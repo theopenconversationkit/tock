@@ -29,17 +29,20 @@ data class Referral(
     @JsonProperty("image_url") val imageUrl: String?,
     @JsonProperty("video_url") val videoUrl: String?,
     @JsonProperty("thumbnail_url") val thumbnailUrl: String?,
-    @JsonProperty("ctwa_clid") val ctwaClid: String
+    @JsonProperty("ctwa_clid") val ctwaClid: String,
 )
 
 enum class MediaType {
-    IMAGE, VIDEO;
+    IMAGE,
+    VIDEO,
+    ;
 
     companion object {
-        fun fromString(type: String): MediaType = when (type.lowercase()) {
-            "image" -> IMAGE
-            "video" -> VIDEO
-            else -> throw IllegalArgumentException("Unsupported media type: $type")
-        }
+        fun fromString(type: String): MediaType =
+            when (type.lowercase()) {
+                "image" -> IMAGE
+                "video" -> VIDEO
+                else -> throw IllegalArgumentException("Unsupported media type: $type")
+            }
     }
 }

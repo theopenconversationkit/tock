@@ -18,24 +18,27 @@ package ai.tock.shared.security
 
 import io.vertx.core.http.HttpServerRequest
 
-fun createRequestFilter(allowedIps: Set<String>?, xAuthToken: String?): RequestFilter = RequestFiltersComposer(
-    listOfNotNull(
-        allowedIps
-            ?.mapNotNull { ip -> ip.trim().takeUnless { it.isEmpty() } }
-            ?.toSet()
-            ?.takeUnless { it.isEmpty() }
-            ?.let { IPRequestFilter(it) },
-        xAuthToken
-            ?.takeUnless { it.isBlank() }
-            ?.let { XAuthTokenRequestFilter(it.trim()) }
+fun createRequestFilter(
+    allowedIps: Set<String>?,
+    xAuthToken: String?,
+): RequestFilter =
+    RequestFiltersComposer(
+        listOfNotNull(
+            allowedIps
+                ?.mapNotNull { ip -> ip.trim().takeUnless { it.isEmpty() } }
+                ?.toSet()
+                ?.takeUnless { it.isEmpty() }
+                ?.let { IPRequestFilter(it) },
+            xAuthToken
+                ?.takeUnless { it.isBlank() }
+                ?.let { XAuthTokenRequestFilter(it.trim()) },
+        ),
     )
-)
 
 /**
  * A request filter is used to filter an incoming request.
  */
 interface RequestFilter {
-
     /**
      * Returns true is the request is accepted, false either.
      */
@@ -43,14 +46,12 @@ interface RequestFilter {
 }
 
 internal class RequestFiltersComposer(private val filters: List<RequestFilter>) : RequestFilter {
-
     override fun accept(request: HttpServerRequest): Boolean {
         return filters.all { it.accept(request) }
     }
 }
 
 internal class IPRequestFilter(private val allowedIps: Set<String>) : RequestFilter {
-
     override fun accept(request: HttpServerRequest): Boolean {
         val directIp = request.remoteAddress().host()
         val forwardedIp = request.getHeader("X-Forwarded-For")?.split(",")?.lastOrNull()?.trim()
@@ -59,7 +60,6 @@ internal class IPRequestFilter(private val allowedIps: Set<String>) : RequestFil
 }
 
 internal class XAuthTokenRequestFilter(private val token: String) : RequestFilter {
-
     override fun accept(request: HttpServerRequest): Boolean {
         return token == request.getHeader("X-Auth-Token")
     }

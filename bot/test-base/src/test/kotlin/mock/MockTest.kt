@@ -23,25 +23,23 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 
 class MockTest {
-
     class MyHandlerDef(bus: BotBus) : HandlerDef<MyConnectorDef>(bus) {
-
         fun call() {
             c.callConnector()
         }
     }
 
     class MyConnectorDef(def: MyHandlerDef) : ConnectorDef<MyHandlerDef>(def) {
-
         fun callConnector() {
         }
     }
 
     @Test
     fun `test mockConnector function`() {
-        val mockk = mockConnector<MyConnectorDef> { bus ->
-            MyHandlerDef(bus).call()
-        }
+        val mockk =
+            mockConnector<MyConnectorDef> { bus ->
+                MyHandlerDef(bus).call()
+            }
         verify {
             mockk.callConnector()
         }

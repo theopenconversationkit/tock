@@ -48,31 +48,30 @@ data class SentenceReport(
     val forReview: Boolean = false,
     val reviewComment: String? = null,
     val qualifier: UserLogin? = null,
-    val configuration : String? = null
+    val configuration: String? = null,
 ) {
-
     constructor(
         query: ParseResult,
         language: Locale,
         applicationId: Id<ApplicationDefinition>,
-        intentId: Id<IntentDefinition>?
+        intentId: Id<IntentDefinition>?,
     ) :
         this(
             obfuscate(
                 text = query.retainedQuery,
-                obfuscatedRanges = query.entities.filter { it.entity.entityType.obfuscated }.map { it.toClosedRange() }
+                obfuscatedRanges = query.entities.filter { it.entity.entityType.obfuscated }.map { it.toClosedRange() },
             ) ?: "",
             language,
             applicationId,
             now(),
             now(),
             ClassifiedSentenceStatus.inbox,
-            ClassificationReport(query, intentId)
+            ClassificationReport(query, intentId),
         ) {
-            if (text != query.retainedQuery) {
-                key = encrypt(query.retainedQuery)
-            }
+        if (text != query.retainedQuery) {
+            key = encrypt(query.retainedQuery)
         }
+    }
 
     constructor(sentence: ClassifiedSentence) :
         this(
@@ -86,12 +85,12 @@ data class SentenceReport(
             forReview = sentence.forReview,
             reviewComment = sentence.reviewComment,
             qualifier = sentence.qualifier,
-            configuration = sentence.configuration
+            configuration = sentence.configuration,
         ) {
-            if (text != sentence.text) {
-                key = encrypt(sentence.text)
-            }
+        if (text != sentence.text) {
+            key = encrypt(sentence.text)
         }
+    }
 
     constructor(error: IntentTestError, obfuscatedRanges: List<IntRange>) : this(
         obfuscate(text = error.text, obfuscatedRanges = obfuscatedRanges) ?: "",
@@ -100,7 +99,7 @@ data class SentenceReport(
         error.firstDetectionDate,
         error.firstDetectionDate,
         ClassifiedSentenceStatus.model,
-        ClassificationReport(error)
+        ClassificationReport(error),
     ) {
         if (text != error.text) {
             key = encrypt(error.text)
@@ -114,7 +113,7 @@ data class SentenceReport(
         error.firstDetectionDate,
         error.firstDetectionDate,
         ClassifiedSentenceStatus.model,
-        ClassificationReport(error)
+        ClassificationReport(error),
     )
 
     fun toClassifiedSentence(): ClassifiedSentence {
@@ -130,7 +129,7 @@ data class SentenceReport(
             1.0,
             forReview = forReview,
             reviewComment = reviewComment,
-            qualifier = qualifier
+            qualifier = qualifier,
         )
     }
 }

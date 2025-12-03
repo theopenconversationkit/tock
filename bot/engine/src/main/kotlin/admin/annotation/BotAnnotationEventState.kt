@@ -25,5 +25,5 @@ data class BotAnnotationEventState(
     override val lastUpdateDate: Instant,
     override val user: String,
     override val before: String?,
-    override val after: String?
+    override val after: String?,
 ) : BotAnnotationEventChange(eventId, BotAnnotationEventType.STATE, creationDate, lastUpdateDate, user, before, after)

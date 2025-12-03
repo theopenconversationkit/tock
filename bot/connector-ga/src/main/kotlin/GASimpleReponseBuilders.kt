@@ -41,7 +41,7 @@ fun I18nTranslator.simpleResponse(text: CharSequence): GASimpleResponse {
 fun I18nTranslator.flexibleSimpleResponse(
     textToSpeech: CharSequence? = null,
     ssml: CharSequence? = null,
-    displayText: CharSequence? = null
+    displayText: CharSequence? = null,
 ): GASimpleResponse {
     val t = translateAndReturnBlankAsNull(textToSpeech)
     val s = translateAndReturnBlankAsNull(ssml)
@@ -50,7 +50,11 @@ fun I18nTranslator.flexibleSimpleResponse(
     return simpleResponse(t?.toString(), s?.toString(), d?.toString())
 }
 
-private fun simpleResponse(textToSpeech: String?, ssml: String?, displayText: String?): GASimpleResponse {
+private fun simpleResponse(
+    textToSpeech: String?,
+    ssml: String?,
+    displayText: String?,
+): GASimpleResponse {
     val ssmlWithoutEmoji = ssml?.removeEmojis()
     val textToSpeechWithoutEmoji =
         if (ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if (isNullOrBlank()) " - " else this } else null
@@ -78,7 +82,7 @@ internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleRespons
 internal fun flexibleSimpleResponseWithoutTranslate(
     textToSpeech: CharSequence? = null,
     ssml: CharSequence? = null,
-    displayText: CharSequence? = null
+    displayText: CharSequence? = null,
 ): GASimpleResponse {
     val t = textToSpeech.setBlankAsNull()
     val s = ssml.setBlankAsNull()

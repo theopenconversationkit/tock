@@ -22,16 +22,16 @@ import mu.KotlinLogging
  * A [CharSequence] flagged as translated.
  */
 open class TranslatedString(private val wrapped: CharSequence) : CharSequence by wrapped, TranslatedSequence {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun equals(other: Any?): Boolean = when {
-        this === other -> true
-        other is TranslatedString -> wrapped == other.wrapped
-        else -> false
-    }
+    override fun equals(other: Any?): Boolean =
+        when {
+            this === other -> true
+            other is TranslatedString -> wrapped == other.wrapped
+            else -> false
+        }
 
     override fun hashCode(): Int {
         return wrapped.hashCode()
@@ -41,7 +41,10 @@ open class TranslatedString(private val wrapped: CharSequence) : CharSequence by
         return wrapped.toString()
     }
 
-    override fun subSequence(startIndex: Int, endIndex: Int): TranslatedSequence {
+    override fun subSequence(
+        startIndex: Int,
+        endIndex: Int,
+    ): TranslatedSequence {
         return TranslatedString(wrapped.subSequence(startIndex, endIndex))
     }
 

@@ -22,6 +22,8 @@ import java.util.Locale
  *
  */
 internal object NoOpSTT : STT {
-
-    override fun parse(bytes: ByteArray, language: Locale): String? = null
+    override fun parse(
+        bytes: ByteArray,
+        language: Locale,
+    ): String? = null
 }

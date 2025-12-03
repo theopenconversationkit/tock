@@ -25,6 +25,8 @@ import retrofit2.http.Query
 
 internal interface RAGApi {
     @POST("/rag")
-    fun rag(@Body query: RAGRequest, @Query("debug") debug: Boolean): Call<RAGResponse>
-
+    fun rag(
+        @Body query: RAGRequest,
+        @Query("debug") debug: Boolean,
+    ): Call<RAGResponse>
 }

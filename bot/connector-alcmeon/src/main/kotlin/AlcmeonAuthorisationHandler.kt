@@ -23,12 +23,13 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 class AlcmeonAuthorisationHandler(secret: String) : Handler<RoutingContext> {
-
-    private val signingKey = SecretKeySpec(
-        secret.toByteArray(),
-        "HmacSHA256"
-    )
+    private val signingKey =
+        SecretKeySpec(
+            secret.toByteArray(),
+            "HmacSHA256",
+        )
     private val mac = Mac.getInstance("HmacSHA256")
+
     init {
         mac.init(signingKey)
     }

@@ -25,5 +25,5 @@ data class WhatsAppStatus(
     val recipientId: String,
     val status: WhatsAppMessageStatus,
     val timestamp: String,
-    val errors: List<WhatsAppError> = emptyList()
+    val errors: List<WhatsAppError> = emptyList(),
 )

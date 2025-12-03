@@ -33,83 +33,93 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class WhatsAppMediaConverterTest {
-
-    val bus = mockk<BotBus> {
-        every { connectorData } returns mockk(relaxed = true)
-        every { userId } returns PlayerId("user")
-        every { translate(any()) } answers { (args[0] as CharSequence).raw }
-        every { translateAndReturnBlankAsNull(any()) } answers { (args[0] as CharSequence).raw }
-        every { translate(any(), *anyVararg()) } answers {
-            Translator.formatMessage(
-                args[0].toString(),
-                I18nContext(defaultLocale, textChat, null),
-                args.subList(1, args.size)
-            ).raw
+    val bus =
+        mockk<BotBus> {
+            every { connectorData } returns mockk(relaxed = true)
+            every { userId } returns PlayerId("user")
+            every { translate(any()) } answers { (args[0] as CharSequence).raw }
+            every { translateAndReturnBlankAsNull(any()) } answers { (args[0] as CharSequence).raw }
+            every { translate(any(), *anyVararg()) } answers {
+                Translator.formatMessage(
+                    args[0].toString(),
+                    I18nContext(defaultLocale, textChat, null),
+                    args.subList(1, args.size),
+                ).raw
+            }
         }
-    }
 
     @Test
     fun `toConnectorMessage should return text message and links if no nlp actions`() {
-        val mediaCard = MediaCard(
-            title = "title",
-            subTitle = "subtitle",
-            file = null,
-            actions = listOf(
-                MediaAction("Lien 1", "https://example.com/1"),
-                MediaAction("Lien 2", "https://example.com/2"),
-            ),
-        )
+        val mediaCard =
+            MediaCard(
+                title = "title",
+                subTitle = "subtitle",
+                file = null,
+                actions =
+                    listOf(
+                        MediaAction("Lien 1", "https://example.com/1"),
+                        MediaAction("Lien 2", "https://example.com/2"),
+                    ),
+            )
         val result = WhatsAppMediaConverter.toConnectorMessage(mediaCard).invoke(bus)
         assertEquals(
             bus.whatsAppText(
                 "title\n" +
-                        "\n" +
-                        "subtitle"
-            ), result.first()
+                    "\n" +
+                    "subtitle",
+            ),
+            result.first(),
         )
         assertEquals(
             bus.whatsAppText(
                 "Lien 1 :\n" +
-                        "https://example.com/1", true
-            ), result[1]
+                    "https://example.com/1",
+                true,
+            ),
+            result[1],
         )
         assertEquals(
             bus.whatsAppText(
                 "Lien 2 :\n" +
-                        "https://example.com/2", true
-            ), result[2]
+                    "https://example.com/2",
+                true,
+            ),
+            result[2],
         )
     }
 
     @Test
     fun `toConnectorMessage should return reply button message and links if some nlp actions`() {
-        val mediaCard = MediaCard(
-            title = "title",
-            subTitle = "subtitle",
-            file = null,
-            actions = listOf(
-                MediaAction("Action 1"),
-                MediaAction("Action 2"),
-                MediaAction("Lien 1", "https://example.com/1"),
-            ),
-        )
+        val mediaCard =
+            MediaCard(
+                title = "title",
+                subTitle = "subtitle",
+                file = null,
+                actions =
+                    listOf(
+                        MediaAction("Action 1"),
+                        MediaAction("Action 2"),
+                        MediaAction("Lien 1", "https://example.com/1"),
+                    ),
+            )
         val result = WhatsAppMediaConverter.toConnectorMessage(mediaCard).invoke(bus)
         assertEquals(
             bus.replyButtonMessage(
                 "title\n" +
-                        "\n" +
-                        "subtitle",
-               bus.nlpQuickReply("Action 1"),
+                    "\n" +
+                    "subtitle",
+                bus.nlpQuickReply("Action 1"),
                 bus.nlpQuickReply("Action 2"),
-            ), result.first()
+            ),
+            result.first(),
         )
         assertEquals(
             bus.whatsAppText(
                 "Lien 1 :\n" +
-                        "https://example.com/1", true
-            ), result[1]
+                    "https://example.com/1",
+                true,
+            ),
+            result[1],
         )
     }
-
-
 }

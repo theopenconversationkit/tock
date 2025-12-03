@@ -23,11 +23,12 @@ import ai.tock.bot.engine.action.ActionPriority
  * cf [https://developers.facebook.com/docs/messenger-platform/send-api-reference#request]
  */
 enum class NotificationType {
-
-    REGULAR, SILENT_PUSH, NO_PUSH;
+    REGULAR,
+    SILENT_PUSH,
+    NO_PUSH,
+    ;
 
     companion object {
-
         fun toNotificationType(action: Action): NotificationType {
             return when (action.metadata.priority) {
                 ActionPriority.high -> SILENT_PUSH

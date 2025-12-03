@@ -25,9 +25,8 @@ import ai.tock.bot.engine.message.GenericMessage
 data class GAOptionValueSpec(
     val simpleSelect: GASimpleSelect? = null,
     val listSelect: GAListSelect? = null,
-    val carouselSelect: GACarouselSelect? = null
+    val carouselSelect: GACarouselSelect? = null,
 ) : GAInputValueData(option.type!!) {
-
     override fun toGenericMessage(): GenericMessage? {
         return simpleSelect?.toGenericMessage()
             ?: listSelect?.toGenericMessage()

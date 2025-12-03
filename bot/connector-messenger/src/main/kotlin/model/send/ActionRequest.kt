@@ -24,5 +24,5 @@ data class ActionRequest(
     val recipient: Recipient,
     val sender_action: SenderAction = typing_on,
     @JsonProperty("persona_id")
-    val personaId: String? = null
+    val personaId: String? = null,
 )

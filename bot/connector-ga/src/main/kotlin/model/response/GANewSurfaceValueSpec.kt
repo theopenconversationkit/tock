@@ -24,5 +24,5 @@ import ai.tock.bot.connector.ga.model.GAIntent
 data class GANewSurfaceValueSpec(
     val capabilities: Set<String>,
     val context: String,
-    val notificationTitle: String
+    val notificationTitle: String,
 ) : GAInputValueData(GAIntent.newSurface.type!!)

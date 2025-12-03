@@ -19,14 +19,12 @@ package ai.tock.bot.engine.config
 import ai.tock.shared.Loader
 
 interface ConfigurationModuleServiceLoader {
-
     fun modules(): Set<BotConfigurationModule>
 }
 
 private val modulesMap: Map<String, BotConfigurationModule> =
-        Loader.loadServices<ConfigurationModuleServiceLoader>()
-                .flatMap { it.modules() }
-                .associateBy { it.id }
+    Loader.loadServices<ConfigurationModuleServiceLoader>()
+        .flatMap { it.modules() }
+        .associateBy { it.id }
 
-internal fun findActivatedModules(storyIds: List<String>): Set<BotConfigurationModule> =
-        storyIds.mapNotNull { modulesMap[it] }.toSet()
+internal fun findActivatedModules(storyIds: List<String>): Set<BotConfigurationModule> = storyIds.mapNotNull { modulesMap[it] }.toSet()

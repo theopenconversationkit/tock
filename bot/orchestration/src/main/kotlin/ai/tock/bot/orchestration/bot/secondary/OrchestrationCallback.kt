@@ -23,6 +23,8 @@ interface OrchestrationCallback {
     val actions: MutableList<Action>
 
     fun sendResponse()
+
     fun sendResponse(response: SecondaryBotResponse)
+
     fun sendError()
 }

@@ -28,24 +28,24 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class WebhookActionConverterTest {
-
     @Test
     fun `GIVEN A nlp postback THEN toEvent returns a Sentence`() {
-        val postback = PostbackWebhook(
-            Sender("senderId"),
-            Recipient("recipientId"),
-            123,
-            UserActionPayload(SendChoice.encodeNlpChoiceId("Hey"))
-        )
+        val postback =
+            PostbackWebhook(
+                Sender("senderId"),
+                Recipient("recipientId"),
+                123,
+                UserActionPayload(SendChoice.encodeNlpChoiceId("Hey")),
+            )
         val event = WebhookActionConverter.toEvent(postback, "appId")
         assertEquals(
             SendSentence(
                 postback.playerId(user),
                 "appId",
                 postback.recipientId(bot),
-                "Hey"
+                "Hey",
             ).toMessage(),
-            (event as? SendSentence)?.toMessage()
+            (event as? SendSentence)?.toMessage(),
         )
     }
 }

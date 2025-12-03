@@ -28,7 +28,6 @@ import ai.tock.bot.engine.event.Event
  * To be declared in [BotDefinition.eventListener].
  */
 interface EventListener {
-
     /**
      * Listen new event.
      *
@@ -37,5 +36,9 @@ interface EventListener {
      * @param event the new event
      * @return true if the event is handled
      */
-    fun listenEvent(controller: ConnectorController, connectorData: ConnectorData, event: Event): Boolean
+    fun listenEvent(
+        controller: ConnectorController,
+        connectorData: ConnectorData,
+        event: Event,
+    ): Boolean
 }

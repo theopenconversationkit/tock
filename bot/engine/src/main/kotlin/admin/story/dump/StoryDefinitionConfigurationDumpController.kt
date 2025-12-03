@@ -22,7 +22,13 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 interface StoryDefinitionConfigurationDumpController {
     val targetNamespace: String
     val botId: String
+
     fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean
-    fun buildScript(script: ScriptAnswerVersionedConfigurationDump, compile: Boolean): ScriptAnswerVersionedConfiguration
+
+    fun buildScript(
+        script: ScriptAnswerVersionedConfigurationDump,
+        compile: Boolean,
+    ): ScriptAnswerVersionedConfiguration
+
     fun checkIntent(intent: IntentWithoutNamespace?): IntentWithoutNamespace?
 }

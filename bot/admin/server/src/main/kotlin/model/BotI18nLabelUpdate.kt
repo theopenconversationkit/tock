@@ -21,8 +21,8 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nLocalizedLabel
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.util.Locale
 import org.litote.kmongo.Id
+import java.util.Locale
 
 /**
  * Incoming [I18nLabel] update from the client (missing defaultI18n).
@@ -36,11 +36,14 @@ data class BotI18nLabelUpdate(
     override val defaultLocale: Locale = ai.tock.shared.defaultLocale,
     override val version: Int?,
 ) : I18nLabelContract {
-
     @get:JsonIgnore
     override val defaultI18n: Set<I18nLocalizedLabel>?
         get() = null
 
     override fun withDefaultLabel(defaultLabel: String?) = copy(defaultLabel = defaultLabel)
-    override fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?) = copy(i18n = i18n, version = version)
+
+    override fun withUpdatedI18n(
+        i18n: LinkedHashSet<I18nLocalizedLabel>,
+        version: Int?,
+    ) = copy(i18n = i18n, version = version)
 }

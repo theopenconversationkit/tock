@@ -34,17 +34,13 @@ object SentenceGenerationValidationService {
                     ObservabilityService.getObservabilityConfiguration(
                         sentenceGenerationConfig.namespace,
                         sentenceGenerationConfig.botId,
-                        enabled = true
-                    )?.setting
-                )
+                        enabled = true,
+                    )?.setting,
+                ),
             )
             .getErrors("LLM setting check failed")
             .toSet()
     }
 
-    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> =
-        this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
+    private fun ProviderSettingStatusResponse?.getErrors(message: String): Set<ErrorMessage> = this?.errors?.map { ErrorMessage(message = message, params = errors) }?.toSet() ?: emptySet()
 }
-
-
-

@@ -16,7 +16,11 @@
 
 package ai.tock.iadvize.client.authentication
 
-import ai.tock.iadvize.client.*
+import ai.tock.iadvize.client.IadvizeApi
+import ai.tock.iadvize.client.PASSWORD
+import ai.tock.iadvize.client.authenticationFailedError
+import ai.tock.iadvize.client.createApi
+import ai.tock.iadvize.client.property
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.SecretManagerProviderType
@@ -27,20 +31,21 @@ import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
 // The expected values correspond to the names of the SecretManagerProviderType elements
-val iAdvizeSecretManagerProvider: String = property(
-    name = "tock_iadvize_secret_manager_provider",
-    defaultValue = SecretManagerProviderType.ENV.name
-)
-val iAdvizeCredentialsSecretName: String = property(
-    name = "tock_iadvize_credentials_secret_name",
-    defaultValue = "iadvize_credentials",
-)
+val iAdvizeSecretManagerProvider: String =
+    property(
+        name = "tock_iadvize_secret_manager_provider",
+        defaultValue = SecretManagerProviderType.ENV.name,
+    )
+val iAdvizeCredentialsSecretName: String =
+    property(
+        name = "tock_iadvize_credentials_secret_name",
+        defaultValue = "iadvize_credentials",
+    )
 
 /**
  * Authentication client.
  */
 class IadvizeAuthenticationClient {
-
     companion object {
         val logger = KotlinLogging.logger { }
         val token = AtomicReference<Token?>()
@@ -61,7 +66,7 @@ class IadvizeAuthenticationClient {
      * Get the stored access token.
      * if the access token is expired, a new one is requested and stored.
      */
-    fun getAccessToken() : String {
+    fun getAccessToken(): String {
         var t = token.get()
         if (t == null || (t.expireAt?.isBefore(LocalDateTime.now()) == true)) {
             t = getToken()

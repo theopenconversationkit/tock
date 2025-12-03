@@ -22,5 +22,5 @@ import java.time.Instant.now
 data class ResponseContext(
     val requestId: String,
     val date: Instant = now(),
-    val lastResponse: Boolean = true
+    val lastResponse: Boolean = true,
 )

@@ -29,7 +29,7 @@ import mu.KotlinLogging
  */
 data class TaskResult(
     val id: String,
-    val status: String
+    val status: String,
 )
 
 /**
@@ -37,7 +37,7 @@ data class TaskResult(
  * @property results list of task results
  */
 data class DetailedHealthcheckResults(
-    val results: List<TaskResult>
+    val results: List<TaskResult>,
 )
 
 /**
@@ -47,7 +47,7 @@ data class DetailedHealthcheckResults(
  */
 fun detailedHealthcheck(
     tasks: List<Pair<String, () -> Boolean>> = listOf(),
-    selfCheck: () -> Boolean = { true }
+    selfCheck: () -> Boolean = { true },
 ): (RoutingContext) -> Unit {
     val mapper = jacksonObjectMapper()
     val logger: KLogger = KotlinLogging.logger {}
@@ -61,10 +61,11 @@ fun detailedHealthcheck(
             }
             for (task in tasks) {
                 // invoke task and create result from its return value
-                val result = TaskResult(
-                    task.first,
-                    if (task.second.invoke()) "OK" else "KO"
-                )
+                val result =
+                    TaskResult(
+                        task.first,
+                        if (task.second.invoke()) "OK" else "KO",
+                    )
                 results.add(result)
             }
             val body = mapper.writeValueAsString(DetailedHealthcheckResults(results))

@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
  *
  */
 class DateEntityGrainTest {
-
     @Test
     fun calculateEnd_WithDayGrain_ReturnsTimeEqualsToLocalTimeMin() {
         val now = ZonedDateTime.now()

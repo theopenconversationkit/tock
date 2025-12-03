@@ -33,9 +33,8 @@ data class ConnectorTypeConfiguration(
     /**
      * A svg icon if any.
      */
-    val svgIcon: String? = null
+    val svgIcon: String? = null,
 ) {
-
     companion object {
         /**
          * The available connector types.
@@ -62,13 +61,13 @@ data class ConnectorTypeConfiguration(
                 ConnectorTypeConfigurationField(
                     "Allowed IPs",
                     ALLOWED_IPS_FIELD,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "X-Auth-Token Restriction",
                     X_AUTH_TOKEN_FIELD,
-                    false
-                )
+                    false,
+                ),
             )
     }
 }

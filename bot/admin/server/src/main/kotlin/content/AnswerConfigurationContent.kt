@@ -22,9 +22,11 @@ import java.util.Locale
 
 abstract class AnswerConfigurationContent(val answerType: AnswerConfigurationType) {
     companion object {
-        fun fromLabel(label: String): List<AnswerConfigurationContent> =
-                listOf(SimpleAnswerConfigurationContent(listOf(SimpleAnswerContent(label))))
+        fun fromLabel(label: String): List<AnswerConfigurationContent> = listOf(SimpleAnswerConfigurationContent(listOf(SimpleAnswerContent(label))))
     }
 
-    abstract fun toBotAnswerConfiguration(namespace: String, locale: Locale): BotAnswerConfiguration
+    abstract fun toBotAnswerConfiguration(
+        namespace: String,
+        locale: Locale,
+    ): BotAnswerConfiguration
 }

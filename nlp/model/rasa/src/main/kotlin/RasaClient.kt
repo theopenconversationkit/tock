@@ -30,32 +30,31 @@ import retrofit2.http.PUT
 import retrofit2.http.Streaming
 
 internal class RasaClient(conf: RasaConfiguration) {
-
     data class TrainModelRequest(
         val domain: String,
         val config: String,
         val nlu: String,
-        val save_to_default_model_directory: Boolean = true
+        val save_to_default_model_directory: Boolean = true,
     )
 
     data class PutModelRequest(
         val model_file: String,
-        val remote_storage: String? = null
+        val remote_storage: String? = null,
     )
 
     data class ParseRequest(
-        val text: String
+        val text: String,
     )
 
     data class ParsedResponse(
         val entities: List<ParsedEntity> = emptyList(),
         val intent: ParsedIntent? = null,
-        val intent_ranking: List<ParsedIntent> = emptyList()
+        val intent_ranking: List<ParsedIntent> = emptyList(),
     )
 
     data class ParsedIntent(
         val name: String,
-        val confidence: Double
+        val confidence: Double,
     )
 
     data class ParsedEntity(
@@ -65,23 +64,28 @@ internal class RasaClient(conf: RasaConfiguration) {
         val entity: String,
         val confidence: Double,
         val role: String? = null,
-        val extractor: String? = null
+        val extractor: String? = null,
     )
 
     private interface RasaApi {
-
         @Streaming
         @Headers("Content-Type:application/json")
         @POST("model/train")
-        fun train(@Body request: TrainModelRequest): Call<ResponseBody>
+        fun train(
+            @Body request: TrainModelRequest,
+        ): Call<ResponseBody>
 
         @Headers("Content-Type:application/json")
         @POST("model/parse")
-        fun parse(@Body request: ParseRequest): Call<ParsedResponse>
+        fun parse(
+            @Body request: ParseRequest,
+        ): Call<ParsedResponse>
 
         @Headers("Content-Type:application/json")
         @PUT("model")
-        fun setModel(@Body request: PutModelRequest): Call<ResponseBody>
+        fun setModel(
+            @Body request: PutModelRequest,
+        ): Call<ResponseBody>
 
         @GET("")
         fun healthcheck(): Call<ResponseBody>
@@ -90,11 +94,12 @@ internal class RasaClient(conf: RasaConfiguration) {
     private val api: RasaApi
 
     init {
-        api = retrofitBuilderWithTimeoutAndLogger(timeoutInSeconds)
-            .addJacksonConverter()
-            .baseUrl(conf.rasaUrl)
-            .build()
-            .create()
+        api =
+            retrofitBuilderWithTimeoutAndLogger(timeoutInSeconds)
+                .addJacksonConverter()
+                .baseUrl(conf.rasaUrl)
+                .build()
+                .create()
     }
 
     fun train(request: TrainModelRequest): String =
@@ -114,8 +119,7 @@ internal class RasaClient(conf: RasaConfiguration) {
         }
     }
 
-    fun parse(request: ParseRequest): ParsedResponse =
-        api.parse(request).execute().run { body() ?: error(errorBody()?.string() ?: "unknown error") }
+    fun parse(request: ParseRequest): ParsedResponse = api.parse(request).execute().run { body() ?: error(errorBody()?.string() ?: "unknown error") }
 
     fun healthcheck(): Boolean =
         try {

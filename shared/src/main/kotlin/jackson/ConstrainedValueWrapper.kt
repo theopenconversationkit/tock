@@ -46,13 +46,16 @@ fun addConstrainedTypes(types: Set<KClass<*>>) {
 @JsonDeserialize(using = ConstrainedValueDeserializer::class)
 @JsonSerialize(using = ConstrainedValueSerializer::class)
 data class ConstrainedValueWrapper<T : Any>(val klass: String, val value: T?) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     internal class ConstrainedValueSerializer : JsonSerializer<ConstrainedValueWrapper<*>>() {
-        override fun serialize(value: ConstrainedValueWrapper<*>, gen: JsonGenerator, serializers: SerializerProvider) {
+        override fun serialize(
+            value: ConstrainedValueWrapper<*>,
+            gen: JsonGenerator,
+            serializers: SerializerProvider,
+        ) {
             gen.writeStartObject()
             gen.writeFieldName(ConstrainedValueWrapper<*>::klass.name)
             gen.writeString(value.klass)
@@ -62,8 +65,10 @@ data class ConstrainedValueWrapper<T : Any>(val klass: String, val value: T?) {
     }
 
     internal class ConstrainedValueDeserializer : JsonDeserializer<ConstrainedValueWrapper<*>>() {
-
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): ConstrainedValueWrapper<*>? {
+        override fun deserialize(
+            jp: JsonParser,
+            context: DeserializationContext,
+        ): ConstrainedValueWrapper<*>? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
                 val classValue: Class<*>? =

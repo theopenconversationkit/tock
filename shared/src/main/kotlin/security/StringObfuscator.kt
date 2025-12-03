@@ -20,7 +20,6 @@ package ai.tock.shared.security
  * Replaces a string by an other String.
  */
 interface StringObfuscator {
-
     /**
      * The search regexp.
      */

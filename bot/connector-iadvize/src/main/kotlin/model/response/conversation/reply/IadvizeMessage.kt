@@ -16,37 +16,43 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.payload.Payload
 import ai.tock.bot.connector.iadvize.model.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
 import ai.tock.iadvize.client.graphql.ChatbotConversationMessageAttachmentInput
 import ai.tock.iadvize.client.graphql.ChatbotMessageInput
 import ai.tock.iadvize.client.graphql.ChatbotQuickReplyMenuAttachmentInput
 
-data class IadvizeMessage(val payload: Payload,
-                          val quickReplies: MutableList<QuickReply> = mutableListOf()) : IadvizeReply(ReplyType.message) {
+data class IadvizeMessage(
+    val payload: Payload,
+    val quickReplies: MutableList<QuickReply> = mutableListOf(),
+) : IadvizeReply(ReplyType.message) {
     constructor(messagePayload: String) : this(TextPayload(messagePayload))
 
     override fun toChatBotActionOrMessageInput(): ChatbotActionOrMessageInput {
         return if (quickReplies.isEmpty() && payload is TextPayload) {
             // A simple message
             ChatbotActionOrMessageInput(
-                chatbotMessage = ChatbotMessageInput(
-                    chatbotSimpleTextMessage = payload.value.toString(),
-                )
+                chatbotMessage =
+                    ChatbotMessageInput(
+                        chatbotSimpleTextMessage = payload.value.toString(),
+                    ),
             )
         } else {
             // A complex message with QuickReply
             ChatbotActionOrMessageInput(
-                chatbotMessage = ChatbotMessageInput(
-                    chatbotMessageAttachmentInput = ChatbotConversationMessageAttachmentInput(
-                        quickReplyMenu = ChatbotQuickReplyMenuAttachmentInput(
-                            message = if (payload is TextPayload) payload.value.toString() else payload.toString(),
-                            choices = quickReplies.map { quickReply -> quickReply.value }
-                        )
-                    )
-                )
+                chatbotMessage =
+                    ChatbotMessageInput(
+                        chatbotMessageAttachmentInput =
+                            ChatbotConversationMessageAttachmentInput(
+                                quickReplyMenu =
+                                    ChatbotQuickReplyMenuAttachmentInput(
+                                        message = if (payload is TextPayload) payload.value.toString() else payload.toString(),
+                                        choices = quickReplies.map { quickReply -> quickReply.value },
+                                    ),
+                            ),
+                    ),
             )
         }
     }

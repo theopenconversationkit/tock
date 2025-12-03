@@ -25,12 +25,14 @@ import ai.tock.shared.security.TockUserListener
 import mu.KotlinLogging
 
 object AdminTockUserListener : TockUserListener {
-
     private val namespaceDAO: UserNamespaceDAO get() = injector.provide()
 
     private val logger = KotlinLogging.logger {}
 
-    override fun registerUser(user: TockUser, joinNamespace: Boolean): TockUser {
+    override fun registerUser(
+        user: TockUser,
+        joinNamespace: Boolean,
+    ): TockUser {
         logger.info { "register $user" }
         var namespace = user.namespace.lowercase()
         val existingNamespaces = namespaceDAO.getNamespaces(user.user)

@@ -34,7 +34,6 @@ import ai.tock.nlp.api.client.model.NlpResult
  * Has to be registered using [ai.tock.bot.engine.BotRepository.registerNlpListener].
  */
 interface NlpListener {
-
     /**
      * Used to handle "secret" keywords.
      *
@@ -51,7 +50,7 @@ interface NlpListener {
         sentence: SendSentence,
         userTimeline: UserTimeline,
         dialog: Dialog,
-        botDefinition: BotDefinition
+        botDefinition: BotDefinition,
     ): NlpResult? = null
 
     /**
@@ -66,7 +65,7 @@ interface NlpListener {
         userTimeline: UserTimeline,
         dialog: Dialog,
         botDefinition: BotDefinition,
-        nlpQuery: NlpQuery
+        nlpQuery: NlpQuery,
     ): NlpQuery = nlpQuery
 
     /**
@@ -77,7 +76,12 @@ interface NlpListener {
      *
      * Default returns null.
      */
-    fun findIntent(userTimeline: UserTimeline, dialog: Dialog, event: Event, nlpResult: NlpResult): IntentAware? = null
+    fun findIntent(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        event: Event,
+        nlpResult: NlpResult,
+    ): IntentAware? = null
 
     /**
      * Allows custom entity evaluation - default returns empty list.
@@ -86,7 +90,7 @@ interface NlpListener {
         userTimeline: UserTimeline,
         dialog: Dialog,
         event: Event,
-        nlpResult: NlpResult
+        nlpResult: NlpResult,
     ): List<EntityValue> = emptyList()
 
     /**
@@ -103,13 +107,16 @@ interface NlpListener {
     fun mergeEntityValues(
         dialogState: DialogState,
         action: Action,
-        entityToMerge: NlpEntityMergeContext
+        entityToMerge: NlpEntityMergeContext,
     ): NlpEntityMergeContext = entityToMerge
 
     /**
      * Called when nlp request is successful.
      */
-    fun success(query: NlpQuery, result: NlpResult) = Unit
+    fun success(
+        query: NlpQuery,
+        result: NlpResult,
+    ) = Unit
 
     /**
      * Called when nlp request is throwing an error.
@@ -125,5 +132,9 @@ interface NlpListener {
      * }
      * ```
      */
-    fun error(query: NlpQuery, dialog: Dialog, throwable: Throwable?) = Unit
+    fun error(
+        query: NlpQuery,
+        dialog: Dialog,
+        throwable: Throwable?,
+    ) = Unit
 }

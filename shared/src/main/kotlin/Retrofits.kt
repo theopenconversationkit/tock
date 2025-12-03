@@ -82,8 +82,9 @@ val retrofitDefaultLogLevel = propertyOrNull("tock_retrofit_log_level")
  * @return [Level]
  */
 fun retrofitLogLevel(logLevel: String?): Level =
-    if (devEnvironment && logLevel.isNullOrEmpty()) BODY
-    else {
+    if (devEnvironment && logLevel.isNullOrEmpty()) {
+        BODY
+    } else {
         logLevel?.let { Level.valueOf(logLevel) } ?: NONE
     }
 
@@ -103,47 +104,50 @@ fun retrofitBuilderWithTimeoutAndLogger(
      * Add a circuit breaker facility.
      */
     circuitBreaker: Boolean = false,
-    proxy: Proxy? = null
-): Retrofit.Builder = OkHttpClient.Builder()
-    .readTimeout(ms, MILLISECONDS)
-    .connectTimeout(ms, MILLISECONDS)
-    .writeTimeout(ms, MILLISECONDS)
-    .apply {
-        interceptors.forEach { addInterceptor(it) }
-    }
-    .apply {
-        takeIf { requestGZipEncoding }
-            ?.addInterceptor(GzipRequestInterceptor())
-    }
-    .addInterceptor(LoggingInterceptor(logger, level))
-    .apply {
-        // support compatible tls
-        connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
-        takeIf { proxy != null }
-            ?.proxy(proxy)
-    }
-    .apply(TockProxyAuthenticator::install)
-
-    .build()
-    .let {
-        Retrofit.Builder().client(it)
-            .apply {
-
-                takeIf { circuitBreaker && booleanProperty("tock_circuit_breaker", false) }
-                    ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
-            }
-    }
+    proxy: Proxy? = null,
+): Retrofit.Builder =
+    OkHttpClient.Builder()
+        .readTimeout(ms, MILLISECONDS)
+        .connectTimeout(ms, MILLISECONDS)
+        .writeTimeout(ms, MILLISECONDS)
+        .apply {
+            interceptors.forEach { addInterceptor(it) }
+        }
+        .apply {
+            takeIf { requestGZipEncoding }
+                ?.addInterceptor(GzipRequestInterceptor())
+        }
+        .addInterceptor(LoggingInterceptor(logger, level))
+        .apply {
+            // support compatible tls
+            connectionSpecs(listOf(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
+            takeIf { proxy != null }
+                ?.proxy(proxy)
+        }
+        .apply(TockProxyAuthenticator::install)
+        .build()
+        .let {
+            Retrofit.Builder().client(it)
+                .apply {
+                    takeIf { circuitBreaker && booleanProperty("tock_circuit_breaker", false) }
+                        ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
+                }
+        }
 
 /**
  * Create a basic auth interceptor.
  */
-fun basicAuthInterceptor(login: String, password: String): Interceptor {
+fun basicAuthInterceptor(
+    login: String,
+    password: String,
+): Interceptor {
     val credential = basicCredentialsHeader(login, password)
     return Interceptor { chain ->
         val original = chain.request()
 
-        val requestBuilder = original.newBuilder()
-            .header("Authorization", credential)
+        val requestBuilder =
+            original.newBuilder()
+                .header("Authorization", credential)
 
         val request = requestBuilder.build()
         chain.proceed(request)
@@ -157,8 +161,9 @@ fun tokenAuthenticationInterceptor(token: String): Interceptor {
     return Interceptor { chain ->
         val original = chain.request()
 
-        val requestBuilder = original.newBuilder()
-            .header("Authorization", "Bearer $token")
+        val requestBuilder =
+            original.newBuilder()
+                .header("Authorization", "Bearer $token")
 
         val request = requestBuilder.build()
         chain.proceed(request)
@@ -168,19 +173,21 @@ fun tokenAuthenticationInterceptor(token: String): Interceptor {
 /**
  * Encode basic credential header.
  */
-fun basicCredentialsHeader(login: String, password: String): String =
-    Credentials.basic(login, password)
+fun basicCredentialsHeader(
+    login: String,
+    password: String,
+): String = Credentials.basic(login, password)
 
 /**
  * Add jackson converter factory.
  */
-fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder = run {
-    addConverterFactory(JacksonConverterFactory.create(objectMapper))
-}
+fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder =
+    run {
+        addConverterFactory(JacksonConverterFactory.create(objectMapper))
+    }
 
 /** This interceptor compresses the HTTP request body. Many webservers can't handle this!  */
 private class GzipRequestInterceptor : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val body = originalRequest.body
@@ -191,10 +198,11 @@ private class GzipRequestInterceptor : Interceptor {
             return chain.proceed(originalRequest)
         }
 
-        val compressedRequest = originalRequest.newBuilder()
-            .header("Content-Encoding", "gzip")
-            .method(originalRequest.method, gzip(body))
-            .build()
+        val compressedRequest =
+            originalRequest.newBuilder()
+                .header("Content-Encoding", "gzip")
+                .method(originalRequest.method, gzip(body))
+                .build()
         return chain.proceed(compressedRequest)
     }
 
@@ -234,7 +242,7 @@ enum class Level {
      * <pre>`--> POST /greeting http/1.1 (3-byte body)
 
      * <-- 200 OK (22ms, 6-byte body)
-    `</pre> *
+     `</pre> *
      */
     BASIC,
 
@@ -253,7 +261,7 @@ enum class Level {
      * Content-Type: plain/text
      * Content-Length: 6
      * <-- END HTTP
-    `</pre> *
+     `</pre> *
      */
     HEADERS,
 
@@ -276,13 +284,12 @@ enum class Level {
 
      * Hello!
      * <-- END HTTP
-    `</pre> *
+     `</pre> *
      */
-    BODY
+    BODY,
 }
 
 private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interceptor {
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val level = this.level
 
@@ -323,9 +330,10 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
             while (i < count) {
                 val name = headers.name(i)
                 // Skip headers from the request body as they are explicitly logged above.
-                if (!"Content-Type".equals(name, ignoreCase = true) && !"Content-Length".equals(
+                if (!"Content-Type".equals(name, ignoreCase = true) &&
+                    !"Content-Length".equals(
                         name,
-                        ignoreCase = true
+                        ignoreCase = true,
                     )
                 ) {
                     logger.info(name + ": " + headers.value(i))
@@ -352,12 +360,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                     logger.info(buffer.readString(charset))
                     logger.info(
                         "--> END " + request.method +
-                                " (" + requestBody.contentLength() + "-byte body)"
+                            " (" + requestBody.contentLength() + "-byte body)",
                     )
                 } else {
                     logger.info(
                         "--> END " + request.method + " (binary " +
-                                requestBody.contentLength() + "-byte body omitted)"
+                            requestBody.contentLength() + "-byte body omitted)",
                     )
                 }
             }
@@ -379,13 +387,14 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
         logger.info(
             "<-- " + response.code + ' ' + response.message + ' ' +
-                    response.request.url + " (" + tookMs + "ms" + (
-                    if (!logHeaders)
+                response.request.url + " (" + tookMs + "ms" + (
+                    if (!logHeaders) {
                         ", " +
-                                bodySize + " body"
-                    else
+                            bodySize + " body"
+                    } else {
                         ""
-                    ) + ')'
+                    }
+                ) + ')',
         )
 
         if (logHeaders) {
@@ -403,7 +412,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 logger.info("<-- END HTTP (encoded body omitted)")
             } else {
                 val source = responseBody?.source()
-                if(source != null) {
+                if (source != null) {
                     source.request(java.lang.Long.MAX_VALUE) // Buffer the entire body.
                     val buffer = source.buffer
 

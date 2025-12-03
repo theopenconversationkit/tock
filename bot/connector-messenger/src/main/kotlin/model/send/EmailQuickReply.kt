@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.messenger.model.send
 
 class EmailQuickReply : QuickReply(QuickReplyContentType.user_email) {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is QuickReply) return false

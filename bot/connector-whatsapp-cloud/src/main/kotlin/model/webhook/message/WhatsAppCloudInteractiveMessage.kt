@@ -16,7 +16,10 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.*
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ContextContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.InteractiveContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
 
 data class WhatsAppCloudInteractiveMessage(
     val interactive: InteractiveContent,
@@ -25,6 +28,5 @@ data class WhatsAppCloudInteractiveMessage(
     override val timestamp: String,
     override val context: ContextContent? = null,
     override val referral: Referral? = null,
-    override val errors: List<ErrorItem>? = emptyList()
+    override val errors: List<ErrorItem>? = emptyList(),
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.interactive)
-

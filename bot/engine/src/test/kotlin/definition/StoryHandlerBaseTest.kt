@@ -32,7 +32,6 @@ import kotlin.test.assertNotEquals
  *
  */
 class StoryHandlerBaseTest : BotEngineTest() {
-
     @Test
     fun handleAndSwitchStory_shouldCreateANewStory_IfStoryHandlerFound() {
         assertEquals(test, bus.story.definition)
@@ -56,10 +55,11 @@ class StoryHandlerBaseTest : BotEngineTest() {
 
     @Test
     fun `i18nKeyFromLabel() does not throw exception WHEN mainIntentName is null and StoryHandlerBase implementation has no class name`() {
-        val handler = object : SimpleStoryHandlerBase() {
-            override fun action(bus: BotBus) {
+        val handler =
+            object : SimpleStoryHandlerBase() {
+                override fun action(bus: BotBus) {
+                }
             }
-        }
         assertEquals("test", handler.i18n("test").toString())
     }
 }

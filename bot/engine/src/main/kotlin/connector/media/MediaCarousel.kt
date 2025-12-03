@@ -25,6 +25,5 @@ import ai.tock.bot.engine.message.GenericMessage
 data class MediaCarousel(val cards: List<MediaCard>) : MediaMessage {
     override fun checkValidity(): Boolean = cards.isNotEmpty()
 
-    override fun toGenericMessage(): GenericMessage? =
-        GenericMessage(subElements = cards.mapNotNull { it.toGenericMessage() }.map { GenericElement(it) })
+    override fun toGenericMessage(): GenericMessage? = GenericMessage(subElements = cards.mapNotNull { it.toGenericMessage() }.map { GenericElement(it) })
 }

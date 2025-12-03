@@ -16,15 +16,17 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.*
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ContextContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.SystemContent
 
 data class WhatsAppCloudSystemMessage(
-        val text: SystemContent,
-        override val id: String,
-        override val from: String,
-        override val timestamp: String,
-        override val context: ContextContent? = null,
-        override val referral: Referral? = null,
-        override val errors: List<ErrorItem>? = emptyList()
+    val text: SystemContent,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val context: ContextContent? = null,
+    override val referral: Referral? = null,
+    override val errors: List<ErrorItem>? = emptyList(),
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.system)
-

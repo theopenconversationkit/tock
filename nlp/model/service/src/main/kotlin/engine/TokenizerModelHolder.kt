@@ -25,5 +25,5 @@ import java.util.Locale
  */
 data class TokenizerModelHolder(
     val language: Locale,
-    val configuration: NlpApplicationConfiguration
+    val configuration: NlpApplicationConfiguration,
 ) : ModelHolder

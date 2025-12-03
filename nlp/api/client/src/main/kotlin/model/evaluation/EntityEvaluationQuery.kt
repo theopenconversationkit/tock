@@ -26,5 +26,5 @@ data class EntityEvaluationQuery(
     val applicationName: String,
     val context: NlpQueryContext,
     val entities: List<EntityToEvaluate>,
-    val text: String
+    val text: String,
 )

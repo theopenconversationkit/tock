@@ -21,9 +21,14 @@ import ai.tock.bot.engine.action.SendAttachment
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class AttachmentType {
-
-    image, audio, video, file, template;
+    image,
+    audio,
+    video,
+    file,
+    template,
+    ;
 
     companion object {
         fun fromTockAttachmentType(type: SendAttachment.AttachmentType): AttachmentType {

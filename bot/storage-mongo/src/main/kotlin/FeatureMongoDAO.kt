@@ -50,12 +50,16 @@ internal class FeatureMongoDAO(
     private val cache: FeatureCache,
     asyncCol: MongoCollection<Feature>,
 ) : FeatureDAO {
-
     private val col = asyncCol.coroutine
     private val logger = KotlinLogging.logger {}
 
-    private fun calculateId(botId: String, namespace: String, category: String, name: String, applicationId: String?) =
-        "$botId,$namespace,$category,$name${applicationId?.let { "+$it" } ?: ""}"
+    private fun calculateId(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        applicationId: String?,
+    ) = "$botId,$namespace,$category,$name${applicationId?.let { "+$it" } ?: ""}"
 
     override suspend fun isEnabled(
         botId: String,
@@ -81,13 +85,19 @@ internal class FeatureMongoDAO(
         }
     }
 
-    private fun isEnabled(feature: Feature, userId: String?): Boolean {
-        return feature.enabled
-                && isEnableForDate(feature, ZonedDateTime.now(internalDefaultZoneId))
-                && isEnableForUser(feature, userId)
+    private fun isEnabled(
+        feature: Feature,
+        userId: String?,
+    ): Boolean {
+        return feature.enabled &&
+            isEnableForDate(feature, ZonedDateTime.now(internalDefaultZoneId)) &&
+            isEnableForUser(feature, userId)
     }
 
-    private fun isEnableForUser(feature: Feature, userId: String?): Boolean {
+    private fun isEnableForUser(
+        feature: Feature,
+        userId: String?,
+    ): Boolean {
         userId ?: return true
         return when (feature.graduation) {
             null -> true
@@ -97,32 +107,40 @@ internal class FeatureMongoDAO(
         }
     }
 
-    private fun isEnableForDate(feature: Feature, now: ZonedDateTime): Boolean {
+    private fun isEnableForDate(
+        feature: Feature,
+        now: ZonedDateTime,
+    ): Boolean {
         return when {
             feature.startDate != null && feature.endDate == null -> now.isAfter(feature.startDate)
-            feature.startDate != null && feature.endDate != null -> now.isAfter(feature.startDate) &&
+            feature.startDate != null && feature.endDate != null ->
+                now.isAfter(feature.startDate) &&
                     now.isBefore(feature.endDate)
             // FIXME : startDate == null && endDate != null is not handle ?
             else -> true
         }
     }
 
-    private suspend fun getValues(id: String, idWithoutApplicationId: String): Pair<Feature?, Feature?> {
+    private suspend fun getValues(
+        id: String,
+        idWithoutApplicationId: String,
+    ): Pair<Feature?, Feature?> {
         val cacheForId = cache.stateOf(id)
         val cacheForIdWithoutApplicationId = cache.stateOf(idWithoutApplicationId)
-        val pair = if (cacheForId == null && cacheForIdWithoutApplicationId == null) {
-            cacheAllConnectorFeatureWithId(idWithoutApplicationId)
+        val pair =
+            if (cacheForId == null && cacheForIdWithoutApplicationId == null) {
+                cacheAllConnectorFeatureWithId(idWithoutApplicationId)
 
-            Pair(
-                col.findOne(_id eq id)?.also { cache.setState(id, it) },
-                col.findOne(_id eq idWithoutApplicationId)?.also { cache.setState(idWithoutApplicationId, it) }
-            )
-        } else {
-            Pair(
-                cacheForId,
-                cacheForIdWithoutApplicationId
-            )
-        }
+                Pair(
+                    col.findOne(_id eq id)?.also { cache.setState(id, it) },
+                    col.findOne(_id eq idWithoutApplicationId)?.also { cache.setState(idWithoutApplicationId, it) },
+                )
+            } else {
+                Pair(
+                    cacheForId,
+                    cacheForIdWithoutApplicationId,
+                )
+            }
         return pair
     }
 
@@ -153,14 +171,17 @@ internal class FeatureMongoDAO(
         namespace: String,
         category: String,
         name: String,
-        applicationId: String?
+        applicationId: String?,
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", false, botId, namespace)
         col.save(feature)
     }
 
-    override suspend fun getFeatures(botId: String, namespace: String): List<FeatureState> =
+    override suspend fun getFeatures(
+        botId: String,
+        namespace: String,
+    ): List<FeatureState> =
         col.find(BotId eq botId, Namespace eq namespace)
             .toList()
             .mapNotNull {
@@ -198,7 +219,7 @@ internal class FeatureMongoDAO(
         namespace: String,
         category: String,
         name: String,
-        applicationId: String?
+        applicationId: String?,
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
         col.deleteOneById(id)

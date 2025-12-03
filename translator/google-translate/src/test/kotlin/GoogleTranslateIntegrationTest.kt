@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test
 import java.util.Locale
 
 class GoogleTranslateIntegrationTest {
-
     @Test
     fun test() {
         val result = GoogleTranslatorEngine.translate("je vais à Paris", Locale.FRENCH, Locale.ENGLISH)

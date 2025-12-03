@@ -28,19 +28,18 @@ data class LogsReport(
     val logs: List<LogReport>,
     val total: Long,
     val start: Long,
-    val end: Long
+    val end: Long,
 ) {
-
     constructor(
         start: Long,
         result: ParseRequestLogQueryResult,
         applicationId: Id<ApplicationDefinition>,
-        intentIdFinder: (String) -> Id<IntentDefinition>?
+        intentIdFinder: (String) -> Id<IntentDefinition>?,
     ) :
         this(
             result.logs.map { LogReport(it, applicationId, intentIdFinder) },
             result.total,
             start,
-            start + result.logs.size
+            start + result.logs.size,
         )
 }

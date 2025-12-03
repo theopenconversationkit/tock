@@ -22,5 +22,5 @@ package ai.tock.bot.connector.ga.model.response
 data class GAGoogleProvidedPaymentOptions(
     val tokenizationParameters: GAPaymentMethodTokenizationParameters,
     val supportedCardNetworks: Set<GACardNetwork>,
-    val prepaidCardDisallowed: Boolean
+    val prepaidCardDisallowed: Boolean,
 )

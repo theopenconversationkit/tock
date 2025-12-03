@@ -24,7 +24,6 @@ import ai.tock.translator.I18nLabelValue
  * Descriptor for [MediaAction].
  */
 data class MediaActionDescriptor(val title: I18nLabelValue, var url: String? = null) : MediaMessageDescriptor {
-
     override val type: MediaMessageType = action
 
     override fun toMessage(bus: BotBus): MediaAction = MediaAction(bus.translate(title), url)

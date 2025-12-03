@@ -37,10 +37,6 @@ import ai.tock.shared.cache.getOrCache
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
-import java.time.Instant
-import java.util.Base64
-import java.util.Date
-import java.util.UUID
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -50,9 +46,12 @@ import okhttp3.ResponseBody
 import org.litote.kmongo.toId
 import retrofit2.Call
 import retrofit2.Response
+import java.time.Instant
+import java.util.Base64
+import java.util.Date
+import java.util.UUID
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
-
     private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO get() = injector.provide()
     private val executor: Executor get() = injector.provide()
@@ -60,26 +59,33 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     fun sendMessage(
         phoneNumberId: String,
-        messageRequest: WhatsAppCloudSendBotMessage
+        messageRequest: WhatsAppCloudSendBotMessage,
     ) {
         send(messageRequest) {
             apiClient.sendMessage(phoneNumberId, messageRequest).execute()
         }
     }
 
-    fun sendTypingIndicator(phoneNumberId: String, messageId: String) {
+    fun sendTypingIndicator(
+        phoneNumberId: String,
+        messageId: String,
+    ) {
         apiClient.sendMessage(phoneNumberId, WhatsAppCloudTypingIndicatorMessage(messageId)).execute()
     }
 
-    fun downloadImgByBinary(imgId: String, mimeType: String): String {
+    fun downloadImgByBinary(
+        imgId: String,
+        mimeType: String,
+    ): String {
+        val url =
+            send(imgId) {
+                apiClient.retrieveMediaUrl(imgId).execute()
+            }.url
 
-        val url = send(imgId) {
-            apiClient.retrieveMediaUrl(imgId).execute()
-        }.url
-
-        val base64Response = responseDownloadMedia(url, mimeType) {
-            apiClient.downloadMediaBinary(url).execute()
-        }
+        val base64Response =
+            responseDownloadMedia(url, mimeType) {
+                apiClient.downloadMediaBinary(url).execute()
+            }
         return base64Response
     }
 
@@ -121,7 +127,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private fun sendMedia(
         fileUrl: String,
-        fileType: String
+        fileType: String,
     ): MediaResponse {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_media")
@@ -143,7 +149,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     private fun sendMedia(
         fileId: String,
         fileBytes: ByteArray,
-        fileType: String
+        fileType: String,
     ): MediaResponse {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_media_bytes")
@@ -162,15 +168,21 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         } ?: throw ConnectorException("Error sending media")
     }
 
-    fun getOrUpload(metaApplicationId: String, fileUrl: String, fileType: String, fileContents: ByteArray? = null): MetaUploadHandle {
+    fun getOrUpload(
+        metaApplicationId: String,
+        fileUrl: String,
+        fileType: String,
+        fileContents: ByteArray? = null,
+    ): MetaUploadHandle {
         val requestTimerData = BotRepository.requestTimer.start("whatsapp_upload_business_asset")
 
         return getOrCache("$metaApplicationId-$fileUrl".toId(), APP_UPLOAD_ID_CACHE) {
             try {
                 val actualFileContents = fileContents ?: retrieveMedia(fileUrl)
-                val uploadId = call("asset_upload_start") {
-                    apiClient.startFileUpload(metaApplicationId, actualFileContents.size.toLong(), fileType)
-                }.id
+                val uploadId =
+                    call("asset_upload_start") {
+                        apiClient.startFileUpload(metaApplicationId, actualFileContents.size.toLong(), fileType)
+                    }.id
                 val handle = apiClient.uploadFile(client, uploadId, actualFileContents)
                 MetaUploadHandle(handle)
             } finally {
@@ -182,8 +194,9 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     fun createOrUpdateTemplate(template: WhatsappTemplate) {
         // Ensure this code never runs concurrently for any given template name
         synchronized(template.name.intern()) {
-            val existingTemplate = call(template.name, apiClient::getMessageTemplates)
-                .data.firstOrNull { it.language == template.language }
+            val existingTemplate =
+                call(template.name, apiClient::getMessageTemplates)
+                    .data.firstOrNull { it.language == template.language }
 
             if (existingTemplate == null) {
                 logger.info { "Creating template ${template.name} for language ${template.language}" }
@@ -204,11 +217,18 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         apiClient.deleteMessageTemplate(templateName).execute()
     }
 
-    private inline fun <T: Any, R: Any> call(request: T, prepareCall: (T) -> Call<R>): R = send(request) {
-        prepareCall(it).execute()
-    }
+    private inline fun <T : Any, R : Any> call(
+        request: T,
+        prepareCall: (T) -> Call<R>,
+    ): R =
+        send(request) {
+            prepareCall(it).execute()
+        }
 
-    private inline fun <T : Any, R : Any> send(request: T, call: (T) -> Response<R>): R {
+    private inline fun <T : Any, R : Any> send(
+        request: T,
+        call: (T) -> Response<R>,
+    ): R {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_${request as? String ?: request.javaClass.simpleName.lowercase()}")
         try {
@@ -217,7 +237,6 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
                 throw ConnectorException("Failed to send message: ${response.errorBody()?.string()}")
             }
             return response.body() ?: throw ConnectorException("Null response body")
-
         } catch (e: Throwable) {
             BotRepository.requestTimer.throwable(e, requestTimerData)
             if (e is ConnectorException) {
@@ -234,7 +253,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         request: T,
         mimeType: String,
         requestType: String = request.javaClass.simpleName.lowercase(),
-        call: (T) -> Response<ResponseBody>
+        call: (T) -> Response<ResponseBody>,
     ): String {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_$requestType")
@@ -259,7 +278,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     fun replaceWithRealImageId(
         components: List<WhatsappTemplateComponent>,
-        phoneNumberId: String
+        phoneNumberId: String,
     ) {
         components
             .asSequence()
@@ -271,14 +290,15 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             .filterIsInstance<HeaderParameter.Image>()
             .filter { it.image.id != null }
             .map {
-                it to executor.executeBlockingTask {
-                    sendMedia(
-                        it.image.id!!,
-                        FileType.PNG.type
-                    )
-                }
+                it to
+                    executor.executeBlockingTask {
+                        sendMedia(
+                            it.image.id!!,
+                            FileType.PNG.type,
+                        )
+                    }
             }
-            //exit from sequence
+            // exit from sequence
             .toList()
             .forEach {
                 val imageHeader = it.first
@@ -288,8 +308,9 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     }
 
     private fun retrieveMedia(fileUrl: String): ByteArray {
-        val request = Request.Builder()
-            .url(fileUrl).build()
+        val request =
+            Request.Builder()
+                .url(fileUrl).build()
 
         return client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) error("Failed to download file: $fileUrl - ${response.message}")

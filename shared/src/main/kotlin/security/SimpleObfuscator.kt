@@ -21,5 +21,5 @@ package ai.tock.shared.security
  */
 data class SimpleObfuscator(
     override val regex: Regex,
-    override val replacement: String
+    override val replacement: String,
 ) : StringObfuscator

@@ -24,5 +24,5 @@ import ai.tock.bot.engine.BotBus
 data class BusinessChatConnectorTextMessage(
     override val sourceId: String,
     override val destinationId: String,
-    val body: String?
+    val body: String?,
 ) : BusinessChatConnectorMessage()

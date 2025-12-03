@@ -23,5 +23,5 @@ data class DialogFlowTransitionStatsData(
     val transitionId: String?,
     val dialogId: String?,
     val text: String?,
-    val date: LocalDateTime
+    val date: LocalDateTime,
 )

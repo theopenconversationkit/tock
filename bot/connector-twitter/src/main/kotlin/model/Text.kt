@@ -20,5 +20,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Text(
     @JsonProperty("full_text") val text: String,
-    @JsonProperty("display_text_range") val range: List<Int>
+    @JsonProperty("display_text_range") val range: List<Int>,
 )

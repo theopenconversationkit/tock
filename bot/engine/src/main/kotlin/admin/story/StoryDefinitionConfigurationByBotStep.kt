@@ -21,5 +21,5 @@ package ai.tock.bot.admin.story
  */
 data class StoryDefinitionConfigurationByBotStep(
     val botConfiguration: String,
-    val steps: List<StoryDefinitionConfigurationStep> = emptyList()
+    val steps: List<StoryDefinitionConfigurationStep> = emptyList(),
 )

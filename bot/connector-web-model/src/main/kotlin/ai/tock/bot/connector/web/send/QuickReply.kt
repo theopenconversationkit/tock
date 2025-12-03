@@ -24,5 +24,5 @@ data class QuickReply(
     val payload: String?,
     val imageUrl: String?,
     val nlpText: String? = null,
-    val style: String? = ButtonStyle.primary.name
+    val style: String? = ButtonStyle.primary.name,
 ) : Button(ButtonType.quick_reply)

@@ -24,7 +24,6 @@ import com.mongodb.client.MongoDatabase
  *
  */
 internal object MongoFrontConfiguration {
-
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
     val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(MONGO_DATABASE)
 }

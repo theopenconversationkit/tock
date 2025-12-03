@@ -24,5 +24,5 @@ import ai.tock.nlp.core.sample.SampleExpression
  */
 data class EntityMatchError(
     val expression: SampleExpression,
-    val entities: List<EntityRecognition>
+    val entities: List<EntityRecognition>,
 )

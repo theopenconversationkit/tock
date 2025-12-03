@@ -21,13 +21,12 @@ import ai.tock.bot.engine.message.GenericMessage
 data class SlackMessageOut(
     val text: String,
     val channel: String? = null,
-    val attachments: List<SlackMessageAttachment> = emptyList()
+    val attachments: List<SlackMessageAttachment> = emptyList(),
 ) : SlackConnectorMessage() {
-
     override fun toGenericMessage(): GenericMessage? =
         GenericMessage(
             texts = mapOf(GenericMessage.TEXT_PARAM to text),
             choices = attachments.filter { it.hasOnlyActions() }.flatMap { it.actions }.map { it.toChoice() },
-            subElements = attachments.filter { !it.hasOnlyActions() }.map { it.toGenericElement() }
+            subElements = attachments.filter { !it.hasOnlyActions() }.map { it.toGenericElement() },
         )
 }

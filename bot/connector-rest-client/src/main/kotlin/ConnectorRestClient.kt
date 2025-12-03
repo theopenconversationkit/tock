@@ -38,9 +38,8 @@ import java.util.Locale
  *
  */
 class ConnectorRestClient(
-    private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888"
+    private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888",
 ) {
-
     private val restCache: Cache<String, ConnectorRestService> =
         CacheBuilder.newBuilder().expireAfterAccess(Duration.ofHours(1)).build()
 
@@ -57,13 +56,14 @@ class ConnectorRestClient(
             mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
             val timeout = longProperty("tock_bot_rest_client_request_timeout_ms", 100000)
-            val retrofit = retrofitBuilderWithTimeoutAndLogger(
-                ms = timeout,
-                level = Level.BODY,
-            )
-                .baseUrl("$baseUrl/$p/")
-                .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .build()
+            val retrofit =
+                retrofitBuilderWithTimeoutAndLogger(
+                    ms = timeout,
+                    level = Level.BODY,
+                )
+                    .baseUrl("$baseUrl/$p/")
+                    .addConverterFactory(JacksonConverterFactory.create(mapper))
+                    .build()
             retrofit.create(ConnectorRestService::class.java)
         }
     }
@@ -71,7 +71,11 @@ class ConnectorRestClient(
     /**
      * Analyse a sentence and returns the result.
      */
-    fun talk(path: String, locale: Locale, query: ClientMessageRequest): Response<ClientMessageResponse> {
+    fun talk(
+        path: String,
+        locale: Locale,
+        query: ClientMessageRequest,
+    ): Response<ClientMessageResponse> {
         return getService(path).talk(locale, query).execute()
     }
 }

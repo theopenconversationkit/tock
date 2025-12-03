@@ -22,12 +22,11 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referr
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.StickerContent
 
 data class WhatsAppCloudStickerMessage(
-        val text: StickerContent,
-        override val id: String,
-        override val from: String,
-        override val timestamp: String,
-        override val context: ContextContent? = null,
-        override val referral: Referral? = null,
-        override val errors: List<ErrorItem>? = emptyList()
+    val text: StickerContent,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val context: ContextContent? = null,
+    override val referral: Referral? = null,
+    override val errors: List<ErrorItem>? = emptyList(),
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.sticker)
-

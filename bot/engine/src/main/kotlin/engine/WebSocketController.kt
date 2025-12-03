@@ -28,10 +28,9 @@ import java.util.concurrent.CopyOnWriteArraySet
  * Internal object used to manage websocket events.
  */
 object WebSocketController {
-
     private class Handler(
         var pushHandler: ((String) -> Unit)? = null,
-        var receiveHandler: ((String) -> Unit)? = null
+        var receiveHandler: ((String) -> Unit)? = null,
     )
 
     /**
@@ -51,7 +50,10 @@ object WebSocketController {
 
     private val handlers: MutableMap<String, Handler> = ConcurrentHashMap()
 
-    internal fun setPushHandler(id: String, handler: ((String) -> Unit)) {
+    internal fun setPushHandler(
+        id: String,
+        handler: ((String) -> Unit),
+    ) {
         val context = vertx.orCreateContext
         handlers.getOrPut(id, { Handler() }).pushHandler = { content ->
             context.runOnContext {
@@ -62,7 +64,10 @@ object WebSocketController {
 
     fun getPushHandler(id: String): ((String) -> Unit)? = handlers[id]?.pushHandler
 
-    fun setReceiveHandler(id: String, handler: ((String) -> Unit)) {
+    fun setReceiveHandler(
+        id: String,
+        handler: ((String) -> Unit),
+    ) {
         handlers.getOrPut(id, { Handler() }).receiveHandler = {
             executor.executeBlocking {
                 handler(it)

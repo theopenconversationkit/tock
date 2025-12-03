@@ -25,13 +25,17 @@ import java.util.Locale
  * A date template is used to format a date (or a [TemporalAccessor]) for all supported [Locale] in the i18n process.
  */
 interface DateTemplate : Formattable {
-
     /**
      * Formats the date from the provided [locale].
      */
     fun format(locale: Locale): String
 
-    override fun formatTo(formatter: Formatter, flags: Int, width: Int, precision: Int) {
+    override fun formatTo(
+        formatter: Formatter,
+        flags: Int,
+        width: Int,
+        precision: Int,
+    ) {
         formatter.format(format(formatter.locale()))
     }
 }

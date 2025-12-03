@@ -31,27 +31,30 @@ import mu.KotlinLogging
  *
  */
 internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Payload? {
         data class PayloadFields(
             var coordinates: FacebookLocation? = null,
             var url: String? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    LocationPayload::coordinates.name -> coordinates = jp.readValue()
-                    UrlPayload::url.name -> url = jp.valueAsString
-                    else -> other = jp.readUnknownValue()
+        val (coordinates, url) =
+            jp.read<PayloadFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        LocationPayload::coordinates.name -> coordinates = jp.readValue()
+                        UrlPayload::url.name -> url = jp.valueAsString
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (coordinates != null) {
             LocationPayload(coordinates)

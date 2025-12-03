@@ -15,7 +15,6 @@
  */
 package ai.tock.bot.connector.web.channel
 
-import com.mongodb.reactivestreams.client.MongoDatabase as ReactiveMongoDatabase
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
@@ -27,7 +26,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
-import java.util.concurrent.TimeUnit
 import mu.KotlinLogging
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -36,21 +34,22 @@ import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 import org.litote.kmongo.setTo
 import org.litote.kmongo.updateOneById
+import java.util.concurrent.TimeUnit
+import com.mongodb.reactivestreams.client.MongoDatabase as ReactiveMongoDatabase
 
 internal object ChannelMongoDAO : ChannelDAO {
     private const val COLLECTION_NAME = "web_channel_event"
     private val asyncDatabase: ReactiveMongoDatabase by injector.instance(
-        TOCK_BOT_DATABASE
+        TOCK_BOT_DATABASE,
     )
     private val database: MongoDatabase by injector.instance(
-        TOCK_BOT_DATABASE
+        TOCK_BOT_DATABASE,
     )
     private val logger = KotlinLogging.logger {}
     private val asyncWebChannelResponseCol: com.mongodb.reactivestreams.client.MongoCollection<ChannelEvent>
     private val webChannelResponseCol: MongoCollection<ChannelEvent>
 
-    private fun MongoDatabase.collectionExists(collectionName: String): Boolean =
-        listCollectionNames().contains(collectionName)
+    private fun MongoDatabase.collectionExists(collectionName: String): Boolean = listCollectionNames().contains(collectionName)
 
     private val messageQueueTtl = longProperty("tock_web_sse_message_queue_ttl_days", -1)
     private val messageQueueMaxCount = longProperty("tock_web_sse_message_queue_max_count", 50000)
@@ -65,7 +64,7 @@ internal object ChannelMongoDAO : ChannelDAO {
                         CreateCollectionOptions()
                             .capped(true)
                             .sizeInBytes(messageQueueMaxSize * 1000)
-                            .maxDocuments(messageQueueMaxCount)
+                            .maxDocuments(messageQueueMaxCount),
                     )
             } catch (e: Exception) {
                 logger.error(e)
@@ -77,10 +76,12 @@ internal object ChannelMongoDAO : ChannelDAO {
             webChannelResponseCol.ensureIndex(ChannelEvent::appId, ChannelEvent::recipientId, ChannelEvent::status)
             if (messageQueueTtl > 0) {
                 webChannelResponseCol.ensureIndex(
-                    ChannelEvent::enqueuedAt, indexOptions = IndexOptions().expireAfter(
-                        messageQueueTtl,
-                        TimeUnit.DAYS
-                    )
+                    ChannelEvent::enqueuedAt,
+                    indexOptions =
+                        IndexOptions().expireAfter(
+                            messageQueueTtl,
+                            TimeUnit.DAYS,
+                        ),
                 )
             }
         } catch (e: Exception) {
@@ -100,20 +101,23 @@ internal object ChannelMongoDAO : ChannelDAO {
     override fun handleMissedEvents(
         appId: String,
         recipientId: String,
-        handler: ChannelEvent.Handler
+        handler: ChannelEvent.Handler,
     ) {
         webChannelResponseCol.find(
             and(
                 ChannelEvent::appId eq appId,
                 ChannelEvent::recipientId eq recipientId,
                 ChannelEvent::status eq ChannelEvent.Status.ENQUEUED,
-            )
+            ),
         ).forEach { event ->
             process(event, handler)
         }
     }
 
-    private fun process(event: ChannelEvent, handler: ChannelEvent.Handler) {
+    private fun process(
+        event: ChannelEvent,
+        handler: ChannelEvent.Handler,
+    ) {
         try {
             handler(event).onComplete({ processed ->
                 if (processed) {

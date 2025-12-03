@@ -36,43 +36,60 @@ import ai.tock.bot.engine.action.SendAttachment.AttachmentType.video
 private typealias MessengerAttachmentType = ai.tock.bot.connector.messenger.model.send.AttachmentType
 
 object MessengerMediaConverter {
-
     private fun BotBus.toButton(action: MediaAction): Button =
-        if (action.url != null) urlButton(action.title, action.url!!)
-        else nlpPostbackButton(action.title)
+        if (action.url != null) {
+            urlButton(action.title, action.url!!)
+        } else {
+            nlpPostbackButton(action.title)
+        }
 
-    private fun BotBus.toButtons(actions: List<MediaAction>, buttonsLimit: Int = 3, onlyUrl: Boolean = true): List<Button> =
-        actions.filter { !onlyUrl || it.url != null }.take(buttonsLimit).map { toButton(it) }
+    private fun BotBus.toButtons(
+        actions: List<MediaAction>,
+        buttonsLimit: Int = 3,
+        onlyUrl: Boolean = true,
+    ): List<Button> = actions.filter { !onlyUrl || it.url != null }.take(buttonsLimit).map { toButton(it) }
 
-    private fun BotBus.toQuickReplies(actions: List<MediaAction>): List<QuickReply> =
-        actions.filter { it.url == null }.map { nlpQuickReply(it.title) }
+    private fun BotBus.toQuickReplies(actions: List<MediaAction>): List<QuickReply> = actions.filter { it.url == null }.map { nlpQuickReply(it.title) }
 
-    private fun BotBus.toUserActions(actions: List<MediaAction>, buttonsLimit: Int = 3): List<UserAction> =
+    private fun BotBus.toUserActions(
+        actions: List<MediaAction>,
+        buttonsLimit: Int = 3,
+    ): List<UserAction> =
         if (actions.size <= buttonsLimit) {
             actions.map { toButton(it) }
         } else {
             toButtons(actions, buttonsLimit) + toQuickReplies(actions)
         }
 
-    private fun BotBus.textWithButtons(text: CharSequence, actions: List<MediaAction>): ConnectorMessage =
-        if (actions.isEmpty()) text(text)
-        else buttonsTemplate(text, toUserActions(actions))
+    private fun BotBus.textWithButtons(
+        text: CharSequence,
+        actions: List<MediaAction>,
+    ): ConnectorMessage =
+        if (actions.isEmpty()) {
+            text(text)
+        } else {
+            buttonsTemplate(text, toUserActions(actions))
+        }
 
-    private fun BotBus.toAttachment(type: AttachmentType, url: String): AttachmentMessage =
+    private fun BotBus.toAttachment(
+        type: AttachmentType,
+        url: String,
+    ): AttachmentMessage =
         AttachmentMessage(
             Attachment(
                 MessengerAttachmentType.fromTockAttachmentType(type),
-                UrlPayload.getUrlPayload(this, url)
-            )
+                UrlPayload.getUrlPayload(this, url),
+            ),
         )
 
-    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (message) {
-            is MediaCard -> fromMediaCard(message)
-            is MediaCarousel -> fromMediaCarousel(message)
-            else -> emptyList()
+    fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (message) {
+                is MediaCard -> fromMediaCard(message)
+                is MediaCarousel -> fromMediaCarousel(message)
+                else -> emptyList()
+            }
         }
-    }
 
     private fun BotBus.fromMediaCarousel(message: MediaCarousel): List<ConnectorMessage> =
         listOf(
@@ -82,11 +99,11 @@ object MessengerMediaConverter {
                         card.title ?: card.subTitle ?: "",
                         card.subTitle.takeIf { card.title != null },
                         card.file?.url,
-                        toButtons(card.actions, onlyUrl = false)
+                        toButtons(card.actions, onlyUrl = false),
                     )
                 },
-                toQuickReplies(message.cards.flatMap { it.actions.drop(3) })
-            )
+                toQuickReplies(message.cards.flatMap { it.actions.drop(3) }),
+            ),
         )
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
@@ -98,46 +115,61 @@ object MessengerMediaConverter {
             when (file.type) {
                 image ->
                     listOf(
-                        if (title == null && subTitle == null && actions.isNotEmpty())
+                        if (title == null && subTitle == null && actions.isNotEmpty()) {
                             mediaTemplate(file.url, actions = toUserActions(actions))
-                        else if (title != null || subTitle != null)
+                        } else if (title != null || subTitle != null) {
                             genericTemplate(
                                 listOf(
                                     genericElement(
                                         title ?: subTitle!!,
                                         subTitle.takeIf { title != null },
                                         file.url,
-                                        toButtons(actions)
-                                    )
+                                        toButtons(actions),
+                                    ),
                                 ),
-                                toQuickReplies(actions)
+                                toQuickReplies(actions),
                             )
-                        else toAttachment(file.type, file.url)
+                        } else {
+                            toAttachment(file.type, file.url)
+                        },
                     )
                 video ->
                     listOfNotNull(
                         if (subTitle != null) title?.let { text(it) } else null,
-                        if (title == null && subTitle == null && actions.isNotEmpty())
+                        if (title == null && subTitle == null && actions.isNotEmpty()) {
                             mediaTemplate(file.url, MediaType.video, actions = toUserActions(actions))
-                        else toAttachment(file.type, file.url),
-                        if (title != null || subTitle != null) subTitle?.let { textWithButtons(it, actions) }
-                        else null
+                        } else {
+                            toAttachment(file.type, file.url)
+                        },
+                        if (title != null || subTitle != null) {
+                            subTitle?.let { textWithButtons(it, actions) }
+                        } else {
+                            null
+                        },
                     )
                 else ->
                     listOfNotNull(
                         if (subTitle != null) title?.let { text(it) } else null,
                         toAttachment(file.type, file.url),
-                        if (title != null || subTitle != null)
+                        if (title != null || subTitle != null) {
                             textWithButtons(subTitle ?: title!!, actions)
-                        else null
+                        } else {
+                            null
+                        },
                     )
             }
         } else {
             listOfNotNull(
-                if (title != null) textWithButtons(title, if (subTitle == null) actions else emptyList())
-                else null,
-                if (subTitle != null) textWithButtons(subTitle, actions)
-                else null
+                if (title != null) {
+                    textWithButtons(title, if (subTitle == null) actions else emptyList())
+                } else {
+                    null
+                },
+                if (subTitle != null) {
+                    textWithButtons(subTitle, actions)
+                } else {
+                    null
+                },
             )
         }
     }

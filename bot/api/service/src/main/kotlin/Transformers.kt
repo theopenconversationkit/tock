@@ -46,7 +46,7 @@ internal fun BotBus.toUserRequest(): UserRequest =
         action.toApiMessage(),
         story.definition.id,
         step?.name,
-        toRequestContext()
+        toRequestContext(),
     )
 
 internal fun EntityValue.toEntity(bus: BotBus): Entity =
@@ -57,7 +57,7 @@ internal fun EntityValue.toEntity(bus: BotBus): Entity =
         value,
         evaluated,
         subEntities.map { it.toEntity(bus) },
-        bus.hasActionEntity(entity.role)
+        bus.hasActionEntity(entity.role),
     )
 
 private fun Action.toApiMessage(): UserMessage =
@@ -82,8 +82,11 @@ private fun BotBus.toRequestContext(): RequestContext =
         botId,
         userPreferences.toUserData(),
         connectorData.metadata,
-        if (action.metadata.returnsHistory || booleanProperty("tock_bot_api_actions_history_to_client_bus", false))
-            toActionsHistory() else null
+        if (action.metadata.returnsHistory || booleanProperty("tock_bot_api_actions_history_to_client_bus", false)) {
+            toActionsHistory()
+        } else {
+            null
+        },
     )
 
 /**
@@ -102,7 +105,7 @@ private fun BotBus.toActionsHistory(): ActionsHistory =
             it.toActionId(),
             it.state.intent,
             it.applicationId,
-            it.metadata
+            it.metadata,
         )
     }
 
@@ -115,5 +118,5 @@ private fun UserPreferences.toUserData(): UserData =
         locale,
         picture,
         gender,
-        test
+        test,
     )

@@ -25,22 +25,28 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 internal class Channels {
-
     private val channelDAO: ChannelDAO = injector.provide()
     private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>()
 
     init {
         channelDAO.listenChanges { (appId, recipientId, response) ->
-            Future.all<Unit>((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
-                channel.onAction(response)
-            }).map { it.list<Unit>().isNotEmpty() }
+            Future.all<Unit>(
+                (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+                    channel.onAction(response)
+                },
+            ).map { it.list<Unit>().isNotEmpty() }
         }
     }
 
-    fun register(appId: String, userId: String, onAction: ChannelCallback): Channel {
-        val channels = channelsByUser.getOrPut(userId) {
-            CopyOnWriteArrayList()
-        }
+    fun register(
+        appId: String,
+        userId: String,
+        onAction: ChannelCallback,
+    ): Channel {
+        val channels =
+            channelsByUser.getOrPut(userId) {
+                CopyOnWriteArrayList()
+            }
         val channel = Channel(appId, UUID.randomUUID(), userId, onAction)
         channels.add(channel)
         channelDAO.handleMissedEvents(appId, userId) { (_, _, response) ->
@@ -55,7 +61,11 @@ internal class Channels {
         }
     }
 
-    fun send(applicationId: String, recipientId: PlayerId, response: WebConnectorResponse) {
+    fun send(
+        applicationId: String,
+        recipientId: PlayerId,
+        response: WebConnectorResponse,
+    ) {
         channelDAO.save(ChannelEvent(applicationId, recipientId.id, response))
     }
 }

@@ -16,5 +16,5 @@
 
 package ai.tock.bot.connector.iadvize.model.payload
 
-data class ProductOfferBundlePayload(val cards: MutableList<ProductOfferPayload> = mutableListOf())
-    : Payload("bundle/product-offer")
+data class ProductOfferBundlePayload(val cards: MutableList<ProductOfferPayload> = mutableListOf()) :
+    Payload("bundle/product-offer")

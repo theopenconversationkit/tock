@@ -29,15 +29,14 @@ data class SimpleAnswerDump(
     val key: I18nLabelValue,
     val delay: Long,
     val mediaMessage: MediaMessageDescriptorDump? = null,
-    val footnotes: List<Footnote>? = null
+    val footnotes: List<Footnote>? = null,
 ) {
-
     constructor(answer: SimpleAnswer) :
         this(
             key = answer.key,
             delay = answer.delay,
             mediaMessage = toDump(answer.mediaMessage),
-            footnotes = answer.footnotes
+            footnotes = answer.footnotes,
         )
 
     fun toAnswer(controller: StoryDefinitionConfigurationDumpController): SimpleAnswer =
@@ -45,6 +44,6 @@ data class SimpleAnswerDump(
             key = key.withNamespace(controller.targetNamespace),
             delay = delay,
             mediaMessage = mediaMessage?.toMedia(controller),
-            footnotes = footnotes
+            footnotes = footnotes,
         )
 }

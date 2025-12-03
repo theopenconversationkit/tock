@@ -22,11 +22,15 @@ import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
-import org.litote.kmongo.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.save
 
 internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigurationDAO {
-
     private const val COLLECTION_NAME = "bot_observability_configuration"
     internal val col = database.getCollection<BotObservabilityConfiguration>(COLLECTION_NAME)
     private val asyncCol = asyncDatabase.getCollectionOfName<BotObservabilityConfiguration>(COLLECTION_NAME)
@@ -41,23 +45,23 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
 
     override fun findByNamespaceAndBotId(
         namespace: String,
-        botId: String
+        botId: String,
     ): BotObservabilityConfiguration? {
         return col.findOne(
             BotObservabilityConfiguration::namespace eq namespace,
-            BotObservabilityConfiguration::botId eq botId
+            BotObservabilityConfiguration::botId eq botId,
         )
     }
 
     override fun findByNamespaceAndBotIdAndEnabled(
         namespace: String,
         botId: String,
-        enabled: Boolean
+        enabled: Boolean,
     ): BotObservabilityConfiguration? {
         return col.findOne(
             BotObservabilityConfiguration::namespace eq namespace,
             BotObservabilityConfiguration::botId eq botId,
-            BotObservabilityConfiguration::enabled eq enabled
+            BotObservabilityConfiguration::enabled eq enabled,
         )
     }
 
@@ -69,5 +73,4 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
     override fun delete(id: Id<BotObservabilityConfiguration>) {
         col.deleteOneById(id)
     }
-
 }

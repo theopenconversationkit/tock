@@ -24,7 +24,7 @@ class FlowAnalyticsQuery(
     val applicationName: String = "",
     val nlpModel: String = "",
     val from: LocalDateTime = LocalDateTime.now().minusDays(7),
-    val to: LocalDateTime = LocalDateTime.now()
+    val to: LocalDateTime = LocalDateTime.now(),
 ) {
     fun formatQuery() =
         FlowAnalyticsQuery(
@@ -32,6 +32,6 @@ class FlowAnalyticsQuery(
             applicationName,
             nlpModel,
             LocalDateTime.of(from.toLocalDate(), LocalTime.MIDNIGHT),
-            LocalDateTime.of(to.toLocalDate(), LocalTime.MAX)
+            LocalDateTime.of(to.toLocalDate(), LocalTime.MAX),
         )
 }

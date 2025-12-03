@@ -48,37 +48,38 @@ import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class ConfiguredStoryHandlerTest {
-
     data class TestConnectorMessage(
         val suggestions: List<CharSequence>,
-        override val connectorType: ConnectorType = ConnectorType.none
+        override val connectorType: ConnectorType = ConnectorType.none,
     ) : ConnectorMessage
 
     @Test
     fun `GIVEN simple answer configuration WHEN sending answer THEN translate suggestions`() {
-
         // Given
-        val originalLabel = I18nLabel(
-            _id = "id".toId(),
-            namespace = "namespace",
-            category = "category",
-            defaultLabel = "Not translated label",
-            i18n = LinkedHashSet()
-        )
-        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
-            answers = listOf(
-                SimpleAnswer(
-                    key = I18nLabelValue(originalLabel),
-                    delay = -1
-                )
+        val originalLabel =
+            I18nLabel(
+                _id = "id".toId(),
+                namespace = "namespace",
+                category = "category",
+                defaultLabel = "Not translated label",
+                i18n = LinkedHashSet(),
             )
-        )
+        val simpleAnswerConfiguration =
+            SimpleAnswerConfiguration(
+                answers =
+                    listOf(
+                        SimpleAnswer(
+                            key = I18nLabelValue(originalLabel),
+                            delay = -1,
+                        ),
+                    ),
+            )
 
         val messagesSlot = slot<MessagesList>()
         val suggestionsSlot = slot<List<CharSequence>>()
@@ -86,45 +87,50 @@ class ConfiguredStoryHandlerTest {
             TestConnectorMessage(suggestionsSlot.captured)
         }
 
-        val bus: BotBus = mockk {
-            every { targetConnectorType } returns ConnectorType("a")
-            every { botId } returns PlayerId("botId")
-            every { userId } returns PlayerId("userId")
-            every { connectorId } returns "appId"
-            every { currentAnswerIndex } returns 1
-            every { userTimeline } returns UserTimeline(PlayerId("userId"))
-            every { botDefinition } returns BotDefinitionTest()
-            every { step } returns mockk()
-            every { dialog.lastAction } returns null
-            every { dialog.stories } returns mutableListOf<Story>()
-            every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
-            every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
-            every { underlyingConnector } returns mockk() {
-                every { underlyingConnector.hasFeature(CAROUSEL, any()) } returns true
+        val bus: BotBus =
+            mockk {
+                every { targetConnectorType } returns ConnectorType("a")
+                every { botId } returns PlayerId("botId")
+                every { userId } returns PlayerId("userId")
+                every { connectorId } returns "appId"
+                every { currentAnswerIndex } returns 1
+                every { userTimeline } returns UserTimeline(PlayerId("userId"))
+                every { botDefinition } returns BotDefinitionTest()
+                every { step } returns mockk()
+                every { dialog.lastAction } returns null
+                every { dialog.stories } returns mutableListOf<Story>()
+                every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
+                every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
+                every { underlyingConnector } returns
+                    mockk {
+                        every { underlyingConnector.hasFeature(CAROUSEL, any()) } returns true
+                    }
+                every {
+                    underlyingConnector.addSuggestions(
+                        RawString("translated label"),
+                        capture(suggestionsSlot),
+                    )
+                } returns connectorMessageRetriever
+                every { end(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
+                every { story } returns
+                    mockk {
+                        every { definition } returns
+                            mockk {
+                                every { steps } returns emptySet()
+                            }
+                    }
+                every { createMetric(any(), any()) } returns mockk()
             }
-            every {
-                underlyingConnector.addSuggestions(
-                    RawString("translated label"),
-                    capture(suggestionsSlot)
-                )
-            } returns connectorMessageRetriever
-            every { end(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
-            every { story } returns mockk {
-                every { definition } returns mockk {
-                    every { steps } returns emptySet()
-                }
-            }
-            every { createMetric(any(), any()) } returns mockk()
-        }
 
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns simpleAnswerConfiguration
-            every { nextIntentsQualifiers } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            every { steps } returns emptyList()
-            justRun { saveMetric(any()) }
-        }
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns simpleAnswerConfiguration
+                every { nextIntentsQualifiers } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                every { steps } returns emptyList()
+                justRun { saveMetric(any()) }
+            }
 
         val nextStepTranslated = listOf(RawString("Step 1 not translated"))
         every { configuration.findNextSteps(bus, configuration) } returns nextStepTranslated
@@ -146,31 +152,33 @@ class ConfiguredStoryHandlerTest {
 
     @Test
     fun `GIVEN simple answer configuration with 2 media messages WHEN sending answer THEN addSuggestion is called only once`() {
-
         // Given
-        val originalLabel = I18nLabel(
-            _id = "id".toId(),
-            namespace = "namespace",
-            category = "category",
-            defaultLabel = "Not translated label",
-            i18n = LinkedHashSet()
-        )
+        val originalLabel =
+            I18nLabel(
+                _id = "id".toId(),
+                namespace = "namespace",
+                category = "category",
+                defaultLabel = "Not translated label",
+                i18n = LinkedHashSet(),
+            )
         val media1 = MediaCardDescriptor(I18nLabelValue(originalLabel), null, null)
         val media2 = MediaCardDescriptor(I18nLabelValue(originalLabel), null, null)
-        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
-            answers = listOf(
-                SimpleAnswer(
-                    key = I18nLabelValue(originalLabel),
-                    delay = -1,
-                    mediaMessage = media1
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(originalLabel),
-                    delay = -1,
-                    mediaMessage = media2
-                )
+        val simpleAnswerConfiguration =
+            SimpleAnswerConfiguration(
+                answers =
+                    listOf(
+                        SimpleAnswer(
+                            key = I18nLabelValue(originalLabel),
+                            delay = -1,
+                            mediaMessage = media1,
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(originalLabel),
+                            delay = -1,
+                            mediaMessage = media2,
+                        ),
+                    ),
             )
-        )
 
         val messagesSlot = slot<MessagesList>()
         val suggestionsSlot = slot<List<CharSequence>>()
@@ -178,50 +186,55 @@ class ConfiguredStoryHandlerTest {
             TestConnectorMessage(suggestionsSlot.captured)
         }
 
-        val connector = mockk<Connector> {
-            every {
-                addSuggestions(
-                    any<ConnectorMessage>(),
-                    capture(suggestionsSlot)
-                )
-            } returns connectorMessageRetriever
-            every { toConnectorMessage(any()) } returns { listOf(mockk()) }
-            every { hasFeature(CAROUSEL, any()) } returns true
-        }
-
-        val bus: BotBus = mockk {
-            every { targetConnectorType } returns ConnectorType("a")
-            every { botId } returns PlayerId("botId")
-            every { userId } returns PlayerId("userId")
-            every { connectorId } returns "appId"
-            every { currentAnswerIndex } returns 1
-            every { userTimeline } returns UserTimeline(PlayerId("userId"))
-            every { botDefinition } returns BotDefinitionTest()
-            every { dialog.lastAction } returns null
-            every { step } returns mockk()
-            every { dialog.stories } returns mutableListOf<Story>()
-            every { translate(any<I18nLabelValue>()) } returns RawString("translated label")
-            every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
-            every { underlyingConnector } returns connector
-
-            every { end(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
-            every { send(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
-            every { story } returns mockk {
-                every { definition } returns mockk {
-                    every { steps } returns emptySet()
-                }
+        val connector =
+            mockk<Connector> {
+                every {
+                    addSuggestions(
+                        any<ConnectorMessage>(),
+                        capture(suggestionsSlot),
+                    )
+                } returns connectorMessageRetriever
+                every { toConnectorMessage(any()) } returns { listOf(mockk()) }
+                every { hasFeature(CAROUSEL, any()) } returns true
             }
-            every { createMetric(any(), any()) } returns mockk()
-        }
 
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns simpleAnswerConfiguration
-            every { nextIntentsQualifiers } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            every { steps } returns emptyList()
-            justRun { saveMetric(any()) }
-        }
+        val bus: BotBus =
+            mockk {
+                every { targetConnectorType } returns ConnectorType("a")
+                every { botId } returns PlayerId("botId")
+                every { userId } returns PlayerId("userId")
+                every { connectorId } returns "appId"
+                every { currentAnswerIndex } returns 1
+                every { userTimeline } returns UserTimeline(PlayerId("userId"))
+                every { botDefinition } returns BotDefinitionTest()
+                every { dialog.lastAction } returns null
+                every { step } returns mockk()
+                every { dialog.stories } returns mutableListOf<Story>()
+                every { translate(any<I18nLabelValue>()) } returns RawString("translated label")
+                every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
+                every { underlyingConnector } returns connector
+
+                every { end(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
+                every { send(messages = capture(messagesSlot), initialDelay = any()) } returns mockk()
+                every { story } returns
+                    mockk {
+                        every { definition } returns
+                            mockk {
+                                every { steps } returns emptySet()
+                            }
+                    }
+                every { createMetric(any(), any()) } returns mockk()
+            }
+
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns simpleAnswerConfiguration
+                every { nextIntentsQualifiers } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                every { steps } returns emptyList()
+                justRun { saveMetric(any()) }
+            }
 
         val nextStepTranslated = listOf(RawString("Step 1 not translated"))
         every { configuration.findNextSteps(bus, configuration) } returns nextStepTranslated
@@ -243,7 +256,6 @@ class ConfiguredStoryHandlerTest {
 
     @Test
     fun `GIVEN simple answer configuration with consecutive media cards WHEN sending answer THEN merge consecutive cards to carousels`() {
-
         // Given card+text+card+card+card+text+text+card+card
         val label0Card = buildLabel("labelAnswer0")
         val label1Text = buildLabel("labelAnswer1")
@@ -255,118 +267,130 @@ class ConfiguredStoryHandlerTest {
         val label7Card = buildLabel("labelAnswer7")
         val label8Card = buildLabel("labelAnswer8")
 
-        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
-            answers = listOf(
-                SimpleAnswer(
-                    key = I18nLabelValue(label0Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label0Card), null, null)
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label1Text),
-                    delay = -1
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label2Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(
-                        I18nLabelValue(label2Card),
-                        null,
-                        null,
-                        fillCarousel = true
-                    )
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label3Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(
-                        I18nLabelValue(label3Card),
-                        null,
-                        null,
-                        fillCarousel = true
-                    )
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label4Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(
-                        I18nLabelValue(label4Card),
-                        null,
-                        null,
-                        fillCarousel = true
-                    )
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label5Text),
-                    delay = -1
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label6Text),
-                    delay = -1
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label7Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(
-                        I18nLabelValue(label7Card),
-                        null,
-                        null,
-                        fillCarousel = true
-                    )
-                ),
-                SimpleAnswer(
-                    key = I18nLabelValue(label8Card),
-                    delay = -1,
-                    mediaMessage = MediaCardDescriptor(
-                        I18nLabelValue(label8Card),
-                        null,
-                        null,
-                        fillCarousel = true
-                    )
-                )
+        val simpleAnswerConfiguration =
+            SimpleAnswerConfiguration(
+                answers =
+                    listOf(
+                        SimpleAnswer(
+                            key = I18nLabelValue(label0Card),
+                            delay = -1,
+                            mediaMessage = MediaCardDescriptor(I18nLabelValue(label0Card), null, null),
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label1Text),
+                            delay = -1,
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label2Card),
+                            delay = -1,
+                            mediaMessage =
+                                MediaCardDescriptor(
+                                    I18nLabelValue(label2Card),
+                                    null,
+                                    null,
+                                    fillCarousel = true,
+                                ),
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label3Card),
+                            delay = -1,
+                            mediaMessage =
+                                MediaCardDescriptor(
+                                    I18nLabelValue(label3Card),
+                                    null,
+                                    null,
+                                    fillCarousel = true,
+                                ),
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label4Card),
+                            delay = -1,
+                            mediaMessage =
+                                MediaCardDescriptor(
+                                    I18nLabelValue(label4Card),
+                                    null,
+                                    null,
+                                    fillCarousel = true,
+                                ),
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label5Text),
+                            delay = -1,
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label6Text),
+                            delay = -1,
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label7Card),
+                            delay = -1,
+                            mediaMessage =
+                                MediaCardDescriptor(
+                                    I18nLabelValue(label7Card),
+                                    null,
+                                    null,
+                                    fillCarousel = true,
+                                ),
+                        ),
+                        SimpleAnswer(
+                            key = I18nLabelValue(label8Card),
+                            delay = -1,
+                            mediaMessage =
+                                MediaCardDescriptor(
+                                    I18nLabelValue(label8Card),
+                                    null,
+                                    null,
+                                    fillCarousel = true,
+                                ),
+                        ),
+                    ),
             )
-        )
 
         val capturedMessages = mutableListOf<MessagesList>()
         val capturedMediaMessages = mutableListOf<MediaMessage>()
-        val connector = mockk<Connector> {
-            every { toConnectorMessage(capture(capturedMediaMessages)) } returns { listOf(mockk()) }
-            every { hasFeature(CAROUSEL, any()) } returns true
-        }
-
-        val bus: BotBus = mockk {
-            every { targetConnectorType } returns ConnectorType("a")
-            every { botId } returns PlayerId("botId")
-            every { userId } returns PlayerId("userId")
-            every { connectorId } returns "appId"
-            every { currentAnswerIndex } returns 1
-            every { userTimeline } returns UserTimeline(PlayerId("userId"))
-            every { botDefinition } returns BotDefinitionTest()
-            every { dialog.lastAction } returns null
-            every { step } returns mockk()
-            every { dialog.stories } returns mutableListOf<Story>()
-            every { translate(any<I18nLabelValue>()) } answers { RawString(it.invocation.args[0].toString()) }
-            every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
-            every { underlyingConnector } returns connector
-
-            every { end(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
-            every { send(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
-            every { story } returns mockk {
-                every { definition } returns mockk {
-                    every { steps } returns emptySet()
-                }
+        val connector =
+            mockk<Connector> {
+                every { toConnectorMessage(capture(capturedMediaMessages)) } returns { listOf(mockk()) }
+                every { hasFeature(CAROUSEL, any()) } returns true
             }
-            every { createMetric(any(), any()) } returns mockk()
-        }
 
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns simpleAnswerConfiguration
-            every { nextIntentsQualifiers } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            every { steps } returns emptyList()
-            justRun { saveMetric(any()) }
-        }
+        val bus: BotBus =
+            mockk {
+                every { targetConnectorType } returns ConnectorType("a")
+                every { botId } returns PlayerId("botId")
+                every { userId } returns PlayerId("userId")
+                every { connectorId } returns "appId"
+                every { currentAnswerIndex } returns 1
+                every { userTimeline } returns UserTimeline(PlayerId("userId"))
+                every { botDefinition } returns BotDefinitionTest()
+                every { dialog.lastAction } returns null
+                every { step } returns mockk()
+                every { dialog.stories } returns mutableListOf<Story>()
+                every { translate(any<I18nLabelValue>()) } answers { RawString(it.invocation.args[0].toString()) }
+                every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
+                every { underlyingConnector } returns connector
+
+                every { end(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
+                every { send(messages = capture(capturedMessages), initialDelay = any()) } returns mockk()
+                every { story } returns
+                    mockk {
+                        every { definition } returns
+                            mockk {
+                                every { steps } returns emptySet()
+                            }
+                    }
+                every { createMetric(any(), any()) } returns mockk()
+            }
+
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns simpleAnswerConfiguration
+                every { nextIntentsQualifiers } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                every { steps } returns emptyList()
+                justRun { saveMetric(any()) }
+            }
 
         every { configuration.findNextSteps(bus, configuration) } returns emptyList() // nextStepTranslated
 
@@ -380,15 +404,15 @@ class ConfiguredStoryHandlerTest {
         // 3 simple text answers
         assertEquals(
             ((capturedMessages.get(1).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
-            label1Text.defaultLabel
+            label1Text.defaultLabel,
         )
         assertEquals(
             ((capturedMessages.get(3).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
-            label5Text.defaultLabel
+            label5Text.defaultLabel,
         )
         assertEquals(
             ((capturedMessages.get(4).messages.first() as ActionWrappedMessage).action as SendSentence).stringText,
-            label6Text.defaultLabel
+            label6Text.defaultLabel,
         )
         // 2 carousels
         assertEquals(capturedMediaMessages.size, 3)
@@ -414,97 +438,108 @@ class ConfiguredStoryHandlerTest {
                 _id = label.toId(),
                 category = "category",
                 defaultLabel = "Default $label",
-                i18n = LinkedHashSet()
+                i18n = LinkedHashSet(),
             )
     }
 
     @Test
     fun `nextIntentQualifiers are taking in account`() {
-
-        val bus: BotBus = mockk(relaxed = true){
-            every { botDefinition } returns BotDefinitionTest()
-            every { dialog } returns mockk{
-                every { stories } returns mutableListOf()
-                every { state } returns mockk(relaxed = true){
-                    every{ nextActionState } returns mockk{
-                        every {intentsQualifiers} returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
+        val bus: BotBus =
+            mockk(relaxed = true) {
+                every { botDefinition } returns BotDefinitionTest()
+                every { dialog } returns
+                    mockk {
+                        every { stories } returns mutableListOf()
+                        every { state } returns
+                            mockk(relaxed = true) {
+                                every { nextActionState } returns
+                                    mockk {
+                                        every { intentsQualifiers } returns listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5))
+                                    }
+                            }
                     }
-                }
             }
-        }
 
-        val configuration: StoryDefinitionConfiguration = mockk{
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns null
-            every { steps } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            every { nextIntentsQualifiers } returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
-            justRun { saveMetric(any()) }
-        }
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns null
+                every { steps } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                every { nextIntentsQualifiers } returns listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5))
+                justRun { saveMetric(any()) }
+            }
 
         val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
         handler.handle(bus)
 
-        assertEquals(bus.dialog.state.nextActionState?.intentsQualifiers, listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5)))
+        assertEquals(bus.dialog.state.nextActionState?.intentsQualifiers, listOf(NlpIntentQualifier("intent1", 0.5), NlpIntentQualifier("intent2", 0.5)))
     }
 
     @Test
     fun `GIVEN story without a step WHEN handled THEN save story handled metric`() {
-
         val capturedMetricTypes = mutableListOf<MetricType>()
 
-        val connector = mockk<Connector> {
-            every { toConnectorMessage(any()) } returns { listOf(mockk()) }
-            every { hasFeature(any(), any()) } returns true
-        }
-
-        val originalLabel = I18nLabel(
-            _id = "id".toId(),
-            category = "category",
-            i18n = LinkedHashSet()
-        )
-        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
-            answers = listOf(
-                SimpleAnswer(
-                    key = I18nLabelValue(originalLabel),
-                    delay = -1
-                )
-            )
-        )
-
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns simpleAnswerConfiguration
-            every { nextIntentsQualifiers } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            every { steps } returns emptyList()
-            justRun { saveMetric(any()) }
-            justRun { saveMetrics(any()) }
-        }
-
-        val bus: BotBus = mockk {
-            every { targetConnectorType } returns ConnectorType("a")
-            every { botId } returns PlayerId("botId")
-            every { userId } returns PlayerId("userId")
-            every { userTimeline } returns UserTimeline(userId)
-            every { connectorId } returns "appId"
-            every { currentAnswerIndex } returns 1
-            every { botDefinition } returns BotDefinitionTest()
-            every { step } returns null
-            every { dialog.stories } returns mutableListOf()
-            every { dialog.lastAction } returns null
-            every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
-            every { underlyingConnector } returns connector
-            every { end(messages = any(), initialDelay = any()) } returns mockk()
-            every { send(messages = any(), initialDelay = any()) } returns mockk()
-            every { story } returns mockk {
-                every { definition } returns mockk {
-                    every { steps } returns emptySet()
-                }
+        val connector =
+            mockk<Connector> {
+                every { toConnectorMessage(any()) } returns { listOf(mockk()) }
+                every { hasFeature(any(), any()) } returns true
             }
 
-            every { createMetric(capture(capturedMetricTypes), any(), any()) } returns mockk()
-        }
+        val originalLabel =
+            I18nLabel(
+                _id = "id".toId(),
+                category = "category",
+                i18n = LinkedHashSet(),
+            )
+        val simpleAnswerConfiguration =
+            SimpleAnswerConfiguration(
+                answers =
+                    listOf(
+                        SimpleAnswer(
+                            key = I18nLabelValue(originalLabel),
+                            delay = -1,
+                        ),
+                    ),
+            )
+
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns simpleAnswerConfiguration
+                every { nextIntentsQualifiers } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                every { steps } returns emptyList()
+                justRun { saveMetric(any()) }
+                justRun { saveMetrics(any()) }
+            }
+
+        val bus: BotBus =
+            mockk {
+                every { targetConnectorType } returns ConnectorType("a")
+                every { botId } returns PlayerId("botId")
+                every { userId } returns PlayerId("userId")
+                every { userTimeline } returns UserTimeline(userId)
+                every { connectorId } returns "appId"
+                every { currentAnswerIndex } returns 1
+                every { botDefinition } returns BotDefinitionTest()
+                every { step } returns null
+                every { dialog.stories } returns mutableListOf()
+                every { dialog.lastAction } returns null
+                every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
+                every { underlyingConnector } returns connector
+                every { end(messages = any(), initialDelay = any()) } returns mockk()
+                every { send(messages = any(), initialDelay = any()) } returns mockk()
+                every { story } returns
+                    mockk {
+                        every { definition } returns
+                            mockk {
+                                every { steps } returns emptySet()
+                            }
+                    }
+
+                every { createMetric(capture(capturedMetricTypes), any(), any()) } returns mockk()
+            }
 
         every { configuration.findNextSteps(bus, configuration) } returns emptyList()
 
@@ -523,74 +558,82 @@ class ConfiguredStoryHandlerTest {
 
     @Test
     fun `GIVEN story WHEN a step handled and has metrics THEN save only step metrics`() {
-
         val capturedMetricTypes = mutableListOf<MetricType>()
         val capturedIndicatorNames = mutableListOf<String>()
         val capturedIndicatorNameValues = mutableListOf<String>()
 
-        val connector = mockk<Connector> {
-            every { toConnectorMessage(any()) } returns { listOf(mockk()) }
-            every { hasFeature(any(), any()) } returns true
-        }
+        val connector =
+            mockk<Connector> {
+                every { toConnectorMessage(any()) } returns { listOf(mockk()) }
+                every { hasFeature(any(), any()) } returns true
+            }
 
         val metric1 = StoryDefinitionStepMetric("indicator1", "value1")
         val metric2 = StoryDefinitionStepMetric("indicator2", "value2")
 
-        val storyDefinitionConfigurationStep = StoryDefinitionConfigurationStep(
-            name = "stepName",
-            intent = null,
-            targetIntent = null,
-            answers = emptyList(),
-            currentType = AnswerConfigurationType.simple,
-            metrics = listOf(metric1, metric2)
-        )
-
-        val originalLabel = I18nLabel(
-            _id = "id".toId(),
-            category = "category",
-            i18n = LinkedHashSet()
-        )
-        val simpleAnswerConfiguration = SimpleAnswerConfiguration(
-            answers = listOf(
-                SimpleAnswer(
-                    key = I18nLabelValue(originalLabel),
-                    delay = -1
-                )
+        val storyDefinitionConfigurationStep =
+            StoryDefinitionConfigurationStep(
+                name = "stepName",
+                intent = null,
+                targetIntent = null,
+                answers = emptyList(),
+                currentType = AnswerConfigurationType.simple,
+                metrics = listOf(metric1, metric2),
             )
-        )
 
-        val configuration: StoryDefinitionConfiguration = mockk {
-            every { mandatoryEntities } returns emptyList()
-            every { findCurrentAnswer() } returns simpleAnswerConfiguration
-            every { nextIntentsQualifiers } returns emptyList()
-            every { findEnabledEndWithStoryId(any()) } returns null
-            justRun { saveMetric(any()) }
-            justRun { saveMetrics(any()) }
-        }
+        val originalLabel =
+            I18nLabel(
+                _id = "id".toId(),
+                category = "category",
+                i18n = LinkedHashSet(),
+            )
+        val simpleAnswerConfiguration =
+            SimpleAnswerConfiguration(
+                answers =
+                    listOf(
+                        SimpleAnswer(
+                            key = I18nLabelValue(originalLabel),
+                            delay = -1,
+                        ),
+                    ),
+            )
 
-        val bus: BotBus = mockk {
-            every { targetConnectorType } returns ConnectorType("a")
-            every { botId } returns PlayerId("botId")
-            every { userId } returns PlayerId("userId")
-            every { userTimeline } returns UserTimeline(userId)
-            every { connectorId } returns "appId"
-            every { currentAnswerIndex } returns 1
-            every { botDefinition } returns BotDefinitionTest()
-            every { step } returns storyDefinitionConfigurationStep.toStoryStep(configuration)
-            every { dialog.stories } returns mutableListOf()
-            every { dialog.lastAction } returns null
-            every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
-            every { underlyingConnector } returns connector
-            every { end(messages = any(), initialDelay = any()) } returns mockk()
-            every { send(messages = any(), initialDelay = any()) } returns mockk()
-            every { story } returns mockk {
-                every { definition } returns mockk {
-                    every { steps } returns emptySet()
-                }
+        val configuration: StoryDefinitionConfiguration =
+            mockk {
+                every { mandatoryEntities } returns emptyList()
+                every { findCurrentAnswer() } returns simpleAnswerConfiguration
+                every { nextIntentsQualifiers } returns emptyList()
+                every { findEnabledEndWithStoryId(any()) } returns null
+                justRun { saveMetric(any()) }
+                justRun { saveMetrics(any()) }
             }
-            every { intent } returns null
-            every { createMetric(capture(capturedMetricTypes), capture(capturedIndicatorNames), capture(capturedIndicatorNameValues)) } returns mockk()
-        }
+
+        val bus: BotBus =
+            mockk {
+                every { targetConnectorType } returns ConnectorType("a")
+                every { botId } returns PlayerId("botId")
+                every { userId } returns PlayerId("userId")
+                every { userTimeline } returns UserTimeline(userId)
+                every { connectorId } returns "appId"
+                every { currentAnswerIndex } returns 1
+                every { botDefinition } returns BotDefinitionTest()
+                every { step } returns storyDefinitionConfigurationStep.toStoryStep(configuration)
+                every { dialog.stories } returns mutableListOf()
+                every { dialog.lastAction } returns null
+                every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
+                every { underlyingConnector } returns connector
+                every { end(messages = any(), initialDelay = any()) } returns mockk()
+                every { send(messages = any(), initialDelay = any()) } returns mockk()
+                every { story } returns
+                    mockk {
+                        every { definition } returns
+                            mockk {
+                                every { steps } returns emptySet()
+                            }
+                    }
+                every { intent } returns null
+                every { createMetric(capture(capturedMetricTypes), capture(capturedIndicatorNames), capture(capturedIndicatorNameValues)) } returns mockk()
+            }
 
         every { configuration.findNextSteps(bus, configuration) } returns emptyList()
 
@@ -608,7 +651,5 @@ class ConfiguredStoryHandlerTest {
 
         verify(exactly = 0) { configuration.saveMetric(any()) }
         verify(exactly = 1) { configuration.saveMetrics(any()) }
-
     }
-
 }

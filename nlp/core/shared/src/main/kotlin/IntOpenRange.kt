@@ -20,7 +20,6 @@ package ai.tock.nlp.core
  *
  */
 interface IntOpenRange : Comparable<IntOpenRange> {
-
     val start: Int
     val end: Int
 
@@ -33,7 +32,10 @@ interface IntOpenRange : Comparable<IntOpenRange> {
         return overlap(range.start, range.end)
     }
 
-    fun overlap(start: Int, end: Int): Boolean {
+    fun overlap(
+        start: Int,
+        end: Int,
+    ): Boolean {
         return this.end > start && this.start < end
     }
 

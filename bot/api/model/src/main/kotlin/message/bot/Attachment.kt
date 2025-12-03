@@ -19,5 +19,5 @@ package ai.tock.bot.api.model.message.bot
 data class Attachment(
     val url: String,
     val type: AttachmentType? = null,
-    val description: I18nText? = null
+    val description: I18nText? = null,
 )

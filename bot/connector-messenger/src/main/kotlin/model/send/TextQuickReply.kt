@@ -24,18 +24,18 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class TextQuickReply(
     val title: String,
     val payload: String,
-    @JsonProperty("image_url") val imageUrl: String? = null
+    @JsonProperty("image_url") val imageUrl: String? = null,
 ) : QuickReply(QuickReplyContentType.text) {
-
     override fun toChoice(): Choice? {
         return SendChoice.decodeChoiceId(payload)
             .let { (intent, params) ->
                 Choice(
                     intent,
-                    params + mapNotNullValues(
-                        SendChoice.TITLE_PARAMETER to title,
-                        SendChoice.IMAGE_PARAMETER to imageUrl
-                    )
+                    params +
+                        mapNotNullValues(
+                            SendChoice.TITLE_PARAMETER to title,
+                            SendChoice.IMAGE_PARAMETER to imageUrl,
+                        ),
                 )
             }
     }

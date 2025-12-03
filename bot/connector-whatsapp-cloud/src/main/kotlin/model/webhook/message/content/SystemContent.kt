@@ -21,21 +21,22 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(JsonInclude.Include.NON_NULL) // Exclut les champs null de la sérialisation JSON
 data class SystemContent(
-        val body: String,
-        val identity: String?,
-        @JsonProperty("new_wa_id") val newWaIdV11: String?, // Pour les versions de webhook v11.0 et antérieures
-        @JsonProperty("wa_id") val waIdV12: String?, // Pour les versions de webhook v12.0 et ultérieures
-        val type: SystemUpdateType,
-        val customer: String?
+    val body: String,
+    val identity: String?,
+    // Pour les versions de webhook v11.0 et antérieures
+    @JsonProperty("new_wa_id") val newWaIdV11: String?,
+    // Pour les versions de webhook v12.0 et ultérieures
+    @JsonProperty("wa_id") val waIdV12: String?,
+    val type: SystemUpdateType,
+    val customer: String?,
 )
 
 enum class SystemUpdateType(val typeName: String) {
     CUSTOMER_CHANGED_NUMBER("customer_changed_number"),
-    CUSTOMER_IDENTITY_CHANGED("customer_identity_changed");
+    CUSTOMER_IDENTITY_CHANGED("customer_identity_changed"),
+    ;
 
     companion object {
         fun fromTypeName(typeName: String): SystemUpdateType? = values().firstOrNull { it.typeName == typeName }
     }
 }
-
-

@@ -21,7 +21,6 @@ package ai.tock.bot.connector
  * Used mainly to allow nice expressions with Bus.end{} and Bus.send{}.
  */
 interface ConnectorMessageProvider {
-
     /**
      * Provides the [ConnectorMessage].
      */

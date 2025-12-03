@@ -26,20 +26,20 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
-
     JsonSubTypes.Type(value = BotMediaActionDescriptor::class, name = "action"),
     JsonSubTypes.Type(value = BotMediaActionDescriptor::class, name = "0"),
-
     JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "card"),
-    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "1")
+    JsonSubTypes.Type(value = BotMediaCardDescriptor::class, name = "1"),
 )
 interface BotMediaMessageDescriptor {
-
     companion object {
-        fun fromDescriptor(desc: MediaMessageDescriptor, readOnly: Boolean = false): BotMediaMessageDescriptor =
+        fun fromDescriptor(
+            desc: MediaMessageDescriptor,
+            readOnly: Boolean = false,
+        ): BotMediaMessageDescriptor =
             when (desc) {
                 is MediaActionDescriptor -> BotMediaActionDescriptor(desc, readOnly)
                 is MediaCardDescriptor -> BotMediaCardDescriptor(desc, readOnly)

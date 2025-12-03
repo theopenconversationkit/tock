@@ -32,6 +32,7 @@ import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import kotlin.reflect.KClass
 
 internal const val BUSINESS_CHAT_CONNECTOR_TYPE_ID = "businesschat"
+
 /**
  * The Business Chat connector type.
  */
@@ -41,7 +42,6 @@ val businessChatConnectorType = ConnectorType(BUSINESS_CHAT_CONNECTOR_TYPE_ID, t
  * Defines the configuration to be exposed on the bot admin
  */
 internal object BusinessChatConnectorProvider : ConnectorProvider {
-
     private const val BUSINESS_ID = "businessId"
     override val connectorType: ConnectorType get() = businessChatConnectorType
 
@@ -64,19 +64,20 @@ internal object BusinessChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Business Id",
                     BUSINESS_ID,
-                    true
-                )
+                    true,
+                ),
             ),
-            resourceAsString("/businesschat.svg")
+            resourceAsString("/businesschat.svg"),
         )
     }
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        BusinessChatConnectorImageMessage::class,
-        BusinessChatConnectorListPickerMessage::class,
-        BusinessChatConnectorRichLinkMessage::class,
-        BusinessChatConnectorTextMessage::class
-    )
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
+        setOf(
+            BusinessChatConnectorImageMessage::class,
+            BusinessChatConnectorListPickerMessage::class,
+            BusinessChatConnectorRichLinkMessage::class,
+            BusinessChatConnectorTextMessage::class,
+        )
 }
 
 internal class BusinessChatConnectorProviderService : ConnectorProvider by BusinessChatConnectorProvider

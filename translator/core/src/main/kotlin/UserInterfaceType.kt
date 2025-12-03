@@ -20,6 +20,12 @@ package ai.tock.translator
  *
  */
 enum class UserInterfaceType {
+    @Suppress("ktlint:standard:enum-entry-name-case")
+    textChat,
 
-    textChat, voiceAssistant, textAndVoiceAssistant
+    @Suppress("ktlint:standard:enum-entry-name-case")
+    voiceAssistant,
+
+    @Suppress("ktlint:standard:enum-entry-name-case")
+    textAndVoiceAssistant,
 }

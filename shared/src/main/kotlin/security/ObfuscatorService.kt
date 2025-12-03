@@ -20,7 +20,6 @@ package ai.tock.shared.security
  * To load obfuscators via service loaders.
  */
 interface ObfuscatorService {
-
     /**
      * Returns the string obfuscators to register.
      */

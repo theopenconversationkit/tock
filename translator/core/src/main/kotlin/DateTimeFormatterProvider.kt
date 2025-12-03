@@ -23,7 +23,6 @@ import java.util.Locale
  * Used as argument in [DateTemplate].
  */
 interface DateTimeFormatterProvider {
-
     /**
      * Provides a [DateTimeFormatter] for the specified [Locale].
      */

@@ -21,5 +21,5 @@ import com.microsoft.bot.schema.Activity
 
 class TeamsConnectorCallback(
     applicationId: String,
-    val activity: Activity
+    val activity: Activity,
 ) : ConnectorCallbackBase(applicationId, teamsConnectorType)

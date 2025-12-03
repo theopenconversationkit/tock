@@ -26,6 +26,7 @@ import com.github.salomonbrys.kodein.provider
  */
 val deeplTranslatorModule = configureDeeplTranslatorModule()
 
-fun configureDeeplTranslatorModule(client: DeeplClient = OkHttpDeeplClient()) = Kodein.Module {
-    bind<TranslatorEngine>(overrides = true) with provider { DeeplTranslatorEngine(client) }
-}
+fun configureDeeplTranslatorModule(client: DeeplClient = OkHttpDeeplClient()) =
+    Kodein.Module {
+        bind<TranslatorEngine>(overrides = true) with provider { DeeplTranslatorEngine(client) }
+    }

@@ -23,10 +23,14 @@ typealias WorkerOnDemandType = String
 interface WorkerOnDemandProvider {
     companion object {
         private val providers: Set<WorkerOnDemandProvider> = ServiceLoader.load(WorkerOnDemandProvider::class.java).toSet()
-        fun provide(type: WorkerOnDemandType, properties: WorkerProperties) =
-            providers.findLast { it.workerOnDemandType == type }?.provide(properties)
+
+        fun provide(
+            type: WorkerOnDemandType,
+            properties: WorkerProperties,
+        ) = providers.findLast { it.workerOnDemandType == type }?.provide(properties)
     }
 
     val workerOnDemandType: WorkerOnDemandType
+
     fun provide(workerProperties: WorkerProperties): WorkerOnDemand
 }

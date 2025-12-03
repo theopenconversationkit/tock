@@ -21,6 +21,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class DirectMessageIndicateTyping(
     @JsonProperty("created_timestamp") val created: Long,
     @JsonProperty("sender_id") val senderId: String,
-    val target: Recipient
-
+    val target: Recipient,
 )

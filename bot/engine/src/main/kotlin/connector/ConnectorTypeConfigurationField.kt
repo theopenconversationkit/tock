@@ -31,5 +31,5 @@ data class ConnectorTypeConfigurationField(
     /**
      * Is the parameter is mandatory?
      */
-    val mandatory: Boolean = false
+    val mandatory: Boolean = false,
 )

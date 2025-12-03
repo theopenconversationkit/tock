@@ -16,5 +16,4 @@
 
 package model.send
 
-class WhatsAppCloudBotTextMessageSerializationTest {
-}
+class WhatsAppCloudBotTextMessageSerializationTest

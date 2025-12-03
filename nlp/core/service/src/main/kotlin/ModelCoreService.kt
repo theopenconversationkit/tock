@@ -41,15 +41,14 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.normalize
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
-import mu.KotlinLogging
 
 /**
  *
  */
 internal object ModelCoreService : ModelCore {
-
     private val logger = KotlinLogging.logger {}
 
     private val nlpClassifier: NlpClassifier by injector.instance()
@@ -64,13 +63,16 @@ internal object ModelCoreService : ModelCore {
                 nlpClassifier.warmupEntityModel(
                     EntityCallContextForIntent(
                         CallContext(context.application, context.language, context.engineType),
-                        it
-                    )
+                        it,
+                    ),
                 )
             }
     }
 
-    override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
+    override fun updateIntentModel(
+        context: BuildContext,
+        expressions: List<SampleExpression>,
+    ) {
         val nlpContext = IntentContext(context)
         if (!context.onlyIfNotExists || !nlpClassifier.isIntentModelExist(nlpContext)) {
             nlpClassifier.buildAndSaveIntentModel(nlpContext, context.formatExpressions(expressions))
@@ -80,7 +82,7 @@ internal object ModelCoreService : ModelCore {
     override fun updateEntityModelForIntent(
         context: BuildContext,
         intent: Intent,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ) {
         val nlpContext = EntityBuildContextForIntent(context, intent)
         updateEntityModel(context, nlpContext, expressions)
@@ -89,7 +91,7 @@ internal object ModelCoreService : ModelCore {
     override fun updateEntityModelForEntityType(
         context: BuildContext,
         entityType: EntityType,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ) {
         val nlpContext = EntityBuildContextForSubEntities(context, entityType)
         updateEntityModel(context, nlpContext, expressions)
@@ -98,7 +100,7 @@ internal object ModelCoreService : ModelCore {
     private fun updateEntityModel(
         context: BuildContext,
         nlpContext: EntityBuildContext,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ) {
         if (!context.onlyIfNotExists ||
             !nlpClassifier.isEntityModelExist(nlpContext)
@@ -107,11 +109,17 @@ internal object ModelCoreService : ModelCore {
         }
     }
 
-    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
+    override fun deleteOrphans(
+        applicationsAndIntents: Map<Application, Set<Intent>>,
+        entityTypes: List<EntityType>,
+    ) {
         nlpClassifier.deleteOrphans(applicationsAndIntents, entityTypes)
     }
 
-    override fun testModel(context: TestContext, expressions: List<SampleExpression>): TestModelReport {
+    override fun testModel(
+        context: TestContext,
+        expressions: List<SampleExpression>,
+    ): TestModelReport {
         if (expressions.size < 100) {
             error("at least 100 expressions needed")
         }
@@ -125,22 +133,24 @@ internal object ModelCoreService : ModelCore {
 
         val intentContext = IntentContext(context)
         val intentModel = nlpClassifier.buildIntentModel(intentContext, context.formatExpressions(modelExpressions))
-        val entityModels = modelExpressions
-            .groupBy { it.intent }
-            .mapNotNull { (intent, expressions)
-                ->
-                try {
-                    intent to nlpClassifier.buildEntityModel(
-                        EntityBuildContextForIntent(context, intent),
-                        context.formatExpressions(expressions)
-                    )
-                } catch (e: Exception) {
-                    logger.error { "entity model build fail for $intent " }
-                    logger.error(e)
-                    null
+        val entityModels =
+            modelExpressions
+                .groupBy { it.intent }
+                .mapNotNull { (intent, expressions),
+                    ->
+                    try {
+                        intent to
+                            nlpClassifier.buildEntityModel(
+                                EntityBuildContextForIntent(context, intent),
+                                context.formatExpressions(expressions),
+                            )
+                    } catch (e: Exception) {
+                        logger.error { "entity model build fail for $intent " }
+                        logger.error(e)
+                        null
+                    }
                 }
-            }
-            .toMap()
+                .toMap()
 
         val buildDuration = Duration.between(startDate, Instant.now())
 
@@ -148,12 +158,13 @@ internal object ModelCoreService : ModelCore {
         val entityErrors = mutableListOf<EntityMatchError>()
 
         testedExpressions.forEach {
-            val parseResult = NlpCoreService.parse(
-                context,
-                it.text,
-                intentModel,
-                entityModels
-            )
+            val parseResult =
+                NlpCoreService.parse(
+                    context,
+                    it.text,
+                    intentModel,
+                    entityModels,
+                )
             if (parseResult.intent != it.intent.name) {
                 intentErrors.add(IntentMatchError(it, parseResult.intent, parseResult.intentProbability))
             } else if (hasNotSameEntities(it.entities, parseResult.entities)) {
@@ -170,53 +181,56 @@ internal object ModelCoreService : ModelCore {
             entityErrors,
             buildDuration,
             testDuration,
-            startDate
+            startDate,
         )
     }
 
     private fun hasNotSameEntities(
         expectedEntities: List<SampleEntity>,
-        entities: List<EntityRecognition>
+        entities: List<EntityRecognition>,
     ): Boolean {
         return expectedEntities.any { e ->
             entities.none {
-                it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
-                    e
-                )
+                it.role == e.definition.role && it.entityType == e.definition.entityType &&
+                    it.isSameRange(
+                        e,
+                    )
             }
         } ||
-                entities.any {
-                    expectedEntities.none { e ->
-                        it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
-                            e
+            entities.any {
+                expectedEntities.none { e ->
+                    it.role == e.definition.role && it.entityType == e.definition.entityType &&
+                        it.isSameRange(
+                            e,
                         )
-                    }
                 }
+            }
     }
 
     override fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
-    ): NlpApplicationConfiguration =
-        nlpClassifier.getCurrentModelConfiguration(applicationName, nlpEngineType)
+        nlpEngineType: NlpEngineType,
+    ): NlpApplicationConfiguration = nlpClassifier.getCurrentModelConfiguration(applicationName, nlpEngineType)
 
     override fun updateModelConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
     private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
-        return if (application.normalizeText)
+        return if (application.normalizeText) {
             expressions.map { e -> e.copy(text = e.text.normalize(language)) }
-        else expressions
+        } else {
+            expressions
+        }
     }
-
 
     private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
         return if (callContext.application.normalizeText) {
             expressions.map { e -> e.copy(text = e.text.normalize(callContext.language)) }
-        } else expressions
+        } else {
+            expressions
+        }
     }
-
 }

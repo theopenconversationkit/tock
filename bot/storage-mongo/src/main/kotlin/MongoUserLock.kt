@@ -46,7 +46,6 @@ import java.util.concurrent.TimeUnit.HOURS
  *
  */
 internal object MongoUserLock : UserLock {
-
     @Data(internal = true)
     @JacksonData(internal = true)
     data class UserLock(val _id: Id<UserLock>, val locked: Boolean = true, val date: Instant = now())
@@ -62,11 +61,12 @@ internal object MongoUserLock : UserLock {
             runBlocking {
                 col.ensureIndex(
                     Date,
-                    indexOptions = IndexOptions()
-                        .expireAfter(
-                            longProperty("mongo_user_ttl_hours", 6),
-                            HOURS
-                        )
+                    indexOptions =
+                        IndexOptions()
+                            .expireAfter(
+                                longProperty("mongo_user_ttl_hours", 6),
+                                HOURS,
+                            ),
                 )
             }
         } catch (e: Exception) {
@@ -92,13 +92,14 @@ internal object MongoUserLock : UserLock {
             // This query finds unlocked UserLock objects, either because
             // their locked property is false or because their lock date
             // is too old
-            val query = and(
-                _id eq lock._id,
-                or(
-                    Locked eq false,
-                    Date lt validLockDatesLimit
+            val query =
+                and(
+                    _id eq lock._id,
+                    or(
+                        Locked eq false,
+                        Date lt validLockDatesLimit,
+                    ),
                 )
-            )
 
             // Atomically take lock if it's unlocked
             //

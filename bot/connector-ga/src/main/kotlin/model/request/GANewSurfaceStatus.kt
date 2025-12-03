@@ -22,5 +22,5 @@ package ai.tock.bot.connector.ga.model.request
 enum class GANewSurfaceStatus {
     OK, // Handoff completed
     CANCELLED, // User denied handoff
-    NEW_SURFACE_STATUS_UNSPECIFIED // Unknown status
+    NEW_SURFACE_STATUS_UNSPECIFIED, // Unknown status
 }

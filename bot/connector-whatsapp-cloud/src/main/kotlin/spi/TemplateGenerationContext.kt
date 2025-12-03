@@ -32,12 +32,20 @@ class TemplateGenerationContext internal constructor(
     businessAccountId: String,
     metaApplicationId: String,
     private val apiService: WhatsAppCloudApiService,
-): TemplateManagementContext(connectorId, businessAccountId, metaApplicationId) {
-    fun buildBasicTemplate(name: String, locale: Locale, builder: WhatsappBasicTemplateBuilder.() -> Unit): WhatsappTemplate {
+) : TemplateManagementContext(connectorId, businessAccountId, metaApplicationId) {
+    fun buildBasicTemplate(
+        name: String,
+        locale: Locale,
+        builder: WhatsappBasicTemplateBuilder.() -> Unit,
+    ): WhatsappTemplate {
         return WhatsappBasicTemplateBuilder(name, locale, connectorId).apply(builder).build()
     }
 
-    fun buildCarousel(name: String, locale: Locale, builder: WhatsappCarouselBuilder.() -> Unit): WhatsappTemplate {
+    fun buildCarousel(
+        name: String,
+        locale: Locale,
+        builder: WhatsappCarouselBuilder.() -> Unit,
+    ): WhatsappTemplate {
         return WhatsappCarouselBuilder(name, locale, connectorId).apply(builder).build()
     }
 
@@ -63,7 +71,11 @@ class TemplateGenerationContext internal constructor(
      * @return a handle for use in template headers
      * @throws AssetUploadingException
      */
-    fun getOrUpload(fileUrl: String, fileType: String, fileContents: ByteArray? = null): MetaUploadHandle {
+    fun getOrUpload(
+        fileUrl: String,
+        fileType: String,
+        fileContents: ByteArray? = null,
+    ): MetaUploadHandle {
         return apiService.getOrUpload(metaApplicationId, fileUrl, fileType, fileContents)
     }
 }

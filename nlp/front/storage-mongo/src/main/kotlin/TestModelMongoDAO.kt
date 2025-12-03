@@ -52,7 +52,6 @@ import java.util.Locale
  *
  */
 internal object TestModelMongoDAO : TestModelDAO {
-
     private val buildCol: MongoCollection<TestBuild> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<TestBuild>()
         c.ensureIndex(ApplicationId, Language)
@@ -80,8 +79,8 @@ internal object TestModelMongoDAO : TestModelDAO {
                 and(
                     Language eq language,
                     ApplicationId eq applicationId,
-                    if (after != null) StartDate gte after else null
-                )
+                    if (after != null) StartDate gte after else null,
+                ),
             )
                 .descendingSort(StartDate)
                 .mapNotNull {
@@ -95,7 +94,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                             nbSentencesTested = it.nbSentencesTestedByIntent[intent] ?: 0,
                             nbErrors = intentErrors + entityErrors,
                             intentErrors = intentErrors,
-                            entityErrors = entityErrors
+                            entityErrors = entityErrors,
                         )
                     }
                 }
@@ -108,11 +107,12 @@ internal object TestModelMongoDAO : TestModelDAO {
     }
 
     override fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult {
-        val filter = and(
-            Language eq query.language,
-            ApplicationId eq query.applicationId,
-            if (query.intentName == null) null else CurrentIntent eq query.intentName
-        )
+        val filter =
+            and(
+                Language eq query.language,
+                ApplicationId eq query.applicationId,
+                if (query.intentName == null) null else CurrentIntent eq query.intentName,
+            )
         val count = intentErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             IntentTestErrorQueryResult(0, emptyList())
@@ -124,17 +124,18 @@ internal object TestModelMongoDAO : TestModelDAO {
                     .descendingSort(Count)
                     .skip(query.start.toInt())
                     .limit(query.size)
-                    .toList()
+                    .toList(),
             )
         }
     }
 
     override fun addTestIntentError(intentError: IntentTestError) {
-        val filter = and(
-            Text eq textKey(intentError.text),
-            Language eq intentError.language,
-            ApplicationId eq intentError.applicationId
-        )
+        val filter =
+            and(
+                Text eq textKey(intentError.text),
+                Language eq intentError.language,
+                ApplicationId eq intentError.applicationId,
+            )
         val newError = intentError.count != 0
         intentErrorCol.findOne(filter)
             ?.apply {
@@ -145,32 +146,37 @@ internal object TestModelMongoDAO : TestModelDAO {
                         currentIntent = if (newError) intentError.currentIntent else currentIntent,
                         wrongIntent = if (newError) intentError.wrongIntent else wrongIntent,
                         averageErrorProbability = if (newError) (averageErrorProbability * total + intentError.averageErrorProbability) / (total + 1) else averageErrorProbability,
-                        total = total + 1
-                    )
+                        total = total + 1,
+                    ),
                 )
             }
             ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text))) else Unit
     }
 
-    override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
+    override fun deleteTestIntentError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    ) {
         intentErrorCol.deleteOne(
             and(
                 Text eq textKey(text),
                 Language eq language,
-                ApplicationId eq applicationId
-            )
+                ApplicationId eq applicationId,
+            ),
         )
     }
 
     override fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult {
-        val filter = and(
-            Language eq query.language,
-            ApplicationId eq query.applicationId,
-            query.intentName?.let { intentName ->
-                IntentDefinitionMongoDAO.getIntentByNamespaceAndName(intentName.namespace(), intentName.name())
-                    ?.let { IntentId eq it._id }
-            }
-        )
+        val filter =
+            and(
+                Language eq query.language,
+                ApplicationId eq query.applicationId,
+                query.intentName?.let { intentName ->
+                    IntentDefinitionMongoDAO.getIntentByNamespaceAndName(intentName.namespace(), intentName.name())
+                        ?.let { IntentId eq it._id }
+                },
+            )
         val count = entityErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             EntityTestErrorQueryResult(0, emptyList())
@@ -182,17 +188,18 @@ internal object TestModelMongoDAO : TestModelDAO {
                     .descendingSort(Count)
                     .skip(query.start.toInt())
                     .limit(query.size)
-                    .toList()
+                    .toList(),
             )
         }
     }
 
     override fun addTestEntityError(entityError: EntityTestError) {
-        val filter = and(
-            Text eq textKey(entityError.text),
-            Language eq entityError.language,
-            ApplicationId eq entityError.applicationId
-        )
+        val filter =
+            and(
+                Text eq textKey(entityError.text),
+                Language eq entityError.language,
+                ApplicationId eq entityError.applicationId,
+            )
         val newError = entityError.count != 0
         entityErrorCol.findOne(filter)
             ?.apply {
@@ -203,20 +210,24 @@ internal object TestModelMongoDAO : TestModelDAO {
                         intentId = entityError.intentId,
                         lastAnalyse = if (newError) entityError.lastAnalyse else lastAnalyse,
                         averageErrorProbability = if (newError) (averageErrorProbability * total + entityError.averageErrorProbability) / (total + 1) else averageErrorProbability,
-                        total = total + 1
-                    )
+                        total = total + 1,
+                    ),
                 )
             }
             ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text))) else Unit
     }
 
-    override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
+    override fun deleteTestEntityError(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String,
+    ) {
         entityErrorCol.deleteOne(
             and(
                 Text eq textKey(text),
                 Language eq language,
-                ApplicationId eq applicationId
-            )
+                ApplicationId eq applicationId,
+            ),
         )
     }
 }

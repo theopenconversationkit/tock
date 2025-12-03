@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 
-val noOpTranslatorModule = Kodein.Module {
-    bind<TranslatorEngine>() with provider { NoOpTranslatorEngine }
-}
+val noOpTranslatorModule =
+    Kodein.Module {
+        bind<TranslatorEngine>() with provider { NoOpTranslatorEngine }
+    }

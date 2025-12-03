@@ -31,11 +31,11 @@ import kotlin.test.assertEquals
  *
  */
 class EntityMergeServiceTest {
-
-    private val callContext = CallContext(
-        Application("test", emptyList(), emptySet()),
-        Locale.US
-    )
+    private val callContext =
+        CallContext(
+            Application("test", emptyList(), emptySet()),
+            Locale.US,
+        )
 
     @Test
     fun mergeEntityTypes_shouldReturnsTomorrowMorning_WhenTomorrowIsDetectedByTheModelAndTomorrowMorningByTheEntityEvaluator() {
@@ -43,31 +43,35 @@ class EntityMergeServiceTest {
         val dateEntity = Entity(entityType, "test")
         val tomorrow = EntityRecognition(EntityValue(0, "Tomorrow".length, dateEntity), 0.98)
         val tomorrowMorning = EntityTypeRecognition(EntityTypeValue(0, "Tomorrow morning".length, entityType), 0.8)
-        val result = EntityMergeService.mergeEntityTypes(
-            callContext,
-            "Tomorrow morning",
-            Intent("test", listOf(dateEntity)),
-            listOf(tomorrow),
-            listOf(tomorrowMorning)
-        )
+        val result =
+            EntityMergeService.mergeEntityTypes(
+                callContext,
+                "Tomorrow morning",
+                Intent("test", listOf(dateEntity)),
+                listOf(tomorrow),
+                listOf(tomorrowMorning),
+            )
 
         assertEquals(
             listOf(
                 EntityRecognition(
-                    value = EntityValue(
-                        start = 0,
-                        end = 16,
-                        entity = Entity(
-                            entityType = EntityType(
-                                name = "test"
-                            ),
-                            role = "test"
-                        )
-                    ),
-                    probability = 0.8
-                )
+                    value =
+                        EntityValue(
+                            start = 0,
+                            end = 16,
+                            entity =
+                                Entity(
+                                    entityType =
+                                        EntityType(
+                                            name = "test",
+                                        ),
+                                    role = "test",
+                                ),
+                        ),
+                    probability = 0.8,
+                ),
             ),
-            result
+            result,
         )
     }
 
@@ -80,31 +84,35 @@ class EntityMergeServiceTest {
         val tomorrow = EntityRecognition(EntityValue(0, "sun".length, entity), 0.98)
         val tomorrowMorning = EntityTypeRecognition(EntityTypeValue(0, "sun tomorrow".length, dateEntityType), 0.8)
 
-        val result = EntityMergeService.mergeEntityTypes(
-            callContext,
-            "sun tomorrow",
-            Intent("test", listOf(entity, dateEntity)),
-            listOf(tomorrow),
-            listOf(tomorrowMorning)
-        )
+        val result =
+            EntityMergeService.mergeEntityTypes(
+                callContext,
+                "sun tomorrow",
+                Intent("test", listOf(entity, dateEntity)),
+                listOf(tomorrow),
+                listOf(tomorrowMorning),
+            )
 
         assertEquals(
             listOf(
                 EntityRecognition(
-                    value = EntityValue(
-                        start = 0,
-                        end = 12,
-                        entity = Entity(
-                            entityType = EntityType(
-                                name = "date"
-                            ),
-                            role = "dateRole"
-                        )
-                    ),
-                    probability = 0.8
-                )
+                    value =
+                        EntityValue(
+                            start = 0,
+                            end = 12,
+                            entity =
+                                Entity(
+                                    entityType =
+                                        EntityType(
+                                            name = "date",
+                                        ),
+                                    role = "dateRole",
+                                ),
+                        ),
+                    probability = 0.8,
+                ),
             ),
-            result
+            result,
         )
     }
 
@@ -115,36 +123,41 @@ class EntityMergeServiceTest {
         val dateEntityType = EntityType("date")
         val dateEntity = Entity(dateEntityType, "dateRole")
         val tomorrow = EntityRecognition(EntityValue(0, "the sun".length, entity), 0.98)
-        val tomorrowMorning = EntityTypeRecognition(
-            EntityTypeValue("the ".length, "the ".length + "sun tomorrow".length, dateEntityType),
-            0.8
-        )
+        val tomorrowMorning =
+            EntityTypeRecognition(
+                EntityTypeValue("the ".length, "the ".length + "sun tomorrow".length, dateEntityType),
+                0.8,
+            )
 
-        val result = EntityMergeService.mergeEntityTypes(
-            callContext,
-            "the sun tomorrow",
-            Intent("test", listOf(entity, dateEntity)),
-            listOf(tomorrow),
-            listOf(tomorrowMorning)
-        )
+        val result =
+            EntityMergeService.mergeEntityTypes(
+                callContext,
+                "the sun tomorrow",
+                Intent("test", listOf(entity, dateEntity)),
+                listOf(tomorrow),
+                listOf(tomorrowMorning),
+            )
 
         assertEquals(
             listOf(
                 EntityRecognition(
-                    value = EntityValue(
-                        start = 0,
-                        end = 7,
-                        entity = Entity(
-                            entityType = EntityType(
-                                name = "test"
-                            ),
-                            role = "role"
-                        )
-                    ),
-                    probability = 0.98
-                )
+                    value =
+                        EntityValue(
+                            start = 0,
+                            end = 7,
+                            entity =
+                                Entity(
+                                    entityType =
+                                        EntityType(
+                                            name = "test",
+                                        ),
+                                    role = "role",
+                                ),
+                        ),
+                    probability = 0.98,
+                ),
             ),
-            result
+            result,
         )
     }
 }

@@ -23,25 +23,25 @@ import ai.tock.shared.name
  *
  */
 internal object DucklingDimensions {
-
     const val DUCKLING = "duckling"
     const val TIME_DIMENSION = "time"
     const val DATETIME_DIMENSION = "datetime"
     val datetimeEntityType = DATETIME_DIMENSION.withDucklingPrefix()
 
-    val dimensions = listOf(
-        DATETIME_DIMENSION,
-        "temperature",
-        "number",
-        "ordinal",
-        "distance",
-        "volume",
-        "amount-of-money",
-        "duration",
-        "email",
-        "url",
-        "phone-number"
-    )
+    val dimensions =
+        listOf(
+            DATETIME_DIMENSION,
+            "temperature",
+            "number",
+            "ordinal",
+            "distance",
+            "volume",
+            "amount-of-money",
+            "duration",
+            "email",
+            "url",
+            "phone-number",
+        )
 
     private fun String.withDucklingPrefix() = "$DUCKLING:$this"
 

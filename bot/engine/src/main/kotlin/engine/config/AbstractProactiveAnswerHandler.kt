@@ -19,7 +19,9 @@ package engine.config
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.config.ProactiveConversationStatus
-import ai.tock.bot.engine.config.ProactiveConversationStatus.*
+import ai.tock.bot.engine.config.ProactiveConversationStatus.CLOSED
+import ai.tock.bot.engine.config.ProactiveConversationStatus.LUNCHED
+import ai.tock.bot.engine.config.ProactiveConversationStatus.STARTED
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
@@ -33,8 +35,8 @@ private val userTimelineDAO: UserTimelineDAO by injector.instance()
 private val logger = KotlinLogging.logger {}
 
 interface AbstractProactiveAnswerHandler {
-
     fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? = null
+
     fun handle(botBus: BotBus) {
         with(botBus) {
             startProactiveConversation()
@@ -68,22 +70,22 @@ interface AbstractProactiveAnswerHandler {
     }
 
     private fun BotBus.startProactiveConversation() {
-        if(getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == null) {
+        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == null) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, LUNCHED)
-            if(underlyingConnector.startProactiveConversation(connectorData.callback, this)){
+            if (underlyingConnector.startProactiveConversation(connectorData.callback, this)) {
                 setBusContextValue(PROACTIVE_CONVERSATION_STATUS, STARTED)
             }
         }
     }
 
     fun BotBus.flushProactiveConversation() {
-        if(getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
+        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
             underlyingConnector.flushProactiveConversation(connectorData.callback, connectorData.metadata)
         }
     }
 
     private fun BotBus.endProactiveConversation() {
-        if(getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
+        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, CLOSED)
             underlyingConnector.endProactiveConversation(connectorData.callback, connectorData.metadata)
         } else {

@@ -21,8 +21,8 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import java.util.regex.Matcher
 
+@Suppress("ktlint:standard:max-line-length")
 object WebMarkdown {
-
     internal val regex = "`{3}([\\S\\s]*?)`{3}|`([^`]*)`|~~([\\S\\s]*?)~~".toRegex()
 
     fun markdown(text: String): String {
@@ -37,48 +37,57 @@ object WebMarkdown {
             render = render.replace("<em>", "<em style=\"font-style: italic\">")
         }
         if (render.contains("<h1>")) {
-            render = render.replace(
-                "<h1>",
-                "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">"
-            )
+            render =
+                render.replace(
+                    "<h1>",
+                    "<h1 style=\"display: block; font-size: 2em; margin-top: 0.67em; margin-bottom: 0.67em; margin-left: 0; margin-right: 0; font-weight: bold;\">",
+                )
         }
         if (render.contains("<h2>")) {
-            render = render.replace(
-                "<h2>",
-                "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">"
-            )
+            render =
+                render.replace(
+                    "<h2>",
+                    "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">",
+                )
         }
         if (render.contains("<h3>")) {
-            render = render.replace(
-                "<h3>",
-                "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">"
-            )
+            render =
+                render.replace(
+                    "<h3>",
+                    "<h3 style=\"display: block; font-size: 1.17em; margin-top: 1em; margin-bottom: 1em; margin-left: 0; margin-right: 0; font-weight: bold;\">",
+                )
         }
         if (render.contains("<blockquote>")) {
-            render = render.replace(
-                "<blockquote>",
-                "<blockquote style=\"font-style: normal; font-size: 15px; margin-left: 0px; font-family: Arial; border-left: 4px solid rgb(0 0 0 / 28%); padding-left: 8px; background-color: #f5f5f5;\">"
-            )
+            render =
+                render.replace(
+                    "<blockquote>",
+                    "<blockquote style=\"font-style: normal; font-size: 15px; margin-left: 0px; font-family: Arial; border-left: 4px solid rgb(0 0 0 / 28%); padding-left: 8px; background-color: #f5f5f5;\">",
+                )
         }
         if (render.contains("<code>")) {
-            render = render.replace(
-                "<code>",
-                "<code style=\"padding: 2px 4px; font-size: 90%; background-color: #f5f5f5; border-radius: 4px;\">"
-            )
+            render =
+                render.replace(
+                    "<code>",
+                    "<code style=\"padding: 2px 4px; font-size: 90%; background-color: #f5f5f5; border-radius: 4px;\">",
+                )
         }
         if (render.contains("~~")) {
             render = extractAllDataWithRegex(regex, render)
         }
         if (render.contains("<a href=")) {
-            render = render.replace(
-                "<a href=",
-                "<a target=\"_blank\" rel=\"noopener noreferrer\" href="
-            )
+            render =
+                render.replace(
+                    "<a href=",
+                    "<a target=\"_blank\" rel=\"noopener noreferrer\" href=",
+                )
         }
         return render
     }
 
-    internal fun extractAllDataWithRegex(regex: Regex, value: String): String {
+    internal fun extractAllDataWithRegex(
+        regex: Regex,
+        value: String,
+    ): String {
         val data = ArrayList<String>()
         val matcher: Matcher = regex.toPattern().matcher(value)
         var tmp = value

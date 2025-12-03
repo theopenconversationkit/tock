@@ -49,7 +49,6 @@ import kotlin.reflect.KClass
  * A test context initialized for each test.
  */
 open class TestContext {
-
     /**
      * Creates a new mock.
      */
@@ -130,10 +129,10 @@ open class TestContext {
      */
     val testKodein: Kodein
         by lazy {
-        Kodein {
-            importModule().invoke(this)
+            Kodein {
+                importModule().invoke(this)
+            }
         }
-    }
 
     /**
      * The story handler listeners to apply.
@@ -148,29 +147,30 @@ open class TestContext {
     /**
      * Default mocked Tock Ioc.
      */
-    open fun importModule(): Kodein.Builder.() -> Unit = {
-        import(sharedTestModule, true)
-        import(testTranslatorModule, true)
-        import(
-            Kodein.Module {
-                bind<I18nDAO>() with provider { mockedI18nDAO }
+    open fun importModule(): Kodein.Builder.() -> Unit =
+        {
+            import(sharedTestModule, true)
+            import(testTranslatorModule, true)
+            import(
+                Kodein.Module {
+                    bind<I18nDAO>() with provider { mockedI18nDAO }
 
-                bind<NlpClient>() with provider { mockedNlpClient }
-                bind<NlpController>() with provider { mockedNlpController }
+                    bind<NlpClient>() with provider { mockedNlpClient }
+                    bind<NlpController>() with provider { mockedNlpController }
 
-                bind<BotApplicationConfigurationDAO>() with provider { mockedBotApplicationConfigurationDAO }
-                bind<StoryDefinitionConfigurationDAO>() with provider { mockedStoryDefinitionConfigurationDAO }
-                bind<UserTimelineDAO>() with provider { mockedUserTimelineDAO }
-                bind<UserReportDAO>() with provider { mockedUserReportDAO }
-                bind<DialogReportDAO>() with provider { mockedDialogReportDAO }
-                bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
-                bind<UserLock>() with provider { mockedUserLock }
-                bind<FeatureDAO>() with provider { mockedFeatureDAO }
-                bind<DialogFlowDAO>() with provider { mockedDialogFlowDAO }
-            }
-        )
-        testModules.forEach { import(it, true) }
-    }
+                    bind<BotApplicationConfigurationDAO>() with provider { mockedBotApplicationConfigurationDAO }
+                    bind<StoryDefinitionConfigurationDAO>() with provider { mockedStoryDefinitionConfigurationDAO }
+                    bind<UserTimelineDAO>() with provider { mockedUserTimelineDAO }
+                    bind<UserReportDAO>() with provider { mockedUserReportDAO }
+                    bind<DialogReportDAO>() with provider { mockedDialogReportDAO }
+                    bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
+                    bind<UserLock>() with provider { mockedUserLock }
+                    bind<FeatureDAO>() with provider { mockedFeatureDAO }
+                    bind<DialogFlowDAO>() with provider { mockedDialogFlowDAO }
+                },
+            )
+            testModules.forEach { import(it, true) }
+        }
 
     /**
      * [KodeinInjector] used in tests.
@@ -193,27 +193,39 @@ open class TestContext {
      * Default [StoryDefinition] if none is provided.
      */
     open fun defaultStoryDefinition(botDefinition: BotDefinition): StoryDefinition =
-        if (isInitialized()) botBusMockContext.story.definition
-        else botDefinition.defaultStory
+        if (isInitialized()) {
+            botBusMockContext.story.definition
+        } else {
+            botDefinition.defaultStory
+        }
 
     /**
      * Default [ConnectorType] if none is provided.
      */
     open fun defaultConnectorType(): ConnectorType =
-        if (isInitialized()) botBusMockContext.connectorType
-        else defaultTestConnectorType
+        if (isInitialized()) {
+            botBusMockContext.connectorType
+        } else {
+            defaultTestConnectorType
+        }
 
     /**
      * Default [Locale] if none is provided.
      */
     open fun defaultLocale(): Locale =
-        if (isInitialized()) botBusMockContext.userPreferences.locale
-        else defaultLocale
+        if (isInitialized()) {
+            botBusMockContext.userPreferences.locale
+        } else {
+            defaultLocale
+        }
 
     /**
      * Default [PlayerId] if none is provided.
      */
     open fun defaultPlayerId(): PlayerId =
-        if (isInitialized()) botBusMockContext.firstAction.playerId
-        else PlayerId("user")
+        if (isInitialized()) {
+            botBusMockContext.firstAction.playerId
+        } else {
+            PlayerId("user")
+        }
 }

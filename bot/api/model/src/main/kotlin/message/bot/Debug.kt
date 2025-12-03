@@ -19,5 +19,5 @@ package ai.tock.bot.api.model.message.bot
 data class Debug(
     val text: String,
     val data: Any?,
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : BotMessage

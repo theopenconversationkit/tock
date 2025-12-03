@@ -20,7 +20,7 @@ import ai.tock.bot.engine.message.GenericMessage
 
 data class GAInputPrompt(
     val richInitialPrompt: GARichResponse,
-    val noInputPrompts: List<GASimpleResponse> = emptyList()
+    val noInputPrompts: List<GASimpleResponse> = emptyList(),
 ) {
     fun toGenericMessage(): GenericMessage? = richInitialPrompt.toGenericMessage()
 }

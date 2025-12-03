@@ -17,5 +17,5 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.media
 
 data class MediaResponse(
-        val id: String
+    val id: String,
 )

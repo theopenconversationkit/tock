@@ -60,7 +60,6 @@ import java.time.temporal.ChronoUnit.MINUTES
  *
  */
 object AdminService {
-
     val front = FrontClient
 
     fun parseSentence(query: ParseQuery): SentenceReport {
@@ -69,7 +68,7 @@ object AdminService {
         val intentId =
             when (intentWithNamespace) {
                 UNKNOWN_INTENT_NAME -> UNKNOWN_INTENT_NAME.toId()
-                RAG_EXCLUDED_INTENT_NAME ->  RAG_EXCLUDED_INTENT_NAME.toId()
+                RAG_EXCLUDED_INTENT_NAME -> RAG_EXCLUDED_INTENT_NAME.toId()
                 else -> front.getIntentIdByQualifiedName(intentWithNamespace)!!
             }
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
@@ -84,11 +83,12 @@ object AdminService {
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
-        val sentences = if (query.searchQuery == null) {
-            query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
-        } else {
-            front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
-        }
+        val sentences =
+            if (query.searchQuery == null) {
+                query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
+            } else {
+                front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
+            }
         return if (query.newIntentId != null &&
             (query.unknownNewIntent || query.ragExcludedNewIntent || application.intents.contains(query.newIntentId))
         ) {
@@ -107,11 +107,12 @@ object AdminService {
 
     fun translateSentences(query: TranslateSentencesQuery): TranslateReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
-        val sentences = if (query.searchQuery == null) {
-            query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
-        } else {
-            front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
-        }
+        val sentences =
+            if (query.searchQuery == null) {
+                query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
+            } else {
+                front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
+            }
         val engine: TranslatorEngine = injector.provide()
         if (!engine.supportAdminTranslation) {
             badRequest("Translation is not activated for this account")
@@ -126,39 +127,41 @@ object AdminService {
                         status = setOf(validated, model),
                         onlyExactMatch = true,
                         normalizeText = application.normalizeText,
-                    )
+                    ),
                 ).sentences.isEmpty()
             ) {
                 val toLowerCaseTranslation = translation.lowercase(s.language)
                 val newEntities = mutableListOf<ClassifiedEntity>()
-                val entities = s.classification.entities.mapNotNull { e ->
-                    val originalEntityText = e.textValue(s.text)
-                    val entityTranslation = engine.translate(originalEntityText, s.language, query.targetLanguage)
-                    val index = toLowerCaseTranslation.indexOf(entityTranslation.lowercase(query.targetLanguage))
-                    val start = if(index != -1) index else toLowerCaseTranslation.indexOf(originalEntityText.lowercase())
-                    val end = start + if(index != -1) entityTranslation.length else originalEntityText.length
-                    if (start == -1 || newEntities.any { it.overlap(start, end) }) {
-                        null
-                    } else {
-                        e.copy(
-                            start = start,
-                            end = end,
-                            //sub entities not yet supported
-                            subEntities = emptyList()
-                        )
-                            .apply { newEntities.add(this) }
-                    }
-                }.sorted()
-                val translatedSentence = s.copy(
-                    text = translation,
-                    language = query.targetLanguage,
-                    classification = s.classification.copy(entities = entities),
-                    status = if (s.status == model) validated else s.status,
-                    usageCount = 0,
-                    unknownCount = 0,
-                    creationDate = now(),
-                    updateDate = now()
-                )
+                val entities =
+                    s.classification.entities.mapNotNull { e ->
+                        val originalEntityText = e.textValue(s.text)
+                        val entityTranslation = engine.translate(originalEntityText, s.language, query.targetLanguage)
+                        val index = toLowerCaseTranslation.indexOf(entityTranslation.lowercase(query.targetLanguage))
+                        val start = if (index != -1) index else toLowerCaseTranslation.indexOf(originalEntityText.lowercase())
+                        val end = start + if (index != -1) entityTranslation.length else originalEntityText.length
+                        if (start == -1 || newEntities.any { it.overlap(start, end) }) {
+                            null
+                        } else {
+                            e.copy(
+                                start = start,
+                                end = end,
+                                // sub entities not yet supported
+                                subEntities = emptyList(),
+                            )
+                                .apply { newEntities.add(this) }
+                        }
+                    }.sorted()
+                val translatedSentence =
+                    s.copy(
+                        text = translation,
+                        language = query.targetLanguage,
+                        classification = s.classification.copy(entities = entities),
+                        status = if (s.status == model) validated else s.status,
+                        usageCount = 0,
+                        unknownCount = 0,
+                        creationDate = now(),
+                        updateDate = now(),
+                    )
                 front.save(translatedSentence, s.qualifier ?: UNKNOWN_USER_LOGIN)
             }
         }
@@ -175,7 +178,10 @@ object AdminService {
         return ApplicationWithIntents(application, intents, front.getModelSharedIntents(application.namespace))
     }
 
-    fun createOrGetIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
+    fun createOrGetIntent(
+        namespace: String,
+        intent: IntentDefinition,
+    ): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
             if (intentId == null) {
@@ -195,34 +201,37 @@ object AdminService {
     /**
      * Create or Update Intent and search the existing one by the intent qualifiedName
      */
-    fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
+    fun createOrUpdateIntent(
+        namespace: String,
+        intent: IntentDefinition,
+    ): IntentDefinition? {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
             (
-                    if (intentId == null) {
-                        intent
-                    } else {
-                        front.getIntentById(intentId)!!.run {
-                            copy(
-                                label = intent.label,
-                                description = intent.description,
-                                category = intent.category,
-                                applications = applications + intent.applications,
-                                entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
-                                entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
-                                mandatoryStates = intent.mandatoryStates + mandatoryStates,
-                                sharedIntents = intent.sharedIntents + sharedIntents
-                            )
-                        }
-                    }
-                    ).apply {
-                    front.save(this)
-                    applications.forEach { appId ->
-                        front.getApplicationById(appId)?.also {
-                            front.save(it.copy(intents = it.intents + _id))
-                        }
+                if (intentId == null) {
+                    intent
+                } else {
+                    front.getIntentById(intentId)!!.run {
+                        copy(
+                            label = intent.label,
+                            description = intent.description,
+                            category = intent.category,
+                            applications = applications + intent.applications,
+                            entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                            entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                            mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                            sharedIntents = intent.sharedIntents + sharedIntents,
+                        )
                     }
                 }
+            ).apply {
+                front.save(this)
+                applications.forEach { appId ->
+                    front.getApplicationById(appId)?.also {
+                        front.save(it.copy(intents = it.intents + _id))
+                    }
+                }
+            }
         } else {
             null
         }
@@ -235,7 +244,7 @@ object AdminService {
         return LogsReport(
             query.start,
             result,
-            applicationId
+            applicationId,
         ) { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) }
     }
 
@@ -245,71 +254,77 @@ object AdminService {
                 IntentTestErrorQueryResultReport(
                     total,
                     data.mapNotNull {
-                        val s = front.search(
-                            SentencesQuery(
-                                it.applicationId,
-                                it.language,
-                                search = it.text,
-                                onlyExactMatch = true
+                        val s =
+                            front.search(
+                                SentencesQuery(
+                                    it.applicationId,
+                                    it.language,
+                                    search = it.text,
+                                    onlyExactMatch = true,
+                                ),
                             )
-                        )
                         if (s.total == 0L) {
                             null
                         } else {
                             IntentTestErrorWithSentenceReport(
                                 s.sentences.first(),
-                                it
+                                it,
                             )
                         }
-                    }
+                    },
                 )
             }
     }
 
-    internal fun ClassifiedSentence.obfuscatedEntityRanges(): List<IntRange> =
-        classification.entities.filter { front.isEntityTypeObfuscated(it.type) }.map { it.toClosedRange() }
+    internal fun ClassifiedSentence.obfuscatedEntityRanges(): List<IntRange> = classification.entities.filter { front.isEntityTypeObfuscated(it.type) }.map { it.toClosedRange() }
 
     fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResultReport {
         return front.searchTestEntityErrors(query)
             .run {
-                val results = data.mapNotNull {
-                    val s = front.search(
-                        SentencesQuery(
-                            it.applicationId,
-                            it.language,
-                            search = it.text,
-                            onlyExactMatch = true
-                        )
-                    )
-                    if (s.total == 0L) {
-                        null
-                    } else {
-                        EntityTestErrorWithSentenceReport(
-                            s.sentences.first(),
-                            it
-                        )
+                val results =
+                    data.mapNotNull {
+                        val s =
+                            front.search(
+                                SentencesQuery(
+                                    it.applicationId,
+                                    it.language,
+                                    search = it.text,
+                                    onlyExactMatch = true,
+                                ),
+                            )
+                        if (s.total == 0L) {
+                            null
+                        } else {
+                            EntityTestErrorWithSentenceReport(
+                                s.sentences.first(),
+                                it,
+                            )
+                        }
                     }
-                }
                 EntityTestErrorQueryResultReport(total, results)
             }
     }
 
-    fun testBuildStats(query: TestBuildQuery, app: ApplicationDefinition): List<TestBuildStat> {
-        val stats = front
-            .getTestBuilds(query.toTestErrorQuery(app))
-            .map {
-                TestBuildStat(
-                    it.startDate.truncatedTo(MINUTES),
-                    it.nbErrors,
-                    it.intentErrors,
-                    it.entityErrors,
-                    it.nbSentencesInModel,
-                    it.nbSentencesTested,
-                    it.buildModelDuration,
-                    it.testSentencesDuration
-                )
-            }
-            .sortedBy { it.date }
+    fun testBuildStats(
+        query: TestBuildQuery,
+        app: ApplicationDefinition,
+    ): List<TestBuildStat> {
+        val stats =
+            front
+                .getTestBuilds(query.toTestErrorQuery(app))
+                .map {
+                    TestBuildStat(
+                        it.startDate.truncatedTo(MINUTES),
+                        it.nbErrors,
+                        it.intentErrors,
+                        it.entityErrors,
+                        it.nbSentencesInModel,
+                        it.nbSentencesTested,
+                        it.buildModelDuration,
+                        it.testSentencesDuration,
+                    )
+                }
+                .sortedBy { it.date }
         // only one point each 1 minutes
         return stats.filterIndexed { i, s ->
             i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(1)

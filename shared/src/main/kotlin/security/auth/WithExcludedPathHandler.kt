@@ -18,14 +18,12 @@ package ai.tock.shared.security.auth
 
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.PlatformHandler
 import io.vertx.ext.web.impl.OrderListener
 
 internal class WithExcludedPathHandler(
     val excluded: Set<Regex>,
-    val handler: Handler<RoutingContext>
+    val handler: Handler<RoutingContext>,
 ) : Handler<RoutingContext>, OrderListener {
-
     override fun handle(c: RoutingContext) {
         if (excluded.any { it.matches(c.request().path()) }) {
             c.next()

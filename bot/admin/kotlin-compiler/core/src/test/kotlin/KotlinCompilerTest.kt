@@ -26,7 +26,6 @@ import kotlin.test.assertTrue
  *
  */
 class KotlinCompilerTest {
-
     companion object {
         @BeforeAll
         @JvmStatic
@@ -39,9 +38,8 @@ class KotlinCompilerTest {
 
     class CompilationResultClassLoader(
         val className: String,
-        val bytes: ByteArray
+        val bytes: ByteArray,
     ) : ClassLoader(CompilationResultClassLoader::class.java.classLoader) {
-
         @Override
         override fun findClass(name: String): Class<*> {
             return if (name == className) {
@@ -54,80 +52,83 @@ class KotlinCompilerTest {
 
     @Test
     fun `simple compilation with erroneous file reports error`() {
-        val expectedError = try {
-            Runtime::class.java.getMethod("version").invoke(null)
-            listOf(
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
+        val expectedError =
+            try {
+                Runtime::class.java.getMethod("version").invoke(null)
+                listOf(
+                    CompileError(
+                        TextInterval(
+                            TextPosition(2, 34),
+                            TextPosition(2, 35),
+                        ),
+                        """Expecting '"'""",
+                        Severity.ERROR,
+                        "red_wavy_line",
                     ),
-                    """Expecting '"'""",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                ),
-                CompileError(
-                    TextInterval(
-                        TextPosition(line = 2, ch = 34),
-                        TextPosition(line = 2, ch = 35)
+                    CompileError(
+                        TextInterval(
+                            TextPosition(line = 2, ch = 34),
+                            TextPosition(line = 2, ch = 35),
+                        ),
+                        "Expecting ')'",
+                        Severity.ERROR,
+                        "red_wavy_line",
                     ),
-                    "Expecting ')'",
-                    Severity.ERROR,
-                    "red_wavy_line"
                 )
-            )
-        } catch (e: Throwable) {
-            // java 8
-            listOf(
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
+            } catch (e: Throwable) {
+                // java 8
+                listOf(
+                    CompileError(
+                        TextInterval(
+                            TextPosition(2, 34),
+                            TextPosition(2, 35),
+                        ),
+                        "Expecting '\"'",
+                        Severity.ERROR,
+                        "red_wavy_line",
                     ),
-                    "Expecting '\"'",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                ),
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
+                    CompileError(
+                        TextInterval(
+                            TextPosition(2, 34),
+                            TextPosition(2, 35),
+                        ),
+                        "Expecting ')'",
+                        Severity.ERROR,
+                        "red_wavy_line",
                     ),
-                    "Expecting ')'",
-                    Severity.ERROR,
-                    "red_wavy_line"
                 )
-            )
-        }
+            }
 
-        val erroneousSourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                to
+        val erroneousSourceCode =
+            mapOf(
+                "ClassToBeCompiled.kt"
+                    to
                     """
                 fun main() {
                     println("Hello)
-                }"""
-        )
+                }""",
+            )
 
         val errors = KotlinCompiler.getErrors(erroneousSourceCode)
         assertEquals(1, errors.size)
         assertEquals(
             expectedError,
-            errors["ClassToBeCompiled.kt"]
+            errors["ClassToBeCompiled.kt"],
         )
     }
 
     @Test
     fun `simple compilation and execution succeed`() {
-        val sourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                to
+        val sourceCode =
+            mapOf(
+                "ClassToBeCompiled.kt"
+                    to
                     """
                 import ai.tock.bot.admin.kotlin.compiler.KotlinCompilerTest  
                 fun main() {
                     KotlinCompilerTest.mark = true
-                }"""
-        )
+                }""",
+            )
         assertFalse(mark)
         assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
         val result = KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
@@ -147,14 +148,15 @@ class KotlinCompilerTest {
             // java 8 return
             return
         }
-        val sourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                to
+        val sourceCode =
+            mapOf(
+                "ClassToBeCompiled.kt"
+                    to
                     """
                 fun main() {
                     ai.tock.shared.Dice.newInt(2)
-                }"""
-        )
+                }""",
+            )
         assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
         KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
     }

@@ -22,7 +22,6 @@ import kotlin.test.assertEquals
 class OpenSearchUtilsTest {
     @Test
     fun `when namespace and botId are in uppercase`() {
-
         // GIVEN
         // "namespace" in uppercase
         // "botId" in uppercase
@@ -30,9 +29,12 @@ class OpenSearchUtilsTest {
 
         // WHEN :
         // Launch of the normalisation
-        val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "NAMESPACE", botId = "BOTID", indexSessionId = "123-ABC-5F"
-        )
+        val indexName =
+            OpenSearchUtils.normalizeDocumentIndexName(
+                namespace = "NAMESPACE",
+                botId = "BOTID",
+                indexSessionId = "123-ABC-5F",
+            )
 
         // THEN :
         // Convert to lowercase
@@ -41,7 +43,6 @@ class OpenSearchUtilsTest {
 
     @Test
     fun `when namespace and botId has a underscore`() {
-
         // GIVEN
         // "namespace" has an underscore
         // "botId" has an underscore
@@ -49,9 +50,12 @@ class OpenSearchUtilsTest {
 
         // WHEN :
         // Launch of the normalisation
-        val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "my_private_namespace", botId = "bot_id", indexSessionId = "123-ABC-5F"
-        )
+        val indexName =
+            OpenSearchUtils.normalizeDocumentIndexName(
+                namespace = "my_private_namespace",
+                botId = "bot_id",
+                indexSessionId = "123-ABC-5F",
+            )
 
         // THEN :
         // Replace underscores with hyphens
@@ -60,7 +64,6 @@ class OpenSearchUtilsTest {
 
     @Test
     fun `when namespace and botId has an invalid character`() {
-
         // GIVEN
         // "namespace" has a "*"
         // "botId" has a "?"
@@ -68,9 +71,12 @@ class OpenSearchUtilsTest {
 
         // WHEN :
         // Launch of the normalisation
-        val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "my_private*", botId = "bot?id", indexSessionId = "123-ABC-5F"
-        )
+        val indexName =
+            OpenSearchUtils.normalizeDocumentIndexName(
+                namespace = "my_private*",
+                botId = "bot?id",
+                indexSessionId = "123-ABC-5F",
+            )
 
         // THEN :
         // Remove invalid characters

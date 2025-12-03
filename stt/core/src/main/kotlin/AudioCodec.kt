@@ -20,6 +20,8 @@ package ai.tock.stt
  * Codec audio for STT input stream.
  */
 enum class AudioCodec {
-
-    unknown, ogg
+    @Suppress("ktlint")
+    unknown,
+    @Suppress("ktlint")
+    ogg,
 }

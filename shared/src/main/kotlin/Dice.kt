@@ -25,7 +25,6 @@ import java.util.concurrent.ThreadLocalRandom
  * Manage random things.
  */
 object Dice {
-
     private fun random(): Random = ThreadLocalRandom.current()
 
     /**
@@ -46,9 +45,10 @@ object Dice {
     /**
      * Return a new random [Id].
      */
-    fun newId(): String = try {
-        ObjectId().toHexString()
-    } catch (e: NoClassDefFoundError) {
-        UUID.randomUUID().toString()
-    }
+    fun newId(): String =
+        try {
+            ObjectId().toHexString()
+        } catch (e: NoClassDefFoundError) {
+            UUID.randomUUID().toString()
+        }
 }

@@ -30,11 +30,9 @@ data class UrlPayload(
     @JsonProperty("attachment_id")
     val attachmentId: String?,
     @JsonProperty("is_reusable")
-    val reusable: Boolean?
+    val reusable: Boolean?,
 ) : Payload() {
-
     companion object {
-
         /**
          * Create an UrlPayload from an url.
          * Uses default cache configuration.
@@ -43,12 +41,14 @@ data class UrlPayload(
             return getUrlPayload(
                 attachment.applicationId,
                 attachment.url,
-                reuseAttachmentByDefault && !attachment.state.testEvent
+                reuseAttachmentByDefault && !attachment.state.testEvent,
             )
         }
 
-        internal fun getUrlPayload(bus: BotBus, url: String): UrlPayload =
-            getUrlPayload(bus.applicationId, url, reuseAttachmentByDefault && !bus.action.state.testEvent)
+        internal fun getUrlPayload(
+            bus: BotBus,
+            url: String,
+        ): UrlPayload = getUrlPayload(bus.applicationId, url, reuseAttachmentByDefault && !bus.action.state.testEvent)
 
         /**
          * Create an UrlPayload from an url.
@@ -56,7 +56,11 @@ data class UrlPayload(
          * @param url the url
          * @param useCache is cache is used?
          */
-        fun getUrlPayload(applicationId: String, url: String, useCache: Boolean): UrlPayload {
+        fun getUrlPayload(
+            applicationId: String,
+            url: String,
+            useCache: Boolean,
+        ): UrlPayload {
             return if (useCache) {
                 val attachmentId = AttachmentCacheService.getAttachmentId(applicationId, url)
                 if (attachmentId == null) {

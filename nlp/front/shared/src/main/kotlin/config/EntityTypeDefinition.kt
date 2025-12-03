@@ -46,5 +46,5 @@ data class EntityTypeDefinition(
     /**
      * The unique id of the entity.
      */
-    val _id: Id<EntityTypeDefinition> = newId()
+    val _id: Id<EntityTypeDefinition> = newId(),
 )

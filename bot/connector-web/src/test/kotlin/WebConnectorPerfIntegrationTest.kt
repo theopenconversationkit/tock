@@ -24,7 +24,6 @@ import java.net.http.HttpResponse
 import java.net.http.HttpResponse.BodyHandlers.ofString
 
 class WebConnectorPerfIntegrationTest {
-
     @Test
     fun `testWebConnectorPerf`() {
         val startTest = System.currentTimeMillis()
@@ -34,11 +33,12 @@ class WebConnectorPerfIntegrationTest {
         (0..20).map { call ->
             (0..users)
                 .map { user ->
-                    val request = HttpRequest.newBuilder(URI("http://localhost:8080/io/app/new_assistant/web"))
-                        .POST(ofString("{\"query\":\"yo\",\"userId\":\"${userIds[user]}\",\"locale\":\"fr\"}"))
-                        .header("Content-Type", "application/json")
-                        .header("Accept", "application/json")
-                        .build()
+                    val request =
+                        HttpRequest.newBuilder(URI("http://localhost:8080/io/app/new_assistant/web"))
+                            .POST(ofString("{\"query\":\"yo\",\"userId\":\"${userIds[user]}\",\"locale\":\"fr\"}"))
+                            .header("Content-Type", "application/json")
+                            .header("Accept", "application/json")
+                            .build()
 
                     val start = System.currentTimeMillis()
                     clients[user].sendAsync(request, ofString()).thenApply { response: HttpResponse<String> ->

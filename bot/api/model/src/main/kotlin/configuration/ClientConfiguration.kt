@@ -24,13 +24,13 @@ import ai.tock.bot.api.model.configuration.ResponseContextVersion.V1
  */
 data class ClientConfiguration(
     val stories: List<StoryConfiguration>,
-    val version: ResponseContextVersion = V1
+    val version: ResponseContextVersion = V1,
 ) {
-    val supportSSE : Boolean get() = version != V1
+    val supportSSE: Boolean get() = version != V1
 }
 
 enum class ResponseContextVersion {
     V1,
     V2,
-    V3
+    V3,
 }

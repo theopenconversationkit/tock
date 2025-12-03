@@ -28,12 +28,11 @@ data class OptinWebhook(
     override val sender: Sender?,
     override val recipient: Recipient,
     override val timestamp: Long,
-    val optin: Optin
+    val optin: Optin,
 ) : Webhook() {
-
     override fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(
             sender?.id ?: optin.userRef ?: error("null sender field in webhook"),
-            if (playerType == PlayerType.user && sender?.id == null) PlayerType.temporary else playerType
+            if (playerType == PlayerType.user && sender?.id == null) PlayerType.temporary else playerType,
         )
 }

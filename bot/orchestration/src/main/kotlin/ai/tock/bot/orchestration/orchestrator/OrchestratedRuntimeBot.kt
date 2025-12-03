@@ -27,17 +27,17 @@ import ai.tock.bot.orchestration.shared.SecondaryBotNoResponse
 import ai.tock.bot.orchestration.shared.SecondaryBotResponse
 
 abstract class OrchestratedRuntimeBot(
-    open val target: OrchestrationTargetedBot
+    open val target: OrchestrationTargetedBot,
 ) {
     open fun askOrchestration(request: AskEligibilityToOrchestratedBotRequest): SecondaryBotResponse =
         SecondaryBotNoResponse(
             status = NOT_AVAILABLE,
-            metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator"))
+            metaData = request.metadata ?: OrchestrationMetaData(PlayerId("unknown"), target.botId, PlayerId("orchestrator")),
         )
 
     open fun resumeOrchestration(request: ResumeOrchestrationRequest): SecondaryBotResponse =
         SecondaryBotNoResponse(
             status = END,
-            metaData = request.metadata
+            metaData = request.metadata,
         )
 }

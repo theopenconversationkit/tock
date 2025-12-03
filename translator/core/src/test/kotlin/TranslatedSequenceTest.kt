@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class TranslatedSequenceTest {
-
     @Test
     fun `TranslatedSequence plus String is ok`() {
         assertEquals("ab".raw, "a".raw + "b")

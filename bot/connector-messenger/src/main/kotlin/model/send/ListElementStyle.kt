@@ -19,6 +19,8 @@ package ai.tock.bot.connector.messenger.model.send
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ListElementStyle {
-    large, compact
+    large,
+    compact,
 }

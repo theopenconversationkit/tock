@@ -23,5 +23,5 @@ data class ValueWithProbability(val value: String, val probability: Double)
  */
 data class StringValue(
     val value: String,
-    val candidates: List<ValueWithProbability> = emptyList()
+    val candidates: List<ValueWithProbability> = emptyList(),
 ) : Value

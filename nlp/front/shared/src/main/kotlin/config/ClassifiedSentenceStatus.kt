@@ -19,6 +19,10 @@ package ai.tock.nlp.front.shared.config
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class ClassifiedSentenceStatus {
-    inbox, validated, model, deleted
+    inbox,
+    validated,
+    model,
+    deleted,
 }

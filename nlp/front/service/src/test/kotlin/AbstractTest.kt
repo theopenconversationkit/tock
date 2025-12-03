@@ -58,9 +58,7 @@ import java.time.Instant
  *
  */
 abstract class AbstractTest {
-
     inner class TestContext {
-
         val core: NlpCore = mockk(relaxed = true)
         val config: ApplicationConfiguration = mockk(relaxed = true)
         val executor: Executor = mockk(relaxed = true)
@@ -75,28 +73,29 @@ abstract class AbstractTest {
         val faqDefinitionDAO: FaqDefinitionDAO = mockk(relaxed = true)
         val namespaceConfigurationDAO: NamespaceConfigurationDAO = mockk(relaxed = true)
 
-        val frontTestModule = Kodein.Module {
-            bind<ApplicationConfiguration>() with provider { config }
-            bind<NlpCore>() with provider { core }
-            bind<Executor>() with provider { executor }
-            bind<ParseRequestLogDAO>() with provider { logDAO }
-            bind<ModelBuildTriggerDAO>() with provider { modelBuildTriggerDAO }
-            bind<ApplicationDefinitionDAO>() with provider { applicationDefinitionDAO }
-            bind<EntityTypeDefinitionDAO>() with provider { entityTypeDefinitionDAO }
-            bind<IntentDefinitionDAO>() with provider { intentDefinitionDAO }
-            bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
-            bind<ClassifiedSentenceDAO>() with provider { classifiedSentenceDAO }
-            bind<DictionaryRepository>() with provider { dictionaryRepository }
-            bind<UserNamespaceDAO>() with provider { namespaceDAO }
-            bind<NamespaceConfigurationDAO>() with provider { namespaceConfigurationDAO }
-        }
+        val frontTestModule =
+            Kodein.Module {
+                bind<ApplicationConfiguration>() with provider { config }
+                bind<NlpCore>() with provider { core }
+                bind<Executor>() with provider { executor }
+                bind<ParseRequestLogDAO>() with provider { logDAO }
+                bind<ModelBuildTriggerDAO>() with provider { modelBuildTriggerDAO }
+                bind<ApplicationDefinitionDAO>() with provider { applicationDefinitionDAO }
+                bind<EntityTypeDefinitionDAO>() with provider { entityTypeDefinitionDAO }
+                bind<IntentDefinitionDAO>() with provider { intentDefinitionDAO }
+                bind<FaqDefinitionDAO>() with provider { faqDefinitionDAO }
+                bind<ClassifiedSentenceDAO>() with provider { classifiedSentenceDAO }
+                bind<DictionaryRepository>() with provider { dictionaryRepository }
+                bind<UserNamespaceDAO>() with provider { namespaceDAO }
+                bind<NamespaceConfigurationDAO>() with provider { namespaceConfigurationDAO }
+            }
 
         fun init() {
             every { config.getApplicationByNamespaceAndName(namespace, appName) } returns app
             every { config.getIntentsByApplicationId(app._id) } returns
                 listOf(
                     defaultIntentDefinition,
-                    intent2Definition
+                    intent2Definition,
                 )
 
             every { config.getIntentById(any()) } returns null
@@ -111,7 +110,7 @@ abstract class AbstractTest {
             injector.inject(
                 Kodein {
                     import(frontTestModule)
-                }
+                },
             )
         }
     }
@@ -120,28 +119,30 @@ abstract class AbstractTest {
 
     val namespace = "namespace"
     val appName = "test"
-    val app = ApplicationDefinition(
-        appName,
-        namespace = namespace,
-        _id = "id".toId(),
-        supportedLocales = setOf(defaultLocale)
-    )
+    val app =
+        ApplicationDefinition(
+            appName,
+            namespace = namespace,
+            _id = "id".toId(),
+            supportedLocales = setOf(defaultLocale),
+        )
 
     val defaultIntentName = "$namespace:intent"
     val defaultIntentDefinition =
         IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id), emptySet(), _id = newId())
     val defaultClassification = Classification(defaultIntentDefinition._id, emptyList())
-    val defaultClassifiedSentence = ClassifiedSentence(
-        "a",
-        defaultLocale,
-        "id".toId(),
-        Instant.now(),
-        Instant.now(),
-        ClassifiedSentenceStatus.inbox,
-        defaultClassification,
-        1.0,
-        1.0
-    )
+    val defaultClassifiedSentence =
+        ClassifiedSentence(
+            "a",
+            defaultLocale,
+            "id".toId(),
+            Instant.now(),
+            Instant.now(),
+            ClassifiedSentenceStatus.inbox,
+            defaultClassification,
+            1.0,
+            1.0,
+        )
 
     val parseQuery = ParseQuery(listOf("a"), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
 
@@ -150,24 +151,26 @@ abstract class AbstractTest {
         IntentDefinition(intent2Name.name(), namespace, setOf(app._id), emptySet(), _id = newId())
     val intent2Classification = Classification(intent2Definition._id, emptyList())
 
-    val intent2ClassifiedSentence = ClassifiedSentence(
-        "text",
-        defaultLocale,
-        "id".toId(),
-        Instant.now(),
-        Instant.now(),
-        ClassifiedSentenceStatus.validated,
-        intent2Classification,
-        1.0,
-        1.0
-    )
-    val intentSubsetParseQuery = ParseQuery(
-        listOf("text"),
-        namespace,
-        appName,
-        QueryContext(defaultLocale, Dice.newId()),
-        intentsSubset = setOf(IntentQualifier(intent2Name, 0.0))
-    )
+    val intent2ClassifiedSentence =
+        ClassifiedSentence(
+            "text",
+            defaultLocale,
+            "id".toId(),
+            Instant.now(),
+            Instant.now(),
+            ClassifiedSentenceStatus.validated,
+            intent2Classification,
+            1.0,
+            1.0,
+        )
+    val intentSubsetParseQuery =
+        ParseQuery(
+            listOf("text"),
+            namespace,
+            appName,
+            QueryContext(defaultLocale, Dice.newId()),
+            intentsSubset = setOf(IntentQualifier(intent2Name, 0.0)),
+        )
 
     @BeforeEach
     fun initContext() {

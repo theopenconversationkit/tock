@@ -24,10 +24,10 @@ internal data class SubscriptionsData(
     val active: Boolean?,
     @get:JsonProperty("callback_url")
     val callbackUrl: String?,
-    val fields: List<Field>?
+    val fields: List<Field>?,
 )
 
 internal data class Field(
     val name: String,
-    val version: String
+    val version: String,
 )

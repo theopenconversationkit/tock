@@ -27,5 +27,5 @@ import java.time.Instant.now
 data class EntityModelHolder(
     val nativeModel: Any,
     val configuration: NlpApplicationConfiguration,
-    val lastUpdate: Instant = now()
+    val lastUpdate: Instant = now(),
 ) : ModelHolder

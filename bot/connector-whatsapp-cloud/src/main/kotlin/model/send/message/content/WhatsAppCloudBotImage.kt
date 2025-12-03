@@ -24,7 +24,9 @@ import java.util.Base64
 
 sealed interface WhatsAppCloudBotImage {
     val caption: String?
+
     fun prepare(apiService: WhatsAppCloudApiService): WhatsAppCloudSendBotImageMessage.Image
+
     fun toGenericAttachment(): Attachment
 
     data class LinkedImage(val url: String, override val caption: String?, val uploadToWhatsapp: Boolean) : WhatsAppCloudBotImage {

@@ -25,9 +25,8 @@ import java.time.Instant
 data class ArchivedEntityValue(
     val entityValue: EntityValue?,
     val action: Action?,
-    val date: Instant = action?.date ?: Instant.now()
+    val date: Instant = action?.date ?: Instant.now(),
 ) {
-
     override fun toString(): String {
         return "ArchivedEntityValue(entityValue=$entityValue, date=$date)"
     }

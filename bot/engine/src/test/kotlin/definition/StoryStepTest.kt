@@ -26,7 +26,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class StoryStepTest {
-
     private val userTimeline: UserTimeline = mockk()
     private val dialog: Dialog = mockk()
     private val action: Action = mockk()

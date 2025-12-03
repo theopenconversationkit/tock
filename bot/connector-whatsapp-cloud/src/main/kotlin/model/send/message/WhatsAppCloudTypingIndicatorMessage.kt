@@ -18,14 +18,13 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-
 data class WhatsAppCloudTypingIndicatorMessage(
-    val messageId:String,
+    val messageId: String,
     @get:JsonProperty(value = "messaging_product")
-    val messagingProduct : String = "whatsapp",
-    val status : String = "read",
+    val messagingProduct: String = "whatsapp",
+    val status: String = "read",
     @get:JsonProperty(value = "typing_indicator")
-    val typingIndicator : TypingIndicator = TypingIndicator()
+    val typingIndicator: TypingIndicator = TypingIndicator(),
 )
 
-data class TypingIndicator(val type:String = "text")
+data class TypingIndicator(val type: String = "text")

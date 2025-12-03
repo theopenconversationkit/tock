@@ -22,10 +22,8 @@ import java.util.ServiceLoader
  * Helper methods to deal with [ServiceLoader].
  */
 object Loader {
-
     /**
      * Load all services of class [T].
      */
-    inline fun <reified T : Any> loadServices(): List<T> =
-        ServiceLoader.load(T::class.java).iterator().toSafeList()
+    inline fun <reified T : Any> loadServices(): List<T> = ServiceLoader.load(T::class.java).iterator().toSafeList()
 }

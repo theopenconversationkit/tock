@@ -30,7 +30,6 @@ import ai.tock.shared.property
 import ai.tock.shared.vertx.blocking
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.http.HttpClient
 import io.vertx.core.http.WebSocketClient
 import io.vertx.core.http.WebSocketConnectOptions
 import mu.KotlinLogging
@@ -54,7 +53,7 @@ fun startWithDemo(botDefinition: ClientBotDefinition) {
  */
 fun start(
     botDefinition: ClientBotDefinition,
-    url: String
+    url: String,
 ) {
     val u = URL(url)
     start(botDefinition, u.port.takeUnless { it == -1 } ?: u.defaultPort, u.host, u.protocol == "https")
@@ -72,16 +71,18 @@ fun start(
     botDefinition: ClientBotDefinition,
     serverPort: Int = intProperty("tock_websocket_port", 8080),
     serverHost: String = property("tock_websocket_host", "localhost"),
-    ssl: Boolean = booleanProperty("tock_websocket_ssl", false)
+    ssl: Boolean = booleanProperty("tock_websocket_ssl", false),
 ) {
-
     // State to indicate the current client is currently restarting, meaning a new client start is already scheduled
     var websocketIsRestarting = false
 
-    fun restart(client: WebSocketClient, delay: Long) {
+    fun restart(
+        client: WebSocketClient,
+        delay: Long,
+    ) {
         // guard prevent multiples concurrent restart that would lead to multiple client at each restarts
         // As restart is also called from the close handler
-        if(websocketIsRestarting) return
+        if (websocketIsRestarting) return
 
         websocketIsRestarting = true
         logger.info { "restart in $delay seconds..." }
@@ -102,8 +103,9 @@ fun start(
         }
     }
 
-    val options = WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
-        .setURI("/${botDefinition.apiKey}".trim())
+    val options =
+        WebSocketConnectOptions().setSsl(ssl).setHost(serverHost).setPort(serverPort)
+            .setURI("/${botDefinition.apiKey}".trim())
 
     logger.info { "start web socket client: ${options.toJson()}" }
     val client = vertx.createWebSocketClient()
@@ -111,9 +113,10 @@ fun start(
     client.connect(options).onSuccess { socket ->
         try {
             // send bot configuration
-            val conf = mapper.writeValueAsString(
-                ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration())
-            )
+            val conf =
+                mapper.writeValueAsString(
+                    ResponseData(Dice.newId(), botConfiguration = botDefinition.toConfiguration()),
+                )
             logger.debug { "send bot conf: $conf" }
             socket?.writeTextMessage(conf)
             socket
@@ -124,23 +127,24 @@ fun start(
                         val request = data.botRequest
                         if (request != null) {
                             logger.debug { "handle request by bus" }
-                            val bus = TockClientBus(botDefinition, data) { r ->
-                                logger.debug { "send bus response" }
-                                val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
-                                logger.debug { response }
-                                if(r.context.lastResponse) {
-                                    it.complete(response)
-                                } else {
-                                    socket.writeTextMessage(response)
+                            val bus =
+                                TockClientBus(botDefinition, data) { r ->
+                                    logger.debug { "send bus response" }
+                                    val response = mapper.writeValueAsString(ResponseData(data.requestId, r))
+                                    logger.debug { response }
+                                    if (r.context.lastResponse) {
+                                        it.complete(response)
+                                    } else {
+                                        socket.writeTextMessage(response)
+                                    }
                                 }
-                            }
                             bus.handle()
                         } else if (data.configuration == true) {
                             logger.debug { "send configuration" }
                             it.complete(
                                 mapper.writeValueAsString(
-                                    ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration())
-                                )
+                                    ResponseData(data.requestId, botConfiguration = botDefinition.toConfiguration()),
+                                ),
                             )
                         } else {
                             it.fail("invalid request: $json")

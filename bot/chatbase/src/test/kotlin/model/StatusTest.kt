@@ -22,7 +22,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class StatusTest {
-
     @Test
     fun `serialize deserialize response`() {
         val response = Response("messageId", Status.OK)

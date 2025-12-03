@@ -17,7 +17,6 @@
 package ai.tock.genai.orchestratorcore.utils
 
 object OpenSearchUtils {
-
     /**
      * Normalize the document index name
      * Here, OpenSearch rules are used
@@ -26,7 +25,11 @@ object OpenSearchUtils {
      * @param botId the bot ID
      * @param indexSessionId the index session ID
      */
-    fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String {
+    fun normalizeDocumentIndexName(
+        namespace: String,
+        botId: String,
+        indexSessionId: String,
+    ): String {
         // Convert to lowercase
         var normalized = "ns-$namespace-bot-$botId-session-$indexSessionId".lowercase()
         // Replace underscores and space with hyphens

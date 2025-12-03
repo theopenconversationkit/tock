@@ -31,7 +31,6 @@ import java.util.Locale
  * Translates [CharSequence] depending of current [userLocale], [userInterfaceType] and [targetConnectorType].
  */
 interface I18nTranslator : I18nKeyProvider {
-
     /**
      * The current user [Locale].
      */
@@ -62,7 +61,10 @@ interface I18nTranslator : I18nKeyProvider {
     /**
      * Translates and format if needed the text with the optionals args.
      */
-    fun translate(text: CharSequence?, vararg args: Any?): TranslatedSequence {
+    fun translate(
+        text: CharSequence?,
+        vararg args: Any?,
+    ): TranslatedSequence {
         return when {
             text.isNullOrBlank() -> EMPTY_TRANSLATED_STRING
             text is I18nLabelValue -> translate(text)
@@ -74,27 +76,31 @@ interface I18nTranslator : I18nKeyProvider {
     /**
      * Translates and format if needed the text with the optionals args.
      */
-    fun translate(text: CharSequence?, args: List<Any?>): TranslatedSequence =
-        translate(text, *args.toTypedArray())
+    fun translate(
+        text: CharSequence?,
+        args: List<Any?>,
+    ): TranslatedSequence = translate(text, *args.toTypedArray())
 
     /**
      * Translates the specified key.
      */
     fun translate(key: I18nLabelValue?): TranslatedSequence =
-        if (key == null) EMPTY_TRANSLATED_STRING
-        else Translator.translate(
-            key,
-            I18nContext(
-                userLocale,
-                userInterfaceType,
-                targetConnectorType.id,
-                contextId
+        if (key == null) {
+            EMPTY_TRANSLATED_STRING
+        } else {
+            Translator.translate(
+                key,
+                I18nContext(
+                    userLocale,
+                    userInterfaceType,
+                    targetConnectorType.id,
+                    contextId,
+                ),
             )
-        )
+        }
 
     /**
      * Translates the specified text and return null if the answer is blank.
      */
-    fun translateAndReturnBlankAsNull(s: CharSequence?): TranslatedSequence? =
-        translate(s).run { if (isBlank()) null else this.raw }
+    fun translateAndReturnBlankAsNull(s: CharSequence?): TranslatedSequence? = translate(s).run { if (isBlank()) null else this.raw }
 }

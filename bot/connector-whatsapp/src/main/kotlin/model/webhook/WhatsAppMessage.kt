@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     Type(value = WhatsAppTextMessage::class, name = "text"),
@@ -37,13 +37,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     Type(value = WhatsAppVoiceMessage::class, name = "voice"),
     Type(value = WhatsAppSystemMessage::class, name = "system"),
     Type(value = WhatsAppButtonMessage::class, name = "button"),
-    Type(value = WhatsAppUnknownMessage::class, name = "unknown")
+    Type(value = WhatsAppUnknownMessage::class, name = "unknown"),
 )
 abstract class WhatsAppMessage(val type: WhatsAppMessageType) {
     abstract val from: String
     abstract val id: String
     abstract val timestamp: String
     abstract val context: WhatsAppContext?
+
     @get:JsonProperty("group_id")
     abstract val groupId: String?
 }

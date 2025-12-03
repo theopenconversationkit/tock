@@ -20,7 +20,6 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-abstract class WhatsAppCloudConnectorMessage  : ConnectorMessage {
-
-   override val connectorType: ConnectorType @JsonIgnore get() = WhatsAppConnectorCloudProvider.connectorType
+abstract class WhatsAppCloudConnectorMessage : ConnectorMessage {
+    override val connectorType: ConnectorType @JsonIgnore get() = WhatsAppConnectorCloudProvider.connectorType
 }

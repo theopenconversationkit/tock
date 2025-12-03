@@ -44,9 +44,8 @@ data class Story(
     val definition: StoryDefinition,
     val starterIntent: Intent,
     internal var step: String? = null,
-    val actions: MutableList<Action> = mutableListOf()
+    val actions: MutableList<Action> = mutableListOf(),
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -84,7 +83,7 @@ data class Story(
         userTimeline: UserTimeline,
         dialog: Dialog,
         action: Action,
-        intent: Intent?
+        intent: Intent?,
     ): StoryStepDef? {
         // first level
         findStepInTree(steps, userTimeline, dialog, action, intent)?.also {
@@ -105,7 +104,7 @@ data class Story(
         userTimeline: UserTimeline,
         dialog: Dialog,
         action: Action,
-        intent: Intent?
+        intent: Intent?,
     ): StoryStepDef? {
         // first level
         steps.forEach { s ->
@@ -122,10 +121,12 @@ data class Story(
         return null
     }
 
-    private fun findParentStep(child: StoryStepDef): StoryStepDef? =
-        definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
+    private fun findParentStep(child: StoryStepDef): StoryStepDef? = definition.steps.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
-    private fun findParentStep(current: StoryStepDef, child: StoryStepDef): StoryStepDef? =
+    private fun findParentStep(
+        current: StoryStepDef,
+        child: StoryStepDef,
+    ): StoryStepDef? =
         current.takeIf { current.children.any { child.name == it.name } }
             ?: current.children.asSequence().mapNotNull { findParentStep(it, child) }.firstOrNull()
 
@@ -181,7 +182,11 @@ data class Story(
         }
     }
 
-    private inline fun <T : StoryHandler> withEvents(handler: T, bus: BotBus, op: (T) -> Unit) {
+    private inline fun <T : StoryHandler> withEvents(
+        handler: T,
+        bus: BotBus,
+        op: (T) -> Unit,
+    ) {
         try {
             if (sendStartEvent { startAction(bus, handler) }) {
                 op(handler)
@@ -192,10 +197,17 @@ data class Story(
     }
 
     @ExperimentalTockCoroutines
-    private suspend inline fun <T : StoryHandler> withEvents(handler: T, bus: AsyncBotBus, op: (T) -> Unit) {
+    private suspend inline fun <T : StoryHandler> withEvents(
+        handler: T,
+        bus: AsyncBotBus,
+        op: (T) -> Unit,
+    ) {
         try {
-            if (sendStartEvent { this is AsyncStoryHandlerListener && startAction(bus, handler)
-                        || startAction(bus.botBus, handler) }) {
+            if (sendStartEvent {
+                    this is AsyncStoryHandlerListener && startAction(bus, handler) ||
+                        startAction(bus.botBus, handler)
+                }
+            ) {
                 op(handler)
             }
         } finally {
@@ -211,40 +223,51 @@ data class Story(
     /**
      * Does this story supports the action ?
      */
-    fun supportAction(userTimeline: UserTimeline, dialog: Dialog, action: Action, intent: Intent): Boolean {
+    fun supportAction(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+        intent: Intent,
+    ): Boolean {
         if (supportIntent(intent)) {
             return true
         }
 
-        val checkSteps = if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
-            currentStep?.supportIntent(intent) == true ||
+        val checkSteps =
+            if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
+                currentStep?.supportIntent(intent) == true ||
                     (currentStep?.children ?: definition.steps)
                         .any { it.supportIntent(intent) }
-        } else {
-            true
-        }
+            } else {
+                true
+            }
 
         return if (checkSteps) {
             currentStep?.selectFromAction(userTimeline, dialog, action, intent) == true ||
-                    (currentStep?.children
-                        ?: if (definition.hasTag(CHECK_ONLY_SUB_STEPS)) emptyList() else definition.steps)
-                        .any { it.selectFromAction(userTimeline, dialog, action, intent) }
+                (
+                    currentStep?.children
+                        ?: if (definition.hasTag(CHECK_ONLY_SUB_STEPS)) emptyList() else definition.steps
+                )
+                    .any { it.selectFromAction(userTimeline, dialog, action, intent) }
         } else {
             false
         }
     }
 
-
     /**
      * Does this story supports the intent ?
      */
-    fun supportIntent(intent: Intent): Boolean =
-        definition.supportIntent(intent) || currentStep?.supportIntent(intent) == true
+    fun supportIntent(intent: Intent): Boolean = definition.supportIntent(intent) || currentStep?.supportIntent(intent) == true
 
     /**
      * Set the current step form the specified action and new intent.
      */
-    fun computeCurrentStep(userTimeline: UserTimeline, dialog: Dialog, action: Action, newIntent: Intent?) {
+    fun computeCurrentStep(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        action: Action,
+        newIntent: Intent?,
+    ) {
         // set current step if necessary
         var forced = false
         if (action is SendChoice && !dialog.state.hasCurrentSwitchStoryProcess) {
@@ -269,16 +292,15 @@ data class Story(
         // reset the step if applicable
         if (!forced && newIntent != null &&
             (
-                    (s?.intent != null && !s.supportIntent(newIntent)) ||
-                            s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
-                    )
+                (s?.intent != null && !s.supportIntent(newIntent)) ||
+                    s?.selectFromActionAndEntityStepSelection(action, newIntent) == false
+            )
         ) {
             this.step = null
         }
 
         // check the step from the intent
         if (!forced && this.step == null) {
-
             if (s != null) {
                 var parent: StoryStepDef? = s
                 do {

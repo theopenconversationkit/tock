@@ -28,14 +28,14 @@ data class WhatsAppBotTextMessage(
     override val recipientType: WhatsAppBotRecipientType,
     override val userId: String? = null,
     @get:JsonProperty("preview_url")
-    val previewUrl: Boolean = false
+    val previewUrl: Boolean = false,
 ) : WhatsAppBotMessage(WhatsAppBotMessageType.text, userId) {
     override fun toSendBotMessage(recipientId: String): WhatsAppSendBotMessage =
         WhatsAppSendBotTextMessage(
             text,
             recipientType,
             recipientId,
-            previewUrl
+            previewUrl,
         )
 
     override fun toGenericMessage(): GenericMessage? =

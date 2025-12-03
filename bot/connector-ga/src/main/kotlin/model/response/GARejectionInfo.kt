@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GARejectionInfo(
     val type: GAReasonType,
-    val reason: String
+    val reason: String,
 )

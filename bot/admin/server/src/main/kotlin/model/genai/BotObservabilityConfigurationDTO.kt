@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.model.genai
 
-
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
@@ -46,14 +45,12 @@ data class BotObservabilityConfigurationDTO(
             namespace = namespace,
             botId = botId,
             enabled = enabled,
-            setting = ObservabilitySettingMapper.toEntity(
-                namespace = namespace,
-                botId = botId,
-                feature = Constants.GEN_AI_OBSERVABILITY,
-                dto = setting
-            ),
+            setting =
+                ObservabilitySettingMapper.toEntity(
+                    namespace = namespace,
+                    botId = botId,
+                    feature = Constants.GEN_AI_OBSERVABILITY,
+                    dto = setting,
+                ),
         )
 }
-
-
-

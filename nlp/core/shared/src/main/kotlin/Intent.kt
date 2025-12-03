@@ -17,7 +17,6 @@
 package ai.tock.nlp.core
 
 import ai.tock.shared.TOCK_NAMESPACE
-import java.util.LinkedHashSet
 import java.util.Locale
 
 /**
@@ -26,9 +25,8 @@ import java.util.Locale
 data class Intent(
     val name: String,
     val entities: List<Entity>,
-    val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap()
+    val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap(),
 ) {
-
     companion object {
         const val UNKNOWN_INTENT_NAME: String = "$TOCK_NAMESPACE:unknown"
         val UNKNOWN_INTENT: Intent = Intent(UNKNOWN_INTENT_NAME, emptyList())
@@ -37,8 +35,10 @@ data class Intent(
         val RAG_EXCLUDED_INTENT: Intent = Intent(RAG_EXCLUDED_INTENT_NAME, emptyList())
     }
 
-    fun hasEntity(entityType: EntityType, role: String) =
-        entities.any { it.entityType == entityType && it.role == role }
+    fun hasEntity(
+        entityType: EntityType,
+        role: String,
+    ) = entities.any { it.entityType == entityType && it.role == role }
 
     fun getEntity(role: String): Entity? = entities.firstOrNull { it.role == role }
 

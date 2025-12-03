@@ -20,7 +20,6 @@ package ai.tock.bot.engine.user
  *
  */
 interface UserLock {
-
     suspend fun lock(userId: String): Boolean
 
     /**

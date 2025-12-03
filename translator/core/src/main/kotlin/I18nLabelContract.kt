@@ -16,10 +16,11 @@
 
 package ai.tock.translator
 
-import java.util.Locale
 import org.litote.kmongo.Id
+import java.util.Locale
 
 interface I18nLabelContract {
+    @Suppress("ktlint:standard:property-naming")
     val _id: Id<I18nLabel>
     val namespace: String?
     val category: String
@@ -30,5 +31,9 @@ interface I18nLabelContract {
     val version: Int?
 
     fun withDefaultLabel(defaultLabel: String?): I18nLabelContract
-    fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?): I18nLabelContract
+
+    fun withUpdatedI18n(
+        i18n: LinkedHashSet<I18nLocalizedLabel>,
+        version: Int?,
+    ): I18nLabelContract
 }

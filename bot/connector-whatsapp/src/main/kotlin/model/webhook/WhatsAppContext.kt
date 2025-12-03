@@ -21,5 +21,5 @@ package ai.tock.bot.connector.whatsapp.model.webhook
  */
 data class WhatsAppContext(
     val from: String,
-    val id: String
+    val id: String,
 )

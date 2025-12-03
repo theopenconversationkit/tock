@@ -19,8 +19,8 @@ package ai.tock.translator.deepl
 import ai.tock.shared.mapProperty
 import ai.tock.shared.propertyOrNull
 import ai.tock.translator.TranslatorEngine
-import java.util.Locale
 import org.apache.commons.text.StringEscapeUtils
+import java.util.Locale
 
 internal class DeeplTranslatorEngine(client: DeeplClient) : TranslatorEngine {
     private val deeplClient = client
@@ -29,7 +29,11 @@ internal class DeeplTranslatorEngine(client: DeeplClient) : TranslatorEngine {
     private val glossaryMapIds = mapProperty("tock_translator_deepl_glossary_map_ids", emptyMap())
     override val supportAdminTranslation: Boolean = true
 
-    override fun translate(text: String, source: Locale, target: Locale): String {
+    override fun translate(
+        text: String,
+        source: Locale,
+        target: Locale,
+    ): String {
         var translatedTextHTML4 = ""
         // Allows to filter translation on a specific language
         if (supportedLanguages == null || supportedLanguages.contains(target.language)) {

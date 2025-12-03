@@ -22,7 +22,6 @@ import ai.tock.shared.defaultNamespace
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.listProperty
-import ai.tock.shared.mapProperty
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
@@ -31,7 +30,6 @@ import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Vertx
-import io.vertx.core.http.HttpClientOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.core.net.ProxyOptions
 import io.vertx.ext.auth.oauth2.OAuth2Auth
@@ -39,36 +37,42 @@ import io.vertx.ext.auth.oauth2.OAuth2Options
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
-import java.util.Base64
 import mu.KotlinLogging
+import java.util.Base64
 
 internal class KeycloakOAuth2Provider(
     vertx: Vertx,
-    private val oauth2: OAuth2Auth = OAuth2Auth.create(
-        vertx,
-        OAuth2Options()
-            .setSupportedGrantTypes(listProperty("tock_keycloak_grant_types", emptyList()).takeUnless { it.isEmpty() })
-            .setClientId(property("tock_keycloak_client_id", "tock"))
-            .setClientSecret(property("tock_keycloak_secret_key", "thesecretkeyfromkeycloak"))
-            .setSite(property("tock_keycloak_site_url", "https://keycloak/realms/myrealm"))
-            .setTokenPath(property("tock_keycloak_access_token_path", "/protocol/openid-connect/token"))
-            .setAuthorizationPath(property("tock_keycloak_authorize_path", "/protocol/openid-connect/auth"))
-            .setUserInfoPath(property("tock_keycloak_userinfo_path", "/protocol/openid-connect/userinfo"))
-            .apply {
-                val proxyHost = propertyOrNull("tock_keycloak_proxy_host")
-                val proxyPort = intProperty("tock_keycloak_proxy_port", 0)
-                if (proxyHost != null) {
-                    logger.info { "set proxy $proxyHost:$proxyPort" }
-                    logger.info { "set proxy $proxyHost:$proxyPort" }
-                    httpClientOptions.proxyOptions = ProxyOptions().apply {
-                        host = proxyHost
-                        port = proxyPort
+    private val oauth2: OAuth2Auth =
+        OAuth2Auth.create(
+            vertx,
+            OAuth2Options()
+                .setSupportedGrantTypes(
+                    listProperty(
+                        "tock_keycloak_grant_types",
+                        emptyList(),
+                    ).takeUnless { it.isEmpty() },
+                )
+                .setClientId(property("tock_keycloak_client_id", "tock"))
+                .setClientSecret(property("tock_keycloak_secret_key", "thesecretkeyfromkeycloak"))
+                .setSite(property("tock_keycloak_site_url", "https://keycloak/realms/myrealm"))
+                .setTokenPath(property("tock_keycloak_access_token_path", "/protocol/openid-connect/token"))
+                .setAuthorizationPath(property("tock_keycloak_authorize_path", "/protocol/openid-connect/auth"))
+                .setUserInfoPath(property("tock_keycloak_userinfo_path", "/protocol/openid-connect/userinfo"))
+                .apply {
+                    val proxyHost = propertyOrNull("tock_keycloak_proxy_host")
+                    val proxyPort = intProperty("tock_keycloak_proxy_port", 0)
+                    if (proxyHost != null) {
+                        logger.info { "set proxy $proxyHost:$proxyPort" }
+                        logger.info { "set proxy $proxyHost:$proxyPort" }
+                        httpClientOptions.proxyOptions =
+                            ProxyOptions().apply {
+                                host = proxyHost
+                                port = proxyPort
+                            }
                     }
-                }
-            }
-    )
+                },
+        ),
 ) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private val userNamespaceAttribute = property("tock_custom_namespace_mapping", "tock_namespace")
@@ -78,13 +82,12 @@ internal class KeycloakOAuth2Provider(
 
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
-        OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler = OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
 
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        sessionHandler: SessionHandler
+        sessionHandler: SessionHandler,
     ): AuthenticationHandler {
         val authHandler = super.protectPaths(verticle, pathsToProtect, sessionHandler)
 
@@ -96,8 +99,16 @@ internal class KeycloakOAuth2Provider(
             val user = context.user()
             if (user?.containsKey("access_token") == true) {
                 user.also { u ->
-                    val data = if (u.containsKey("email")) u.principal()
-                    else JsonObject(String(Base64.getDecoder().decode(user.get<String>("access_token").split(".")[1])))
+                    val data =
+                        if (u.containsKey("email")) {
+                            u.principal()
+                        } else {
+                            JsonObject(
+                                String(
+                                    Base64.getDecoder().decode(user.get<String>("access_token").split(".")[1]),
+                                ),
+                            )
+                        }
                     val login: String = data.getString("email").lowercase(defaultLocale)
                     val customRoles: String = data.getString(userRoleAttribute)
                     val roles = parseUserRoles(customRoles)
@@ -107,14 +118,18 @@ internal class KeycloakOAuth2Provider(
                     } else {
                         var namespace = data.getString(userNamespaceAttribute)
                         if (namespace == null) {
-                            logger.warn { "No attribute representing namespace called $userNamespaceAttribute in $data, using default \"app\" namespace" }
+                            logger.warn {
+                                "No attribute representing namespace called $userNamespaceAttribute in $data, using default \"app\" namespace"
+                            }
                             namespace = defaultNamespace
                         }
 
                         executor.executeBlocking {
-                            val tockUser = injector.provide<TockUserListener>().registerUser(
-                                TockUser(login, namespace, roles), true
-                            )
+                            val tockUser =
+                                injector.provide<TockUserListener>().registerUser(
+                                    TockUser(login, namespace, roles),
+                                    true,
+                                )
 
                             vertx.runOnContext {
                                 sessionHandler
@@ -133,9 +148,10 @@ internal class KeycloakOAuth2Provider(
         return authHandler
     }
 
-    private fun parseCustomRoles(customRoles: String): List<String> = customRoles
-        .split(",")
-        .map { it.removePrefix("[").removeSuffix("]").trim() }
+    private fun parseCustomRoles(customRoles: String): List<String> =
+        customRoles
+            .split(",")
+            .map { it.removePrefix("[").removeSuffix("]").trim() }
 
     private fun parseUserRoles(customRoles: String): Set<String> =
         parseCustomRoles(customRoles)
@@ -144,8 +160,7 @@ internal class KeycloakOAuth2Provider(
             .map { it.name }
             .toSet()
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
-        super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
+    override fun excludedPaths(verticle: WebVerticle): Set<Regex> = super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
 }

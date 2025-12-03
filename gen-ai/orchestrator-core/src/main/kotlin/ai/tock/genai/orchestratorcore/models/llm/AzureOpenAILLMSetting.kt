@@ -27,6 +27,6 @@ data class AzureOpenAILLMSetting<T>(
     val model: String? = null,
 ) : LLMSettingBase<T>(LLMProvider.AzureOpenAIService, apiKey, temperature, prompt) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
-        return this.copy(temperature=temperature)
+        return this.copy(temperature = temperature)
     }
 }

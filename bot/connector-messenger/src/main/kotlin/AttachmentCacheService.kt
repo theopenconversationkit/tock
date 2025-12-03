@@ -26,16 +26,22 @@ import org.litote.kmongo.toId
  * cf (https://developers.facebook.com/docs/messenger-platform/send-api-reference/attachment-upload)
  */
 internal object AttachmentCacheService {
-
     private val logger = KotlinLogging.logger {}
     private val cacheType = "messenger_cache_url"
 
-    fun getAttachmentId(applicationId: String, url: String): String? {
+    fun getAttachmentId(
+        applicationId: String,
+        url: String,
+    ): String? {
         logger.trace { "get attachment from cache $url" }
         return getFromCache("${applicationId}_$url".toId(), cacheType)
     }
 
-    fun setAttachmentId(applicationId: String, url: String, attachmentId: String) {
+    fun setAttachmentId(
+        applicationId: String,
+        url: String,
+        attachmentId: String,
+    ) {
         logger.trace { "set attachment in cache $url $attachmentId" }
         putInCache("${applicationId}_$url".toId(), cacheType, attachmentId)
     }

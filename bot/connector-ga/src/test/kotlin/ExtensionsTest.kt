@@ -24,7 +24,6 @@ import kotlin.test.assertEquals
  *
  */
 class ExtensionsTest {
-
     @Test
     fun simpleResponseWithoutTranslate_shouldReturnsSpeechToTextWithoutEmoji() {
         val r = simpleResponseWithoutTranslate("a\uD83D\uDE00d\uD83D\uDE09")

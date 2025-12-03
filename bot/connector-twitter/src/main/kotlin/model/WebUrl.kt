@@ -25,13 +25,14 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class WebUrl(
     val label: String,
     val url: String,
-    @JsonProperty("tco_url") val tcoUrl: String? = null
+    @JsonProperty("tco_url") val tcoUrl: String? = null,
 ) : CTA() {
-    override fun toChoice(): Choice = Choice(
-        SendChoice.EXIT_INTENT,
-        mapOf(
-            SendChoice.URL_PARAMETER to url,
-            SendChoice.TITLE_PARAMETER to label
+    override fun toChoice(): Choice =
+        Choice(
+            SendChoice.EXIT_INTENT,
+            mapOf(
+                SendChoice.URL_PARAMETER to url,
+                SendChoice.TITLE_PARAMETER to label,
+            ),
         )
-    )
 }

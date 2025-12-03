@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class Attachment(
     sourceId: String,
     destinationId: String,
-    val attachments: Array<AttachmentDictionnary>
+    val attachments: Array<AttachmentDictionnary>,
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text) {
     val body: String = "\uFFFc"
 }
@@ -42,5 +42,5 @@ class AttachmentDictionnary(
     @JsonProperty("signature-base64")
     val signatureBase64: String,
     val size: Int,
-    val url: String
+    val url: String,
 )

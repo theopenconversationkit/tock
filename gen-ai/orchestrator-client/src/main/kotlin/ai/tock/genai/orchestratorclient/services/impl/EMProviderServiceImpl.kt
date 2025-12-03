@@ -17,12 +17,12 @@
 package ai.tock.genai.orchestratorclient.services.impl
 
 import ai.tock.genai.orchestratorclient.api.EMProviderApi
-import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 
-class EMProviderServiceImpl: EMProviderService {
+class EMProviderServiceImpl : EMProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val emProviderApi = retrofit.create(EMProviderApi::class.java)
 

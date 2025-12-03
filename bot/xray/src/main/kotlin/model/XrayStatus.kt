@@ -20,6 +20,7 @@ package ai.tock.bot.xray.model
  *
  */
 enum class XrayStatus {
-
-    PASS, FAIL, TODO
+    PASS,
+    FAIL,
+    TODO,
 }

@@ -26,7 +26,6 @@ import kotlin.test.assertTrue
  *
  */
 class EventApiMessageDeserializationTest {
-
     @Test
     fun `simple message can be deserialized`() {
         val json = """
@@ -68,7 +67,7 @@ class EventApiMessageDeserializationTest {
         assertTrue { message is UrlVerificationEvent }
         assertEquals(
             "3eZbrw1aBm2rZgRNFdxV2595E9CY3gmdALWMmHkvFXO7tYXAYM8P",
-            (message as UrlVerificationEvent).challenge
+            (message as UrlVerificationEvent).challenge,
         )
     }
 }

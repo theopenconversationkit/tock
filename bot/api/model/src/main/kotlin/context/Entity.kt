@@ -46,5 +46,5 @@ data class Entity(
     /**
      * Is it a entity evaluated now?
      */
-    val new: Boolean
+    val new: Boolean,
 )

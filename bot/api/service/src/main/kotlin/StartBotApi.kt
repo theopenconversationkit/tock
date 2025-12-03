@@ -19,6 +19,7 @@ package ai.tock.bot.api.service
 import ai.tock.bot.BotIoc
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.BotRepository.botAPI
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.translator.Translator
@@ -34,6 +35,7 @@ fun main() {
         logger.info("register configuration ${it.name}")
         BotRepository.registerBotProvider(BotApiDefinitionProvider(it))
     }
+    botAPI = true
     BotRepository.installBots(emptyList())
     dao.listenBotChanges {
         logger.info("reload bot configurations")

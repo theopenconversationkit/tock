@@ -17,5 +17,5 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 data class IadvizeMultipartReply(val replies: List<IadvizeReply>) {
-    constructor(vararg replies : IadvizeReply) : this(replies.toList())
+    constructor(vararg replies: IadvizeReply) : this(replies.toList())
 }

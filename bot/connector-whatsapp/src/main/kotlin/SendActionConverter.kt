@@ -28,20 +28,19 @@ import ai.tock.bot.engine.action.SendSentence
  *
  */
 object SendActionConverter {
-
     fun toBotMessage(action: Action): WhatsAppSendBotMessage? {
         return if (action is SendSentence) {
             (action.message(whatsAppConnectorType) as? WhatsAppBotMessage)
                 ?.let {
                     it.toSendBotMessage(
-                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) }
+                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) },
                     )
                 }
                 ?: action.stringText?.let { text ->
                     WhatsAppSendBotTextMessage(
                         WhatsAppTextBody(text),
                         individual,
-                        UserHashedIdCache.getRealId(action.recipientId.id)
+                        UserHashedIdCache.getRealId(action.recipientId.id),
                     )
                 }
         } else {

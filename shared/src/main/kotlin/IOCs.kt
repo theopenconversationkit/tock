@@ -20,12 +20,21 @@ import ai.tock.shared.cache.TockCache
 import ai.tock.shared.cache.mongo.MongoCache
 import ai.tock.shared.security.NoOpTockUserListener
 import ai.tock.shared.security.TockUserListener
+import ai.tock.shared.security.auth.spi.WebSecurityHandler
+import ai.tock.shared.security.auth.spi.WebSecurityMode
 import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
+import ai.tock.shared.vertx.WebSecurityCookiesHandler
+import ai.tock.shared.vertx.WebSecurityPassthroughHandler
 import ai.tock.shared.vertx.vertxExecutor
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.providerOrNull
+import com.github.salomonbrys.kodein.singleton
 import com.mongodb.client.MongoClient
 import mu.KotlinLogging
 
@@ -45,14 +54,16 @@ val injector: KodeinInjector get() = tockInternalInjector
  * Extension function for Ioc. Pattern:
  * <code>val core: NlpCore get() = injector.provide()</code>
  */
-inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T =
-    injector.provider<T>(tag).value.invoke()
+inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T = injector.provider<T>(tag).value.invoke()
 
 /**
  * Extension function for Ioc. Pattern:
  * <code>val core: NlpCore get() = injector.provideOrDefault() { ... }</code>
  */
-inline fun <reified T : Any> KodeinInjector.provideOrDefault(tag: Any? = null, defaultValueProvider: () -> T): T =
+inline fun <reified T : Any> KodeinInjector.provideOrDefault(
+    tag: Any? = null,
+    defaultValueProvider: () -> T,
+): T =
     try {
         injector.providerOrNull<T>(tag).value?.invoke() ?: defaultValueProvider.invoke()
     } catch (e: KodeinInjector.UninjectedException) {
@@ -62,21 +73,24 @@ inline fun <reified T : Any> KodeinInjector.provideOrDefault(tag: Any? = null, d
 /**
  * IOC of shared module.
  */
-val sharedModule = Kodein.Module {
-    bind<Executor>() with provider { vertxExecutor() }
-    bind<TockCache>() with provider { MongoCache }
-    bind<VertxProvider>() with provider { TockVertxProvider }
-    bind<TockUserListener>() with provider { NoOpTockUserListener }
-    bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+val sharedModule =
+    Kodein.Module {
+        bind<Executor>() with provider { vertxExecutor() }
+        bind<TockCache>() with provider { MongoCache }
+        bind<VertxProvider>() with provider { TockVertxProvider }
+        bind<TockUserListener>() with provider { NoOpTockUserListener }
+        bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+        bind<WebSecurityHandler>(tag = WebSecurityMode.COOKIES.name) with singleton { WebSecurityCookiesHandler() }
+        bind<WebSecurityHandler>(tag = WebSecurityMode.PASSTHROUGH.name) with singleton { WebSecurityPassthroughHandler() }
 
-    try {
-        bind<MongoClient>() with singleton { mongoClient }
-    } catch (e: Exception) {
-        logger.warn { e.message }
+        try {
+            bind<MongoClient>() with singleton { mongoClient }
+        } catch (e: Exception) {
+            logger.warn { e.message }
+        }
+        try {
+            bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton { asyncMongoClient }
+        } catch (e: Exception) {
+            logger.warn { e.message }
+        }
     }
-    try {
-        bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton { asyncMongoClient }
-    } catch (e: Exception) {
-        logger.warn { e.message }
-    }
-}

@@ -19,9 +19,9 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class VideoContent(
-        val caption: String?,
-        val filename: String,
-        val sha256: String,
-        val id: String,
-        @JsonProperty("mime_type") val mimeType: String
+    val caption: String?,
+    val filename: String,
+    val sha256: String,
+    val id: String,
+    @JsonProperty("mime_type") val mimeType: String,
 )

@@ -39,25 +39,25 @@ import java.time.Instant.now
  *
  */
 internal object NlpApplicationConfigurationMongoDAO : NlpApplicationConfigurationDAO {
-
     @JacksonData(internal = true)
     @Data(internal = true)
     data class NlpApplicationConfigurationCol(
         val applicationName: String,
         val engineType: NlpEngineType,
         val configuration: NlpApplicationConfiguration,
-        val date: Instant = now()
+        val date: Instant = now(),
     )
 
-    private val col = database.getCollection<NlpApplicationConfigurationCol>("nlp_application_configuration")
-        .apply {
-            ensureIndex(descending(ApplicationName, EngineType, Date))
-        }
+    private val col =
+        database.getCollection<NlpApplicationConfigurationCol>("nlp_application_configuration")
+            .apply {
+                ensureIndex(descending(ApplicationName, EngineType, Date))
+            }
 
     override fun saveNewConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     ) {
         col.insertOne(NlpApplicationConfigurationCol(applicationName, engineType, configuration))
     }
@@ -65,7 +65,7 @@ internal object NlpApplicationConfigurationMongoDAO : NlpApplicationConfiguratio
     override fun loadLastConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        updated: Instant
+        updated: Instant,
     ): NlpApplicationConfiguration? {
         return col
             .find(ApplicationName eq applicationName, EngineType eq engineType, Date lt updated)

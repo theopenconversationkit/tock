@@ -32,7 +32,6 @@ import kotlin.test.assertEquals
 
  */
 class MessageParserTest {
-
     @Test
     fun parse_shouldWork_forSentenceText() {
         val s = Sentence("ok")
@@ -71,63 +70,74 @@ class MessageParserTest {
 
     @Test
     fun parse_shouldWork_forSentenceWithChoicesAndTextsAndMetaData() {
-        val s = Sentence(
-            null,
-            mutableListOf(
-                GenericMessage(
-                    texts = mapOf("1" to "2", "3" to "4"),
-                    metadata = mapOf("a" to "b", "c" to "d"),
-                    choices = listOf(
-                        Choice("intent1"),
-                        Choice(
-                            "intent2", mapOf("1" to "2", "3" to "4")
-                        )
-                    )
-                )
+        val s =
+            Sentence(
+                null,
+                mutableListOf(
+                    GenericMessage(
+                        texts = mapOf("1" to "2", "3" to "4"),
+                        metadata = mapOf("a" to "b", "c" to "d"),
+                        choices =
+                            listOf(
+                                Choice("intent1"),
+                                Choice(
+                                    "intent2",
+                                    mapOf("1" to "2", "3" to "4"),
+                                ),
+                            ),
+                    ),
+                ),
             )
-        )
         assertEquals(s, MessageParser.parse(s.toPrettyString()).first())
     }
 
     @Test
     fun parse_shouldWork_forSentenceWithChoicesAndTextsAndMetaDataAndSubElements() {
-        val s = Sentence(
-            null,
-            mutableListOf(
-                GenericMessage(
-                    texts = mapOf("1" to "2", "3" to "4"),
-                    metadata = mapOf("a" to "b", "c" to "d"),
-                    choices = listOf(
-                        Choice("intent1"),
-                        Choice(
-                            "intent2", mapOf("1" to "2", "3" to "4")
-                        )
+        val s =
+            Sentence(
+                null,
+                mutableListOf(
+                    GenericMessage(
+                        texts = mapOf("1" to "2", "3" to "4"),
+                        metadata = mapOf("a" to "b", "c" to "d"),
+                        choices =
+                            listOf(
+                                Choice("intent1"),
+                                Choice(
+                                    "intent2",
+                                    mapOf("1" to "2", "3" to "4"),
+                                ),
+                            ),
+                        subElements =
+                            listOf(
+                                GenericElement(
+                                    texts = mapOf("1" to "2", "3" to "4"),
+                                    metadata = mapOf("a" to "b", "c" to "d"),
+                                    choices =
+                                        listOf(
+                                            Choice("intent1"),
+                                            Choice(
+                                                "intent2",
+                                                mapOf("1" to "2", "3" to "4"),
+                                            ),
+                                        ),
+                                ),
+                                GenericElement(
+                                    texts = mapOf("1" to "2", "3" to "4"),
+                                    metadata = mapOf("a" to "b", "c" to "d"),
+                                    choices =
+                                        listOf(
+                                            Choice("intent1"),
+                                            Choice(
+                                                "intent2",
+                                                mapOf("1" to "2", "3" to "4"),
+                                            ),
+                                        ),
+                                ),
+                            ),
                     ),
-                    subElements = listOf(
-                        GenericElement(
-                            texts = mapOf("1" to "2", "3" to "4"),
-                            metadata = mapOf("a" to "b", "c" to "d"),
-                            choices = listOf(
-                                Choice("intent1"),
-                                Choice(
-                                    "intent2", mapOf("1" to "2", "3" to "4")
-                                )
-                            )
-                        ),
-                        GenericElement(
-                            texts = mapOf("1" to "2", "3" to "4"),
-                            metadata = mapOf("a" to "b", "c" to "d"),
-                            choices = listOf(
-                                Choice("intent1"),
-                                Choice(
-                                    "intent2", mapOf("1" to "2", "3" to "4")
-                                )
-                            )
-                        )
-                    )
-                )
+                ),
             )
-        )
         assertEquals(s, MessageParser.parse(s.toPrettyString()).first())
     }
 

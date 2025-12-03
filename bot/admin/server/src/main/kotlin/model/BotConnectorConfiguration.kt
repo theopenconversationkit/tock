@@ -39,7 +39,7 @@ data class BotConnectorConfiguration(
     val path: String? = null,
     val fillMandatoryValues: Boolean = false,
     val _id: Id<BotApplicationConfiguration>? = null,
-    val targetConfigurationId: Id<BotApplicationConfiguration>? = null
+    val targetConfigurationId: Id<BotApplicationConfiguration>? = null,
 ) {
     fun toBotApplicationConfiguration(): BotApplicationConfiguration =
         BotApplicationConfiguration(
@@ -54,6 +54,6 @@ data class BotConnectorConfiguration(
             parameters,
             path?.lowercase(defaultLocale),
             _id ?: newId(),
-            targetConfigurationId
+            targetConfigurationId,
         )
 }

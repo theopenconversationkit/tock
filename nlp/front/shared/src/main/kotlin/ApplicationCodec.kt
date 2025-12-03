@@ -30,11 +30,13 @@ import java.util.Locale
  * To import and export applications, intents, entities and sentences.
  */
 interface ApplicationCodec {
-
     /**
      * Export application dump.
      */
-    fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump
+    fun export(
+        applicationId: Id<ApplicationDefinition>,
+        dumpType: DumpType,
+    ): ApplicationDump
 
     /**
      * Analyse the application dump and present options.
@@ -47,7 +49,7 @@ interface ApplicationCodec {
     fun import(
         namespace: String,
         dump: ApplicationDump,
-        configuration: ApplicationImportConfiguration = ApplicationImportConfiguration()
+        configuration: ApplicationImportConfiguration = ApplicationImportConfiguration(),
     ): ImportReport
 
     /**
@@ -55,7 +57,7 @@ interface ApplicationCodec {
      */
     fun importSentences(
         namespace: String,
-        dump: SentencesDump
+        dump: SentencesDump,
     ): ImportReport
 
     /**
@@ -68,7 +70,7 @@ interface ApplicationCodec {
         applicationId: Id<ApplicationDefinition>,
         dumpType: DumpType,
         intent: String? = null,
-        locale: Locale? = null
+        locale: Locale? = null,
     ): SentencesDump
 
     /**
@@ -76,7 +78,7 @@ interface ApplicationCodec {
      */
     fun exportSentences(
         query: SentencesQuery,
-        dumpType: DumpType
+        dumpType: DumpType,
     ): SentencesDump {
         return exportSentences(listOf(query), dumpType)
     }
@@ -86,6 +88,6 @@ interface ApplicationCodec {
      */
     fun exportSentences(
         queries: List<SentencesQuery>,
-        dumpType: DumpType
+        dumpType: DumpType,
     ): SentencesDump
 }

@@ -23,5 +23,5 @@ import ai.tock.bot.connector.ConnectorCallbackBase
  */
 internal class RocketChatConnectorCallback(
     applicationId: String,
-    val roomId: String
+    val roomId: String,
 ) : ConnectorCallbackBase(applicationId, rocketChatConnectorType)

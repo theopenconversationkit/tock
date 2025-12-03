@@ -40,10 +40,11 @@ import java.util.Collections
  * https://developers.google.com/actions/assistant/updates/notifications
  */
 class GaNotificationClient {
-
     interface GaNotificationApi {
         @POST("./conversations:send")
-        fun push(@Body notification: GAPushNotification): Call<ResponseBody>
+        fun push(
+            @Body notification: GAPushNotification,
+        ): Call<ResponseBody>
     }
 
     private val logger = KotlinLogging.logger {}
@@ -52,18 +53,24 @@ class GaNotificationClient {
     private val baseUrl = property("tock_ga_notification_api_url", "https://actions.googleapis.com")
 
     init {
-        gaNotificationApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_ga_notification_api_timeout", 30000),
-            logger,
-            interceptors = listOf(tokenAuthenticationInterceptor(getAccessToken()))
-        )
-            .baseUrl("$baseUrl/v$version/")
-            .addJacksonConverter()
-            .build()
-            .create()
+        gaNotificationApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_ga_notification_api_timeout", 30000),
+                logger,
+                interceptors = listOf(tokenAuthenticationInterceptor(getAccessToken())),
+            )
+                .baseUrl("$baseUrl/v$version/")
+                .addJacksonConverter()
+                .build()
+                .create()
     }
 
-    fun push(title: String, userId: String, intent: String, locale: String): Boolean {
+    fun push(
+        title: String,
+        userId: String,
+        intent: String,
+        locale: String,
+    ): Boolean {
         return try {
             gaNotificationApi.push(
                 GAPushNotification(
@@ -72,10 +79,10 @@ class GaNotificationClient {
                         GATarget(
                             userId,
                             intent,
-                            locale
-                        )
-                    )
-                )
+                            locale,
+                        ),
+                    ),
+                ),
             ).execute().isSuccessful
         } catch (e: Exception) {
             logger.error(e)
@@ -93,8 +100,8 @@ class GaNotificationClient {
         val serviceAccountCredentials = ServiceAccountCredentials.fromStream(actionsApiServiceAccountFile)
         return serviceAccountCredentials.createScoped(
             Collections.singleton(
-                "https://www.googleapis.com/auth/actions.fulfillment.conversation"
-            )
+                "https://www.googleapis.com/auth/actions.fulfillment.conversation",
+            ),
         ) as ServiceAccountCredentials
     }
 }

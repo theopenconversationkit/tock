@@ -81,9 +81,8 @@ data class ApplicationDefinition(
     /**
      * The id of the app.
      */
-    val _id: Id<ApplicationDefinition> = newId()
+    val _id: Id<ApplicationDefinition> = newId(),
 ) {
-
     /**
      * A qualified name (ie "namespace:name") of the app.
      */

@@ -43,19 +43,20 @@ import kotlin.test.assertEquals
 /**
  *
  */
+@Suppress("ktlint:standard:max-line-length")
 class MessengerBuildersTest {
-
     val bus: BotBus = mockk(relaxed = true)
 
     @BeforeEach
     fun before() {
-        tockInternalInjector = KodeinInjector().apply {
-            inject(
-                Kodein {
-                    import(sharedTestModule)
-                }
-            )
-        }
+        tockInternalInjector =
+            KodeinInjector().apply {
+                inject(
+                    Kodein {
+                        import(sharedTestModule)
+                    },
+                )
+            }
 
         every { bus.targetConnectorType } returns messengerConnectorType
         every { bus.isCompatibleWith(messengerConnectorType) } returns true
@@ -72,20 +73,21 @@ class MessengerBuildersTest {
 
     @Test
     fun `buttonTemplate cut the text when text exceed 640 chars`() {
-        val result = bus.buttonsTemplate(
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
-                "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
-                "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
-                "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
-                "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
-                "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus.",
-            bus.postbackButton("button", Intent("myIntent"))
-        )
+        val result =
+            bus.buttonsTemplate(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                    "Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. " +
+                    "Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum " +
+                    "lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero " +
+                    "ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. " +
+                    "Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc " +
+                    "laoreet orci eu fringilla auctor. Aliquam interdum odio vel metus.",
+                bus.postbackButton("button", Intent("myIntent")),
+            )
 
         assertEquals(
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae augue dignissim, ultrices tortor sed, fringilla neque. Maecenas sit amet efficitur enim. Pellentesque nec dictum tellus. Etiam rhoncus arcu nunc, eget sagittis lacus rutrum ac. Aenean eu ipsum lorem. Vestibulum condimentum, ligula in euismod auctor, felis ante semper erat, ut laoreet est libero ut tellus. Duis sollicitudin justo id est lobortis sollicitudin. Fusce gravida sagittis nibh id tempor. Proin a imperdiet est. In arcu est, imperdiet quis pellentesque vitae, tincidunt sit amet massa. Nunc laoreet orci eu fringilla auctor. Aliquam interdum odio vel me...",
-            (result.attachment.payload as ButtonPayload).text
+            (result.attachment.payload as ButtonPayload).text,
         )
     }
 
@@ -100,12 +102,13 @@ class MessengerBuildersTest {
     fun testImage() {
         assertEquals(
             AttachmentMessage(
-                attachment = Attachment(
-                    type = image,
-                    payload = UrlPayload("http://test", null, true)
-                )
+                attachment =
+                    Attachment(
+                        type = image,
+                        payload = UrlPayload("http://test", null, true),
+                    ),
             ),
-            bus.image("http://test")
+            bus.image("http://test"),
         )
     }
 
@@ -113,12 +116,13 @@ class MessengerBuildersTest {
     fun testVideo() {
         assertEquals(
             AttachmentMessage(
-                attachment = Attachment(
-                    type = video,
-                    payload = UrlPayload("http://test", null, true)
-                )
+                attachment =
+                    Attachment(
+                        type = video,
+                        payload = UrlPayload("http://test", null, true),
+                    ),
             ),
-            bus.video("http://test")
+            bus.video("http://test"),
         )
     }
 
@@ -126,12 +130,13 @@ class MessengerBuildersTest {
     fun testAudio() {
         assertEquals(
             AttachmentMessage(
-                attachment = Attachment(
-                    type = audio,
-                    payload = UrlPayload("http://test", null, true)
-                )
+                attachment =
+                    Attachment(
+                        type = audio,
+                        payload = UrlPayload("http://test", null, true),
+                    ),
             ),
-            bus.audio("http://test")
+            bus.audio("http://test"),
         )
     }
 

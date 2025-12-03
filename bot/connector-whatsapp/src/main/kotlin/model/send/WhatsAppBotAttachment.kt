@@ -23,10 +23,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
  */
 data class WhatsAppBotAttachment(
     var id: String = "",
-    val caption: String? = null
+    val caption: String? = null,
 ) {
     @get:JsonIgnore
     internal var byteImages: ByteArray? = null
+
     @get:JsonIgnore
     internal var contentType: String = "image/png"
 

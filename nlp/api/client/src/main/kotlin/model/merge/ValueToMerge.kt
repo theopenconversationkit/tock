@@ -26,5 +26,5 @@ data class ValueToMerge(
     val content: String? = null,
     val initial: Boolean = false,
     val position: Int? = null,
-    val probability: Double = 1.0
+    val probability: Double = 1.0,
 )

@@ -28,9 +28,8 @@ data class MediaCardDescriptor(
     val subTitle: I18nLabelValue?,
     val file: MediaFileDescriptor?,
     val actions: List<MediaActionDescriptor> = emptyList(),
-    val fillCarousel: Boolean = false
+    val fillCarousel: Boolean = false,
 ) : MediaMessageDescriptor {
-
     override val type: MediaMessageType = card
 
     override fun toMessage(bus: BotBus): MediaCard =
@@ -38,7 +37,7 @@ data class MediaCardDescriptor(
             bus.translate(title).takeUnless { it.isBlank() },
             bus.translate(subTitle).takeUnless { it.isBlank() },
             file?.toMessage(bus),
-            actions.map { it.toMessage(bus) }
+            actions.map { it.toMessage(bus) },
         )
 
     override fun checkValidity(): Boolean = title != null || subTitle != null || file != null

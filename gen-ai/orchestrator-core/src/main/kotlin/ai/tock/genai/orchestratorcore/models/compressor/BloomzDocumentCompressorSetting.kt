@@ -22,7 +22,7 @@ data class BloomzDocumentCompressorSetting(
     val label: String,
     val endpoint: String,
 ) : DocumentCompressorSettingBase(
-    provider = DocumentCompressorProvider.BloomzRerank,
-    maxDocuments = maxDocuments,
-    minScore = minScore
-)
+        provider = DocumentCompressorProvider.BloomzRerank,
+        maxDocuments = maxDocuments,
+        minScore = minScore,
+    )

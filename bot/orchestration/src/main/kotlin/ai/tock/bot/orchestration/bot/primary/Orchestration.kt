@@ -38,7 +38,7 @@ data class Orchestration(
     val targetMetadata: OrchestrationMetaData,
     val targetBot: OrchestrationTargetedBot,
     var status: OrchestrationStatus = OrchestrationStatus.ACTIVE,
-    val history: MutableList<SecondaryBotAction> = mutableListOf()
+    val history: MutableList<SecondaryBotAction> = mutableListOf(),
 ) {
     @get:JsonIgnore
     val locked: Boolean

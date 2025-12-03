@@ -22,7 +22,6 @@ import ai.tock.shared.TOCK_NAMESPACE
  * The non qualified name of the intent.
  */
 data class IntentWithoutNamespace(val name: String) {
-
     fun intent(namespace: String): Intent =
         // TODO for backward compatibility
         Intent(name)
@@ -36,18 +35,19 @@ data class Intent(
     /**
      * The qualified name of the intent.
      */
-    val name: String
+    val name: String,
 ) : IntentAware {
-
     companion object {
         /**
          * The unknown intent.
          */
         val unknown: Intent = Intent("$TOCK_NAMESPACE:unknown")
+
         /**
          * The keyword intent.
          */
         val keyword: Intent = Intent("$TOCK_NAMESPACE:keyword")
+
         /**
          * The RAG excluded subject intent.
          */

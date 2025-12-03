@@ -29,20 +29,21 @@ private const val APPLICATION_SECRET_FIELD = "application_secret"
 private const val SUB_BOT_DESCRIPTION_FIELD = "sub_bot_description"
 
 internal object AlcmeonConnectorProvider : ConnectorProvider {
-
     override val connectorType: ConnectorType get() = alcmeonConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
-            val applicationSecret = parameters[APPLICATION_SECRET_FIELD]
-                ?: error("Alcmeon application secret should be provided")
+            val applicationSecret =
+                parameters[APPLICATION_SECRET_FIELD]
+                    ?: error("Alcmeon application secret should be provided")
 
             return AlcmeonConnector(
                 connectorId = connectorId,
                 path = path,
-                description = parameters[SUB_BOT_DESCRIPTION_FIELD]
-                    ?: error("Alcmeon subbot description should be provided"),
-                authorisationHandler = AlcmeonAuthorisationHandler(applicationSecret)
+                description =
+                    parameters[SUB_BOT_DESCRIPTION_FIELD]
+                        ?: error("Alcmeon subbot description should be provided"),
+                authorisationHandler = AlcmeonAuthorisationHandler(applicationSecret),
             )
         }
     }
@@ -50,11 +51,12 @@ internal object AlcmeonConnectorProvider : ConnectorProvider {
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             connectorType = alcmeonConnectorType,
-            fields = listOf(
-                ConnectorTypeConfigurationField("SubBot description", SUB_BOT_DESCRIPTION_FIELD, true),
-                ConnectorTypeConfigurationField("Application secret ", APPLICATION_SECRET_FIELD, true),
-            ),
-            svgIcon = resourceAsString("/alcmeon.svg")
+            fields =
+                listOf(
+                    ConnectorTypeConfigurationField("SubBot description", SUB_BOT_DESCRIPTION_FIELD, true),
+                    ConnectorTypeConfigurationField("Application secret ", APPLICATION_SECRET_FIELD, true),
+                ),
+            svgIcon = resourceAsString("/alcmeon.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
@@ -63,12 +65,9 @@ internal object AlcmeonConnectorProvider : ConnectorProvider {
 
 internal class AlcmeonConnectorProviderService : ConnectorProvider by AlcmeonConnectorProvider
 
-
 internal const val ALCMEON_CONNECTOR_TYPE_ID = "alcmeon"
 
-val alcmeonConnectorType = ConnectorType(
-    ALCMEON_CONNECTOR_TYPE_ID,
-)
-
-
-
+val alcmeonConnectorType =
+    ConnectorType(
+        ALCMEON_CONNECTOR_TYPE_ID,
+    )

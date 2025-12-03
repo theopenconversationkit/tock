@@ -60,7 +60,7 @@ sealed class TemplateCardComponent {
 }
 
 @JsonTypeName("HEADER")
-data class TemplateCardHeader private constructor(val format: HeaderFormat, val example: Map<String, List<String>>): TemplateCardComponent() {
+data class TemplateCardHeader private constructor(val format: HeaderFormat, val example: Map<String, List<String>>) : TemplateCardComponent() {
     constructor(format: HeaderFormat, imageHandle: MetaUploadHandle) : this(format, mapOf("header_handle" to listOf(imageHandle.value)))
 
     override fun looselyEquals(other: TemplateCardComponent): Boolean {
@@ -70,12 +70,16 @@ data class TemplateCardHeader private constructor(val format: HeaderFormat, val 
 
     companion object {
         fun image(handle: MetaUploadHandle) = TemplateCardHeader(HeaderFormat.IMAGE, handle)
+
         fun video(handle: MetaUploadHandle) = TemplateCardHeader(HeaderFormat.VIDEO, handle)
     }
 }
 
-enum class HeaderFormat(@JsonValue val id: String) {
-    IMAGE("IMAGE"), VIDEO("VIDEO"),
+enum class HeaderFormat(
+    @JsonValue val id: String,
+) {
+    IMAGE("IMAGE"),
+    VIDEO("VIDEO"),
 }
 
 @JsonTypeName("BODY")
@@ -96,7 +100,7 @@ data class TemplateCardBody(
      *
      * If message body text uses a single variable, body_text value can be a string, otherwise it must be an array containing an array of strings.
      */
-    val example: BodyExample?
+    val example: BodyExample?,
 ) : TemplateCardComponent() {
     constructor(text: String) : this(text, null)
     constructor(text: String, vararg textVariableExamples: String) : this(text, BodyExample(*textVariableExamples))

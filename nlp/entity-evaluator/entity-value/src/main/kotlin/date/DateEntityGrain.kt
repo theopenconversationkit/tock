@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.entity.date
 
-import java.lang.Exception
 import java.time.DayOfWeek
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -30,8 +29,8 @@ import java.time.temporal.TemporalAdjusters
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class DateEntityGrain(val time: Boolean) {
-
     // the order is important (duckling parsing)
     timezone(false),
     unknown(false),
@@ -43,10 +42,10 @@ enum class DateEntityGrain(val time: Boolean) {
     week(false),
     month(false),
     quarter(false),
-    year(false);
+    year(false),
+    ;
 
     companion object {
-
         fun from(s: String?): DateEntityGrain {
             try {
                 return if (s == null) unknown else valueOf(s)
@@ -55,7 +54,10 @@ enum class DateEntityGrain(val time: Boolean) {
             }
         }
 
-        fun maxGrain(start: ZonedDateTime, end: ZonedDateTime): DateEntityGrain {
+        fun maxGrain(
+            start: ZonedDateTime,
+            end: ZonedDateTime,
+        ): DateEntityGrain {
             return if (start.plusSeconds(1) >= end) {
                 second
             } else if (start.truncatedTo(MINUTES).plusMinutes(1) >= end.truncatedTo(MINUTES)) {
@@ -94,7 +96,10 @@ enum class DateEntityGrain(val time: Boolean) {
         }
     }
 
-    fun calculateInclusiveEnd(start: ZonedDateTime, zoneId: ZoneId): ZonedDateTime {
+    fun calculateInclusiveEnd(
+        start: ZonedDateTime,
+        zoneId: ZoneId,
+    ): ZonedDateTime {
         val s = calculateEnd(start, zoneId)
         return when (this) {
             second -> truncate(s.minusSeconds(1))
@@ -109,7 +114,10 @@ enum class DateEntityGrain(val time: Boolean) {
         }
     }
 
-    fun calculateEnd(start: ZonedDateTime, zoneId: ZoneId): ZonedDateTime {
+    fun calculateEnd(
+        start: ZonedDateTime,
+        zoneId: ZoneId,
+    ): ZonedDateTime {
         val s = start.withZoneSameInstant(zoneId)
         return when (this) {
             second -> truncate(s.plusSeconds(1))

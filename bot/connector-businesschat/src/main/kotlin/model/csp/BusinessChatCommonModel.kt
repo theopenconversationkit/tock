@@ -31,5 +31,5 @@ open class BusinessChatCommonModel(
     val intent: String? = null,
     val group: String? = null,
     val sourceId: String,
-    val destinationId: String
+    val destinationId: String,
 )

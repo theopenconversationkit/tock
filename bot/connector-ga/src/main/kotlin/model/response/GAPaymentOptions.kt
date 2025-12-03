@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 data class GAPaymentOptions(
     val googleProvidedOptions: GAGoogleProvidedPaymentOptions? = null,
-    val actionProvidedOptions: GAActionProvidedPaymentOptions? = null
+    val actionProvidedOptions: GAActionProvidedPaymentOptions? = null,
 )

@@ -33,9 +33,8 @@ import java.util.Locale
 data class SentenceConfiguration(
     val text: I18nLabelValue?,
     val messages: MutableList<SentenceElementConfiguration> = mutableListOf(),
-    override val delay: Long = 0
+    override val delay: Long = 0,
 ) : MessageConfiguration {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -47,7 +46,7 @@ data class SentenceConfiguration(
         applicationId: String,
         recipientId: PlayerId,
         locale: Locale,
-        userInterfaceType: UserInterfaceType
+        userInterfaceType: UserInterfaceType,
     ): Action {
         return SendSentence(
             playerId,
@@ -61,7 +60,7 @@ data class SentenceConfiguration(
                     logger.error(e)
                     null
                 }
-            }.toMutableList()
+            }.toMutableList(),
         )
     }
 }

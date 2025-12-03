@@ -24,9 +24,9 @@ import org.apache.commons.csv.CSVPrinter
  * Csv utilities.
  */
 object CsvCodec {
-
     private val s = property("tock_csv_delimiter", ";")
 
     fun csvFormat(): CSVFormat = CSVFormat.DEFAULT.withDelimiter(s[0]).withTrim(true)
+
     fun newPrinter(sb: StringBuilder): CSVPrinter = CSVPrinter(sb, csvFormat())
 }

@@ -23,8 +23,7 @@ import java.util.Enumeration
 /**
  * Return a map with only not null values.
  */
-fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> =
-    mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
+fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
 
 /**
  * Map not null values of the [Pair] results of the specified transformation.
@@ -45,24 +44,26 @@ fun <T> Enumeration<T>.toSet(): Set<T> = Collections.list(this).toSet()
 /**
  * Extract a [List] from an [Iterator].
  */
-fun <T> Iterator<T>.toList(): List<T> = mutableListOf<T>().apply {
-    while (hasNext()) {
-        add(next())
+fun <T> Iterator<T>.toList(): List<T> =
+    mutableListOf<T>().apply {
+        while (hasNext()) {
+            add(next())
+        }
     }
-}
 
 /**
  * Extract safely a [List] from an [Iterator] - if an [Iterator.next()) call throws an error, ignore this call.
  */
-fun <T> Iterator<T>.toSafeList(): List<T> = mutableListOf<T>().apply {
-    while (hasNext()) {
-        try {
-            add(next())
-        } catch (throwable: Throwable) {
-            KotlinLogging.logger {}.error(throwable)
+fun <T> Iterator<T>.toSafeList(): List<T> =
+    mutableListOf<T>().apply {
+        while (hasNext()) {
+            try {
+                add(next())
+            } catch (throwable: Throwable) {
+                KotlinLogging.logger {}.error(throwable)
+            }
         }
     }
-}
 
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the collection.

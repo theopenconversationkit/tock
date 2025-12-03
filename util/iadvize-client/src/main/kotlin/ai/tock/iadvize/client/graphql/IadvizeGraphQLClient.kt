@@ -16,12 +16,16 @@
 
 package ai.tock.iadvize.client.graphql
 
-import ai.tock.iadvize.client.*
+import ai.tock.iadvize.client.APPLICATION_JSON
+import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.authentication.IadvizeAuthenticationClient
+import ai.tock.iadvize.client.createSecuredApi
+import ai.tock.iadvize.client.graphQlDataNotFoundError
+import ai.tock.iadvize.client.graphQlNotSuccessResponseError
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataRequest
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleRequest
-import ai.tock.iadvize.client.graphql.models.sendproactivemessage.*
+import ai.tock.iadvize.client.graphql.models.sendproactivemessage.SendProactiveActionOrMessageRequest
 import com.expediagroup.graphql.client.serializer.defaultGraphQLSerializer
 import com.expediagroup.graphql.client.types.GraphQLClientRequest
 import mu.KotlinLogging
@@ -34,7 +38,6 @@ import retrofit2.Call
  * GraphQL client for iAdvize.
  */
 class IadvizeGraphQLClient {
-
     companion object {
         val logger = KotlinLogging.logger { }
     }
@@ -46,28 +49,32 @@ class IadvizeGraphQLClient {
      * Check if a rule is available for distribution
      * @param distributionRule the distribution rule identifier
      */
-    fun isAvailable(distributionRule: String): Boolean = execute(
-        RoutingRuleRequest(RoutingRuleRequest.Variables(distributionRule)),
-        { checkAvailability(it) },
-        { it.routingRule?.availability?.chat?.isAvailable }
-    )
-
+    fun isAvailable(distributionRule: String): Boolean =
+        execute(
+            RoutingRuleRequest(RoutingRuleRequest.Variables(distributionRule)),
+            { checkAvailability(it) },
+            { it.routingRule?.availability?.chat?.isAvailable },
+        )
 
     /**
      * Check if a custom data (key/value) exist for a given conversation
      * @param conversationId the conversation identifier
      * @param customData the looked for custom data key/value pair
      */
-    fun isCustomDataExist(conversationId: String, customData: Pair<String, String>): Boolean = this.execute(
-        CustomDataRequest(CustomDataRequest.Variables(conversationId)),
-        { getCustomData(it) },
-        {
-            it.visitorConversationCustomData?.customData
-                ?.find { data -> data.key == customData.first }
-                ?.value == customData.second
-        },
-        false
-    )
+    fun isCustomDataExist(
+        conversationId: String,
+        customData: Pair<String, String>,
+    ): Boolean =
+        this.execute(
+            CustomDataRequest(CustomDataRequest.Variables(conversationId)),
+            { getCustomData(it) },
+            {
+                it.visitorConversationCustomData?.customData
+                    ?.find { data -> data.key == customData.first }
+                    ?.value == customData.second
+            },
+            false,
+        )
 
     /**
      * Proactively send actions or messages to the visitor
@@ -77,14 +84,19 @@ class IadvizeGraphQLClient {
      * @param chatBotId the id of your external bot at iAdvize in integer format
      * @param actionOrMessage the action or message to send
      */
-    fun sendProactiveActionOrMessage(conversationId: String, chatBotId: Int, actionOrMessage: ChatbotActionOrMessageInput): Boolean = this.execute(
-        SendProactiveActionOrMessageRequest(SendProactiveActionOrMessageRequest.Variables(conversationId, chatBotId, actionOrMessage)),
-        { sendProactiveMessage(it) },
-        {
-            it.userErrors == null
-        },
-        false
-    )
+    fun sendProactiveActionOrMessage(
+        conversationId: String,
+        chatBotId: Int,
+        actionOrMessage: ChatbotActionOrMessageInput,
+    ): Boolean =
+        this.execute(
+            SendProactiveActionOrMessageRequest(SendProactiveActionOrMessageRequest.Variables(conversationId, chatBotId, actionOrMessage)),
+            { sendProactiveMessage(it) },
+            {
+                it.userErrors == null
+            },
+            false,
+        )
 
     /**
      * Execute a GraphQL request.
@@ -98,33 +110,32 @@ class IadvizeGraphQLClient {
         request: GraphQLClientRequest<T>,
         apiCall: IadvizeApi.(RequestBody) -> Call<GraphQLResponse<T>>,
         responseMapper: (T) -> R?,
-        defaultResult: R? = null
-    ): R = serializeRequest(request)
-        .let { iadvizeApi.apiCall(it) }
-        .execute()
-        .let {
-            with(it.body()) body@{
-                when (this@body) {
-                    null -> graphQlDataNotFoundError()
-                    else -> {
-                        if (this@body.hasErrors()) {
-                            graphQlNotSuccessResponseError(
-                                errors?.joinToString(",\n ") { err -> err.toString() },
-                                it.code()
-                            )
-                        } else {
-                            (responseMapper(this@body.data) ?: defaultResult) ?: graphQlDataNotFoundError()
+        defaultResult: R? = null,
+    ): R =
+        serializeRequest(request)
+            .let { iadvizeApi.apiCall(it) }
+            .execute()
+            .let {
+                with(it.body()) body@{
+                    when (this@body) {
+                        null -> graphQlDataNotFoundError()
+                        else -> {
+                            if (this@body.hasErrors()) {
+                                graphQlNotSuccessResponseError(
+                                    errors?.joinToString(",\n ") { err -> err.toString() },
+                                    it.code(),
+                                )
+                            } else {
+                                (responseMapper(this@body.data) ?: defaultResult) ?: graphQlDataNotFoundError()
+                            }
                         }
                     }
                 }
             }
-        }
 
     /**
      * Serialize a [GraphQLClientRequest] using the defaultGraphQLSerializer
      * provided by the [com.expediagroup.graphql.client] library.
      */
-    private fun serializeRequest(request: GraphQLClientRequest<*>) =
-        defaultGraphQLSerializer().serialize(request).toRequestBody(APPLICATION_JSON.toMediaTypeOrNull())
-
+    private fun serializeRequest(request: GraphQLClientRequest<*>) = defaultGraphQLSerializer().serialize(request).toRequestBody(APPLICATION_JSON.toMediaTypeOrNull())
 }

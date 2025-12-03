@@ -28,5 +28,5 @@ import org.litote.kmongo.newId
 @JacksonData(internal = true)
 internal data class ClientIdCol(
     val userIds: Set<String>,
-    val _id: Id<ClientIdCol> = newId()
+    val _id: Id<ClientIdCol> = newId(),
 )

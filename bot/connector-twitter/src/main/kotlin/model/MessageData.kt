@@ -25,12 +25,12 @@ data class MessageData(
     val ctas: List<CTA>? = null,
     val attachment: Attachment? = null,
     @JsonProperty("quick_reply") val quickReply: QuickReply? = null,
-    @JsonProperty("quick_reply_response") val quickReplyResponse: QuickReplyResponse? = null
+    @JsonProperty("quick_reply_response") val quickReplyResponse: QuickReplyResponse? = null,
 ) {
     fun toGenericMessage(): GenericMessage {
         return GenericMessage(
             texts = mapOf("text" to text),
-            choices = (quickReply?.toChoices() ?: emptyList()) + (ctas?.map { it.toChoice() } ?: emptyList())
+            choices = (quickReply?.toChoices() ?: emptyList()) + (ctas?.map { it.toChoice() } ?: emptyList()),
         )
     }
 }

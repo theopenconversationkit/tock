@@ -22,7 +22,6 @@ import org.litote.kmongo.Id
  * Manage [StoryDefinitionConfiguration] persistence.
  */
 interface StoryDefinitionConfigurationDAO {
-
     /**
      * Listen changes on story definitions.
      */
@@ -30,39 +29,53 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration?
 
-    fun getRuntimeStorySettings(namespace: String, botId: String): List<StoryDefinitionConfiguration>
+    fun getRuntimeStorySettings(
+        namespace: String,
+        botId: String,
+    ): List<StoryDefinitionConfiguration>
 
     fun getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
-        intent: String
+        intent: String,
     ): StoryDefinitionConfiguration?
 
     fun getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
-        intentNames: List<String>
+        intentNames: List<String>,
     ): List<StoryDefinitionConfiguration>
 
     fun getStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
-        intent: String
+        intent: String,
     ): StoryDefinitionConfiguration?
 
     fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(
         namespace: String,
         botId: String,
-        storyId: String
+        storyId: String,
     ): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
-    fun getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(namespace: String, botId: String): List<StoryDefinitionConfiguration>
+    fun getStoryDefinitionsByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): List<StoryDefinitionConfiguration>
+
+    fun getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(
+        namespace: String,
+        botId: String,
+    ): List<StoryDefinitionConfiguration>
+
     fun save(story: StoryDefinitionConfiguration)
 
     fun delete(story: StoryDefinitionConfiguration)
 
-    fun deleteByNamespaceAndBotId(namespace: String, botId: String)
+    fun deleteByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    )
 
     /**
      * Search [StoryDefinitionConfigurationSummaryMinimumMetrics] implementations

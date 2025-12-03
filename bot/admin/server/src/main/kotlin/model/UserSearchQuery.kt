@@ -31,9 +31,8 @@ data class UserSearchQuery(
     val from: ZonedDateTime?,
     val to: ZonedDateTime?,
     val flags: Set<String> = emptySet(),
-    val displayTests: Boolean = false
+    val displayTests: Boolean = false,
 ) : PaginatedQuery() {
-
     fun toUserReportQuery(): UserReportQuery {
         return UserReportQuery(
             namespace,
@@ -45,7 +44,7 @@ data class UserSearchQuery(
             from,
             to,
             flags.map { it to null }.toMap(),
-            displayTests
+            displayTests,
         )
     }
 
@@ -55,7 +54,7 @@ data class UserSearchQuery(
             applicationName,
             currentLanguage,
             LocalDateTime.of(from?.toLocalDate(), LocalTime.MIDNIGHT),
-            LocalDateTime.of(to?.toLocalDate(), LocalTime.MAX)
+            LocalDateTime.of(to?.toLocalDate(), LocalTime.MAX),
         )
     }
 }

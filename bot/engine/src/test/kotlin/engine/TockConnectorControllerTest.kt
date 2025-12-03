@@ -16,7 +16,11 @@
 
 package ai.tock.bot.engine
 
-import io.mockk.*
+import io.mockk.every
+import io.mockk.invoke
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import org.junit.jupiter.api.Test
@@ -25,7 +29,6 @@ import org.junit.jupiter.api.Test
  *
  */
 class TockConnectorControllerTest {
-
     @Test
     fun `test registerService install healthcheck`() {
         val botVerticle: BotVerticle = mockk()

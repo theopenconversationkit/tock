@@ -23,5 +23,5 @@ data class MediaUpload(
     @JsonProperty("media_id_string") val mediaIdString: String,
     val size: Long?,
     @JsonProperty("expires_after_secs") val expiresAfterSecs: Long,
-    val media: Media?
+    val media: Media?,
 )

@@ -78,21 +78,21 @@ import kotlin.concurrent.thread
 import kotlin.reflect.KProperty
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
-
     private val logger = KotlinLogging.logger {}
 
     internal val col: MongoCollection<FaqDefinition> by lazy {
 
-        val c = MongoFrontConfiguration.database.getCollection<FaqDefinition>().apply {
-            ensureUniqueIndex(
-                FaqDefinition::intentId,
-                FaqDefinition::i18nId,
-                FaqDefinition::tags,
-                FaqDefinition::updateDate
-            )
-            ensureIndex(FaqDefinition::intentId, FaqDefinition::i18nId, FaqDefinition::botId)
-            ensureIndex(FaqDefinition::intentId, FaqDefinition::creationDate, FaqDefinition::botId)
-        }
+        val c =
+            MongoFrontConfiguration.database.getCollection<FaqDefinition>().apply {
+                ensureUniqueIndex(
+                    FaqDefinition::intentId,
+                    FaqDefinition::i18nId,
+                    FaqDefinition::tags,
+                    FaqDefinition::updateDate,
+                )
+                ensureIndex(FaqDefinition::intentId, FaqDefinition::i18nId, FaqDefinition::botId)
+                ensureIndex(FaqDefinition::intentId, FaqDefinition::creationDate, FaqDefinition::botId)
+            }
         c
     }
 
@@ -108,7 +108,10 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         col.deleteOneById(id)
     }
 
-    override fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String) {
+    override fun deleteFaqDefinitionByBotIdAndNamespace(
+        id: String,
+        namespace: String,
+    ) {
         col.deleteMany(and(FaqDefinition::botId eq id, FaqDefinition::namespace eq namespace))
     }
 
@@ -116,12 +119,15 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         return col.findOneById(id)
     }
 
-    override fun getFaqDefinitionByBotIdAndNamespace(botId: String, namespace: String): List<FaqDefinition> {
+    override fun getFaqDefinitionByBotIdAndNamespace(
+        botId: String,
+        namespace: String,
+    ): List<FaqDefinition> {
         return col.find(
             and(
                 FaqDefinition::botId eq botId,
-                FaqDefinition::namespace eq namespace
-            )
+                FaqDefinition::namespace eq namespace,
+            ),
         ).into(ArrayList())
     }
 
@@ -145,11 +151,15 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         return col.find(FaqDefinition::i18nId `in` ids).into(ArrayList())
     }
 
-    override fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId: Id<IntentDefinition>, botId: String, namespace: String): FaqDefinition? {
+    override fun getFaqDefinitionByIntentIdAndBotIdAndNamespace(
+        intentId: Id<IntentDefinition>,
+        botId: String,
+        namespace: String,
+    ): FaqDefinition? {
         return col.findOne(
             FaqDefinition::intentId eq intentId,
             FaqDefinition::namespace eq namespace,
-            FaqDefinition::botId eq botId
+            FaqDefinition::botId eq botId,
         )
     }
 
@@ -161,29 +171,30 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqDefinition::i18nId eq faqDefinition.i18nId,
             ),
             faqDefinition,
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
     override fun getFaqDetailsWithCount(
         query: FaqQuery,
         applicationDefinition: ApplicationDefinition,
-        i18nIds: List<Id<I18nLabel>>?
+        i18nIds: List<Id<I18nLabel>>?,
     ): Pair<List<FaqQueryResult>, Long> {
         with(query) {
-            //prepare aggregation without skip and limit to know the total number of faq available
-            val baseAggregation = if (isDocumentDB()) {
-                prepareFaqDetailBaseAggregationDocumentDb(query, applicationDefinition, i18nIds)
-            } else {
-                prepareFaqDetailBaseAggregation(query, applicationDefinition, i18nIds)
-            }
+            // prepare aggregation without skip and limit to know the total number of faq available
+            val baseAggregation =
+                if (isDocumentDB()) {
+                    prepareFaqDetailBaseAggregationDocumentDb(query, applicationDefinition, i18nIds)
+                } else {
+                    prepareFaqDetailBaseAggregation(query, applicationDefinition, i18nIds)
+                }
 
             logger.debug { baseAggregation.map { it.json } }
-            //counting total
+            // counting total
             val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
             logger.debug { "count : $count" }
 
-            //add skip and limit on the baseAggregation
+            // add skip and limit on the baseAggregation
             var aggregationWithSkipAndLimit =
                 if (start.toInt() > 0) baseAggregation.plusElement(skip(start.toInt())) else baseAggregation
             aggregationWithSkipAndLimit = aggregationWithSkipAndLimit.plusElement(limit(size))
@@ -192,7 +203,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 val res = col.aggregate(aggregationWithSkipAndLimit, FaqQueryResult::class.java)
                 Pair(
                     res.mapNotNull { it },
-                    count.toLong()
+                    count.toLong(),
                 )
             } else {
                 Pair(emptyList(), 0)
@@ -206,13 +217,16 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
      * @param namespace: the namespace
      * @return a string list of tags
      */
-    override fun getTags(botId: String, namespace: String): List<String> {
+    override fun getTags(
+        botId: String,
+        namespace: String,
+    ): List<String> {
         return col.aggregate<FaqDefinitionTag>(
             joinOnIntentDefinition(),
             match(
                 andNotNull(
-                    filterOnNamespaceAndBotId(botId, namespace)
-                )
+                    filterOnNamespaceAndBotId(botId, namespace),
+                ),
             ),
             // unwind : to flat tags array into an object
             FaqDefinition::tags.unwind(),
@@ -226,7 +240,6 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
      * @see FaqDefinitionDAO.makeMigration
      */
     override fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?) {
-
         // Faq projection represents the old structure of FaqDefinition
         // May 2023
         data class FaqProjection(
@@ -244,16 +257,14 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             match(
                 FaqDefinition::namespace exists false,
                 // to ensure old faq migration if not done (see Tock version 23.3.0)
-                FaqDefinition::botId exists true
-            )
+                FaqDefinition::botId exists true,
+            ),
         ).forEach { projection ->
             thread(true) {
-
                 with(projection) {
-
-
-                    val namespace = intentIdSupplier.invoke(intentId)
-                        ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
+                    val namespace =
+                        intentIdSupplier.invoke(intentId)
+                            ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
 
                     logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
 
@@ -266,7 +277,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                         tags,
                         enabled,
                         creationDate,
-                        updateDate
+                        updateDate,
                     )
                 }.let { faq -> col.save(faq) }
             }
@@ -277,7 +288,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val INTENT_DEFINITION_COLLECTION = "intent_definition"
 
-    //create a variable for let parameter in lookup in order to join two collection
+    // create a variable for let parameter in lookup in order to join two collection
     private const val FAQ_INTENTID = "faq_intentId"
 
     /**
@@ -289,7 +300,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     private fun prepareFaqDetailBaseAggregation(
         query: FaqQuery,
         applicationDefinition: ApplicationDefinition,
-        i18nIds: List<Id<I18nLabel>>?
+        i18nIds: List<Id<I18nLabel>>?,
     ): ArrayList<Bson> {
         with(query) {
             return arrayListOf(
@@ -307,16 +318,16 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                             filterTextSearchOnFaqTitle(),
                             filterTextSearchOnFaqDescription(),
                             filterTextSearchOnClassifiedSentence(),
-                            filterI18nIds(i18nIds)
+                            filterI18nIds(i18nIds),
                         ),
                         andNotNull(
                             filterOnNamespaceAndBotId(applicationDefinition.name, applicationDefinition.namespace),
                             filterTags(),
                             filterEnabled(),
-                        )
-                    )
+                        ),
+                    ),
                 ),
-                sortDescending(FaqQueryResult::creationDate)
+                sortDescending(FaqQueryResult::creationDate),
             )
         }
     }
@@ -331,7 +342,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     private fun prepareFaqDetailBaseAggregationDocumentDb(
         query: FaqQuery,
         applicationDefinition: ApplicationDefinition,
-        i18nIds: List<Id<I18nLabel>>?
+        i18nIds: List<Id<I18nLabel>>?,
     ): ArrayList<Bson> {
         with(query) {
             return arrayListOf(
@@ -350,39 +361,51 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                             filterTags(),
                             filterEnabled(),
                             filterCurrentApplicationClassifiedSentence(applicationDefinition._id),
-                            filterNotDeletedClassifiedSentencesStatus()
+                            filterNotDeletedClassifiedSentencesStatus(),
                         ),
                         orNotNull(
                             filterTextSearchOnFaqTitle(),
                             filterTextSearchOnFaqDescription(),
                             filterTextSearchOnClassifiedSentence(),
-                            filterI18nIds(i18nIds)
+                            filterI18nIds(i18nIds),
                         ),
-                    )
+                    ),
                 ),
                 groupFaqDefinitionDetailedData(),
-                sortDescending(FaqQueryResult::creationDate)
+                sortDescending(FaqQueryResult::creationDate),
             )
         }
     }
 
     private fun FaqQuery.filterTextSearchOnFaqTitle() =
-        if (search == null) null else (FaqQueryResult::faq / IntentDefinition::label).regex(
-            pattern = search!!,
-            options = "i"
-        )
+        if (search == null) {
+            null
+        } else {
+            (FaqQueryResult::faq / IntentDefinition::label).regex(
+                pattern = search!!,
+                options = "i",
+            )
+        }
 
     private fun FaqQuery.filterTextSearchOnFaqDescription() =
-        if (search == null) null else (FaqQueryResult::faq / IntentDefinition::description).regex(
-            pattern = search!!,
-            options = "i"
-        )
+        if (search == null) {
+            null
+        } else {
+            (FaqQueryResult::faq / IntentDefinition::description).regex(
+                pattern = search!!,
+                options = "i",
+            )
+        }
 
     private fun FaqQuery.filterTextSearchOnClassifiedSentence() =
-        if (search == null) null else (FaqQueryResult::utterances / ClassifiedSentence::text).regex(
-            pattern = search!!,
-            options = "i"
-        )
+        if (search == null) {
+            null
+        } else {
+            (FaqQueryResult::utterances / ClassifiedSentence::text).regex(
+                pattern = search!!,
+                options = "i",
+            )
+        }
 
     private fun FaqQuery.filterCurrentApplicationClassifiedSentence(currentApplicationId: Id<ApplicationDefinition>) =
         FaqQueryResult::utterances / ClassifiedSentence::applicationId eq currentApplicationId
@@ -390,15 +413,14 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      *  add the filter on deleted Classified Sentences if cannot use aggegration pipeline with documentDB
      */
-    private fun FaqQuery.filterNotDeletedClassifiedSentencesStatus() =
-        FaqQueryResult::utterances / ClassifiedSentence::status ne ClassifiedSentenceStatus.deleted
+    private fun FaqQuery.filterNotDeletedClassifiedSentencesStatus() = FaqQueryResult::utterances / ClassifiedSentence::status ne ClassifiedSentenceStatus.deleted
 
     /**
      * Filter on i18nIds
      * @param i18nIds: List<Id<I18nLabel>>?
      */
     private fun FaqQuery.filterI18nIds(i18nIds: List<Id<I18nLabel>>?): Bson? =
-        //i18nIds are optional and can be used if the request has i18nIds
+        // i18nIds are optional and can be used if the request has i18nIds
         if (i18nIds == null) null else FaqQueryResult::i18nId `in` i18nIds
 
     /**
@@ -414,8 +436,10 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * Filter on the botId and the namespace
      */
-    private fun filterOnNamespaceAndBotId(botId: String, namespace: String): Bson =
-        and(FaqDefinition::botId eq botId, FaqDefinition::namespace eq namespace)
+    private fun filterOnNamespaceAndBotId(
+        botId: String,
+        namespace: String,
+    ): Bson = and(FaqDefinition::botId eq botId, FaqDefinition::namespace eq namespace)
 
     /**
      * Group aggregation pipeline to recompose and group data after multiple unwind especially due to utterances unwind
@@ -433,19 +457,20 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqQueryResult::creationDate first FaqQueryResult::creationDate,
                 FaqQueryResult::updateDate first FaqQueryResult::updateDate,
                 FaqQueryResult::utterances first FaqQueryResult::utterances,
-                FaqQueryResult::faq first FaqQueryResult::faq
-            )
+                FaqQueryResult::faq first FaqQueryResult::faq,
+            ),
         )
 
     /**
      * Perform a lookup join from the FaqDefinition.intentId on IntentDefinition._id
      */
-    private fun joinOnIntentDefinition() = lookup(
-        INTENT_DEFINITION_COLLECTION,
-        FaqDefinition::intentId.name,
-        IntentDefinition::_id.name,
-        FaqQueryResult::faq.name
-    )
+    private fun joinOnIntentDefinition() =
+        lookup(
+            INTENT_DEFINITION_COLLECTION,
+            FaqDefinition::intentId.name,
+            IntentDefinition::_id.name,
+            FaqQueryResult::faq.name,
+        )
 
     /**
      * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted sentences
@@ -454,7 +479,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         lookup(
             CLASSIFIED_SENTENCE_COLLECTION,
             FaqDefinition::intentId.name,
-            (ClassifiedSentence::classification / Classification::intentId).name,  //classification.intentId
+            (ClassifiedSentence::classification / Classification::intentId).name,
             FaqQueryResult::utterances.name,
         )
 
@@ -463,35 +488,36 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
      * while ClassifiedSentence::status is 'validated' or 'in model'
      */
     private fun FaqQuery.joinOnClassifiedSentenceStatus(applicationId: Id<ApplicationDefinition>) =
-        //inspired from https://github.com/Litote/kmongo/blob/master/kmongo-core-tests/src/main/kotlin/org/litote/kmongo/AggregateTypedTest.kt#L322
+        // inspired from https://github.com/Litote/kmongo/blob/master/kmongo-core-tests/src/main/kotlin/org/litote/kmongo/AggregateTypedTest.kt#L322
         lookup(
             CLASSIFIED_SENTENCE_COLLECTION,
             // declare a variable FAQ_INTENTID to call it in the pipeline exp below
             listOf(
-                Variable(FAQ_INTENTID, FaqDefinition::intentId)
+                Variable(FAQ_INTENTID, FaqDefinition::intentId),
             ),
             FaqQueryResult::utterances,
             match(
                 expr(
                     and from
-                            listOf(
-                                // join classifiedSentence intentId and FaqDefinition intentId
-                                eq from listOf(
+                        listOf(
+                            // join classifiedSentence intentId and FaqDefinition intentId
+                            eq from
+                                listOf(
                                     ClassifiedSentence::classification / Classification::intentId,
-                                    "\$\$$FAQ_INTENTID"
+                                    "\$\$$FAQ_INTENTID",
                                 ),
-                                // filter on current applicationId
-                                eq from listOf(ClassifiedSentence::applicationId, applicationId),
-                                // filter on classified sentence
-                                `in` from listOf(
+                            // filter on current applicationId
+                            eq from listOf(ClassifiedSentence::applicationId, applicationId),
+                            // filter on classified sentence
+                            `in` from
+                                listOf(
                                     ClassifiedSentence::status,
-                                    listOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model)
-                                )
-                            ),
-                )
-            )
+                                    listOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model),
+                                ),
+                        ),
+                ),
+            ),
         )
-
 
     /**
      * Create group by tag name
@@ -500,26 +526,28 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
      * tags: "tag"
      * }
      */
-    private fun groupByTag(): Bson = group(
-        FaqDefinition::tags,
-        FaqDefinition::tags.first(FaqQueryResult::tags)
-    )
+    private fun groupByTag(): Bson =
+        group(
+            FaqDefinition::tags,
+            FaqDefinition::tags.first(FaqQueryResult::tags),
+        )
 
     /**
      * Exclude the _id
      * Just keep the tag element
      */
-    private fun projectByTag(): Bson = project(
-        excludeId(),
-        document(FaqDefinitionTag::tag from FaqDefinition::tags)
-    )
+    private fun projectByTag(): Bson =
+        project(
+            excludeId(),
+            document(FaqDefinitionTag::tag from FaqDefinition::tags),
+        )
 
     /**
      * Util method to do an union on the not null filter predicates
      */
     private fun orNotNull(vararg predicates: Bson?): Bson {
         return or(
-            predicates.filterNotNull()
+            predicates.filterNotNull(),
         )
     }
 
@@ -528,7 +556,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
      */
     private fun andNotNull(vararg predicates: Bson?): Bson {
         return and(
-            predicates.filterNotNull()
+            predicates.filterNotNull(),
         )
     }
 
@@ -545,5 +573,4 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     private fun sortDescending(vararg properties: KProperty<*>): Bson {
         return sort(descending(properties.asList()))
     }
-
 }

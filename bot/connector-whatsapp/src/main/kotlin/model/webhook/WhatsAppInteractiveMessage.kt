@@ -20,5 +20,5 @@ data class WhatsAppInteractiveMessage(
     val to: String,
     val ttl: String?,
     val type: String?,
-    val template: WhatsAppTemplate
+    val template: WhatsAppTemplate,
 )

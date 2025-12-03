@@ -30,5 +30,5 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class MessengerHandler(
-    val value: KClass<out ConnectorSpecificHandling>
+    val value: KClass<out ConnectorSpecificHandling>,
 )

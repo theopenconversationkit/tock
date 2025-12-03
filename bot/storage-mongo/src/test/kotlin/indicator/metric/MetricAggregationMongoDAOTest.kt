@@ -17,9 +17,9 @@
 package ai.tock.bot.mongo.indicator.metric
 
 import ai.tock.bot.admin.indicators.metric.CustomMetric
+import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricFilter
 import ai.tock.bot.admin.indicators.metric.MetricGroupBy
-import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerId
@@ -39,7 +39,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class MetricAggregationMongoDAOTest : AbstractTest() {
-
     private val namespace1 = "namespace1"
     private val applicationId1 = "app1"
     private val botId1 = "botId1"
@@ -59,227 +58,240 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
     private var creationDate = Instant.now().truncatedTo(ChronoUnit.MILLIS)
 
     private val dialogId = "dialogId1".toId<Dialog>()
-    private val playerIds = setOf(
-        PlayerId(id = "playerId1", PlayerType.user),
-        PlayerId(id = "playerId2", PlayerType.bot),
-    )
-
-    private val metrics = listOf(
-        // --------------------CASE 01--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_REPLIED,
-            indicatorName = indicatorName1,
-            indicatorValueName = indicatorValue1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 02--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_REPLIED,
-            indicatorName = indicatorName1,
-            indicatorValueName = indicatorValue1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 03--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_REPLIED,
-            indicatorName = indicatorName1,
-            indicatorValueName = indicatorValue2,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 04--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId3,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName2,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId3,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_REPLIED,
-            indicatorName = indicatorName2,
-            indicatorValueName = indicatorValue1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId3,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 05--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ), Metric(
-            type = MetricType.QUESTION_ASKED,
-            indicatorName = indicatorName1,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 06--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId1,
-            emitterStoryId = storyId2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = next(),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 07--------------------------
-        Metric(
-            type = MetricType.STORY_HANDLED,
-            trackedStoryId = storyId10,
-            emitterStoryId = storyId20,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = Instant.now().minus(5, ChronoUnit.DAYS),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
-        ),
-        // --------------------CASE 08--------------------------
-        Metric(
-            type = MetricType.QUESTION_REPLIED,
-            trackedStoryId = storyId30,
-            emitterStoryId = storyId40,
-            indicatorName = indicatorName1,
-            indicatorValueName = indicatorValue2,
-            playerIds = playerIds,
-            dialogId = dialogId,
-            creationDate = Instant.now().plus(5, ChronoUnit.DAYS),
-            botId = botId1,
-            namespace = namespace1,
-            applicationId = applicationId1
+    private val playerIds =
+        setOf(
+            PlayerId(id = "playerId1", PlayerType.user),
+            PlayerId(id = "playerId2", PlayerType.bot),
         )
-    )
+
+    private val metrics =
+        listOf(
+            // --------------------CASE 01--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_REPLIED,
+                indicatorName = indicatorName1,
+                indicatorValueName = indicatorValue1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 02--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_REPLIED,
+                indicatorName = indicatorName1,
+                indicatorValueName = indicatorValue1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 03--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_REPLIED,
+                indicatorName = indicatorName1,
+                indicatorValueName = indicatorValue2,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 04--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId3,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName2,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId3,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_REPLIED,
+                indicatorName = indicatorName2,
+                indicatorValueName = indicatorValue1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId3,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 05--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            Metric(
+                type = MetricType.QUESTION_ASKED,
+                indicatorName = indicatorName1,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 06--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId1,
+                emitterStoryId = storyId2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = next(),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 07--------------------------
+            Metric(
+                type = MetricType.STORY_HANDLED,
+                trackedStoryId = storyId10,
+                emitterStoryId = storyId20,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = Instant.now().minus(5, ChronoUnit.DAYS),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+            // --------------------CASE 08--------------------------
+            Metric(
+                type = MetricType.QUESTION_REPLIED,
+                trackedStoryId = storyId30,
+                emitterStoryId = storyId40,
+                indicatorName = indicatorName1,
+                indicatorValueName = indicatorValue2,
+                playerIds = playerIds,
+                dialogId = dialogId,
+                creationDate = Instant.now().plus(5, ChronoUnit.DAYS),
+                botId = botId1,
+                namespace = namespace1,
+                applicationId = applicationId1,
+            ),
+        )
 
     private fun next() = creationDate.plusMillis(100).also { creationDate = it }
+
     private fun initDb(metrics: List<Metric> = emptyList()) = metrics.forEach(MetricMongoDAO::save)
 
     @BeforeEach
@@ -334,19 +346,23 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(
-            namespace1,
-            botId1,
-            listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED),
-            indicatorValueNames = listOf(indicatorValue1)
-        )
+        val filter =
+            MetricFilter(
+                namespace1,
+                botId1,
+                listOf(MetricType.QUESTION_ASKED, MetricType.QUESTION_REPLIED),
+                indicatorValueNames = listOf(indicatorValue1),
+            )
         val groupBy = emptyList<MetricGroupBy>()
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
         // THEN
-        val predicates = listOf({ m: Metric -> m.botId == botId1 },
-            { m: Metric -> filter.types?.contains(m.type) == true },
-            { m: Metric -> filter.indicatorValueNames?.contains(m.indicatorValueName) == true })
+        val predicates =
+            listOf(
+                { m: Metric -> m.botId == botId1 },
+                { m: Metric -> filter.types?.contains(m.type) == true },
+                { m: Metric -> filter.indicatorValueNames?.contains(m.indicatorValueName) == true },
+            )
         assertEquals(metrics.count { m -> predicates.all { it(m) } }, result.count())
         assertTrue(result.all { it.count == 1 })
         assertGroupByAttribute(groupBy, result)
@@ -394,10 +410,13 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         initDb(metrics)
 
         // WHEN
-        val filter = MetricFilter(namespace1, botId1,
-            creationDateSince = creationDate.minus(2, ChronoUnit.DAYS),
-            creationDateUntil = creationDate.plus(1, ChronoUnit.DAYS)
-        )
+        val filter =
+            MetricFilter(
+                namespace1,
+                botId1,
+                creationDateSince = creationDate.minus(2, ChronoUnit.DAYS),
+                creationDateUntil = creationDate.plus(1, ChronoUnit.DAYS),
+            )
         val groupBy = listOf(MetricGroupBy.TYPE)
         val result = MetricMongoDAO.filterAndGroupBy(filter, groupBy)
 
@@ -440,9 +459,10 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
         assertFalse { result.any { it.type == MetricType.QUESTION_ASKED && it.trackedStoryId != storyId1 } }
         assertFalse {
             result.any {
-                it.type == MetricType.QUESTION_REPLIED && it.trackedStoryId !in listOf(
-                    storyId1, storyId30
-                )
+                it.type == MetricType.QUESTION_REPLIED && it.trackedStoryId !in
+                    listOf(
+                        storyId1, storyId30,
+                    )
             }
         }
         assertEquals(6, result.filter { it.type == MetricType.QUESTION_ASKED }.sumByLong { it.count.toLong() })
@@ -456,18 +476,22 @@ class MetricAggregationMongoDAOTest : AbstractTest() {
     /**
      * Utility function that checks for the presence of data based on "group by" attributes
      */
-    private fun assertGroupByAttribute(groupBy: List<MetricGroupBy>, result: List<CustomMetric>) {
-        val predicates = with(groupBy) {
-            listOfNotNull(if (!isEmpty()) { cm: CustomMetric -> cm.id == null } else { cm: CustomMetric -> cm.id != null },
-                if (!contains(MetricGroupBy.TYPE)) { cm: CustomMetric -> cm.type == null } else { cm: CustomMetric -> cm.type != null },
-                if (!contains(MetricGroupBy.EMITTER_STORY_ID)) { cm: CustomMetric -> cm.emitterStoryId == null } else { cm: CustomMetric -> cm.emitterStoryId != null },
-                if (!contains(MetricGroupBy.TRACKED_STORY_ID)) { cm: CustomMetric -> cm.trackedStoryId == null } else { cm: CustomMetric -> cm.trackedStoryId != null },
-                if (!contains(MetricGroupBy.INDICATOR_NAME)) { cm: CustomMetric -> cm.indicatorName == null } else null,
-                if (!contains(MetricGroupBy.INDICATOR_VALUE_NAME)) { cm: CustomMetric -> cm.indicatorValueName == null } else null)
-        }
+    private fun assertGroupByAttribute(
+        groupBy: List<MetricGroupBy>,
+        result: List<CustomMetric>,
+    ) {
+        val predicates =
+            with(groupBy) {
+                listOfNotNull(
+                    if (!isEmpty()) { cm: CustomMetric -> cm.id == null } else { cm: CustomMetric -> cm.id != null },
+                    if (!contains(MetricGroupBy.TYPE)) { cm: CustomMetric -> cm.type == null } else { cm: CustomMetric -> cm.type != null },
+                    if (!contains(MetricGroupBy.EMITTER_STORY_ID)) { cm: CustomMetric -> cm.emitterStoryId == null } else { cm: CustomMetric -> cm.emitterStoryId != null },
+                    if (!contains(MetricGroupBy.TRACKED_STORY_ID)) { cm: CustomMetric -> cm.trackedStoryId == null } else { cm: CustomMetric -> cm.trackedStoryId != null },
+                    if (!contains(MetricGroupBy.INDICATOR_NAME)) { cm: CustomMetric -> cm.indicatorName == null } else null,
+                    if (!contains(MetricGroupBy.INDICATOR_VALUE_NAME)) { cm: CustomMetric -> cm.indicatorValueName == null } else null,
+                )
+            }
 
         assertTrue(result.all { m -> predicates.all { it(m) } })
     }
 }
-
-

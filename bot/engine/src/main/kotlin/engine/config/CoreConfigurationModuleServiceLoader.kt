@@ -34,45 +34,47 @@ enum class SatisfactionIntent(val id: String) {
     NOTE("satisfaction_note"),
     YES("satisfaction_yes"),
     NO("satisfaction_no"),
-    SATISFACTION(SATISFACTION_MODULE_ID);
+    SATISFACTION(SATISFACTION_MODULE_ID),
+    ;
 
     val intent: IntentWithoutNamespace = IntentWithoutNamespace(id)
 }
 
 private enum class ReviewParameter : ParameterKey { REVIEW_COMMENT_PARAMETER }
 
-private val satisfactionModule = BotConfigurationModule(
+private val satisfactionModule =
+    BotConfigurationModule(
         SATISFACTION_MODULE_ID,
         listOf(
-                BotConfigurationStoryHandlerBase(REVIEW_ASK.id) {
-                    val storyReview = botDefinition.findStoryDefinitionById(SATISFACTION_MODULE_ID, connectorId)
-                    val ratingIndex = storyReview.steps.indexOfFirst {
+            BotConfigurationStoryHandlerBase(REVIEW_ASK.id) {
+                val storyReview = botDefinition.findStoryDefinitionById(SATISFACTION_MODULE_ID, connectorId)
+                val ratingIndex =
+                    storyReview.steps.indexOfFirst {
                         (it as? StoryDefinitionConfigurationStep.Step)
                             ?.configuration?.userSentenceLabel?.defaultLabel == userText?.trim()
                     }
-                    if (ratingIndex >= 0) {
-                        dialog.rating = ratingIndex + 1
-                        changeContextValue(REVIEW_COMMENT_PARAMETER, false)
-                    }
-                },
-                BotConfigurationStoryHandlerBase(REVIEW_COMMENT.id) {
-                    if(contextValue<Boolean>(REVIEW_COMMENT_PARAMETER) != true) {
-                        nextUserActionState = NextUserActionState(
-                                listOf(
-                                        NlpIntentQualifier(REVIEW_COMMENT.id)
-                                )
-                        )
-                        changeContextValue(REVIEW_COMMENT_PARAMETER, true)
-                    } else {
-                        dialog.review = userText
-                        handleAndSwitchStory(botDefinition.findStoryDefinitionById(SatisfactionIntent.REVIEW_ADDED.id, connectorId))
-                    }
+                if (ratingIndex >= 0) {
+                    dialog.rating = ratingIndex + 1
+                    changeContextValue(REVIEW_COMMENT_PARAMETER, false)
                 }
-        )
-)
+            },
+            BotConfigurationStoryHandlerBase(REVIEW_COMMENT.id) {
+                if (contextValue<Boolean>(REVIEW_COMMENT_PARAMETER) != true) {
+                    nextUserActionState =
+                        NextUserActionState(
+                            listOf(
+                                NlpIntentQualifier(REVIEW_COMMENT.id),
+                            ),
+                        )
+                    changeContextValue(REVIEW_COMMENT_PARAMETER, true)
+                } else {
+                    dialog.review = userText
+                    handleAndSwitchStory(botDefinition.findStoryDefinitionById(SatisfactionIntent.REVIEW_ADDED.id, connectorId))
+                }
+            },
+        ),
+    )
 
 internal class CoreConfigurationModuleServiceLoader : ConfigurationModuleServiceLoader {
-
     override fun modules(): Set<BotConfigurationModule> = setOf(satisfactionModule)
-
 }

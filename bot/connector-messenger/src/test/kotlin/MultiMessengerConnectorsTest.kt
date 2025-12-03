@@ -45,23 +45,22 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class MultiMessengerConnectorsTest {
-
     companion object {
-
         @BeforeAll
         @JvmStatic
         fun injectExecutor() {
-            tockInternalInjector = KodeinInjector().apply {
-                inject(
-                    Kodein {
-                        import(
-                            Module {
-                                bind<Executor>() with singleton { SimpleExecutor(2) }
-                            }
-                        )
-                    }
-                )
-            }
+            tockInternalInjector =
+                KodeinInjector().apply {
+                    inject(
+                        Kodein {
+                            import(
+                                Module {
+                                    bind<Executor>() with singleton { SimpleExecutor(2) }
+                                },
+                            )
+                        },
+                    )
+                }
         }
 
         @AfterAll
@@ -120,29 +119,34 @@ internal class MultiMessengerConnectorsTest {
 
     val messengerConnector1 =
         MessengerConnector(connectorId1, appId1, path1, pageId1, appToken1, token1, verifyToken1, messengerClient)
-    val controller1 = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector1
-    }
+    val controller1 =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector1
+        }
     val messengerConnector2 =
         MessengerConnector(connectorId2, appId2, path2, pageId2, appToken2, token2, verifyToken2, messengerClient)
-    val controller2 = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector2
-    }
+    val controller2 =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector2
+        }
     val messengerConnector3 =
         MessengerConnector(connectorId3, appId3, path3, pageId3, appToken3, token3, verifyToken3, messengerClient)
-    val controller3: ConnectorController = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector3
-    }
+    val controller3: ConnectorController =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector3
+        }
     val messengerConnector4 =
         MessengerConnector(connectorId4, appId4, path4, pageId4, appToken4, token4, verifyToken4, messengerClient)
-    val controller4: ConnectorController = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector4
-    }
+    val controller4: ConnectorController =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector4
+        }
     val messengerConnector5 =
         MessengerConnector(connectorId5, appId5, path5, pageId5, appToken5, token5, verifyToken5, messengerClient)
-    val controller5 = mockk<ConnectorController>(relaxed = true).apply {
-        every { connector } returns messengerConnector5
-    }
+    val controller5 =
+        mockk<ConnectorController>(relaxed = true).apply {
+            every { connector } returns messengerConnector5
+        }
 
     @BeforeEach
     fun before() {
@@ -160,52 +164,57 @@ internal class MultiMessengerConnectorsTest {
                 Entry(
                     page,
                     0,
-                    messaging = listOf(
-                        MessageWebhook(
-                            Sender("1"),
-                            Recipient(page),
-                            1L,
-                            Message("aa", "text")
-                        )
-                    )
-                )
-            )
+                    messaging =
+                        listOf(
+                            MessageWebhook(
+                                Sender("1"),
+                                Recipient(page),
+                                1L,
+                                Message("aa", "text"),
+                            ),
+                        ),
+                ),
+            ),
         )
 
-    fun choice(page: String, appId: String) =
-        CallbackRequest(
-            "page",
-            listOf(
-                Entry(
-                    page,
-                    0,
-                    messaging = listOf(
+    fun choice(
+        page: String,
+        appId: String,
+    ) = CallbackRequest(
+        "page",
+        listOf(
+            Entry(
+                page,
+                0,
+                messaging =
+                    listOf(
                         PostbackWebhook(
                             Sender("1"),
                             Recipient(page),
                             1L,
-                            UserActionPayload(SendChoice.encodeChoiceId(Intent.unknown, sourceAppId = appId))
-                        )
-                    )
-                )
-            )
-        )
+                            UserActionPayload(SendChoice.encodeChoiceId(Intent.unknown, sourceAppId = appId)),
+                        ),
+                    ),
+            ),
+        ),
+    )
 
-    fun standby(page: String) = request(page).run {
-        copy(
-            entry = entry.map { it.copy(messaging = null, standby = it.messaging) }
-        )
-    }
+    fun standby(page: String) =
+        request(page).run {
+            copy(
+                entry = entry.map { it.copy(messaging = null, standby = it.messaging) },
+            )
+        }
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN app A is called for the page A THEN the right controller is called`() {
-
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            request("pageA"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                request("pageA"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -214,13 +223,13 @@ internal class MultiMessengerConnectorsTest {
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN app A is called for the page B THEN the right controller is called`() {
-
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            request("pageB"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                request("pageB"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -229,13 +238,13 @@ internal class MultiMessengerConnectorsTest {
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN app A is called for the page C THEN the right controller is called`() {
-
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            request("pageC"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                request("pageC"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -244,13 +253,13 @@ internal class MultiMessengerConnectorsTest {
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN app B is called for the page A THEN the right controller is called`() {
-
-        val handler = MessengerConnectorHandler(
-            "appB",
-            controller4,
-            request("pageA"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appB",
+                controller4,
+                request("pageA"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -259,13 +268,13 @@ internal class MultiMessengerConnectorsTest {
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN app B is called for the page B THEN the right controller is called`() {
-
-        val handler = MessengerConnectorHandler(
-            "appB",
-            controller4,
-            request("pageB"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appB",
+                controller4,
+                request("pageB"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -275,12 +284,13 @@ internal class MultiMessengerConnectorsTest {
     @Test
     fun `GIVEN 5 messenger connectors WHEN app A is notified of the page B call by app B THEN notifyOnly is true AND sourceId is ok`() {
         every { messengerClient.getThreadOwnerId(token2, "1") } returns appId5
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            standby("pageB"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                standby("pageB"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -290,12 +300,13 @@ internal class MultiMessengerConnectorsTest {
     @Test
     fun `GIVEN 5 messenger connectors WHEN app A is notified of the page B call by app B with thread owner is an unknown app THEN notifyOnly is true AND sourceId is the unknown app id`() {
         every { messengerClient.getThreadOwnerId(token2, "1") } returns "other_messenger_app_id"
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            standby("pageB"),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                standby("pageB"),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 
@@ -304,12 +315,13 @@ internal class MultiMessengerConnectorsTest {
 
     @Test
     fun `GIVEN 5 messenger connectors WHEN a send choice of a different app is retrieved THEN notifyOnly is true AND sourceId is the choice source app id`() {
-        val handler = MessengerConnectorHandler(
-            "appA",
-            controller1,
-            choice("pageB", connectorId5),
-            RequestTimerData("messenger")
-        )
+        val handler =
+            MessengerConnectorHandler(
+                "appA",
+                controller1,
+                choice("pageB", connectorId5),
+                RequestTimerData("messenger"),
+            )
 
         handler.handleRequest()
 

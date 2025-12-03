@@ -39,14 +39,13 @@ import java.util.Locale
  * Rest client used to find entities from a rest API.
  */
 class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_url", "http://localhost:5000/app/v1/")) {
-
     internal data class EntityTypeRequest(
         val text: String,
-        val language: Locale = defaultLocale
+        val language: Locale = defaultLocale,
     )
 
     internal data class EntityTypeResponse(
-        val entities: List<EntityResponse>
+        val entities: List<EntityResponse>,
     )
 
     internal data class EntityResponse(val entity: EntityDescription, val probability: Double = 1.0)
@@ -54,20 +53,21 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
     internal data class EntityDescription(
         val start: Int,
         val end: Int,
-        val type: EntityTypeDescription
+        val type: EntityTypeDescription,
     )
 
     internal data class EntityTypeDescription(val name: String)
 
     private interface EntityTypeApi {
-
         @Headers("Content-Type:application/json")
         @GET("entities")
         fun supportedEntityTypes(): Call<Set<String>>
 
         @Headers("Content-Type:application/json")
         @POST("parse")
-        fun parse(@Body testPlan: EntityTypeRequest): Call<EntityTypeResponse>
+        fun parse(
+            @Body testPlan: EntityTypeRequest,
+        ): Call<EntityTypeResponse>
 
         @GET("healthcheck")
         fun healthcheck(): Call<ResponseBody>
@@ -76,11 +76,12 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
     private val api: EntityTypeApi
 
     init {
-        api = retrofitBuilderWithTimeoutAndLogger(timeoutInSeconds)
-            .addJacksonConverter()
-            .baseUrl(targetUrl)
-            .build()
-            .create()
+        api =
+            retrofitBuilderWithTimeoutAndLogger(timeoutInSeconds)
+                .addJacksonConverter()
+                .baseUrl(targetUrl)
+                .build()
+                .create()
     }
 
     fun retrieveSupportedEntityTypes(): Set<String> =
@@ -91,7 +92,10 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
             emptySet()
         }
 
-    fun parse(text: String, language: Locale): List<EntityTypeRecognition> =
+    fun parse(
+        text: String,
+        language: Locale,
+    ): List<EntityTypeRecognition> =
         try {
             api.parse(EntityTypeRequest(text, language)).execute().body()
                 ?.entities?.map {
@@ -99,9 +103,9 @@ class RestEntityTypeClient(targetUrl: String = property("tock_nlp_entity_type_ur
                         EntityTypeValue(
                             it.entity.start,
                             it.entity.end,
-                            EntityType(it.entity.type.name)
+                            EntityType(it.entity.type.name),
                         ),
-                        it.probability
+                        it.probability,
                     )
                 } ?: emptyList()
         } catch (e: Exception) {

@@ -23,9 +23,8 @@ import java.time.Instant
  */
 data class TimeBoxedFlag(
     val value: String,
-    val expirationDate: Instant? = Instant.now()
+    val expirationDate: Instant? = Instant.now(),
 ) {
-
     fun isValid(): Boolean {
         return expirationDate?.isAfter(Instant.now()) ?: true
     }

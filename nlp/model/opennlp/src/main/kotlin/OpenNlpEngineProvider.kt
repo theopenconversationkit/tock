@@ -31,7 +31,6 @@ import ai.tock.nlp.model.service.engine.TokenizerModelHolder
  *
  */
 class OpenNlpEngineProvider : NlpEngineProvider {
-
     override val type: NlpEngineType = NlpEngineType.opennlp
 
     override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier {

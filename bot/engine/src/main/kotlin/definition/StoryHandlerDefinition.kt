@@ -25,7 +25,6 @@ import ai.tock.bot.engine.message.MessagesList.Companion.toMessageList
  * Implementations should usually use [StoryHandlerDefinitionBase].
  */
 interface StoryHandlerDefinition : BotBus {
-
     /**
      * The [ConnectorStoryHandler] provided for the current [BotBus.targetConnectorType] - null if it does not exist.
      */
@@ -44,7 +43,7 @@ interface StoryHandlerDefinition : BotBus {
      */
     fun answerWith(
         default: CharSequence? = null,
-        messageProvider: () -> Any?
+        messageProvider: () -> Any?,
     ) {
         end(messages = toMessageList(default, this) { messageProvider() })
     }

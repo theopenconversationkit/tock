@@ -18,10 +18,10 @@ package ai.tock.bot.definition
 
 import kotlin.reflect.KClass
 
-class DialogContextKey<T: Any>(val type: KClass<T>, val name: String) {
+class DialogContextKey<T : Any>(val type: KClass<T>, val name: String) {
     override fun toString(): String = name
 
     companion object {
-        inline operator fun <reified T: Any> invoke(name: String) = DialogContextKey(T::class, name)
+        inline operator fun <reified T : Any> invoke(name: String) = DialogContextKey(T::class, name)
     }
 }

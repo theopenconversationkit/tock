@@ -25,14 +25,12 @@ import ai.tock.nlp.entity.Value
 /**
  * Takes a [Value] applied to the current [Entity] and returns a [EntityValue].
  */
-infix fun Entity.setTo(value: Value?): EntityValue =
-    EntityValue(this, value)
+infix fun Entity.setTo(value: Value?): EntityValue = EntityValue(this, value)
 
 /**
  * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [EntityValue].
  */
-infix fun Entity.setTo(text: String): EntityValue =
-    EntityValue(null, null, this, text, null, false)
+infix fun Entity.setTo(text: String): EntityValue = EntityValue(null, null, this, text, null, false)
 
 /**
  * Does this event contains specified role entity?
@@ -41,7 +39,11 @@ internal fun List<EntityValue>.hasEntity(role: String): Boolean {
     return hasSubEntity(this, role)
 }
 
-internal fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String, value: String): Boolean {
+internal fun hasEntityPredefinedValue(
+    entities: List<EntityValue>,
+    role: String,
+    value: String,
+): Boolean {
     return entities.filter { it.entity.role == role || hasEntityPredefinedValue(it.subEntities, role, value) }
         .firstOrNull {
             (it.value as? StringValue)?.value == value ||
@@ -49,7 +51,10 @@ internal fun hasEntityPredefinedValue(entities: List<EntityValue>, role: String,
         } != null
 }
 
-internal fun hasSubEntity(entities: List<EntityValue>, role: String): Boolean {
+internal fun hasSubEntity(
+    entities: List<EntityValue>,
+    role: String,
+): Boolean {
     return entities.any { it.entity.role == role } || entities.any { hasSubEntity(it.subEntities, role) }
 }
 
@@ -92,9 +97,8 @@ data class EntityValue(
     /**
      * Does this value support merge?
      */
-    val mergeSupport: Boolean = false
+    val mergeSupport: Boolean = false,
 ) {
-
     constructor(nlpResult: NlpResult, value: NlpEntityValue) : this(nlpResult.retainedQuery, value)
 
     constructor(sentence: String, value: NlpEntityValue) :
@@ -107,7 +111,7 @@ data class EntityValue(
             value.evaluated,
             value.subEntities.map { EntityValue(sentence.substring(value.start, value.end), it) },
             value.probability,
-            value.mergeSupport
+            value.mergeSupport,
         )
 
     constructor(entity: Entity, value: Value?, content: String? = null) :
@@ -117,13 +121,12 @@ data class EntityValue(
             entity,
             content,
             value,
-            true
+            true,
         )
 
     override fun toString(): String {
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
 
-    internal fun toClosedRange(): IntRange? =
-        if (start != null && end != null && start < end) IntRange(start, end - 1) else null
+    internal fun toClosedRange(): IntRange? = if (start != null && end != null && start < end) IntRange(start, end - 1) else null
 }

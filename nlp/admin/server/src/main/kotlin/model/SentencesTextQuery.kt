@@ -22,16 +22,15 @@ import org.litote.kmongo.Id
 
 /** Query sentences by text. */
 data class SentencesTextQuery(
-    val texts: List<String> = emptyList()
+    val texts: List<String> = emptyList(),
 ) : ApplicationScopedQuery() {
-
     fun toSentencesQueries(applicationId: Id<ApplicationDefinition>): List<SentencesQuery> {
         return texts.map {
             SentencesQuery(
                 applicationId,
                 language,
                 search = it,
-                onlyExactMatch = true
+                onlyExactMatch = true,
             )
         }
     }

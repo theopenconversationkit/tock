@@ -26,9 +26,8 @@ data class GAUser(
     val accessToken: String? = null,
     val permissions: Set<GAPermission>? = null,
     val userVerificationStatus: GAUserVerificationStatus = GAUserVerificationStatus.VERIFIED,
-    val locale: String = defaultLocale.toLanguageTag()
+    val locale: String = defaultLocale.toLanguageTag(),
 ) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }

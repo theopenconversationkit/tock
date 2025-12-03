@@ -22,7 +22,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SendActionConverterTest {
-
     @Test
     fun `WHEN setting a persona id THEN a MessageRequest with persona_id is returned`() {
         val personaId = "id"

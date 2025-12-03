@@ -21,18 +21,21 @@ import io.mockk.verify
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.Test
 
-internal class AlcmeonAuthorisationHandlerTest{
-
+@Suppress("ktlint:standard:max-line-length")
+internal class AlcmeonAuthorisationHandlerTest {
     @Test
     internal fun `authorization success`() {
-        val routingContext = mockk<RoutingContext>(relaxed = true){
-            every { request().getHeader("X-Alcmeon-Webhook-Signature") } returns "4d737b25de54f0ec47bc9b5fee2b3baf7231733cabe7731830912bb9c0c548a9"
-            every { normalizedPath() } returns "/alcmeon/start"
-            every { body().asString() } returns "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
-        }
+        val routingContext =
+            mockk<RoutingContext>(relaxed = true) {
+                every { request().getHeader("X-Alcmeon-Webhook-Signature") } returns "4d737b25de54f0ec47bc9b5fee2b3baf7231733cabe7731830912bb9c0c548a9"
+                every { normalizedPath() } returns "/alcmeon/start"
+                every {
+                    body().asString()
+                } returns "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
+            }
 
         AlcmeonAuthorisationHandler("1309768d3f6f8462").handle(routingContext)
 
-        verify {  routingContext.next() }
+        verify { routingContext.next() }
     }
 }

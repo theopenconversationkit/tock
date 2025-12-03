@@ -26,28 +26,29 @@ import kotlin.test.Test
  *
  */
 class RocketChatIntegrationTest {
-
     private val connectorController: ConnectorController = mockk()
-    private val connector = RocketChatConnector(
-        "appId",
-        RocketChatClient(
-            "http://localhost:3000",
-            "test2",
-            "a",
-            "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
-        ),
-        "GENERAL"
-    )
-
-    private val connector2 = RocketChatConnector(
-        "appId",
-        RocketChatClient(
-            "http://localhost:3000",
-            "test2",
-            "a",
-            "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
+    private val connector =
+        RocketChatConnector(
+            "appId",
+            RocketChatClient(
+                "http://localhost:3000",
+                "test2",
+                "a",
+                "https://avatars2.githubusercontent.com/u/224255?s=88&v=4",
+            ),
+            "GENERAL",
         )
-    )
+
+    private val connector2 =
+        RocketChatConnector(
+            "appId",
+            RocketChatClient(
+                "http://localhost:3000",
+                "test2",
+                "a",
+                "https://avatars2.githubusercontent.com/u/224255?s=88&v=4",
+            ),
+        )
 
     @Test
     fun testRocketChatIntegration() {
@@ -59,9 +60,9 @@ class RocketChatIntegrationTest {
                     s.recipientId,
                     s.applicationId,
                     s.playerId,
-                    "sentence received: ${s.text}"
+                    "sentence received: ${s.text}",
                 ),
-                data.callback
+                data.callback,
             )
         }
         connector.register(connectorController)

@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 
-val googleTranslatorModule = Kodein.Module {
-    bind<TranslatorEngine>(overrides = true) with provider { GoogleTranslatorEngine }
-}
+val googleTranslatorModule =
+    Kodein.Module {
+        bind<TranslatorEngine>(overrides = true) with provider { GoogleTranslatorEngine }
+    }

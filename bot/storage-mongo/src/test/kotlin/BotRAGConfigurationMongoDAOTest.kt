@@ -32,7 +32,6 @@ import kotlin.test.assertNull
  *
  */
 internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
-
     @BeforeEach
     fun cleanup() {
         BotRAGConfigurationMongoDAO.col.drop()
@@ -40,25 +39,28 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `save rag configuration`() {
-        val config = BotRAGConfiguration(
-            newId(),
-            "namespace1",
-            "botId1",
-            false,
-            questionAnsweringLlmSetting = OpenAILLMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1",
-                temperature = "1F",
-                baseUrl = "https://api.openai.com/v1"
-            ),
-            questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
-            emSetting = OpenAIEMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1",
-                baseUrl = "https://api.openai.com/v1"
-            ),
-            noAnswerSentence = "no answer sentence"
-        )
+        val config =
+            BotRAGConfiguration(
+                newId(),
+                "namespace1",
+                "botId1",
+                false,
+                questionAnsweringLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
+                emSetting =
+                    OpenAIEMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                noAnswerSentence = "no answer sentence",
+            )
 
         BotRAGConfigurationMongoDAO.save(config)
         val configBDD = BotRAGConfigurationMongoDAO.findByNamespaceAndBotId("namespace1", "botId1")
@@ -68,45 +70,51 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `update rag configuration`() {
-        val config1 = BotRAGConfiguration(
-            newId(),
-            "namespace1",
-            "botId1",
-            false,
-            questionAnsweringLlmSetting = OpenAILLMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1",
-                baseUrl = "https://api.openai.com/v1",
-                temperature = "1F",
-            ),
-            questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
-            emSetting = OpenAIEMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                baseUrl = "https://api.openai.com/v1",
-                model = "modelName1"
-            ),
-            noAnswerSentence = "no answer sentence1"
-        )
+        val config1 =
+            BotRAGConfiguration(
+                newId(),
+                "namespace1",
+                "botId1",
+                false,
+                questionAnsweringLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        baseUrl = "https://api.openai.com/v1",
+                        temperature = "1F",
+                    ),
+                questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
+                emSetting =
+                    OpenAIEMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        baseUrl = "https://api.openai.com/v1",
+                        model = "modelName1",
+                    ),
+                noAnswerSentence = "no answer sentence1",
+            )
 
-        val config2 = BotRAGConfiguration(
-            newId(),
-            "namespace1",
-            "botId2",
-            false,
-            questionAnsweringLlmSetting = OpenAILLMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1",
-                temperature = "1F",
-                baseUrl = "https://api.openai.com/v1",
-            ),
-            questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
-            emSetting = OpenAIEMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                baseUrl = "https://api.openai.com/v1",
-                model = "modelName1"
-            ),
-            noAnswerSentence = "no answer sentence1"
-        )
+        val config2 =
+            BotRAGConfiguration(
+                newId(),
+                "namespace1",
+                "botId2",
+                false,
+                questionAnsweringLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
+                emSetting =
+                    OpenAIEMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        baseUrl = "https://api.openai.com/v1",
+                        model = "modelName1",
+                    ),
+                noAnswerSentence = "no answer sentence1",
+            )
 
         assertNotEquals(config1, config2)
 
@@ -122,33 +130,33 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `delete rag configuration`() {
-        val config = BotRAGConfiguration(
-            newId(),
-            "namespace1",
-            "botId1",
-            false,
-            questionAnsweringLlmSetting = OpenAILLMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                model = "modelName1",
-                temperature = "1F",
-                baseUrl = "https://api.openai.com/v1",
-            ),
-            questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
-            emSetting = OpenAIEMSetting(
-                apiKey = RawSecretKey("apiKey1"),
-                baseUrl = "https://api.openai.com/v1",
-                model = "modelName1"
-            ),
-            noAnswerSentence = "no answer sentence"
-        )
+        val config =
+            BotRAGConfiguration(
+                newId(),
+                "namespace1",
+                "botId1",
+                false,
+                questionAnsweringLlmSetting =
+                    OpenAILLMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        model = "modelName1",
+                        temperature = "1F",
+                        baseUrl = "https://api.openai.com/v1",
+                    ),
+                questionAnsweringPrompt = PromptTemplate(template = "prompt template"),
+                emSetting =
+                    OpenAIEMSetting(
+                        apiKey = RawSecretKey("apiKey1"),
+                        baseUrl = "https://api.openai.com/v1",
+                        model = "modelName1",
+                    ),
+                noAnswerSentence = "no answer sentence",
+            )
 
         BotRAGConfigurationMongoDAO.save(config)
         BotRAGConfigurationMongoDAO.delete(config._id)
         val configBDD = BotRAGConfigurationMongoDAO.findByNamespaceAndBotId("namespace1", "botId1")
 
         assertNull(configBDD)
-
-
     }
-
 }

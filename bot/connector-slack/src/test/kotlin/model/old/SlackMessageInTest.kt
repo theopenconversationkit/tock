@@ -23,21 +23,21 @@ import kotlin.test.assertEquals
  *
  */
 class SlackMessageInTest {
-
     @Test
     fun `toSentenceElement provides SentenceElement with text`() {
-        val inMessage = SlackMessageIn(
-            "token",
-            "team_id",
-            "team_domain",
-            "channel_id",
-            "channel_name",
-            12,
-            "user_id",
-            "user_name",
-            "text",
-            "trigger_word"
-        )
+        val inMessage =
+            SlackMessageIn(
+                "token",
+                "team_id",
+                "team_domain",
+                "channel_id",
+                "channel_name",
+                12,
+                "user_id",
+                "user_name",
+                "text",
+                "trigger_word",
+            )
         assertEquals("text", inMessage.toGenericMessage().texts["text"])
     }
 }

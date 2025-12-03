@@ -24,5 +24,5 @@ data class ParsingResult(
     val entities: List<EntityRecognition>,
     val notRetainedEntities: List<EntityRecognition>,
     val intentProbability: Double,
-    val entitiesProbability: Double
+    val entitiesProbability: Double,
 )

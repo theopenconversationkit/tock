@@ -28,16 +28,17 @@ import java.time.Instant.now
 data class ScriptAnswerVersionedConfigurationDump(
     val script: String,
     val version: BotVersion,
-    val date: Instant = now()
+    val date: Instant = now(),
 ) {
     constructor(conf: ScriptAnswerVersionedConfiguration) :
         this(
             conf.script,
             conf.version,
-            conf.date
+            conf.date,
         )
 
-    fun toAnswer(controller: StoryDefinitionConfigurationDumpController, compile: Boolean = false):
-        ScriptAnswerVersionedConfiguration =
-            controller.buildScript(this, compile)
+    fun toAnswer(
+        controller: StoryDefinitionConfigurationDumpController,
+        compile: Boolean = false,
+    ): ScriptAnswerVersionedConfiguration = controller.buildScript(this, compile)
 }

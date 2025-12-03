@@ -30,6 +30,8 @@ import ai.tock.translator.UserInterfaceType.voiceAssistant
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import mu.KotlinLogging
+import org.litote.kmongo.toId
 import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.time.Duration
@@ -38,14 +40,11 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.LongAdder
-import mu.KotlinLogging
-import org.litote.kmongo.toId
 
 /**
  * The main entry class of translator module.
  */
 object Translator {
-
     private val logger = KotlinLogging.logger {}
 
     private val loadAllLabelsOfDefaultNamespace = booleanProperty("tock_load_all_labels_of_default_namespace", true)
@@ -109,7 +108,11 @@ object Translator {
         voiceTransformers.remove(transformer)
     }
 
-    private fun transformArg(text: Any, locale: Locale, userInterfaceType: UserInterfaceType): Any {
+    private fun transformArg(
+        text: Any,
+        locale: Locale,
+        userInterfaceType: UserInterfaceType,
+    ): Any {
         var t = text
         voiceTransformers.forEach { t = it.transformArg(t, locale, userInterfaceType) }
         return t
@@ -121,15 +124,20 @@ object Translator {
 
     fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
-    private fun getExistingLabel(key: I18nLabelValue, checkDefaults: Boolean) =
-        getLabel(key.key)?.takeUnless { stored ->
-            checkDefaults && checkDefaultConsistency(key, stored)
-        }
+    private fun getExistingLabel(
+        key: I18nLabelValue,
+        checkDefaults: Boolean,
+    ) = getLabel(key.key)?.takeUnless { stored ->
+        checkDefaults && checkDefaultConsistency(key, stored)
+    }
 
     /**
      * @return `true` if the label should be reset due to a default value mismatch.
      */
-    private fun checkDefaultConsistency(key: I18nLabelValue, value: I18nLabel): Boolean {
+    private fun checkDefaultConsistency(
+        key: I18nLabelValue,
+        value: I18nLabel,
+    ): Boolean {
         if (value.defaultI18n != key.defaultI18n) {
             logger.warn { "default localizations have changed - old values ${value.defaultI18n} - new values : ${key.defaultI18n}" }
             return resetValueWhenDefaultChanges
@@ -141,26 +149,36 @@ object Translator {
         }
     }
 
-    private fun incrementStat(value: I18nLabelValue, context: I18nContext) {
+    private fun incrementStat(
+        value: I18nLabelValue,
+        context: I18nContext,
+    ) {
         statsCache.get(I18nLabelStatKey(value, context)) { LongAdder() }.increment()
     }
 
-    fun saveIfNotExist(value: I18nLabelValue, readOnly: Boolean = false): I18nLabel =
-        saveIfNotExist(value, defaultLocale, readOnly)
+    fun saveIfNotExist(
+        value: I18nLabelValue,
+        readOnly: Boolean = false,
+    ): I18nLabel = saveIfNotExist(value, defaultLocale, readOnly)
 
-    fun saveIfNotExist(value: I18nLabelValue, locale: Locale?, readOnly: Boolean = false): I18nLabel {
+    fun saveIfNotExist(
+        value: I18nLabelValue,
+        locale: Locale?,
+        readOnly: Boolean = false,
+    ): I18nLabel {
         val i18nLabel: I18nLabel? = if (readOnly) null else getExistingLabel(value, true)
         return i18nLabel ?: run {
             val defaultLabelKey = value.defaultLabel.toString()
             val defaultLabel = I18nLocalizedLabel(locale ?: defaultLocale, defaultInterface, defaultLabelKey)
-            val label = I18nLabel(
-                value.key.toId(),
-                value.namespace,
-                value.category,
-                LinkedHashSet(listOf(defaultLabel)),
-                defaultLabelKey,
-                defaultI18n = value.defaultI18n,
-            )
+            val label =
+                I18nLabel(
+                    value.key.toId(),
+                    value.namespace,
+                    value.category,
+                    LinkedHashSet(listOf(defaultLabel)),
+                    defaultLabelKey,
+                    defaultI18n = value.defaultI18n,
+                )
             if (!readOnly) {
                 i18nDAO.save(label)
             }
@@ -171,18 +189,23 @@ object Translator {
     /**
      * Creates a new label. If the label key exists, increment the key with a _$count suffix.
      */
-    fun create(value: I18nLabelValue, defaultLocale: Locale, alternatives: List<String> = emptyList()): I18nLabel {
+    fun create(
+        value: I18nLabelValue,
+        defaultLocale: Locale,
+        alternatives: List<String> = emptyList(),
+    ): I18nLabel {
         synchronized(value.key.intern()) {
             var count = 1
             var v = value
             while (getExistingLabel(v, false) != null) {
-                v = I18nLabelValue(
-                    value.key + "_" + count++,
-                    value.namespace,
-                    value.category,
-                    value.defaultLabel,
-                    value.args
-                )
+                v =
+                    I18nLabelValue(
+                        value.key + "_" + count++,
+                        value.namespace,
+                        value.category,
+                        value.defaultLabel,
+                        value.args,
+                    )
             }
             val defaultLabelKey = v.defaultLabel.toString()
             val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey, alternatives)
@@ -192,7 +215,7 @@ object Translator {
                     v.namespace,
                     v.category,
                     LinkedHashSet(listOf(defaultLabel)),
-                    defaultLabelKey
+                    defaultLabelKey,
                 )
             i18nDAO.save(label)
             return label
@@ -202,15 +225,17 @@ object Translator {
     /**
      * Translates an [I18nLabelValue] for the given [I18nContext].
      */
-    fun translate(value: I18nLabelValue, context: I18nContext): TranslatedString {
-
+    fun translate(
+        value: I18nLabelValue,
+        context: I18nContext,
+    ): TranslatedString {
         if (!enabled) {
             return TranslatedString(
                 formatMessage(
                     value.defaultLabel.toString(),
                     context,
-                    value.args
-                )
+                    value.args,
+                ),
             )
         }
         if (value.defaultLabel is TranslatedString) {
@@ -238,19 +263,20 @@ object Translator {
         return if (label is TextAndVoiceTranslatedString) {
             label.copy(
                 text = formatMessage(label.text.toString(), context.copy(userInterfaceType = textChat), value.args),
-                voice = formatMessage(
-                    label.voice.toString(),
-                    context.copy(userInterfaceType = voiceAssistant),
-                    value.args
-                )
+                voice =
+                    formatMessage(
+                        label.voice.toString(),
+                        context.copy(userInterfaceType = voiceAssistant),
+                        value.args,
+                    ),
             )
         } else {
             TranslatedString(
                 formatMessage(
                     label.toString(),
                     context.copy(userInterfaceType = targetInterface),
-                    value.args
-                )
+                    value.args,
+                ),
             )
         }
     }
@@ -258,27 +284,29 @@ object Translator {
     private fun createLabel(
         value: I18nLabelValue,
         userLocale: Locale,
-        targetInterface: UserInterfaceType
+        targetInterface: UserInterfaceType,
     ): I18nLabel {
         val labels = LinkedHashSet(value.defaultI18n)
         if (labels.none { it.locale == defaultLocale && it.interfaceType == defaultInterface }) {
             labels += I18nLocalizedLabel(defaultLocale, defaultInterface, value.defaultLabel.toString())
         }
         if (labels.none { it.locale == userLocale }) {
-            labels += I18nLocalizedLabel(
-                userLocale,
-                targetInterface,
-                translate(value.defaultLabel.toString(), defaultLocale, userLocale),
-            )
+            labels +=
+                I18nLocalizedLabel(
+                    userLocale,
+                    targetInterface,
+                    translate(value.defaultLabel.toString(), defaultLocale, userLocale),
+                )
         }
-        val label = I18nLabel(
-            value.key.toId(),
-            value.namespace,
-            value.category,
-            labels,
-            value.defaultLabel.toString(),
-            defaultI18n = value.defaultI18n
-        )
+        val label =
+            I18nLabel(
+                value.key.toId(),
+                value.namespace,
+                value.category,
+                labels,
+                value.defaultLabel.toString(),
+                defaultI18n = value.defaultI18n,
+            )
         i18nDAO.save(label)
         return label
     }
@@ -286,7 +314,7 @@ object Translator {
     private fun pickSpecificLabel(
         i18nLabel: I18nLabel,
         defaultLabel: String,
-        context: I18nContext
+        context: I18nContext,
     ): CharSequence {
         val (locale, userInterfaceType, connectorId, contextId) = context
 
@@ -311,7 +339,7 @@ object Translator {
                     ?: labelWithoutUserInterface(
                         i18nLabel,
                         defaultLabel,
-                        context.copy(userInterfaceType = defaultInterface)
+                        context.copy(userInterfaceType = defaultInterface),
                     )
             }
         } else {
@@ -333,9 +361,8 @@ object Translator {
     private fun labelWithoutUserInterface(
         i18nLabel: I18nLabel,
         defaultLabel: String,
-        context: I18nContext
+        context: I18nContext,
     ): String {
-
         val (locale, _, connectorId) = context
 
         val labelWithoutUserInterface = i18nLabel.findLabel(locale, connectorId)
@@ -346,14 +373,15 @@ object Translator {
             i18nDAO.save(
                 i18nLabel.copy(
                     i18n =
-                    LinkedHashSet(
-                        i18nLabel.i18n + I18nLocalizedLabel(
-                            locale,
-                            defaultUserInterface,
-                            newLabel
-                        )
-                    )
-                )
+                        LinkedHashSet(
+                            i18nLabel.i18n +
+                                I18nLocalizedLabel(
+                                    locale,
+                                    defaultUserInterface,
+                                    newLabel,
+                                ),
+                        ),
+                ),
             )
             newLabel
         }
@@ -362,7 +390,7 @@ object Translator {
     fun formatMessage(
         label: String,
         context: I18nContext,
-        args: List<Any?>
+        args: List<Any?>,
     ): String {
         if (args.isEmpty()) {
             return label
@@ -373,15 +401,20 @@ object Translator {
         return MessageFormat(escapeQuotes(normalizedLabel), context.userLocale).format(
             normalizedArgs.map { formatArg(it, context) }.toTypedArray(),
             StringBuffer(),
-            null
+            null,
         ).toString()
     }
 
-    private fun escapeQuotes(text: String): String = text
-        .replace("'", "''")
-        .replace("%%", "'")
+    private fun escapeQuotes(text: String): String =
+        text
+            .replace("'", "''")
+            .replace("%%", "'")
 
-    fun translate(text: String, source: Locale, target: Locale): String {
+    fun translate(
+        text: String,
+        source: Locale,
+        target: Locale,
+    ): String {
         if (source == target) {
             return text
         }
@@ -392,10 +425,11 @@ object Translator {
         m.formatsByArgumentIndex.forEachIndexed { i, format ->
             if (format is ChoiceFormat) {
                 pattern = pattern.replace(format.toPattern(), "")
-                val choiceFormat = ChoiceFormat(
-                    format.limits,
-                    format.formats.map { translator.translate(it as String, source, target) }.toTypedArray()
-                )
+                val choiceFormat =
+                    ChoiceFormat(
+                        format.limits,
+                        format.formats.map { translator.translate(it as String, source, target) }.toTypedArray(),
+                    )
                 m.setFormatByArgumentIndex(i, choiceFormat)
                 choicePrefixList.add("{$i,choice,}")
             }
@@ -412,34 +446,46 @@ object Translator {
                         val b = prefix
                         val c = s.substring(index + prefix.length, s.length)
                         splitPattern = splitPattern.subList(0, i) + listOf(a) + listOf(b) + listOf(c) +
-                                splitPattern.subList(i + 1, splitPattern.size)
+                            splitPattern.subList(i + 1, splitPattern.size)
                     }
                 }
             }
-            val newMessage = MessageFormat(
-                splitPattern.map {
-                    if (choicePrefixList.contains(it)) {
-                        it
-                    } else {
-                        translator.translate(it.replace("''", "'"), source, target)
-                    }
-                }.joinToString("")
-            )
+            val newMessage =
+                MessageFormat(
+                    splitPattern.map {
+                        if (choicePrefixList.contains(it)) {
+                            it
+                        } else {
+                            translator.translate(it.replace("''", "'"), source, target)
+                        }
+                    }.joinToString(""),
+                )
             newMessage.formats = m.formats
             return newMessage.toPattern()
         }
     }
 
-    private fun formatArg(arg: Any?, context: I18nContext): Any? {
-        val a = when (arg) {
-            is String? -> arg ?: ""
-            is Number? -> arg ?: -1
-            is Boolean? -> if (arg == null) -1 else if (arg) 1 else 0
-            is Enum<*>? -> arg?.ordinal ?: -1
-            is I18nLabelValue -> translate(arg, context)
-            null -> ""
-            else -> Formatter().format(context.userLocale, "%s", arg).toString()
-        }
+    private fun formatArg(
+        arg: Any?,
+        context: I18nContext,
+    ): Any? {
+        val a =
+            when (arg) {
+                is String? -> arg ?: ""
+                is Number? -> arg ?: -1
+                is Boolean? ->
+                    if (arg == null) {
+                        -1
+                    } else if (arg) {
+                        1
+                    } else {
+                        0
+                    }
+                is Enum<*>? -> arg?.ordinal ?: -1
+                is I18nLabelValue -> translate(arg, context)
+                null -> ""
+                else -> Formatter().format(context.userLocale, "%s", arg).toString()
+            }
 
         return transformArg(a, context.userLocale, context.userInterfaceType)
     }
@@ -449,16 +495,16 @@ object Translator {
         namespace: String,
         category: String,
         defaultLabel: CharSequence,
-        context: I18nContext
+        context: I18nContext,
     ): TranslatedSequence {
         return translate(
             I18nLabelValue(
                 key.lowercase(),
                 namespace,
                 category.lowercase(),
-                defaultLabel
+                defaultLabel,
             ),
-            context
+            context,
         )
     }
 
@@ -470,23 +516,25 @@ object Translator {
 
     fun completeAllLabels(i18n: List<I18nLabel>): Int {
         var count = 0
-        val newI18n = i18n.map { i ->
-            val newLabels = i.i18n.map { label ->
-                if (label.validated || !label.label.isBlank()) {
-                    label
-                } else {
-                    val baseValue =
-                        i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
-                    if (!baseValue?.label.isNullOrBlank()) {
-                        count++
-                        label.copy(label = translate(baseValue!!.label, baseValue.locale, label.locale))
-                    } else {
-                        label
+        val newI18n =
+            i18n.map { i ->
+                val newLabels =
+                    i.i18n.map { label ->
+                        if (label.validated || !label.label.isBlank()) {
+                            label
+                        } else {
+                            val baseValue =
+                                i.findExistingLabelForOtherLocale(label.locale, label.interfaceType, label.connectorId)
+                            if (!baseValue?.label.isNullOrBlank()) {
+                                count++
+                                label.copy(label = translate(baseValue!!.label, baseValue.locale, label.locale))
+                            } else {
+                                label
+                            }
+                        }
                     }
-                }
+                i.copy(i18n = LinkedHashSet(newLabels))
             }
-            i.copy(i18n = LinkedHashSet(newLabels))
-        }
         i18nDAO.save(newI18n)
         return count
     }
@@ -495,7 +543,7 @@ object Translator {
         i18nLabel: I18nLabel,
         localized: I18nLocalizedLabel,
         contextId: String?,
-        index: Int? = null
+        index: Int? = null,
     ): String {
         return with(localized) {
             if (alternatives.isEmpty()) {
@@ -509,18 +557,19 @@ object Translator {
                     localized.alternative(i)
                 } else {
                     val alreadyUsedIndexes = i18nDAO.getAlternativeIndexes(i18nLabel, localized, contextId)
-                    val newIndex = if (alreadyUsedIndexes.size > alternatives.size) {
-                        i18nDAO.deleteAlternativeIndexes(i18nLabel, localized, contextId)
-                        i
-                    } else if (i in alreadyUsedIndexes) {
-                        var newIndex = i
-                        do {
-                            newIndex = if (newIndex + 1 > alternatives.size) 0 else newIndex + 1
-                        } while (newIndex in alreadyUsedIndexes)
-                        newIndex
-                    } else {
-                        i
-                    }
+                    val newIndex =
+                        if (alreadyUsedIndexes.size > alternatives.size) {
+                            i18nDAO.deleteAlternativeIndexes(i18nLabel, localized, contextId)
+                            i
+                        } else if (i in alreadyUsedIndexes) {
+                            var newIndex = i
+                            do {
+                                newIndex = if (newIndex + 1 > alternatives.size) 0 else newIndex + 1
+                            } while (newIndex in alreadyUsedIndexes)
+                            newIndex
+                        } else {
+                            i
+                        }
 
                     i18nDAO.addAlternativeIndex(i18nLabel, localized, newIndex, contextId)
                     localized.alternative(newIndex)

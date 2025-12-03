@@ -20,12 +20,14 @@ package ai.tock.shared.security
  * Tock user admin listener.
  */
 interface TockUserListener {
-
     /**
      * Try to register a tock user, and returns the registered user.
      *
      * @param user the user
      * @param joinNamespace should we create a non existing namespace, or join the specified user namespace?
      */
-    fun registerUser(user: TockUser, joinNamespace: Boolean = false): TockUser
+    fun registerUser(
+        user: TockUser,
+        joinNamespace: Boolean = false,
+    ): TockUser
 }

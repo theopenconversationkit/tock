@@ -34,7 +34,6 @@ import org.litote.kmongo.or
 import org.litote.kmongo.reactivestreams.getCollection
 
 object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
-
     private val col: MongoCollection<NamespaceConfiguration> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<NamespaceConfiguration>()
         c.ensureUniqueIndex(Namespace)
@@ -51,15 +50,14 @@ object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
         col.replaceOne(Namespace eq configuration.namespace, configuration, ReplaceOptions().upsert(true))
     }
 
-    override fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration? =
-        col.findOne(Namespace eq namespace)
+    override fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration? = col.findOne(Namespace eq namespace)
 
     override fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration> =
         col.find(
             or(
                 DefaultSharingConfiguration / NamespaceSharingConfiguration::model eq true,
-                DefaultSharingConfiguration / NamespaceSharingConfiguration::stories eq true
-            )
+                DefaultSharingConfiguration / NamespaceSharingConfiguration::stories eq true,
+            ),
         )
             .toList()
 

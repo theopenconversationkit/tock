@@ -29,13 +29,12 @@ import com.microsoft.bot.schema.CardImage
 class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
-            subElements = listMessage.map { GenericElement(it.toGenericMessage() ?: GenericMessage()) }
+            subElements = listMessage.map { GenericElement(it.toGenericMessage() ?: GenericMessage()) },
         )
     }
 }
 
 class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TeamsBotTextMessage) return false
@@ -50,7 +49,7 @@ class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
     override fun toGenericMessage(): GenericMessage {
         return GenericMessage(
             connectorType = connectorType,
-            texts = mapOf("text" to toString())
+            texts = mapOf("text" to toString()),
         )
     }
 }
@@ -61,25 +60,28 @@ class TeamsHeroCard(
     val attachmentContent: String,
     val images: List<CardImage>?,
     val buttons: List<CardAction>?,
-    val tap: CardAction?
+    val tap: CardAction?,
 ) : TeamsBotMessage(null) {
-
     override fun equals(other: Any?): Boolean {
         if (null == other) return false
         if (other !is TeamsHeroCard) return false
         if (title != other.title ||
             subtitle != other.subtitle ||
             attachmentContent != other.attachmentContent
-        ) return false
+        ) {
+            return false
+        }
         if ((images?.size ?: -1) != (other.images?.size ?: -1)) return false
         images?.forEach { self ->
             if (other.images == null) return false
             if (!other.images.any {
                     ((it.tap != null && self.tap != null && it.tap?.equalsTo(self.tap) == true) || (it.tap == null && self.tap == null)) &&
-                            it.alt == self.alt &&
-                            it.url == self.url
+                        it.alt == self.alt &&
+                        it.url == self.url
                 }
-            ) return false
+            ) {
+                return false
+            }
         }
         if ((buttons?.size ?: -1) != (other.buttons?.size ?: -1)) return false
         buttons?.forEach { self ->
@@ -94,65 +96,70 @@ class TeamsHeroCard(
         val images = images?.map { it.url } ?: ""
         val buttons = buttons?.map { it.value } ?: ""
         return "TeamsHeroCard(" +
-                "title=$title, " +
-                "subtitle=$subtitle, " +
-                "attachmentContent=$attachmentContent, " +
-                "images=$images, " +
-                "buttons=$buttons, " +
-                "tap=${tap?.value})"
+            "title=$title, " +
+            "subtitle=$subtitle, " +
+            "attachmentContent=$attachmentContent, " +
+            "images=$images, " +
+            "buttons=$buttons, " +
+            "tap=${tap?.value})"
     }
 
     override fun toGenericMessage(): GenericMessage {
         return GenericMessage(
             connectorType = connectorType,
-            texts = mapNotNullValues(
-                TITLE_PARAM to title,
-                "subtitle" to subtitle,
-                "attachmentContent" to attachmentContent
-            ),
-            choices = buttons?.map {
-                Choice(
-                    intentName = it.text?.toString() ?: it.title,
-                    parameters = mapNotNullValues(
-                        "title" to it.title?.toString(),
-                        "value" to it.value?.toString(),
-                        "displayText" to it.displayText,
-                        "text" to it.text,
-                        "type" to it.type.toString()
+            texts =
+                mapNotNullValues(
+                    TITLE_PARAM to title,
+                    "subtitle" to subtitle,
+                    "attachmentContent" to attachmentContent,
+                ),
+            choices =
+                buttons?.map {
+                    Choice(
+                        intentName = it.text?.toString() ?: it.title,
+                        parameters =
+                            mapNotNullValues(
+                                "title" to it.title?.toString(),
+                                "value" to it.value?.toString(),
+                                "displayText" to it.displayText,
+                                "text" to it.text,
+                                "type" to it.type.toString(),
+                            ),
                     )
-                )
-            } ?: emptyList(),
-            attachments = images?.map {
-                Attachment(
-                    url = it.url,
-                    type = SendAttachment.AttachmentType.image
-                )
-            } ?: emptyList()
+                } ?: emptyList(),
+            attachments =
+                images?.map {
+                    Attachment(
+                        url = it.url,
+                        type = SendAttachment.AttachmentType.image,
+                    )
+                } ?: emptyList(),
         )
     }
 }
 
 class TeamsCardAction(
     val actionTitle: String,
-    val buttons: List<CardAction>
+    val buttons: List<CardAction>,
 ) : TeamsBotMessage(null) {
-
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             connectorType = connectorType,
             texts = mapNotNullValues(TITLE_PARAM to actionTitle),
-            choices = buttons.map {
-                Choice(
-                    intentName = it.text?.toString() ?: it.title,
-                    parameters = mapNotNullValues(
-                        "title" to it.title?.toString(),
-                        "value" to it.value?.toString(),
-                        "displayText" to it.displayText,
-                        "text" to it.text,
-                        "type" to it.type.toString()
+            choices =
+                buttons.map {
+                    Choice(
+                        intentName = it.text?.toString() ?: it.title,
+                        parameters =
+                            mapNotNullValues(
+                                "title" to it.title?.toString(),
+                                "value" to it.value?.toString(),
+                                "displayText" to it.displayText,
+                                "text" to it.text,
+                                "type" to it.type.toString(),
+                            ),
                     )
-                )
-            }
+                },
         )
     }
 
@@ -184,9 +191,9 @@ class TeamsCardAction(
 
 fun CardAction.equalsTo(other: CardAction?): Boolean {
     return image == other?.image &&
-            text == other?.text &&
-            title == other?.title &&
-            displayText == other?.displayText &&
-            type?.name == other?.type?.name &&
-            value == other?.value
+        text == other?.text &&
+        title == other?.title &&
+        displayText == other?.displayText &&
+        type?.name == other?.type?.name &&
+        value == other?.value
 }

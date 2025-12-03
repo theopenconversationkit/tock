@@ -26,5 +26,5 @@ data class DialogFlowStateTransitionData(
     val step: String?,
     val newEntities: Set<String>,
     val type: DialogFlowStateTransitionType,
-    val count: Long = 0
+    val count: Long = 0,
 )

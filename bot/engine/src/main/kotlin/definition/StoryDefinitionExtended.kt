@@ -26,7 +26,6 @@ import ai.tock.translator.UserInterfaceType
  * Warning: advanced usage only.
  */
 interface StoryDefinitionExtended : StoryDefinition {
-
     val otherStarterIntents: Set<IntentAware> get() = emptySet()
     val secondaryIntents: Set<IntentAware> get() = emptySet()
 

@@ -19,7 +19,8 @@ package ai.tock.bot.admin.story.dump
 enum class StoriesImportMode {
     DEFAULT,
     RAG_ON,
-    RAG_OFF;
+    RAG_OFF,
+    ;
 
     companion object {
         fun findMode(key: String): StoriesImportMode? {

@@ -36,10 +36,12 @@ import javax.xml.transform.stream.StreamResult
  */
 class ImageGenerator<T : Any>(
     private val svgToPngConverter: SvgToPngConverter,
-    private val svgGenerator: SvgGenerator<T>
+    private val svgGenerator: SvgGenerator<T>,
 ) {
-
-    fun generate(params: T, format: ImageFormat): ByteArray {
+    fun generate(
+        params: T,
+        format: ImageFormat,
+    ): ByteArray {
         val document = svgGenerator.generate(params)
 
         return when (format) {
@@ -79,7 +81,9 @@ class SvgToPngConverter {
  * Supported generation format.
  */
 enum class ImageFormat(val contentType: String) {
-    SVG("image/svg+xml"), PNG("image/png");
+    SVG("image/svg+xml"),
+    PNG("image/png"),
+    ;
 
     companion object {
         fun findByCode(code: String): ImageFormat? {
@@ -92,27 +96,29 @@ enum class ImageFormat(val contentType: String) {
  * Generates an image from a svg file.
  */
 abstract class SvgGenerator<T : Any>(resourceName: String, resourcePath: String = "/generation/") {
-
     private val template = "$resourcePath$resourceName.svg"
 
     fun generate(params: T): Document {
-        val doc: Document = SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName()).createDocument(
-            resource(template).toString(),
-            resourceAsStream(template)
-        )
+        val doc: Document =
+            SAXSVGDocumentFactory(XMLResourceDescriptor.getXMLParserClassName()).createDocument(
+                resource(template).toString(),
+                resourceAsStream(template),
+            )
         applyParamsToDocument(doc, params)
 
         return doc
     }
 
-    abstract fun applyParamsToDocument(doc: Document, params: T)
+    abstract fun applyParamsToDocument(
+        doc: Document,
+        params: T,
+    )
 }
 
 /**
  * Provides a data instance from specified parameters.
  */
 interface ImageParametersExtractor<T : Any> {
-
     /**
      * Returns the parameters data instance.
      * If null is returned, it means the parameters can not be extracted ([ai.tock.shared.vertx.ImageGeneratorHandler] returns 404).
@@ -126,7 +132,10 @@ interface ImageParametersExtractor<T : Any> {
 object FontLoader {
     private val logger = KotlinLogging.logger {}
 
-    fun register(fontFilesNames: List<String>, fontFilesPath: String = "/generation/fonts/") {
+    fun register(
+        fontFilesNames: List<String>,
+        fontFilesPath: String = "/generation/fonts/",
+    ) {
         try {
             fontFilesNames.map { createFont(fontFilesPath, it) }.forEach {
                 GraphicsEnvironment.getLocalGraphicsEnvironment().registerAndLogFont(it)
@@ -144,10 +153,13 @@ object FontLoader {
         }
     }
 
-    private fun createFont(path: String, file: String): Font {
+    private fun createFont(
+        path: String,
+        file: String,
+    ): Font {
         return Font.createFont(
             Font.TRUETYPE_FONT,
-            resourceAsStream(path + file)
+            resourceAsStream(path + file),
         )
     }
 }

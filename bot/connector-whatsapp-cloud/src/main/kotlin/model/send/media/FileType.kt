@@ -16,10 +16,11 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.media
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class FileType(@JsonValue val type: String) {
+enum class FileType(
+    @JsonValue val type: String,
+) {
     JPEG("image/jpeg"),
     PNG("image/png"),
     TEXT("text/plain"),
@@ -38,5 +39,5 @@ enum class FileType(@JsonValue val type: String) {
     OPUS("audio/opus"),
     MP4_VIDEO("video/mp4"),
     THREEGP("video/3gp"),
-    WEBP("image/webp");
+    WEBP("image/webp"),
 }

@@ -19,14 +19,14 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class OrderContent(
-        @JsonProperty("catalog_id") val catalogId: String,
-        val text: String,
-        @JsonProperty("product_items") val productItems: List<ProductItem>
+    @JsonProperty("catalog_id") val catalogId: String,
+    val text: String,
+    @JsonProperty("product_items") val productItems: List<ProductItem>,
 )
 
 data class ProductItem(
-        @JsonProperty("product_retailer_id") val productRetailerId: String,
-        val quantity: String,
-        @JsonProperty("item_price") val itemPrice: String,
-        val currency: String
+    @JsonProperty("product_retailer_id") val productRetailerId: String,
+    val quantity: String,
+    @JsonProperty("item_price") val itemPrice: String,
+    val currency: String,
 )

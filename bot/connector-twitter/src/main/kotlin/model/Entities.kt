@@ -24,5 +24,5 @@ data class Entities(
     val urls: List<Url>? = null,
     val symbols: List<Symbol>? = null,
     val polls: List<Poll>? = null,
-    val media: List<MediaEntities>? = null
+    val media: List<MediaEntities>? = null,
 )

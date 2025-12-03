@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.ga.model.request
 
 data class GASurface(val capabilities: List<GACapability>) {
-
     fun hasScreen(): Boolean = capabilities.any { it.name == GACapability.SCREEN_OUTPUT }
 
     fun hasAudio(): Boolean = capabilities.any { it.name == GACapability.AUDIO_OUTPUT }

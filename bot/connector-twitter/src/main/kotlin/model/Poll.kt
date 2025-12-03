@@ -21,5 +21,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class Poll(
     val options: List<PollOption>,
     @JsonProperty("end_datetime")val endDatetime: String,
-    @JsonProperty("duration_minutes") val durationMinutes: Int
+    @JsonProperty("duration_minutes") val durationMinutes: Int,
 )

@@ -25,8 +25,10 @@ import ai.tock.bot.engine.BotBus
 
 internal class ChatBaseStoryHandlerListener(private val apiKey: String, private val client: ChatBaseClient, private val version: String) :
     StoryHandlerListener {
-
-    override fun startAction(botBus: BotBus, handler: StoryHandler): Boolean {
+    override fun startAction(
+        botBus: BotBus,
+        handler: StoryHandler,
+    ): Boolean {
         val intent = (botBus.intent as? Intent)?.name ?: botBus.intent.toString()
         client.message(
             Message(
@@ -37,8 +39,8 @@ internal class ChatBaseStoryHandlerListener(private val apiKey: String, private 
                 message = botBus.userText ?: "",
                 intent = intent,
                 notHandled = intent == "unknown",
-                version = version
-            )
+                version = version,
+            ),
         )
         return true
     }

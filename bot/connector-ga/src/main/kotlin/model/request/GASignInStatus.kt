@@ -23,5 +23,5 @@ enum class GASignInStatus {
     SIGN_IN_STATUS_UNSPECIFIED,
     OK,
     CANCELLED,
-    ERROR
+    ERROR,
 }

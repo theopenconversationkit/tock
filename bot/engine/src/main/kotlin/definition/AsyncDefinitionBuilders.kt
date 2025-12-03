@@ -20,7 +20,6 @@ import ai.tock.bot.engine.AsyncBus
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.translator.UserInterfaceType
 
-
 /**
  * Creates a new coroutine-based story.
  */
@@ -59,17 +58,20 @@ inline fun <reified T : AsyncStoryHandling, D> storyDef(
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: suspend AsyncBus.() -> D
+    noinline preconditionsChecker: suspend AsyncBus.() -> D,
 ): AsyncStoryDefinitionBase<AsyncStoryStep<T>> =
     AsyncStoryDefinitionBase(
         intentName,
         AsyncConfigurableStoryHandler(Intent(intentName), handling, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
-        steps + simpleSteps.onEach { check(it !is AsyncStoryDataStep<*, *, *>) {
-            "Story data steps must be provided in the steps parameter, not simpleSteps"
-        } },
-        unsupportedUserInterface
+        steps +
+            simpleSteps.onEach {
+                check(it !is AsyncStoryDataStep<*, *, *>) {
+                    "Story data steps must be provided in the steps parameter, not simpleSteps"
+                }
+            },
+        unsupportedUserInterface,
     )
 
 /**
@@ -106,7 +108,7 @@ inline fun <reified T : AsyncStoryHandling> storyDef(
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {}
+    noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {},
 ): AsyncStoryDefinitionBase<AsyncStoryStep<T>> =
     AsyncStoryDefinitionBase(
         intentName,
@@ -114,7 +116,7 @@ inline fun <reified T : AsyncStoryHandling> storyDef(
         otherStarterIntents,
         secondaryIntents,
         steps,
-        unsupportedUserInterface
+        unsupportedUserInterface,
     )
 
 /**
@@ -147,18 +149,20 @@ inline fun <reified T : AsyncStoryHandling, reified S, D> storyDefWithSteps(
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: suspend AsyncBus.() -> D
+    noinline preconditionsChecker: suspend AsyncBus.() -> D,
 ): AsyncStoryDefinitionBase<S> where S : Enum<S>, S : AsyncStoryStep<T> =
     AsyncStoryDefinitionBase(
         name = intentName,
-        storyHandler = AsyncConfigurableStoryHandler(
-            Intent(intentName), handling,
-            preconditionsChecker
-        ),
+        storyHandler =
+            AsyncConfigurableStoryHandler(
+                Intent(intentName),
+                handling,
+                preconditionsChecker,
+            ),
         otherStarterIntents = otherStarterIntents,
         secondaryIntents = secondaryIntents,
         stepsList = enumValues<S>().toList(),
-        unsupportedUserInterface = unsupportedUserInterface
+        unsupportedUserInterface = unsupportedUserInterface,
     )
 
 /**
@@ -191,16 +195,18 @@ inline fun <reified T : AsyncStoryHandling, reified S> storyDefWithSteps(
      * Check preconditions. if [AsyncBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
-    noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {}
+    noinline preconditionsChecker: suspend AsyncBus.() -> Unit = {},
 ): AsyncStoryDefinitionBase<S> where S : Enum<S>, S : AsyncStoryStep<T> =
     AsyncStoryDefinitionBase(
         name = intentName,
-        storyHandler = AsyncConfigurableStoryHandler(
-            Intent(intentName), handling,
-            preconditionsChecker
-        ),
+        storyHandler =
+            AsyncConfigurableStoryHandler(
+                Intent(intentName),
+                handling,
+                preconditionsChecker,
+            ),
         otherStarterIntents = otherStarterIntents,
         secondaryIntents = secondaryIntents,
         stepsList = enumValues<S>().toList(),
-        unsupportedUserInterface = unsupportedUserInterface
+        unsupportedUserInterface = unsupportedUserInterface,
     )

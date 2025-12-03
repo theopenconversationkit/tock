@@ -28,7 +28,6 @@ import ai.tock.nlp.front.shared.parser.ParseResult
  *
  */
 interface Parser {
-
     /**
      * Parses sentences with NLP.
      */

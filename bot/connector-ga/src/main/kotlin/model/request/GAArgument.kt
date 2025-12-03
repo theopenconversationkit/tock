@@ -24,9 +24,8 @@ data class GAArgument(
     val boolValue: Boolean? = null,
     val textValue: String? = null,
     val datetimeValue: GADateTime? = null,
-    val extension: GAArgumentValue? = null
+    val extension: GAArgumentValue? = null,
 ) {
-
     @get:JsonIgnore
     val builtInArg: GAArgumentBuiltInName? =
         try {

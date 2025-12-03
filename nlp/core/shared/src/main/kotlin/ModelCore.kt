@@ -25,7 +25,6 @@ import ai.tock.nlp.core.sample.SampleExpression
  * The main entry point to manage NLP models.
  */
 interface ModelCore {
-
     /**
      * Load all models in memory.
      */
@@ -36,7 +35,7 @@ interface ModelCore {
      */
     fun updateIntentModel(
         context: BuildContext,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     )
 
     /**
@@ -45,7 +44,7 @@ interface ModelCore {
     fun updateEntityModelForIntent(
         context: BuildContext,
         intent: Intent,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     )
 
     /**
@@ -54,20 +53,23 @@ interface ModelCore {
     fun updateEntityModelForEntityType(
         context: BuildContext,
         entityType: EntityType,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     )
 
     /**
      * Remove models that does not match specified applications or intents.
      */
-    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
+    fun deleteOrphans(
+        applicationsAndIntents: Map<Application, Set<Intent>>,
+        entityTypes: List<EntityType>,
+    )
 
     /**
      * Test a model and returns a report.
      */
     fun testModel(
         context: TestContext,
-        expressions: List<SampleExpression>
+        expressions: List<SampleExpression>,
     ): TestModelReport
 
     /**
@@ -75,7 +77,7 @@ interface ModelCore {
      */
     fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
+        nlpEngineType: NlpEngineType,
     ): NlpApplicationConfiguration
 
     /**
@@ -84,6 +86,6 @@ interface ModelCore {
     fun updateModelConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     )
 }

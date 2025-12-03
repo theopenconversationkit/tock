@@ -32,10 +32,11 @@ import kotlin.reflect.KClass
  */
 @JsonDeserialize(using = CustomValueDeserializer::class)
 data class CustomValueWrapper(val klass: String, val value: Any?) : Value {
-
     internal class CustomValueDeserializer : JsonDeserializer<CustomValueWrapper>() {
-
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): CustomValueWrapper? {
+        override fun deserialize(
+            jp: JsonParser,
+            context: DeserializationContext,
+        ): CustomValueWrapper? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
                 val classValue: Class<*>? =

@@ -24,7 +24,7 @@ class SimpleDef(bus: BotBus) : HandlerDef<Connector>(bus)
 
 data class StoryData(
     val entityValue: String? = null,
-    val departureDate: ZonedDateTime? = null
+    val departureDate: ZonedDateTime? = null,
 )
 
 class Def(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
@@ -53,7 +53,7 @@ class Connector(context: Def) : ConnectorDef<Def>(context)
 
 data class StoryData2(
     val entityValue: String?,
-    val departureDate: ZonedDateTime?
+    val departureDate: ZonedDateTime?,
 )
 
 class Def2(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
@@ -80,26 +80,28 @@ class Def2(bus: BotBus, val data: StoryData) : HandlerDef<Connector>(bus) {
 
 class Connector2(context: Def2) : ConnectorDef<Def2>(context)
 
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class Step2 : StoryDataStep<Def2, StoryData, StoryData2> {
     s1 {
+        override fun checkPreconditions(): BotBus.(StoryData?) -> StoryData2? =
+            {
+                changeContextValue("myValue", entityText("entity"))
 
-        override fun checkPreconditions(): BotBus.(StoryData?) -> StoryData2? = {
-            changeContextValue("myValue", entityText("entity"))
+                StoryData2(
+                    entityText("entity"),
+                    entityValue<DateEntityRange>("date")?.start(),
+                )
+            }
 
-            StoryData2(
-                entityText("entity"),
-                entityValue<DateEntityRange>("date")?.start()
-            )
-        }
+        override fun handler(): Def2.(StoryData2?) -> Any? =
+            { data: StoryData2? ->
+                changeContextValue("myValue", data?.entityValue)
 
-        override fun handler(): Def2.(StoryData2?) -> Any? = { data: StoryData2? ->
-            changeContextValue("myValue", data?.entityValue)
-
-            end("at {0}?", data?.departureDate)
-        }
+                end("at {0}?", data?.departureDate)
+            }
     },
 
-    s2
+    s2,
 }
 
 object Step3 : StoryDataStepBase<Def2, StoryData, EmptyData>(reply = { "ok" })

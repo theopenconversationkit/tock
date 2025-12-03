@@ -28,13 +28,11 @@ fun <T : Bus<T>> T.withTeams(messageProvider: () -> TeamsBotMessage): T {
     return withMessage(teamsConnectorType, messageProvider)
 }
 
-fun I18nTranslator.teamsMessage(
-    text: CharSequence
-): TeamsBotTextMessage = TeamsBotTextMessage(translate(text).toString())
+fun I18nTranslator.teamsMessage(text: CharSequence): TeamsBotTextMessage = TeamsBotTextMessage(translate(text).toString())
 
 fun I18nTranslator.teamsMessageWithButtonCard(
     urlText: CharSequence,
-    links: List<CardAction>
+    links: List<CardAction>,
 ): TeamsCardAction = TeamsCardAction(translate(urlText).toString(), links)
 
 fun I18nTranslator.teamsHeroCard(
@@ -43,25 +41,22 @@ fun I18nTranslator.teamsHeroCard(
     attachmentContent: CharSequence,
     images: List<CardImage>? = null,
     buttons: List<CardAction>? = null,
-    tap: CardAction? = null
-): TeamsHeroCard = TeamsHeroCard(
-    translate(title).toString(),
-    subtitle?.let { translate(subtitle).toString() },
-    translate(attachmentContent).toString(),
-    images,
-    buttons,
-    tap
-)
+    tap: CardAction? = null,
+): TeamsHeroCard =
+    TeamsHeroCard(
+        translate(title).toString(),
+        subtitle?.let { translate(subtitle).toString() },
+        translate(attachmentContent).toString(),
+        images,
+        buttons,
+        tap,
+    )
 
-fun I18nTranslator.teamsCarousel(
-    carouselContent: List<TeamsBotMessage>
-): TeamsCarousel = TeamsCarousel(carouselContent)
+fun I18nTranslator.teamsCarousel(carouselContent: List<TeamsBotMessage>): TeamsCarousel = TeamsCarousel(carouselContent)
 
 fun cardImage(url: String): CardImage = CardImage().apply { this.url = url }
 
-fun <T : Bus<T>> T.nlpCardAction(
-    title: CharSequence
-): CardAction =
+fun <T : Bus<T>> T.nlpCardAction(title: CharSequence): CardAction =
     translate(title).toString().let { t ->
         CardAction(IM_BACK, t, t).apply {
             value = t
@@ -71,7 +66,7 @@ fun <T : Bus<T>> T.nlpCardAction(
 
 fun <T : Bus<T>> T.urlCardAction(
     title: CharSequence,
-    url: String
+    url: String,
 ): CardAction =
     translate(title).toString().let { t ->
         CardAction(OPEN_URL, t).apply {

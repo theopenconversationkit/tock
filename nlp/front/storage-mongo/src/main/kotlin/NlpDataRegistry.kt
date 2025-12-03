@@ -28,7 +28,6 @@ import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
-import ai.tock.nlp.front.shared.namespace.NamespaceSharingConfiguration
 import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.nlp.front.shared.parser.ParseResult
 import ai.tock.nlp.front.shared.parser.QueryContext
@@ -62,7 +61,7 @@ import org.litote.kmongo.DataRegistry
         DictionaryData::class,
         UserNamespace::class,
         NamespaceConfiguration::class,
-    ]
+    ],
 )
 @JacksonDataRegistry(
     [
@@ -85,6 +84,6 @@ import org.litote.kmongo.DataRegistry
         UserActionLog::class,
         UserNamespace::class,
         NamespaceConfiguration::class,
-    ]
+    ],
 )
 internal object NlpDataRegistry

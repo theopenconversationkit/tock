@@ -31,8 +31,18 @@ import ai.tock.translator.I18nLocalizedLabel
  * @see AsyncStoryHandlerBase
  */
 interface I18nStoryHandler : StoryHandler, I18nKeyProvider {
-    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue
-    fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue
+    fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        vararg args: Any?,
+    ): I18nLabelValue
+
+    fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        defaultI18n: Set<I18nLocalizedLabel>,
+        vararg args: Any?,
+    ): I18nLabelValue
 
     var i18nNamespace: String
         @InternalTockApi set // should never be set by consumer code

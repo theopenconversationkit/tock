@@ -28,7 +28,6 @@ import kotlin.test.assertEquals
  *
  */
 class WhatsAppClientTest {
-
     @Test
     fun `LoginResponse is deserialized`() {
         val client = WhatsAppClient("http://test", "login", "password")
@@ -41,11 +40,11 @@ class WhatsAppClientTest {
         val r: LoginResponse = client.clientMapper.readValue(response)
         assertEquals(
             "eyJhbGciOHlXVCJ9.eyJ1c2VyIjoNTIzMDE2Nn0.mEoF0COaO00Z1cANo",
-            r.users.first().token
+            r.users.first().token,
         )
         assertEquals(
             OffsetDateTime.of(LocalDateTime.parse("2018-03-01T15:29:26"), ZoneOffset.UTC),
-            r.users.first().expiresAfter
+            r.users.first().expiresAfter,
         )
     }
 }

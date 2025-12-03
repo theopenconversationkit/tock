@@ -29,5 +29,5 @@ data class NlpStats(
     val actionId: Id<Action>,
     val stats: NlpCallStats,
     val appNamespace: String,
-    val date: Instant
+    val date: Instant,
 )

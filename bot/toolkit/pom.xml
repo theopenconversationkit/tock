@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>25.10.2-SNAPSHOT</version>
+        <version>25.10.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>bot-toolkit</artifactId>
@@ -88,6 +88,10 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-open-ai</artifactId>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>

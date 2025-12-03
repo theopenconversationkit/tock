@@ -28,10 +28,12 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 data class Option private constructor(val label: String, val description: String, val metadata: String) : AbstractOption() {
-
     companion object {
-
-        fun of(label: String, description: String, metadata: String): Option {
+        fun of(
+            label: String,
+            description: String,
+            metadata: String,
+        ): Option {
             if (label.length > MAX_OPTION_LABEL) {
                 logger.warn { "label $label has more than $MAX_OPTION_LABEL chars, it will be truncated" }
             }
@@ -46,7 +48,7 @@ data class Option private constructor(val label: String, val description: String
             return Option(
                 label.truncateIfLongerThan(MAX_OPTION_LABEL),
                 description.truncateIfLongerThan(MAX_OPTION_DESCRIPTION),
-                metadata.truncateIfLongerThan(MAX_METADATA)
+                metadata.truncateIfLongerThan(MAX_METADATA),
             )
         }
     }
@@ -57,7 +59,7 @@ data class Option private constructor(val label: String, val description: String
                 Choice(
                     intent,
                     params +
-                        mapNotNullValues(SendChoice.TITLE_PARAMETER to label)
+                        mapNotNullValues(SendChoice.TITLE_PARAMETER to label),
                 )
             }
     }

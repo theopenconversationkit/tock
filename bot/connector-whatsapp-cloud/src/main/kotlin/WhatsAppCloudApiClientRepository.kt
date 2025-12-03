@@ -37,6 +37,4 @@ internal fun createCloudApiClient(connectorConfiguration: ConnectorConfiguration
 /**
  * Allow to retrieve the WhatsAppCloudApiClient from the cache.
  */
-fun getWhatsAppCloudApiClient(connectorId: String? = null): WhatsAppCloudApiClient? =
-    cloudApiClientCache[connectorId] ?: cloudApiClientCache.values.firstOrNull()
-
+fun getWhatsAppCloudApiClient(connectorId: String? = null): WhatsAppCloudApiClient? = cloudApiClientCache[connectorId] ?: cloudApiClientCache.values.firstOrNull()

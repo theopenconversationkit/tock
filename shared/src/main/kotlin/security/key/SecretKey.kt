@@ -16,7 +16,6 @@
 
 package ai.tock.shared.security.key
 
-
 import ai.tock.shared.Constants
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -24,12 +23,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = RawSecretKey::class, name = Constants.SECRET_KEY_RAW),
     JsonSubTypes.Type(value = AwsSecretKey::class, name = Constants.SECRET_KEY_AWS),
-    JsonSubTypes.Type(value = GcpSecretKey::class, name = Constants.SECRET_KEY_GCP)
+    JsonSubTypes.Type(value = GcpSecretKey::class, name = Constants.SECRET_KEY_GCP),
 )
 abstract class SecretKey(
     val type: SecretKeyType,
@@ -39,7 +38,6 @@ interface NamedSecretKey {
     val secretName: String
 }
 
-interface HasSecretKey<T>{
+interface HasSecretKey<T> {
     val secretKey: T
 }
-

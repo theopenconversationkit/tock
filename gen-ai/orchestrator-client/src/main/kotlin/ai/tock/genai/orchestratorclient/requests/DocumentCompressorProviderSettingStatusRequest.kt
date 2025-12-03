@@ -18,7 +18,6 @@ package ai.tock.genai.orchestratorclient.requests
 
 import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
 
-
 class DocumentCompressorProviderSettingStatusRequest(
-    val setting: DocumentCompressorSetting
+    val setting: DocumentCompressorSetting,
 )

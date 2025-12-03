@@ -23,8 +23,9 @@ import ai.tock.iadvize.client.graphql.CloseMessageInput
 class IadvizeClose : IadvizeReply(ReplyType.close) {
     override fun toChatBotActionOrMessageInput() =
         ChatbotActionOrMessageInput(
-            chatbotAction = ChatbotActionInput(
-                closeMessage = CloseMessageInput()
-            )
+            chatbotAction =
+                ChatbotActionInput(
+                    closeMessage = CloseMessageInput(),
+                ),
         )
 }

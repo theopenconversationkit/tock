@@ -19,7 +19,7 @@ package ai.tock.bot.connector.ga.model.response
 import ai.tock.bot.engine.message.GenericMessage
 
 data class GAFinalResponse(
-    val richResponse: GARichResponse
+    val richResponse: GARichResponse,
 ) {
     fun toGenericMessage(): GenericMessage? = richResponse.toGenericMessage()
 }

@@ -16,7 +16,7 @@
   -->
 
 <!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
-<svg width="48" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" height="48">
+<svg width="48" xmlns="http://www.w3.org/2000/svg" version="1.1" height="48">
  <defs>
   <radialGradient id="radialGradient4120" gradientUnits="userSpaceOnUse" cy="63.965" cx="15.116" gradientTransform="scale(1.644 .60828)" r="12.289">
    <stop id="stop4116" offset="0"/>

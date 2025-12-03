@@ -22,5 +22,5 @@ import ai.tock.bot.connector.ga.model.response.transaction.v3.GAOrderUpdateV3
  *
  */
 data class GAStructuredResponse(
-    val orderUpdateV3: GAOrderUpdateV3?
+    val orderUpdateV3: GAOrderUpdateV3?,
 )

@@ -18,20 +18,15 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.web.channel.ChannelDAO
 import ai.tock.bot.connector.web.channel.ChannelMongoDAO
-import ai.tock.bot.connector.web.security.WebSecurityCookiesHandler
-import ai.tock.bot.connector.web.security.WebSecurityPassthroughHandler
-import ai.tock.shared.security.auth.spi.WebSecurityHandler
-import ai.tock.shared.security.auth.spi.WebSecurityMode
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 
-val webConnectorModule = Kodein.Module {
-    bind<ChannelDAO>() with singleton { ChannelMongoDAO }
-    bind<WebSecurityHandler>(tag = WebSecurityMode.COOKIES.name) with singleton { WebSecurityCookiesHandler() }
-    bind<WebSecurityHandler>(tag = WebSecurityMode.PASSTHROUGH.name) with singleton { WebSecurityPassthroughHandler() }
-}
+val webConnectorModule =
+    Kodein.Module {
+        bind<ChannelDAO>() with singleton { ChannelMongoDAO }
+    }
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService
 class IOCModulesService : BotAdditionalModulesService {

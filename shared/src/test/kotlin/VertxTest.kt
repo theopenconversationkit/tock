@@ -36,14 +36,13 @@ import kotlin.test.assertEquals
  *
  */
 class VertxTest {
-
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(
             Kodein.invoke {
                 bind<VertxProvider>() with provider { TockVertxProvider }
-            }
+            },
         )
     }
 

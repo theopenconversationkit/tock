@@ -29,14 +29,13 @@ import ai.tock.translator.I18nLabel
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import java.util.UUID
 import org.litote.kmongo.toId
+import java.util.UUID
 
 /**
  * To manage uploaded files.
  */
 object UploadedFilesService {
-
     private const val UPLOADED_TYPE = "_uploaded"
     private val basePath = property("tock_bot_serve_files_path", "/f/")
     private val imagesTypes = setOf("png", "jpg", "jpeg", "svg", "gif")
@@ -61,7 +60,7 @@ object UploadedFilesService {
         namespace: String,
         fileName: String,
         bytes: ByteArray,
-        description: I18nLabel? = null
+        description: I18nLabel? = null,
     ): MediaFileDescriptor? {
         val id = (namespace + UUID.randomUUID().toString()).lowercase()
         val name = fileName.trim().lowercase()
@@ -77,14 +76,24 @@ object UploadedFilesService {
         return MediaFileDescriptor(suffix, fileName, id, description = description)
     }
 
-    fun downloadFile(context: RoutingContext, id: String, suffix: String) {
+    fun downloadFile(
+        context: RoutingContext,
+        id: String,
+        suffix: String,
+    ) {
         downloadFile(context, "$id.$suffix")
     }
 
-    internal fun fileId(id: String, suffix: String): String = "$id.$suffix"
+    internal fun fileId(
+        id: String,
+        suffix: String,
+    ): String = "$id.$suffix"
 
-    internal fun botFilePath(bus: BotBus, id: String, suffix: String): String =
-        (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + fileId(id, suffix)
+    internal fun botFilePath(
+        bus: BotBus,
+        id: String,
+        suffix: String,
+    ): String = (bus as? TockBotBus)?.connector?.getBaseUrl() + basePath + fileId(id, suffix)
 
     fun getFileContentFromUrl(url: String): ByteArray? =
         url.run {
@@ -98,7 +107,10 @@ object UploadedFilesService {
 
     internal fun getFileContentFromId(id: String): ByteArray? = getFromCache(id.toId(), UPLOADED_TYPE) as? ByteArray
 
-    private fun downloadFile(context: RoutingContext, id: String) {
+    private fun downloadFile(
+        context: RoutingContext,
+        id: String,
+    ) {
         val bytes: ByteArray? = getFileContentFromId(id)
         if (bytes != null) {
             context.response().putHeader("Content-Type", guessContentType(id))

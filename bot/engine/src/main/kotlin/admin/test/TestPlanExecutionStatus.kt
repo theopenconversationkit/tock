@@ -28,5 +28,5 @@ enum class TestPlanExecutionStatus {
     SUCCESS,
     FAILED,
     COMPLETE,
-    UNKNOWN
+    UNKNOWN,
 }

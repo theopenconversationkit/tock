@@ -22,7 +22,6 @@ import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.shared.Dice
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
-import ai.tock.translator.Translator
 
 /**
  * A file descriptor.
@@ -33,9 +32,8 @@ data class MediaFileDescriptor(
     val id: String = Dice.newId(),
     val type: AttachmentType = UploadedFilesService.attachmentType(suffix),
     val externalUrl: String? = null,
-    val description: I18nLabel? = null
+    val description: I18nLabel? = null,
 ) {
-
     /**
      * Creates a [MediaMessage] for the specified [BotBus].
      */

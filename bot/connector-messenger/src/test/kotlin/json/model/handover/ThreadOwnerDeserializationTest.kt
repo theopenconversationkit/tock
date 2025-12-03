@@ -23,7 +23,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ThreadOwnerDeserializationTest {
-
     @Test
     fun `GIVEN Thread owner data THEN deserialization is ok`() {
         val t = """{"data":[{"thread_owner":{"app_id":"655869374944173"}}]}"""

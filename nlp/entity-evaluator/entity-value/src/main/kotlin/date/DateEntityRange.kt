@@ -25,7 +25,6 @@ import java.time.ZonedDateTime
  * Both [DateEntityValue] && [DateIntervalEntityValue] can be seen as date range.
  */
 interface DateEntityRange : Value {
-
     /**
      * Returns the start inclusive date.
      * Ie

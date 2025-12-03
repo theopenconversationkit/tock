@@ -52,5 +52,5 @@ data class UserActionLog(
     /**
      * Date of the action.
      */
-    val date: Instant = now()
+    val date: Instant = now(),
 )

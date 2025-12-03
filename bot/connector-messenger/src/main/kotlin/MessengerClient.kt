@@ -65,41 +65,73 @@ private const val VERSION = "20.0"
  * Messenger client.
  */
 internal class MessengerClient(val secretKey: String) {
-
     interface GraphApi {
+        @POST("/v$VERSION/me/messages")
+        fun sendMessage(
+            @Query("access_token") accessToken: String,
+            @Body messageRequest: MessageRequest,
+        ): Call<SendResponse>
 
         @POST("/v$VERSION/me/messages")
-        fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
-
-        @POST("/v$VERSION/me/messages")
-        fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
+        fun sendAction(
+            @Query("access_token") accessToken: String,
+            @Body actionRequest: ActionRequest,
+        ): Call<SendResponse>
 
         @GET("/v$VERSION/{userId}/")
-        fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
+        fun getUserProfile(
+            @Path("userId") userId: String,
+            @Query("access_token") accessToken: String,
+            @Query("fields") fields: String,
+        ): Call<UserProfile>
 
         @POST("/v$VERSION/me/message_attachments")
-        fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
+        fun sendAttachment(
+            @Query("access_token") accessToken: String,
+            @Body attachmentRequest: AttachmentRequest,
+        ): Call<SendResponse>
 
         @POST("/v$VERSION/me/pass_thread_control")
-        fun passThreadControl(@Query("access_token") accessToken: String, @Body request: PassThreadControlRequest): Call<SendResponse>
+        fun passThreadControl(
+            @Query("access_token") accessToken: String,
+            @Body request: PassThreadControlRequest,
+        ): Call<SendResponse>
 
         @POST("/v$VERSION/me/take_thread_control")
-        fun takeThreadControl(@Query("access_token") accessToken: String, @Body request: TakeThreadControlRequest): Call<SendResponse>
+        fun takeThreadControl(
+            @Query("access_token") accessToken: String,
+            @Body request: TakeThreadControlRequest,
+        ): Call<SendResponse>
 
         @POST("/v$VERSION/me/request_thread_control")
-        fun requestThreadControl(@Query("access_token") accessToken: String, @Body request: RequestThreadControlRequest): Call<SendResponse>
+        fun requestThreadControl(
+            @Query("access_token") accessToken: String,
+            @Body request: RequestThreadControlRequest,
+        ): Call<SendResponse>
 
         @GET("/v$VERSION/me/secondary_receivers")
-        fun secondaryReceivers(@Query("access_token") accessToken: String, @Query("fields") recipient: String = "id,name"): Call<SecondaryReceiverResponse>
+        fun secondaryReceivers(
+            @Query("access_token") accessToken: String,
+            @Query("fields") recipient: String = "id,name",
+        ): Call<SecondaryReceiverResponse>
 
         @GET("/v$VERSION/me/thread_owner")
-        fun threadOwner(@Query("access_token") accessToken: String, @Query("recipient") recipient: String): Call<ThreadOwnerResponse>
+        fun threadOwner(
+            @Query("access_token") accessToken: String,
+            @Query("recipient") recipient: String,
+        ): Call<ThreadOwnerResponse>
 
         @POST("/{appId}/activities")
-        fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
+        fun sendCustomEvent(
+            @Path("appId") appId: String,
+            @Body customEventRequest: CustomEventRequest,
+        ): Call<SendResponse>
 
         @GET("/v$VERSION/{appId}/subscriptions")
-        fun getSubscriptions(@Path("appId") appId: String, @Query("access_token") appAccessToken: String): Call<SubscriptionsResponse>
+        fun getSubscriptions(
+            @Path("appId") appId: String,
+            @Query("access_token") appAccessToken: String,
+        ): Call<SubscriptionsResponse>
 
         @POST("/v$VERSION/{appId}/subscriptions")
         fun subscriptions(
@@ -108,26 +140,25 @@ internal class MessengerClient(val secretKey: String) {
             @Query("callback_url") callbackUrl: String,
             @Query("fields") fields: String,
             @Query("verify_token") verifyToken: String,
-            @Query("access_token") appAccessToken: String
+            @Query("access_token") appAccessToken: String,
         ): Call<SuccessResponse>
 
         @DELETE("/v$VERSION/{pageId}/subscribed_apps")
         fun deleteSubscribedApps(
             @Path("pageId") pageId: String,
             @Query("subscribed_fields") subscribedFields: String,
-            @Query("access_token") accessToken: String
+            @Query("access_token") accessToken: String,
         ): Call<SuccessResponse>
 
         @POST("/v$VERSION/{pageId}/subscribed_apps")
         fun subscribedApps(
             @Path("pageId") pageId: String,
             @Query("subscribed_fields") subscribedFields: String,
-            @Query("access_token") accessToken: String
+            @Query("access_token") accessToken: String,
         ): Call<SuccessResponse>
     }
 
     interface StatusApi {
-
         @GET("/platform/api-status")
         fun status(): Call<ResponseBody>
     }
@@ -140,23 +171,25 @@ internal class MessengerClient(val secretKey: String) {
     private val extendedProfileFields = property("tock_messenger_extended_profile_fields", "")
 
     init {
-        graphApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_messenger_request_timeout_ms", 30000),
-            logger,
-            requestGZipEncoding = booleanProperty("tock_messenger_request_gzip", true)
-        )
-            .baseUrl("https://graph.facebook.com")
-            .addJacksonConverter()
-            .build()
-            .create()
-        statusApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_messenger_request_timeout_ms", 5000),
-            logger,
-            Level.BASIC
-        )
-            .baseUrl("https://www.facebook.com")
-            .build()
-            .create()
+        graphApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_messenger_request_timeout_ms", 30000),
+                logger,
+                requestGZipEncoding = booleanProperty("tock_messenger_request_gzip", true),
+            )
+                .baseUrl("https://graph.facebook.com")
+                .addJacksonConverter()
+                .build()
+                .create()
+        statusApi =
+            retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_messenger_request_timeout_ms", 5000),
+                logger,
+                Level.BASIC,
+            )
+                .baseUrl("https://www.facebook.com")
+                .build()
+                .create()
     }
 
     fun healthcheck(): Boolean {
@@ -168,15 +201,24 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {
+    fun sendMessage(
+        token: String,
+        messageRequest: MessageRequest,
+    ): SendResponse {
         return send(messageRequest) { graphApi.sendMessage(token, messageRequest).execute() }
     }
 
-    fun sendAttachment(token: String, request: AttachmentRequest): SendResponse? {
+    fun sendAttachment(
+        token: String,
+        request: AttachmentRequest,
+    ): SendResponse? {
         return graphApi.sendAttachment(token, request).execute().body()
     }
 
-    fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {
+    fun sendAction(
+        token: String,
+        actionRequest: ActionRequest,
+    ): SendResponse? {
         return try {
             send(actionRequest) { graphApi.sendAction(token, actionRequest).execute() }
         } catch (e: Exception) {
@@ -186,11 +228,17 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest): SendResponse {
+    fun sendCustomEvent(
+        applicationId: String,
+        customEventRequest: CustomEventRequest,
+    ): SendResponse {
         return send(customEventRequest) { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() }
     }
 
-    fun requestThreadControl(token: String, request: RequestThreadControlRequest): SendResponse? {
+    fun requestThreadControl(
+        token: String,
+        request: RequestThreadControlRequest,
+    ): SendResponse? {
         return try {
             send(request) { graphApi.requestThreadControl(token, request).execute() }
         } catch (e: Exception) {
@@ -200,7 +248,10 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun takeThreadControl(token: String, request: TakeThreadControlRequest): SendResponse? {
+    fun takeThreadControl(
+        token: String,
+        request: TakeThreadControlRequest,
+    ): SendResponse? {
         return try {
             send(request) { graphApi.takeThreadControl(token, request).execute() }
         } catch (e: Exception) {
@@ -210,7 +261,10 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun passThreadControl(token: String, request: PassThreadControlRequest): SendResponse? {
+    fun passThreadControl(
+        token: String,
+        request: PassThreadControlRequest,
+    ): SendResponse? {
         return try {
             send(request) { graphApi.passThreadControl(token, request).execute() }
         } catch (e: Exception) {
@@ -220,7 +274,10 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun getThreadOwnerId(token: String, userId: String): String? =
+    fun getThreadOwnerId(
+        token: String,
+        userId: String,
+    ): String? =
         try {
             graphApi.threadOwner(token, userId).execute().body()?.data?.firstOrNull()?.threadOwner?.appId
         } catch (e: Exception) {
@@ -240,10 +297,12 @@ internal class MessengerClient(val secretKey: String) {
         return UserProfile("", "", null, null, 0, null)
     }
 
-    fun getUserProfile(token: String, recipient: Recipient): UserProfile {
+    fun getUserProfile(
+        token: String,
+        recipient: Recipient,
+    ): UserProfile {
         val requestTimerData = requestTimer.start("messenger_user_profile")
         return try {
-
             graphApi.getUserProfile(recipient.id!!, token, getProfileFields(extendedProfileFields))
                 .execute().body() ?: defaultUserProfile()
         } catch (e: Exception) {
@@ -274,11 +333,17 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    private fun <T : Any> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
+    private fun <T : Any> send(
+        request: T,
+        call: (T) -> Response<SendResponse>,
+    ): SendResponse {
         return send(request, call, 0)
     }
 
-    private fun <T> warnRequest(request: T, msg: () -> Any?) {
+    private fun <T> warnRequest(
+        request: T,
+        msg: () -> Any?,
+    ) {
         if (request is ActionRequest) {
             logger.debug(msg)
         } else {
@@ -286,12 +351,19 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    private fun <T> throwError(request: T, errorMessage: String): Nothing {
+    private fun <T> throwError(
+        request: T,
+        errorMessage: String,
+    ): Nothing {
         warnRequest(request) { mapper.writeValueAsString(request) }
         throw ConnectorException(errorMessage)
     }
 
-    private fun <T : Any> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
+    private fun <T : Any> send(
+        request: T,
+        call: (T) -> Response<SendResponse>,
+        nbTries: Int,
+    ): SendResponse {
         val requestTimerData = requestTimer.start("messenger_send_${request.javaClass.simpleName.lowercase()}")
         try {
             val response = call(request)
@@ -332,7 +404,10 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun getSubscriptions(appId: String, appToken: String): SubscriptionsResponse? {
+    fun getSubscriptions(
+        appId: String,
+        appToken: String,
+    ): SubscriptionsResponse? {
         return try {
             graphApi.getSubscriptions(appId, appToken).execute().body()
         } catch (e: Exception) {
@@ -347,7 +422,7 @@ internal class MessengerClient(val secretKey: String) {
         callbackUrl: String,
         fields: String,
         verifyToken: String,
-        appToken: String
+        appToken: String,
     ): SuccessResponse? {
         return try {
             if (callbackUrl == "") {
@@ -361,7 +436,11 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun deleteSubscribedApps(pageId: String, fields: String, token: String): SuccessResponse? {
+    fun deleteSubscribedApps(
+        pageId: String,
+        fields: String,
+        token: String,
+    ): SuccessResponse? {
         return try {
             graphApi.deleteSubscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {
@@ -371,7 +450,11 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
-    fun subscribedApps(pageId: String, fields: String, token: String): SuccessResponse? {
+    fun subscribedApps(
+        pageId: String,
+        fields: String,
+        token: String,
+    ): SuccessResponse? {
         return try {
             graphApi.subscribedApps(pageId, fields, token).execute().body()
         } catch (e: Exception) {

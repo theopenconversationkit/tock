@@ -23,10 +23,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 data class AuthResponse(
     @JsonProperty("refresh_token")
-    val refreshToken:String? = null,
+    val refreshToken: String? = null,
     @JsonProperty("token_type")
     val tokenType: String? = null,
     @JsonProperty("access_token")
-    val accessToken: String?=null,
+    val accessToken: String? = null,
     @JsonProperty("expires_in")
-    val expiresIn: Number? = null )
+    val expiresIn: Number? = null,
+)

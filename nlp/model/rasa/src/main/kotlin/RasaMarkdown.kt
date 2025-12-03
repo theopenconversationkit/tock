@@ -18,21 +18,22 @@ package ai.tock.nlp.rasa
 
 import ai.tock.nlp.core.sample.SampleExpression
 import ai.tock.nlp.model.IntentContext
-import ai.tock.shared.name
 import mu.KotlinLogging
 
 // TODO sub entities with rasa "group" feature
 internal object RasaMarkdown {
-
     private val logger = KotlinLogging.logger {}
 
     fun toModelDomainMarkdown(context: IntentContext): String =
         "intents:\n" +
             context.application.intents.joinToString(separator = "\n") { i ->
                 "  - ${i.name.escapeRasaName()}:\n      use_entities:" +
-                    if (i.entities.isEmpty()) " []"
-                    else i.entities.distinctBy { it.entityType.name }
-                        .joinToString(separator = "\n", prefix = "\n") { "        - ${it.entityType.name.escapeRasaName()}" }
+                    if (i.entities.isEmpty()) {
+                        " []"
+                    } else {
+                        i.entities.distinctBy { it.entityType.name }
+                            .joinToString(separator = "\n", prefix = "\n") { "        - ${it.entityType.name.escapeRasaName()}" }
+                    }
             } +
             "\n\nentities:\n" +
             context.application.intents.flatMap { it.entities }.distinctBy { it.entityType.name }
@@ -56,10 +57,11 @@ internal object RasaMarkdown {
             var result = this
             entities.sortedByDescending { it.start }.forEach { entity ->
                 val range = entity.toClosedRange()
-                result = result.replaceRange(
-                    range,
-                    "[${substring(range)}]{\"entity\":\"${entity.definition.entityType.name.escapeRasaName()}\",\"role\":\"${entity.definition.role}\"}"
-                )
+                result =
+                    result.replaceRange(
+                        range,
+                        "[${substring(range)}]{\"entity\":\"${entity.definition.entityType.name.escapeRasaName()}\",\"role\":\"${entity.definition.role}\"}",
+                    )
             }
             result
         }

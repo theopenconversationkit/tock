@@ -19,63 +19,72 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 import com.fasterxml.jackson.annotation.JsonProperty
 
 enum class ComponentType { BODY, CAROUSEL, HEADER, BUTTON }
+
 enum class ParameterType { TEXT, IMAGE, VIDEO, PAYLOAD }
+
 enum class ButtonSubType { QUICK_REPLY, URL, PHONE_NUMBER }
+
 data class WhatsAppCloudBotTemplate(
     val name: String,
     val language: Language,
-    val components: List<WhatsappTemplateComponent>
+    val components: List<WhatsappTemplateComponent>,
 )
 
-data class Language(@JsonProperty("code") val code: String)
+data class Language(
+    @JsonProperty("code") val code: String,
+)
 
 sealed class WhatsappTemplateComponent {
     abstract val type: ComponentType
 
     data class Body(
         override val type: ComponentType = ComponentType.BODY,
-        val parameters: List<TextParameter>
+        val parameters: List<TextParameter>,
     ) : WhatsappTemplateComponent()
 
     data class Header(
         override val type: ComponentType = ComponentType.HEADER,
-        val parameters: List<HeaderParameter>
+        val parameters: List<HeaderParameter>,
     ) : WhatsappTemplateComponent()
 
     data class Button(
         override val type: ComponentType = ComponentType.BUTTON,
         @JsonProperty("sub_type") val subType: ButtonSubType,
         val index: String,
-        val parameters: List<PayloadParameter>
+        val parameters: List<PayloadParameter>,
     ) : WhatsappTemplateComponent()
 
     data class Carousel(
         override val type: ComponentType = ComponentType.CAROUSEL,
-        val cards: List<Card>
+        val cards: List<Card>,
     ) : WhatsappTemplateComponent()
 
     data class Card(
         @JsonProperty("card_index") val cardIndex: Int,
-        val components: List<WhatsappTemplateComponent>
+        val components: List<WhatsappTemplateComponent>,
     )
 }
 
-
 data class TextParameter(val type: ParameterType, val text: String)
-data class PayloadParameter(val type: ParameterType, val payload: String?, val text: String)
 
+data class PayloadParameter(val type: ParameterType, val payload: String?, val text: String)
 
 sealed class HeaderParameter {
     data class Image(
         val type: ParameterType,
-        val image: ImageId
+        val image: ImageId,
     ) : HeaderParameter()
 
     data class Video(
         val type: ParameterType,
-        val video: VideoId
+        val video: VideoId,
     ) : HeaderParameter()
 }
 
-data class ImageId(@JsonProperty("id") var id: String?)
-data class VideoId(@JsonProperty("id") val id: String)
+data class ImageId(
+    @JsonProperty("id") var id: String?,
+)
+
+data class VideoId(
+    @JsonProperty("id") val id: String,
+)

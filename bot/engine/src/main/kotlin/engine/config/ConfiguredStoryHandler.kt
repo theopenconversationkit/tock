@@ -55,11 +55,10 @@ import mu.KotlinLogging
  *
  */
 internal class ConfiguredStoryHandler(
-        private val definition: BotDefinitionWrapper,
-        private val configuration: StoryDefinitionConfiguration,
-        private val configurationStoryHandler: BotConfigurationStoryHandler? = null,
+    private val definition: BotDefinitionWrapper,
+    private val configuration: StoryDefinitionConfiguration,
+    private val configurationStoryHandler: BotConfigurationStoryHandler? = null,
 ) : StoryHandler {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
@@ -78,15 +77,15 @@ internal class ConfiguredStoryHandler(
             val role = entity.role
             val entityTypeName = entity.entityTypeName
             if (role != entityTypeName &&
-                    bus.entityValueDetails(role) == null &&
-                    bus.hasActionEntity(entityTypeName)
+                bus.entityValueDetails(role) == null &&
+                bus.hasActionEntity(entityTypeName)
             ) {
                 bus.dialog.state.changeValue(
-                        role,
-                        bus.entityValueDetails(entityTypeName)
-                                ?.let { v ->
-                                    v.copy(entity = Entity(v.entity.entityType, role))
-                                }
+                    role,
+                    bus.entityValueDetails(entityTypeName)
+                        ?.let { v ->
+                            v.copy(entity = Entity(v.entity.entityType, role))
+                        },
                 )
                 bus.removeEntityValue(entityTypeName)
             }
@@ -113,8 +112,9 @@ internal class ConfiguredStoryHandler(
                 if (step.hasCurrentAnswer()) {
                     step.send(bus)
                 }
-                val targetIntent = step.targetIntent?.name
-                    ?: (bus.intent.takeIf { !step.hasCurrentAnswer() }?.wrappedIntent()?.name)
+                val targetIntent =
+                    step.targetIntent?.name
+                        ?: (bus.intent.takeIf { !step.hasCurrentAnswer() }?.wrappedIntent()?.name)
                 bus.botDefinition
                     .takeIf { targetIntent != null }
                     ?.findStoryDefinition(targetIntent, bus.connectorId)
@@ -132,8 +132,8 @@ internal class ConfiguredStoryHandler(
 
         val configurationName = BotRepository.getConfigurationByApplicationId(BotApplicationConfigurationKey(bus))?.name
         val answerContainer =
-                configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
-                        ?: configuration
+            configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
+                ?: configuration
         removeAskAgainProcess(bus)
         answerContainer.send(bus)
 
@@ -160,7 +160,6 @@ internal class ConfiguredStoryHandler(
             logger.debug { "bus.dialog.state.nextActionState  : $bus.dialog.state.nextActionState " }
             logger.debug { "NextIntentsQualifiers : ${bus.dialog.state.nextActionState} " }
         }
-
     }
 
     /**
@@ -173,22 +172,22 @@ internal class ConfiguredStoryHandler(
     private fun manageMetrics(bus: BotBus) {
         val busStep = bus.step as? Step
 
-        if(busStep == null) {
+        if (busStep == null) {
             // Save story handled metric if bot handle story and not a step
             configuration.saveMetric(
-                bus.createMetric(MetricType.STORY_HANDLED)
+                bus.createMetric(MetricType.STORY_HANDLED),
             )
 
             // if story has steps with metrics then save all metrics as QuestionAsked
             saveQuestionAskedMetrics(bus, configuration.steps.flatMap { it.metrics })
-
         } else {
             // Save step metric if bot handle story and not a step
             busStep.configuration.metrics
                 .map { bus.createMetric(MetricType.QUESTION_REPLIED, it.indicatorName, it.indicatorValueName) }
                 .also {
-                    if(it.isNotEmpty())
+                    if (it.isNotEmpty()) {
                         configuration.saveMetrics(it)
+                    }
                 }
 
             // if step has children with metrics then save all metrics as QuestionAsked
@@ -199,13 +198,17 @@ internal class ConfiguredStoryHandler(
     /**
      * Save distinct [MetricType.QUESTION_ASKED] metrics
      */
-    private fun saveQuestionAskedMetrics(bus: BotBus, metrics: List<StoryDefinitionStepMetric>) {
+    private fun saveQuestionAskedMetrics(
+        bus: BotBus,
+        metrics: List<StoryDefinitionStepMetric>,
+    ) {
         metrics.map { it.indicatorName }
             .distinct()
             .map { bus.createMetric(MetricType.QUESTION_ASKED, it) }
             .also {
-                if(it.isNotEmpty())
+                if (it.isNotEmpty()) {
                     configuration.saveMetrics(it)
+                }
             }
     }
 
@@ -233,22 +236,22 @@ internal class ConfiguredStoryHandler(
     }
 
     private fun switchStoryIfEnding(
-            step: StoryDefinitionConfigurationStep?,
-            bus: BotBus
+        step: StoryDefinitionConfigurationStep?,
+        bus: BotBus,
     ) {
         if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
             configuration.findEnabledEndWithStoryId(bus.connectorId)
-                    ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.connectorId) }
-                    ?.let {
-                        // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
-                        if (bus.connectorData.saveTimeline){
-                            runBlocking {
-                                userTimelineDAO.save(bus.userTimeline, bus.botDefinition, asynchronousProcess = false)
-                            }
+                ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.connectorId) }
+                ?.let {
+                    // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
+                    if (bus.connectorData.saveTimeline) {
+                        runBlocking {
+                            userTimelineDAO.save(bus.userTimeline, bus.botDefinition, asynchronousProcess = false)
                         }
-
-                        bus.switchConfiguredStory(it, it.mainIntent().name)
                     }
+
+                    bus.switchConfiguredStory(it, it.mainIntent().name)
+                }
         }
     }
 
@@ -256,7 +259,10 @@ internal class ConfiguredStoryHandler(
         get() =
             getBusContextValue<Set<StoryDefinition>>(VIEWED_STORIES_BUS_KEY) ?: emptySet()
 
-    private fun BotBus.switchConfiguredStory(target: StoryDefinition, newIntent: String) {
+    private fun BotBus.switchConfiguredStory(
+        target: StoryDefinition,
+        newIntent: String,
+    ) {
         step = step?.takeUnless { story.definition == target }
         setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
         handleAndSwitchStory(target, Intent(newIntent))
@@ -278,12 +284,11 @@ internal class ConfiguredStoryHandler(
 
     override fun support(bus: BotBus): Double = 1.0
 
-    private fun BotBus.fallbackAnswer() =
-        botDefinition.unknownStory.storyHandler.handle(this)
+    private fun BotBus.fallbackAnswer() = botDefinition.unknownStory.storyHandler.handle(this)
 
     private fun BotBus.handleSimpleAnswer(
         container: StoryDefinitionAnswersContainer,
-        simple: SimpleAnswerConfiguration?
+        simple: SimpleAnswerConfiguration?,
     ) {
         if (simple == null) {
             fallbackAnswer()
@@ -301,16 +306,17 @@ internal class ConfiguredStoryHandler(
                         val currentStep = (step as? Step)?.configuration
                         val endingStoryRule = configuration.findEnabledEndWithStoryId(connectorId) != null
                         send(
-                            container, this,
+                            container,
+                            this,
                             isMissingMandatoryEntities ||
-                                    // No steps and no ending story
-                                    (!steps && !endingStoryRule) ||
-                                    // Steps not started
-                                    (steps && currentStep == null) ||
-                                    // Steps started with children
-                                    (currentStep?.hasNoChildren == false) ||
-                                    // Steps started with no children, no target intent, no ending story
-                                    (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
+                                // No steps and no ending story
+                                (!steps && !endingStoryRule) ||
+                                // Steps not started
+                                (steps && currentStep == null) ||
+                                // Steps started with children
+                                (currentStep?.hasNoChildren == false) ||
+                                // Steps started with no children, no target intent, no ending story
+                                (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule),
                         )
                     }
                 }
@@ -337,10 +343,11 @@ internal class ConfiguredStoryHandler(
                                     transformedAnswers.removeLast()
                                     transformedAnswers.add(
                                         previousAnswer.copy(
-                                            mediaMessage = previousAnswerMedia.copy(
-                                                cards = previousAnswerMedia.cards + a.mediaMessage
-                                            )
-                                        )
+                                            mediaMessage =
+                                                previousAnswerMedia.copy(
+                                                    cards = previousAnswerMedia.cards + a.mediaMessage,
+                                                ),
+                                        ),
                                     )
                                 }
                                 is MediaCardDescriptor -> {
@@ -348,16 +355,21 @@ internal class ConfiguredStoryHandler(
                                     transformedAnswers.removeLast()
                                     transformedAnswers.add(
                                         previousAnswer.copy(
-                                            mediaMessage = MediaCarouselDescriptor(
-                                                listOf(previousAnswerMedia, a.mediaMessage)
-                                            )
-                                        )
+                                            mediaMessage =
+                                                MediaCarouselDescriptor(
+                                                    listOf(previousAnswerMedia, a.mediaMessage),
+                                                ),
+                                        ),
                                     )
                                 }
                                 else -> transformedAnswers.add(a)
                             }
-                        } else transformedAnswers.add(a)
-                    } else transformedAnswers.add(a)
+                        } else {
+                            transformedAnswers.add(a)
+                        }
+                    } else {
+                        transformedAnswers.add(a)
+                    }
                 }
             }
 
@@ -365,7 +377,11 @@ internal class ConfiguredStoryHandler(
         return transformedAnswers
     }
 
-    private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
+    private fun BotBus.send(
+        container: StoryDefinitionAnswersContainer,
+        answer: SimpleAnswer,
+        end: Boolean = false,
+    ) {
         val label = translate(answer.key)
         val suggestions = container.findNextSteps(this, configuration).map { this.translate(it) }
         val connectorMessages =
@@ -377,51 +393,52 @@ internal class ConfiguredStoryHandler(
                 ?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
-                                (
-                                        underlyingConnector.addSuggestions(
-                                            messages.last(),
-                                            suggestions
-                                        ).invoke(this)
-                                            ?: messages.last()
-                                        )
+                            (
+                                underlyingConnector.addSuggestions(
+                                    messages.last(),
+                                    suggestions,
+                                ).invoke(this)
+                                    ?: messages.last()
+                            )
                     } else {
                         messages
                     }
                 }
                 ?: listOfNotNull(
                     suggestions.takeIf { suggestions.isNotEmpty() && end }
-                        ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) }
+                        ?.let { underlyingConnector.addSuggestions(label, suggestions).invoke(this) },
                 )
 
-        val actions = connectorMessages
-            .map {
-                SendSentence(
-                    botId,
-                    connectorId,
-                    userId,
-                    null,
-                    mutableListOf(it)
-                )
-            }
-            .takeUnless { it.isEmpty() }
-            ?: listOf(
-                answer.footnotes?.takeIf{ it.isNotEmpty() }
-                ?.let {
-                    SendSentenceWithFootnotes(
-                        playerId = botId,
-                        applicationId = connectorId,
-                        recipientId = userId,
-                        text = label,
-                        footnotes = it.toMutableList()
-                    )
-                } ?:
+        val actions =
+            connectorMessages
+                .map {
                     SendSentence(
                         botId,
                         connectorId,
                         userId,
-                        label
+                        null,
+                        mutableListOf(it),
                     )
-            )
+                }
+                .takeUnless { it.isEmpty() }
+                ?: listOf(
+                    answer.footnotes?.takeIf { it.isNotEmpty() }
+                        ?.let {
+                            SendSentenceWithFootnotes(
+                                playerId = botId,
+                                applicationId = connectorId,
+                                recipientId = userId,
+                                text = label,
+                                footnotes = it.toMutableList(),
+                            )
+                        }
+                        ?: SendSentence(
+                            botId,
+                            connectorId,
+                            userId,
+                            label,
+                        ),
+                )
 
         val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })
         val delay = if (answer.delay == -1L) botDefinition.defaultDelay(currentAnswerIndex) else answer.delay

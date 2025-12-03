@@ -54,7 +54,6 @@ data class BotBusMockContext(
     val snapshots: MutableList<Snapshot> = mutableListOf(),
     val connectorsCompatibleWith: Set<ConnectorType> = setOf(connectorType),
 ) {
-
     constructor(
         applicationId: String,
         userId: PlayerId,
@@ -78,7 +77,7 @@ data class BotBusMockContext(
             userInterfaceType,
             connectorType,
             testContext,
-            connectorsCompatibleWith = connectorsCompatibleWith
+            connectorsCompatibleWith = connectorsCompatibleWith,
         )
 
     constructor(
@@ -105,7 +104,7 @@ data class BotBusMockContext(
             userPreferences,
             connectorType,
             testContext,
-            connectorsCompatibleWith
+            connectorsCompatibleWith,
         )
 
     val applicationId get() = firstAction.applicationId
@@ -153,18 +152,16 @@ data class BotBusMockContext(
      */
     fun sentence(
         text: String,
-        vararg entityValues: EntityValue
-    ): SendSentence =
-        sentence(text, entityValues.toList())
+        vararg entityValues: EntityValue,
+    ): SendSentence = sentence(text, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
      */
     fun sentence(
         text: String,
-        entityValues: List<EntityValue> = emptyList()
-    ): SendSentence =
-        sentence(text, null as IntentAware?, entityValues.toList())
+        entityValues: List<EntityValue> = emptyList(),
+    ): SendSentence = sentence(text, null as IntentAware?, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
@@ -172,7 +169,7 @@ data class BotBusMockContext(
     fun sentence(
         text: String,
         intent: IntentAware? = null,
-        vararg entityValues: EntityValue
+        vararg entityValues: EntityValue,
     ) = sentence(text, intent, entityValues.toList())
 
     /**
@@ -181,7 +178,7 @@ data class BotBusMockContext(
     fun sentence(
         text: String,
         intent: IntentAware? = null,
-        entityValues: List<EntityValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList(),
     ): SendSentence =
         SendSentence(userId, applicationId, botId, text).apply {
             state.intent = intent?.wrappedIntent()?.name
@@ -193,18 +190,16 @@ data class BotBusMockContext(
      */
     fun sentence(
         message: ConnectorMessage,
-        vararg entityValues: EntityValue
-    ): SendSentence =
-        sentence(message, entityValues.toList())
+        vararg entityValues: EntityValue,
+    ): SendSentence = sentence(message, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
      */
     fun sentence(
         message: ConnectorMessage,
-        entityValues: List<EntityValue> = emptyList()
-    ): SendSentence =
-        sentence(message, null as IntentAware?, entityValues.toList())
+        entityValues: List<EntityValue> = emptyList(),
+    ): SendSentence = sentence(message, null as IntentAware?, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
@@ -212,7 +207,7 @@ data class BotBusMockContext(
     fun sentence(
         message: ConnectorMessage,
         intent: IntentAware? = null,
-        vararg entityValues: EntityValue
+        vararg entityValues: EntityValue,
     ) = sentence(message, intent, entityValues.toList())
 
     /**
@@ -221,7 +216,7 @@ data class BotBusMockContext(
     fun sentence(
         message: ConnectorMessage,
         intent: IntentAware? = null,
-        entityValues: List<EntityValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList(),
     ): SendSentence =
         SendSentence(userId, applicationId, botId, null, mutableListOf(message)).apply {
             state.intent = intent?.wrappedIntent()?.name
@@ -235,7 +230,7 @@ data class BotBusMockContext(
      */
     fun choice(
         intentName: String,
-        vararg parameters: Pair<String, String>
+        vararg parameters: Pair<String, String>,
     ): SendChoice = SendChoice(userId, applicationId, botId, intentName, parameters.toMap())
 
     /**
@@ -244,7 +239,7 @@ data class BotBusMockContext(
     fun choice(
         intentName: String,
         step: StoryStepDef,
-        vararg parameters: Pair<String, String>
+        vararg parameters: Pair<String, String>,
     ): SendChoice = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
 
     /**
@@ -253,7 +248,7 @@ data class BotBusMockContext(
     fun choice(
         intent: IntentAware,
         step: StoryStepDef,
-        parameters: Parameters
+        parameters: Parameters,
     ): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
 
     /**
@@ -261,13 +256,14 @@ data class BotBusMockContext(
      */
     fun choice(
         intent: IntentAware,
-        parameters: Parameters = Parameters()
+        parameters: Parameters = Parameters(),
     ): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
-    fun choiceOfId(choiceId: String): SendChoice = decodeChoiceId(choiceId).let { it ->
-        choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
-    }
+    fun choiceOfId(choiceId: String): SendChoice =
+        decodeChoiceId(choiceId).let { it ->
+            choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
+        }
 }

@@ -28,32 +28,32 @@ import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class IadvizeConnectorMessage(val replies: List<IadvizeReply>) : ConnectorMessage {
-
     override val connectorType: ConnectorType
         @JsonIgnore get() = IadvizeConnectorProvider.connectorType
 
-    constructor(vararg replies : IadvizeReply) : this(replies.toList())
+    constructor(vararg replies: IadvizeReply) : this(replies.toList())
 
-    constructor(multipartReplies : IadvizeMultipartReply) : this(multipartReplies.replies)
+    constructor(multipartReplies: IadvizeMultipartReply) : this(multipartReplies.replies)
 
     override fun toGenericMessage(): GenericMessage? {
         val indexOfFirst = replies.indexOfFirst { it is IadvizeTransfer }
-        return (if (indexOfFirst != -1) {
-            // Ignore all messages after transfer reply
-            replies
-                .slice(0..indexOfFirst)
-        } else {
-            replies
-        })
+        return (
+            if (indexOfFirst != -1) {
+                // Ignore all messages after transfer reply
+                replies
+                    .slice(0..indexOfFirst)
+            } else {
+                replies
+            }
+        )
             .filterIsInstance<IadvizeMessage>()
             .map { message ->
                 GenericMessage(
                     connectorType = connectorType,
                     texts = mapOf("text" to (message.payload as TextPayload).value.toString()),
-                    choices = message.quickReplies.map { Choice.fromText(it.value) }
+                    choices = message.quickReplies.map { Choice.fromText(it.value) },
                 )
             }
             .firstOrNull()
     }
-
 }

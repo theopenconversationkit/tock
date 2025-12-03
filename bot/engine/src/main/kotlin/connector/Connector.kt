@@ -33,7 +33,6 @@ import ai.tock.bot.engine.user.UserPreferences
  * See [ai.tock.bot.connector.messenger.MessengerConnector] or [ai.tock.bot.connector.ga.GAConnector] for examples of [Connector] implementations.
  */
 interface Connector {
-
     /**
      * The type of the connector.
      */
@@ -47,7 +46,10 @@ interface Connector {
     /**
      * Is this feature supported ?
      */
-    fun hasFeature(feature: ConnectorFeature, targetConnectorType: ConnectorType): Boolean = supportedFeatures.contains(feature)
+    fun hasFeature(
+        feature: ConnectorFeature,
+        targetConnectorType: ConnectorType,
+    ): Boolean = supportedFeatures.contains(feature)
 
     /**
      * Registers the connector for the specified controller.
@@ -71,28 +73,41 @@ interface Connector {
      * @param callback the initial connector callback
      * @param delayInMs the optional delay
      */
-    fun send(event: Event, callback: ConnectorCallback, delayInMs: Long = 0)
+    fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long = 0,
+    )
 
     /**
      * Start a proactive conversation
      * @param callback the initial connector callback
      * @param botBus the bot bus
      */
-    fun startProactiveConversation(callback: ConnectorCallback, botBus: BotBus): Boolean = false
+    fun startProactiveConversation(
+        callback: ConnectorCallback,
+        botBus: BotBus,
+    ): Boolean = false
 
     /**
      * Proactively send messages to connector
      * @param callback the initial connector callback
      * @param parameters the parameters to be used for a proactive response
      */
-    fun flushProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) = run { }
+    fun flushProactiveConversation(
+        callback: ConnectorCallback,
+        parameters: Map<String, String>,
+    ) = run { }
 
     /**
      * End the proactive conversation
      * @param callback the initial connector callback
      * @param parameters the parameters to be used for a proactive response
      */
-    fun endProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) = run { }
+    fun endProactiveConversation(
+        callback: ConnectorCallback,
+        parameters: Map<String, String>,
+    ) = run { }
 
     /**
      * Sends a notification to the connector.
@@ -113,9 +128,8 @@ interface Connector {
         step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit = {}
-    ): Unit =
-        throw UnsupportedOperationException("Connector $connectorType does not support notification")
+        errorListener: (Throwable) -> Unit = {},
+    ): Unit = throw UnsupportedOperationException("Connector $connectorType does not support notification")
 
     /**
      * if true, profile is not loaded twice, except that [refreshProfile] is called periodically.
@@ -126,26 +140,37 @@ interface Connector {
     /**
      * Load user preferences - default implementation returns null.
      */
-    fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null
+    fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? = null
 
     /**
      * Refresh user preferences - default implementation returns null.
      * Only not null values are taken into account.
      */
-    fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null
+    fun refreshProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences? = null
 
     /**
      * Returns a [ConnectorMessage] with the specified list of suggestions.
      * If the connector does not support suggestions, returns null.
      */
-    fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = { null }
+    fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? = { null }
 
     /**
      * Updates a [ConnectorMessage] with the specified list of suggestions.
      * Default returns [message] unmodified.
      */
-    fun addSuggestions(message: ConnectorMessage, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? =
-        { message }
+    fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? = { message }
 
     /**
      * Maps a [MediaMessage] into a [ConnectorMessage].

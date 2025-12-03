@@ -15,7 +15,6 @@
  */
 package ai.tock.nlp.sagemaker
 
-import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.EntityType
@@ -23,9 +22,9 @@ import ai.tock.nlp.core.EntityValue
 import ai.tock.nlp.model.EntityCallContext
 import ai.tock.nlp.model.service.engine.EntityModelHolder
 import ai.tock.nlp.model.service.engine.NlpEntityClassifier
+import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
-
 
 internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
     companion object {
@@ -35,7 +34,7 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
-        tokens: Array<String>
+        tokens: Array<String>,
     ): List<EntityRecognition> {
         SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
@@ -44,7 +43,7 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
                 property("tock_sagemaker_aws_entities_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),
                 property("tock_sagemaker_aws_profile_name", "default"),
-            )
+            ),
         ).parseEntities(ParsedRequest(text)).run {
             return entities.map { e ->
                 e.role
@@ -53,10 +52,10 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
                         e.start,
                         e.end,
                         // entity is entityType in fact -- do not modify for the moment
-                        Entity(EntityType(e.entity),e.role.toString()),
-                            e.value
+                        Entity(EntityType(e.entity), e.role.toString()),
+                        e.value,
                     ),
-                    e.confidence
+                    e.confidence,
                 )
             }
         }

@@ -46,13 +46,16 @@ import ai.tock.bot.engine.config.BotRAGConfigurationMonitor
 import ai.tock.bot.engine.config.BotVectorStoreConfigurationMonitor
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.monitoring.RequestTimer
+import ai.tock.bot.engine.nlp.AsyncNlpListener
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
+import ai.tock.bot.engine.nlp.LegacyNlpListenerAdapter
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.nlp.NlpListener
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.shared.Executor
+import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -60,27 +63,25 @@ import ai.tock.shared.jackson.addConstrainedTypes
 import ai.tock.shared.listProperty
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
-import io.vertx.core.Deployable
-import io.vertx.core.DeploymentOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.locks.Lock
-import mu.KotlinLogging
-import org.litote.kmongo.Id
 
 /**
  * Advanced bot configuration.
  *
  * [ai.tock.bot.registerAndInstallBot] method is the preferred way to start a bot in most use cases.
  */
+@OptIn(ExperimentalTockCoroutines::class)
 object BotRepository {
-
     private val logger = KotlinLogging.logger {}
 
     // load only specified configuration ids (dev mode)
@@ -90,7 +91,7 @@ object BotRepository {
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = CopyOnWriteArrayList()
-    private val nlpListeners: MutableList<NlpListener> = CopyOnWriteArrayList(listOf(BuiltInKeywordListener))
+    private val nlpListeners: MutableList<AsyncNlpListener> = CopyOnWriteArrayList(listOf(LegacyNlpListenerAdapter(BuiltInKeywordListener)))
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
@@ -99,22 +100,23 @@ object BotRepository {
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
 
     internal val detailedHealthcheckTasks: MutableList<Pair<String, () -> Boolean>> =
-        mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() });
+        mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() })
 
-    internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
-        ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
-            forEach {
-                logger.info { "Connector ${it.connectorType} loaded" }
-                addConstrainedTypes(it.supportedResponseConnectorMessageTypes)
-            }
-        }
-    )
+    internal val connectorProviders: MutableSet<ConnectorProvider> =
+        CopyOnWriteArraySet(
+            ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
+                forEach {
+                    logger.info { "Connector ${it.connectorType} loaded" }
+                    addConstrainedTypes(it.supportedResponseConnectorMessageTypes)
+                }
+            },
+        )
 
     internal val connectorControllerMap: ConcurrentHashMap<BotApplicationConfiguration, ConnectorController> =
         ConcurrentHashMap()
 
     private val applicationIdBotApplicationConfigurationMap:
-            ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
+        ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
     internal var botsInstalled: Boolean = false
@@ -160,13 +162,16 @@ object BotRepository {
             }
         }
 
+    @Volatile
+    var botAPI: Boolean = false
+
     private val verticle by lazy { BotVerticle() }
 
     /**
      * Calls the specified [action] for each registered [NlpListener].
      */
-    fun forEachNlpListener(action: (NlpListener) -> Unit) {
-        nlpListeners.forEach(action)
+    suspend fun forEachNlpListener(action: suspend (AsyncNlpListener) -> Unit) {
+        nlpListeners.forEach { action(it) }
     }
 
     /**
@@ -184,7 +189,7 @@ object BotRepository {
      */
     @Deprecated(
         "use ai.tock.bot.definition.notify",
-        replaceWith = ReplaceWith("notify", "ai.tock.bot.definition.notify")
+        replaceWith = ReplaceWith("notify", "ai.tock.bot.definition.notify"),
     )
     fun notify(
         applicationId: String,
@@ -196,14 +201,15 @@ object BotRepository {
         notificationType: ActionNotificationType? = null,
         namespace: String? = null,
         botId: String? = null,
-        errorListener: (Throwable) -> Unit = {}
+        errorListener: (Throwable) -> Unit = {},
     ) {
-        val key = if (namespace == null || botId == null) {
-            logger.warn { "notify without specifying namespace or botId will be removed in next release" }
-            applicationIdBotApplicationConfigurationMap.keys.firstOrNull { it.applicationId == applicationId }
-        } else {
-            BotApplicationConfigurationKey(applicationId = applicationId, namespace = namespace, botId = botId)
-        }
+        val key =
+            if (namespace == null || botId == null) {
+                logger.warn { "notify without specifying namespace or botId will be removed in next release" }
+                applicationIdBotApplicationConfigurationMap.keys.firstOrNull { it.applicationId == applicationId }
+            } else {
+                BotApplicationConfigurationKey(applicationId = applicationId, namespace = namespace, botId = botId)
+            }
         val conf = key?.let { getConfigurationByApplicationId(it) } ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf)
             .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
@@ -216,7 +222,7 @@ object BotRepository {
         parameters: Map<String, String>,
         stateModifier: NotifyBotStateModifier,
         notificationType: ActionNotificationType?,
-        errorListener: (Throwable) -> Unit = {}
+        errorListener: (Throwable) -> Unit = {},
     ) {
         runBlocking {
             val userTimelineDAO: UserTimelineDAO = injector.provide()
@@ -269,7 +275,7 @@ object BotRepository {
                     .filter { it.mainIntent() != Intent.unknown }
                     .map { storyDefinition ->
                         StoryDefinitionConfiguration(botDefinition, storyDefinition, configurationName)
-                    }
+                    },
             )
         }
     }
@@ -306,6 +312,14 @@ object BotRepository {
      * Registers a new [NlpListener].
      */
     fun registerNlpListener(listener: NlpListener) {
+        registerNlpListener(LegacyNlpListenerAdapter(listener))
+    }
+
+    /**
+     * Registers a new [AsyncNlpListener].
+     */
+    @ExperimentalTockCoroutines
+    fun registerNlpListener(listener: AsyncNlpListener) {
         nlpListeners.add(listener)
     }
 
@@ -321,8 +335,7 @@ object BotRepository {
         detailedHealthcheckTasks.add(task)
     }
 
-    internal fun getConfigurationByApplicationId(key: BotApplicationConfigurationKey): BotApplicationConfiguration? =
-        applicationIdBotApplicationConfigurationMap[key]
+    internal fun getConfigurationByApplicationId(key: BotApplicationConfigurationKey): BotApplicationConfiguration? = applicationIdBotApplicationConfigurationMap[key]
 
     /**
      * Returns the current [ConnectorController] for a given predicate.
@@ -345,7 +358,7 @@ object BotRepository {
     fun installBots(
         routerHandlers: List<(Router) -> Any?>,
         createApplicationIfNotExists: Boolean = true,
-        startupLock: Lock? = null
+        startupLock: Lock? = null,
     ) {
         val bots = botProviders.values.map { it.botDefinition() }
 
@@ -357,7 +370,7 @@ object BotRepository {
                         nlpClient.createApplication(
                             botDefinition.namespace,
                             botDefinition.nlpModelName,
-                            defaultLocale
+                            defaultLocale,
                         )?.apply {
                             logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
                         }
@@ -389,12 +402,13 @@ object BotRepository {
             logger.warn { "bot already installed - try to configure new confs" }
             verticle.configure()
         } else {
-            val lockFree = try {
-                startupLock?.tryLock(5, MINUTES) ?: true
-            } catch (e: InterruptedException) {
-                logger.error(e)
-                false
-            }
+            val lockFree =
+                try {
+                    startupLock?.tryLock(5, MINUTES) ?: true
+                } catch (e: InterruptedException) {
+                    logger.error(e)
+                    false
+                }
             if (lockFree) {
                 vertx.deployVerticle(verticle).onComplete {
                     if (it.succeeded()) {
@@ -428,13 +442,17 @@ object BotRepository {
      * Checks that configurations are synchronized with the database.
      */
     @Synchronized
-    fun checkBotConfigurations(startup: Boolean = false, botConfigurationChanged: Boolean = false) {
+    fun checkBotConfigurations(
+        startup: Boolean = false,
+        botConfigurationChanged: Boolean = false,
+    ) {
         logger.debug { "check configurations" }
         // the application definition cache
         val botConfigurationsCache = mutableSetOf<BotConfiguration>()
         // the existing confs mapped by path
-        val existingConfsByPath: Map<String?, BotApplicationConfiguration> = connectorControllerMap.keys
-            .groupBy { it.path }.mapValues { it.value.first() }
+        val existingConfsByPath: Map<String?, BotApplicationConfiguration> =
+            connectorControllerMap.keys
+                .groupBy { it.path }.mapValues { it.value.first() }
         // the existing confs mapped by id
         val existingConfsById: Map<Id<BotApplicationConfiguration>, BotApplicationConfiguration> =
             connectorControllerMap.keys
@@ -449,16 +467,17 @@ object BotRepository {
 
         confs.values.forEach { c ->
             // gets the provider
-            val provider = botProviders[BotProviderId(c.botId, c.namespace, c.name)]
-                ?: botProviders[BotProviderId(c.botId, c.namespace)]
+            val provider =
+                botProviders[BotProviderId(c.botId, c.namespace, c.name)]
+                    ?: botProviders[BotProviderId(c.botId, c.namespace)]
 
             // is there a configuration change ?
             if (provider != null &&
                 (
-                        provider.configurationUpdated ||
-                                botConfigurationChanged ||
-                                existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
-                        )
+                    provider.configurationUpdated ||
+                        botConfigurationChanged ||
+                        existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
+                )
             ) {
                 val botDefinition = provider.botDefinition()
                 if (botDefinition.namespace == c.namespace) {
@@ -510,46 +529,47 @@ object BotRepository {
         botDefinition: BotDefinition,
         connector: Connector,
         conf: BotApplicationConfiguration,
-        botConfigurationsCache: MutableSet<BotConfiguration>
+        botConfigurationsCache: MutableSet<BotConfiguration>,
     ): BotApplicationConfiguration {
-
         val botConfiguration =
             botConfigurationsCache.find { it.botId == conf.botId && it.namespace == conf.namespace && it.name == conf.name }
                 ?: botConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(
                     conf.namespace,
                     conf.name,
-                    conf.botId
+                    conf.botId,
                 )
                 ?: BotConfiguration(
                     name = conf.name,
                     botId = conf.botId,
                     namespace = conf.namespace,
-                    nlpModel = conf.nlpModel
+                    nlpModel = conf.nlpModel,
                 )
 
-        val supportedLocales = if (botConfiguration.supportedLocales.isEmpty()) {
-            try {
-                nlpController.waitAvailability()
-                val app = nlpClient.getApplicationByNamespaceAndName(
-                    botDefinition.namespace,
-                    botDefinition.nlpModelName
-                )
+        val supportedLocales =
+            if (botConfiguration.supportedLocales.isEmpty()) {
+                try {
+                    nlpController.waitAvailability()
+                    val app =
+                        nlpClient.getApplicationByNamespaceAndName(
+                            botDefinition.namespace,
+                            botDefinition.nlpModelName,
+                        )
 
-                val locales = app?.supportedLocales
-                if (locales != null) {
-                    val newBotConf = botConfiguration.copy(supportedLocales = locales)
-                    botConfigurationDAO.save(newBotConf)
-                    botConfigurationsCache.add(newBotConf)
+                    val locales = app?.supportedLocales
+                    if (locales != null) {
+                        val newBotConf = botConfiguration.copy(supportedLocales = locales)
+                        botConfigurationDAO.save(newBotConf)
+                        botConfigurationsCache.add(newBotConf)
+                    }
+                    locales ?: emptySet()
+                } catch (e: Exception) {
+                    logger.error(e)
+                    emptySet()
                 }
-                locales ?: emptySet()
-            } catch (e: Exception) {
-                logger.error(e)
-                emptySet()
+            } else {
+                botConfigurationsCache.add(botConfiguration)
+                botConfiguration.supportedLocales
             }
-        } else {
-            botConfigurationsCache.add(botConfiguration)
-            botConfiguration.supportedLocales
-        }
 
         if (supportedLocales.isEmpty()) {
             logger.warn { "no supported locales found for ${botDefinition.namespace}:${botDefinition.nlpModelName}" }

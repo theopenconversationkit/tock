@@ -27,9 +27,8 @@ import mu.KotlinLogging
  */
 open class ConnectorCallbackBase(
     override val applicationId: String,
-    val connectorType: ConnectorType
+    val connectorType: ConnectorType,
 ) : ConnectorCallback {
-
     private val requestTimerData = requestTimer.start("${connectorType.id}_response")
     private var lockTimerData: RequestTimerData? = null
 
@@ -57,7 +56,10 @@ open class ConnectorCallbackBase(
         requestTimer.end(requestTimerData)
     }
 
-    override fun exceptionThrown(event: Event, throwable: Throwable) {
+    override fun exceptionThrown(
+        event: Event,
+        throwable: Throwable,
+    ) {
         logger.error("error thown for $event", throwable)
         requestTimer.throwable(throwable, requestTimerData)
         requestTimer.end(requestTimerData)

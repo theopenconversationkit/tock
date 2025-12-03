@@ -31,7 +31,6 @@ import java.io.OutputStream
  *
  */
 internal object OpenNlpModelIo : NlpEngineModelIo {
-
     override fun loadTokenizerModel(input: NlpModelStream): Any {
         error("loading tokenizer model is not supported")
     }
@@ -46,15 +45,24 @@ internal object OpenNlpModelIo : NlpEngineModelIo {
             NameFinderME(TokenNameFinderModel(it))
         }
 
-    override fun copyTokenizerModel(model: Any, output: OutputStream) {
+    override fun copyTokenizerModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         error("copying tokenizer model is not supported")
     }
 
-    override fun copyIntentModel(model: Any, output: OutputStream) {
+    override fun copyIntentModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         BinaryGISModelWriter(model as AbstractModel, DataOutputStream(output)).persist()
     }
 
-    override fun copyEntityModel(model: Any, output: OutputStream) {
+    override fun copyEntityModel(
+        model: Any,
+        output: OutputStream,
+    ) {
         (model as OpenNlpNameFinderME).tokenNameFinderModel.serialize(output)
     }
 }

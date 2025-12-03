@@ -49,7 +49,6 @@ import mu.KotlinLogging
  * Simple [AuthProvider] used in dev mode.
  */
 internal object PropertyBasedAuthProvider : TockAuthProvider {
-
     private val logger = KotlinLogging.logger {}
 
     private data class AuthenticateRequest(val email: String, val password: String)
@@ -58,7 +57,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         val authenticated: Boolean,
         val email: String? = null,
         val organization: String? = null,
-        val roles: Set<TockUserRole> = emptySet()
+        val roles: Set<TockUserRole> = emptySet(),
     )
 
     private val allRoles: Set<String> = values().map { it.name }.toSet()
@@ -73,7 +72,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        sessionHandler: SessionHandler
+        sessionHandler: SessionHandler,
     ): AuthenticationHandler {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
@@ -94,21 +93,22 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                         .setUser(context, user)
                         .onSuccess {
                             val rs = user.roles
-                            val respRoles = buildSet<TockUserRole> {
-                                if (rs.contains(nlpUser.name)) add(nlpUser)
-                                if (rs.contains(faqNlpUser.name)) add(nlpUser) // historique
-                                if (rs.contains(faqBotUser.name)) add(botUser) // historique
-                                if (rs.contains(botUser.name)) add(botUser)
-                                if (rs.contains(admin.name)) add(admin)
-                                if (rs.contains(technicalAdmin.name)) add(technicalAdmin)
-                            }
+                            val respRoles =
+                                buildSet<TockUserRole> {
+                                    if (rs.contains(nlpUser.name)) add(nlpUser)
+                                    if (rs.contains(faqNlpUser.name)) add(nlpUser) // historique
+                                    if (rs.contains(faqBotUser.name)) add(botUser) // historique
+                                    if (rs.contains(botUser.name)) add(botUser)
+                                    if (rs.contains(admin.name)) add(admin)
+                                    if (rs.contains(technicalAdmin.name)) add(technicalAdmin)
+                                }
                             context.endJson(
                                 AuthenticateResponse(
                                     authenticated = true,
                                     email = request.email,
                                     organization = user.namespace,
-                                    roles = respRoles
-                                )
+                                    roles = respRoles,
+                                ),
                             )
                         }
                         .onFailure { err ->
@@ -138,8 +138,9 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     override fun authenticate(credentials: Credentials): Future<User> {
         val promise = Promise.promise<User>()
 
-        val up = credentials as? UsernamePasswordCredentials
-            ?: return Future.failedFuture("unsupported credentials type")
+        val up =
+            credentials as? UsernamePasswordCredentials
+                ?: return Future.failedFuture("unsupported credentials type")
 
         val username = up.username
         val password = up.password
@@ -147,16 +148,17 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         val idx = users.indexOfFirst { it == username }
         if (idx != -1 && passwords[idx] == password) {
             executor.executeBlocking {
-                val tockUser = injector.provide<TockUserListener>().registerUser(
-                    TockUser(
-                        username,
-                        organizations[idx],
-                        roles.getOrNull(idx)
-                            ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
-                            ?: allRoles
-                    ),
-                    true
-                )
+                val tockUser =
+                    injector.provide<TockUserListener>().registerUser(
+                        TockUser(
+                            username,
+                            organizations[idx],
+                            roles.getOrNull(idx)
+                                ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
+                                ?: allRoles,
+                        ),
+                        true,
+                    )
                 promise.complete(tockUser)
             }
         } else {

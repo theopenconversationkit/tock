@@ -32,7 +32,6 @@ import kotlin.reflect.KClass
  *
  */
 internal object MessengerConnectorProvider : ConnectorProvider {
-
     private const val APP_ID = "appId"
     private const val PAGE_ID = "pageId"
     private const val TOKEN = "token"
@@ -54,7 +53,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
                 MessengerClient(parameters.getValue(SECRET)),
-                personaId = parameters[PERSONA_ID]?.takeUnless { it.isBlank() }
+                personaId = parameters[PERSONA_ID]?.takeUnless { it.isBlank() },
             )
         }
     }
@@ -66,41 +65,42 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Application Id",
                     APP_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Page Id",
                     PAGE_ID,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Call Token",
                     TOKEN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Webhook token",
                     VERIFY_TOKEN,
-                    false
+                    false,
                 ),
                 ConnectorTypeConfigurationField(
                     "Secret",
                     SECRET,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Persona Id",
                     PERSONA_ID,
-                    false
-                )
+                    false,
+                ),
             ),
-            resourceAsString("/messenger.svg")
+            resourceAsString("/messenger.svg"),
         )
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        AttachmentMessage::class,
-        TextMessage::class
-    )
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
+        setOf(
+            AttachmentMessage::class,
+            TextMessage::class,
+        )
 }
 
 internal class MessengerConnectorProviderService : ConnectorProvider by MessengerConnectorProvider

@@ -28,12 +28,14 @@ data class AlcmeonConnectorCallback(
     val backend: AlcmeonBackend,
     val context: RoutingContext,
 ) : ConnectorCallbackBase(applicationId, alcmeonConnectorType) {
-
     private val logger = KotlinLogging.logger {}
 
     private val actions = mutableListOf<DelayedAction>()
 
-    fun addAction(action: Action, delay: Long) {
+    fun addAction(
+        action: Action,
+        delay: Long,
+    ) {
         actions.add(DelayedAction(action, delay))
     }
 
@@ -41,11 +43,17 @@ data class AlcmeonConnectorCallback(
         sendResponse()
     }
 
-    fun sendResponseWithExit(exitReason: String, delayInMs: Long) {
+    fun sendResponseWithExit(
+        exitReason: String,
+        delayInMs: Long,
+    ) {
         sendResponse(exitReason, delayInMs)
     }
 
-    private fun sendResponse(exitReason: String? = null, delayInMs: Long = 0L) {
+    private fun sendResponse(
+        exitReason: String? = null,
+        delayInMs: Long = 0L,
+    ) {
         val response = AlcmeonMessageConverter.toMessageOut(actions, backend, exitReason, delayInMs)
         val serializedResponse = jacksonObjectMapper().writeValueAsString(response)
         logger.info { "Alcmeon connector callback response : $serializedResponse" }

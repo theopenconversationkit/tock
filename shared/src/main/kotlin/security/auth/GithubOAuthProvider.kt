@@ -25,30 +25,31 @@ private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "h
 
 internal class GithubOAuthProvider(
     vertx: Vertx,
-    private val oauth2: OAuth2Auth = GithubAuth.create(
-        vertx,
-        property("tock_github_oauth_client_id", "CLIENT_ID"),
-        property("tock_github_oauth_secret_key", "SECRET_KEY"),
-        HttpClientOptions().apply {
-            val proxyHost = propertyOrNull("tock_oauth2_proxy_host")
-            val proxyPort = intProperty("tock_oauth2_proxy_port", 0)
-            val proxyUsername = propertyOrNull("tock_oauth2_proxy_username")
-            val proxyPassword = propertyOrNull("tock_oauth2_proxy_password")
-            if (proxyHost != null) {
-                logger.info { "set proxy $proxyHost:$proxyPort" }
-                proxyOptions = ProxyOptions().apply {
-                    host = proxyHost
-                    port = proxyPort
-                    if (proxyUsername != null && proxyPassword != null) {
-                        username = proxyUsername
-                        password = proxyPassword
-                    }
+    private val oauth2: OAuth2Auth =
+        GithubAuth.create(
+            vertx,
+            property("tock_github_oauth_client_id", "CLIENT_ID"),
+            property("tock_github_oauth_secret_key", "SECRET_KEY"),
+            HttpClientOptions().apply {
+                val proxyHost = propertyOrNull("tock_oauth2_proxy_host")
+                val proxyPort = intProperty("tock_oauth2_proxy_port", 0)
+                val proxyUsername = propertyOrNull("tock_oauth2_proxy_username")
+                val proxyPassword = propertyOrNull("tock_oauth2_proxy_password")
+                if (proxyHost != null) {
+                    logger.info { "set proxy $proxyHost:$proxyPort" }
+                    proxyOptions =
+                        ProxyOptions().apply {
+                            host = proxyHost
+                            port = proxyPort
+                            if (proxyUsername != null && proxyPassword != null) {
+                                username = proxyUsername
+                                password = proxyPassword
+                            }
+                        }
                 }
-            }
-        }
-    )
+            },
+        ),
 ) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
-
     val logger: KLogger = KotlinLogging.logger {}
     private val executor: Executor get() = injector.provide()
 
@@ -56,13 +57,12 @@ internal class GithubOAuthProvider(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
-        OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl${callbackPath(verticle)}")
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler = OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl${callbackPath(verticle)}")
 
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        sessionHandler: SessionHandler
+        sessionHandler: SessionHandler,
     ): AuthenticationHandler {
         val authHandler = super.protectPaths(verticle, pathsToProtect, sessionHandler)
         (authHandler as OAuth2AuthHandler).apply {
@@ -74,9 +74,10 @@ internal class GithubOAuthProvider(
             if (user != null && user !is TockUser) {
                 executor.executeBlocking {
                     val login = RetrofitGithubClient.login(user.principal().getString("access_token"))
-                    val tockUser = injector.provide<TockUserListener>().registerUser(
-                        TockUser(login, login, TockUserRole.entries.map { r -> r.name }.toSet())
-                    )
+                    val tockUser =
+                        injector.provide<TockUserListener>().registerUser(
+                            TockUser(login, login, TockUserRole.entries.map { r -> r.name }.toSet()),
+                        )
 
                     vertx.runOnContext {
                         sessionHandler
@@ -93,8 +94,7 @@ internal class GithubOAuthProvider(
         return authHandler
     }
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
-        super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
+    override fun excludedPaths(verticle: WebVerticle): Set<Regex> = super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
 }

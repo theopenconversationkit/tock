@@ -40,7 +40,6 @@ import kotlin.test.assertTrue
  *
  */
 class BotDefinitionTest {
-
     private val botDef = BotDefinitionTest()
 
     @Test
@@ -51,9 +50,9 @@ class BotDefinitionTest {
                 "namespace_BotTest_test",
                 "namespace",
                 "bottest",
-                "test"
+                "test",
             ),
-            result
+            result,
         )
     }
 
@@ -81,14 +80,15 @@ class BotDefinitionTest {
             listOf(
                 StoryDefinitionConfiguration(
                     botDefinition = botDef,
-                    storyDefinition = SimpleStoryDefinition(
-                        id = "disable_bot",
-                        storyHandler = StoryHandlerTest,
-                        starterIntents = setOf(Intent("starter_intent"))
-                    ),
-                    configurationName = "toto"
-                )
-            )
+                    storyDefinition =
+                        SimpleStoryDefinition(
+                            id = "disable_bot",
+                            storyHandler = StoryHandlerTest,
+                            starterIntents = setOf(Intent("starter_intent")),
+                        ),
+                    configurationName = "toto",
+                ),
+            ),
         )
 
         // When
@@ -101,17 +101,19 @@ class BotDefinitionTest {
     @Test
     fun `GIVEN stories containing simple story with specific id WHEN findStoryDefinitionById THEN story is found`() {
         // Given
-        val storyConfiguration = SimpleStoryDefinition(
-            id = "disable_bot",
-            storyHandler = StoryHandlerTest,
-            starterIntents = setOf(Intent("starter_intent"))
-        )
+        val storyConfiguration =
+            SimpleStoryDefinition(
+                id = "disable_bot",
+                storyHandler = StoryHandlerTest,
+                starterIntents = setOf(Intent("starter_intent")),
+            )
 
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = listOf(storyConfiguration)
-        )
+        val botDef =
+            BotDefinitionBase(
+                botId = "test",
+                namespace = "namespace",
+                stories = listOf(storyConfiguration),
+            )
 
         // When
         val result = botDef.findStoryDefinitionById("disable_bot", "appId")
@@ -123,11 +125,12 @@ class BotDefinitionTest {
     @Test
     fun `GIVEN stories not containing story with specific id WHEN findStoryDefinitionById THEN story is not found`() {
         // Given
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = emptyList()
-        )
+        val botDef =
+            BotDefinitionBase(
+                botId = "test",
+                namespace = "namespace",
+                stories = emptyList(),
+            )
 
         // When
         val result = botDef.findStoryDefinitionById("disable_bot", "appId")
@@ -139,30 +142,34 @@ class BotDefinitionTest {
     @Test
     fun `GIVEN list of stories WHEN findStoryDefinitionById with non existing id THEN story is not found`() {
         // Given
-        val simpleStoryConfiguration = SimpleStoryDefinition(
-            id = "disable_bot",
-            storyHandler = StoryHandlerTest,
-            starterIntents = setOf(Intent("starter_intent"))
-        )
-
-        val configuredStoryConfiguration = ConfiguredStoryDefinition(
-            BotDefinitionWrapper(botDef),
-            StoryDefinitionConfiguration(
-                botDefinition = botDef,
-                storyDefinition = SimpleStoryDefinition(
-                    id = "enable_bot",
-                    storyHandler = StoryHandlerTest,
-                    starterIntents = setOf(Intent("starter_intent"))
-                ),
-                configurationName = "toto"
+        val simpleStoryConfiguration =
+            SimpleStoryDefinition(
+                id = "disable_bot",
+                storyHandler = StoryHandlerTest,
+                starterIntents = setOf(Intent("starter_intent")),
             )
-        )
 
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = listOf(simpleStoryConfiguration, configuredStoryConfiguration)
-        )
+        val configuredStoryConfiguration =
+            ConfiguredStoryDefinition(
+                BotDefinitionWrapper(botDef),
+                StoryDefinitionConfiguration(
+                    botDefinition = botDef,
+                    storyDefinition =
+                        SimpleStoryDefinition(
+                            id = "enable_bot",
+                            storyHandler = StoryHandlerTest,
+                            starterIntents = setOf(Intent("starter_intent")),
+                        ),
+                    configurationName = "toto",
+                ),
+            )
+
+        val botDef =
+            BotDefinitionBase(
+                botId = "test",
+                namespace = "namespace",
+                stories = listOf(simpleStoryConfiguration, configuredStoryConfiguration),
+            )
 
         // When
         val result = botDef.findStoryDefinitionById("should_not_find_id", "appId")
@@ -176,36 +183,41 @@ class BotDefinitionTest {
         // Given
         val intent = Intent("intent")
 
-        val simpleTaggedStoryDefinition = SimpleStoryDefinition(
-            id = "tagged_story",
-            storyHandler = StoryHandlerTest,
-            starterIntents = setOf(intent),
-            tags = setOf(StoryTag.DISABLE)
-        )
+        val simpleTaggedStoryDefinition =
+            SimpleStoryDefinition(
+                id = "tagged_story",
+                storyHandler = StoryHandlerTest,
+                starterIntents = setOf(intent),
+                tags = setOf(StoryTag.DISABLE),
+            )
 
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = listOf(simpleTaggedStoryDefinition)
-        )
+        val botDef =
+            BotDefinitionBase(
+                botId = "test",
+                namespace = "namespace",
+                stories = listOf(simpleTaggedStoryDefinition),
+            )
 
         val wrapper = BotDefinitionWrapper(botDef)
 
-        val dialog = Dialog(
-            playerIds = emptySet(),
-            id = newId(),
-            state = DialogState(
-                currentIntent = intent,
-                entityValues = mutableMapOf(),
-                context = mutableMapOf()
-            ),
-            stories = mutableListOf(
-                Story(
-                    definition = simpleTaggedStoryDefinition,
-                    starterIntent = intent
-                )
+        val dialog =
+            Dialog(
+                playerIds = emptySet(),
+                id = newId(),
+                state =
+                    DialogState(
+                        currentIntent = intent,
+                        entityValues = mutableMapOf(),
+                        context = mutableMapOf(),
+                    ),
+                stories =
+                    mutableListOf(
+                        Story(
+                            definition = simpleTaggedStoryDefinition,
+                            starterIntent = intent,
+                        ),
+                    ),
             )
-        )
 
         // When
         val result = wrapper.hasDisableTagIntent(dialog)
@@ -219,36 +231,41 @@ class BotDefinitionTest {
         // Given
         val intent = Intent("intent")
 
-        val simpleTaggedStoryDefinition = SimpleStoryDefinition(
-            id = "not_tagged_story",
-            storyHandler = StoryHandlerTest,
-            starterIntents = setOf(intent),
-            tags = emptySet()
-        )
+        val simpleTaggedStoryDefinition =
+            SimpleStoryDefinition(
+                id = "not_tagged_story",
+                storyHandler = StoryHandlerTest,
+                starterIntents = setOf(intent),
+                tags = emptySet(),
+            )
 
-        val botDef = BotDefinitionBase(
-            botId = "test",
-            namespace = "namespace",
-            stories = listOf(simpleTaggedStoryDefinition)
-        )
+        val botDef =
+            BotDefinitionBase(
+                botId = "test",
+                namespace = "namespace",
+                stories = listOf(simpleTaggedStoryDefinition),
+            )
 
         val wrapper = BotDefinitionWrapper(botDef)
 
-        val dialog = Dialog(
-            playerIds = emptySet(),
-            id = newId(),
-            state = DialogState(
-                currentIntent = intent,
-                entityValues = mutableMapOf(),
-                context = mutableMapOf()
-            ),
-            stories = mutableListOf(
-                Story(
-                    definition = simpleTaggedStoryDefinition,
-                    starterIntent = intent
-                )
+        val dialog =
+            Dialog(
+                playerIds = emptySet(),
+                id = newId(),
+                state =
+                    DialogState(
+                        currentIntent = intent,
+                        entityValues = mutableMapOf(),
+                        context = mutableMapOf(),
+                    ),
+                stories =
+                    mutableListOf(
+                        Story(
+                            definition = simpleTaggedStoryDefinition,
+                            starterIntent = intent,
+                        ),
+                    ),
             )
-        )
 
         // When
         val result = wrapper.hasDisableTagIntent(dialog)

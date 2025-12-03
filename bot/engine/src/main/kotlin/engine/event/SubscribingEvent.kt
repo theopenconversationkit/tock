@@ -29,5 +29,5 @@ class SubscribingEvent(
     /** an optional payload */
     val payload: String? = null,
     /** the application id */
-    applicationId: String
+    applicationId: String,
 ) : OneToOneEvent(userId, recipientId, applicationId)

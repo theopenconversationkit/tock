@@ -23,7 +23,6 @@ import ai.tock.bot.connector.media.MediaMessageDescriptor
 import ai.tock.bot.connector.media.MediaMessageType
 
 interface MediaMessageDescriptorDump {
-
     val type: MediaMessageType
 
     companion object {

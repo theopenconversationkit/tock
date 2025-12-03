@@ -19,18 +19,20 @@ package ai.tock.bot.engine.user
 /**
  * Define user type.
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class PlayerType {
-
     /**
      * human user.
      */
     user,
+
     /**
      * bot.
      */
     bot,
+
     /**
      * Is it a temporary user? (pre opt-in case).
      */
-    temporary
+    temporary,
 }

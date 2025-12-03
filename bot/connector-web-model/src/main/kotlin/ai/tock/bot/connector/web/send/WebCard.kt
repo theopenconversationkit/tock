@@ -20,5 +20,5 @@ data class WebCard(
     val title: CharSequence? = null,
     val subTitle: CharSequence? = null,
     val file: WebMediaFile? = null,
-    val buttons: List<Button> = emptyList()
+    val buttons: List<Button> = emptyList(),
 )

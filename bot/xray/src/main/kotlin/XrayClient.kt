@@ -53,7 +53,6 @@ import java.io.StringReader
  *
  */
 object XrayClient {
-
     private val logger = KotlinLogging.logger {}
 
     private val xrayTimeoutInSeconds = longProperty("tock_bot_test_xray_timeout_in_ms", 60000L)
@@ -63,14 +62,15 @@ object XrayClient {
     val xray: XrayApi
 
     init {
-        xray = retrofitBuilderWithTimeoutAndLogger(
-            xrayTimeoutInSeconds,
-            interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword))
-        )
-            .addJacksonConverter()
-            .baseUrl(xrayUrl)
-            .build()
-            .create()
+        xray =
+            retrofitBuilderWithTimeoutAndLogger(
+                xrayTimeoutInSeconds,
+                interceptors = listOf(basicAuthInterceptor(xrayLogin, xrayPassword)),
+            )
+                .addJacksonConverter()
+                .baseUrl(xrayUrl)
+                .build()
+                .create()
     }
 
     /**
@@ -104,8 +104,7 @@ object XrayClient {
      * @param testKey is the identifier of the test to retrieve the steps.
      * @return a list of steps as a XrayTestStep object.
      */
-    fun getTestSteps(testKey: String): List<XrayTestStep> =
-        xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
+    fun getTestSteps(testKey: String): List<XrayTestStep> = xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
 
     /**
      * This functions will search for the issue using the JQL query given in parameters
@@ -130,7 +129,7 @@ object XrayClient {
             0 -> NoIssueRetrieved
             1 -> {
                 IssueRetrieved(
-                    issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", "")
+                    issuesArray?.get("key")?.value.toString().replace("[", "").replace("]", ""),
                 )
             }
             else -> TooMuchIssuesRetrieved
@@ -167,8 +166,7 @@ object XrayClient {
      * @param execution is the result of the test execution.
      * @return the answer of Jira after the test execution reception.
      */
-    fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody> =
-        xray.sendTestExecution(execution).execute()
+    fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody> = xray.sendTestExecution(execution).execute()
 
     /**
      * This function converts an attachment file into a String.
@@ -180,37 +178,53 @@ object XrayClient {
         xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string()
             ?: "error : empty jira attachment"
 
-    fun createTest(test: JiraTest): JiraIssue =
-        xray.createTest(test).execute().body() ?: error("error during creating test $test")
+    fun createTest(test: JiraTest): JiraIssue = xray.createTest(test).execute().body() ?: error("error during creating test $test")
 
-    fun saveStep(testKey: String, step: XrayBuildTestStep) = xray.saveStep(testKey, step).execute().body()
+    fun saveStep(
+        testKey: String,
+        step: XrayBuildTestStep,
+    ) = xray.saveStep(testKey, step).execute().body()
 
-    fun deleteStep(testKey: String, stepId: Long) =
-        xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
+    fun deleteStep(
+        testKey: String,
+        stepId: Long,
+    ) = xray.deleteStep(testKey, stepId).execute().body() ?: error("error during test step deletion")
 
     fun getIssue(issueKey: String) = xray.getIssue(issueKey).execute().body() ?: error("error: issue not found")
 
-    fun addPrecondition(preConditionKey: String, jiraId: String) =
-        xray.addPrecondition(
-            preConditionKey,
-            XrayUpdateTest(listOf(jiraId))
-        ).execute().body()
+    fun addPrecondition(
+        preConditionKey: String,
+        jiraId: String,
+    ) = xray.addPrecondition(
+        preConditionKey,
+        XrayUpdateTest(listOf(jiraId)),
+    ).execute().body()
 
-    fun updateTest(jiraId: String, test: JiraTest) = xray.updateTest(jiraId, test).execute().body()
+    fun updateTest(
+        jiraId: String,
+        test: JiraTest,
+    ) = xray.updateTest(jiraId, test).execute().body()
 
-    fun uploadAttachment(issueId: String, name: String, content: String): JiraAttachment =
+    fun uploadAttachment(
+        issueId: String,
+        name: String,
+        content: String,
+    ): JiraAttachment =
         xray.addAttachment(
             issueId,
             MultipartBody.Part.createFormData(
                 "file",
                 name,
-                RequestBody.create("text/plain".toMediaType(), content)
-            )
+                RequestBody.create("text/plain".toMediaType(), content),
+            ),
         )
             .execute()
             .body()?.firstOrNull() ?: error("error during attachment of $content")
 
-    fun linkTest(key1: String, key2: String) {
+    fun linkTest(
+        key1: String,
+        key2: String,
+    ) {
         xray.linkIssue(JiraIssueLink(JiraType("Associate"), JiraKey(key1), JiraKey(key2))).execute()
     }
 
@@ -220,14 +234,19 @@ object XrayClient {
         return body.obj("fields")?.array<String>("labels") ?: emptyList()
     }
 
-    fun getLinkedIssues(key: String, linkedField: String): List<String> {
+    fun getLinkedIssues(
+        key: String,
+        linkedField: String,
+    ): List<String> {
         val response = xray.getIssue(key).execute()
         val body = Parser().parse(StringBuilder(response.body()!!.string())) as JsonObject
         return body.obj("fields")?.array<String>(linkedField) ?: emptyList()
     }
 
-    fun addTestToTestPlan(test: String, testPlan: String) =
-        xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
+    fun addTestToTestPlan(
+        test: String,
+        testPlan: String,
+    ) = xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
 
     fun getProjectTestPlans(project: String): List<XrayTestPlan> {
         val response = xray.searchTestPlans(jql = "project= $project AND issuetype=\"Test Plan\" order by key ASC", fields = listOf("key", "summary")).execute()
@@ -240,4 +259,5 @@ object XrayClient {
 sealed class SearchIssueResult
 object TooMuchIssuesRetrieved : SearchIssueResult()
 object NoIssueRetrieved : SearchIssueResult()
+
 data class IssueRetrieved(val key: String) : SearchIssueResult()

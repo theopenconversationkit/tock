@@ -27,7 +27,6 @@ import ai.tock.bot.engine.action.SendSentence
 import mu.KotlinLogging
 
 internal object TwitterMessageConverter {
-
     val logger = KotlinLogging.logger {}
 
     fun toEvent(action: Action): ConnectorMessage? {
@@ -43,13 +42,19 @@ internal object TwitterMessageConverter {
                     action.message(TwitterConnectorProvider.connectorType) as OutcomingEvent
                 } else {
                     action.stringText?.run {
-                        if (isBlank()) null else OutcomingEvent(
-                            DirectMessageOutcomingEvent.builder(
-                                Recipient(action.recipientId.id), action.playerId.id, this
+                        if (isBlank()) {
+                            null
+                        } else {
+                            OutcomingEvent(
+                                DirectMessageOutcomingEvent.builder(
+                                    Recipient(action.recipientId.id),
+                                    action.playerId.id,
+                                    this,
+                                )
+                                    .withSourceAppId(action.applicationId)
+                                    .build(),
                             )
-                                .withSourceAppId(action.applicationId)
-                                .build()
-                        )
+                        }
                     }
                 }
             }

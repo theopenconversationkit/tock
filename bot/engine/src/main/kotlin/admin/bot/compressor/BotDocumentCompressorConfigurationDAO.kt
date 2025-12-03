@@ -19,14 +19,20 @@ package ai.tock.bot.admin.bot.compressor
 import org.litote.kmongo.Id
 
 interface BotDocumentCompressorConfigurationDAO {
-
     fun listenChanges(listener: () -> Unit)
 
     fun save(conf: BotDocumentCompressorConfiguration): BotDocumentCompressorConfiguration
 
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotDocumentCompressorConfiguration?
+    fun findByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): BotDocumentCompressorConfiguration?
 
-    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotDocumentCompressorConfiguration?
+    fun findByNamespaceAndBotIdAndEnabled(
+        namespace: String,
+        botId: String,
+        enabled: Boolean,
+    ): BotDocumentCompressorConfiguration?
 
     fun delete(id: Id<BotDocumentCompressorConfiguration>)
 }

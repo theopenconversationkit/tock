@@ -24,5 +24,5 @@ import ai.tock.bot.engine.user.PlayerId
 abstract class OneToOneEvent(
     val userId: PlayerId,
     val recipientId: PlayerId,
-    applicationId: String
+    applicationId: String,
 ) : Event(applicationId)

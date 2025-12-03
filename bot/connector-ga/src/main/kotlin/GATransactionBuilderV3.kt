@@ -38,15 +38,14 @@ fun I18nTranslator.gaTransactionRequirementsCheckV3(): GAResponseConnectorMessag
     gaMessage(
         GAExpectedIntent(
             GAIntent.transactionRequirementsCheckV3,
-            GATransactionRequirementsCheckSpecV3()
-        )
+            GATransactionRequirementsCheckSpecV3(),
+        ),
     )
 
 /**
  * Return a [GATransactionRequirementsCheckResultV3] if available.
  */
-fun ConnectorMessage.findTransactionRequirementsCheckResultV3(): GATransactionRequirementsCheckResultV3? =
-    findTransactionObject(GAIntent.transactionRequirementsCheckV3)
+fun ConnectorMessage.findTransactionRequirementsCheckResultV3(): GATransactionRequirementsCheckResultV3? = findTransactionObject(GAIntent.transactionRequirementsCheckV3)
 
 private inline fun <reified T> ConnectorMessage.findTransactionObject(intent: GAIntent): T? =
     (this as? GARequestConnectorMessage)?.run {
@@ -68,7 +67,7 @@ fun I18nTranslator.gaTransactionOrderDecision(
     order: GAOrder,
     orderOptions: GAOrderOptionsV3? = null,
     paymentParameters: GAPaymentParameters? = null,
-    presentationOptions: GAPresentationOptions? = null
+    presentationOptions: GAPresentationOptions? = null,
 ): GAResponseConnectorMessage =
     gaMessage(
         GAExpectedIntent(
@@ -77,16 +76,15 @@ fun I18nTranslator.gaTransactionOrderDecision(
                 order,
                 orderOptions,
                 paymentParameters,
-                presentationOptions
-            )
-        )
+                presentationOptions,
+            ),
+        ),
     )
 
 /**
  * Return a [GATransactionDecisionValueV3] if available.
  */
-fun ConnectorMessage.findTransactionDecisionValueV3(): GATransactionDecisionValueV3? =
-    findTransactionObject(GAIntent.transactionDecisionV3)
+fun ConnectorMessage.findTransactionDecisionValueV3(): GATransactionDecisionValueV3? = findTransactionObject(GAIntent.transactionDecisionV3)
 
 /**
  * Build an [GAStructuredResponse] from an [GAOrderUpdateV3].
@@ -96,8 +94,8 @@ fun I18nTranslator.gaTransactionOrderUpdate(orderUpdate: GAOrderUpdateV3): GARes
         richResponse(
             item(
                 GAStructuredResponse(
-                    orderUpdateV3 = orderUpdate
-                )
-            )
-        )
+                    orderUpdateV3 = orderUpdate,
+                ),
+            ),
+        ),
     )

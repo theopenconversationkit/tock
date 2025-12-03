@@ -48,4 +48,3 @@ data class ActionMetadata(
     /** ObservabilityInfo **/
     val observabilityInfo: ObservabilityInfo? = null,
 )
-

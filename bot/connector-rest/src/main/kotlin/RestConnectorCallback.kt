@@ -25,10 +25,8 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
-import java.lang.IllegalStateException
 import mu.KotlinLogging
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
@@ -43,9 +41,8 @@ internal class RestConnectorCallback(
     val testContext: TestBehaviour?,
     val locale: Locale,
     private val userAction: Action,
-    val actions: MutableList<Action> = CopyOnWriteArrayList()
+    val actions: MutableList<Action> = CopyOnWriteArrayList(),
 ) : ConnectorCallbackBase(applicationId, connectorType) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -60,27 +57,31 @@ internal class RestConnectorCallback(
         sendAnswer()
     }
 
-    override fun exceptionThrown(event: Event, throwable: Throwable) {
+    override fun exceptionThrown(
+        event: Event,
+        throwable: Throwable,
+    ) {
         super.exceptionThrown(event, throwable)
         sendAnswer(throwable)
     }
 
     private fun sendAnswer(throwable: Throwable? = null) {
-        if(actions.isEmpty()) {
+        if (actions.isEmpty()) {
             context.fail(throwable ?: IllegalStateException("no response available"))
         } else {
-            val nlpStats = if(checkNlpStats) (userAction as? SendSentence)?.nlpStats else null
-            val r = mapper.writeValueAsString(
+            val nlpStats = if (checkNlpStats) (userAction as? SendSentence)?.nlpStats else null
+            val r =
+                mapper.writeValueAsString(
                     MessageResponse(
-                            actions.filter {
-                                if(!userAction.metadata.debugEnabled) it !is SendDebug else true
-                            }.map { it.toMessage() },
-                            applicationId,
-                            userAction.id.toString(),
-                            nlpStats?.locale ?: locale,
-                            userAction is SendSentence
-                    )
-            )
+                        actions.filter {
+                            if (!userAction.metadata.debugEnabled) it !is SendDebug else true
+                        }.map { it.toMessage() },
+                        applicationId,
+                        userAction.id.toString(),
+                        nlpStats?.locale ?: locale,
+                        userAction is SendSentence,
+                    ),
+                )
             logger.debug { "response : $r" }
             context.response().end(r)
         }

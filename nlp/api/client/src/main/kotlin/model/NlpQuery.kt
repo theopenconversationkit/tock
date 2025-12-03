@@ -49,5 +49,5 @@ data class NlpQuery(
     /**
      * Returns the result only for sentences of this configuration.
      */
-    val configuration : String? = null
+    val configuration: String? = null,
 )

@@ -54,17 +54,18 @@ import java.util.Locale
 class RestConnector(
     val applicationId: String,
     private val path: String,
-    private val requestFilter: RequestFilter
+    private val requestFilter: RequestFilter,
 ) : ConnectorBase(rest) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
         private val disabled = booleanProperty("tock_rest_connector_disabled", false)
         internal val checkNlpStats = booleanProperty("tock_rest_connector_check_nlp_stats", false)
     }
 
-    override fun hasFeature(feature: ConnectorFeature, targetConnectorType: ConnectorType): Boolean =
-        getTargetConnector(targetConnectorType)?.hasFeature(feature, targetConnectorType) ?: false
+    override fun hasFeature(
+        feature: ConnectorFeature,
+        targetConnectorType: ConnectorType,
+    ): Boolean = getTargetConnector(targetConnectorType)?.hasFeature(feature, targetConnectorType) ?: false
 
     override fun register(controller: ConnectorController) {
         if (!disabled) {
@@ -91,9 +92,9 @@ class RestConnector(
                                 context,
                                 if (message.test) controller.botDefinition.testBehaviour else null,
                                 locale,
-                                action
-                            )
-                        )
+                                action,
+                            ),
+                        ),
                     )
                 }
             }
@@ -108,11 +109,15 @@ class RestConnector(
             m.toAction(
                 PlayerId(message.userId, PlayerType.user),
                 applicationId,
-                PlayerId(message.recipientId, PlayerType.bot)
+                PlayerId(message.recipientId, PlayerType.bot),
             )
         }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         callback as RestConnectorCallback
         if (event is Action) {
             callback.actions.add(event)
@@ -121,7 +126,10 @@ class RestConnector(
         }
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+    override fun loadProfile(
+        callback: ConnectorCallback,
+        userId: PlayerId,
+    ): UserPreferences {
         callback as RestConnectorCallback
         // register user as test user if applicable
         return UserPreferences().apply {
@@ -130,64 +138,71 @@ class RestConnector(
         }
     }
 
-    private fun getTargetConnector(targetConnectorType: ConnectorType): Connector? =
-        BotRepository.getController { it.connectorType == targetConnectorType }?.connector
-
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        when (targetConnectorType) {
-            rest -> MessageResponse(
-                listOf(
-                    Sentence(
-                        null,
-                        mutableListOf(
-                            GenericMessage(
-                                texts = mapOf(TEXT_PARAM to text.toString()),
-                                choices = suggestions.map { Choice.fromText(it.toString()) }
-                            )
-                        )
-                    )
-                ),
-                applicationId
-            )
-            else -> getTargetConnector(targetConnectorType)?.addSuggestions(text, suggestions)?.invoke(this)
-        }
-    }
+    private fun getTargetConnector(targetConnectorType: ConnectorType): Connector? = BotRepository.getController { it.connectorType == targetConnectorType }?.connector
 
     override fun addSuggestions(
-        message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        when (targetConnectorType) {
-            rest -> {
-                val response = message as? MessageResponse
-                val sentence = response?.messages?.lastOrNull() as? Sentence
-                val lastMessage = sentence?.messages?.lastOrNull()
-                if (lastMessage?.choices?.isEmpty() == true) {
-                    sentence.messages[sentence.messages.size - 1] =
-                        lastMessage.copy(choices = suggestions.map { Choice.fromText(it.toString()) })
-                }
-                message
-            }
-            else -> getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
-        }
-    }
-
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (targetConnectorType) {
-            rest -> listOfNotNull(
-                message.toGenericMessage()?.let {
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            when (targetConnectorType) {
+                rest ->
                     MessageResponse(
                         listOf(
                             Sentence(
                                 null,
-                                mutableListOf(it)
-                            )
+                                mutableListOf(
+                                    GenericMessage(
+                                        texts = mapOf(TEXT_PARAM to text.toString()),
+                                        choices = suggestions.map { Choice.fromText(it.toString()) },
+                                    ),
+                                ),
+                            ),
                         ),
-                        applicationId
+                        applicationId,
                     )
-                }
-            )
-            else -> getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
+                else -> getTargetConnector(targetConnectorType)?.addSuggestions(text, suggestions)?.invoke(this)
+            }
         }
-    }
+
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            when (targetConnectorType) {
+                rest -> {
+                    val response = message as? MessageResponse
+                    val sentence = response?.messages?.lastOrNull() as? Sentence
+                    val lastMessage = sentence?.messages?.lastOrNull()
+                    if (lastMessage?.choices?.isEmpty() == true) {
+                        sentence.messages[sentence.messages.size - 1] =
+                            lastMessage.copy(choices = suggestions.map { Choice.fromText(it.toString()) })
+                    }
+                    message
+                }
+                else -> getTargetConnector(targetConnectorType)?.addSuggestions(message, suggestions)?.invoke(this)
+            }
+        }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (targetConnectorType) {
+                rest ->
+                    listOfNotNull(
+                        message.toGenericMessage()?.let {
+                            MessageResponse(
+                                listOf(
+                                    Sentence(
+                                        null,
+                                        mutableListOf(it),
+                                    ),
+                                ),
+                                applicationId,
+                            )
+                        },
+                    )
+                else -> getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
+            }
+        }
 }

@@ -46,44 +46,69 @@ internal data class BooleanResponse(val success: Boolean = true)
  *
  */
 internal interface NlpService {
-
     @POST("parse")
-    fun parse(@Body query: NlpQuery): Call<NlpResult>
+    fun parse(
+        @Body query: NlpQuery,
+    ): Call<NlpResult>
 
     @POST("evaluate")
-    fun evaluateEntities(@Body query: EntityEvaluationQuery): Call<EntityEvaluationResult>
+    fun evaluateEntities(
+        @Body query: EntityEvaluationQuery,
+    ): Call<EntityEvaluationResult>
 
     @POST("merge")
-    fun mergeValues(@Body query: ValuesMergeQuery): Call<ValuesMergeResult>
+    fun mergeValues(
+        @Body query: ValuesMergeQuery,
+    ): Call<ValuesMergeResult>
 
     @POST("unknown")
-    fun markAsUnknown(@Body query: MarkAsUnknownQuery): Call<ResponseBody>
+    fun markAsUnknown(
+        @Body query: MarkAsUnknownQuery,
+    ): Call<ResponseBody>
 
     @GET("intents")
-    fun getIntentsByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<List<IntentDefinition>>
+    fun getIntentsByNamespaceAndName(
+        @Query("namespace") namespace: String,
+        @Query("name") name: String,
+    ): Call<List<IntentDefinition>>
 
     @GET("application")
-    fun getApplicationByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<ApplicationDefinition>
+    fun getApplicationByNamespaceAndName(
+        @Query("namespace") namespace: String,
+        @Query("name") name: String,
+    ): Call<ApplicationDefinition>
 
     @POST("application/create")
-    fun createApplication(@Body query: CreateApplicationQuery): Call<ApplicationDefinition?>
+    fun createApplication(
+        @Body query: CreateApplicationQuery,
+    ): Call<ApplicationDefinition?>
 
     @Multipart
     @POST("dump/import")
-    fun importNlpDump(@Part dump: MultipartBody.Part): Call<BooleanResponse>
+    fun importNlpDump(
+        @Part dump: MultipartBody.Part,
+    ): Call<BooleanResponse>
 
     @POST("dump/import/plain")
-    fun importNlpPlainDump(@Body dump: ApplicationDump): Call<BooleanResponse>
+    fun importNlpPlainDump(
+        @Body dump: ApplicationDump,
+    ): Call<BooleanResponse>
 
     @Multipart
     @POST("dump/import/sentences")
-    fun importNlpSentencesDump(@Part dump: MultipartBody.Part): Call<BooleanResponse>
+    fun importNlpSentencesDump(
+        @Part dump: MultipartBody.Part,
+    ): Call<BooleanResponse>
 
     @POST("dump/import/sentences/plain")
-    fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<BooleanResponse>
+    fun importNlpPlainSentencesDump(
+        @Body dump: SentencesDump,
+    ): Call<BooleanResponse>
 
     @POST("logs/count")
-    fun logsCount(@Body query: NlpLogCountQuery): Call<List<NlpLogCount>>
+    fun logsCount(
+        @Body query: NlpLogCountQuery,
+    ): Call<List<NlpLogCount>>
 
     @GET("healthcheck")
     fun healthcheck(): Call<ResponseBody>

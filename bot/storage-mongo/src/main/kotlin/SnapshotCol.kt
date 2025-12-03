@@ -32,5 +32,5 @@ import java.time.Instant.now
 internal data class SnapshotCol(
     val _id: Id<Dialog>,
     val snapshots: List<Snapshot>,
-    val lastUpdateDate: Instant = now()
+    val lastUpdateDate: Instant = now(),
 )

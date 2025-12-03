@@ -26,7 +26,6 @@ import java.time.Duration
  *
  */
 class CleanupModelWorkerVerticle : AbstractVerticle() {
-
     private val executor: Executor by injector.instance()
 
     override fun start() {

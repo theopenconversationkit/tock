@@ -24,13 +24,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SagemakerAwsClientTest {
-
     @Test
-    fun testParsedIntentResponseDeserializeJson(){
-        val parsedIntent = SagemakerAwsClient.ParsedIntent("GREETINGS",0.98)
+    fun testParsedIntentResponseDeserializeJson() {
+        val parsedIntent = SagemakerAwsClient.ParsedIntent("GREETINGS", 0.98)
         val parsedIntentResponse = SagemakerAwsClient.ParsedIntentResponse(parsedIntent)
         val jsonString = mapper.writeValueAsString(parsedIntentResponse)
-        val sdkBytes = SdkBytes.fromString(jsonString,Charsets.UTF_8)
+        val sdkBytes = SdkBytes.fromString(jsonString, Charsets.UTF_8)
         val builder = InvokeEndpointResponse.builder()
         builder.body(sdkBytes)
         builder.contentType("application/json")
@@ -40,20 +39,20 @@ class SagemakerAwsClientTest {
     }
 
     @Test
-    fun testParsedEntityResponseDeserializeJson(){
-        val parsedEntity = SagemakerAwsClient.ParsedEntity(0,5,"value","TRAIN",0.98,"role")
+    fun testParsedEntityResponseDeserializeJson() {
+        val parsedEntity = SagemakerAwsClient.ParsedEntity(0, 5, "value", "TRAIN", 0.98, "role")
         val parsedEntityResponse = ParsedEntitiesResponse(listOf(parsedEntity))
-        val jsonString =  mapper.writeValueAsString(parsedEntityResponse)
-        val sdkBytes = SdkBytes.fromString(jsonString,Charsets.UTF_8)
+        val jsonString = mapper.writeValueAsString(parsedEntityResponse)
+        val sdkBytes = SdkBytes.fromString(jsonString, Charsets.UTF_8)
         val builder = InvokeEndpointResponse.builder()
         builder.body(sdkBytes)
         builder.contentType("application/json")
         val response = mapper.readValue<ParsedEntitiesResponse>(builder.build().body().asInputStream())
-        assertEquals(response.entities[0].start,0)
-        assertEquals(response.entities[0].end,5)
-        assertEquals(response.entities[0].value,"value")
-        assertEquals(response.entities[0].entity,"TRAIN")
-        assertEquals(response.entities[0].confidence,0.98)
-        assertEquals(response.entities[0].role,"role")
+        assertEquals(response.entities[0].start, 0)
+        assertEquals(response.entities[0].end, 5)
+        assertEquals(response.entities[0].value, "value")
+        assertEquals(response.entities[0].entity, "TRAIN")
+        assertEquals(response.entities[0].confidence, 0.98)
+        assertEquals(response.entities[0].role, "role")
     }
 }

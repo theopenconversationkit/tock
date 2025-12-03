@@ -19,7 +19,6 @@ package ai.tock.bot.admin.indicators
 import org.litote.kmongo.Id
 
 interface IndicatorDAO {
-
     /**
      * Save an indicator.
      * @param indicator the indicator to save
@@ -32,7 +31,11 @@ interface IndicatorDAO {
      * @param namespace the namespace
      * @param botId the bot id
      */
-    fun existByNameAndBotId(name: String, namespace: String, botId: String): Boolean
+    fun existByNameAndBotId(
+        name: String,
+        namespace: String,
+        botId: String,
+    ): Boolean
 
     /**
      * Find an indicator by its name, namespace and bot id.
@@ -40,14 +43,21 @@ interface IndicatorDAO {
      * @param namespace the namespace
      * @param botId the bot id
      */
-    fun findByNameAndBotId(name: String, namespace: String, botId: String): Indicator?
+    fun findByNameAndBotId(
+        name: String,
+        namespace: String,
+        botId: String,
+    ): Indicator?
 
     /**
      * Find all indicators by namespace and bot id
      * @param namespace the namespace
      * @param botId the bot id
      */
-    fun findAllByBotId(namespace: String, botId: String): List<Indicator>
+    fun findAllByBotId(
+        namespace: String,
+        botId: String,
+    ): List<Indicator>
 
     /**
      * Find all indicators
@@ -66,7 +76,14 @@ interface IndicatorDAO {
      * @param namespace the namespace
      * @param botId the application name
      */
-    fun deleteByNameAndApplicationName(name: String, namespace: String, botId: String): Boolean
-    fun deleteByApplicationName(namespace: String, botId: String): Boolean
+    fun deleteByNameAndApplicationName(
+        name: String,
+        namespace: String,
+        botId: String,
+    ): Boolean
 
+    fun deleteByApplicationName(
+        namespace: String,
+        botId: String,
+    ): Boolean
 }

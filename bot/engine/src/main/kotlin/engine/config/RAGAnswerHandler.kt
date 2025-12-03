@@ -30,7 +30,10 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.genai.orchestratorclient.requests.*
+import ai.tock.genai.orchestratorclient.requests.ChatMessage
+import ai.tock.genai.orchestratorclient.requests.ChatMessageType
+import ai.tock.genai.orchestratorclient.requests.DialogDetails
+import ai.tock.genai.orchestratorclient.requests.RAGRequest
 import ai.tock.genai.orchestratorclient.responses.ObservabilityInfo
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
@@ -39,20 +42,21 @@ import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationErro
 import ai.tock.genai.orchestratorclient.services.RAGService
 import ai.tock.genai.orchestratorcore.models.observability.LangfuseObservabilitySetting
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
-import ai.tock.shared.*
+import ai.tock.shared.injector
+import ai.tock.shared.property
+import ai.tock.shared.provide
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
-private val technicalErrorMessage = property(
-    name = "tock_gen_ai_orchestrator_technical_error",
-    defaultValue = "Technical error :( sorry!")
-
+private val technicalErrorMessage =
+    property(
+        name = "tock_gen_ai_orchestrator_technical_error",
+        defaultValue = "Technical error :( sorry!",
+    )
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
-
     private val logger = KotlinLogging.logger {}
     private val ragService: RAGService get() = injector.provide()
-
 
     override fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? {
         return with(botBus) {
@@ -76,16 +80,23 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
                 send(
                     SendSentenceWithFootnotes(
-                        botId, connectorId, userId, text = answer.text, footnotes = answer.footnotes.map {
-                            Footnote(
-                                it.identifier, it.title, it.url,
-                                if(action.metadata.sourceWithContent) it.content else null,
-                                it.score
-                            )
-                        }.toMutableList(),
+                        botId,
+                        connectorId,
+                        userId,
+                        text = answer.text,
+                        footnotes =
+                            answer.footnotes.map {
+                                Footnote(
+                                    it.identifier,
+                                    it.title,
+                                    it.url,
+                                    if (action.metadata.sourceWithContent) it.content else null,
+                                    it.score,
+                                )
+                            }.toMutableList(),
                         // modifiedObservabilityInfo includes the public langfuse URL if filled.
-                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo)
-                    )
+                        metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo),
+                    ),
                 )
             } else {
                 logger.info { "No RAG answer to send, because a noAnswerStory is returned." }
@@ -95,7 +106,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         }
     }
 
-    private fun updateObservabilityInfo(botBus: BotBus, info: ObservabilityInfo): ObservabilityInfo {
+    private fun updateObservabilityInfo(
+        botBus: BotBus,
+        info: ObservabilityInfo,
+    ): ObservabilityInfo {
         val config = botBus.botDefinition.observabilityConfiguration
         if (config?.enabled == true && config.setting is LangfuseObservabilitySetting<*>) {
             val setting = config.setting as LangfuseObservabilitySetting<*>
@@ -113,7 +127,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param botBus the bot Bus
      * @param response the RAG response
      */
-    private fun ragStoryRedirection(botBus: BotBus, response: RAGResponse?): StoryDefinition? {
+    private fun ragStoryRedirection(
+        botBus: BotBus,
+        response: RAGResponse?,
+    ): StoryDefinition? {
         return with(botBus) {
             botDefinition.ragConfiguration?.let { ragConfig ->
                 if (response?.answer?.text.equals(ragConfig.noAnswerSentence, ignoreCase = true)) {
@@ -124,7 +141,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     if (!ragConfig.noAnswerStoryId.isNullOrBlank()) {
                         logger.info { "The RAG response is equal to the configured no-answer sentence, so switch to the no-answer story." }
                         getNoAnswerRAGStory(ragConfig)
-                    } else null
+                    } else {
+                        null
+                    }
                 } else {
                     // Save success metric
                     saveRagMetric(IndicatorValues.SUCCESS)
@@ -139,20 +158,21 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Switch to the default unknown story otherwise.
      * @param ragConfig: The RAG configuration
      */
-    private fun BotBus.getNoAnswerRAGStory(
-        ragConfig: BotRAGConfiguration
-    ): StoryDefinition {
+    private fun BotBus.getNoAnswerRAGStory(ragConfig: BotRAGConfiguration): StoryDefinition {
         val noAnswerStory: StoryDefinition
         val noAnswerStoryId = ragConfig.noAnswerStoryId
         if (!noAnswerStoryId.isNullOrBlank()) {
             logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
-            noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, connectorId).let {
-                // Prevent infinite loop when the noAnswerStory is removed or disabled
-                if (it.id == RAGStoryDefinition.RAG_STORY_NAME) {
-                    logger.info { "The no-answer story is removed or disabled, so run the default unknown story." }
-                    botDefinition.unknownStory
-                } else it
-            }
+            noAnswerStory =
+                botDefinition.findStoryDefinitionById(noAnswerStoryId, connectorId).let {
+                    // Prevent infinite loop when the noAnswerStory is removed or disabled
+                    if (it.id == RAGStoryDefinition.RAG_STORY_NAME) {
+                        logger.info { "The no-answer story is removed or disabled, so run the default unknown story." }
+                        botDefinition.unknownStory
+                    } else {
+                        it
+                    }
+                }
         } else {
             logger.info { "No no-answer story is configured, so run the default unknown story." }
             noAnswerStory = botDefinition.unknownStory
@@ -177,48 +197,57 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
             val vectorStoreSetting = vectorStoreConfiguration?.takeIf { it.enabled }?.setting
 
-            val (documentSearchParams, indexName) = VectorStoreUtils.getVectorStoreElements(
-                ragConfiguration.namespace,
-                ragConfiguration.botId,
-                // The indexSessionId is mandatory to enable RAG Story
-                ragConfiguration.indexSessionId!!,
-                ragConfiguration.maxDocumentsRetrieved,
-                vectorStoreSetting
-            )
+            val (documentSearchParams, indexName) =
+                VectorStoreUtils.getVectorStoreElements(
+                    ragConfiguration.namespace,
+                    ragConfiguration.botId,
+                    // The indexSessionId is mandatory to enable RAG Story
+                    ragConfiguration.indexSessionId!!,
+                    ragConfiguration.maxDocumentsRetrieved,
+                    vectorStoreSetting,
+                )
 
-            val questionAnsweringPrompt = ragConfiguration.questionAnsweringPrompt
-                ?: ragConfiguration.initQuestionAnsweringPrompt()
+            val questionAnsweringPrompt =
+                ragConfiguration.questionAnsweringPrompt
+                    ?: ragConfiguration.initQuestionAnsweringPrompt()
 
             try {
-                val response = ragService.rag(
-                    query = RAGRequest(
-                        dialog = DialogDetails(
-                            dialogId = dialog.id.toString(),
-                            userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
-                            history = getDialogHistory(dialog, ragConfiguration.maxMessagesFromHistory),
-                            tags = listOf(
-                                "connector:${underlyingConnector.connectorType.id}"
-                            )
-                        ),
-                        questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
-                        questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
-                        questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
-                        questionAnsweringPrompt = questionAnsweringPrompt.copy(
-                            inputs = mapOf(
-                                "question" to action.toString(),
-                                "locale" to userPreferences.locale.displayLanguage,
-                                "no_answer" to ragConfiguration.noAnswerSentence
-                            )
-                        ),
-                        embeddingQuestionEmSetting = ragConfiguration.emSetting,
-                        documentIndexName = indexName,
-                        documentSearchParams = documentSearchParams,
-                        compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
-                        vectorStoreSetting = vectorStoreSetting,
-                        observabilitySetting = botDefinition.observabilityConfiguration?.setting,
-                        documentsRequired = ragConfiguration.documentsRequired,
-                    ), debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled
-                )
+                val response =
+                    ragService.rag(
+                        query =
+                            RAGRequest(
+                                dialog =
+                                    DialogDetails(
+                                        dialogId = dialog.id.toString(),
+                                        userId = dialog.playerIds.firstOrNull { PlayerType.user == it.type }?.id,
+                                        history = getDialogHistory(dialog, ragConfiguration.maxMessagesFromHistory),
+                                        tags =
+                                            listOf(
+                                                "connector:${underlyingConnector.connectorType.id}",
+                                            ),
+                                    ),
+                                questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
+                                questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
+                                questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
+                                questionAnsweringPrompt =
+                                    questionAnsweringPrompt.copy(
+                                        inputs =
+                                            mapOf(
+                                                "question" to action.toString(),
+                                                "locale" to userPreferences.locale.displayLanguage,
+                                                "no_answer" to ragConfiguration.noAnswerSentence,
+                                            ),
+                                    ),
+                                embeddingQuestionEmSetting = ragConfiguration.emSetting,
+                                documentIndexName = indexName,
+                                documentSearchParams = documentSearchParams,
+                                compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
+                                vectorStoreSetting = vectorStoreSetting,
+                                observabilitySetting = botDefinition.observabilityConfiguration?.setting,
+                                documentsRequired = ragConfiguration.documentsRequired,
+                            ),
+                        debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
+                    )
 
                 // Handle RAG response
                 return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response), response?.observabilityInfo)
@@ -230,15 +259,17 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 return if (exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError") {
                     logger.info { "The APITimeoutError is raised, so switch to the no-answer story." }
                     RAGResult(noAnswerStory = getNoAnswerRAGStory(ragConfiguration))
+                } else {
+                    RAGResult(
+                        answer = TextWithFootnotes(text = technicalErrorMessage),
+                        debug =
+                            when (exc) {
+                                is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
+                                is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
+                                else -> RAGError(errorMessage = exc.message)
+                            },
+                    )
                 }
-                else RAGResult(
-                    answer = TextWithFootnotes(text = technicalErrorMessage),
-                    debug = when(exc) {
-                        is GenAIOrchestratorBusinessError -> RAGError(exc.message, exc.error)
-                        is GenAIOrchestratorValidationError -> RAGError(exc.message, exc.detail)
-                        else -> RAGError(errorMessage = exc.message)
-                    }
-                )
             }
         }
     }
@@ -247,32 +278,49 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Create a dialog history (Human and Bot message)
      * @param dialog
      */
-    private fun getDialogHistory(dialog: Dialog, nLastMessages: Int): List<ChatMessage> = dialog.stories.flatMap { it.actions }.mapNotNull {
-        when (it) {
-            is SendSentence -> if (it.text == null) null
-            else ChatMessage(
-                text = it.text.toString(), type = if (PlayerType.user == it.playerId.type) ChatMessageType.HUMAN
-                else ChatMessageType.AI
-            )
+    private fun getDialogHistory(
+        dialog: Dialog,
+        nLastMessages: Int,
+    ): List<ChatMessage> =
+        dialog.stories.flatMap { it.actions }.mapNotNull {
+            when (it) {
+                is SendSentence ->
+                    if (it.text == null) {
+                        null
+                    } else {
+                        ChatMessage(
+                            text = it.text.toString(),
+                            type =
+                                if (PlayerType.user == it.playerId.type) {
+                                    ChatMessageType.HUMAN
+                                } else {
+                                    ChatMessageType.AI
+                                },
+                        )
+                    }
 
-            is SendSentenceWithFootnotes -> ChatMessage(
-                text = it.text.toString(), type = ChatMessageType.AI
-            )
+                is SendSentenceWithFootnotes ->
+                    ChatMessage(
+                        text = it.text.toString(),
+                        type = ChatMessageType.AI,
+                    )
 
-            // Other types of action are not considered part of history.
-            else -> null
+                // Other types of action are not considered part of history.
+                else -> null
+            }
         }
-    }
-        // drop the last message, because it corresponds to the user's current question
-        .dropLast(n = 1)
-        // take last 10 messages
-        .takeLast(n = nLastMessages)
+            // drop the last message, because it corresponds to the user's current question
+            .dropLast(n = 1)
+            // take last 10 messages
+            .takeLast(n = nLastMessages)
 
     private fun BotBus.saveRagMetric(indicator: IndicatorValues) {
         BotRepository.saveMetric(
             createMetric(
-                MetricType.QUESTION_REPLIED, Indicators.RAG.value.name, indicator.value.name
-            )
+                MetricType.QUESTION_REPLIED,
+                Indicators.RAG.value.name,
+                indicator.value.name,
+            ),
         )
     }
 }

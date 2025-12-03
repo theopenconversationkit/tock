@@ -22,11 +22,14 @@ import java.util.Locale
  * The translator API translate one sentence from a source [Locale] to a target [Locale].
  */
 interface TranslatorEngine {
-
     /**
      * Translates a text from [source] to [destination] locale.
      */
-    fun translate(text: String, source: Locale, target: Locale): String
+    fun translate(
+        text: String,
+        source: Locale,
+        target: Locale,
+    ): String
 
     /**
      * Does the engine support "on the fly" translations?

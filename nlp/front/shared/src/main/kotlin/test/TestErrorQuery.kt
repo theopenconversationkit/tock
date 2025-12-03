@@ -30,5 +30,5 @@ data class TestErrorQuery(
     val intentName: String?,
     val after: Instant?,
     val start: Long = 0,
-    val size: Int = 1
+    val size: Int = 1,
 )

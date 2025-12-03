@@ -32,9 +32,8 @@ internal data class ParserRequestData(
     val query: ParseQuery,
     val classifiedSentence: ClassifiedSentence?,
     val intentsQualifiers: Set<IntentQualifier>,
-    val intents: List<IntentDefinition>
+    val intents: List<IntentDefinition>,
 ) {
-
     private val intentsById = intents.map { it._id to it }.toMap()
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 

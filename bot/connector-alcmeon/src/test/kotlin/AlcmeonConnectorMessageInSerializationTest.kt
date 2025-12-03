@@ -28,48 +28,58 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class AlcmeonConnectorMessageInSerializationTest {
-
-    val whatsAppTextMessage = AlcmeonConnectorWhatsappMessageIn(
-        userExternalId = "userExternalId",
-        userName = "user",
-        event = AlcmeonConnectorWhatsappMessageTextEvent(
-            text = WhatsAppTextBody("body")
-        )
-    )
-
-    val whatsappInteractiveButtonReply = AlcmeonConnectorWhatsappMessageIn(
-        userExternalId = "userExternalId",
-        userName = "user",
-        event = AlcmeonConnectorWhatsappMessageInteractiveEvent(
-            interactive = WhatsAppInteractive(
-                listReply = null,
-                buttonReply = WhatsAppInteractiveButtonReply(
-                    title = "title",
-                    payload = "payload",
-                )
-            )
-        )
-    )
-
-    val whatsappInteractiveListReply = AlcmeonConnectorWhatsappMessageIn(
-        userExternalId = "userExternalId",
-        userName = "user",
-        event = AlcmeonConnectorWhatsappMessageInteractiveEvent(
-            interactive = WhatsAppInteractive(
-                listReply = WhatsAppInteractiveListReply(
-                    title = "title",
-                    description = "description",
-                    payload = "payload",
+    val whatsAppTextMessage =
+        AlcmeonConnectorWhatsappMessageIn(
+            userExternalId = "userExternalId",
+            userName = "user",
+            event =
+                AlcmeonConnectorWhatsappMessageTextEvent(
+                    text = WhatsAppTextBody("body"),
                 ),
-                buttonReply = null
-            )
         )
-    )
+
+    val whatsappInteractiveButtonReply =
+        AlcmeonConnectorWhatsappMessageIn(
+            userExternalId = "userExternalId",
+            userName = "user",
+            event =
+                AlcmeonConnectorWhatsappMessageInteractiveEvent(
+                    interactive =
+                        WhatsAppInteractive(
+                            listReply = null,
+                            buttonReply =
+                                WhatsAppInteractiveButtonReply(
+                                    title = "title",
+                                    payload = "payload",
+                                ),
+                        ),
+                ),
+        )
+
+    val whatsappInteractiveListReply =
+        AlcmeonConnectorWhatsappMessageIn(
+            userExternalId = "userExternalId",
+            userName = "user",
+            event =
+                AlcmeonConnectorWhatsappMessageInteractiveEvent(
+                    interactive =
+                        WhatsAppInteractive(
+                            listReply =
+                                WhatsAppInteractiveListReply(
+                                    title = "title",
+                                    description = "description",
+                                    payload = "payload",
+                                ),
+                            buttonReply = null,
+                        ),
+                ),
+        )
 
     @Test
     fun `alcmeon connector whats app text message can be serialized`() {
-        val expectedJson = "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"text\":{" +
-            "\"body\":\"body\"},\"type\":\"text\"},\"backend\":\"whatsapp\"}"
+        val expectedJson =
+            "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"text\":{" +
+                "\"body\":\"body\"},\"type\":\"text\"},\"backend\":\"whatsapp\"}"
 
         val json = mapper.writeValueAsString(whatsAppTextMessage)
 
@@ -80,15 +90,16 @@ class AlcmeonConnectorMessageInSerializationTest {
     fun `alcmeon connector whats app text message can be deserialized`() {
         val json = resource("/whatsappTextMessage.json")
 
-        val message : AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
+        val message: AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
 
         assertEquals(whatsAppTextMessage, message)
     }
 
     @Test
     fun `alcmeon connector whats app interactive button reply message can be serialized`() {
-        val expectedJson = "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"interactive\":" +
-            "{\"button_reply\":{\"title\":\"title\",\"payload\":\"payload\"}},\"type\":\"interactive\"}," +
+        val expectedJson =
+            "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"interactive\":" +
+                "{\"button_reply\":{\"title\":\"title\",\"payload\":\"payload\"}},\"type\":\"interactive\"}," +
                 "\"backend\":\"whatsapp\"}"
 
         val json = mapper.writeValueAsString(whatsappInteractiveButtonReply)
@@ -100,16 +111,17 @@ class AlcmeonConnectorMessageInSerializationTest {
     fun `alcmeon connector whats app interactive button reply message can be deserialized`() {
         val json = resource("/whatsappInteractiveButtonReplyMessage.json")
 
-        val message : AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
+        val message: AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
 
         assertEquals(whatsappInteractiveButtonReply, message)
     }
 
     @Test
     fun `alcmeon connector whats app interactive list message can be serialized`() {
-        val expectedJson = "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"interactive\":" +
-            "{\"list_reply\":{\"title\":\"title\",\"description\":\"description\",\"payload\":\"payload\"}}," +
-            "\"type\":\"interactive\"},\"backend\":\"whatsapp\"}"
+        val expectedJson =
+            "{\"user_external_id\":\"userExternalId\",\"user_name\":\"user\",\"event\":{\"interactive\":" +
+                "{\"list_reply\":{\"title\":\"title\",\"description\":\"description\",\"payload\":\"payload\"}}," +
+                "\"type\":\"interactive\"},\"backend\":\"whatsapp\"}"
 
         val json = mapper.writeValueAsString(whatsappInteractiveListReply)
 
@@ -120,7 +132,7 @@ class AlcmeonConnectorMessageInSerializationTest {
     fun `alcmeon connector whats app interactive list message can be deserialized`() {
         val json = resource("/whatsappInteractiveListMessage.json")
 
-        val message : AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
+        val message: AlcmeonConnectorWhatsappMessageIn = mapper.readValue(json)
 
         assertEquals(whatsappInteractiveListReply, message)
     }

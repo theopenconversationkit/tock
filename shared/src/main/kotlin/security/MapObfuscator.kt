@@ -19,7 +19,6 @@ package ai.tock.shared.security
  * Obfuscate a map.
  */
 interface MapObfuscator {
-
     /**
      * Obfuscate the map.
      */

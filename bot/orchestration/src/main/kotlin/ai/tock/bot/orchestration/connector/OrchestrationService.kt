@@ -28,12 +28,14 @@ import ai.tock.shared.provide
 import mu.KotlinLogging
 
 internal class OrchestrationService : ConnectorService {
-
     private val logger = KotlinLogging.logger {}
     private val executor: Executor get() = injector.provide()
     private val orchestrationEnabled = booleanProperty("tock_orchestration", false)
 
-    override fun install(controller: ConnectorController, configuration: BotApplicationConfiguration) {
+    override fun install(
+        controller: ConnectorController,
+        configuration: BotApplicationConfiguration,
+    ) {
         if (orchestrationEnabled && controller.connector is OrchestrationConnector) {
             BotRepository.registerBotAnswerInterceptor(OrchestrationSecondaryBotResponseInterceptor())
             (controller.connector as OrchestrationConnector).getOrchestrationHandlers().apply {

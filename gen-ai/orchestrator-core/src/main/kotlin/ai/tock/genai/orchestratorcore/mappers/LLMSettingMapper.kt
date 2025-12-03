@@ -16,14 +16,17 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.llm.*
+import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
+import ai.tock.genai.orchestratorcore.models.llm.OllamaLLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
  * The Large Language Model Setting Mapper
  */
 object LLMSettingMapper {
-
     /**
      * Convert the LLM setting to a DTO
      * @param entity the [LLMSetting] as recorded in the database
@@ -31,14 +34,13 @@ object LLMSettingMapper {
      */
     fun toDTO(entity: LLMSetting): LLMSettingDTO =
         with(entity) {
-
             when (this) {
                 is OpenAILLMSetting ->
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
 
                 is AzureOpenAILLMSetting ->
@@ -48,14 +50,14 @@ object LLMSettingMapper {
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         model = model,
-                        apiVersion = apiVersion
+                        apiVersion = apiVersion,
                     )
 
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(
                         temperature = temperature,
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
 
                 else ->
@@ -77,7 +79,7 @@ object LLMSettingMapper {
         botId: String = "",
         feature: String = "",
         dto: LLMSettingDTO,
-        rawByForce: Boolean = false
+        rawByForce: Boolean = false,
     ): LLMSetting =
         with(dto) {
             when (this) {
@@ -86,7 +88,7 @@ object LLMSettingMapper {
                         apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
 
                 is AzureOpenAILLMSetting ->
@@ -96,18 +98,17 @@ object LLMSettingMapper {
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
-                        model = model
+                        model = model,
                     )
 
                 is OllamaLLMSetting ->
                     OllamaLLMSetting(
                         temperature = temperature,
                         model = model,
-                        baseUrl = baseUrl
+                        baseUrl = baseUrl,
                     )
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
         }
-
 }

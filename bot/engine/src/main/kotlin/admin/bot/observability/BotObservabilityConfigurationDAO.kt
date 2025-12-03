@@ -19,14 +19,20 @@ package ai.tock.bot.admin.bot.observability
 import org.litote.kmongo.Id
 
 interface BotObservabilityConfigurationDAO {
-
     fun listenChanges(listener: () -> Unit)
 
     fun save(conf: BotObservabilityConfiguration): BotObservabilityConfiguration
 
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotObservabilityConfiguration?
+    fun findByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): BotObservabilityConfiguration?
 
-    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration?
+    fun findByNamespaceAndBotIdAndEnabled(
+        namespace: String,
+        botId: String,
+        enabled: Boolean,
+    ): BotObservabilityConfiguration?
 
     fun delete(id: Id<BotObservabilityConfiguration>)
 }

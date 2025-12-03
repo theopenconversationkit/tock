@@ -24,14 +24,12 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import com.github.salomonbrys.kodein.KodeinInjector
-import kotlin.LazyThreadSafetyMode.PUBLICATION
 import mu.KotlinLogging
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 @ExperimentalTockCoroutines
 abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryHandlingBase<T>>>(val bus: AsyncBus) : AsyncStoryHandling, AsyncBus by bus {
-
     companion object {
-
         private val logger = KotlinLogging.logger {}
 
         private val connectorProvider: ConnectorHandlerProvider
@@ -66,16 +64,14 @@ abstract class AsyncStoryHandlingBase<out T : AsyncConnectorHandling<AsyncStoryH
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @Suppress("UNCHECKED_CAST")
-    protected open fun findConnector(connectorType: ConnectorType): T? =
-        connectorProvider.provide(this, connectorType) as? T?
+    protected open fun findConnector(connectorType: ConnectorType): T? = connectorProvider.provide(this, connectorType) as? T?
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
      * Default implementation use annotations annotated with @[ConnectorIdHandlers].
      */
     @Suppress("UNCHECKED_CAST")
-    protected open fun findConnector(connectorId: String): T? =
-        connectorProvider.provide(this, connectorId) as? T?
+    protected open fun findConnector(connectorId: String): T? = connectorProvider.provide(this, connectorId) as? T?
 
     /**
      * Provides the current [ConnectorStoryHandler] using [findConnector].

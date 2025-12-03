@@ -26,20 +26,21 @@ data class MattermostMessageOut(
     val links: List<Link> = emptyList(),
     val footnotes: List<Footnote> = emptyList(),
 ) : MattermostConnectorMessage() {
-
     @JsonProperty("text")
     fun getFullText(): String {
         var t = text
         if (links.isNotEmpty()) {
-            val linksMd = links.joinToString("\n") {
-                "[${it.name}](${it.url})"
-            }
+            val linksMd =
+                links.joinToString("\n") {
+                    "[${it.name}](${it.url})"
+                }
             t += "\n\n$linksMd"
         }
         if (footnotes.isNotEmpty()) {
-            val footnotesMd = footnotes.joinToString("  \n") { it ->
-                "[${it.title}](${it.url})" + if (it.content != null) "\n${it.content}" else ""
-            }
+            val footnotesMd =
+                footnotes.joinToString("  \n") { it ->
+                    "[${it.title}](${it.url})" + if (it.content != null) "\n${it.content}" else ""
+                }
             t += "\n\n:information_source:\n$footnotesMd"
         }
         return t

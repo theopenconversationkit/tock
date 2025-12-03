@@ -30,16 +30,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "@type"
+    property = "@type",
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
     JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec"),
     JsonSubTypes.Type(value = GATransactionRequirementsCheckSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionRequirementsCheckSpec"),
     JsonSubTypes.Type(value = GATransactionDecisionValueSpecV3::class, name = "type.googleapis.com/google.actions.transactions.v3.TransactionDecisionValueSpec"),
-    JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec")
+    JsonSubTypes.Type(value = GANewSurfaceValueSpec::class, name = "type.googleapis.com/google.actions.v2.NewSurfaceValueSpec"),
 )
-abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {
-
+abstract class GAInputValueData(
+    @get:JsonProperty("@type") val type: GAInputValueDataType,
+) {
     open fun toGenericMessage(): GenericMessage? = null
 }

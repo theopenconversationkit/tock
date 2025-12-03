@@ -38,7 +38,7 @@ internal data class NlpStatsCol(
     val _id: NlpStatsColId,
     val stats: NlpCallStats,
     val appNamespace: String,
-    val date: Instant = Instant.now()
+    val date: Instant = Instant.now(),
 ) {
     fun toNlpStats(): NlpStats = NlpStats(_id.dialogId, _id.actionId, stats, appNamespace, date)
 }

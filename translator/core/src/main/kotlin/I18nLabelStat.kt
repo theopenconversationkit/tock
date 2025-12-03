@@ -31,7 +31,7 @@ data class I18nLabelStat(
     val interfaceType: UserInterfaceType,
     val connectorId: String?,
     val count: Int = 1,
-    val lastUpdate: Instant = Instant.now()
+    val lastUpdate: Instant = Instant.now(),
 ) {
     internal constructor(key: I18nLabelStatKey, count: Int) :
         this(
@@ -40,7 +40,7 @@ data class I18nLabelStat(
             key.locale,
             key.interfaceType,
             key.connectorId,
-            count
+            count,
         )
 
     /**
@@ -54,7 +54,7 @@ internal data class I18nLabelStatKey(
     val namespace: String,
     val locale: Locale,
     val interfaceType: UserInterfaceType,
-    val connectorId: String?
+    val connectorId: String?,
 ) {
     constructor(value: I18nLabelValue, context: I18nContext) :
         this(
@@ -62,6 +62,6 @@ internal data class I18nLabelStatKey(
             value.namespace,
             context.userLocale,
             context.userInterfaceType,
-            context.connectorId
+            context.connectorId,
         )
 }

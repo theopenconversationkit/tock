@@ -68,36 +68,47 @@ abstract class AsyncStoryHandlerBase(
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? =
-        (bus as AsyncBotBus).botBus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
+    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? = (bus as AsyncBotBus).botBus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
 
     /**
      * Story i18n category.
      */
     protected open fun i18nKeyCategory(): String = mainIntent?.name ?: i18nNamespace
 
-    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+    override fun i18n(
+        defaultLabel: CharSequence,
+        args: List<Any?>,
+    ): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             generateKey(i18nNamespace, category, defaultLabel),
             i18nNamespace,
             category,
             defaultLabel,
-            args
+            args,
         )
     }
 
     /**
      * Gets an i18n label with the specified key. Current namespace is used for the categorization.
      */
-    override fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        vararg args: Any?,
+    ): I18nLabelValue {
         return i18nKey(key, defaultLabel, emptySet(), *args)
     }
 
     /**
      * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
      */
-    override fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
+    override fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        defaultI18n: Set<I18nLocalizedLabel>,
+        vararg args: Any?,
+    ): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             key,

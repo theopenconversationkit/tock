@@ -35,7 +35,6 @@ import ai.tock.translator.TranslatedString
  * Bus implementation for Tock Bot API mode.
  */
 interface ClientBus : Bus<ClientBus> {
-
     /**
      * The bot definition.
      */
@@ -65,7 +64,6 @@ interface ClientBus : Bus<ClientBus> {
      * Handles the current request.
      */
     fun handle()
-
 
     override fun isCompatibleWith(connectorType: ConnectorType) = targetConnectorType == connectorType
 
@@ -100,7 +98,7 @@ interface ClientBus : Bus<ClientBus> {
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
+        vararg i18nArgs: Any?,
     ): ClientBus
 
     /**
@@ -108,7 +106,7 @@ interface ClientBus : Bus<ClientBus> {
      */
     suspend fun send(
         i18nText: CharSequence,
-        suggestions: List<CharSequence>
+        suggestions: List<CharSequence>,
     ): ClientBus = send(i18nText, suggestions.map { Suggestion(translate(it)) })
 
     /**
@@ -118,7 +116,7 @@ interface ClientBus : Bus<ClientBus> {
         i18nText: CharSequence,
         suggestions: List<Suggestion>,
         delay: Long = defaultDelay(currentAnswerIndex),
-        vararg i18nArgs: Any?
+        vararg i18nArgs: Any?,
     ): ClientBus
 
     /**
@@ -126,7 +124,7 @@ interface ClientBus : Bus<ClientBus> {
      */
     suspend fun end(
         i18nText: CharSequence,
-        suggestions: List<CharSequence>
+        suggestions: List<CharSequence>,
     ): ClientBus = end(i18nText, suggestions.map { Suggestion(translate(it)) })
 
     /**
@@ -155,7 +153,10 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun removeEntity(entity: Entity): Boolean = entities.remove(entity)
 
-    override fun translate(text: CharSequence?, vararg args: Any?): I18nText {
+    override fun translate(
+        text: CharSequence?,
+        vararg args: Any?,
+    ): I18nText {
         return if (text.isNullOrBlank()) {
             I18nText("", toBeTranslated = false)
         } else if (text is I18nLabelValue) {
@@ -175,14 +176,14 @@ interface ClientBus : Bus<ClientBus> {
         subTitle: CharSequence? = null,
         attachment: Attachment? = null,
         actions: List<Action> = emptyList(),
-        delay: Long = defaultDelay(currentAnswerIndex)
+        delay: Long = defaultDelay(currentAnswerIndex),
     ): Card =
         Card(
             title?.let { translate(it) },
             subTitle?.let { translate(it) },
             attachment,
             actions,
-            delay
+            delay,
         )
 
     /**
@@ -190,18 +191,16 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun newCarousel(
         cards: List<Card>,
-        delay: Long = defaultDelay(currentAnswerIndex)
-    ): Carousel =
-        Carousel(cards, delay)
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): Carousel = Carousel(cards, delay)
 
     /**
      * Creates a new [Carousel].
      */
     fun newCarousel(
         vararg cards: Card,
-        delay: Long = defaultDelay(currentAnswerIndex)
-    ): Carousel =
-        Carousel(cards.toList(), delay)
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): Carousel = Carousel(cards.toList(), delay)
 
     /**
      * Creates a new [Card].
@@ -211,7 +210,7 @@ interface ClientBus : Bus<ClientBus> {
         subTitle: CharSequence? = null,
         attachment: Attachment? = null,
         vararg actions: Action,
-        delay: Long = defaultDelay(currentAnswerIndex)
+        delay: Long = defaultDelay(currentAnswerIndex),
     ): Card = newCard(title, subTitle, attachment, actions.toList(), delay)
 
     /**
@@ -219,7 +218,7 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun newAction(
         title: CharSequence,
-        url: String? = null
+        url: String? = null,
     ): Action = Action(translate(title), url)
 
     /**
@@ -227,6 +226,6 @@ interface ClientBus : Bus<ClientBus> {
      */
     fun newAttachment(
         url: String,
-        type: AttachmentType? = null
+        type: AttachmentType? = null,
     ): Attachment = Attachment(url, type)
 }

@@ -47,9 +47,8 @@ data class DialogState(
      * The [NextUserActionState] if any.
      * If not null, it will be applied to the next user action, with NLP custom qualifiers.
      */
-    var nextActionState: NextUserActionState? = null
+    var nextActionState: NextUserActionState? = null,
 ) {
-
     companion object {
         private const val SWITCH_STORY_BUS_KEY = "_tock_switch"
         private const val ASK_AGAIN_STORY_BUS_KEY = "_tock_ask_again"
@@ -64,7 +63,7 @@ data class DialogState(
                 dialog.entityValues.map { it.key to EntityStateValue(it.value.value) }.toMap().toMutableMap(),
                 dialog.context,
                 dialog.userLocation,
-                dialog.nextActionState
+                dialog.nextActionState,
             )
         }
     }
@@ -83,15 +82,15 @@ data class DialogState(
 
     private val askAgainRoundDefault = intProperty("tock_ask_again_round", 1)
 
-    //askAgain round with default value
+    // askAgain round with default value
     internal var askAgainRound: Int = askAgainRoundDefault
         get() {
-            //retrieve default value
+            // retrieve default value
             val value = context[ASK_AGAIN_STORY_ROUND_BUS_KEY] as? Int
             return if (value == null) {
                 context[ASK_AGAIN_STORY_ROUND_BUS_KEY] = field
                 field
-                //or retrieve current value
+                // or retrieve current value
             } else {
                 value
             }
@@ -105,7 +104,10 @@ data class DialogState(
      * Updates persistent context value.
      * Do not store Collection or Map in the context, only plain objects or typed arrays.
      */
-    fun setContextValue(name: String, value: Any?) {
+    fun setContextValue(
+        name: String,
+        value: Any?,
+    ) {
         if (value == null) {
             context.remove(name)
         } else {
@@ -120,7 +122,10 @@ data class DialogState(
      * Updates persistent context value.
      * Do not store generic objects like Collection or Map in the context, only plain objects or typed arrays.
      */
-    fun <T : Any> setContextValue(key: DialogContextKey<T>, value: Any?) {
+    fun <T : Any> setContextValue(
+        key: DialogContextKey<T>,
+        value: Any?,
+    ) {
         require(key.type.typeParameters.isEmpty()) {
             "Generic type parameters cannot be safely preserved in a dialog context"
         }
@@ -138,7 +143,10 @@ data class DialogState(
      * @role the role of the entity
      * @value the new entity value
      */
-    fun setValue(role: String, value: EntityValue) {
+    fun setValue(
+        role: String,
+        value: EntityValue,
+    ) {
         entityValues[role] = EntityStateValue(value)
     }
 
@@ -148,7 +156,10 @@ data class DialogState(
      * @entity the entity
      * @value the new entity value
      */
-    fun setValue(entity: Entity, value: Value) {
+    fun setValue(
+        entity: Entity,
+        value: Value,
+    ) {
         entityValues[entity.role] = EntityStateValue(entity, value)
     }
 
@@ -158,7 +169,10 @@ data class DialogState(
      * @entity the entity
      * @newValue the new entity value
      */
-    fun changeValue(entity: Entity, newValue: Value?) {
+    fun changeValue(
+        entity: Entity,
+        newValue: Value?,
+    ) {
         entityValues[entity.role]?.changeValue(entity, newValue)
             ?: if (newValue != null) {
                 setValue(entity, newValue)
@@ -179,7 +193,10 @@ data class DialogState(
      * @role the role of the entity
      * @newValue the new entity value
      */
-    fun changeValue(role: String, newValue: EntityValue?) {
+    fun changeValue(
+        role: String,
+        newValue: EntityValue?,
+    ) {
         entityValues[role]?.changeValue(newValue)
             ?: if (newValue != null) {
                 setValue(role, newValue)
@@ -235,7 +252,10 @@ data class DialogState(
     /**
      * Does this event contains specified predefined value entity?
      */
-    fun hasEntityPredefinedValue(role: String, value: String): Boolean {
+    fun hasEntityPredefinedValue(
+        role: String,
+        value: String,
+    ): Boolean {
         return hasEntityPredefinedValue(currentEntityValues(), role, value)
     }
 }

@@ -25,6 +25,9 @@ import ai.tock.shared.ThreadSafe
  */
 @ThreadSafe
 interface EntityClassifier {
-
-    fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition>
+    fun classifyEntities(
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>,
+    ): List<EntityRecognition>
 }

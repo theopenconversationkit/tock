@@ -27,7 +27,7 @@ data class CountResult(
     // MongoDB returns the grouping key under the _id field.
     @field:JsonProperty("_id")
     val applicationId: String,
-    val total: Long
+    val total: Long,
 )
 
 /**

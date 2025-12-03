@@ -30,5 +30,5 @@ import java.time.Instant
 internal data class DialogTextCol(
     val text: String,
     val dialogId: Id<Dialog>,
-    val date: Instant = Instant.now()
+    val date: Instant = Instant.now(),
 )

@@ -16,11 +16,13 @@
 
 package ai.tock.bot.connector.iadvize.model.payload
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Action
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image
 
-data class GenericCardPayload(val title: String? = null,
-                              val text: String? = null,
-                              val image: Image? = null,
-                              val actions: List<Action> = mutableListOf())
-    : Payload("card/content")
+data class GenericCardPayload(
+    val title: String? = null,
+    val text: String? = null,
+    val image: Image? = null,
+    val actions: List<Action> = mutableListOf(),
+) :
+    Payload("card/content")

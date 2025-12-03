@@ -32,7 +32,6 @@ import mu.KotlinLogging
  * Service that manage the Generate Sentences with Large Language Model (LLM) functionality
  */
 object SentenceGenerationService {
-
     private val logger: KLogger = KotlinLogging.logger {}
     private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
 
@@ -41,7 +40,10 @@ object SentenceGenerationService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun getSentenceGenerationConfiguration(namespace: String, botId: String): BotSentenceGenerationConfiguration? {
+    fun getSentenceGenerationConfiguration(
+        namespace: String,
+        botId: String,
+    ): BotSentenceGenerationConfiguration? {
         return sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
@@ -50,9 +52,13 @@ object SentenceGenerationService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun deleteConfig(namespace: String, botId: String) {
-        val sentenceGenerationConfiguration = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No LLM Sentence Generation configuration is defined yet [namespace: $namespace, botId: $botId]")
+    fun deleteConfig(
+        namespace: String,
+        botId: String,
+    ) {
+        val sentenceGenerationConfiguration =
+            sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+                ?: WebVerticle.badRequest("No LLM Sentence Generation configuration is defined yet [namespace: $namespace, botId: $botId]")
 
         logger.info { "Deleting the LLM Sentence Generation Configuration [namespace: $namespace, botId: $botId] ..." }
         sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
@@ -67,9 +73,7 @@ object SentenceGenerationService {
      * @throws [BadRequestException] if a llm sentence generation configuration is invalid
      * @return [BotSentenceGenerationConfiguration]
      */
-    fun saveSentenceGeneration(
-        sentenceGenerationConfig: BotSentenceGenerationConfigurationDTO
-    ): BotSentenceGenerationConfiguration {
+    fun saveSentenceGeneration(sentenceGenerationConfig: BotSentenceGenerationConfigurationDTO): BotSentenceGenerationConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(sentenceGenerationConfig.namespace, sentenceGenerationConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${sentenceGenerationConfig.namespace}, botId = ${sentenceGenerationConfig.botId}]")
         return saveSentenceGenerationConfiguration(sentenceGenerationConfig)
@@ -79,13 +83,11 @@ object SentenceGenerationService {
      * Save the Generate Sentences configuration
      * @param sentenceGenerationConfiguration [BotSentenceGenerationConfigurationDTO]
      */
-    private fun saveSentenceGenerationConfiguration(
-        sentenceGenerationConfiguration: BotSentenceGenerationConfigurationDTO
-    ): BotSentenceGenerationConfiguration {
+    private fun saveSentenceGenerationConfiguration(sentenceGenerationConfiguration: BotSentenceGenerationConfigurationDTO): BotSentenceGenerationConfiguration {
         val sentenceGenerationConfig = sentenceGenerationConfiguration.toSentenceGenerationConfiguration()
 
         // Check validity of the configuration
-        if(sentenceGenerationConfig.enabled) {
+        if (sentenceGenerationConfig.enabled) {
             SentenceGenerationValidationService.validate(sentenceGenerationConfig).let { errors ->
                 if (errors.isNotEmpty()) {
                     throw BadRequestException(errors)
@@ -99,5 +101,4 @@ object SentenceGenerationService {
             throw BadRequestException(e.message ?: "Generation Sentences Configuration: registration failed ")
         }
     }
-
 }

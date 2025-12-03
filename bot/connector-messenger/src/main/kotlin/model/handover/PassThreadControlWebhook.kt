@@ -28,11 +28,11 @@ data class PassThreadControlWebhook(
     override val sender: Sender,
     override val recipient: Recipient,
     override val timestamp: Long,
-    @JsonProperty("pass_thread_control") val passThreadControl: PassThreadControl
+    @JsonProperty("pass_thread_control") val passThreadControl: PassThreadControl,
 ) : Webhook()
 
 data class PassThreadControl(
     @JsonProperty("new_owner_app_id")
     val newOwnerAppId: String,
-    val metadata: String? = null
+    val metadata: String? = null,
 )

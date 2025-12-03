@@ -16,8 +16,9 @@
 
 package ai.tock.genai.orchestratorcore.models.observability
 
-enum class ObservabilityProvider{
-    Langfuse;
+enum class ObservabilityProvider {
+    Langfuse,
+    ;
 
     companion object {
         fun findByName(provider: String): ObservabilityProvider? {

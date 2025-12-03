@@ -24,7 +24,6 @@ import kotlin.test.assertTrue
  *
  */
 class StringsTest {
-
     @Test
     fun `WHEN string ends with dot THEN endWithPunctuation returns true`() {
         assertTrue("hkh.".endWithPunctuation())
@@ -33,6 +32,9 @@ class StringsTest {
     @Test
     fun `Test Regex for replace accent`() {
         assertEquals(allowDiacriticsInRegexp("demo"), "d[eéèêë]m[oòóôõöø]")
-        assertEquals(allowDiacriticsInRegexp("c est une mise a jour"), "[cç]['-_ ][eéèêë]st['-_ ][uùúûü][nñ][eéèêë]['-_ ]m[iìíîï]s[eéèêë]['-_ ][aàáâãä]['-_ ]j[oòóôõöø][uùúûü]r")
+        assertEquals(
+            allowDiacriticsInRegexp("c est une mise a jour"),
+            "[cç]['-_ ][eéèêë]st['-_ ][uùúûü][nñ][eéèêë]['-_ ]m[iìíîï]s[eéèêë]['-_ ][aàáâãä]['-_ ]j[oòóôõöø][uùúûü]r",
+        )
     }
 }

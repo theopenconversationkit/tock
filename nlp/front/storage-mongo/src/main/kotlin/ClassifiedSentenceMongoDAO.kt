@@ -34,6 +34,7 @@ import ai.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicat
 import ai.tock.nlp.front.storage.mongo.ApplicationDefinitionMongoDAO.getApplicationsByNamespace
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Classifier
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Configuration
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ForReview
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
@@ -41,7 +42,6 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEnti
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.NormalizedText
-import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Configuration
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
@@ -54,11 +54,11 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
-import ai.tock.shared.normalize
 import ai.tock.shared.injector
 import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.namespace
+import ai.tock.shared.normalize
 import ai.tock.shared.provide
 import ai.tock.shared.safeCollation
 import ai.tock.shared.security.UserLogin
@@ -74,7 +74,6 @@ import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
-import org.litote.kmongo.`in`
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
@@ -83,6 +82,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
+import org.litote.kmongo.`in`
 import org.litote.kmongo.inc
 import org.litote.kmongo.json
 import org.litote.kmongo.lt
@@ -108,7 +108,6 @@ import java.util.concurrent.TimeUnit.DAYS
  *
  */
 internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
-
     private val logger = KotlinLogging.logger {}
 
     // alias
@@ -135,31 +134,30 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val reviewComment: String? = null,
         val classifier: UserLogin? = null,
         val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
-        val configuration : String? = null
+        val configuration: String? = null,
     ) {
-
         constructor(sentence: ClassifiedSentence) :
-                this(
-                    textKey(sentence.text),
-                    sentence.text.normalize(sentence.language),
-                    sentence.text,
-                    sentence.language,
-                    sentence.applicationId,
-                    sentence.creationDate,
-                    now(),
-                    sentence.status,
-                    sentence.classification,
-                    sentence.lastIntentProbability,
-                    sentence.lastEntityProbability,
-                    sentence.lastUsage,
-                    sentence.usageCount,
-                    sentence.unknownCount,
-                    sentence.forReview,
-                    sentence.reviewComment,
-                    sentence.qualifier,
-                    sentence.otherIntentsProbabilities,
-                    sentence.configuration
-                )
+            this(
+                textKey(sentence.text),
+                sentence.text.normalize(sentence.language),
+                sentence.text,
+                sentence.language,
+                sentence.applicationId,
+                sentence.creationDate,
+                now(),
+                sentence.status,
+                sentence.classification,
+                sentence.lastIntentProbability,
+                sentence.lastEntityProbability,
+                sentence.lastUsage,
+                sentence.usageCount,
+                sentence.unknownCount,
+                sentence.forReview,
+                sentence.reviewComment,
+                sentence.qualifier,
+                sentence.otherIntentsProbabilities,
+                sentence.configuration,
+            )
 
         fun toSentence(): ClassifiedSentence =
             ClassifiedSentence(
@@ -179,7 +177,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 reviewComment,
                 classifier,
                 otherIntentsProbabilities,
-                configuration
+                configuration,
             )
     }
 
@@ -195,7 +193,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             c.ensureIndex(Language, ApplicationId, UnknownCount)
             c.ensureIndex(Language, Status, Classification_.intentId)
             c.ensureIndex(
-                ApplicationId, Classification_.intentId, Language, UpdateDate
+                ApplicationId,
+                Classification_.intentId,
+                Language,
+                UpdateDate,
             )
             c.ensureIndex(ForReview)
 
@@ -205,9 +206,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 logger.info { "add classified sentence ttl index for $ttlDays days" }
                 c.ensureIndex(
                     UpdateDate,
-                    indexOptions = IndexOptions()
-                        .expireAfter(ttlDays, DAYS)
-                        .partialFilterExpression(Status eq inbox)
+                    indexOptions =
+                        IndexOptions()
+                            .expireAfter(ttlDays, DAYS)
+                            .partialFilterExpression(Status eq inbox),
                 )
             } else {
                 c.ensureIndex(UpdateDate)
@@ -217,13 +219,14 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 logger.info { "add classified sentence periodic crawler for $ttlDays days and intents $ttlIntents" }
                 injector.provide<Executor>().setPeriodic(Duration.ofMinutes(1), Duration.ofDays(1)) {
                     val intentIds = IntentDefinitionMongoDAO.getIntentsByNames(ttlIntents).map { it._id }
-                    val deleted = c.deleteMany(
-                        and(
-                            Status eq inbox,
-                            Classification_.intentId `in` intentIds,
-                            UpdateDate lt now().minus(ttlDays, ChronoUnit.DAYS)
+                    val deleted =
+                        c.deleteMany(
+                            and(
+                                Status eq inbox,
+                                Classification_.intentId `in` intentIds,
+                                UpdateDate lt now().minus(ttlDays, ChronoUnit.DAYS),
+                            ),
                         )
-                    )
                     logger.debug { "delete ${deleted.deletedCount} old classified sentences for intents $ttlIntents of ids $intentIds" }
                 }
             }
@@ -244,7 +247,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     override fun getSentences(
         intents: Set<Id<IntentDefinition>>?,
         language: Locale?,
-        status: ClassifiedSentenceStatus?
+        status: ClassifiedSentenceStatus?,
     ): List<ClassifiedSentence> {
         if (intents == null && language == null && status == null) {
             error("at least one parameter should be not null")
@@ -254,13 +257,16 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             .find(
                 if (intents != null) Classification_.intentId `in` intents else null,
                 if (language != null) Language eq language else null,
-                if (status != null) Status eq status else null
+                if (status != null) Status eq status else null,
             )
             .map { it.toSentence() }
             .toList()
     }
 
-    override fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {
+    override fun switchSentencesStatus(
+        sentences: List<ClassifiedSentence>,
+        newStatus: ClassifiedSentenceStatus,
+    ) {
         sentences.forEach {
             save(it.copy(status = newStatus))
         }
@@ -283,25 +289,24 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             and(
                 Text eq textKey(s.text),
                 Language eq s.language,
-                ApplicationId eq s.applicationId
+                ApplicationId eq s.applicationId,
             ),
             s,
-            ReplaceOptions().upsert(true)
+            ReplaceOptions().upsert(true),
         )
     }
 
     override fun users(applicationId: Id<ApplicationDefinition>): List<String> {
         return col.distinct(
             Classifier,
-            and(ApplicationId eq applicationId, Status `in` listOf(validated, model))
+            and(ApplicationId eq applicationId, Status `in` listOf(validated, model)),
         ).filterNotNull()
     }
-
 
     override fun configurations(applicationId: Id<ApplicationDefinition>): List<String> {
         return col.distinct(
             Configuration,
-            and(ApplicationId eq applicationId)
+            and(ApplicationId eq applicationId),
         ).filterNotNull()
     }
 
@@ -325,7 +330,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     filterByAllButUser(),
                     filterMaxIntentProbability(),
                     filterMinIntentProbability(),
-                    filterConfiguration()
+                    filterConfiguration(),
                 )
 
             logger.debug { filterBase.json }
@@ -334,49 +339,49 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             val count = c.countDocuments(filterBase)
             logger.debug { "count : $count" }
             if (count > start) {
-                val list = c
-                    .find(filterBase)
-                    .run {
-                        if (query.sort.isEmpty()) {
-                            descendingSort(UpdateDate)
-                        } else {
-                            sort(
-                                orderBy(
-                                    query.sort.map {
-                                        when (it.first) {
-                                            "text" -> Text
-                                            "currentIntent" -> Classification_.intentId
-                                            "intentProbability" -> LastIntentProbability
-                                            "entitiesProbability" -> LastEntityProbability
-                                            "lastUpdate" -> UpdateDate
-                                            "lastUsage" -> LastUsage
-                                            "usageCount" -> UsageCount
-                                            "unknownCount" -> UnknownCount
-                                            else -> UpdateDate
-                                        } to it.second
-                                    }.toMap()
+                val list =
+                    c
+                        .find(filterBase)
+                        .run {
+                            if (query.sort.isEmpty()) {
+                                descendingSort(UpdateDate)
+                            } else {
+                                sort(
+                                    orderBy(
+                                        query.sort.map {
+                                            when (it.first) {
+                                                "text" -> Text
+                                                "currentIntent" -> Classification_.intentId
+                                                "intentProbability" -> LastIntentProbability
+                                                "entitiesProbability" -> LastEntityProbability
+                                                "lastUpdate" -> UpdateDate
+                                                "lastUsage" -> LastUsage
+                                                "usageCount" -> UsageCount
+                                                "unknownCount" -> UnknownCount
+                                                else -> UpdateDate
+                                            } to it.second
+                                        }.toMap(),
+                                    ),
                                 )
-                            )
+                            }
                         }
-                    }
-                    .run {
-                        if (query.sort.isNotEmpty()) {
-                            safeCollation(
-                                Collation
-                                    .builder()
-                                    .caseLevel(false)
-                                    .locale((query.language ?: defaultLocale).toLanguageTag())
-                                    .build()
-                            )
-                        } else {
-                            this
+                        .run {
+                            if (query.sort.isNotEmpty()) {
+                                safeCollation(
+                                    Collation
+                                        .builder()
+                                        .caseLevel(false)
+                                        .locale((query.language ?: defaultLocale).toLanguageTag())
+                                        .build(),
+                                )
+                            } else {
+                                this
+                            }
                         }
-                    }
-                    .skip(start.toInt())
-                    .run {
-                        size?.let { limit(it) } ?: this
-                    }
-
+                        .skip(start.toInt())
+                        .run {
+                            size?.let { limit(it) } ?: this
+                        }
 
                 return SentencesQueryResult(count, list.map { it.toSentence() }.toList())
             } else {
@@ -386,12 +391,15 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     private fun SentencesQuery.filterApplication() =
-        if (wholeNamespace) ApplicationId `in`
+        if (wholeNamespace) {
+            ApplicationId `in`
                 (
-                        getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
-                            ?: emptyList()
-                        )
-        else ApplicationId eq applicationId
+                    getApplicationById(applicationId)?.namespace?.let { n -> getApplicationsByNamespace(n).map { it._id } }
+                        ?: emptyList()
+                )
+        } else {
+            ApplicationId eq applicationId
+        }
 
     private fun SentencesQuery.filterReviewOnly() = if (onlyToReview) ForReview eq true else null
 
@@ -399,45 +407,52 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterByAllButUser() = if (allButUser != null) Classifier ne allButUser else null
 
-    private fun SentencesQuery.filterSearchMark(): Bson? =
-        if (searchMark == null) null else UpdateDate lte searchMark?.date
+    private fun SentencesQuery.filterSearchMark(): Bson? = if (searchMark == null) null else UpdateDate lte searchMark?.date
 
-    private fun SentencesQuery.filterModifiedAfter(): Bson? =
-        if (modifiedAfter == null) null else UpdateDate gt modifiedAfter?.toInstant()
+    private fun SentencesQuery.filterModifiedAfter(): Bson? = if (modifiedAfter == null) null else UpdateDate gt modifiedAfter?.toInstant()
 
-    private fun SentencesQuery.filterModifiedBefore(): Bson? =
-        if (modifiedBefore == null) null else UpdateDate lt modifiedBefore?.toInstant()
+    private fun SentencesQuery.filterModifiedBefore(): Bson? = if (modifiedBefore == null) null else UpdateDate lt modifiedBefore?.toInstant()
 
-    private fun SentencesQuery.filterEntityRoleToExclude(): Bson? = when {
-        entityRolesToExclude.isEmpty() -> null
-        searchSubEntities -> subEntityRoleQueryToExclude(entityRolesToExclude)
-        else -> Classification_.entities.role nin entityRolesToExclude
-    }
+    private fun SentencesQuery.filterEntityRoleToExclude(): Bson? =
+        when {
+            entityRolesToExclude.isEmpty() -> null
+            searchSubEntities -> subEntityRoleQueryToExclude(entityRolesToExclude)
+            else -> Classification_.entities.role nin entityRolesToExclude
+        }
 
-    private fun SentencesQuery.filterEntityRolesToInclude(): Bson? = when {
-        entityRolesToInclude.isEmpty() -> null
-        searchSubEntities -> subEntityRoleQueryToInclude(entityRolesToInclude)
-        else -> Classification_.entities.role `in` entityRolesToInclude
-    }
+    private fun SentencesQuery.filterEntityRolesToInclude(): Bson? =
+        when {
+            entityRolesToInclude.isEmpty() -> null
+            searchSubEntities -> subEntityRoleQueryToInclude(entityRolesToInclude)
+            else -> Classification_.entities.role `in` entityRolesToInclude
+        }
 
-    private fun SentencesQuery.filterEntityType(): Bson? = when {
-        entityType == null -> null
-        searchSubEntities -> subEntityTypeQuery(entityType!!)
-        else -> Classification_.entities.type eq entityType
-    }
+    private fun SentencesQuery.filterEntityType(): Bson? =
+        when {
+            entityType == null -> null
+            searchSubEntities -> subEntityTypeQuery(entityType!!)
+            else -> Classification_.entities.type eq entityType
+        }
 
     private fun SentencesQuery.filterStatus() =
-        if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null
+        if (status.isNotEmpty()) {
+            Status `in` status
+        } else if (notStatus != null) {
+            Status ne notStatus
+        } else {
+            null
+        }
 
     private fun SentencesQuery.filterConfiguration() = if (configuration == null) null else Configuration eq configuration
 
     private fun SentencesQuery.filterIntent() = if (intentId == null) null else Classification_.intentId eq intentId
 
-    private fun SentencesQuery.filterText(): Bson? = when {
-        search.isNullOrBlank() -> null
-        onlyExactMatch -> filterOnlyExactMatchText()
-        else -> FullText.regex(search!!.trim(), "i")
-    }
+    private fun SentencesQuery.filterText(): Bson? =
+        when {
+            search.isNullOrBlank() -> null
+            onlyExactMatch -> filterOnlyExactMatchText()
+            else -> FullText.regex(search!!.trim(), "i")
+        }
 
     private fun SentencesQuery.filterOnlyExactMatchText() =
         when {
@@ -449,11 +464,9 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterLanguage() = if (language == null) null else Language eq language
 
-    private fun SentencesQuery.filterMaxIntentProbability(): Bson? =
-        if (maxIntentProbability < 1f) LastIntentProbability lt maxIntentProbability.toDouble() else null
+    private fun SentencesQuery.filterMaxIntentProbability(): Bson? = if (maxIntentProbability < 1f) LastIntentProbability lt maxIntentProbability.toDouble() else null
 
-    private fun SentencesQuery.filterMinIntentProbability(): Bson? =
-        if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
+    private fun SentencesQuery.filterMinIntentProbability(): Bson? = if (minIntentProbability > 0f) LastIntentProbability gt minIntentProbability.toDouble() else null
 
     // ugly
     private fun subEntityTypeQuery(entityType: String): Bson =
@@ -466,7 +479,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.type eq entityType,
         )
 
     private fun subEntityRoleQueryToInclude(roles: List<String>): Bson =
@@ -479,7 +492,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role `in` roles,
         )
 
     private fun subEntityRoleQueryToExclude(roles: List<String>): Bson =
@@ -492,33 +505,34 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
             Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
-            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles
+            Classification_.entities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.subEntities.role nin roles,
         )
 
     override fun switchSentencesIntent(
         applicationId: Id<ApplicationDefinition>,
         oldIntentId: Id<IntentDefinition>,
-        newIntentId: Id<IntentDefinition>
+        newIntentId: Id<IntentDefinition>,
     ) {
         col.updateMany(
             and(
                 ApplicationId eq applicationId,
-                Classification_.intentId eq oldIntentId
+                Classification_.intentId eq oldIntentId,
             ),
             Classification_.intentId setTo newIntentId,
             Classification_.entities setTo emptyList(),
-            Status setTo inbox
+            Status setTo inbox,
         )
     }
 
     override fun switchSentencesIntent(
         sentences: List<ClassifiedSentence>,
-        newIntentId: Id<IntentDefinition>
+        newIntentId: Id<IntentDefinition>,
     ) {
         // TODO what if new intent does not contains existing entities?
         sentences.forEach {
-            if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME
-                || newIntentId.toString() == Intent.RAG_EXCLUDED_INTENT_NAME) {
+            if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME ||
+                newIntentId.toString() == Intent.RAG_EXCLUDED_INTENT_NAME
+            ) {
                 save(it.copy(classification = it.classification.copy(newIntentId, emptyList())))
             } else {
                 save(it.copy(classification = it.classification.copy(newIntentId)))
@@ -530,14 +544,16 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         allowedNamespace: String,
         sentences: List<ClassifiedSentence>,
         oldEntity: EntityDefinition,
-        newEntity: EntityDefinition
+        newEntity: EntityDefinition,
     ) {
         // TODO not only first entity level
 
-        val oldEntityType = EntityTypeDefinitionMongoDAO.getEntityTypeByName(oldEntity.entityTypeName)
-            ?: error("no entity type found: $oldEntity")
-        val newEntityType = EntityTypeDefinitionMongoDAO.getEntityTypeByName(newEntity.entityTypeName)
-            ?: error("no entity type found: $newEntity")
+        val oldEntityType =
+            EntityTypeDefinitionMongoDAO.getEntityTypeByName(oldEntity.entityTypeName)
+                ?: error("no entity type found: $oldEntity")
+        val newEntityType =
+            EntityTypeDefinitionMongoDAO.getEntityTypeByName(newEntity.entityTypeName)
+                ?: error("no entity type found: $newEntity")
         val newSubEntityDefinitions = mutableSetOf<EntityDefinition>()
 
         sentences.forEach { s ->
@@ -545,52 +561,54 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 s.classification.entities.filter { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName }
             val newEntities =
                 s.classification.entities.filterNot { e -> e.role == oldEntity.role && e.type == oldEntity.entityTypeName } +
-                        selectedEntities.map { e ->
-                            // select already existing roles and change type
-                            val subEntitiesWithExistingRole = e.subEntities
+                    selectedEntities.map { e ->
+                        // select already existing roles and change type
+                        val subEntitiesWithExistingRole =
+                            e.subEntities
                                 .filter { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
                                 .map { sub ->
                                     sub.copy(type = newEntityType.subEntities.first { it.role == sub.role }.entityTypeName)
                                 }
 
-                            val subEntitiesWithNotExistingRole =
-                                if (newEntityType.name.namespace() == allowedNamespace) {
-                                    // for non existing roles, add the new sub entity to entity
-                                    e.subEntities
-                                        .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
-                                        .apply {
-                                            forEach { sub ->
-                                                oldEntityType.subEntities.find { sub.role == it.role }
-                                                    ?.let { newSubEntity ->
-                                                        newSubEntityDefinitions.add(newSubEntity)
-                                                    }
-                                            }
+                        val subEntitiesWithNotExistingRole =
+                            if (newEntityType.name.namespace() == allowedNamespace) {
+                                // for non existing roles, add the new sub entity to entity
+                                e.subEntities
+                                    .filterNot { subEntity -> newEntityType.subEntities.any { it.role == subEntity.role } }
+                                    .apply {
+                                        forEach { sub ->
+                                            oldEntityType.subEntities.find { sub.role == it.role }
+                                                ?.let { newSubEntity ->
+                                                    newSubEntityDefinitions.add(newSubEntity)
+                                                }
                                         }
-                                } else {
-                                    emptyList()
-                                }
-                            val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
+                                    }
+                            } else {
+                                emptyList()
+                            }
+                        val newSubEntities = subEntitiesWithExistingRole + subEntitiesWithNotExistingRole
 
-                            e.copy(
-                                type = newEntity.entityTypeName,
-                                role = newEntity.role,
-                                subEntities = newSubEntities.sorted()
-                            )
-                        }
+                        e.copy(
+                            type = newEntity.entityTypeName,
+                            role = newEntity.role,
+                            subEntities = newSubEntities.sorted(),
+                        )
+                    }
             save(
                 s.copy(
-                    classification = s.classification.copy(
-                        entities = newEntities.sorted()
-                    )
-                )
+                    classification =
+                        s.classification.copy(
+                            entities = newEntities.sorted(),
+                        ),
+                ),
             )
         }
 
         if (newSubEntityDefinitions.isNotEmpty()) {
             EntityTypeDefinitionMongoDAO.save(
                 newEntityType.copy(
-                    subEntities = newEntityType.subEntities + newSubEntityDefinitions
-                )
+                    subEntities = newEntityType.subEntities + newSubEntityDefinitions,
+                ),
             )
         }
     }
@@ -599,21 +617,21 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
         entityType: String,
-        role: String
+        role: String,
     ) {
         col.updateMany(
             and(
                 ApplicationId eq applicationId,
-                Classification_.intentId eq intentId
+                Classification_.intentId eq intentId,
             ),
-            pullByFilter(Classification_.entities, Role eq role)
+            pullByFilter(Classification_.entities, Role eq role),
         )
     }
 
     override fun removeSubEntityFromSentences(
         applicationId: Id<ApplicationDefinition>,
         entityType: String,
-        role: String
+        role: String,
     ) {
         (1..10).forEach { removeSubEntitiesFromSentence(applicationId, entityType, role, it) }
     }
@@ -622,7 +640,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         applicationId: Id<ApplicationDefinition>,
         entityType: String,
         role: String,
-        level: Int
+        level: Int,
     ) {
         val baseFilter = "classification.entities" + (2..level).joinToString("") { ".subEntities" }
         val filter = """{
@@ -654,31 +672,31 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             and(
                 Language eq stat.language,
                 ApplicationId eq stat.applicationId,
-                Text eq stat.text
+                Text eq stat.text,
             ),
             combine(
                 listOfNotNull(
                     stat.intentProbability?.let { setValue(LastIntentProbability, it) },
                     stat.entitiesProbability?.let { setValue(LastEntityProbability, it) },
                     setValue(LastUsage, stat.lastUsage),
-                    setValue(UsageCount, stat.count)
-                )
-            )
+                    setValue(UsageCount, stat.count),
+                ),
+            ),
         )
     }
 
     override fun incrementUnknownStat(
         applicationId: Id<ApplicationDefinition>,
         language: Locale,
-        text: String
+        text: String,
     ) {
         col.updateOne(
             and(
                 Language eq language,
                 ApplicationId eq applicationId,
-                Text eq text
+                Text eq text,
             ),
-            inc(UnknownCount, 1)
+            inc(UnknownCount, 1),
         )
     }
 }

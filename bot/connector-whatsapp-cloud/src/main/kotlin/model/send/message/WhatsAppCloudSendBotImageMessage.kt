@@ -24,6 +24,6 @@ data class WhatsAppCloudSendBotImageMessage(
     data class Image(
         val id: String?,
         val link: String?,
-        val caption: String?
+        val caption: String?,
     )
 }

@@ -19,15 +19,15 @@ package ai.tock.nlp.front.storage.mongo
 import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
+import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.service.storage.ModelBuildTriggerDAO
+import ai.tock.nlp.front.service.storage.NamespaceConfigurationDAO
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
 import ai.tock.nlp.front.service.storage.TestModelDAO
 import ai.tock.nlp.front.service.storage.UserActionLogDAO
 import ai.tock.nlp.front.service.storage.UserNamespaceDAO
-import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
-import ai.tock.nlp.front.service.storage.FaqSettingsDAO
-import ai.tock.nlp.front.service.storage.NamespaceConfigurationDAO
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
@@ -38,19 +38,20 @@ import com.mongodb.client.MongoDatabase
 
 const val MONGO_DATABASE: String = TOCK_FRONT_DATABASE
 
-val frontMongoModule = Kodein.Module {
-    bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
-    bind<ApplicationDefinitionDAO>() with provider { ApplicationDefinitionMongoDAO }
-    bind<IntentDefinitionDAO>() with provider { IntentDefinitionMongoDAO }
-    bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
-    bind<ClassifiedSentenceDAO>() with provider { ClassifiedSentenceMongoDAO }
-    bind<ModelBuildTriggerDAO>() with provider { ModelBuildTriggerMongoDAO }
-    bind<ParseRequestLogDAO>() with provider { ParseRequestLogMongoDAO }
-    bind<TestModelDAO>() with provider { TestModelMongoDAO }
-    bind<UserActionLogDAO>() with provider { UserActionLogMongoDAO }
-    bind<UserNamespaceDAO>() with provider { UserNamespaceMongoDAO }
-    bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
-    bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
-    bind<NamespaceConfigurationDAO>() with provider { NamespaceConfigurationMongoDAO }
-}
+val frontMongoModule =
+    Kodein.Module {
+        bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+        bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+        bind<ApplicationDefinitionDAO>() with provider { ApplicationDefinitionMongoDAO }
+        bind<IntentDefinitionDAO>() with provider { IntentDefinitionMongoDAO }
+        bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
+        bind<ClassifiedSentenceDAO>() with provider { ClassifiedSentenceMongoDAO }
+        bind<ModelBuildTriggerDAO>() with provider { ModelBuildTriggerMongoDAO }
+        bind<ParseRequestLogDAO>() with provider { ParseRequestLogMongoDAO }
+        bind<TestModelDAO>() with provider { TestModelMongoDAO }
+        bind<UserActionLogDAO>() with provider { UserActionLogMongoDAO }
+        bind<UserNamespaceDAO>() with provider { UserNamespaceMongoDAO }
+        bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
+        bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
+        bind<NamespaceConfigurationDAO>() with provider { NamespaceConfigurationMongoDAO }
+    }

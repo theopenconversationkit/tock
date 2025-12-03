@@ -20,5 +20,6 @@ package ai.tock.bot.connector.messenger.model.send
  *
  */
 enum class SourceType {
-    SHORTLINK, ADS
+    SHORTLINK,
+    ADS,
 }

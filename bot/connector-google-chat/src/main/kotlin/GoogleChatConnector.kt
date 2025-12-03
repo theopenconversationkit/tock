@@ -45,9 +45,8 @@ class GoogleChatConnector(
     private val path: String,
     private val chatService: HangoutsChat,
     private val authorisationHandler: GoogleChatAuthorisationHandler,
-    private val useCondensedFootnotes: Boolean
+    private val useCondensedFootnotes: Boolean,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
-
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
@@ -71,7 +70,7 @@ class GoogleChatConnector(
                             executor.executeBlocking {
                                 controller.handle(
                                     event,
-                                    ConnectorData(GoogleChatConnectorCallback(connectorId, spaceName, threadName))
+                                    ConnectorData(GoogleChatConnectorCallback(connectorId, spaceName, threadName)),
                                 )
                             }
                         } else {
@@ -84,7 +83,11 @@ class GoogleChatConnector(
         }
     }
 
-    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+    override fun send(
+        event: Event,
+        callback: ConnectorCallback,
+        delayInMs: Long,
+    ) {
         logger.debug { "event: $event" }
         if (event is Action) {
             val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
@@ -120,71 +123,80 @@ class GoogleChatConnector(
         }
     }
 
-    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
-        card {
-            section {
-                textParagraph(text)
-                buttons {
-                    suggestions.map { nlpTextButton(it) }
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            card {
+                section {
+                    textParagraph(text)
+                    buttons {
+                        suggestions.map { nlpTextButton(it) }
+                    }
                 }
             }
         }
-    }
 
     override fun addSuggestions(
         message: ConnectorMessage,
-        suggestions: List<CharSequence>
-    ): BotBus.() -> ConnectorMessage? = {
-        when (message) {
-            is GoogleChatConnectorCardMessageOut -> {
-                if (message.card.hasChatButtons()) {
-                    message
-                } else {
-                    message.apply {
-                        card.section {
-                            buttons { suggestions.map { nlpTextButton(it) } }
+        suggestions: List<CharSequence>,
+    ): BotBus.() -> ConnectorMessage? =
+        {
+            when (message) {
+                is GoogleChatConnectorCardMessageOut -> {
+                    if (message.card.hasChatButtons()) {
+                        message
+                    } else {
+                        message.apply {
+                            card.section {
+                                buttons { suggestions.map { nlpTextButton(it) } }
+                            }
                         }
                     }
                 }
-            }
-            is GoogleChatConnectorTextMessageOut -> {
-                card {
-                    section {
-                        textParagraph(message.text)
-                        buttons {
-                            suggestions.map { nlpTextButton(it) }
+                is GoogleChatConnectorTextMessageOut -> {
+                    card {
+                        section {
+                            textParagraph(message.text)
+                            buttons {
+                                suggestions.map { nlpTextButton(it) }
+                            }
                         }
                     }
                 }
+                else -> message.also { logger.warn { "Add suggestion to message $message not handled" } }
             }
-            else -> message.also { logger.warn { "Add suggestion to message $message not handled" } }
         }
-    }
 
-    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = {
-        when (message) {
-            is MediaAction -> listOf(
-                card {
-                    section {
-                        buttons {
-                            buttonFromMediaAction(message)
-                        }
-                    }
-                }
-            )
-            is MediaCard -> listOf(
-                card {
-                    sectionFromMediaCard(message)
-                }
-            )
-            is MediaCarousel -> listOf(
-                card {
-                    message.cards.forEach { sectionFromMediaCard(it) }
-                }
-            )
-            else -> emptyList()
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        {
+            when (message) {
+                is MediaAction ->
+                    listOf(
+                        card {
+                            section {
+                                buttons {
+                                    buttonFromMediaAction(message)
+                                }
+                            }
+                        },
+                    )
+                is MediaCard ->
+                    listOf(
+                        card {
+                            sectionFromMediaCard(message)
+                        },
+                    )
+                is MediaCarousel ->
+                    listOf(
+                        card {
+                            message.cards.forEach { sectionFromMediaCard(it) }
+                        },
+                    )
+                else -> emptyList()
+            }
         }
-    }
 
     private fun ChatCard.sectionFromMediaCard(message: MediaCard) {
         section {

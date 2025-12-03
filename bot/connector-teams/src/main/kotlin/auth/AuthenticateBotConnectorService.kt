@@ -34,18 +34,19 @@ import java.util.Date
 
 @Suppress("PropertyName")
 internal class AuthenticateBotConnectorService(
-    private val appId: String
+    private val appId: String,
 ) {
     private val logger = KotlinLogging.logger {}
 
     companion object {
         const val AUTHORIZATION_HEADER = "Authorization"
         const val ISSUER_BOT_CONNECTOR_SERVICE = "https://api.botframework.com"
-        val ISSUER_BOT_FWK_EMULATOR = listOf(
-            "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",
-            "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",
-            "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
-        )
+        val ISSUER_BOT_FWK_EMULATOR =
+            listOf(
+                "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",
+                "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",
+                "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",
+            )
         const val BEARER_PREFIX = "Bearer "
     }
 
@@ -54,25 +55,34 @@ internal class AuthenticateBotConnectorService(
      *
      * In dev environment, we test also the Bot Framework Emulator token.
      */
-    fun checkRequestValidity(jwkHandler: JWKHandler, headers: MultiMap, activity: Activity) {
+    fun checkRequestValidity(
+        jwkHandler: JWKHandler,
+        headers: MultiMap,
+        activity: Activity,
+    ) {
         var isFromTheBotConnectorService = false
         var isFromTheBotFwkEmulator = false
         var errorStackTrace: String? = ""
 
         runBlocking {
-            val jobAuthenticateFromBotConnectorService = async(Dispatchers.Default) {
-                isFromTheBotConnectorService = try {
-                    checkTokenValidityFromConnectorService(jwkHandler, headers, activity)
-                } catch (e: Exception) {
-                    errorStackTrace = e.message
-                    false
-                }
-            }
-            val jobAuthenticateFromBotFrameworkEmulator = if (devEnvironment) {
+            val jobAuthenticateFromBotConnectorService =
                 async(Dispatchers.Default) {
-                    isFromTheBotFwkEmulator = checkTokenValidityFromEmulator(jwkHandler, headers)
+                    isFromTheBotConnectorService =
+                        try {
+                            checkTokenValidityFromConnectorService(jwkHandler, headers, activity)
+                        } catch (e: Exception) {
+                            errorStackTrace = e.message
+                            false
+                        }
                 }
-            } else null
+            val jobAuthenticateFromBotFrameworkEmulator =
+                if (devEnvironment) {
+                    async(Dispatchers.Default) {
+                        isFromTheBotFwkEmulator = checkTokenValidityFromEmulator(jwkHandler, headers)
+                    }
+                } else {
+                    null
+                }
 
             jobAuthenticateFromBotConnectorService.join()
             jobAuthenticateFromBotFrameworkEmulator?.join()
@@ -94,7 +104,10 @@ internal class AuthenticateBotConnectorService(
      * The token is within its validity period. Industry-standard clock-skew is 5 minutes.
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      */
-    private fun checkTokenValidityFromEmulator(jwkHandler: JWKHandler, headers: MultiMap): Boolean {
+    private fun checkTokenValidityFromEmulator(
+        jwkHandler: JWKHandler,
+        headers: MultiMap,
+    ): Boolean {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
@@ -126,7 +139,11 @@ internal class AuthenticateBotConnectorService(
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      * The token contains a "serviceUrl" claim with value that matches the servieUrl property at the root of the Activity object of the incoming request.    *
      */
-    private fun checkTokenValidityFromConnectorService(jwkHandler: JWKHandler, headers: MultiMap, activity: Activity): Boolean {
+    private fun checkTokenValidityFromConnectorService(
+        jwkHandler: JWKHandler,
+        headers: MultiMap,
+        activity: Activity,
+    ): Boolean {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
@@ -138,8 +155,8 @@ internal class AuthenticateBotConnectorService(
             checkValidity(signedJWT)
             checkSignature(signedJWT, jwkHandler)
             if ((
-                signedJWT.jwtClaimsSet.getClaim("serviceurl")
-                    ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")
+                    signedJWT.jwtClaimsSet.getClaim("serviceurl")
+                        ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")
                 ) != activity.serviceUrl
             ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
@@ -158,15 +175,19 @@ internal class AuthenticateBotConnectorService(
         if (now.before(notBefore)) throw ForbiddenException("Authorization header is not valid yet")
     }
 
-    private fun checkSignature(signedJWT: SignedJWT, jwkHandler: JWKHandler) {
+    private fun checkSignature(
+        signedJWT: SignedJWT,
+        jwkHandler: JWKHandler,
+    ) {
         jwkHandler.getJWK()?.keys?.forEach {
             if ((it.kid == signedJWT.header.keyID)) {
                 val algo = it.kty
-                val verifier: JWSVerifier = when (algo) {
-                    "RSA" -> RSASSAVerifier(RSAKey.parse(it.toString()))
-                    "EC" -> ECDSAVerifier(ECKey.parse(it.toString()))
-                    else -> throw ForbiddenException("$algo is not a supported algorithm")
-                }
+                val verifier: JWSVerifier =
+                    when (algo) {
+                        "RSA" -> RSASSAVerifier(RSAKey.parse(it.toString()))
+                        "EC" -> ECDSAVerifier(ECKey.parse(it.toString()))
+                        else -> throw ForbiddenException("$algo is not a supported algorithm")
+                    }
                 if (signedJWT.verify(verifier)) {
                     logger.debug("the token received from botconnector is good")
                     return

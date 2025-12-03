@@ -51,7 +51,6 @@ data class DialogsSearchQuery(
     val dialogCreationDateFrom: ZonedDateTime? = null,
     val dialogCreationDateTo: ZonedDateTime? = null,
 ) : PaginatedQuery() {
-
     fun toDialogReportQuery(): DialogReportQuery {
         return DialogReportQuery(
             namespace,

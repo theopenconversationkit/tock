@@ -27,8 +27,7 @@ data class SampleEntity(
     val definition: Entity,
     val subEntities: List<SampleEntity>,
     override val start: Int,
-    override val end: Int
+    override val end: Int,
 ) : IntOpenRange {
-
     fun isType(entityType: EntityType): Boolean = definition.entityType == entityType
 }

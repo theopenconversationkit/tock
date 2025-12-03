@@ -23,13 +23,15 @@ import java.net.Proxy
  * A proxy configuration
  */
 object ProxyConfiguration {
-
     /**
      * Configure proxy
      * @param proxyHost : host
      * @param proxyPort : port
      */
-    fun configure(proxyHost: String, proxyPort: Int): Proxy {
+    fun configure(
+        proxyHost: String,
+        proxyPort: Int,
+    ): Proxy {
         return if (proxyHost.isNotBlank()) {
             val address = InetSocketAddress(proxyHost, proxyPort)
             Proxy(Proxy.Type.HTTP, address)

@@ -17,5 +17,5 @@
 package ai.tock.nlp.rasa
 
 internal data class RasaModelConfiguration(
-    val modelFileName: String
+    val modelFileName: String,
 )

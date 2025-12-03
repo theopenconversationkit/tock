@@ -36,7 +36,10 @@ private val logger = KotlinLogging.logger {}
 /**
  * Provides a message with a [GACarouselSelect].
  */
-fun I18nTranslator.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
+fun I18nTranslator.gaMessageForCarousel(
+    items: List<GACarouselItem>,
+    suggestions: List<CharSequence> = emptyList(),
+): GAResponseConnectorMessage {
     if (items.size < 2) {
         error("must have at least 2 - current size = ${items.size}")
     } else {
@@ -44,8 +47,8 @@ fun I18nTranslator.gaMessageForCarousel(items: List<GACarouselItem>, suggestions
             inputPrompt(richResponse(emptyList(), suggestions)),
             listOf(
                 expectedTextIntent(),
-                expectedIntentForCarousel(items)
-            )
+                expectedIntentForCarousel(items),
+            ),
         )
     }
 }
@@ -66,18 +69,18 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
     oneItemTitle: CharSequence? = null,
     oneItemSubtitle: CharSequence? = null,
     oneItemDescription: CharSequence? = null,
-    oneItemSuggestions: List<CharSequence> = emptyList()
+    oneItemSuggestions: List<CharSequence> = emptyList(),
 ): GAResponseConnectorMessage {
     return gaFlexibleMessageForCarousel(
         items,
         suggestions,
-        oneItemSuggestions
+        oneItemSuggestions,
     ) { one ->
         basicCard(
             oneItemTitle ?: one.title.raw,
             if (one.image != null) oneItemSubtitle ?: one.description?.raw else oneItemSubtitle,
             if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
-            one.image
+            one.image,
         )
     }
 }
@@ -99,16 +102,16 @@ fun I18nTranslator.gaFlexibleMessageForCarousel(
             it.title.raw,
             if (it.image != null) it.description?.raw else null,
             if (it.image == null) it.description?.raw else null,
-            it.image
+            it.image,
         )
-    }
+    },
 ): GAResponseConnectorMessage {
     return if (items.size == 1) {
         gaMessage(
             richResponse(
                 oneItemBasicCardProvider.invoke(items.first()),
-                suggestions + oneItemSuggestions
-            )
+                suggestions + oneItemSuggestions,
+            ),
         )
     } else {
         gaMessageForCarousel(items, suggestions)
@@ -122,15 +125,16 @@ fun I18nTranslator.expectedIntentForCarousel(items: List<GACarouselItem>): GAExp
     return GAExpectedIntent(
         GAIntent.option,
         optionValueSpec(
-            carouselSelect = GACarouselSelect(
-                if (items.size > 10) {
-                    logger.warn { "too many items $items - keep only first 10" }
-                    items.subList(0, 10)
-                } else {
-                    items
-                }
-            )
-        )
+            carouselSelect =
+                GACarouselSelect(
+                    if (items.size > 10) {
+                        logger.warn { "too many items $items - keep only first 10" }
+                        items.subList(0, 10)
+                    } else {
+                        items
+                    },
+                ),
+        ),
     )
 }
 
@@ -142,9 +146,8 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    vararg parameters: Pair<String, String>
-):
-    GACarouselItem = carouselItem(targetIntent, null, title, description, image, *parameters)
+    vararg parameters: Pair<String, String>,
+): GACarouselItem = carouselItem(targetIntent, null, title, description, image, *parameters)
 
 /**
  * Provides a [GACarouselItem] with [Parameters] parameters.
@@ -154,9 +157,8 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    parameters: Parameters
-):
-    GACarouselItem = carouselItem(targetIntent, null, title, description, image, parameters)
+    parameters: Parameters,
+): GACarouselItem = carouselItem(targetIntent, null, title, description, image, parameters)
 
 /**
  * Provides a [GACarouselItem] with [StoryStep] and [Parameters] parameters.
@@ -167,9 +169,8 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    parameters: Parameters
-):
-    GACarouselItem = carouselItem(targetIntent, step, title, description, image, *parameters.toArray())
+    parameters: Parameters,
+): GACarouselItem = carouselItem(targetIntent, step, title, description, image, *parameters.toArray())
 
 /**
  * Provides a [GACarouselItem] with [StoryStep] and [String] parameters.
@@ -180,19 +181,18 @@ fun <T : Bus<T>> T.carouselItem(
     title: CharSequence,
     description: CharSequence? = null,
     image: GAImage? = null,
-    vararg parameters: Pair<String, String>
-):
-    GACarouselItem {
-        val t = translate(title)
-        return GACarouselItem(
-            optionInfo(
-                t,
-                targetIntent,
-                step,
-                *parameters
-            ),
-            t.toString(),
-            translate(description).toString(),
-            image
-        )
-    }
+    vararg parameters: Pair<String, String>,
+): GACarouselItem {
+    val t = translate(title)
+    return GACarouselItem(
+        optionInfo(
+            t,
+            targetIntent,
+            step,
+            *parameters,
+        ),
+        t.toString(),
+        translate(description).toString(),
+        image,
+    )
+}

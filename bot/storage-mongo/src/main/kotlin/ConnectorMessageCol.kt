@@ -29,13 +29,10 @@ import java.time.Instant.now
 @JacksonData(internal = true)
 internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
 
-/**
- *
- */
 // @Data(internal = true)
 @JacksonData(internal = true)
 internal data class ConnectorMessageCol(
     val _id: ConnectorMessageColId,
     val messages: List<AnyValueWrapper?>,
-    val date: Instant = now()
+    val date: Instant = now(),
 )

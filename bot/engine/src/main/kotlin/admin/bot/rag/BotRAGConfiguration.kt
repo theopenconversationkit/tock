@@ -20,7 +20,6 @@ import ai.tock.genai.orchestratorclient.requests.Formatter
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import ai.tock.shared.intProperty
 import org.litote.kmongo.Id
 
 data class BotRAGConfiguration(
@@ -49,7 +48,7 @@ data class BotRAGConfiguration(
         // which will remove the prompt at LLMSetting level and use the promptTemplate
         return PromptTemplate(
             formatter = Formatter.F_STRING.id,
-            template = getQuestionAnsweringLLMSetting().prompt!!
+            template = getQuestionAnsweringLLMSetting().prompt!!,
         )
     }
 

@@ -25,13 +25,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.Instant
 import java.time.InstantSource
-import org.junit.jupiter.api.Test
 
 internal class ConnectorQueueTest {
-
     private val executor = SimpleExecutor(10)
 
     class ActionSender {
@@ -51,9 +50,15 @@ internal class ConnectorQueueTest {
 
         val send = spyk(ActionSender())
         send.send(action1a)
-        queue.add(action1b, 0) { action -> Thread.sleep(1000); send.send(action); }
+        queue.add(action1b, 0) { action ->
+            Thread.sleep(1000)
+            send.send(action)
+        }
         send.send(action2a)
-        queue.add(action2b, 0) { action -> Thread.sleep(500); send.send(action); }
+        queue.add(action2b, 0) { action ->
+            Thread.sleep(500)
+            send.send(action)
+        }
         send.send(action3a)
         queue.add(action3b, 0, send::send)
         verify(timeout = 5000, ordering = Ordering.SEQUENCE) {
@@ -83,9 +88,15 @@ internal class ConnectorQueueTest {
         val send = spyk(ActionSender())
         val prepare = spyk<ActionPreparer>(ActionPreparer(), name = "prepare")
         send.send(prepare(action1a))
-        queue.add(action1b, 0, { Thread.sleep(1000); prepare(it) }, send::send)
+        queue.add(action1b, 0, {
+            Thread.sleep(1000)
+            prepare(it)
+        }, send::send)
         send.send(prepare(action2a))
-        queue.add(action2b, 0, { Thread.sleep(500); prepare(it) }, send::send)
+        queue.add(action2b, 0, {
+            Thread.sleep(500)
+            prepare(it)
+        }, send::send)
         send.send(prepare(action3a))
         queue.add(action3b, 0, { prepare(it) }, send::send)
         verify(timeout = 5000, ordering = Ordering.SEQUENCE) {
@@ -114,10 +125,22 @@ internal class ConnectorQueueTest {
         val user2Action1 = `given action`("user2", "user2Action1")
         val user2Action2 = `given action`("user2", "user2Action2")
         val send = spyk(ActionSender())
-        queue.add(user1Action1, 0) { action -> Thread.sleep(1500); send.send(action); }
-        queue.add(user1Action2, 0) { action -> Thread.sleep(1000); send.send(action); }
-        queue.add(user2Action1, 0) { action -> Thread.sleep(500); send.send(action); }
-        queue.add(user2Action2, 0) { action -> Thread.sleep(0); send.send(action); }
+        queue.add(user1Action1, 0) { action ->
+            Thread.sleep(1500)
+            send.send(action)
+        }
+        queue.add(user1Action2, 0) { action ->
+            Thread.sleep(1000)
+            send.send(action)
+        }
+        queue.add(user2Action1, 0) { action ->
+            Thread.sleep(500)
+            send.send(action)
+        }
+        queue.add(user2Action2, 0) { action ->
+            Thread.sleep(0)
+            send.send(action)
+        }
         verify(timeout = 5000, ordering = Ordering.SEQUENCE) {
             send.send(user2Action1)
             send.send(user2Action2)
@@ -131,14 +154,19 @@ internal class ConnectorQueueTest {
         var instant = Instant.now()
         val clock = InstantSource { instant }
         val queue = ConnectorQueue(executor, clock)
+
         /**This action should be sent immediately*/
         val action1 = `given action`("user1", lastAnswer = false)
+
         /**This action should be sent immediately after action1*/
         val action2 = `given action`("user1", lastAnswer = false)
+
         /**This action should be sent 100ms after action2 - end of an answer*/
         val action3 = `given action`("user1", lastAnswer = true)
+
         /**This action should be sent after action3, 100ms after it is scheduled*/
         val action4 = `given action`("user1", lastAnswer = false)
+
         /**This action should be sent 100ms after action4 - end of an answer*/
         val action5 = `given action`("user1", lastAnswer = true)
         val send = spyk(ActionSender())
@@ -171,7 +199,12 @@ internal class ConnectorQueueTest {
     }
 
     private var actionId = 1
-    private fun `given action`(recipientId: String, actionName: String = "action${actionId++}", lastAnswer: Boolean = true): Action {
+
+    private fun `given action`(
+        recipientId: String,
+        actionName: String = "action${actionId++}",
+        lastAnswer: Boolean = true,
+    ): Action {
         val action = mockk<Action>(relaxed = true, name = actionName)
         every {
             action.recipientId

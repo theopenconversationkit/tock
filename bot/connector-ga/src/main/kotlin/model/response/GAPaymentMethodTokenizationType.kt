@@ -21,5 +21,5 @@ package ai.tock.bot.connector.ga.model.response
  */
 enum class GAPaymentMethodTokenizationType {
     UNSPECIFIED_TOKENIZATION_TYPE,
-    PAYMENT_GATEWAY
+    PAYMENT_GATEWAY,
 }

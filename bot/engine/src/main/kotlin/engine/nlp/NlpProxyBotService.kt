@@ -27,31 +27,31 @@ import io.vertx.core.http.HttpMethod.POST
 import io.vertx.core.http.RequestOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import java.net.URL
 import mu.KLogger
 import mu.KotlinLogging
+import java.net.URL
 
 /**
  * Expose NLP API to BOT app
  *
  */
 internal object NlpProxyBotService {
-
     private val logger: KLogger = KotlinLogging.logger {}
     private val tockNlpProxyOnBotPath = property("tock_nlp_proxy_on_bot_path", "/_proxy_nlp")
     private val tockNlpServiceHost: String
     private val tockNlpServicePort: Int
     private val tockNlpServiceSsl: Boolean
-    private val nonForwardedHeaders = setOf(
-        "Accept-Encoding",
-        "Host",
-        "Via",
-        "X-Forwarded-For",
-        "X-Forwarded-Host",
-        "X-Forwarded-Port",
-        "X-Forwarded-Proto",
-        "X-Forwarded-Server",
-    )
+    private val nonForwardedHeaders =
+        setOf(
+            "Accept-Encoding",
+            "Host",
+            "Via",
+            "X-Forwarded-For",
+            "X-Forwarded-Host",
+            "X-Forwarded-Port",
+            "X-Forwarded-Proto",
+            "X-Forwarded-Server",
+        )
 
     init {
         val tockNlpServiceUrl = URL(System.getenv("tock_nlp_service_url") ?: "http://localhost:8888")
@@ -74,22 +74,23 @@ internal object NlpProxyBotService {
     private fun httpProxyToNlp(
         context: RoutingContext,
         vertx: Vertx,
-        httpMethod: HttpMethod
+        httpMethod: HttpMethod,
     ) {
         try {
             val uri = context.request().uri().substringAfter(tockNlpProxyOnBotPath)
             val client: HttpClient = vertx.createHttpClient(HttpClientOptions().apply { isKeepAlive = false })
-            val options = RequestOptions()
-                .setHost(tockNlpServiceHost)
-                .setPort(tockNlpServicePort)
-                .setSsl(tockNlpServiceSsl)
-                .setURI(uri)
-                .setMethod(httpMethod)
-                .apply {
-                    context.response().headers().forEach { (key, value) ->
-                        if (key !in nonForwardedHeaders) addHeader(key, value)
+            val options =
+                RequestOptions()
+                    .setHost(tockNlpServiceHost)
+                    .setPort(tockNlpServicePort)
+                    .setSsl(tockNlpServiceSsl)
+                    .setURI(uri)
+                    .setMethod(httpMethod)
+                    .apply {
+                        context.response().headers().forEach { (key, value) ->
+                            if (key !in nonForwardedHeaders) addHeader(key, value)
+                        }
                     }
-                }
             client.request(options).flatMap {
                 if (httpMethod == POST) {
                     it.send(context.body().buffer())

@@ -22,12 +22,21 @@ import org.litote.kmongo.Id
  *
  */
 internal interface TockCache {
+    fun <T> get(
+        id: Id<T>,
+        type: String,
+    ): T?
 
-    fun <T> get(id: Id<T>, type: String): T?
-
-    fun <T : Any> put(id: Id<T>, type: String, data: T)
+    fun <T : Any> put(
+        id: Id<T>,
+        type: String,
+        data: T,
+    )
 
     fun <T> getAll(type: String): Map<Id<T>, Any>
 
-    fun <T> remove(id: Id<T>, type: String)
+    fun <T> remove(
+        id: Id<T>,
+        type: String,
+    )
 }

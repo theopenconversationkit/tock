@@ -38,74 +38,86 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class WhatsAppBotMessageInteractiveMessageSerializationTest {
-
-    private val expectedMessage = WhatsAppBotMessageInteractiveMessage(
-        recipientType = WhatsAppBotRecipientType.individual,
-        interactive = WhatsAppBotInteractive(
-            type = WhatsAppBotInteractiveType.button,
-            header = WhatsAppBotInteractiveHeader(
-                type = WhatsAppBotHeaderType.document,
-                document = WhatsAppBotMedia(
-                    id = "mediaId",
-                    link = "link",
-                    caption = "caption",
-                    filename = "filename",
-                    provider = "provider"
-                ),
-                image = WhatsAppBotMedia(
-                    id = "mediaId2",
-                    link = "link2",
-                    caption = "caption2",
-                    filename = "filename2",
-                    provider = "provider2"
-                ),
-                video = WhatsAppBotMedia(
-                    id = "mediaId3",
-                    link = "link3",
-                    caption = "caption3",
-                    filename = "filename3",
-                    provider = "provider3"
-                ),
-                text = "text"
-            ),
-            body = WhatsAppBotBody("body"),
-            footer = WhatsAppBotFooter("footer"),
-            action = WhatsAppBotAction(
-                button = "button",
-                buttons = listOf(
-                    WhatsAppBotActionButton(
-                        type = "reply",
-                        reply = WhatsAppBotActionButtonReply(
-                            title = "buttonReply",
-                            id = "id",
-                        )
-                    )
-                ),
-                sections = listOf(
-                    WhatsAppBotActionSection(
-                        title = "section",
-                        rows = listOf(
-                            WhatsAppBotRow(
-                                id = "id",
-                                title = "row",
-                                description = "description"
-                            )
+    private val expectedMessage =
+        WhatsAppBotMessageInteractiveMessage(
+            recipientType = WhatsAppBotRecipientType.individual,
+            interactive =
+                WhatsAppBotInteractive(
+                    type = WhatsAppBotInteractiveType.button,
+                    header =
+                        WhatsAppBotInteractiveHeader(
+                            type = WhatsAppBotHeaderType.document,
+                            document =
+                                WhatsAppBotMedia(
+                                    id = "mediaId",
+                                    link = "link",
+                                    caption = "caption",
+                                    filename = "filename",
+                                    provider = "provider",
+                                ),
+                            image =
+                                WhatsAppBotMedia(
+                                    id = "mediaId2",
+                                    link = "link2",
+                                    caption = "caption2",
+                                    filename = "filename2",
+                                    provider = "provider2",
+                                ),
+                            video =
+                                WhatsAppBotMedia(
+                                    id = "mediaId3",
+                                    link = "link3",
+                                    caption = "caption3",
+                                    filename = "filename3",
+                                    provider = "provider3",
+                                ),
+                            text = "text",
                         ),
-                        productItems = listOf(
-                            WhatsAppBotActionSectionProduct("id")
-                        )
-                    )
+                    body = WhatsAppBotBody("body"),
+                    footer = WhatsAppBotFooter("footer"),
+                    action =
+                        WhatsAppBotAction(
+                            button = "button",
+                            buttons =
+                                listOf(
+                                    WhatsAppBotActionButton(
+                                        type = "reply",
+                                        reply =
+                                            WhatsAppBotActionButtonReply(
+                                                title = "buttonReply",
+                                                id = "id",
+                                            ),
+                                    ),
+                                ),
+                            sections =
+                                listOf(
+                                    WhatsAppBotActionSection(
+                                        title = "section",
+                                        rows =
+                                            listOf(
+                                                WhatsAppBotRow(
+                                                    id = "id",
+                                                    title = "row",
+                                                    description = "description",
+                                                ),
+                                            ),
+                                        productItems =
+                                            listOf(
+                                                WhatsAppBotActionSectionProduct("id"),
+                                            ),
+                                    ),
+                                ),
+                            catalogId = "catalogId",
+                            productRetailerId = "productRetailerId",
+                        ),
                 ),
-                catalogId = "catalogId",
-                productRetailerId = "productRetailerId",
-            )
         )
-    )
 
     @Test
     fun `interactive message can be successfully serialized`() {
         val message = expectedMessage.copy(userId = "userId")
-        val expectedJson = "{\"interactive\":{\"type\":\"button\",\"header\":{\"type\":\"document\",\"document\":" +
+        val expectedJson =
+            "{\"interactive\":{\"type\":\"button\",\"header\":{\"type\":\"document\",\"document\":" +
                 "{\"id\":\"mediaId\",\"link\":\"link\",\"caption\":\"caption\",\"filename\":\"filename\",\"provider\":" +
                 "\"provider\"},\"image\":{\"id\":\"mediaId2\",\"link\":\"link2\",\"caption\":\"caption2\",\"filename\":" +
                 "\"filename2\",\"provider\":\"provider2\"},\"video\":{\"id\":\"mediaId3\",\"link\":\"link3\"," +
@@ -126,9 +138,8 @@ class WhatsAppBotMessageInteractiveMessageSerializationTest {
     fun `interactive message can be successfully deserialized`() {
         val json = resource("/model/send/interactive.json")
 
-        val message : WhatsAppBotMessageInteractiveMessage = mapper.readValue(json)
+        val message: WhatsAppBotMessageInteractiveMessage = mapper.readValue(json)
 
         assertEquals(expectedMessage, message)
     }
-
 }

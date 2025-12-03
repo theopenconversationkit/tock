@@ -20,14 +20,29 @@ import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 
 internal class JSONValue(val value: Any?) {
-
     companion object {
         val NULL_VALUE = JSONValue(null)
     }
 
-    operator fun get(i: Int): JSONValue = if (isNull()) NULL_VALUE else if (value is JsonArray) JSONValue(value.getValue(i)) else throw IllegalArgumentException("supported only for array but is $value")
+    operator fun get(i: Int): JSONValue =
+        if (isNull()) {
+            NULL_VALUE
+        } else if (value is JsonArray) {
+            JSONValue(value.getValue(i))
+        } else {
+            throw IllegalArgumentException("supported only for array but is $value")
+        }
 
-    operator fun get(name: String): JSONValue = if (isNull()) NULL_VALUE else if (value is JsonObject) JSONValue(value.getValue(name)) else if (value is Map<*, *>) JSONValue(value.get(name)) else throw IllegalArgumentException("supported only for map but is $value")
+    operator fun get(name: String): JSONValue =
+        if (isNull()) {
+            NULL_VALUE
+        } else if (value is JsonObject) {
+            JSONValue(value.getValue(name))
+        } else if (value is Map<*, *>) {
+            JSONValue(value.get(name))
+        } else {
+            throw IllegalArgumentException("supported only for map but is $value")
+        }
 
     fun string(): String = value.toString()
 

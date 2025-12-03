@@ -28,8 +28,6 @@ internal interface LLMProviderApi {
     @POST("/llm-providers/{provider-id}/setting/status")
     fun checkLLMSetting(
         @Body query: LLMProviderSettingStatusRequest,
-        @Path("provider-id") providerId: LLMProvider
+        @Path("provider-id") providerId: LLMProvider,
     ): Call<ProviderSettingStatusResponse>
-
 }
-

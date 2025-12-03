@@ -68,7 +68,6 @@ import java.util.Locale
  * Bus implementation for Tock integrated mode.
  */
 interface BotBus : Bus<BotBus>, DialogEntityAccess {
-
     companion object {
         /**
          * Helper method to return the current bus,
@@ -203,7 +202,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Checks that the specified choice parameter has the specified value.
      */
-    fun hasChoiceValue(param: ParameterKey, value: ParameterKey): Boolean = choice(param) == value.key
+    fun hasChoiceValue(
+        param: ParameterKey,
+        value: ParameterKey,
+    ): Boolean = choice(param) == value.key
 
     /**
      * Returns true if the current action has the specified entity role.
@@ -224,7 +226,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     override fun <T : Value> entityValue(
         role: String,
-        valueTransformer: (EntityValue) -> T?
+        valueTransformer: (EntityValue) -> T?,
     ): T? {
         return entities[role]?.value?.let { valueTransformer.invoke(it) }
     }
@@ -236,7 +238,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     override fun <T : Value> entityValue(
         entity: Entity,
-        valueTransformer: (EntityValue) -> T?
+        valueTransformer: (EntityValue) -> T?,
     ): T? = entityValue(entity.role, valueTransformer)
 
     /**
@@ -264,7 +266,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param role entity role
      * @param newValue the new entity value
      */
-    override fun changeEntityValue(role: String, newValue: EntityValue?) {
+    override fun changeEntityValue(
+        role: String,
+        newValue: EntityValue?,
+    ) {
         dialog.state.changeValue(role, newValue)
     }
 
@@ -273,7 +278,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    override fun changeEntityValue(entity: Entity, newValue: Value?) {
+    override fun changeEntityValue(
+        entity: Entity,
+        newValue: Value?,
+    ) {
         dialog.state.changeValue(entity, newValue)
     }
 
@@ -282,18 +290,23 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    override fun changeEntityValue(entity: Entity, newValue: EntityValue) = changeEntityValue(entity.role, newValue)
+    override fun changeEntityValue(
+        entity: Entity,
+        newValue: EntityValue,
+    ) = changeEntityValue(entity.role, newValue)
 
     /**
      * Updates the current entity text value in the dialog.
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    override fun changeEntityText(entity: Entity, textContent: String?) =
-        changeEntityValue(
-            entity.role,
-            EntityValue(entity, null, textContent)
-        )
+    override fun changeEntityText(
+        entity: Entity,
+        textContent: String?,
+    ) = changeEntityValue(
+        entity.role,
+        EntityValue(entity, null, textContent),
+    )
 
     /**
      * Removes entity value for the specified role.
@@ -347,14 +360,20 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * Updates persistent context value.
      * Do not store Collection or Map in the context, only plain objects or typed arrays.
      */
-    fun changeContextValue(name: String, value: Any?) {
+    fun changeContextValue(
+        name: String,
+        value: Any?,
+    ) {
         dialog.state.setContextValue(name, value)
     }
 
     /**
      * Updates persistent context value.
      */
-    fun changeContextValue(key: ParameterKey, value: Any?) = changeContextValue(key.key, value)
+    fun changeContextValue(
+        key: ParameterKey,
+        value: Any?,
+    ) = changeContextValue(key.key, value)
 
     /**
      * Returns the non persistent current context value.
@@ -372,37 +391,55 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun setBusContextValue(key: String, value: Any?)
+    fun setBusContextValue(
+        key: String,
+        value: Any?,
+    )
 
     /**
      * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.key, value)
+    fun setBusContextValue(
+        key: ParameterKey,
+        value: Any?,
+    ) = setBusContextValue(key.key, value)
 
     /**
      * Sends text that should not be translated as last bot answer.
      */
-    override fun endRawText(plainText: CharSequence?, delay: Long): BotBus {
+    override fun endRawText(
+        plainText: CharSequence?,
+        delay: Long,
+    ): BotBus {
         return end(SendSentence(botId, connectorId, userId, plainText), delay)
     }
 
     /**
      * Sends [Message] as last bot answer.
      */
-    fun end(message: Message, delay: Long = defaultDelay(currentAnswerIndex)): BotBus {
+    fun end(
+        message: Message,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): BotBus {
         return end(message.toAction(this), delay)
     }
 
     /**
      * Sends [Action] as last bot answer.
      */
-    fun end(action: Action, delay: Long = defaultDelay(currentAnswerIndex)): BotBus
+    fun end(
+        action: Action,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): BotBus
 
     /**
      * Sends a [MessagesList] and end the dialog.
      */
-    fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
+    fun end(
+        messages: MessagesList,
+        initialDelay: Long = 0,
+    ): BotBus {
         messages.messages.forEachIndexed { i, m ->
             val wait = initialDelay + m.delay
             if (messages.messages.size - 1 == i) {
@@ -417,14 +454,20 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Sends a [Message].
      */
-    fun send(message: Message, delay: Long = defaultDelay(currentAnswerIndex)): BotBus {
+    fun send(
+        message: Message,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): BotBus {
         return send(message.toAction(this), delay)
     }
 
     /**
      * Sends a [MessagesList].
      */
-    fun send(messages: MessagesList, initialDelay: Long = 0): BotBus {
+    fun send(
+        messages: MessagesList,
+        initialDelay: Long = 0,
+    ): BotBus {
         messages.messages.forEach { m ->
             val wait = initialDelay + m.delay
             send(m.toAction(this), wait)
@@ -435,7 +478,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Sends an [Action].
      */
-    fun send(action: Action, delay: Long = defaultDelay(currentAnswerIndex)): BotBus
+    fun send(
+        action: Action,
+        delay: Long = defaultDelay(currentAnswerIndex),
+    ): BotBus
 
     /**
      * Adds the specified [ActionPriority] to the bus context.
@@ -460,7 +506,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Switches the context to the specified story definition (start a new [Story]).
      */
-    fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+    fun switchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent = storyDefinition.mainIntent(),
+    ) {
         story = Story(storyDefinition, starterIntent, story.step)
         hasCurrentSwitchStoryProcess = true
         story.computeCurrentStep(userTimeline, currentDialog, action, starterIntent)
@@ -470,7 +519,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     /**
      * Handles the action and switches the context to the specified story definition.
      */
-    fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+    fun handleAndSwitchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent = storyDefinition.mainIntent(),
+    ) {
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false
         storyDefinition.storyHandler.handle(this)
@@ -478,7 +530,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
 
     @Deprecated("Do not switch to an AsyncStoryDefinition from a synchronous story", level = DeprecationLevel.ERROR)
     @ExperimentalTockCoroutines
-    fun handleAndSwitchStory(storyDefinition: AsyncStoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+    fun handleAndSwitchStory(
+        storyDefinition: AsyncStoryDefinition,
+        starterIntent: Intent = storyDefinition.mainIntent(),
+    ) {
         handleAndSwitchStory(storyDefinition as StoryDefinition, starterIntent)
     }
 
@@ -488,27 +543,31 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param indicatorName optional indicator name
      * @param indicatorValueName optional indicator value name
      */
-    fun createMetric(type: MetricType, indicatorName: String? = null, indicatorValueName: String? = null) =
-        Metric(
-            type = type,
-            indicatorName = indicatorName,
-            indicatorValueName = indicatorValueName,
-            emitterStoryId = story.definition.id,
-            trackedStoryId = getTrackedStoryId(),
-            playerIds = dialog.playerIds,
-            dialogId = dialog.id,
-            applicationId = dialog.stories.first().actions.first().applicationId,
-            botId = botDefinition.botId,
-            namespace = botDefinition.namespace
-        )
+    fun createMetric(
+        type: MetricType,
+        indicatorName: String? = null,
+        indicatorValueName: String? = null,
+    ) = Metric(
+        type = type,
+        indicatorName = indicatorName,
+        indicatorValueName = indicatorValueName,
+        emitterStoryId = story.definition.id,
+        trackedStoryId = getTrackedStoryId(),
+        playerIds = dialog.playerIds,
+        dialogId = dialog.id,
+        applicationId = dialog.stories.first().actions.first().applicationId,
+        botId = botDefinition.botId,
+        namespace = botDefinition.namespace,
+    )
 
     /**
      * A tracked story is the last story in the dialog, wich flagged non metricStory,
      * If it doesn't exist, the tracked story is the current one
      */
-    fun getTrackedStoryId() = dialog.stories
-        .lastOrNull { !it.metricStory }?.definition?.id
-        ?: story.definition.id
+    fun getTrackedStoryId() =
+        dialog.stories
+            .lastOrNull { !it.metricStory }?.definition?.id
+            ?: story.definition.id
 
     /**
      * Does not send an answer. Synchronous [Connector]s (like Google Assistant or Alexa)
@@ -524,11 +583,13 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      * @param feature the feature to check
      * @param default the default value if the feature state is unknown
      */
-    fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
-        runBlocking {
-            injector.provide<FeatureDAO>()
-                .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
-        }
+    fun isFeatureEnabled(
+        feature: FeatureType,
+        default: Boolean = false,
+    ) = runBlocking {
+        injector.provide<FeatureDAO>()
+            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, connectorId, default, userId.id)
+    }
 
     /**
      * Marks the current as not understood in the nlp model.
@@ -536,13 +597,19 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     fun markAsUnknown()
 
     // i18n provider implementation
-    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
-        i18nProvider.i18n(defaultLabel, args)
+    override fun i18n(
+        defaultLabel: CharSequence,
+        args: List<Any?>,
+    ): I18nLabelValue = i18nProvider.i18n(defaultLabel, args)
 
     /**
      * Gets an i18n label with the specified key.
      */
-    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue =
+    fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        vararg args: Any?,
+    ): I18nLabelValue =
         story.definition.storyHandler.let {
             (it as? I18nStoryHandler)?.i18nKey(key, defaultLabel, *args)
                 ?: I18nLabelValue(
@@ -550,14 +617,19 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
                     botDefinition.namespace,
                     botDefinition.botId,
                     defaultLabel,
-                    args.toList()
+                    args.toList(),
                 )
         }
 
     /**
      * Gets an i18n label with the specified key and defaults.
      */
-    fun i18nKey(key: String, defaultLabel: CharSequence, localizedDefaults: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue =
+    fun i18nKey(
+        key: String,
+        defaultLabel: CharSequence,
+        localizedDefaults: Set<I18nLocalizedLabel>,
+        vararg args: Any?,
+    ): I18nLabelValue =
         story.definition.storyHandler.let {
             (it as? I18nStoryHandler)?.i18nKey(key, defaultLabel, defaultI18n = localizedDefaults, args = args)
                 ?: I18nLabelValue(
@@ -570,7 +642,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
                 )
         }
 
-    fun send(event: Event, delayInMs: Long = 0): BotBus {
+    fun send(
+        event: Event,
+        delayInMs: Long = 0,
+    ): BotBus {
         underlyingConnector.send(event, connectorData.callback, delayInMs)
         return this
     }
@@ -585,7 +660,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     // override default beahviour
     override fun end(
         delay: Long,
-        messageProvider: BotBus.() -> Any?
+        messageProvider: BotBus.() -> Any?,
     ): BotBus {
         val messages = toMessageList(null, this, messageProvider)
         if (messages.messages.isEmpty()) {
@@ -596,7 +671,10 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
         return this
     }
 
-    override fun send(delay: Long, messageProvider: BotBus.() -> Any?): BotBus {
+    override fun send(
+        delay: Long,
+        messageProvider: BotBus.() -> Any?,
+    ): BotBus {
         val messages = toMessageList(null, this, messageProvider)
         if (messages.messages.isEmpty()) {
             send(delay)
@@ -611,22 +689,33 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     override fun isCompatibleWith(connectorType: ConnectorType) = underlyingConnector.canHandleMessageFor(connectorType)
 
-
     // this is mainly to allow mockk to work -->
 
     override fun withMessage(message: ConnectorMessage): BotBus = super.withMessage(message)
 
     override fun send(delay: Long): BotBus = super.send(delay)
 
-    override fun send(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus =
-        super.send(i18nText, delay, *i18nArgs)
+    override fun send(
+        i18nText: CharSequence,
+        delay: Long,
+        vararg i18nArgs: Any?,
+    ): BotBus = super.send(i18nText, delay, *i18nArgs)
 
-    override fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.send(i18nText, *i18nArgs)
+    override fun send(
+        i18nText: CharSequence,
+        vararg i18nArgs: Any?,
+    ): BotBus = super.send(i18nText, *i18nArgs)
 
-    override fun end(i18nText: CharSequence, delay: Long, vararg i18nArgs: Any?): BotBus =
-        super.end(i18nText, delay, *i18nArgs)
+    override fun end(
+        i18nText: CharSequence,
+        delay: Long,
+        vararg i18nArgs: Any?,
+    ): BotBus = super.end(i18nText, delay, *i18nArgs)
 
-    override fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus = super.end(i18nText, *i18nArgs)
+    override fun end(
+        i18nText: CharSequence,
+        vararg i18nArgs: Any?,
+    ): BotBus = super.end(i18nText, *i18nArgs)
 
     override fun end(delay: Long): BotBus = super.end(delay)
 }

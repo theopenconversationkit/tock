@@ -17,7 +17,7 @@
 package ai.tock.bot.connector.whatsapp.cloud.database.model
 
 import org.bson.codecs.pojo.annotations.BsonId
-import java.util.*
+import java.util.Date
 
 data class PayloadWhatsAppCloud(
     @BsonId

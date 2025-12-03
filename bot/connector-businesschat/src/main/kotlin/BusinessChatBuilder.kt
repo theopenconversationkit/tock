@@ -39,13 +39,11 @@ fun <T : Bus<T>> T.withBusinessChat(messageProvider: () -> BusinessChatConnector
  * @param text the text sent
  *
  */
-fun <T : Bus<T>> T.businessChatText(
-    text: CharSequence
-): BusinessChatConnectorMessage =
+fun <T : Bus<T>> T.businessChatText(text: CharSequence): BusinessChatConnectorMessage =
     BusinessChatConnectorTextMessage(
         sourceId = botId.id,
         destinationId = userId.id,
-        body = translate(text).toString()
+        body = translate(text).toString(),
     )
 
 /**
@@ -56,13 +54,13 @@ fun <T : Bus<T>> T.businessChatText(
  */
 fun <T : Bus<T>> T.businessChatAttachement(
     attachment: ByteArray,
-    mimeType: String = "image/png"
+    mimeType: String = "image/png",
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorImageMessage(
         sourceId = botId.id,
         destinationId = userId.id,
         bytes = attachment,
-        mimeType = mimeType
+        mimeType = mimeType,
     )
 
 /**
@@ -77,7 +75,7 @@ fun <T : Bus<T>> T.businessChatListPicker(
     title: CharSequence,
     subtitle: CharSequence,
     listDetails: CharSequence,
-    items: List<ListPickerItem>
+    items: List<ListPickerItem>,
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorListPickerMessage(
         sourceId = botId.id,
@@ -86,7 +84,7 @@ fun <T : Bus<T>> T.businessChatListPicker(
         subtitle = translate(subtitle).toString(),
         listDetails = translate(listDetails).toString(),
         multipleSelection = false,
-        items = items
+        items = items,
     )
 
 /**
@@ -101,7 +99,7 @@ fun <T : Bus<T>> T.businessChatRichLink(
     url: String,
     title: CharSequence,
     image: ByteArray,
-    mimeType: String
+    mimeType: String,
 ): BusinessChatConnectorMessage =
     BusinessChatConnectorRichLinkMessage(
         sourceId = botId.id,
@@ -109,5 +107,5 @@ fun <T : Bus<T>> T.businessChatRichLink(
         url = url,
         title = translate(title).toString(),
         image = image,
-        mimeType = mimeType
+        mimeType = mimeType,
     )

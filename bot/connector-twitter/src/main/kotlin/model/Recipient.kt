@@ -19,5 +19,5 @@ package ai.tock.bot.connector.twitter.model
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Recipient(
-    @JsonProperty("recipient_id") val recipientId: String
+    @JsonProperty("recipient_id") val recipientId: String,
 )

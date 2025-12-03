@@ -25,5 +25,5 @@ data class CreateApplicationQuery(
     val name: String,
     val label: String = name,
     val namespace: String,
-    val locale: Locale
+    val locale: Locale,
 )

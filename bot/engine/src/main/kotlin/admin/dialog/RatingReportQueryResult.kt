@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.dialog
 
-
 /**
  *
  * [RatingReportQueryResult] this class contains the statistics concerning the satisfaction module
@@ -27,21 +26,18 @@ package ai.tock.bot.admin.dialog
  *
  */
 data class RatingReportQueryResult(
-
     /**
      * [ratingBot] the average round bot rating
      * the average rating must be between 1 and 5
      * it can be null if no user has rated the bot or satisfaction is not activated
      */
     val ratingBot: Double?,
-
     /**
      * [nbUsersRated] the number of users who rated the bot
      */
     val nbUsersRated: Int?,
-
     /**
      * [ratingDetails] a list of the ratings given with the number of users who gave this rating
      */
-    val ratingDetails: List<DialogRating> = emptyList()
+    val ratingDetails: List<DialogRating> = emptyList(),
 )

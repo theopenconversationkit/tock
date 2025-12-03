@@ -20,17 +20,20 @@ package ai.tock.bot.connector.messenger.model.send
  * Generic interface for messenger user action ( [Button] or [QuickReply] ).
  */
 interface UserAction {
-
     companion object {
         fun extractQuickReplies(userActions: List<UserAction>): List<QuickReply>? {
             return userActions
                 .filter { it is QuickReply }
                 .map { it as QuickReply }
                 .run {
-                    if (isEmpty()) null
-                    // 11 quick replies max cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
-                    else if (size > 11) error("more than 11 quick replies : $this")
-                    else this
+                    if (isEmpty()) {
+                        null
+                    } else if (size > 11) {
+                        // 11 quick replies max cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
+                        error("more than 11 quick replies : $this")
+                    } else {
+                        this
+                    }
                 }
         }
 

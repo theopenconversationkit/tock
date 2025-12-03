@@ -22,7 +22,6 @@ import ai.tock.nlp.front.service.ParserRequestData
  *
  */
 internal object IntentSelectorService {
-
     fun isValidClassifiedSentence(data: ParserRequestData): Boolean {
         with(data) {
             return classifiedSentence != null &&
@@ -32,7 +31,10 @@ internal object IntentSelectorService {
     }
 
     fun selector(data: ParserRequestData): SelectorBase {
-        return if (data.intentsQualifiers.isEmpty()) DefaultIntentSelector(data)
-        else ExpectedIntentSelector(data)
+        return if (data.intentsQualifiers.isEmpty()) {
+            DefaultIntentSelector(data)
+        } else {
+            ExpectedIntentSelector(data)
+        }
     }
 }

@@ -51,7 +51,6 @@ import org.pac4j.vertx.handler.impl.SecurityHandler
 import org.pac4j.vertx.handler.impl.SecurityHandlerOptions
 
 abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
-
     protected val sessionStore: VertxSessionStore
     private val executor: Executor get() = injector.provide()
 
@@ -64,7 +63,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     protected data class HttpResult<T>(
         val result: T?,
         val cause: Throwable?,
-        val code: Int
+        val code: Int,
     ) {
         fun succeeded(): Boolean = code / 100 == 2
     }
@@ -74,7 +73,8 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         sessionStore = VertxSessionStore(vertxSessionStore)
 
         // If you use a CAS Authentication module, chances are that you also are behind corporate proxy (for test env)
-        val isBehindProxy = propertyExists("tock_cas_auth_proxy_host") &&
+        val isBehindProxy =
+            propertyExists("tock_cas_auth_proxy_host") &&
                 propertyExists("tock_cas_auth_proxy_port")
 
         if (isBehindProxy) {
@@ -94,7 +94,6 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
      */
     open val enabledPacAuthorizers: String get() = "isAuthenticated" // TODO: Make csrf authorizer work
 
-
     /** Get customer specific Pac4J Config */
     abstract fun getConfig(): Config
 
@@ -107,20 +106,24 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
         val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
         options.authorizers = enabledPacAuthorizers
-        return SecurityHandler(vertx, sessionStore, getConfig(),  options)
+        return SecurityHandler(vertx, sessionStore, getConfig(), options)
     }
 
     override fun authenticate(credentials: Credentials): Future<User> =
         // Actual authentication is performed by pac4j-cas not CASAuthProvider
         Future.failedFuture("Unauthorized")
 
-    protected fun registerTockUser(username: String, rolesByNamespace: Map<String, Set<String>>): TockUser {
+    protected fun registerTockUser(
+        username: String,
+        rolesByNamespace: Map<String, Set<String>>,
+    ): TockUser {
         var user: TockUser? = null
         // NOTE: Currently registering same user multiple times is the only way to save multiple namespaces
         for ((namespace, roles) in rolesByNamespace) {
-            user = injector.provide<TockUserListener>().registerUser(
-                TockUser(username, namespace, roles), isJoinNamespace
-            )
+            user =
+                injector.provide<TockUserListener>().registerUser(
+                    TockUser(username, namespace, roles), isJoinNamespace,
+                )
         }
         return user!! // !! is because user is already guaranteed to be not null
     }
@@ -134,7 +137,10 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         return profileManager.getProfile(CasProfile::class.java).get()
     }
 
-    protected open fun upgradeToTockUser(userCASProfile: CasProfile, resultHandler: Handler<HttpResult<TockUser>>) {
+    protected open fun upgradeToTockUser(
+        userCASProfile: CasProfile,
+        resultHandler: Handler<HttpResult<TockUser>>,
+    ) {
         try {
             val username = readCasLogin(userCASProfile)
             val rolesByNamespace = readRolesByNamespace(userCASProfile)
@@ -158,7 +164,11 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     /**
      * Handle failures in 'Pac4J user to Tock User' upgrade process (Vert.x 5).
      */
-    open fun handleUpgradeFailure(rc: RoutingContext, code: Int, cause: Throwable?) {
+    open fun handleUpgradeFailure(
+        rc: RoutingContext,
+        code: Int,
+        cause: Throwable?,
+    ) {
         if (cause == null) {
             logger.error("Caught by default CAS mapping exception handler: $code")
             rc.fail(code)
@@ -172,7 +182,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
-        sessionHandler: SessionHandler
+        sessionHandler: SessionHandler,
     ): AuthenticationHandler {
         val authHandler = super.protectPaths(verticle, pathsToProtect, sessionHandler)
 
@@ -180,33 +190,35 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         verticle.router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
         verticle.router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
 
-        verticle.router.route("/*").handler(WithExcludedPathHandler(excluded) { rc ->
-            val user = rc.user()
-            if (user != null && user !is TockUser) { // user is Pac4jUser
-                executor.executeBlocking {
-                    upgradeToTockUser(getUserCasProfile(rc)) { hr ->
-                        if (hr.succeeded()) {
-                            vertx.runOnContext {
-                                // TODO : setUser problem (*): This assignment (adding the user to the context) is not maintained for the next vertx handler (rc.next()).
-                                (rc.userContext() as UserContextInternal).setUser(hr.result)
-                                // TODO : we are therefore temporarily using the session to store tockUser.
-                                rc.session().put(
-                                    "tockUser",
-                                    hr.result
-                                )
-                                rc.next()
+        verticle.router.route("/*").handler(
+            WithExcludedPathHandler(excluded) { rc ->
+                val user = rc.user()
+                if (user != null && user !is TockUser) { // user is Pac4jUser
+                    executor.executeBlocking {
+                        upgradeToTockUser(getUserCasProfile(rc)) { hr ->
+                            if (hr.succeeded()) {
+                                vertx.runOnContext {
+                                    // TODO : setUser problem (*): This assignment (adding the user to the context) is not maintained for the next vertx handler (rc.next()).
+                                    (rc.userContext() as UserContextInternal).setUser(hr.result)
+                                    // TODO : we are therefore temporarily using the session to store tockUser.
+                                    rc.session().put(
+                                        "tockUser",
+                                        hr.result,
+                                    )
+                                    rc.next()
+                                }
+                            } else {
+                                rc.userContext().clear()
+                                // note: below method has ability to redirect to custom error pages
+                                this@CASAuthProvider.handleUpgradeFailure(rc, hr.code, hr.cause)
                             }
-                        } else {
-                            rc.userContext().clear()
-                            // note: below method has ability to redirect to custom error pages
-                            this@CASAuthProvider.handleUpgradeFailure(rc, hr.code, hr.cause)
                         }
                     }
+                } else {
+                    rc.next()
                 }
-            } else {
-                rc.next()
-            }
-        })
+            },
+        )
 
         with(verticle) {
             router.get("$basePath/user").handler {
@@ -227,8 +239,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         return authHandler
     }
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
-        super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
+    override fun excludedPaths(verticle: WebVerticle): Set<Regex> = super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
     private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
 }

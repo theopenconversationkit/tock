@@ -30,13 +30,12 @@ import java.util.Locale
  * Manage sentences of the NLP model.
  */
 interface ClassifiedSentenceDAO {
-
     fun updateFormattedSentences(applicationId: Id<ApplicationDefinition>)
 
     fun getSentences(
         intents: Set<Id<IntentDefinition>>?,
         language: Locale?,
-        status: ClassifiedSentenceStatus?
+        status: ClassifiedSentenceStatus?,
     ): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
@@ -50,28 +49,38 @@ interface ClassifiedSentenceDAO {
     fun switchSentencesIntent(
         applicationId: Id<ApplicationDefinition>,
         oldIntentId: Id<IntentDefinition>,
-        newIntentId: Id<IntentDefinition>
+        newIntentId: Id<IntentDefinition>,
     )
 
-    fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>)
+    fun switchSentencesIntent(
+        sentences: List<ClassifiedSentence>,
+        newIntentId: Id<IntentDefinition>,
+    )
 
     fun switchSentencesEntity(
         allowedNamespace: String,
         sentences: List<ClassifiedSentence>,
         oldEntity: EntityDefinition,
-        newEntity: EntityDefinition
+        newEntity: EntityDefinition,
     )
 
-    fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
+    fun switchSentencesStatus(
+        sentences: List<ClassifiedSentence>,
+        newStatus: ClassifiedSentenceStatus,
+    )
 
     fun removeEntityFromSentences(
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
         entityType: String,
-        role: String
+        role: String,
     )
 
-    fun removeSubEntityFromSentences(applicationId: Id<ApplicationDefinition>, entityType: String, role: String)
+    fun removeSubEntityFromSentences(
+        applicationId: Id<ApplicationDefinition>,
+        entityType: String,
+        role: String,
+    )
 
     /**
      * Increment unknown stat.
@@ -88,14 +97,13 @@ interface ClassifiedSentenceDAO {
         /**
          * The text of the sentence.
          */
-        text: String
+        text: String,
     )
 
     /**
      * Returns sentence validator users.
      */
     fun users(applicationId: Id<ApplicationDefinition>): List<String>
-
 
     /**
      * Returns sentence channel source.

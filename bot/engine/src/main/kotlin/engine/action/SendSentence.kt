@@ -25,9 +25,9 @@ import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.api.client.model.NlpResult
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * The most important [Action] class.
@@ -48,23 +48,27 @@ open class SendSentence(
     /**
      * Used by analysed nlp (ie Alexa).
      */
-    var precomputedNlp: NlpResult? = null
+    var precomputedNlp: NlpResult? = null,
 ) :
     Action(playerId, recipientId, connectorId, id, date, state, metadata) {
-
-    @Deprecated("Use constructor with connectorId", ReplaceWith("SendSentence(" +
-            "playerId, " +
-            "connectorId = applicationId, " +
-            "recipientId, " +
-            "text, " +
-            "messages, " +
-            "id, " +
-            "date, " +
-            "state, " +
-            "metadata, " +
-            "nlpStats, " +
-            "annotation, " +
-            "precomputedNlp)"))
+    @Deprecated(
+        "Use constructor with connectorId",
+        ReplaceWith(
+            "SendSentence(" +
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "text, " +
+                "messages, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata, " +
+                "nlpStats, " +
+                "annotation, " +
+                "precomputedNlp)",
+        ),
+    )
     constructor(
         playerId: PlayerId,
         applicationId: String,
@@ -79,7 +83,20 @@ open class SendSentence(
         annotation: BotAnnotation? = null,
         precomputedNlp: NlpResult? = null,
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, applicationId, recipientId, text, messages, id, date, state, metadata, nlpStats, annotation, precomputedNlp)
+    ) : this(
+        playerId,
+        applicationId,
+        recipientId,
+        text,
+        messages,
+        id,
+        date,
+        state,
+        metadata,
+        nlpStats,
+        annotation,
+        precomputedNlp,
+    )
 
     @Transient
     val stringText: String? = text?.toString()
@@ -92,8 +109,7 @@ open class SendSentence(
         return messages.any { it.connectorType == type }
     }
 
-    fun hasMessage(types : List<ConnectorType>) : Boolean =
-        messages.any { types.contains(it.connectorType) }
+    fun hasMessage(types: List<ConnectorType>): Boolean = messages.any { types.contains(it.connectorType) }
 
     override fun toMessage(): Message {
         return Sentence(stringText, messages, state.userInterface) { nlpStats }
@@ -113,4 +129,24 @@ open class SendSentence(
         messages.add(message)
         return this
     }
+
+    /**
+     * Returns the same sentence with an updated text.
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun withText(text: CharSequence): SendSentence =
+        SendSentence(
+            playerId,
+            connectorId,
+            recipientId,
+            text,
+            messages,
+            id as Id<Action>,
+            date,
+            state,
+            metadata,
+            nlpStats,
+            annotation,
+            precomputedNlp,
+        )
 }

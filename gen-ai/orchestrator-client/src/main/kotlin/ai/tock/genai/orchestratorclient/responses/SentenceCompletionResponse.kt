@@ -17,7 +17,5 @@
 package ai.tock.genai.orchestratorclient.responses
 
 class SentenceCompletionResponse(
-    val sentences: List<String>
+    val sentences: List<String>,
 )
-
-

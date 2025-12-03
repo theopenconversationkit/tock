@@ -21,9 +21,9 @@ import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * A user location transmission.
@@ -36,19 +36,23 @@ class SendLocation(
     id: Id<Action> = newId(),
     date: Instant = Instant.now(),
     state: EventState = EventState(),
-    metadata: ActionMetadata = ActionMetadata()
+    metadata: ActionMetadata = ActionMetadata(),
 ) :
     Action(playerId, recipientId, applicationId, id, date, state, metadata) {
-
-    @Deprecated("Use constructor with connectorId", ReplaceWith("SendLocation(" +
-            "playerId, " +
-            "connectorId = applicationId, " +
-            "recipientId, " +
-            "location, " +
-            "id, " +
-            "date, " +
-            "state, " +
-            "metadata)"))
+    @Deprecated(
+        "Use constructor with connectorId",
+        ReplaceWith(
+            "SendLocation(" +
+                "playerId, " +
+                "connectorId = applicationId, " +
+                "recipientId, " +
+                "location, " +
+                "id, " +
+                "date, " +
+                "state, " +
+                "metadata)",
+        ),
+    )
     constructor(
         playerId: PlayerId,
         applicationId: String,
@@ -59,7 +63,7 @@ class SendLocation(
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
         _deprecatedConstructor: Nothing? = null,
-    ): this(playerId, applicationId, recipientId, location, id, date, state, metadata)
+    ) : this(playerId, applicationId, recipientId, location, id, date, state, metadata)
 
     override fun toMessage(): Message {
         return Location(location)

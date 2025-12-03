@@ -43,7 +43,6 @@ data class WebMessage(
     override val deepLink: WebDeepLink? = null,
     override val footnotes: List<Footnote> = emptyList(),
 ) : WebMessageContract, WebConnectorMessage {
-
     constructor(content: WebMessageContent) : this(
         content.text,
         content.buttons,
@@ -67,6 +66,6 @@ data class WebMessage(
             ?: GenericMessage(
                 connectorType = webConnectorType,
                 texts = mapNotNullValues(GenericMessage.TEXT_PARAM to text),
-                choices = buttons.map { it.toChoice() }
+                choices = buttons.map { it.toChoice() },
             )
 }

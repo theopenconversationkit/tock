@@ -19,11 +19,10 @@ package ai.tock.bot.jackson
 import ai.tock.shared.jackson.mapper
 import ai.tock.translator.I18nLabelValue
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class I18nLabelValueSerializationTest {
-
     @Test
     fun `json serialization of I18nLabelValue does not contain length`() {
         val value = I18nLabelValue("key", "namespace", "category", "defaultLabel")
@@ -32,7 +31,7 @@ class I18nLabelValueSerializationTest {
 
         assertEquals(
             """{"key":"key","namespace":"namespace","category":"category","defaultLabel":"defaultLabel","args":[],"defaultI18n":[]}""",
-            json
+            json,
         )
 
         assertEquals(value, mapper.readValue(json))

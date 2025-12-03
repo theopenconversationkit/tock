@@ -30,7 +30,6 @@ import mu.KotlinLogging
  * The security utilities class
  */
 object SecurityUtils {
-
     private val logger: KLogger = KotlinLogging.logger {}
 
     /**
@@ -48,7 +47,7 @@ object SecurityUtils {
     fun fetchSecretKeyValue(secret: SecretKey): String {
         try {
             // If the secret is a raw value, it is recovered as is.
-            if(secret is RawSecretKey) return  secret.secret
+            if (secret is RawSecretKey) return secret.secret
 
             // Check SecretManagerProvider if it is defined
             if (genAISecretManagerProvider == null) {
@@ -56,11 +55,13 @@ object SecurityUtils {
             }
 
             // Check whether the SecretManagerProvider supports secret
-            if(secretMangerService.isSecretTypeSupported(secret)) {
+            if (secretMangerService.isSecretTypeSupported(secret)) {
                 return secretMangerService.getAIProviderSecret((secret as NamedSecretKey).secretName).secret
-            }else{
-                throw IllegalArgumentException("The secret manager provider type '${secret.type}' is not supported by " +
-                        "the instantiated service ${secretMangerService::class.simpleName}.")
+            } else {
+                throw IllegalArgumentException(
+                    "The secret manager provider type '${secret.type}' is not supported by " +
+                        "the instantiated service ${secretMangerService::class.simpleName}.",
+                )
             }
         } catch (e: Exception) {
             logger.warn("The secret has not been recovered.", e)
@@ -84,13 +85,13 @@ object SecurityUtils {
         botId: String,
         feature: String,
         secretValue: String,
-        rawByForce: Boolean
+        rawByForce: Boolean,
     ): SecretKey =
-        if (rawByForce || genAISecretManagerProvider == null)
+        if (rawByForce || genAISecretManagerProvider == null) {
             RawSecretKey(secretValue)
-        else
+        } else {
             secretMangerService.createOrUpdateSecretKey(namespace, botId, feature, secretValue)
-
+        }
 
     /**
      * Delete a secret
@@ -99,7 +100,7 @@ object SecurityUtils {
     fun deleteSecret(secret: SecretKey) {
         try {
             // If the secret is a raw value, there's nothing to be done
-            if(secret is RawSecretKey) return
+            if (secret is RawSecretKey) return
 
             // Check SecretManagerProvider if it is defined
             if (genAISecretManagerProvider == null) {
@@ -107,16 +108,17 @@ object SecurityUtils {
             }
 
             // Check whether the SecretManagerProvider supports secret
-            if(secretMangerService.isSecretTypeSupported(secret)) {
+            if (secretMangerService.isSecretTypeSupported(secret)) {
                 return secretMangerService.deleteSecret((secret as NamedSecretKey).secretName)
-            }else{
-                throw IllegalArgumentException("The secret manager provider type '${secret.type}' is not supported by " +
-                        "the instantiated service ${secretMangerService::class.simpleName}.")
+            } else {
+                throw IllegalArgumentException(
+                    "The secret manager provider type '${secret.type}' is not supported by " +
+                        "the instantiated service ${secretMangerService::class.simpleName}.",
+                )
             }
         } catch (e: Exception) {
             logger.warn("The secret has not been deleted.", e)
             // Do not block treatment if it fails.
         }
     }
-
 }

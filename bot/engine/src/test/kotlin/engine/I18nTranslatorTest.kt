@@ -30,7 +30,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class I18nTranslatorTest {
-
     private class Impl : I18nTranslator {
         override val userLocale: Locale get() = defaultLocale
         override val userInterfaceType: UserInterfaceType get() = defaultUserInterface
@@ -38,8 +37,10 @@ class I18nTranslatorTest {
         override val targetConnectorType: ConnectorType get() = none
         override val contextId: String? get() = null
 
-        override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
-            I18nLabelValue(defaultLabel.toString(), "namespace", "category", defaultLabel, args)
+        override fun i18n(
+            defaultLabel: CharSequence,
+            args: List<Any?>,
+        ): I18nLabelValue = I18nLabelValue(defaultLabel.toString(), "namespace", "category", defaultLabel, args)
     }
 
     @Test

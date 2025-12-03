@@ -20,25 +20,33 @@ package ai.tock.bot.connector.ga.model.request
  *
  */
 enum class GAArgumentBuiltInName {
-
     /** Permission granted argument. */
     PERMISSION,
+
     /** Option selected argument. */
     OPTION,
+
     /** Transaction requirements check result argument. */
     TRANSACTION_REQUIREMENTS_CHECK_RESULT,
+
     /** Delivery address value argument. */
     DELIVERY_ADDRESS_VALUE,
+
     /** Transactions decision argument. */
     TRANSACTION_DECISION_VALUE,
+
     /** Confirmation argument. */
     CONFIRMATION,
+
     /** DateTime argument. */
     DATETIME,
+
     /** Sign in status argument. */
     SIGN_IN,
+
     /** New Surface status argument. */
     NEW_SURFACE,
+
     /** Media status argument. */
-    MEDIA_STATUS
+    MEDIA_STATUS,
 }

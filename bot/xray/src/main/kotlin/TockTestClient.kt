@@ -32,7 +32,6 @@ import org.litote.kmongo.Id
  *
  */
 internal object TockTestClient : TestClientService {
-
     private val tockTimeoutInSeconds = longProperty("tock_bot_test_timeout_in_ms", 60 * 60000L)
     private val tockLogin = property("tock_bot_test_login", "please set tock test login")
     private val tockPassword = property("tock_bot_test_password", "please set tock test password")
@@ -41,21 +40,28 @@ internal object TockTestClient : TestClientService {
     val tock: TockTestApi
 
     init {
-        tock = retrofitBuilderWithTimeoutAndLogger(
-            tockTimeoutInSeconds,
-            interceptors = listOf(basicAuthInterceptor(tockLogin, tockPassword))
-        )
-            .addJacksonConverter()
-            .baseUrl(tockUrl)
-            .build()
-            .create()
+        tock =
+            retrofitBuilderWithTimeoutAndLogger(
+                tockTimeoutInSeconds,
+                interceptors = listOf(basicAuthInterceptor(tockLogin, tockPassword)),
+            )
+                .addJacksonConverter()
+                .baseUrl(tockUrl)
+                .build()
+                .create()
     }
 
-    override fun saveAndExecuteTestPlan(testPlan: TestPlan, executionId: Id<TestPlanExecution>): TestPlanExecution {
+    override fun saveAndExecuteTestPlan(
+        testPlan: TestPlan,
+        executionId: Id<TestPlanExecution>,
+    ): TestPlanExecution {
         return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 
-    override fun getBotConfigurations(namespace: String, botId: String): List<BotApplicationConfiguration> {
+    override fun getBotConfigurations(
+        namespace: String,
+        botId: String,
+    ): List<BotApplicationConfiguration> {
         return tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
     }
 

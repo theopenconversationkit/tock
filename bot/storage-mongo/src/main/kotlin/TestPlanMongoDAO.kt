@@ -39,7 +39,6 @@ import org.litote.kmongo.save
  *
  */
 internal object TestPlanMongoDAO : TestPlanDAO {
-
     private val logger = KotlinLogging.logger {}
     private val testPlanCol = MongoBotConfiguration.database.getCollection<TestPlan>()
     private val testPlanExecutionCol = MongoBotConfiguration.database.getCollection<TestPlanExecution>()
@@ -81,7 +80,7 @@ internal object TestPlanMongoDAO : TestPlanDAO {
 
     override fun getTestPlanExecution(
         testPlan: TestPlan,
-        testPlanExecutionId: Id<TestPlanExecution>
+        testPlanExecutionId: Id<TestPlanExecution>,
     ): TestPlanExecution? {
         return testPlanExecutionCol.findOneById(testPlanExecutionId)
     }

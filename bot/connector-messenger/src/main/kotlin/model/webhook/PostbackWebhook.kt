@@ -29,5 +29,5 @@ data class PostbackWebhook(
     override val timestamp: Long,
     val postback: UserActionPayload,
     @get:JsonProperty("prior_message")
-    override val priorMessage: PriorMessage? = null
+    override val priorMessage: PriorMessage? = null,
 ) : Webhook()

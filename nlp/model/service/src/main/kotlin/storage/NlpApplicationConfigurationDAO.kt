@@ -24,8 +24,15 @@ import java.time.Instant
  *
  */
 interface NlpApplicationConfigurationDAO {
+    fun saveNewConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration,
+    )
 
-    fun saveNewConfiguration(applicationName: String, engineType: NlpEngineType, configuration: NlpApplicationConfiguration)
-
-    fun loadLastConfiguration(applicationName: String, engineType: NlpEngineType, updated: Instant = Instant.now()): NlpApplicationConfiguration?
+    fun loadLastConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        updated: Instant = Instant.now(),
+    ): NlpApplicationConfiguration?
 }

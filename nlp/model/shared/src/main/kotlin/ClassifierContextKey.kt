@@ -23,7 +23,6 @@ import ai.tock.nlp.core.NlpEngineType
  * to another [ClassifierContext].
  */
 interface ClassifierContextKey {
-
     /**
      * The id of the key. key1 == key2 <=> key1.id == key2.id
      */

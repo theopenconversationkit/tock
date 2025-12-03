@@ -20,5 +20,5 @@ data class Bot(
     val idBot: String,
     val name: String,
     val description: String? = null,
-    val editorUrl: String
+    val editorUrl: String,
 )

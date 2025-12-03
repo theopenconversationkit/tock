@@ -17,5 +17,7 @@
 package ai.tock.bot.engine.action
 
 enum class ActionVisibility {
-    UNKNOWN, PUBLIC, PRIVATE
+    UNKNOWN,
+    PUBLIC,
+    PRIVATE,
 }

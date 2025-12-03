@@ -28,7 +28,6 @@ import ai.tock.translator.UserInterfaceType
  * but instead extend [SimpleStoryHandlerBase] or [StoryDefinitionBase].
  */
 interface StoryDefinition : IntentAware {
-
     /**
      * An unique identifier for a given bot.
      */
@@ -99,10 +98,12 @@ interface StoryDefinition : IntentAware {
     /**
      * Returns all steps of the story.
      */
-    fun allSteps(): Set<StoryStepDef> =
-        mutableSetOf<StoryStepDef>().apply { steps.forEach { allStep(this, it) } }
+    fun allSteps(): Set<StoryStepDef> = mutableSetOf<StoryStepDef>().apply { steps.forEach { allStep(this, it) } }
 
-    private fun allStep(result: MutableSet<StoryStepDef>, step: StoryStepDef) {
+    private fun allStep(
+        result: MutableSet<StoryStepDef>,
+        step: StoryStepDef,
+    ) {
         result.add(step)
         step.children.forEach { allStep(result, it) }
     }

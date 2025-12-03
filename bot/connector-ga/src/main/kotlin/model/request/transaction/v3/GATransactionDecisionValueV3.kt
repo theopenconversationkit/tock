@@ -27,5 +27,5 @@ import ai.tock.bot.connector.ga.model.response.transaction.v3.GAOrder
 data class GATransactionDecisionValueV3(
     val transactionDecision: GATransactionDecision,
     val order: GAOrder?,
-    val deliveryAddress: GALocation?
+    val deliveryAddress: GALocation?,
 ) : GAArgumentValue(GAArgumentValueType.transactionRequirementsCheckResultV3)

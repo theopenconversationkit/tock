@@ -22,7 +22,7 @@ data class Message<T : Payload>(
     val idMessage: String,
     val author: Author,
     val payload: T,
-    val createdAt: String) {
-
+    val createdAt: String,
+) {
     data class Author(val role: String)
 }

@@ -27,5 +27,5 @@ data class XrayTestExecutionInfo(
     val startDate: OffsetDateTime,
     val finishDate: OffsetDateTime,
     val testPlanKey: String,
-    val testEnvironments: List<String> = listOf("")
+    val testEnvironments: List<String> = listOf(""),
 )

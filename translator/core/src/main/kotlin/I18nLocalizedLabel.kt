@@ -29,31 +29,29 @@ data class I18nLocalizedLabel(
     val label: String,
     val validated: Boolean,
     val connectorId: String? = null,
-    val alternatives: List<String> = emptyList()
+    val alternatives: List<String> = emptyList(),
 ) {
-
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(
         locale,
         interfaceType,
         label,
         true,
         null,
-        alternatives
+        alternatives,
     )
 
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(
         locale,
         interfaceType,
         label,
-        emptyList()
+        emptyList(),
     )
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    internal fun randomAlternativesIndex(): Int =
-        if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
+    internal fun randomAlternativesIndex(): Int = if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
 
     internal fun alternative(index: Int): String = if (index == 0) label else alternatives[index - 1]
 }

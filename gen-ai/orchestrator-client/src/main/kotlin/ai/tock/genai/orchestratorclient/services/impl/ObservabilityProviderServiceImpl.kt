@@ -16,13 +16,13 @@
 
 package ai.tock.genai.orchestratorclient.services.impl
 
-import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.api.ObservabilityProviderApi
 import ai.tock.genai.orchestratorclient.requests.ObservabilityProviderSettingStatusRequest
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.ObservabilityProviderService
 
-class ObservabilityProviderServiceImpl: ObservabilityProviderService {
+class ObservabilityProviderServiceImpl : ObservabilityProviderService {
     private val retrofit = GenAIOrchestratorClient.getClient()
     private val observabilityProviderApi = retrofit.create(ObservabilityProviderApi::class.java)
 

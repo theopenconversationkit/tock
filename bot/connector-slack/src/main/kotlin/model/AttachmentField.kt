@@ -19,5 +19,5 @@ package ai.tock.bot.connector.slack.model
 data class AttachmentField(
     val title: String,
     val value: String,
-    val short: Boolean = false
+    val short: Boolean = false,
 )

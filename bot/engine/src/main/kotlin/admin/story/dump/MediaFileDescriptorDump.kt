@@ -35,9 +35,8 @@ class MediaFileDescriptorDump(
     val id: String = Dice.newId(),
     val type: AttachmentType = UploadedFilesService.attachmentType(suffix),
     val externalUrl: String? = null,
-    val description: I18nLabel?
+    val description: I18nLabel?,
 ) {
-
     constructor(file: MediaFileDescriptor) :
         this(
             file.suffix,
@@ -46,19 +45,28 @@ class MediaFileDescriptorDump(
             file.id,
             file.type,
             file.externalUrl,
-            file.description
+            file.description,
         )
 
     fun toFile(controller: StoryDefinitionConfigurationDumpController): MediaFileDescriptor? =
         if (externalUrl != null) {
             MediaFileDescriptor(
-                suffix, name, id, type, externalUrl, description
+                suffix,
+                name,
+                id,
+                type,
+                externalUrl,
+                description,
             )
         } else {
             val content = getFileContentFromId(fileId(id, suffix))
             if (content != null && content.size == data?.size) {
                 MediaFileDescriptor(
-                    suffix, name, id, type, description = description
+                    suffix,
+                    name,
+                    id,
+                    type,
+                    description = description,
                 )
             } else if (data != null) {
                 uploadFile(controller.targetNamespace, name, data, description = description)

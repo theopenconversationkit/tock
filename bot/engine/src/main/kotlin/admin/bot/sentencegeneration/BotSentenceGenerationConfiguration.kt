@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.bot.sentencegeneration
 
-
 import ai.tock.genai.orchestratorclient.requests.Formatter
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
@@ -37,7 +36,7 @@ data class BotSentenceGenerationConfiguration(
         // which will remove the prompt at LLMSetting level and use the promptTemplate
         return PromptTemplate(
             formatter = Formatter.JINJA2.id,
-            template = llmSetting.prompt!!
+            template = llmSetting.prompt!!,
         )
     }
 }

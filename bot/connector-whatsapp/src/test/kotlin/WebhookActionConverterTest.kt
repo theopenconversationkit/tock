@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class WebhookActionConverterTest {
-
     @Test
     fun `checks user id is encrypted and decrypted`() {
         val from = "my phone number"
@@ -35,14 +34,15 @@ class WebhookActionConverterTest {
 
         assertNotEquals(from, s.playerId.id)
 
-        val output = SendActionConverter.toBotMessage(
-            SendSentence(
-                PlayerId("botId", bot),
-                "appId",
-                PlayerId(s.playerId.id),
-                "Hey"
+        val output =
+            SendActionConverter.toBotMessage(
+                SendSentence(
+                    PlayerId("botId", bot),
+                    "appId",
+                    PlayerId(s.playerId.id),
+                    "Hey",
+                ),
             )
-        )
 
         assertEquals(from, output?.to)
     }
@@ -55,14 +55,15 @@ class WebhookActionConverterTest {
 
         assertNotEquals(from, s.playerId.id)
 
-        val output = SendActionConverter.toBotMessage(
-            SendSentence(
-                PlayerId("botId", bot),
-                "appId",
-                PlayerId(s.playerId.id),
-                null
+        val output =
+            SendActionConverter.toBotMessage(
+                SendSentence(
+                    PlayerId("botId", bot),
+                    "appId",
+                    PlayerId(s.playerId.id),
+                    null,
+                ),
             )
-        )
 
         assertEquals(output?.to, null)
     }

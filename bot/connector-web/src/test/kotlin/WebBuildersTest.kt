@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import ai.tock.bot.connector.web.*
+import ai.tock.bot.connector.web.HrefTargetType
 import ai.tock.bot.connector.web.send.ButtonStyle
 import ai.tock.bot.connector.web.send.ButtonType
+import ai.tock.bot.connector.web.webCardWithAttachment
+import ai.tock.bot.connector.web.webImage
+import ai.tock.bot.connector.web.webIntentQuickReply
+import ai.tock.bot.connector.web.webNlpQuickReply
+import ai.tock.bot.connector.web.webPostbackButton
+import ai.tock.bot.connector.web.webUrlButton
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendAttachment
@@ -29,17 +35,17 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 internal class WebBuildersTest {
-
     val bus: BotBus = mockk(relaxed = true)
 
     @Nested
     inner class WebUrlButtonTests {
-
         @Test
         fun `webUrlButton with no target nor style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de"
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("target", "_blank")
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("style", "primary")
@@ -47,27 +53,37 @@ internal class WebBuildersTest {
 
         @Test
         fun `webUrlButton with no target but style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de", style = ButtonStyle.secondary
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                    style = ButtonStyle.secondary,
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("style", "secondary")
         }
 
         @Test
         fun `webUrlButton with target but no style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de", target = HrefTargetType._self
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                    target = HrefTargetType._self,
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("target", "_self")
         }
 
         @Test
         fun `webUrlButton with target and style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de", target = HrefTargetType._self, style = ButtonStyle.secondary
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                    target = HrefTargetType._self,
+                    style = ButtonStyle.secondary,
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("target", "_self")
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("style", "secondary")
@@ -75,9 +91,13 @@ internal class WebBuildersTest {
 
         @Test
         fun `webUrlButton with string target and style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de", target = "target", style = "style"
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                    target = "target",
+                    style = "style",
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("target", "target")
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("style", "style")
@@ -85,9 +105,13 @@ internal class WebBuildersTest {
 
         @Test
         fun `webUrlButton with null target and style`() {
-            val webUrlButton = bus.webUrlButton(
-                "title", "https://ab.c.de", target = null, style = null
-            )
+            val webUrlButton =
+                bus.webUrlButton(
+                    "title",
+                    "https://ab.c.de",
+                    target = null,
+                    style = null,
+                )
             Assertions.assertThat(webUrlButton.type).isEqualTo(ButtonType.web_url)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("target", null)
             Assertions.assertThat(webUrlButton).hasFieldOrPropertyWithValue("style", null)
@@ -96,39 +120,49 @@ internal class WebBuildersTest {
 
     @Nested
     inner class WebPostbackButtonTests {
-
         @Test
         fun `webPostbackButton with no style`() {
-            val webPostbackButton = bus.webPostbackButton(
-                "title", Intent("intent")
-            )
+            val webPostbackButton =
+                bus.webPostbackButton(
+                    "title",
+                    Intent("intent"),
+                )
             Assertions.assertThat(webPostbackButton.type).isEqualTo(ButtonType.postback)
             Assertions.assertThat(webPostbackButton).hasFieldOrPropertyWithValue("style", "primary")
         }
 
         @Test
         fun `webPostbackButton with style`() {
-            val webPostbackButton = bus.webPostbackButton(
-                "title", Intent("intent"),  style = ButtonStyle.secondary
-            )
+            val webPostbackButton =
+                bus.webPostbackButton(
+                    "title",
+                    Intent("intent"),
+                    style = ButtonStyle.secondary,
+                )
             Assertions.assertThat(webPostbackButton.type).isEqualTo(ButtonType.postback)
             Assertions.assertThat(webPostbackButton).hasFieldOrPropertyWithValue("style", "secondary")
         }
 
         @Test
         fun `webPostbackButton with string style`() {
-            val webPostbackButton = bus.webPostbackButton(
-                "title", Intent("intent"),  style = "style"
-            )
+            val webPostbackButton =
+                bus.webPostbackButton(
+                    "title",
+                    Intent("intent"),
+                    style = "style",
+                )
             Assertions.assertThat(webPostbackButton.type).isEqualTo(ButtonType.postback)
             Assertions.assertThat(webPostbackButton).hasFieldOrPropertyWithValue("style", "style")
         }
 
         @Test
         fun `webPostbackButton with null style`() {
-            val webPostbackButton = bus.webPostbackButton(
-                "title", Intent("intent"),  style = null
-            )
+            val webPostbackButton =
+                bus.webPostbackButton(
+                    "title",
+                    Intent("intent"),
+                    style = null,
+                )
             Assertions.assertThat(webPostbackButton.type).isEqualTo(ButtonType.postback)
             Assertions.assertThat(webPostbackButton).hasFieldOrPropertyWithValue("style", null)
         }
@@ -136,39 +170,49 @@ internal class WebBuildersTest {
 
     @Nested
     inner class WebIntentQuickReplyTests {
-
         @Test
         fun `webIntentQuickReply with no style`() {
-            val webIntentQuickReply = bus.webIntentQuickReply(
-                "title", Intent("intent")
-            )
+            val webIntentQuickReply =
+                bus.webIntentQuickReply(
+                    "title",
+                    Intent("intent"),
+                )
             Assertions.assertThat(webIntentQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webIntentQuickReply).hasFieldOrPropertyWithValue("style", "primary")
         }
 
         @Test
         fun `webIntentQuickReply with style`() {
-            val webIntentQuickReply = bus.webIntentQuickReply(
-                "title", Intent("intent"),  style = ButtonStyle.secondary
-            )
+            val webIntentQuickReply =
+                bus.webIntentQuickReply(
+                    "title",
+                    Intent("intent"),
+                    style = ButtonStyle.secondary,
+                )
             Assertions.assertThat(webIntentQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webIntentQuickReply).hasFieldOrPropertyWithValue("style", "secondary")
         }
 
         @Test
         fun `webIntentQuickReply with string style`() {
-            val webIntentQuickReply = bus.webIntentQuickReply(
-                "title", Intent("intent"),  style = "style"
-            )
+            val webIntentQuickReply =
+                bus.webIntentQuickReply(
+                    "title",
+                    Intent("intent"),
+                    style = "style",
+                )
             Assertions.assertThat(webIntentQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webIntentQuickReply).hasFieldOrPropertyWithValue("style", "style")
         }
 
         @Test
         fun `webIntentQuickReply with null style`() {
-            val webIntentQuickReply = bus.webIntentQuickReply(
-                "title", Intent("intent"),  style = null
-            )
+            val webIntentQuickReply =
+                bus.webIntentQuickReply(
+                    "title",
+                    Intent("intent"),
+                    style = null,
+                )
             Assertions.assertThat(webIntentQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webIntentQuickReply).hasFieldOrPropertyWithValue("style", null)
         }
@@ -176,39 +220,45 @@ internal class WebBuildersTest {
 
     @Nested
     inner class WebNlpQuickReplyTests {
-
         @Test
         fun `webNlpQuickReply with no style`() {
-            val webNlpQuickReply = bus.webNlpQuickReply(
-                "title"
-            )
+            val webNlpQuickReply =
+                bus.webNlpQuickReply(
+                    "title",
+                )
             Assertions.assertThat(webNlpQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webNlpQuickReply).hasFieldOrPropertyWithValue("style", "primary")
         }
 
         @Test
         fun `webNlpQuickReply with style`() {
-            val webNlpQuickReply = bus.webNlpQuickReply(
-                "title",  style = ButtonStyle.secondary
-            )
+            val webNlpQuickReply =
+                bus.webNlpQuickReply(
+                    "title",
+                    style = ButtonStyle.secondary,
+                )
             Assertions.assertThat(webNlpQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webNlpQuickReply).hasFieldOrPropertyWithValue("style", "secondary")
         }
 
         @Test
         fun `webNlpQuickReply with string style`() {
-            val webNlpQuickReply = bus.webNlpQuickReply(
-                "title",  style = "style"
-            )
+            val webNlpQuickReply =
+                bus.webNlpQuickReply(
+                    "title",
+                    style = "style",
+                )
             Assertions.assertThat(webNlpQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webNlpQuickReply).hasFieldOrPropertyWithValue("style", "style")
         }
 
         @Test
         fun `webNlpQuickReply with null style`() {
-            val webNlpQuickReply = bus.webNlpQuickReply(
-                "title",  style = null
-            )
+            val webNlpQuickReply =
+                bus.webNlpQuickReply(
+                    "title",
+                    style = null,
+                )
             Assertions.assertThat(webNlpQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webNlpQuickReply).hasFieldOrPropertyWithValue("style", null)
         }
@@ -216,13 +266,13 @@ internal class WebBuildersTest {
 
     @Nested
     inner class WebImageTests {
-
         @Test
         fun `webImage with no description`() {
-            val webImageReply = bus.webImage(
-                imageUrl = "https://ab.c.de",
-                title = "title"
-            )
+            val webImageReply =
+                bus.webImage(
+                    imageUrl = "https://ab.c.de",
+                    title = "title",
+                )
             Assertions.assertThat(webImageReply.image?.file?.type).isEqualTo(SendAttachment.AttachmentType.image.toString())
             Assertions.assertThat(webImageReply.image?.file?.description).isNull()
         }
@@ -230,11 +280,12 @@ internal class WebBuildersTest {
         @Test
         fun `webImage with description`() {
             every { bus.translate("description") } returns "description".raw
-            val webImageReply = bus.webImage(
-                imageUrl = "https://ab.c.de",
-                title = "title",
-                description = "description"
-            )
+            val webImageReply =
+                bus.webImage(
+                    imageUrl = "https://ab.c.de",
+                    title = "title",
+                    description = "description",
+                )
             Assertions.assertThat(webImageReply.image?.file?.type).isEqualTo(SendAttachment.AttachmentType.image.toString())
             Assertions.assertThat(webImageReply.image?.file?.description).isEqualTo("description")
             verify { bus.translate("description") }
@@ -243,15 +294,15 @@ internal class WebBuildersTest {
 
     @Nested
     inner class WebCardWithAttachmentTests {
-
         @Test
         fun `webCard with no description`() {
-            val webCardWithAttachmentReply = bus.webCardWithAttachment(
-                title = "title",
-                subTitle = "subTitle",
-                attachmentUrl = "https://ab.c.de",
-                buttons = emptyList()
-            )
+            val webCardWithAttachmentReply =
+                bus.webCardWithAttachment(
+                    title = "title",
+                    subTitle = "subTitle",
+                    attachmentUrl = "https://ab.c.de",
+                    buttons = emptyList(),
+                )
             Assertions.assertThat(webCardWithAttachmentReply.file?.type).isEqualTo(SendAttachment.AttachmentType.file.toString())
             Assertions.assertThat(webCardWithAttachmentReply.file?.description).isNull()
         }
@@ -259,13 +310,14 @@ internal class WebBuildersTest {
         @Test
         fun `webCard with description`() {
             every { bus.translate("description") } returns "description".raw
-            val webCardWithAttachmentReply = bus.webCardWithAttachment(
-                title = "title",
-                subTitle = "subTitle",
-                attachmentUrl = "https://ab.c.de",
-                buttons = emptyList(),
-                fileDescription = "description"
-            )
+            val webCardWithAttachmentReply =
+                bus.webCardWithAttachment(
+                    title = "title",
+                    subTitle = "subTitle",
+                    attachmentUrl = "https://ab.c.de",
+                    buttons = emptyList(),
+                    fileDescription = "description",
+                )
             Assertions.assertThat(webCardWithAttachmentReply.file?.type).isEqualTo(SendAttachment.AttachmentType.file.toString())
             Assertions.assertThat(webCardWithAttachmentReply.file?.description).isEqualTo("description")
             verify { bus.translate("description") }

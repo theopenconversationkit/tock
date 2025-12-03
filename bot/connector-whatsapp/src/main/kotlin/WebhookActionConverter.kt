@@ -33,18 +33,22 @@ import com.github.salomonbrys.kodein.instance
  *
  */
 internal object WebhookActionConverter {
-
     private val stt: STT by injector.instance()
 
-    fun toEvent(message: WhatsAppMessage, applicationId: String, client: WhatsAppClient): Event? {
+    fun toEvent(
+        message: WhatsAppMessage,
+        applicationId: String,
+        client: WhatsAppClient,
+    ): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
-            is WhatsAppTextMessage -> SendSentence(
-                PlayerId(senderId),
-                applicationId,
-                PlayerId(applicationId, PlayerType.bot),
-                message.text.body
-            )
+            is WhatsAppTextMessage ->
+                SendSentence(
+                    PlayerId(senderId),
+                    applicationId,
+                    PlayerId(applicationId, PlayerType.bot),
+                    message.text.body,
+                )
             is WhatsAppVoiceMessage -> {
                 client.getMedia(message.voice.id)
                     ?.let { audio ->
@@ -53,17 +57,18 @@ internal object WebhookActionConverter {
                                 PlayerId(senderId),
                                 applicationId,
                                 PlayerId(applicationId, PlayerType.bot),
-                                text
+                                text,
                             )
                         }
                     }
             }
-            is WhatsAppButtonMessage -> SendSentence(
-                PlayerId(senderId),
-                applicationId,
-                PlayerId(applicationId, PlayerType.bot),
-                message.button.text
-            )
+            is WhatsAppButtonMessage ->
+                SendSentence(
+                    PlayerId(senderId),
+                    applicationId,
+                    PlayerId(applicationId, PlayerType.bot),
+                    message.button.text,
+                )
             else -> null
         }
     }

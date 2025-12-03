@@ -24,7 +24,6 @@ import ai.tock.nlp.entity.Value
  * Transforms any instance in [Value] instance.
  */
 object ValueTransformer {
-
     fun wrapValue(value: Any): Value {
         return when (value) {
             is Value -> value

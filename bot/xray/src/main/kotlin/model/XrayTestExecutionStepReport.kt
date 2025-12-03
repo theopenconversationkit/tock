@@ -21,5 +21,5 @@ package ai.tock.bot.xray.model
  */
 data class XrayTestExecutionStepReport(
     val comment: String,
-    val status: XrayStatus
+    val status: XrayStatus,
 )

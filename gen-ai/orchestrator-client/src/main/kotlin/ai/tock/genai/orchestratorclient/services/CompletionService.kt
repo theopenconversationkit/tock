@@ -23,5 +23,5 @@ import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
 interface CompletionService {
     fun generate(query: CompletionRequest): CompletionResponse?
 
-    fun generateSentences(query: CompletionRequest):  SentenceCompletionResponse?
+    fun generateSentences(query: CompletionRequest): SentenceCompletionResponse?
 }

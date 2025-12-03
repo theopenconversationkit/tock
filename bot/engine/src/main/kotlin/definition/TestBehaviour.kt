@@ -25,11 +25,11 @@ import java.util.Locale
  * Define values and behaviour for integration tests.
  */
 interface TestBehaviour {
-
     /**
      * The default first name used in tests.
      */
     val firstName: String
+
     /**
      * The default last name used in tests.
      */
@@ -47,7 +47,11 @@ interface TestBehaviour {
     /**
      * Setup user preferences for test context.
      */
-    fun setup(userPreferences: UserPreferences, connectorType: ConnectorType, locale: Locale) {
+    fun setup(
+        userPreferences: UserPreferences,
+        connectorType: ConnectorType,
+        locale: Locale,
+    ) {
         userPreferences.test = true
         userPreferences.firstName = firstName
         userPreferences.lastName = lastName

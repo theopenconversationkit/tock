@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
  *
  */
 class DucklingParserIntegrationTest {
-
     @Test
     fun testParseNumber() {
         val v = DucklingParser.parse("en", "number", ZonedDateTime.now(), "12")

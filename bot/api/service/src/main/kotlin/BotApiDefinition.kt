@@ -17,7 +17,6 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
 import ai.tock.bot.api.model.configuration.StoryConfiguration
@@ -36,9 +35,8 @@ import mu.KotlinLogging
 
 internal class FallbackStoryHandler(
     private val defaultUnknown: StoryDefinition,
-    private val handler: BotApiHandler
+    private val handler: BotApiHandler,
 ) : SimpleStoryHandlerBase() {
-
     private val logger = KotlinLogging.logger {}
 
     override fun action(bus: BotBus) {
@@ -49,16 +47,23 @@ internal class FallbackStoryHandler(
             defaultUnknown.storyHandler.handle(bus)
         }
     }
+
+    override fun checkEndCalled(
+        bus: BotBus,
+        storyDefinition: StoryDefinition?,
+    ) {
+        // ignore
+    }
 }
 
 internal class FallbackStoryDefinition(
     defaultUnknown: StoryDefinition,
-    handler: BotApiHandler
+    handler: BotApiHandler,
 ) : SimpleStoryDefinition(
-    defaultUnknown.id,
-    FallbackStoryHandler(defaultUnknown, handler),
-    defaultUnknown.intents
-)
+        defaultUnknown.id,
+        FallbackStoryHandler(defaultUnknown, handler),
+        defaultUnknown.intents,
+    )
 
 internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition> {
     override val name: String = s.name
@@ -76,19 +81,22 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
 internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
-    handler: BotApiHandler
+    handler: BotApiHandler,
 ) : BotDefinitionBase(
-    configuration.botId,
-    configuration.namespace,
-    clientConfiguration
-        ?.stories
-        ?.filter { it.mainIntent != Intent.unknown.name }
-        //map stories to SimpleStoryDefinition otherwise empty list
-        ?.map { it.mapToSimpleStoryDefinition(handler) } ?: emptyList(),
-    configuration.nlpModel,
-    FallbackStoryDefinition(defaultUnknownStory, handler)
-) {
-    override fun findIntent(intent: String, applicationId: String): Intent =
+        configuration.botId,
+        configuration.namespace,
+        clientConfiguration
+            ?.stories
+            ?.filter { it.mainIntent != Intent.unknown.name }
+            // map stories to SimpleStoryDefinition otherwise empty list
+            ?.map { it.mapToSimpleStoryDefinition(handler) } ?: emptyList(),
+        configuration.nlpModel,
+        FallbackStoryDefinition(defaultUnknownStory, handler),
+    ) {
+    override fun findIntent(
+        intent: String,
+        applicationId: String,
+    ): Intent =
         super.findIntent(intent, applicationId).let {
             if (it.wrap(Intent.ragexcluded)) {
                 Intent(intent)
@@ -109,10 +117,12 @@ private fun StoryConfiguration.mapToSimpleStoryDefinition(handler: BotApiHandler
     SimpleStoryDefinition(
         id = this.name,
         storyHandler = FallbackStoryHandler(defaultUnknownStory, handler),
-        starterIntents = setOf(Intent(this.mainIntent))
-                + this.otherStarterIntents.map { Intent(it) },
-        intents = setOf(Intent(this.mainIntent))
-                + this.otherStarterIntents.map { Intent(it) }
-                + this.secondaryIntents.map { Intent(it) },
-        this.steps.map { ApiStep(it) }.toSet()
+        starterIntents =
+            setOf(Intent(this.mainIntent)) +
+                this.otherStarterIntents.map { Intent(it) },
+        intents =
+            setOf(Intent(this.mainIntent)) +
+                this.otherStarterIntents.map { Intent(it) } +
+                this.secondaryIntents.map { Intent(it) },
+        this.steps.map { ApiStep(it) }.toSet(),
     )

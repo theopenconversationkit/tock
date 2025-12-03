@@ -35,8 +35,11 @@ class AsyncConfigurableStoryHandler<T : AsyncStoryHandling, D>(
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     private val preconditionsChecker: suspend AsyncBus.() -> D,
-): AsyncDelegatingStoryHandlerBase<T, D>(mainIntent) {
+) : AsyncDelegatingStoryHandlerBase<T, D>(mainIntent) {
     override fun checkPreconditions(): suspend AsyncBus.() -> D = preconditionsChecker
 
-    override fun newHandlerDefinition(bus: AsyncBus, preconditionResult: D): T = handlerDefCreator.create(bus, preconditionResult)
+    override fun newHandlerDefinition(
+        bus: AsyncBus,
+        preconditionResult: D,
+    ): T = handlerDefCreator.create(bus, preconditionResult)
 }

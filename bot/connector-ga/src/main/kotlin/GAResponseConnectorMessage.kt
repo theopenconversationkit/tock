@@ -30,9 +30,8 @@ data class GAResponseConnectorMessage(
     val expectUserResponse: Boolean = true,
     val expectedInputs: List<GAExpectedInput> = emptyList(),
     val finalResponse: GAFinalResponse? = null,
-    val logoutEvent: Boolean = false
+    val logoutEvent: Boolean = false,
 ) : ConnectorMessage {
-
     constructor(input: GAExpectedInput) : this(expectedInputs = listOf(input))
 
     @Transient

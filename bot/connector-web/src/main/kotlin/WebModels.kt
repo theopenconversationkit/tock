@@ -42,25 +42,27 @@ import ai.tock.shared.mapNotNullValues
 fun WebCard.toGenericMessage(): GenericMessage {
     return GenericMessage(
         choices = buttons.map { it.toChoice() },
-        texts = mapNotNullValues(
-            GenericMessage.TITLE_PARAM to title?.toString(),
-            GenericMessage.SUBTITLE_PARAM to subTitle?.toString()
-        ),
-        attachments = file
-            ?.let { listOf(Attachment(it.url, attachmentType(it.url))) }
-            ?: emptyList()
+        texts =
+            mapNotNullValues(
+                GenericMessage.TITLE_PARAM to title?.toString(),
+                GenericMessage.SUBTITLE_PARAM to subTitle?.toString(),
+            ),
+        attachments =
+            file
+                ?.let { listOf(Attachment(it.url, attachmentType(it.url))) }
+                ?: emptyList(),
     )
 }
 
-fun WebCarousel.toGenericMessage(): GenericMessage =
-    GenericMessage(subElements = cards.map { it.toGenericMessage() }.map { GenericElement(it) })
+fun WebCarousel.toGenericMessage(): GenericMessage = GenericMessage(subElements = cards.map { it.toGenericMessage() }.map { GenericElement(it) })
 
 fun WebImage.toGenericMessage(): GenericMessage {
     return GenericMessage(
-        texts = mapNotNullValues(
-            GenericMessage.TITLE_PARAM to title.toString(),
-        ),
-        attachments = listOf(Attachment(file.url, attachmentType(file.url)))
+        texts =
+            mapNotNullValues(
+                GenericMessage.TITLE_PARAM to title.toString(),
+            ),
+        attachments = listOf(Attachment(file.url, attachmentType(file.url))),
     )
 }
 
@@ -76,8 +78,8 @@ fun Button.toChoice(): Choice =
                         params +
                             mapNotNullValues(
                                 TITLE_PARAMETER to title,
-                                IMAGE_PARAMETER to imageUrl
-                            )
+                                IMAGE_PARAMETER to imageUrl,
+                            ),
                     )
                 }
             } ?: Choice.fromText(text = title, nlpText = title, imageUrl = imageUrl)
@@ -92,8 +94,8 @@ fun Button.toChoice(): Choice =
                                 params +
                                     mapNotNullValues(
                                         TITLE_PARAMETER to title,
-                                        IMAGE_PARAMETER to imageUrl
-                                    )
+                                        IMAGE_PARAMETER to imageUrl,
+                                    ),
                             )
                         }
                 } ?: Choice.fromText(title, nlpText, imageUrl)
@@ -104,23 +106,20 @@ fun Button.toChoice(): Choice =
                 mapNotNullValues(
                     TITLE_PARAMETER to title,
                     URL_PARAMETER to url,
-                    IMAGE_PARAMETER to imageUrl
-                )
+                    IMAGE_PARAMETER to imageUrl,
+                ),
             )
 
         else -> error("unsupported Button type: $this")
     }
 
-fun WebMediaFile.toMediaFile(): MediaFile =
-    MediaFile(url, name, attachmentType(type), description)
+fun WebMediaFile.toMediaFile(): MediaFile = MediaFile(url, name, attachmentType(type), description)
 
-fun MediaFile.toWebMediaFile(): WebMediaFile =
-    WebMediaFile(url, name, type, description?.toString())
+fun MediaFile.toWebMediaFile(): WebMediaFile = WebMediaFile(url, name, type, description?.toString())
 
 fun WebMediaFile(
     url: String,
     name: String,
     type: AttachmentType = attachmentType(url),
-    description: String? = null
-): WebMediaFile =
-    WebMediaFile(url, name, type.name, description)
+    description: String? = null,
+): WebMediaFile = WebMediaFile(url, name, type.name, description)

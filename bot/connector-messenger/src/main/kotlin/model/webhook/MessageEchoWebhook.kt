@@ -26,5 +26,5 @@ data class MessageEchoWebhook(
     override val sender: Sender,
     override val recipient: Recipient,
     override val timestamp: Long,
-    val message: MessageEcho
+    val message: MessageEcho,
 ) : Webhook()

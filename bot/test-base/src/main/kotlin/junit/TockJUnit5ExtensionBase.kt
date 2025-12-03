@@ -38,20 +38,19 @@ import ai.tock.bot.test.TestContext
 import ai.tock.bot.test.TestLifecycle
 import ai.tock.bot.test.newBusMockContext
 import ai.tock.translator.UserInterfaceType
-import java.util.Locale
 import mu.KotlinLogging
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import java.util.Locale
 
 /**
  * JUnit5 base extension.
  */
 open class TockJUnit5ExtensionBase<out T : TestContext>(
     val botDefinition: BotDefinition,
-    @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)
+    @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T),
 ) : BeforeEachCallback, AfterEachCallback {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -85,7 +84,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         return send(
             intent,
@@ -102,10 +101,10 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     connectorId,
                     botId,
                     intent.wrappedIntent().name,
-                    parameters.toMap()
+                    parameters.toMap(),
                 )
             },
-            tests
+            tests,
         )
     }
 
@@ -133,7 +132,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         return send(
             intent,
@@ -145,7 +144,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             userPreferences,
             listOf(),
             { message.toAction(userId, connectorId, botId) },
-            tests
+            tests,
         )
     }
 
@@ -155,12 +154,13 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     fun selectChoice(
         busMockLog: BotBusMockLog,
         buttonTitle: String,
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         return sendMessage(
-            message = busMockLog.choice(buttonTitle)
-                ?: error("No choice $buttonTitle found in bus message $busMockLog"),
-            tests = tests
+            message =
+                busMockLog.choice(buttonTitle)
+                    ?: error("No choice $buttonTitle found in bus message $busMockLog"),
+            tests = tests,
         )
     }
 
@@ -171,12 +171,13 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         busMockLog: BotBusMockLog,
         elementIndex: Int,
         buttonTitle: String,
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         return sendMessage(
-            message = busMockLog.elementChoice(elementIndex, buttonTitle)
-                ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
-            tests = tests
+            message =
+                busMockLog.elementChoice(elementIndex, buttonTitle)
+                    ?: error("No choice $buttonTitle found in element $elementIndex of bus message $busMockLog"),
+            tests = tests,
         )
     }
 
@@ -225,11 +226,12 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     connectorId,
                     botId,
                     text,
-                    state = EventState(
-                        entities.toMutableList(),
-                        intent = intent.wrappedIntent().name
-                    ),
-                    metadata = metadata
+                    state =
+                        EventState(
+                            entities.toMutableList(),
+                            intent = intent.wrappedIntent().name,
+                        ),
+                    metadata = metadata,
                 )
             },
             tests,
@@ -252,25 +254,26 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         val action = actionProvider.invoke()
-        val botBusMock = BotBusMock(
-            if (testContext.isInitialized()) {
-                testContext.botBusMockContext
-            } else {
-                newBusMockContext(
-                    findStoryDefinition(intent, action.connectorId),
-                    connectorType,
-                    locale,
-                    userId,
-                    botId,
-                    action.connectorId,
-                    action,
-                    userInterfaceType,
-                    userPreferences,
-                    secondaryConnectorTypes
-                )
-            },
-            action
-        )
+        val botBusMock =
+            BotBusMock(
+                if (testContext.isInitialized()) {
+                    testContext.botBusMockContext
+                } else {
+                    newBusMockContext(
+                        findStoryDefinition(intent, action.connectorId),
+                        connectorType,
+                        locale,
+                        userId,
+                        botId,
+                        action.connectorId,
+                        action,
+                        userInterfaceType,
+                        userPreferences,
+                        secondaryConnectorTypes,
+                    )
+                },
+                action,
+            )
         tests.invoke(botBusMock.run())
         return botBusMock
     }
@@ -299,7 +302,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ) {
         newRequest(
             intent,
@@ -315,10 +318,10 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     connectorId,
                     botId,
                     intent.wrappedIntent().name,
-                    parameters.toMap()
+                    parameters.toMap(),
                 )
             },
-            tests
+            tests,
         )
     }
 
@@ -336,7 +339,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         connectorId: String = botDefinition.botId,
         userPreferences: UserPreferences = UserPreferences(locale = locale),
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ) {
         newRequest(
             intent,
@@ -352,13 +355,14 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     connectorId,
                     botId,
                     text,
-                    state = EventState(
-                        entities.toMutableList(),
-                        intent = intent.wrappedIntent().name
-                    )
+                    state =
+                        EventState(
+                            entities.toMutableList(),
+                            intent = intent.wrappedIntent().name,
+                        ),
                 )
             },
-            tests
+            tests,
         )
     }
 
@@ -374,7 +378,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         userPreferences: UserPreferences = UserPreferences(locale = locale),
         actionProvider: () -> Action,
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ) {
         val action = actionProvider.invoke()
         tests.invoke(
@@ -391,15 +395,18 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                         action.connectorId,
                         action,
                         userInterfaceType,
-                        userPreferences
+                        userPreferences,
                     )
                 },
-                action
-            )
+                action,
+            ),
         )
     }
 
-    private fun findStoryDefinition(intent: IntentAware, connectorId: String): StoryDefinition =
+    private fun findStoryDefinition(
+        intent: IntentAware,
+        connectorId: String,
+    ): StoryDefinition =
         if (intent is StoryDefinition) {
             intent
         } else {
@@ -419,7 +426,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         locale: Locale = testContext.defaultLocale(),
-        userId: PlayerId = testContext.defaultPlayerId()
+        userId: PlayerId = testContext.defaultPlayerId(),
     ): BotBusMock = newBusMock(story, connectorType, locale, userId).run()
 
     /**
@@ -429,7 +436,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         locale: Locale = testContext.defaultLocale(),
-        userId: PlayerId = testContext.defaultPlayerId()
+        userId: PlayerId = testContext.defaultPlayerId(),
     ): BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
 
     /**

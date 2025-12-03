@@ -23,9 +23,8 @@ import mu.KotlinLogging
  */
 data class TextAndVoiceTranslatedString(
     val text: CharSequence,
-    val voice: CharSequence
+    val voice: CharSequence,
 ) : TranslatedString(text) {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -37,21 +36,28 @@ data class TextAndVoiceTranslatedString(
     }
 
     // override extension method
-    fun splitToCharSequence(vararg delimiters: String, ignoreCase: Boolean = false, limit: Int = 0): List<CharSequence> {
+    fun splitToCharSequence(
+        vararg delimiters: String,
+        ignoreCase: Boolean = false,
+        limit: Int = 0,
+    ): List<CharSequence> {
         val textSplit = text.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
         val voiceSplit = voice.split(*delimiters, ignoreCase = ignoreCase, limit = limit)
         return textSplit.mapIndexed { i, s ->
             TextAndVoiceTranslatedString(
                 s,
-                voiceSplit.getOrNull(i) ?: s
+                voiceSplit.getOrNull(i) ?: s,
             )
         }
     }
 
-    override fun subSequence(startIndex: Int, endIndex: Int): TranslatedSequence {
+    override fun subSequence(
+        startIndex: Int,
+        endIndex: Int,
+    ): TranslatedSequence {
         return TextAndVoiceTranslatedString(
             text.subSequence(startIndex, endIndex),
-            voice.subSequence(startIndex, endIndex)
+            voice.subSequence(startIndex, endIndex),
         )
     }
 

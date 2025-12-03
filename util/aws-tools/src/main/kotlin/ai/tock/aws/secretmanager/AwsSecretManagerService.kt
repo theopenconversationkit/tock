@@ -32,7 +32,13 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.services.secretsmanager.AWSSecretsManager
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
-import com.amazonaws.services.secretsmanager.model.*
+import com.amazonaws.services.secretsmanager.model.AWSSecretsManagerException
+import com.amazonaws.services.secretsmanager.model.CreateSecretRequest
+import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest
+import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest
+import com.amazonaws.services.secretsmanager.model.GetSecretValueResult
+import com.amazonaws.services.secretsmanager.model.ResourceNotFoundException
+import com.amazonaws.services.secretsmanager.model.UpdateSecretRequest
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -57,10 +63,11 @@ class AwsSecretManagerService : SecretManagerService {
     private var secretsManagerClient: AWSSecretsManager
     private val logger: KLogger = KotlinLogging.logger { }
     private val lockOnSecretCache: Lock = ReentrantLock()
-    private var secretsCache: Cache<String, String> = Caffeine.newBuilder()
-        .expireAfterWrite(10, TimeUnit.MINUTES)
-        .maximumSize(100)
-        .build()
+    private var secretsCache: Cache<String, String> =
+        Caffeine.newBuilder()
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .maximumSize(100)
+            .build()
 
     init {
         secretsManagerClient = initSecretsManagerWithNewCredentials()
@@ -76,9 +83,10 @@ class AwsSecretManagerService : SecretManagerService {
             }
 
             // Retrieve secret from AWS Secrets Manager
-            val getSecretValueRequest = GetSecretValueRequest()
-                .withSecretId(secretId)
-                .withVersionStage(property(AWS_SECRET_VERSION, "AWSCURRENT"))
+            val getSecretValueRequest =
+                GetSecretValueRequest()
+                    .withSecretId(secretId)
+                    .withVersionStage(property(AWS_SECRET_VERSION, "AWSCURRENT"))
             var response: GetSecretValueResult
             try {
                 response = secretsManagerClient.getSecretValue(getSecretValueRequest)
@@ -115,51 +123,59 @@ class AwsSecretManagerService : SecretManagerService {
         }
     }
 
-
     /**
      * Get temporary credentials from STS by assuming a predefined role
      */
     private fun getTemporaryCredentials(): com.amazonaws.services.securitytoken.model.Credentials {
-        val request = AssumeRoleRequest()
-            .withRoleArn(EnvConfig.awsSecretManagerAssumedRole)
-            .withRoleSessionName(EnvConfig.awsAssumedRoleSessionName)
-            .withDurationSeconds(900)
+        val request =
+            AssumeRoleRequest()
+                .withRoleArn(EnvConfig.awsSecretManagerAssumedRole)
+                .withRoleSessionName(EnvConfig.awsAssumedRoleSessionName)
+                .withDurationSeconds(900)
         return stsClient.assumeRole(request).credentials
     }
 
-    private fun createOrUpdateAWSSecret(secretName: String, secretObject: Any) {
+    private fun createOrUpdateAWSSecret(
+        secretName: String,
+        secretObject: Any,
+    ) {
         val secretValue = jacksonObjectMapper().writeValueAsString(secretObject)
 
         try {
             // Update the existing secret
-            val updateRequest = UpdateSecretRequest()
-                .withSecretId(secretName)
-                .withSecretString(secretValue)
+            val updateRequest =
+                UpdateSecretRequest()
+                    .withSecretId(secretName)
+                    .withSecretString(secretValue)
             secretsManagerClient.updateSecret(updateRequest)
             logger.info { "The secret '$secretName' already exists, so it has been updated with a new value." }
-        }catch (exc: ResourceNotFoundException){
+        } catch (exc: ResourceNotFoundException) {
             logger.info { "The secret '$secretName' does not yet exist." }
             // Create a new secret
-            val createRequest = CreateSecretRequest()
-                .withName(secretName)
-                .withSecretString(secretValue)
-                .withDescription("Created from Tock.")
+            val createRequest =
+                CreateSecretRequest()
+                    .withName(secretName)
+                    .withSecretString(secretValue)
+                    .withDescription("Created from Tock.")
             secretsManagerClient.createSecret(createRequest)
             logger.info { "The secret '$secretName' has been created with the value." }
         }
-
     }
 
-    override fun getCredentials(secretName: String): Credentials =
-        Json.decodeFromString(getAWSSecret(secretName))
+    override fun getCredentials(secretName: String): Credentials = Json.decodeFromString(getAWSSecret(secretName))
 
-    override fun getAIProviderSecret(secretName: String): AIProviderSecret =
-        Json.decodeFromString(getAWSSecret(secretName))
+    override fun getAIProviderSecret(secretName: String): AIProviderSecret = Json.decodeFromString(getAWSSecret(secretName))
 
-    override fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret) =
-        createOrUpdateAWSSecret(secretName, secretValue)
+    override fun createOrUpdateAIProviderSecret(
+        secretName: String,
+        secretValue: AIProviderSecret,
+    ) = createOrUpdateAWSSecret(secretName, secretValue)
 
-    override fun generateSecretName(namespace: String, botId: String, feature: String): String {
+    override fun generateSecretName(
+        namespace: String,
+        botId: String,
+        feature: String,
+    ): String {
         // Define allowed characters
         val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/_+=.@-"
 
@@ -196,9 +212,10 @@ class AwsSecretManagerService : SecretManagerService {
 
     override fun deleteSecret(secretName: String) {
         try {
-            val deleteRequest = DeleteSecretRequest()
-                .withSecretId(secretName)
-                .withForceDeleteWithoutRecovery(true)
+            val deleteRequest =
+                DeleteSecretRequest()
+                    .withSecretId(secretName)
+                    .withForceDeleteWithoutRecovery(true)
             secretsManagerClient.deleteSecret(deleteRequest)
             logger.info { "The secret '$secretName' has been successfully deleted." }
         } catch (e: Exception) {

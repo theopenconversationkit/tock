@@ -19,12 +19,12 @@ package ai.tock.bot.connector.whatsapp.cloud.model.common
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Error(
-        @JsonProperty("code") val code: Int,
-        @JsonProperty("title") val title: String,
-        @JsonProperty("message") val message: String,
-        @JsonProperty("error_data") val errorData: ErrorData,
+    @JsonProperty("code") val code: Int,
+    @JsonProperty("title") val title: String,
+    @JsonProperty("message") val message: String,
+    @JsonProperty("error_data") val errorData: ErrorData,
 )
 
 data class ErrorData(
-        @JsonProperty("detail") val detail: String?
+    @JsonProperty("detail") val detail: String?,
 )

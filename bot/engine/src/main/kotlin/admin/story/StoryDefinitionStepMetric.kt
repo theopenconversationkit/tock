@@ -23,5 +23,5 @@ package ai.tock.bot.admin.story
  */
 data class StoryDefinitionStepMetric(
     val indicatorName: String,
-    val indicatorValueName: String
+    val indicatorValueName: String,
 )

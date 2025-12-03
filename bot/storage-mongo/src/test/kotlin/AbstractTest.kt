@@ -32,7 +32,6 @@ import com.mongodb.client.MongoDatabase
 import io.mockk.spyk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
-import org.litote.kmongo.deleteMany
 import org.litote.kmongo.reactivestreams.getCollection
 
 /**
@@ -54,15 +53,16 @@ abstract class AbstractTest(private val initDb: Boolean = true) {
                 Kodein {
                     import(sharedTestModule)
                     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-                    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider {
-                        getAsyncDatabase(
-                            MONGO_DATABASE
-                        )
-                    }
+                    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with
+                        provider {
+                            getAsyncDatabase(
+                                MONGO_DATABASE,
+                            )
+                        }
                     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
                     bind<FeatureCache>() with provider { spyk(MongoFeatureCache()) }
                     bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.asyncDatabase.getCollection<Feature>()) }
-                }
+                },
             )
             runBlocking {
                 UserTimelineMongoDAO.dialogCol.deleteMany()
@@ -73,7 +73,7 @@ abstract class AbstractTest(private val initDb: Boolean = true) {
             tockInternalInjector.inject(
                 Kodein {
                     import(sharedTestModule)
-                }
+                },
             )
         }
     }

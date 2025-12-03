@@ -23,5 +23,5 @@ import ai.tock.bot.admin.dialog.DialogStatsQueryResult
  */
 data class DialogStatsGroupResponse(
     val test: DialogStatsQueryResult,
-    val prod: DialogStatsQueryResult
+    val prod: DialogStatsQueryResult,
 )

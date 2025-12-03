@@ -24,16 +24,18 @@ import kotlin.math.abs
 data class ArtifactVersion(
     val major: String,
     val minor: String,
-    val iteration: String
+    val iteration: String,
 ) {
-
     companion object {
         /**
          * The "unknown" artifact version number.
          */
         val UNKNOWN: ArtifactVersion = ArtifactVersion("NONE", "NONE", "NONE")
 
-        private fun distance(v1: String, v2: String): Long {
+        private fun distance(
+            v1: String,
+            v2: String,
+        ): Long {
             return if (v1 == v2) {
                 0
             } else if (v1.toLongOrNull() != null && v2.toLongOrNull() != null) {
@@ -46,9 +48,8 @@ data class ArtifactVersion(
         private fun levenshtein(
             s: String,
             t: String,
-            charScore: (Char, Char) -> Int = { c1, c2 -> if (c1 == c2) 0 else 1 }
+            charScore: (Char, Char) -> Int = { c1, c2 -> if (c1 == c2) 0 else 1 },
         ): Int {
-
             // Special cases
             if (s == t) return 0
             if (s == "") return t.length
@@ -65,13 +66,13 @@ data class ArtifactVersion(
                                 listOf(
                                     row.last() + 1,
                                     previous[v + 1] + 1,
-                                    previous[v] + charScore(s[u], t[v])
-                                ).minOrNull()!!
+                                    previous[v] + charScore(s[u], t[v]),
+                                ).minOrNull()!!,
                             )
                             row
-                        }
+                        },
                     )
-                }
+                },
             ).last()
         }
     }

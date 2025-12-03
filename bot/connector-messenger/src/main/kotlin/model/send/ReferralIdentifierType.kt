@@ -20,5 +20,5 @@ package ai.tock.bot.connector.messenger.model.send
  *
  */
 enum class ReferralIdentifierType {
-    OPEN_THREAD
+    OPEN_THREAD,
 }

@@ -21,11 +21,18 @@ import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 
 @ExperimentalTockCoroutines
 fun interface AsyncStoryHandlingCreator<T : AsyncStoryHandling, D> {
-    fun create(bus: AsyncBus, data: D): T
+    fun create(
+        bus: AsyncBus,
+        data: D,
+    ): T
 }
 
 @ExperimentalTockCoroutines
 fun interface SimpleAsyncStoryHandlingCreator<T : AsyncStoryHandling> : AsyncStoryHandlingCreator<T, Unit> {
-    override fun create(bus: AsyncBus, data: Unit): T = create(bus)
+    override fun create(
+        bus: AsyncBus,
+        data: Unit,
+    ): T = create(bus)
+
     fun create(bus: AsyncBus): T
 }

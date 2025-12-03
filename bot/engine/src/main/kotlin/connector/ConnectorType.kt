@@ -29,9 +29,8 @@ data class ConnectorType(
     /**
      * The preferred [UserInterfaceType] of the connector.
      */
-    val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat
+    val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
 ) {
-
     companion object {
         /**
          * Not a specific connector type.

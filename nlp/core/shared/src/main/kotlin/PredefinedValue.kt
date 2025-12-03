@@ -29,5 +29,5 @@ data class PredefinedValue(
     /**
      * The list of possible values for each locale.
      */
-    val labels: Map<Locale, List<String>> = emptyMap()
+    val labels: Map<Locale, List<String>> = emptyMap(),
 )

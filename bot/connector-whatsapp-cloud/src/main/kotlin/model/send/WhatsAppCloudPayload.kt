@@ -19,20 +19,20 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class SendSuccessfulResponse(
-        @JsonProperty("messaging_product") val messagingProduct: String,
-        val contacts: List<Contact>,
-        val messages: List<Message>
+    @JsonProperty("messaging_product") val messagingProduct: String,
+    val contacts: List<Contact>,
+    val messages: List<Message>,
 )
 
 data class Contact(
-        val input: String,
-        @JsonProperty("wa_id") val waId: String
+    val input: String,
+    @JsonProperty("wa_id") val waId: String,
 )
 
 data class Message(
-        val id: String
+    val id: String,
 )
 
 data class SendTypingIndicatorSuccessfulResponse(
-    val success: Boolean = true
+    val success: Boolean = true,
 )

@@ -20,7 +20,6 @@ package ai.tock.bot.definition
  * For [Enum] based [IntentAware] implementations.
  */
 interface IntentAwareBase : IntentAware {
-
     val name: String
 
     override fun wrappedIntent(): Intent = Intent(name)

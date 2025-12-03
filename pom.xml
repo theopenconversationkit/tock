@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>25.10.2-SNAPSHOT</version>
+    <version>25.10.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -78,6 +78,7 @@
         <vertx-pac4j>7.0.2</vertx-pac4j>
         <okhttp-eventsource>4.1.1</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
+        <openai>4.0.1</openai>
 
         <junit-jupiter>6.0.0</junit-jupiter>
         <testcontainer>1.21.3</testcontainer>
@@ -104,7 +105,9 @@
         <plugin.resources>3.3.0</plugin.resources>
         <plugin.deploy>3.0.0</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
-        <plugin.ktlint>1.15.2</plugin.ktlint>
+        <plugin.ant>3.1.0</plugin.ant>
+        <plugin.ktlint>0.51.0-FINAL</plugin.ktlint>
+
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
 
@@ -681,6 +684,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.aallam.openai</groupId>
+                <artifactId>openai-core-jvm</artifactId>
+                <version>${openai}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-unit</artifactId>
                 <version>${vertx}</version>
@@ -860,6 +869,53 @@
                 <configuration>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${plugin.ant}</version>
+                <executions>
+                    <execution>
+                        <id>ktlint</id>
+                        <phase>verify</phase>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+
+                                    <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
+                                    <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
+                                    <arg value="src/**/*.kt" />
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>ktlint-format</id>
+                        <configuration>
+                            <target name="ktlint">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                    <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
+                                    <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
+                                    <arg value="-F" />
+                                    <arg value="src/**/*.kt" />
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.pinterest</groupId>
+                        <artifactId>ktlint</artifactId>
+                        <version>${plugin.ktlint}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -920,20 +976,6 @@
                         <failOnNoGitDirectory>false</failOnNoGitDirectory>
                         <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.gantsign.maven</groupId>
-                    <artifactId>ktlint-maven-plugin</artifactId>
-                    <version>${plugin.ktlint}</version>
-                    <executions>
-                        <execution>
-                            <id>format-and-check</id>
-                            <goals>
-                                <!--goal>format</goal-->
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

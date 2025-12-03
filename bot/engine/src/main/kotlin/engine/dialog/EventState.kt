@@ -65,9 +65,8 @@ data class EventState(
     /**
      * For notification event, what is the source of the notification if known?
      */
-    var sourceApplicationId: String? = null
+    var sourceApplicationId: String? = null,
 ) {
-
     fun getEntity(role: String): List<EntityValue> {
         return entityValues.filter { it.entity.role == role }
     }

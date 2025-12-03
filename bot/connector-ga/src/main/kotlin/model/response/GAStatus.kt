@@ -19,5 +19,5 @@ package ai.tock.bot.connector.ga.model.response
 data class GAStatus(
     val code: GAStatusCode = GAStatusCode.INTERNAL,
     val message: String,
-    val details: List<GAStatusDetail>
+    val details: List<GAStatusDetail>,
 )

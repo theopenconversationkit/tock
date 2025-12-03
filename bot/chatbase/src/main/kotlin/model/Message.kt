@@ -32,5 +32,5 @@ internal data class Message(
     val notHandled: Boolean? = null,
     val version: String = "1.0",
     @JsonProperty("session_id")
-    val sessionId: String? = null
+    val sessionId: String? = null,
 )

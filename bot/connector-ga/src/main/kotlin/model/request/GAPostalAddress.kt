@@ -27,5 +27,5 @@ data class GAPostalAddress(
     val sublocality: String?,
     val addressLines: List<String>,
     val recipients: List<String>?,
-    val organization: String?
+    val organization: String?,
 )

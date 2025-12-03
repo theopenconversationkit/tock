@@ -28,7 +28,6 @@ import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass
 
 internal object SlackConnectorProvider : ConnectorProvider {
-
     private const val OUT_TOKEN_1 = "outToken1"
     private const val OUT_TOKEN_2 = "outToken2"
     private const val OUT_TOKEN_3 = "outToken3"
@@ -43,7 +42,7 @@ internal object SlackConnectorProvider : ConnectorProvider {
                 parameters.getValue(OUT_TOKEN_1),
                 parameters.getValue(OUT_TOKEN_2),
                 parameters.getValue(OUT_TOKEN_3),
-                SlackClient
+                SlackClient,
             )
         }
     }
@@ -55,20 +54,20 @@ internal object SlackConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Token 1",
                     OUT_TOKEN_1,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Token 2",
                     OUT_TOKEN_2,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "Token 3",
                     OUT_TOKEN_3,
-                    true
-                )
+                    true,
+                ),
             ),
-            resourceAsString("/slack.svg")
+            resourceAsString("/slack.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(SlackMessageOut::class)

@@ -42,7 +42,6 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit.DAYS
 
 internal object UserActionLogMongoDAO : UserActionLogDAO {
-
     private val logger = KotlinLogging.logger {}
 
     @Data(internal = true)
@@ -75,7 +74,7 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
         /**
          * Date of the action.
          */
-        val date: Instant = Instant.now()
+        val date: Instant = Instant.now(),
     ) {
         constructor(log: UserActionLog) :
             this(
@@ -85,11 +84,10 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
                 log.actionType,
                 log.newData?.let { AnyValueWrapper(it) },
                 log.error,
-                log.date
+                log.date,
             )
 
-        fun toLog(): UserActionLog =
-            UserActionLog(namespace, applicationId, login, actionType, newData?.value, error, date)
+        fun toLog(): UserActionLog = UserActionLog(namespace, applicationId, login, actionType, newData?.value, error, date)
     }
 
     private val col: MongoCollection<UserActionLogCol> by lazy {
@@ -98,7 +96,7 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
             c.ensureIndex(Namespace, Date)
             c.ensureIndex(
                 Date,
-                indexOptions = IndexOptions().expireAfter(longProperty("tock_user_log_index_ttl_days", 365), DAYS)
+                indexOptions = IndexOptions().expireAfter(longProperty("tock_user_log_index_ttl_days", 365), DAYS),
             )
         } catch (e: Exception) {
             logger.error(e)
@@ -114,14 +112,15 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
         with(query) {
             val baseFilter =
                 and(
-                    Namespace eq namespace
+                    Namespace eq namespace,
                 )
             val count = col.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
-                val list = col.find(baseFilter)
-                    .descendingSort(Date)
-                    .skip(start.toInt())
-                    .limit(size)
+                val list =
+                    col.find(baseFilter)
+                        .descendingSort(Date)
+                        .skip(start.toInt())
+                        .limit(size)
 
                 UserActionLogQueryResult(count, list.map { it.toLog() }.toList())
             } else {

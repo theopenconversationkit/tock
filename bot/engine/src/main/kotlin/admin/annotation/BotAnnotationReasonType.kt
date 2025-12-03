@@ -25,5 +25,5 @@ enum class BotAnnotationReasonType {
     WRONG_ANSWER_FORMAT,
     BUSINESS_LEXICON_PROBLEM,
     QUESTION_MISUNDERSTOOD,
-    OTHER
+    OTHER,
 }

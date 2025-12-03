@@ -27,14 +27,13 @@ data class ListPayload(
     val elements: List<Element>,
     @JsonProperty("top_element_style")
     val topElementStyle: ListElementStyle?,
-    val buttons: List<Button>?
+    val buttons: List<Button>?,
 ) : ModelPayload(PayloadType.list) {
-
     override fun toGenericMessage(): GenericMessage? {
         return GenericMessage(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
             subElements = elements.map { it.toGenericElement() },
-            metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
+            metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name),
         )
     }
 

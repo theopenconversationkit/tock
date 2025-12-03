@@ -23,7 +23,10 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 internal object UnknownValueDeserializer : JsonDeserializer<UnknownValue>() {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): UnknownValue {
+    override fun deserialize(
+        p: JsonParser,
+        ctxt: DeserializationContext,
+    ): UnknownValue {
         while (p.currentToken == JsonToken.FIELD_NAME) {
             p.nextToken()
             if (p.currentToken?.isStructStart == true) {

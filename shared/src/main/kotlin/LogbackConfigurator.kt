@@ -36,13 +36,12 @@ import ch.qos.logback.core.util.FileSize
  * Default logback configurator.
  */
 internal class LogbackConfigurator : ContextAwareBase(), Configurator {
-
     private val defaultLevel =
         Level.toLevel(
             property(
                 "tock_default_log_level",
-                if (devEnvironment) "DEBUG" else "INFO"
-            )
+                if (devEnvironment) "DEBUG" else "INFO",
+            ),
         )
 
     override fun configure(loggerContext: LoggerContext): ExecutionStatus {
@@ -53,36 +52,39 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
                 LevelChangePropagator().apply {
                     context = c
                     start()
-                }
+                },
             )
 
-            val appender = if (booleanProperty("tock_logback_file_appender", false)) {
-                RollingFileAppender<ILoggingEvent>().also {
-                    it.name = "file"
-                    it.file = "log/logFile.log"
-                    it.context = c
-                    it.rollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>().apply {
-                        fileNamePattern = "log/logFile.%d{yyyy-MM-dd}.log"
-                        maxHistory = 30
-                        context = c
-                        setTotalSizeCap(FileSize.valueOf("3GB"))
-                        setParent(it)
-                        start()
+            val appender =
+                if (booleanProperty("tock_logback_file_appender", false)) {
+                    RollingFileAppender<ILoggingEvent>().also {
+                        it.name = "file"
+                        it.file = "log/logFile.log"
+                        it.context = c
+                        it.rollingPolicy =
+                            TimeBasedRollingPolicy<ILoggingEvent>().apply {
+                                fileNamePattern = "log/logFile.%d{yyyy-MM-dd}.log"
+                                maxHistory = 30
+                                context = c
+                                setTotalSizeCap(FileSize.valueOf("3GB"))
+                                setParent(it)
+                                start()
+                            }
+                    }
+                } else {
+                    ConsoleAppender<ILoggingEvent>().apply {
+                        name = "console"
                     }
                 }
-            } else {
-                ConsoleAppender<ILoggingEvent>().apply {
-                    name = "console"
-                }
-            }
 
             appender.context = c
             appender.apply {
-                encoder = PatternLayoutEncoder().apply {
-                    pattern = "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
-                    context = c
-                    start()
-                }
+                encoder =
+                    PatternLayoutEncoder().apply {
+                        pattern = "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
+                        context = c
+                        start()
+                    }
             }
             appender.start()
 

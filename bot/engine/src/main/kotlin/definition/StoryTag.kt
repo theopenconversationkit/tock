@@ -21,5 +21,5 @@ enum class StoryTag {
     DISABLE,
     CHECK_ONLY_SUB_STEPS,
     CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT,
-    ASK_AGAIN
+    ASK_AGAIN,
 }

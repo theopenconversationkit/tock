@@ -29,15 +29,14 @@ data class SlackMessageAttachment(
     val text: String? = null,
     val pretext: String? = null,
     @get:JsonProperty("callback_id")
-    val callbackId: String = "default"
+    val callbackId: String = "default",
 ) {
-
     fun hasOnlyActions(): Boolean = actions.isNotEmpty() && fields.isEmpty() && text == null && pretext == null
 
     fun toGenericElement(): GenericElement =
         GenericElement(
             choices = actions.map { it.toChoice() },
             attachments = fields.map { Attachment(it.value, SendAttachment.AttachmentType.file) },
-            texts = mapOf(::text.name to (text ?: ""))
+            texts = mapOf(::text.name to (text ?: "")),
         )
 }

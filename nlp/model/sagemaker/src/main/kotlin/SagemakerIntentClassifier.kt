@@ -23,13 +23,16 @@ import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
-
 internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfiguration) : IntentClassifier {
     companion object {
         val CLIENT_TYPE = SagemakerClientType.INTENT_CLASSIFICATION
     }
 
-    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
+    override fun classifyIntent(
+        context: IntentContext,
+        text: String,
+        tokens: Array<String>,
+    ): IntentClassification {
         return SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
                 CLIENT_TYPE.clientName,
@@ -37,7 +40,7 @@ internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfigu
                 property("tock_sagemaker_aws_intent_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),
                 property("tock_sagemaker_aws_profile_name", "default"),
-            )
+            ),
         ).parseIntent(ParsedRequest(text))
             .run {
                 object : IntentClassification {

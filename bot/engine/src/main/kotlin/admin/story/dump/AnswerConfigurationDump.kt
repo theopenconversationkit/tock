@@ -24,9 +24,9 @@ import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 
 abstract class AnswerConfigurationDump(val answerType: AnswerConfigurationType) {
-
     companion object {
         fun toDump(answer: List<AnswerConfiguration>): List<AnswerConfigurationDump> = answer.map { toDump(it) }
+
         fun toDump(answer: AnswerConfiguration): AnswerConfigurationDump =
             when (answer) {
                 is BuiltInAnswerConfiguration -> BuiltInAnswerConfigurationDump(answer)
@@ -37,5 +37,8 @@ abstract class AnswerConfigurationDump(val answerType: AnswerConfigurationType) 
             }
     }
 
-    abstract fun toAnswer(currentType: AnswerConfigurationType, controller: StoryDefinitionConfigurationDumpController): AnswerConfiguration
+    abstract fun toAnswer(
+        currentType: AnswerConfigurationType,
+        controller: StoryDefinitionConfigurationDumpController,
+    ): AnswerConfiguration
 }

@@ -25,18 +25,20 @@ data class GACarouselItem(
     val optionInfo: GAOptionInfo,
     val title: String,
     val description: String? = null,
-    val image: GAImage? = null
+    val image: GAImage? = null,
 ) {
     fun toGenericElement(): GenericElement {
         return GenericElement(
             choices = listOf(optionInfo.toChoice()),
-            texts = mapNotNullValues(
-                GACarouselItem::title.name to title,
-                GACarouselItem::description.name to description
-            ),
-            attachments = image?.url
-                ?.let { listOf(Attachment(it, SendAttachment.AttachmentType.image)) }
-                ?: emptyList()
+            texts =
+                mapNotNullValues(
+                    GACarouselItem::title.name to title,
+                    GACarouselItem::description.name to description,
+                ),
+            attachments =
+                image?.url
+                    ?.let { listOf(Attachment(it, SendAttachment.AttachmentType.image)) }
+                    ?: emptyList(),
         )
     }
 }

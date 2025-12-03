@@ -17,8 +17,8 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 
 data class LocationContent(
-        val latitude: Double,
-        val longitude: Double,
-        val address: String?,
-        val name: String?,
+    val latitude: Double,
+    val longitude: Double,
+    val address: String?,
+    val name: String?,
 )

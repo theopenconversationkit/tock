@@ -53,7 +53,7 @@ private fun registerBot(botProvider: BotProvider) = BotRepository.registerBotPro
 fun registerAndInstallBot(
     botDefinition: BotDefinition,
     additionalModules: List<Kodein.Module> = emptyList(),
-    vararg routerHandlers: (Router) -> Unit
+    vararg routerHandlers: (Router) -> Unit,
 ) {
     registerBot(botDefinition)
     installBots(routerHandlers.toList(), additionalModules)
@@ -65,7 +65,7 @@ fun registerAndInstallBot(
 fun registerAndInstallBot(
     botProvider: BotProvider,
     additionalModules: List<Kodein.Module> = emptyList(),
-    vararg routerHandlers: (Router) -> Unit
+    vararg routerHandlers: (Router) -> Unit,
 ) {
     registerBot(botProvider)
     installBots(routerHandlers.toList(), additionalModules)
@@ -74,7 +74,10 @@ fun registerAndInstallBot(
 /**
  * Install the bot(s) with the specified additional router handlers and additional Tock Modules
  */
-private fun installBots(routerHandlers: List<(Router) -> Unit>, additionalModules: List<Kodein.Module> = emptyList()) {
+private fun installBots(
+    routerHandlers: List<(Router) -> Unit>,
+    additionalModules: List<Kodein.Module> = emptyList(),
+) {
     BotIoc.setup(additionalModules)
     BotRepository.installBots(routerHandlers.toList())
 }
@@ -87,7 +90,10 @@ private fun installBots(routerHandlers: List<(Router) -> Unit>, additionalModule
  *
  * @return List of IntentDefinition
  */
-fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? {
+fun getIntentsByNamespaceAndName(
+    namespace: String,
+    name: String,
+): List<IntentDefinition>? {
     val nlp: NlpController by injector.instance()
     nlp.waitAvailability()
     return nlp.getIntentsByNamespaceAndName(namespace, name)
@@ -118,7 +124,10 @@ fun importNlpSentencesDump(path: String) {
  * @path the dump path in the classpath
  * @replaceAllLabels should preexisting labels be replaced?
  */
-fun importI18nDump(path: String, replaceAllLabels: Boolean = false) {
+fun importI18nDump(
+    path: String,
+    replaceAllLabels: Boolean = false,
+) {
     val i18n: I18nDAO by injector.instance()
     val labels: List<I18nLabel> = mapper.readValue(resource(path))
 
@@ -140,8 +149,9 @@ fun importApplicationDump(path: String) {
     val name = application.application.name
     logger.info { "Importing application '$name' to namespace '${application.application.namespace}'..." }
 
-    if (nlp.importNlpPlainDump(application))
+    if (nlp.importNlpPlainDump(application)) {
         logger.info { "Application '$name' successfully imported." }
-    else
+    } else {
         logger.warn { "Application '$name' not imported (application might already exist)." }
+    }
 }

@@ -25,5 +25,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class AttachmentRequest(
     val message: AttachmentMessage,
     @JsonProperty("persona_id")
-    val personaId: String? = null
+    val personaId: String? = null,
 )

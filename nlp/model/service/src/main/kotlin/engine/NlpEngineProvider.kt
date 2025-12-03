@@ -24,7 +24,6 @@ import ai.tock.nlp.core.NlpEngineType
  * The implementation is loaded at runtime, using the java [java.util.ServiceLoader] - you need to provide a META-INF/services/ai.tock.nlp.model.service.engine.NlpEngineProvider file.
  */
 interface NlpEngineProvider {
-
     /**
      * Type of nlp engine.
      */

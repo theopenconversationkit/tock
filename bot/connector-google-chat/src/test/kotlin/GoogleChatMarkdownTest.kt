@@ -19,7 +19,6 @@ import kotlin.test.assertEquals
  */
 
 class GoogleChatMarkdownTest {
-
     @Test
     fun `bold text is converted to Google Chat format`() {
         val input = "**hello**"
@@ -57,15 +56,17 @@ class GoogleChatMarkdownTest {
 
     @Test
     fun `unordered list is rendered with stars`() {
-        val input = """
+        val input =
+            """
             * Item 1
             * Item 2
-        """.trimIndent()
+            """.trimIndent()
 
-        val expected = """
+        val expected =
+            """
             * Item 1
             * Item 2
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals(expected, GoogleChatMarkdown.toGoogleChat(input))
     }
@@ -86,16 +87,18 @@ class GoogleChatMarkdownTest {
 
     @Test
     fun `headings are converted to bold with spacing`() {
-        val input = """
+        val input =
+            """
             # Title
             ## Subtitle
-        """.trimIndent()
+            """.trimIndent()
 
-        val expected = """
+        val expected =
+            """
             *Title*
 
             *Subtitle*
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals(expected, GoogleChatMarkdown.toGoogleChat(input))
     }

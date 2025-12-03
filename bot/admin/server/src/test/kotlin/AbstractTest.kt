@@ -53,29 +53,28 @@ import org.litote.kmongo.newId
 import java.util.Locale
 
 abstract class AbstractTest {
-
     companion object {
-
         fun defaultModulesBinding(): Kodein.Module {
-            val module = Kodein.Module {
-                bind<ApplicationConfiguration>() with provider { mockk<ApplicationConfiguration>(relaxed = true) }
-                bind<UserReportDAO>() with provider { mockk<UserReportDAO>(relaxed = true) }
-                bind<DialogReportDAO>() with provider { mockk<DialogReportDAO>(relaxed = true) }
-                bind<BotApplicationConfigurationDAO>() with provider { applicationConfigurationDAO }
-                bind<ApplicationDefinitionDAO>() with provider { applicationDefininitionDAO }
-                bind<FeatureDAO>() with provider { mockk<FeatureDAO>(relaxed = true) }
-                bind<Parser>() with provider { mockk<Parser>(relaxed = true) }
-                bind<ModelUpdater>() with provider { mockk<ModelUpdater>(relaxed = true) }
-                bind<ApplicationCodec>() with provider { mockk<ApplicationCodec>(relaxed = true) }
-                bind<AlexaCodec>() with provider { mockk<AlexaCodec>(relaxed = true) }
-                bind<ApplicationMonitor>() with provider { mockk<ApplicationMonitor>(relaxed = true) }
-                bind<ModelTester>() with provider { mockk<ModelTester>(relaxed = true) }
-                bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
-                bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
-                bind<BotDocumentCompressorConfigurationDAO>() with provider { mockk<BotDocumentCompressorConfigurationDAO>(relaxed = true) }
-                bind<IndicatorDAO>() with provider { mockk<IndicatorDAO>(relaxed = true) }
-                bind<MetricDAO>() with provider { mockk<MetricDAO>(relaxed = true) }
-            }
+            val module =
+                Kodein.Module {
+                    bind<ApplicationConfiguration>() with provider { mockk<ApplicationConfiguration>(relaxed = true) }
+                    bind<UserReportDAO>() with provider { mockk<UserReportDAO>(relaxed = true) }
+                    bind<DialogReportDAO>() with provider { mockk<DialogReportDAO>(relaxed = true) }
+                    bind<BotApplicationConfigurationDAO>() with provider { applicationConfigurationDAO }
+                    bind<ApplicationDefinitionDAO>() with provider { applicationDefininitionDAO }
+                    bind<FeatureDAO>() with provider { mockk<FeatureDAO>(relaxed = true) }
+                    bind<Parser>() with provider { mockk<Parser>(relaxed = true) }
+                    bind<ModelUpdater>() with provider { mockk<ModelUpdater>(relaxed = true) }
+                    bind<ApplicationCodec>() with provider { mockk<ApplicationCodec>(relaxed = true) }
+                    bind<AlexaCodec>() with provider { mockk<AlexaCodec>(relaxed = true) }
+                    bind<ApplicationMonitor>() with provider { mockk<ApplicationMonitor>(relaxed = true) }
+                    bind<ModelTester>() with provider { mockk<ModelTester>(relaxed = true) }
+                    bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
+                    bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
+                    bind<BotDocumentCompressorConfigurationDAO>() with provider { mockk<BotDocumentCompressorConfigurationDAO>(relaxed = true) }
+                    bind<IndicatorDAO>() with provider { mockk<IndicatorDAO>(relaxed = true) }
+                    bind<MetricDAO>() with provider { mockk<MetricDAO>(relaxed = true) }
+                }
             return module
         }
 
@@ -88,7 +87,7 @@ abstract class AbstractTest {
                 namespace = namespace,
                 answers = emptyList(),
                 userSentenceLocale = userSentenceLocale,
-                _id = _id
+                _id = _id,
             )
         }
 
@@ -96,7 +95,7 @@ abstract class AbstractTest {
             storyId: String,
             type: AnswerConfigurationType,
             _id: Id<StoryDefinitionConfiguration> = newId(),
-            name: String = storyId
+            name: String = storyId,
         ): BotStoryDefinitionConfiguration {
             return BotStoryDefinitionConfiguration(
                 storyId = storyId,
@@ -107,17 +106,18 @@ abstract class AbstractTest {
                 answers = emptyList(),
                 userSentenceLocale = Locale.FRANCE,
                 _id = _id,
-                name = name
+                name = name,
             )
         }
 
-        val aApplication = BotApplicationConfiguration(
-            applicationId = "testApplicationId",
-            botId = "testBotId",
-            namespace = "testNamespace",
-            nlpModel = "testNlpModel",
-            connectorType = ConnectorType.rest,
-        )
+        val aApplication =
+            BotApplicationConfiguration(
+                applicationId = "testApplicationId",
+                botId = "testBotId",
+                namespace = "testNamespace",
+                nlpModel = "testNlpModel",
+                connectorType = ConnectorType.rest,
+            )
 
         val aBuiltinStory = newTestStory("testBuiltinStory", AnswerConfigurationType.builtin)
         val aMessageStory = newTestStory("testMessageStory", AnswerConfigurationType.message)
@@ -125,14 +125,13 @@ abstract class AbstractTest {
         val storyDefinitionDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = false)
         val applicationConfigurationDAO: BotApplicationConfigurationDAO = mockk(relaxed = false)
         val applicationDefininitionDAO: ApplicationDefinitionDAO = mockk(relaxed = false)
-
     }
 
     @BeforeEach
     internal open fun initMocks() {
         every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(any(), any()) } answers {
             listOf(
-                aApplication
+                aApplication,
             )
         }
         every { storyDefinitionDAO.delete(any()) } returns Unit
@@ -144,4 +143,3 @@ abstract class AbstractTest {
         clearAllMocks()
     }
 }
-

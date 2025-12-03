@@ -29,30 +29,30 @@ const val BID: String =
 class ListPickerMessage(
     sourceId: String,
     destinationId: String,
-    val interactiveData: InteractiveData
+    val interactiveData: InteractiveData,
 ) : BusinessChatCommonModel(
-    sourceId = sourceId,
-    destinationId = destinationId,
-    type = MessageType.interactive
-)
+        sourceId = sourceId,
+        destinationId = destinationId,
+        type = MessageType.interactive,
+    )
 
 class InteractiveData(
     val data: ListPickerData,
-    val receivedMessage: ReceivedMessage
+    val receivedMessage: ReceivedMessage,
 ) {
     val bid: String = BID
 }
 
 class ReceivedMessage(
     val title: String,
-    val subtitle: String?
+    val subtitle: String?,
 ) {
     val style: String = "icon"
 }
 
 class ListPickerData(
     val listPicker: ListPicker,
-    val images: List<Image?>?
+    val images: List<Image?>?,
 ) {
     val version: String = "1.0"
     val requestIdentifier: String = UUID.randomUUID().toString()
@@ -61,14 +61,14 @@ class ListPickerData(
 class Image(val identifier: String, val data: String)
 
 class ListPicker(
-    val sections: List<ListPickerSection> = emptyList()
+    val sections: List<ListPickerSection> = emptyList(),
 )
 
 class ListPickerSection(
     val items: List<ListPickerItem> = emptyList(),
     val order: Int,
     val title: String,
-    val multipleSelection: Boolean = false
+    val multipleSelection: Boolean = false,
 )
 
 class ListPickerItem(
@@ -76,7 +76,7 @@ class ListPickerItem(
     val imageIdentifier: String? = null,
     val order: Int,
     val subtitle: String?,
-    val title: String
+    val title: String,
 ) {
     val style: String = "default"
 }

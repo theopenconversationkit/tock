@@ -33,7 +33,6 @@ internal val keywordServices: List<KeywordService>
         }
 
 interface KeywordService {
-
     /**
      * If returns not null, a keyword is detected, and the returned intent is used to find the story.
      * Use [Intent.keyword] to redirect to the default keyword handler.

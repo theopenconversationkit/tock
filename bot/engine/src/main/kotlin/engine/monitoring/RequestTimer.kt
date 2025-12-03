@@ -20,12 +20,18 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.error
 import mu.KLogger
 
-fun KLogger.logError(throwable: Throwable, data: RequestTimerData) {
+fun KLogger.logError(
+    throwable: Throwable,
+    data: RequestTimerData,
+) {
     BotRepository.requestTimer.throwable(throwable, data)
     this.error(throwable)
 }
 
-fun KLogger.logError(message: String, data: RequestTimerData) {
+fun KLogger.logError(
+    message: String,
+    data: RequestTimerData,
+) {
     BotRepository.requestTimer.error(message, data)
     this.error(message)
 }
@@ -35,7 +41,6 @@ fun KLogger.logError(message: String, data: RequestTimerData) {
  * [start] and [end] are guaranteed to be called.
  */
 interface RequestTimer {
-
     /**
      * Called at the start of the request.
      */
@@ -44,7 +49,10 @@ interface RequestTimer {
     /**
      * Called when an an error is detected.
      */
-    fun error(errorMessage: String, data: RequestTimerData) {
+    fun error(
+        errorMessage: String,
+        data: RequestTimerData,
+    ) {
         data.error = true
         data.message = errorMessage
     }
@@ -52,7 +60,10 @@ interface RequestTimer {
     /**
      * Called when exception is caught.
      */
-    fun throwable(throwable: Throwable, data: RequestTimerData) {
+    fun throwable(
+        throwable: Throwable,
+        data: RequestTimerData,
+    ) {
         data.error = true
         data.throwable = throwable
     }

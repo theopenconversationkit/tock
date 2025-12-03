@@ -27,5 +27,5 @@ data class UserProfile(
     @JsonProperty("profile_pic") val profilePic: String?,
     val locale: String?,
     val timezone: Int,
-    val gender: String?
+    val gender: String?,
 )

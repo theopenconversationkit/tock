@@ -27,7 +27,10 @@ import kotlin.reflect.full.starProjectedType
 inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCreator(): HandlerStoryDefinitionCreator<T> =
     T::class.let {
         object : HandlerStoryDefinitionCreator<T> {
-            override fun create(bus: BotBus, data: Any?): T {
+            override fun create(
+                bus: BotBus,
+                data: Any?,
+            ): T {
                 val pC = it.primaryConstructor ?: error("No primary constructor for $it")
 
                 return pC.callBy(
@@ -43,8 +46,8 @@ inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCre
                             }
                         } else {
                             null
-                        }
-                    ).toMap()
+                        },
+                    ).toMap(),
                 )
             }
         }
@@ -54,9 +57,11 @@ inline fun <reified T : StoryHandlerDefinition> defaultHandlerStoryDefinitionCre
  * In order to create [StoryHandlerDefinition].
  */
 interface HandlerStoryDefinitionCreator<T : StoryHandlerDefinition> {
-
     /**
      * Creates a new [StoryHandlerDefinition].
      */
-    fun create(bus: BotBus, data: Any? = null): T
+    fun create(
+        bus: BotBus,
+        data: Any? = null,
+    ): T
 }

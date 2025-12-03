@@ -39,7 +39,7 @@ data class DirectMessageIncomingEvent(
     override val users: Map<String, User>,
     val apps: Map<String, Application>?,
     @JsonProperty("direct_message_events")
-    val directMessages: List<DirectMessage>
+    val directMessages: List<DirectMessage>,
 ) : IncomingEvent() {
     override val ignored: Boolean
         get() = false
@@ -48,14 +48,11 @@ data class DirectMessageIncomingEvent(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun playerId(playerType: PlayerType): PlayerId =
-        directMessages.first().playerId(playerType)
+    override fun playerId(playerType: PlayerType): PlayerId = directMessages.first().playerId(playerType)
 
     override fun recipientId(playerType: PlayerType): PlayerId = directMessages.first().recipientId(playerType)
 
-    override fun toEvent(
-        applicationId: String
-    ): Event? {
+    override fun toEvent(applicationId: String): Event? {
         // ignore direct message sent from the bot
         val firstOrNull = directMessages.firstOrNull()
         return if (forUserId != firstOrNull?.messageCreated?.senderId) {
@@ -68,7 +65,7 @@ data class DirectMessageIncomingEvent(
                                 quickReplyResponse.metadata,
                                 playerId(PlayerType.user),
                                 applicationId,
-                                recipientId(PlayerType.bot)
+                                recipientId(PlayerType.bot),
                             ).apply {
                                 metadata.visibility = ActionVisibility.PRIVATE
                             }
@@ -87,7 +84,7 @@ data class DirectMessageIncomingEvent(
                             applicationId,
                             recipientId(PlayerType.bot),
                             it.textWithoutUrls(),
-                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE)
+                            metadata = ActionMetadata(visibility = ActionVisibility.PRIVATE),
                         )
                     }
                 }

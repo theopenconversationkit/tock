@@ -25,12 +25,14 @@ import opennlp.tools.tokenize.SimpleTokenizer
  *
  */
 internal class OpenNlpTokenizer(model: TokenizerModelHolder) : NlpTokenizer(model) {
-
     companion object {
         private val tokenizer = SimpleTokenizer.INSTANCE
     }
 
-    override fun tokenize(context: TokenizerContext, text: String): Array<String> {
+    override fun tokenize(
+        context: TokenizerContext,
+        text: String,
+    ): Array<String> {
         return tokenizer.tokenize(text)
     }
 }

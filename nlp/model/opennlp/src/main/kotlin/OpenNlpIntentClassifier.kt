@@ -27,17 +27,20 @@ import opennlp.tools.ml.model.AbstractModel
  *
  */
 internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClassifier(model) {
-
-    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
+    override fun classifyIntent(
+        context: IntentContext,
+        text: String,
+        tokens: Array<String>,
+    ): IntentClassification {
         return with(model) {
             val openNlpModel = nativeModel as AbstractModel
-            val outcomes = openNlpModel.eval(tokens)
-                .mapIndexed { index, d -> index to d }
-                .sortedByDescending { it.second }
-                .iterator()
+            val outcomes =
+                openNlpModel.eval(tokens)
+                    .mapIndexed { index, d -> index to d }
+                    .sortedByDescending { it.second }
+                    .iterator()
 
             object : IntentClassification {
-
                 var probability = 0.0
 
                 override fun probability(): Double = probability

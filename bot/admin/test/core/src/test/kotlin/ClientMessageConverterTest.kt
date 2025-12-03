@@ -27,14 +27,13 @@ import kotlin.test.assertEquals
  *
  */
 class ClientMessageConverterTest {
-
     @Test
     fun clientMessage_withMessageWithNotVoidDelay_mustBeEquals() {
         val a = Attachment("a", SendAttachment.AttachmentType.file, 200)
 
         assertEquals(
             ClientAttachment("a", ClientAttachmentType.file),
-            a.toClientMessage()
+            a.toClientMessage(),
         )
     }
 }

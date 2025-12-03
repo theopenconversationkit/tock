@@ -35,24 +35,23 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
 
-
 internal object WebhookActionConverter {
-
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
 
     fun toEvent(
         message: WhatsAppCloudMessage,
         applicationId: String,
-        whatsAppCloudApiService: WhatsAppCloudApiService
+        whatsAppCloudApiService: WhatsAppCloudApiService,
     ): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
-            is WhatsAppCloudTextMessage -> SendSentence(
-                PlayerId(senderId),
-                applicationId,
-                PlayerId(applicationId, PlayerType.bot),
-                message.text.body
-            )
+            is WhatsAppCloudTextMessage ->
+                SendSentence(
+                    PlayerId(senderId),
+                    applicationId,
+                    PlayerId(applicationId, PlayerType.bot),
+                    message.text.body,
+                )
 
             is WhatsAppCloudImageMessage -> {
                 val binaryImg = whatsAppCloudApiService.downloadImgByBinary(message.image.id, message.image.mimeType)
@@ -61,16 +60,17 @@ internal object WebhookActionConverter {
                     applicationId,
                     PlayerId(applicationId, PlayerType.bot),
                     binaryImg,
-                    SendAttachment.AttachmentType.image
+                    SendAttachment.AttachmentType.image,
                 )
             }
 
-            is WhatsAppCloudLocationMessage -> SendLocation(
-                PlayerId(senderId),
-                applicationId,
-                PlayerId(applicationId, PlayerType.bot),
-                UserLocation(message.location.latitude, message.location.longitude)
-            )
+            is WhatsAppCloudLocationMessage ->
+                SendLocation(
+                    PlayerId(senderId),
+                    applicationId,
+                    PlayerId(applicationId, PlayerType.bot),
+                    UserLocation(message.location.latitude, message.location.longitude),
+                )
 
             is WhatsAppCloudButtonMessage -> {
                 val messageCopy = getMessageButtonCopy(message)
@@ -80,13 +80,12 @@ internal object WebhookActionConverter {
                         PlayerId(senderId),
                         applicationId,
                         PlayerId(applicationId, PlayerType.bot),
-                        messageCopy.referral?.ref
+                        messageCopy.referral?.ref,
                     )
                 }
             }
 
             is WhatsAppCloudInteractiveMessage -> {
-
                 val messageCopy = getMessageInteractiveCopy(message)
 
                 val payloadButtonReply = messageCopy.interactive.buttonReply?.id
@@ -99,37 +98,33 @@ internal object WebhookActionConverter {
                         PlayerId(senderId),
                         applicationId,
                         PlayerId(applicationId, PlayerType.bot),
-                        messageCopy.referral?.ref
+                        messageCopy.referral?.ref,
                     )
                 }
-
             }
 
             else -> null
         }
     }
 
-    private fun getMessageInteractiveCopy(
-        message: WhatsAppCloudInteractiveMessage
-    )
-            : WhatsAppCloudInteractiveMessage {
-
+    private fun getMessageInteractiveCopy(message: WhatsAppCloudInteractiveMessage): WhatsAppCloudInteractiveMessage {
         val buttonReply = message.interactive.buttonReply
         val listReply = message.interactive.listReply
-
 
         val payloadButtonReply = buttonReply?.let { payloadWhatsApp.getPayloadById(it.id) }
         val payloadListReply = listReply?.let { payloadWhatsApp.getPayloadById(it.id) }
 
-
-        val copyInteractive = message.interactive.copy(
-            buttonReply = payloadButtonReply?.let {
-                buttonReply.copy(id = it, title = buttonReply.title)
-            },
-            listReply = payloadListReply?.let {
-                listReply.copy(id = it, title = listReply.title, description = listReply.description)
-            }
-        )
+        val copyInteractive =
+            message.interactive.copy(
+                buttonReply =
+                    payloadButtonReply?.let {
+                        buttonReply.copy(id = it, title = buttonReply.title)
+                    },
+                listReply =
+                    payloadListReply?.let {
+                        listReply.copy(id = it, title = listReply.title, description = listReply.description)
+                    },
+            )
 
         return message.copy(
             interactive = copyInteractive,
@@ -138,16 +133,18 @@ internal object WebhookActionConverter {
             timestamp = message.timestamp,
             context = message.context,
             referral = message.referral,
-            errors = message.errors
+            errors = message.errors,
         )
     }
 
     private fun getMessageButtonCopy(message: WhatsAppCloudButtonMessage): WhatsAppCloudButtonMessage {
         val payload = payloadWhatsApp.getPayloadById(message.button.payload)
         return if (payload != null) {
-            val copyButton = message.button.copy(
-                payload = payload, text = message.button.text
-            )
+            val copyButton =
+                message.button.copy(
+                    payload = payload,
+                    text = message.button.text,
+                )
             message.copy(
                 button = copyButton,
                 id = message.id,
@@ -155,7 +152,7 @@ internal object WebhookActionConverter {
                 timestamp = message.timestamp,
                 context = message.context,
                 referral = message.referral,
-                errors = message.errors
+                errors = message.errors,
             )
         } else {
             message

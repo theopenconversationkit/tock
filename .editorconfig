@@ -1,0 +1,5 @@
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+max_line_length = 200
+ij_kotlin_packages_to_use_import_on_demand= unset
+ktlint_standard_no-empty-file= disabled

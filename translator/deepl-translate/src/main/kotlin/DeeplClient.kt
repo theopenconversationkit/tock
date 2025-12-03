@@ -21,18 +21,18 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import com.fasterxml.jackson.module.kotlin.readValue
-import java.io.IOException
-import java.util.regex.Pattern
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
+import java.util.regex.Pattern
 
 internal data class TranslationResponse(
-    val translations: List<Translation>
+    val translations: List<Translation>,
 )
 
 internal data class Translation(
-    val text: String
+    val text: String,
 )
 
 const val TAG_HANDLING = "xml"
@@ -43,19 +43,20 @@ interface DeeplClient {
         sourceLang: String,
         targetLang: String,
         preserveFormatting: Boolean,
-        glossaryId: String?
+        glossaryId: String?,
     ): String?
 }
 
 class OkHttpDeeplClient(
     private val apiURL: String = property("tock_translator_deepl_api_url", "https://api.deepl.com/v2/translate"),
     private val apiKey: String? = propertyOrNull("tock_translator_deepl_api_key"),
-    okHttpCustomizer: OkHttpClient.Builder.() -> Unit = {}
+    okHttpCustomizer: OkHttpClient.Builder.() -> Unit = {},
 ) : DeeplClient {
-    private val client = OkHttpClient.Builder()
-        .apply(TockProxyAuthenticator::install)
-        .apply(okHttpCustomizer)
-        .build()
+    private val client =
+        OkHttpClient.Builder()
+            .apply(TockProxyAuthenticator::install)
+            .apply(okHttpCustomizer)
+            .build()
 
     private fun replaceSpecificPlaceholders(text: String): Pair<String, List<String>> {
         // Store original placeholders for later restoration
@@ -73,7 +74,10 @@ class OkHttpDeeplClient(
         return Pair(replacedText, placeholders)
     }
 
-    private fun revertSpecificPlaceholders(text: String, placeholders: List<String>): String {
+    private fun revertSpecificPlaceholders(
+        text: String,
+        placeholders: List<String>,
+    ): String {
         var resultText = text
         for (placeholder in placeholders) {
             resultText = resultText.replaceFirst("_PLACEHOLDER_", "{:$placeholder}")
@@ -86,7 +90,7 @@ class OkHttpDeeplClient(
         sourceLang: String,
         targetLang: String,
         preserveFormatting: Boolean,
-        glossaryId: String?
+        glossaryId: String?,
     ): String? {
         if (apiKey == null) return text
 
@@ -94,23 +98,25 @@ class OkHttpDeeplClient(
 
         val formBuilder = FormBody.Builder()
 
-        val requestBody = formBuilder
-            .add("text", textWithPlaceholders)
-            .add("source_lang", sourceLang)
-            .add("target_lang", targetLang)
-            .add("preserve_formatting", preserveFormatting.toString())
-            .add("tag_handling", TAG_HANDLING)
-            .build()
+        val requestBody =
+            formBuilder
+                .add("text", textWithPlaceholders)
+                .add("source_lang", sourceLang)
+                .add("target_lang", targetLang)
+                .add("preserve_formatting", preserveFormatting.toString())
+                .add("tag_handling", TAG_HANDLING)
+                .build()
 
         glossaryId?.let {
             formBuilder.add("glossary_id", it)
         }
 
-        val request = Request.Builder()
-            .url(apiURL)
-            .addHeader("Authorization", "DeepL-Auth-Key $apiKey")
-            .post(requestBody)
-            .build()
+        val request =
+            Request.Builder()
+                .url(apiURL)
+                .addHeader("Authorization", "DeepL-Auth-Key $apiKey")
+                .post(requestBody)
+                .build()
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Unexpected code $response")

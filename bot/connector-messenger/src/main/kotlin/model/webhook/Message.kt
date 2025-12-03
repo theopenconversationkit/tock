@@ -25,9 +25,8 @@ open class Message(
     open val mid: String,
     open var text: String? = null,
     open val attachments: List<Attachment> = emptyList(),
-    @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null
+    @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null,
 ) {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Message) return false

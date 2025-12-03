@@ -19,6 +19,17 @@ package ai.tock.bot.connector.whatsapp.model.webhook
 /**
  *
  */
+@Suppress("ktlint:standard:enum-entry-name-case")
 enum class WhatsAppMessageType {
-    audio, contacts, document, image, location, text, unknown, video, voice, system, button
+    audio,
+    contacts,
+    document,
+    image,
+    location,
+    text,
+    unknown,
+    video,
+    voice,
+    system,
+    button,
 }

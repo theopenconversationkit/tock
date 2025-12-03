@@ -17,17 +17,13 @@
 package ai.tock.shared
 
 import io.mockk.mockk
-import io.netty.channel.EventLoopGroup
 import io.vertx.codegen.annotations.Nullable
-import io.vertx.core.AsyncResult
 import io.vertx.core.Context
 import io.vertx.core.Deployable
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Future
 import io.vertx.core.Handler
-import io.vertx.core.Promise
 import io.vertx.core.Timer
-import io.vertx.core.Verticle
 import io.vertx.core.Vertx
 import io.vertx.core.WorkerExecutor
 import io.vertx.core.datagram.DatagramSocket
@@ -36,7 +32,6 @@ import io.vertx.core.dns.DnsClient
 import io.vertx.core.dns.DnsClientOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.file.FileSystem
-import io.vertx.core.http.HttpClient
 import io.vertx.core.http.HttpClientAgent
 import io.vertx.core.http.HttpClientBuilder
 import io.vertx.core.http.HttpClientOptions
@@ -59,10 +54,12 @@ import java.util.function.Supplier
  * A mock for [Vertx] interface used because mockk & Vertx do not play well together.
  */
 class VertxMock : Vertx {
-
     override fun verticleFactories(): MutableSet<VerticleFactory> = mutableSetOf()
 
-    override fun setPeriodic(delay: Long, handler: Handler<Long>?): Long = delay
+    override fun setPeriodic(
+        delay: Long,
+        handler: Handler<Long>?,
+    ): Long = delay
 
     override fun getOrCreateContext(): Context = mockk()
 
@@ -72,7 +69,10 @@ class VertxMock : Vertx {
 
     override fun fileSystem(): FileSystem = mockk()
 
-    override fun createDnsClient(port: Int, host: String?): DnsClient = mockk()
+    override fun createDnsClient(
+        port: Int,
+        host: String?,
+    ): DnsClient = mockk()
 
     override fun createDnsClient(): DnsClient = mockk()
 
@@ -84,21 +84,30 @@ class VertxMock : Vertx {
 
     override fun createSharedWorkerExecutor(name: String?): WorkerExecutor = mockk()
 
-    override fun createSharedWorkerExecutor(name: String?, poolSize: Int): WorkerExecutor = mockk()
-
-    override fun createSharedWorkerExecutor(name: String?, poolSize: Int, maxExecuteTime: Long): WorkerExecutor =
-        mockk()
+    override fun createSharedWorkerExecutor(
+        name: String?,
+        poolSize: Int,
+    ): WorkerExecutor = mockk()
 
     override fun createSharedWorkerExecutor(
         name: String?,
         poolSize: Int,
         maxExecuteTime: Long,
-        maxExecuteTimeUnit: TimeUnit?
+    ): WorkerExecutor = mockk()
+
+    override fun createSharedWorkerExecutor(
+        name: String?,
+        poolSize: Int,
+        maxExecuteTime: Long,
+        maxExecuteTimeUnit: TimeUnit?,
     ): WorkerExecutor = mockk()
 
     override fun isNativeTransportEnabled(): Boolean = false
 
-    override fun setTimer(delay: Long, handler: Handler<Long>?): Long = delay
+    override fun setTimer(
+        delay: Long,
+        handler: Handler<Long>?,
+    ): Long = delay
 
     override fun deploymentIDs(): MutableSet<String> = mutableSetOf()
 
@@ -131,9 +140,16 @@ class VertxMock : Vertx {
 
     override fun createNetClient(): NetClient = mockk()
 
-    override fun setPeriodic(initialDelay: Long, delay: Long, handler: Handler<Long>?): Long = 0
+    override fun setPeriodic(
+        initialDelay: Long,
+        delay: Long,
+        handler: Handler<Long>?,
+    ): Long = 0
 
-    override fun deployVerticle(name: String?, options: DeploymentOptions?): Future<String> = mockk()
+    override fun deployVerticle(
+        name: String?,
+        options: DeploymentOptions?,
+    ): Future<String> = mockk()
 
     override fun close(): Future<Void> = mockk()
 
@@ -145,7 +161,6 @@ class VertxMock : Vertx {
 
     override fun deployVerticle(name: String?): Future<String> = mockk()
 
-
     override fun <T : Any?> executeBlocking(blockingCodeHandler: Callable<T>?): Future<T> = mockk()
 
     override fun createWebSocketClient(): WebSocketClient = mockk()
@@ -154,39 +169,42 @@ class VertxMock : Vertx {
 
     override fun timer(delay: Long): Timer = mockk()
 
-    override fun timer(delay: Long, unit: TimeUnit): Timer = mockk()
+    override fun timer(
+        delay: Long,
+        unit: TimeUnit,
+    ): Timer = mockk()
 
     override fun deployVerticle(verticle: Deployable?): Future<String?> = mockk()
 
     override fun deployVerticle(
         verticle: Deployable?,
-        options: DeploymentOptions?
+        options: DeploymentOptions?,
     ): Future<String?> = mockk()
 
     override fun deployVerticle(
         supplier: Supplier<out Deployable?>?,
-        options: DeploymentOptions?
+        options: DeploymentOptions?,
     ): Future<String?>? {
         TODO("Not yet implemented")
     }
 
     override fun deployVerticle(
         verticleClass: Class<out Deployable?>?,
-        options: DeploymentOptions?
+        options: DeploymentOptions?,
     ): Future<String?>? {
         TODO("Not yet implemented")
     }
 
     override fun <T : Any?> executeBlocking(
         blockingCodeHandler: Callable<T?>?,
-        ordered: Boolean
+        ordered: Boolean,
     ): Future<@Nullable T?>? {
         return super.executeBlocking(blockingCodeHandler, ordered)
     }
 
     override fun createHttpClient(
         clientOptions: HttpClientOptions?,
-        poolOptions: PoolOptions?
+        poolOptions: PoolOptions?,
     ): HttpClientAgent? {
         return super.createHttpClient(clientOptions, poolOptions)
     }

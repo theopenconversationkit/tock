@@ -41,4 +41,4 @@ val defaultNamespace: String get() = tockAppDefaultNamespace
 /**
  * Allow access to all namespaces - disabled by default for security reasons.
  */
-val allowAccessToAllNamespaces : Boolean = booleanProperty("tock_namespace_open_access", false)
+val allowAccessToAllNamespaces: Boolean = booleanProperty("tock_namespace_open_access", false)

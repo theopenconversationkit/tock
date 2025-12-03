@@ -30,28 +30,31 @@ import mu.KotlinLogging
  *
  */
 internal class AttachmentDeserializer : JacksonDeserializer<Attachment>() {
-
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Attachment? {
+    override fun deserialize(
+        jp: JsonParser,
+        ctxt: DeserializationContext,
+    ): Attachment? {
         // facebook can send empty attachments (ie attachments:[{}])
         data class AttachmentFields(
             var type: AttachmentType? = null,
             var payload: Payload? = null,
-            var other: EmptyJson? = null
+            var other: EmptyJson? = null,
         )
 
-        val (type, payload) = jp.read<AttachmentFields> { fields, name ->
-            with(fields) {
-                when (name) {
-                    Attachment::type.name -> type = jp.readValue()
-                    Attachment::payload.name -> payload = jp.readValue()
-                    else -> other = jp.readUnknownValue()
+        val (type, payload) =
+            jp.read<AttachmentFields> { fields, name ->
+                with(fields) {
+                    when (name) {
+                        Attachment::type.name -> type = jp.readValue()
+                        Attachment::payload.name -> payload = jp.readValue()
+                        else -> other = jp.readUnknownValue()
+                    }
                 }
             }
-        }
 
         return if (type == null || payload == null) {
             logger.debug { "empty attachment" }

@@ -45,15 +45,14 @@ data class ClassifiedEntity(
     /**
      * The sub entities of the entity.
      */
-    val subEntities: List<ClassifiedEntity> = emptyList()
+    val subEntities: List<ClassifiedEntity> = emptyList(),
 ) : IntOpenRange {
-
     constructor(value: ParsedEntityValue) : this(
         value.entity.entityType.name,
         value.entity.role,
         value.start,
         value.end,
-        value.subEntities.map { ClassifiedEntity(it) }
+        value.subEntities.map { ClassifiedEntity(it) },
     )
 
     constructor(value: EntityValue) : this(
@@ -61,7 +60,7 @@ data class ClassifiedEntity(
         value.entity.role,
         value.start,
         value.end,
-        value.subEntities.map { ClassifiedEntity(it.value) }
+        value.subEntities.map { ClassifiedEntity(it.value) },
     )
 
     fun toEntityValue(entityProvider: (String, String) -> Entity?): EntityValue? =
@@ -71,14 +70,14 @@ data class ClassifiedEntity(
                     start,
                     end,
                     this,
-                    subEntities = subEntities.mapNotNull {
-                        it.toEntityRecognition(entityProvider)
-                    }
+                    subEntities =
+                        subEntities.mapNotNull {
+                            it.toEntityRecognition(entityProvider)
+                        },
                 )
             }
 
-    fun toEntityRecognition(entityProvider: (String, String) -> Entity?): EntityRecognition? =
-        toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
+    fun toEntityRecognition(entityProvider: (String, String) -> Entity?): EntityRecognition? = toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
 
     fun toEntity(entityProvider: (String, String) -> Entity?): Entity? = entityProvider.invoke(type, role)
 

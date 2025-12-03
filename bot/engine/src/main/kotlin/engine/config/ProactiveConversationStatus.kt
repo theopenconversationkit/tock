@@ -19,5 +19,5 @@ package ai.tock.bot.engine.config
 enum class ProactiveConversationStatus {
     LUNCHED,
     STARTED,
-    CLOSED
+    CLOSED,
 }

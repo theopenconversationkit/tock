@@ -27,7 +27,6 @@ import ai.tock.translator.UserInterfaceType.voiceAssistant
  *
  */
 data class XrayPrecondition(val preconditionKey: String, val condition: String?) {
-
     companion object {
         val textChatPrecondition: String = property("tock_bot_test_precondition_key_text_chat", "")
         val voiceAssistantPrecondition: String = property("tock_bot_test_precondition_key_voice_assistant", "")

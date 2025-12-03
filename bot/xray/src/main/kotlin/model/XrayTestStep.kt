@@ -24,5 +24,5 @@ data class XrayTestStep(
     val index: Int,
     val data: XrayTestStepData,
     val result: XrayTestStepData,
-    val attachments: List<XrayAttachment>
+    val attachments: List<XrayAttachment>,
 )

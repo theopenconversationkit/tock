@@ -15,9 +15,9 @@
  */
 
 import ai.tock.shared.normalize
+import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
-import org.junit.jupiter.api.Test
 
 internal class ModelCoreServiceTest {
     val locale: Locale = Locale.FRENCH

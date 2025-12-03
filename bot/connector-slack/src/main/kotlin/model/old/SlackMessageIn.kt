@@ -29,9 +29,8 @@ data class SlackMessageIn(
     val user_id: String,
     val user_name: String,
     var text: String,
-    val trigger_word: String?
+    val trigger_word: String?,
 ) : SlackConnectorMessage() {
-
     fun getRealMessage(): String {
         return this.text.replace("${this.trigger_word} ", "")
     }

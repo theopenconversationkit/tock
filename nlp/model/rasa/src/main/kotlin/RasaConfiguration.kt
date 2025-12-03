@@ -20,18 +20,19 @@ import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.shared.property
 import java.util.Locale
 
-fun NlpApplicationConfiguration.toRasaConfiguration(): RasaConfiguration =
-    RasaConfiguration()
+fun NlpApplicationConfiguration.toRasaConfiguration(): RasaConfiguration = RasaConfiguration()
 
 internal fun String.escapeRasaName(): String = replace(":", "___")
+
 internal fun String.unescapeRasaName(): String = replace("___", ":")
+
 /**
  * The rasa configuration.
  */
 class RasaConfiguration(
     val rasaUrl: String = "http://localhost:5005",
     val modelBasePath: String = property("rasa_model_path", "models/"),
-    val configuration: String = "language: en\npipeline: supervised_embeddings\npolicies:\n  - name: MemoizationPolicy\n  - name: KerasPolicy"
+    val configuration: String = "language: en\npipeline: supervised_embeddings\npolicies:\n  - name: MemoizationPolicy\n  - name: KerasPolicy",
 ) {
     fun getMarkdownConfiguration(locale: Locale): String =
         when (locale.language) {
@@ -70,5 +71,6 @@ pipeline:
   - name: ResponseSelector
     epochs: 100"""
         }
+
     fun getModelFilePath(fileName: String) = modelBasePath + fileName
 }

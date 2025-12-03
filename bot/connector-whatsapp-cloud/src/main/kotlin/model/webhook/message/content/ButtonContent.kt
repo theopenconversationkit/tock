@@ -18,5 +18,5 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
 
 data class ButtonContent(
     val payload: String,
-    val text: String
+    val text: String,
 )

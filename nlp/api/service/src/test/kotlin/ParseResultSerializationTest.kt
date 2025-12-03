@@ -37,7 +37,6 @@ import kotlin.test.assertEquals
  *
  */
 class ParseResultSerializationTest {
-
     @BeforeEach
     fun before() {
         mapper.enable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
@@ -50,28 +49,30 @@ class ParseResultSerializationTest {
 
     @Test
     fun testEntityValueDeserializationAndSerialization() {
-        val parseResult = ParseResult(
-            "test",
-            "namespace",
-            defaultLocale,
-            listOf(
-                ParsedEntityValue(
-                    0,
-                    1,
-                    Entity(EntityType("type"), "role"),
-                    DateEntityValue(ZonedDateTime.of(2017, 4, 1, 0, 0, 0, 0, ZoneId.of("Z")), DateEntityGrain.day)
-                )
-            ),
-            emptyList(),
-            1.0,
-            1.0,
-            "sentence",
-            mapOf("test2" to 2.0)
-        )
+        val parseResult =
+            ParseResult(
+                "test",
+                "namespace",
+                defaultLocale,
+                listOf(
+                    ParsedEntityValue(
+                        0,
+                        1,
+                        Entity(EntityType("type"), "role"),
+                        DateEntityValue(ZonedDateTime.of(2017, 4, 1, 0, 0, 0, 0, ZoneId.of("Z")), DateEntityGrain.day),
+                    ),
+                ),
+                emptyList(),
+                1.0,
+                1.0,
+                "sentence",
+                mapOf("test2" to 2.0),
+            )
         val s = mapper.writeValueAsString(parseResult)
+        @Suppress("ktlint:standard:max-line-length")
         assertEquals(
             """{"intent":"test","intentNamespace":"namespace","language":"$defaultLocale","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[],"dictionary":false,"obfuscated":false},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00:00Z","grain":"day"},"evaluated":false,"subEntities":[],"probability":1.0,"mergeSupport":false}],"notRetainedEntities":[],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0},"originalIntentsProbabilities":{}}""",
-            s
+            s,
         )
 
         assertEquals(parseResult, mapper.readValue(s))

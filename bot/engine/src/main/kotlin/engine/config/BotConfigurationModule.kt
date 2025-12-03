@@ -17,6 +17,5 @@
 package ai.tock.bot.engine.config
 
 data class BotConfigurationModule(val id: String, val stories: List<BotConfigurationStoryHandler>) {
-
-    internal val storiesById : Map<String, BotConfigurationStoryHandler> = stories.associateBy { it.id }
+    internal val storiesById: Map<String, BotConfigurationStoryHandler> = stories.associateBy { it.id }
 }

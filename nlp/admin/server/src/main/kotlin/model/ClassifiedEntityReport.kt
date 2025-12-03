@@ -30,9 +30,8 @@ data class ClassifiedEntityReport(
     val end: Int,
     val value: Value?,
     val probability: Double?,
-    val subEntities: List<ClassifiedEntityReport>
+    val subEntities: List<ClassifiedEntityReport>,
 ) {
-
     constructor(value: ParsedEntityValue) : this(
         value.entity.entityType.name,
         value.entity.role,
@@ -40,7 +39,7 @@ data class ClassifiedEntityReport(
         value.end,
         value.value,
         value.probability,
-        value.subEntities.map { ClassifiedEntityReport(it) }
+        value.subEntities.map { ClassifiedEntityReport(it) },
     )
 
     constructor(entity: ClassifiedEntity) : this(
@@ -50,7 +49,7 @@ data class ClassifiedEntityReport(
         entity.end,
         null,
         null,
-        entity.subEntities.map { ClassifiedEntityReport(it) }
+        entity.subEntities.map { ClassifiedEntityReport(it) },
     )
 
     fun toClassifiedEntity(): ClassifiedEntity {

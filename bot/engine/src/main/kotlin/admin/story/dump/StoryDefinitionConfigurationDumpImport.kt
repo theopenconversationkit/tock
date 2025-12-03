@@ -18,5 +18,5 @@ package ai.tock.bot.admin.story.dump
 
 class StoryDefinitionConfigurationDumpImport(
     val stories: List<StoryDefinitionConfigurationDump>,
-    val mode: StoriesImportMode = StoriesImportMode.DEFAULT
+    val mode: StoriesImportMode = StoriesImportMode.DEFAULT,
 )

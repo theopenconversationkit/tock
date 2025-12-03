@@ -18,9 +18,9 @@ package ai.tock.bot.connector.web.channel
 import ai.tock.bot.connector.web.WebConnectorResponse
 import com.fasterxml.jackson.annotation.JsonValue
 import io.vertx.core.Future
-import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  *  Event that will be retrieved by the bot and sent to the recipient if SSE is activated
@@ -33,10 +33,13 @@ internal data class ChannelEvent(
     val enqueuedAt: Instant = Instant.now(),
     val _id: Id<ChannelEvent> = newId(),
 ) {
-    enum class Status(@JsonValue val id: Int) {
+    enum class Status(
+        @JsonValue val id: Int,
+    ) {
         /* Capped MongoDB collections cannot update a document's size after insertion.
            Therefore, we have to serialize this enum as a fixed-size value */
-        ENQUEUED(0), PROCESSED(1)
+        ENQUEUED(0),
+        PROCESSED(1),
     }
 
     fun interface Handler {

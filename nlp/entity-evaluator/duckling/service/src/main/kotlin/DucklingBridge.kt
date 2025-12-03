@@ -31,23 +31,23 @@ import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.Collections
-import java.util.HashMap
 
 /**
  *
  */
 internal object DucklingBridge {
-
     private val logger = KotlinLogging.logger {}
 
     private lateinit var referenceTime: Keyword
     private lateinit var start: Keyword
     private lateinit var grain: Keyword
     private lateinit var second: Keyword
+
     @Volatile
     var initialized = false
 
     private fun keyword(name: String): Keyword = RT.keyword(null as String?, name)
+
     private fun find(name: String): Keyword? = Keyword.find(null, name)
 
     fun initDuckling() {
@@ -70,19 +70,20 @@ internal object DucklingBridge {
         textToParse: String,
         dimensions: List<String>,
         referenceDate: ZonedDateTime,
-        referenceTimezone: ZoneId
+        referenceTimezone: ZoneId,
     ): Any {
         val dateMap = HashMap<Keyword?, Any?>()
         // set timezone for wit
-        val timezone = try {
-            if (referenceTimezone.id == "Z") DateTimeZone.UTC else DateTimeZone.forID(referenceTimezone.id)
-        } catch (e: Exception) {
-            logger.warn { "unrecognized timezone $referenceTimezone - use UTC" }
-            DateTimeZone.UTC
-        }
+        val timezone =
+            try {
+                if (referenceTimezone.id == "Z") DateTimeZone.UTC else DateTimeZone.forID(referenceTimezone.id)
+            } catch (e: Exception) {
+                logger.warn { "unrecognized timezone $referenceTimezone - use UTC" }
+                DateTimeZone.UTC
+            }
         dateMap.put(
             start,
-            DateTime(referenceDate.toInstant().toEpochMilli(), timezone)
+            DateTime(referenceDate.toInstant().toEpochMilli(), timezone),
         )
         dateMap.put(grain, second)
         val dateClosureMap = PersistentArrayMap.create(dateMap)

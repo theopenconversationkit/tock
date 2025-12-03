@@ -26,16 +26,16 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class WhatsAppBotTextMessageSerializationTest {
-
     @Test
     fun `text message can be successfully serialized then deserialized`() {
         val message = WhatsAppBotTextMessage(WhatsAppTextBody("message"), individual, "hashedId")
         val json = mapper.writeValueAsString(message)
         assertEquals(
             WhatsAppBotTextMessage(
-                WhatsAppTextBody("message"), individual
+                WhatsAppTextBody("message"),
+                individual,
             ),
-            mapper.readValue<WhatsAppBotMessage>(json)
+            mapper.readValue<WhatsAppBotMessage>(json),
         )
     }
 }

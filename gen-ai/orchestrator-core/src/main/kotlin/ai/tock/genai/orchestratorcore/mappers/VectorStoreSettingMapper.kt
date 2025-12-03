@@ -26,15 +26,14 @@ import ai.tock.genai.orchestratorcore.utils.SecurityUtils
  * The Vector Store Setting Mapper
  */
 object VectorStoreSettingMapper {
-
     /**
      * Convert the VectorStore setting to a DTO
      * @param entity the [VectorStoreSetting] as recorded in the database
      * @return [VectorStoreSettingDTO]
      */
     fun toDTO(entity: VectorStoreSetting): VectorStoreSettingDTO =
-        with(entity){
-            when(this){
+        with(entity) {
+            when (this) {
                 is OpenSearchVectorStoreSetting -> {
                     val fetchedPassword = SecurityUtils.fetchSecretKeyValue(password)
                     return OpenSearchVectorStoreSetting(host, port, username, fetchedPassword)
@@ -62,10 +61,10 @@ object VectorStoreSettingMapper {
         botId: String,
         feature: String,
         dto: VectorStoreSettingDTO,
-        rawByForce: Boolean = false
+        rawByForce: Boolean = false,
     ): VectorStoreSetting =
-        with(dto){
-            when(this){
+        with(dto) {
+            when (this) {
                 is OpenSearchVectorStoreSetting -> {
                     val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password, rawByForce)
                     return OpenSearchVectorStoreSetting(host, port, username, secretPassword)
@@ -78,5 +77,4 @@ object VectorStoreSettingMapper {
                     throw IllegalArgumentException("Unsupported VectorStore Setting")
             }
         }
-
 }

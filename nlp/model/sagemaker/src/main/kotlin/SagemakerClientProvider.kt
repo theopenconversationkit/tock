@@ -20,9 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
 internal object SagemakerClientProvider {
     private val clientMap = ConcurrentHashMap<SagemakerAwsClientProperties, SagemakerAwsClient>()
 
-    fun getClient(conf: SagemakerAwsClientProperties): SagemakerAwsClient =
-        clientMap.getOrPut(conf) { SagemakerAwsClient(conf) }
+    fun getClient(conf: SagemakerAwsClientProperties): SagemakerAwsClient = clientMap.getOrPut(conf) { SagemakerAwsClient(conf) }
 
-    fun getAllClient(): MutableCollection<SagemakerAwsClient> =
-        clientMap.values
+    fun getAllClient(): MutableCollection<SagemakerAwsClient> = clientMap.values
 }

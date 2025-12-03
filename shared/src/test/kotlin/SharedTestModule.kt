@@ -31,18 +31,18 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.vertx.core.Vertx
-import java.time.Duration
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.atomic.AtomicInteger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodle
 import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
+import java.time.Duration
+import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.atomic.AtomicInteger
 
 private val logger = KotlinLogging.logger {}
 
@@ -54,63 +54,74 @@ val mockedVertx: Vertx by lazy { mockk<Vertx>(relaxed = true) }
 /**
  * Shared test module to be imported by tests using Ioc.
  */
-val sharedTestModule = Kodein.Module {
-    bind<Executor>() with provider { TestExecutor }
-    bind<TockCache>() with provider { NoOpCache }
-    bind<TockUserListener>() with provider { NoOpTockUserListener }
-    bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+val sharedTestModule =
+    Kodein.Module {
+        bind<Executor>() with provider { TestExecutor }
+        bind<TockCache>() with provider { NoOpCache }
+        bind<TockUserListener>() with provider { NoOpTockUserListener }
+        bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
 
-    try {
-        clearMocks(mockedVertx)
-        bind<VertxProvider>() with singleton {
-            mockk<VertxProvider>() {
-                every { vertx() } returns mockedVertx
-            }
+        try {
+            clearMocks(mockedVertx)
+            bind<VertxProvider>() with
+                singleton {
+                    mockk<VertxProvider> {
+                        every { vertx() } returns mockedVertx
+                    }
+                }
+        } catch (e: Throwable) {
+            // vertx not in classpath : ignore
+            logger.trace("vertx is not present in classpath")
         }
-    } catch (e: Throwable) {
-        // vertx not in classpath : ignore
-        logger.trace("vertx is not present in classpath")
-    }
 
-    try {
-        bind<MongoClient>() with singleton {
-            try {
-                // init kmongo configuration for persistence tests
-                TockKMongoConfiguration.configure()
-                KFlapdoodle.mongoClient
-            } catch (t: Throwable) {
-                logger.trace("error during KMongo configuration", t)
-                mockk<MongoClient>(relaxed = true)
-            }
+        try {
+            bind<MongoClient>() with
+                singleton {
+                    try {
+                        // init kmongo configuration for persistence tests
+                        TockKMongoConfiguration.configure()
+                        KFlapdoodle.mongoClient
+                    } catch (t: Throwable) {
+                        logger.trace("error during KMongo configuration", t)
+                        mockk<MongoClient>(relaxed = true)
+                    }
+                }
+        } catch (t: Throwable) {
+            logger.trace("sync mongo driver is not present in classpath")
         }
-    } catch (t: Throwable) {
-        logger.trace("sync mongo driver is not present in classpath")
-    }
-    try {
-        bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton {
-            try {
-                // init kmongo configuration for persistence tests
-                TockKMongoConfiguration.configure(true)
-                KFlapdoodleReactiveStreams.mongoClient
-            } catch (t: Throwable) {
-                logger.trace("error during KMongo configuration", t)
-                mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
-            }
+        try {
+            bind<com.mongodb.reactivestreams.client.MongoClient>() with
+                singleton {
+                    try {
+                        // init kmongo configuration for persistence tests
+                        TockKMongoConfiguration.configure(true)
+                        KFlapdoodleReactiveStreams.mongoClient
+                    } catch (t: Throwable) {
+                        logger.trace("error during KMongo configuration", t)
+                        mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
+                    }
+                }
+        } catch (t: Throwable) {
+            logger.trace("async mongo driver is not present in classpath")
         }
-    } catch (t: Throwable) {
-        logger.trace("async mongo driver is not present in classpath")
     }
-}
 
 private object NoOpCache : TockCache {
     private val map: MutableMap<Pair<Id<*>, String>, Any> = mutableMapOf()
 
-    override fun <T> get(id: Id<T>, type: String): T? {
+    override fun <T> get(
+        id: Id<T>,
+        type: String,
+    ): T? {
         @Suppress("UNCHECKED_CAST")
         return map[id to type] as T?
     }
 
-    override fun <T : Any> put(id: Id<T>, type: String, data: T) {
+    override fun <T : Any> put(
+        id: Id<T>,
+        type: String,
+        data: T,
+    ) {
         map[id to type] = data
     }
 
@@ -125,7 +136,10 @@ private object NoOpCache : TockCache {
             .toMap()
     }
 
-    override fun <T> remove(id: Id<T>, type: String) {
+    override fun <T> remove(
+        id: Id<T>,
+        type: String,
+    ) {
         map - id to type
     }
 }
@@ -135,29 +149,39 @@ private object NoOpCache : TockCache {
  */
 class SimpleExecutor(
     private val nbThreads: Int,
-    private val threadPoolName: String? = "test-pool-${threadPoolId.getAndIncrement()}"
+    private val threadPoolName: String? = "test-pool-${threadPoolId.getAndIncrement()}",
 ) : Executor {
     companion object {
         private val threadPoolId = AtomicInteger(1)
     }
 
-    private val executor = Executors.newScheduledThreadPool(nbThreads, object : ThreadFactory {
-        private val group = Thread.currentThread().threadGroup
-        private val threadNumber = AtomicInteger(1)
+    private val executor =
+        Executors.newScheduledThreadPool(
+            nbThreads,
+            object : ThreadFactory {
+                private val group = Thread.currentThread().threadGroup
+                private val threadNumber = AtomicInteger(1)
 
-        override fun newThread(r: Runnable): Thread {
-            return Thread(group, r, "${threadPoolName}-thread-${threadNumber.getAndIncrement()}").apply {
-                if (isDaemon) setDaemon(false)
-                if (priority != Thread.NORM_PRIORITY) setPriority(Thread.NORM_PRIORITY)
-            }
-        }
-    })
+                override fun newThread(r: Runnable): Thread {
+                    return Thread(group, r, "$threadPoolName-thread-${threadNumber.getAndIncrement()}").apply {
+                        if (isDaemon) setDaemon(false)
+                        if (priority != Thread.NORM_PRIORITY) setPriority(Thread.NORM_PRIORITY)
+                    }
+                }
+            },
+        )
 
-    override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+    override fun executeBlocking(
+        delay: Duration,
+        runnable: () -> Unit,
+    ) {
         executor.schedule(runnable, delay.toMillis(), MILLISECONDS)
     }
 
-    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> {
+    override fun <T> executeBlockingTask(
+        delay: Duration,
+        task: () -> T,
+    ): CompletableFuture<T> {
         return newIncompleteFuture<T>().apply {
             executor.schedule({
                 complete(task())
@@ -169,12 +193,19 @@ class SimpleExecutor(
         executor.schedule(runnable, 0L, MILLISECONDS)
     }
 
-    override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+    override fun <T> executeBlocking(
+        blocking: Callable<T>,
+        result: (T?) -> Unit,
+    ) {
         val future = executor.schedule(blocking, 0, MILLISECONDS)
         future.get().apply { result(this) }
     }
 
-    override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+    override fun setPeriodic(
+        initialDelay: Duration,
+        delay: Duration,
+        runnable: () -> Unit,
+    ): Long {
         executor.scheduleWithFixedDelay(runnable, initialDelay.toMillis(), delay.toMillis(), MILLISECONDS)
         return 0L
     }
@@ -184,7 +215,6 @@ class SimpleExecutor(
  * In order to track test executor calls.
  */
 object TestExecutorRecorder {
-
     val executeBlocking = CopyOnWriteArrayList<() -> Unit>()
     val executeBlockingDuration = CopyOnWriteArrayList<Pair<Duration, () -> Unit>>()
 
@@ -193,26 +223,33 @@ object TestExecutorRecorder {
         executeBlockingDuration.clear()
     }
 
-    fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+    fun executeBlocking(
+        delay: Duration,
+        runnable: () -> Unit,
+    ) {
         executeBlockingDuration.add(delay to runnable)
     }
 
     fun executeBlocking(runnable: () -> Unit) {
         executeBlocking.add(runnable)
     }
-
 }
 
 private object TestExecutor : Executor {
-
-    override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+    override fun executeBlocking(
+        delay: Duration,
+        runnable: () -> Unit,
+    ) {
         TestExecutorRecorder.executeBlocking(delay, runnable)
         runnable.invoke()
     }
 
-    override fun <T> executeBlockingTask(delay: Duration, task: () -> T): CompletableFuture<T> =
+    override fun <T> executeBlockingTask(
+        delay: Duration,
+        task: () -> T,
+    ): CompletableFuture<T> =
         CompletableFuture.completedFuture(
-            task.invoke()
+            task.invoke(),
         )
 
     override fun executeBlocking(runnable: () -> Unit) {
@@ -220,11 +257,18 @@ private object TestExecutor : Executor {
         runnable.invoke()
     }
 
-    override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+    override fun <T> executeBlocking(
+        blocking: Callable<T>,
+        result: (T?) -> Unit,
+    ) {
         result.invoke(blocking.call())
     }
 
-    override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+    override fun setPeriodic(
+        initialDelay: Duration,
+        delay: Duration,
+        runnable: () -> Unit,
+    ): Long {
         Executors.newCachedThreadPool().submit(runnable)
         return 0L
     }

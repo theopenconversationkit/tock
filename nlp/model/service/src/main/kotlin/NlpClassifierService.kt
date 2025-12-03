@@ -53,7 +53,6 @@ import mu.KotlinLogging
  *
  */
 object NlpClassifierService : NlpClassifier {
-
     private val logger = KotlinLogging.logger {}
     private val nlpApplicationConfigurationDAO: NlpApplicationConfigurationDAO by injector.instance()
 
@@ -61,24 +60,31 @@ object NlpClassifierService : NlpClassifier {
         return NlpEngineRepository.registeredNlpEngineTypes()
     }
 
-    private fun tokenizeForIntentClassifier(context: IntentContext, text: String): Array<String> =
-        NlpEngineRepository.getTokenizer(context).tokenize(TokenizerContext(context), text)
+    private fun tokenizeForIntentClassifier(
+        context: IntentContext,
+        text: String,
+    ): Array<String> = NlpEngineRepository.getTokenizer(context).tokenize(TokenizerContext(context), text)
 
-    private fun tokenizeForEntityClassifier(context: EntityCallContext, text: String): Array<String> =
-        NlpEngineRepository.getTokenizer(context).tokenize(TokenizerContext(context), text)
+    private fun tokenizeForEntityClassifier(
+        context: EntityCallContext,
+        text: String,
+    ): Array<String> = NlpEngineRepository.getTokenizer(context).tokenize(TokenizerContext(context), text)
 
-    override fun classifyIntent(context: IntentContext, text: String): IntentClassification {
+    override fun classifyIntent(
+        context: IntentContext,
+        text: String,
+    ): IntentClassification {
         return NlpEngineRepository.getIntentClassifier(context).classifyIntent(
             context,
             text,
-            tokenizeForIntentClassifier(context, text)
+            tokenizeForIntentClassifier(context, text),
         )
     }
 
     override fun classifyIntent(
         context: IntentContext,
         modelHolder: ModelHolder,
-        text: String
+        text: String,
     ): IntentClassification {
         return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder)
             .classifyIntent(context, text, tokenizeForIntentClassifier(context, text))
@@ -86,21 +92,22 @@ object NlpClassifierService : NlpClassifier {
 
     override fun classifyEntities(
         context: EntityCallContext,
-        text: String
-    ): List<EntityRecognition> = NlpEngineRepository.getEntityClassifier(context)
-        ?.let {
-            classifyEntities(
-                it,
-                context,
-                text,
-                tokenizeForEntityClassifier(context, text)
-            )
-        } ?: emptyList()
+        text: String,
+    ): List<EntityRecognition> =
+        NlpEngineRepository.getEntityClassifier(context)
+            ?.let {
+                classifyEntities(
+                    it,
+                    context,
+                    text,
+                    tokenizeForEntityClassifier(context, text),
+                )
+            } ?: emptyList()
 
     override fun classifyEntities(
         context: EntityCallContext,
         modelHolder: ModelHolder,
-        text: String
+        text: String,
     ): List<EntityRecognition> {
         return NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder)
             ?.let { classifyEntities(it, context, text, tokenizeForEntityClassifier(context, text)) }
@@ -111,16 +118,16 @@ object NlpClassifierService : NlpClassifier {
         entityClassifier: EntityClassifier,
         context: EntityCallContext,
         text: String,
-        tokens: Array<String>
+        tokens: Array<String>,
     ): List<EntityRecognition> {
-
         val result = entityClassifier.classifyEntities(context, text, tokens)
         return result.map { e ->
             if (e.hasSubEntities()) {
-                val subEntities = classifyEntities(
-                    EntityCallContextForSubEntities(e.entityType, context),
-                    e.textValue(text)
-                )
+                val subEntities =
+                    classifyEntities(
+                        EntityCallContextForSubEntities(e.entityType, context),
+                        e.textValue(text),
+                    )
                 e.copy(value = e.value.copy(subEntities = subEntities))
             } else {
                 e
@@ -128,34 +135,52 @@ object NlpClassifierService : NlpClassifier {
         }
     }
 
-    override fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>) {
+    override fun buildAndSaveTokenizerModel(
+        context: TokenizerContext,
+        expressions: List<SampleExpression>,
+    ) {
         // do nothing at this time
     }
 
-    override fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): ModelHolder {
+    override fun buildIntentModel(
+        context: IntentContext,
+        expressions: List<SampleExpression>,
+    ): ModelHolder {
         return getModelBuilder(context).buildIntentModel(
             context,
             getCurrentModelConfiguration(context.applicationName, context.engineType),
-            expressions
+            expressions,
         )
     }
 
-    override fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>) {
+    override fun buildAndSaveIntentModel(
+        context: IntentContext,
+        expressions: List<SampleExpression>,
+    ) {
         val model = buildIntentModel(context, expressions)
         saveIntentModel(context.key(), model as IntentModelHolder, getModelIo(context))
     }
 
-    override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): ModelHolder? {
+    override fun buildEntityModel(
+        context: EntityBuildContext,
+        expressions: List<SampleExpression>,
+    ): ModelHolder? {
         val exp = context.select(expressions)
-        return if (exp.isNotEmpty())
+        return if (exp.isNotEmpty()) {
             getModelBuilder(context).buildEntityModel(
                 context,
                 getCurrentModelConfiguration(context.applicationName, context.engineType),
-                exp
-            ) else null
+                exp,
+            )
+        } else {
+            null
+        }
     }
 
-    override fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>) {
+    override fun buildAndSaveEntityModel(
+        context: EntityBuildContext,
+        expressions: List<SampleExpression>,
+    ) {
         val model = buildEntityModel(context, expressions)
         if (model != null) {
             saveEntityModel(context.key(), model as EntityModelHolder, getModelIo(context))
@@ -170,7 +195,10 @@ object NlpClassifierService : NlpClassifier {
         return NlpModelRepository.isEntityModelExist(context)
     }
 
-    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
+    override fun deleteOrphans(
+        applicationsAndIntents: Map<Application, Set<Intent>>,
+        entityTypes: List<EntityType>,
+    ) {
         // remove intents
         NlpModelRepository.removeIntentModelsNotIn(
             applicationsAndIntents.keys
@@ -182,7 +210,7 @@ object NlpClassifierService : NlpClassifier {
                                     IntentContextKey(key.name, locale, engineType)
                                 }
                         }
-                }
+                },
         )
 
         // remove entities
@@ -196,19 +224,20 @@ object NlpClassifierService : NlpClassifier {
                                 .flatMap { engineType ->
                                     e.value.map { intent ->
                                         EntityContextKey(appName, intent.name, locale, engineType)
-                                    } + entityTypes.map { entityType ->
-                                        EntityContextKey(
-                                            appName,
-                                            null,
-                                            locale,
-                                            engineType,
-                                            entityType,
-                                            true
-                                        )
-                                    }
+                                    } +
+                                        entityTypes.map { entityType ->
+                                            EntityContextKey(
+                                                appName,
+                                                null,
+                                                locale,
+                                                engineType,
+                                                entityType,
+                                                true,
+                                            )
+                                        }
                                 }
                         }
-                }
+                },
         )
     }
 
@@ -224,7 +253,7 @@ object NlpClassifierService : NlpClassifier {
 
     override fun getCurrentModelConfiguration(
         applicationName: String,
-        nlpEngineType: NlpEngineType
+        nlpEngineType: NlpEngineType,
     ): NlpApplicationConfiguration {
         return nlpApplicationConfigurationDAO.loadLastConfiguration(applicationName, nlpEngineType)
             ?: NlpEngineRepository.getProvider(nlpEngineType).modelBuilder.defaultNlpApplicationConfiguration()
@@ -233,7 +262,7 @@ object NlpClassifierService : NlpClassifier {
     override fun updateModelConfiguration(
         applicationName: String,
         engineType: NlpEngineType,
-        configuration: NlpApplicationConfiguration
+        configuration: NlpApplicationConfiguration,
     ) {
         nlpApplicationConfigurationDAO.saveNewConfiguration(applicationName, engineType, configuration)
     }

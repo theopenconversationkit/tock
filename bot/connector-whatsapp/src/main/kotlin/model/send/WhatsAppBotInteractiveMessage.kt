@@ -21,13 +21,12 @@ import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppTemplate
 data class WhatsAppBotInteractiveMessage(
     val template: WhatsAppTemplate,
     override val recipientType: WhatsAppBotRecipientType,
-    override val userId: String? = null
+    override val userId: String? = null,
 ) : WhatsAppBotMessage(WhatsAppBotMessageType.template, userId) {
-
     override fun toSendBotMessage(recipientId: String): WhatsAppSendBotMessage =
         WhatsAppSendBotInteractiveMessage(
             to = recipientId,
             recipientType = recipientType,
-            template = template
+            template = template,
         )
 }

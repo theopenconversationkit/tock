@@ -69,7 +69,10 @@ internal class MongoFeatureCache : FeatureCache {
         return features[key]
     }
 
-    override fun setState(key: String, value: Feature) {
+    override fun setState(
+        key: String,
+        value: Feature,
+    ) {
         features[key] = value
     }
 }

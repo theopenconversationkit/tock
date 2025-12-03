@@ -29,7 +29,6 @@ import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass
 
 internal object WhatsAppConnectorProvider : ConnectorProvider {
-
     private const val WHATS_APP_URL = "whatsAppUrl"
     private const val LOGIN = "login"
     private const val PASSWORD = "password"
@@ -44,7 +43,7 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
                 parameters.getValue(WHATS_APP_URL),
                 parameters.getValue(LOGIN),
                 parameters.getValue(PASSWORD),
-                createRequestFilter(connectorConfiguration)
+                createRequestFilter(connectorConfiguration),
             )
         }
     }
@@ -56,23 +55,24 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "WhatsApp Url",
                     WHATS_APP_URL,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "User Login",
                     LOGIN,
-                    true
+                    true,
                 ),
                 ConnectorTypeConfigurationField(
                     "User Password",
                     PASSWORD,
-                    true
-                )
+                    true,
+                ),
             ) + ConnectorTypeConfiguration.commonSecurityFields(),
-            resourceAsString("/whatsapp.svg")
+            resourceAsString("/whatsapp.svg"),
         )
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(WhatsAppBotImageMessage::class, WhatsAppBotTextMessage::class, WhatsAppBotMessageInteractiveMessage::class)
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
+        setOf(WhatsAppBotImageMessage::class, WhatsAppBotTextMessage::class, WhatsAppBotMessageInteractiveMessage::class)
 }
 
 internal class WhatsAppConnectorProviderService : ConnectorProvider by WhatsAppConnectorProvider

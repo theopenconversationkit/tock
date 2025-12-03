@@ -47,13 +47,12 @@ import java.util.concurrent.TimeUnit.MINUTES
  *
  */
 internal object NlpModelRepository {
-
     private val logger = KotlinLogging.logger {}
 
     private data class ConfiguredModel(
         val nativeModel: Any?,
         val lastUpdate: Instant,
-        val configuration: NlpApplicationConfiguration
+        val configuration: NlpApplicationConfiguration,
     )
 
     private val modelDAO: NlpEngineModelDAO by injector.instance()
@@ -79,8 +78,8 @@ internal object NlpModelRepository {
                             it,
                             loadIntentModel(
                                 it,
-                                NlpEngineRepository.getProvider(it.engineType)
-                            )
+                                NlpEngineRepository.getProvider(it.engineType),
+                            ),
                         )
                     }
             }
@@ -95,8 +94,8 @@ internal object NlpModelRepository {
                             it,
                             loadEntityModel(
                                 it,
-                                NlpEngineRepository.getProvider(it.engineType)
-                            )
+                                NlpEngineRepository.getProvider(it.engineType),
+                            ),
                         )
                     }
             }
@@ -105,14 +104,22 @@ internal object NlpModelRepository {
         }
     }
 
-    fun getTokenizerModelHolder(context: TokenizerContext, conf: NlpApplicationConfiguration): TokenizerModelHolder {
+    fun getTokenizerModelHolder(
+        context: TokenizerContext,
+        conf: NlpApplicationConfiguration,
+    ): TokenizerModelHolder {
         return TokenizerModelHolder(context.language, conf)
     }
 
-    fun getConfiguration(context: IntentContext, provider: NlpEngineProvider): NlpApplicationConfiguration =
-        getIntentModelHolder(context, provider).configuration
+    fun getConfiguration(
+        context: IntentContext,
+        provider: NlpEngineProvider,
+    ): NlpApplicationConfiguration = getIntentModelHolder(context, provider).configuration
 
-    fun getIntentModelHolder(context: IntentContext, provider: NlpEngineProvider): IntentModelHolder {
+    fun getIntentModelHolder(
+        context: IntentContext,
+        provider: NlpEngineProvider,
+    ): IntentModelHolder {
         return context
             .key()
             .let { key ->
@@ -123,12 +130,11 @@ internal object NlpModelRepository {
             .let { IntentModelHolder(context.application, it.nativeModel!!, it.configuration, it.lastUpdate) }
     }
 
-    private fun NlpEngineProvider.configuration(configuration: NlpApplicationConfiguration? = null): NlpApplicationConfiguration =
-        configuration ?: modelBuilder.defaultNlpApplicationConfiguration()
+    private fun NlpEngineProvider.configuration(configuration: NlpApplicationConfiguration? = null): NlpApplicationConfiguration = configuration ?: modelBuilder.defaultNlpApplicationConfiguration()
 
     private fun loadIntentModel(
         contextKey: IntentContextKey,
-        provider: NlpEngineProvider
+        provider: NlpEngineProvider,
     ): ConfiguredModel {
         val inputStream = modelDAO.getIntentModelInputStream(contextKey)
         if (inputStream != null) {
@@ -137,18 +143,24 @@ internal object NlpModelRepository {
             return ConfiguredModel(
                 model,
                 inputStream.updatedDate,
-                provider.configuration(inputStream.configuration)
+                provider.configuration(inputStream.configuration),
             )
         }
 
         throw ModelNotInitializedException("no intent model found for $contextKey")
     }
 
-    fun getConfiguration(context: EntityContext, provider: NlpEngineProvider): NlpApplicationConfiguration =
+    fun getConfiguration(
+        context: EntityContext,
+        provider: NlpEngineProvider,
+    ): NlpApplicationConfiguration =
         getEntityModelHolder(context, provider)?.configuration
             ?: provider.modelBuilder.defaultNlpApplicationConfiguration()
 
-    fun getEntityModelHolder(context: EntityContext, provider: NlpEngineProvider): EntityModelHolder? {
+    fun getEntityModelHolder(
+        context: EntityContext,
+        provider: NlpEngineProvider,
+    ): EntityModelHolder? {
         return context
             .key()
             .let {
@@ -159,7 +171,10 @@ internal object NlpModelRepository {
             }
     }
 
-    private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): ConfiguredModel {
+    private fun loadEntityModel(
+        contextKey: EntityContextKey,
+        provider: NlpEngineProvider,
+    ): ConfiguredModel {
         return modelDAO.getEntityModelInputStream(contextKey)
             ?.let { inputStream ->
                 logger.debug { "load entity model for $contextKey" }
@@ -167,12 +182,16 @@ internal object NlpModelRepository {
                 return ConfiguredModel(
                     model,
                     inputStream.updatedDate,
-                    provider.configuration(inputStream.configuration)
+                    provider.configuration(inputStream.configuration),
                 )
             } ?: ConfiguredModel(null, now(), provider.configuration())
     }
 
-    private fun saveModel(copy: (OutputStream) -> Unit, save: (InputStream) -> Unit, retry: Boolean = true) {
+    private fun saveModel(
+        copy: (OutputStream) -> Unit,
+        save: (InputStream) -> Unit,
+        retry: Boolean = true,
+    ) {
         val pipedOutputStream = PipedOutputStream()
         val pipedInputStream = PipedInputStream(pipedOutputStream)
         val latch = CountDownLatch(1)
@@ -215,22 +234,22 @@ internal object NlpModelRepository {
     fun saveIntentModel(
         intentContextKey: IntentContextKey,
         model: IntentModelHolder,
-        modelIo: NlpEngineModelIo
+        modelIo: NlpEngineModelIo,
     ) {
         saveModel(
             { modelIo.copyIntentModel(model.nativeModel, it) },
-            { modelDAO.saveIntentModel(intentContextKey, it) }
+            { modelDAO.saveIntentModel(intentContextKey, it) },
         )
     }
 
     fun saveEntityModel(
         entityContextKey: EntityContextKey,
         model: EntityModelHolder,
-        modelIo: NlpEngineModelIo
+        modelIo: NlpEngineModelIo,
     ) {
         saveModel(
             { modelIo.copyEntityModel(model.nativeModel, it) },
-            { modelDAO.saveEntityModel(entityContextKey, it) }
+            { modelDAO.saveEntityModel(entityContextKey, it) },
         )
     }
 

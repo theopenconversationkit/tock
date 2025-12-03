@@ -25,9 +25,7 @@ private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understan
  * Create a story addressing [Intent.unknown] intent.
  * @param handler The handler for the story.
  */
-fun unknownStory(
-    handler: suspend (ClientBus).() -> Unit
-) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
+fun unknownStory(handler: suspend (ClientBus).() -> Unit) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
  * Creates a [definition for a new bot][ClientBotDefinition] in bot Api mode
@@ -38,7 +36,7 @@ fun unknownStory(
 fun newBot(
     apiKey: String,
     stories: List<ClientStoryDefinition>,
-    unknownStory: ClientStoryDefinition = defaultUnknownStory()
+    unknownStory: ClientStoryDefinition = defaultUnknownStory(),
 ): ClientBotDefinition = ClientBotDefinition(apiKey, stories, unknownStory)
 
 /**
@@ -48,12 +46,12 @@ fun newBot(
  */
 fun newBot(
     apiKey: String,
-    vararg stories: ClientStoryDefinition
+    vararg stories: ClientStoryDefinition,
 ): ClientBotDefinition =
     newBot(
         apiKey,
         stories.toList(),
-        stories.find { it.wrap(Intent.unknown) } ?: defaultUnknownStory()
+        stories.find { it.wrap(Intent.unknown) } ?: defaultUnknownStory(),
     )
 
 /**
@@ -71,7 +69,7 @@ fun newStory(
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent,
-    handler: suspend (ClientBus).() -> Unit
+    handler: suspend (ClientBus).() -> Unit,
 ): ClientStoryDefinition =
     ClientStoryDefinition(
         Intent(mainIntent),
@@ -79,7 +77,7 @@ fun newStory(
         secondaryIntents,
         steps,
         storyId,
-        newStoryHandler(handler)
+        newStoryHandler(handler),
     )
 
 /**
@@ -97,7 +95,7 @@ fun newStory(
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent.wrappedIntent().name,
-    handler: suspend (ClientBus).() -> Unit
+    handler: suspend (ClientBus).() -> Unit,
 ): ClientStoryDefinition =
     ClientStoryDefinition(
         mainIntent,
@@ -105,7 +103,7 @@ fun newStory(
         secondaryIntents,
         steps,
         storyId,
-        newStoryHandler(handler)
+        newStoryHandler(handler),
     )
 
 /**

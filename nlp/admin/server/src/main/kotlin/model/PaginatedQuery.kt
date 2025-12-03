@@ -31,5 +31,5 @@ open class PaginatedQuery(
     /**
      * The optional sort parameters.
      */
-    val sort: List<Pair<String, Boolean>>? = null
+    val sort: List<Pair<String, Boolean>>? = null,
 ) : ApplicationScopedQuery()

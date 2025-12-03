@@ -23,7 +23,6 @@ import ai.tock.bot.engine.BotBus
  * The [MediaCarousel] descriptor.
  */
 data class MediaCarouselDescriptor(val cards: List<MediaCardDescriptor>) : MediaMessageDescriptor {
-
     override val type: MediaMessageType = carousel
 
     override fun toMessage(bus: BotBus): MediaCarousel = MediaCarousel(cards.map { it.toMessage(bus) })
