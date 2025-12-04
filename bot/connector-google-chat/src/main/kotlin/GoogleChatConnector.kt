@@ -94,14 +94,31 @@ class GoogleChatConnector(
             if (message != null) {
                 callback as GoogleChatConnectorCallback
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-                    chatService.spaces().messages().create(
-                        callback.spaceName,
-                        message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
-                    )
-                        .setMessageReplyOption(
-                            "REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD",
-                        ) // Creates the message as a reply to the thread specified by [thread ID] If it fails, the message starts a new thread instead.
-                        .execute()
+                    try {
+                        logger.info {
+                            "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}"
+                        }
+                        logger.debug {
+                            "Message content: ${message.toGoogleMessage()}"
+                        }
+
+                        val response =
+                            chatService
+                                .spaces()
+                                .messages()
+                                .create(
+                                    callback.spaceName,
+                                    message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
+                                )
+                                .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                                .execute()
+
+                        logger.info { "Google Chat API response: ${response?.name}" }
+                    } catch (e: Exception) {
+                        logger.error(e) {
+                            "Failed to send message to Google Chat (space=${callback.spaceName}, thread=${callback.threadName})"
+                        }
+                    }
                 }
             }
         }
