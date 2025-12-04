@@ -264,35 +264,6 @@
           </div>
 
           <div class="col-3 mb-2">
-            <nb-form-field nbTooltip="Filter sentences modified before the given date">
-              <nb-icon
-                nbPrefix
-                icon="calendar-minus"
-              ></nb-icon>
-              <input
-                nbInput
-                fieldSize="small"
-                fullWidth
-                placeholder="Modified before"
-                [nbDatepicker]="modifiedBeforePicker"
-                formControlName="modifiedBefore"
-              />
-              <button
-                nbButton
-                ghost
-                size="small"
-                nbTooltip="Clear"
-                nbSuffix
-                *ngIf="getFormControl('modifiedBefore').value"
-                (click)="resetControl(getFormControl('modifiedBefore'))"
-              >
-                <nb-icon icon="x-lg"></nb-icon>
-              </button>
-            </nb-form-field>
-            <nb-datepicker #modifiedBeforePicker></nb-datepicker>
-          </div>
-
-          <div class="col-3 mb-2">
             <nb-form-field nbTooltip="Filter sentences modified after the given date">
               <nb-icon
                 nbPrefix
@@ -319,6 +290,35 @@
               </button>
             </nb-form-field>
             <nb-datepicker #modifiedAfterPicker></nb-datepicker>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-form-field nbTooltip="Filter sentences modified before the given date">
+              <nb-icon
+                nbPrefix
+                icon="calendar-minus"
+              ></nb-icon>
+              <input
+                nbInput
+                fieldSize="small"
+                fullWidth
+                placeholder="Modified before"
+                [nbDatepicker]="modifiedBeforePicker"
+                formControlName="modifiedBefore"
+              />
+              <button
+                nbButton
+                ghost
+                size="small"
+                nbTooltip="Clear"
+                nbSuffix
+                *ngIf="getFormControl('modifiedBefore').value"
+                (click)="resetControl(getFormControl('modifiedBefore'))"
+              >
+                <nb-icon icon="x-lg"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #modifiedBeforePicker></nb-datepicker>
           </div>
 
           <div
