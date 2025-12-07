@@ -55,7 +55,7 @@ def get_observability_info(observability_handler, trace_name: Optional[str] = No
     if trace_id is None:
         return None
 
-    langfuse_client = get_client()
+    langfuse_client = observability_handler.client
     trace_url = langfuse_client.get_trace_url(trace_id=trace_id)
 
     return ObservabilityInfo(

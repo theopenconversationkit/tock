@@ -91,6 +91,7 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
                 list(kwargs.keys()),
             )
 
+        # Langfuse SDK maintains an internal map / pool of clients based on there public key, that why the client isn't passed to the callbackhandler constructor.
         return LangfuseCallbackHandler(
             public_key=self.setting.public_key,
         )
