@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.web.send
 
 interface WebMessageContract {
+    val actionId: String
     val text: String?
     val footnotes: List<Footnote>
     val buttons: List<Button>
@@ -29,6 +30,7 @@ interface WebMessageContract {
 }
 
 data class WebMessageContent(
+    override val actionId: String,
     override val text: String? = null,
     override val buttons: List<Button> = emptyList(),
     override val deepLink: WebDeepLink? = null,
