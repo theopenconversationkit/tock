@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { StateService } from '../../../../core-nlp/state.service';
 import { IntentName, StoryDefinitionConfigurationSummary } from '../../../model/story';
 import { NbDialogService } from '@nebular/theme';
-import { Intent } from '../../../../model/nlp';
 import { IntentStoryDetailsComponent } from '../../../../shared/components';
 
 @Component({
@@ -36,7 +35,7 @@ export class StoriesListComponent {
   @Output() onDownloadStory = new EventEmitter<StoryDefinitionConfigurationSummary>();
   @Output() onDeleteStory = new EventEmitter<StoryDefinitionConfigurationSummary>();
 
-  dateFormat = 'dd/MM/yyyy HH:mm';
+  dateFormat = 'y/MM/dd HH:mm:ss';
 
   constructor(public state: StateService, private nbDialogService: NbDialogService) {}
 

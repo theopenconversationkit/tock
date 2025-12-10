@@ -46,6 +46,12 @@ private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 
+// Lifetime (in seconds) of each impersonated access token.
+// This is the TTL of a single token, not a hard limit on the connector:
+// HttpCredentialsAdapter + ImpersonatedCredentials automatically refresh
+// tokens when they expire, as long as the source credentials remain valid.
+private const val IMPERSONATION_TOKEN_LIFETIME_SECONDS = 3600
+
 internal object GoogleChatConnectorProvider : ConnectorProvider {
     private val logger = KotlinLogging.logger {}
 
@@ -111,30 +117,39 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
         targetServiceAccount: String,
     ): GoogleCredentials {
         val sourceCredentials = getSourceCredentials(connectorConfiguration)
+
+        logger.info { "Source credentials: ${(sourceCredentials as? ServiceAccountCredentials)?.clientEmail}" }
+        logger.info { "Impersonating target GSA = $targetServiceAccount with scopes = $CHAT_SCOPE" }
+
         return ImpersonatedCredentials.create(
             sourceCredentials,
             targetServiceAccount,
             null,
             listOf(CHAT_SCOPE),
-            3600,
+            IMPERSONATION_TOKEN_LIFETIME_SECONDS,
             null,
         )
     }
 
-    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials =
-        try {
+    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials {
+        return try {
             val credentialInputStream = getCredentialInputStream(connectorConfiguration)
-            ServiceAccountCredentials
-                .fromStream(credentialInputStream)
-                .createScoped("https://www.googleapis.com/auth/cloud-platform")
+            val creds =
+                ServiceAccountCredentials.fromStream(credentialInputStream)
+                    .createScoped("https://www.googleapis.com/auth/cloud-platform")
+
+            logger.info { "Loaded explicit service account: ${(creds as ServiceAccountCredentials).clientEmail}" }
+
+            creds
         } catch (e: Exception) {
-            GoogleCredentials
-                .getApplicationDefault()
+            logger.info { "No explicit credentials found, using Application Default Credentials" }
+            GoogleCredentials.getApplicationDefault()
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
         }
+    }
 
-    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream =
-        connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
+    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream {
+        return connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
             ?.let { resourceAsStream(it) }
             ?: connectorConfiguration.parameters[SERVICE_CREDENTIAL_CONTENT_PARAMETER]
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
@@ -143,6 +158,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
                     "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
+    }
 
     private fun loadCredentials(inputStream: InputStream): GoogleCredentials =
         ServiceAccountCredentials

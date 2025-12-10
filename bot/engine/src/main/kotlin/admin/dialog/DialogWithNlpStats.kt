@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Component } from '@angular/core';
+package ai.tock.bot.admin.dialog
 
-@Component({
-  selector: 'tock-rag-tabs',
-  template: '<nb-route-tabset></nb-route-tabset>'
-})
-export class RagTabsComponent {}
+import ai.tock.bot.engine.nlp.NlpStats
+
+data class DialogWithNlpStats(
+    val dialog: DialogReport,
+    val nlpStats: List<NlpStats>,
+)

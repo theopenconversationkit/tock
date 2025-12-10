@@ -106,7 +106,10 @@ class GoogleChatConnector(
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {
                     try {
                         logger.info {
-                            "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}, message=${message.toGoogleMessage()}"
+                            "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}"
+                        }
+                        logger.debug {
+                            "Message content: ${message.toGoogleMessage()}"
                         }
 
                         val response =
@@ -116,7 +119,8 @@ class GoogleChatConnector(
                                 .create(
                                     callback.spaceName,
                                     message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
-                                ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                                )
+                                .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
                                 .execute()
 
                         logger.info { "Google Chat API response: ${response?.name}" }
