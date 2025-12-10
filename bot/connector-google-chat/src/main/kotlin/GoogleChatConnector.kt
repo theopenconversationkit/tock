@@ -32,7 +32,6 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
-import ai.tock.shared.longProperty
 import com.github.salomonbrys.kodein.instance
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.chat.v1.HangoutsChat
@@ -51,12 +50,6 @@ class GoogleChatConnector(
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
-
-    // Align intro cooldown with dialog validity (24 hours)
-    private val introCooldownSeconds: Long = longProperty("tock_bot_dialog_max_validity_in_seconds", 60 * 60 * 24)
-
-    // Last intro send time per space + thread
-    private val introSentThreads: MutableMap<String, Long> = mutableMapOf()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -79,7 +72,15 @@ class GoogleChatConnector(
                             executor.executeBlocking {
                                 controller.handle(
                                     event,
-                                    ConnectorData(GoogleChatConnectorCallback(connectorId, spaceName, threadName)),
+                                    ConnectorData(
+                                        GoogleChatConnectorCallback(
+                                            connectorId,
+                                            spaceName,
+                                            threadName,
+                                            chatService,
+                                            introMessage
+                                        )
+                                    ),
                                 )
                             }
                         } else {
@@ -99,59 +100,10 @@ class GoogleChatConnector(
     ) {
         logger.debug { "event: $event" }
         if (event is Action) {
-            var shouldSendIntro = false
-            var introCallback: GoogleChatConnectorCallback? = null
-
-            if (introMessage != null && callback is GoogleChatConnectorCallback) {
-                val threadKey = callback.spaceName + "|" + callback.threadName
-                val now = System.currentTimeMillis()
-                val cooldownMillis = introCooldownSeconds * 1000
-
-                shouldSendIntro =
-                    synchronized(introSentThreads) {
-                        val last = introSentThreads[threadKey] ?: 0L
-                        if (now - last >= cooldownMillis) {
-                            introSentThreads[threadKey] = now
-                            true
-                        } else {
-                            false
-                        }
-                    }
-
-                if (shouldSendIntro) {
-                    introCallback = callback
-                }
-            }
-
             val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
             if (message != null) {
                 callback as GoogleChatConnectorCallback
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-                    if (shouldSendIntro && introMessage != null && introCallback != null) {
-                        try {
-                            logger.info {
-                                "Sending intro message to Google Chat: space=${introCallback.spaceName}, thread=${introCallback.threadName}"
-                            }
-                            val introResponse =
-                                chatService
-                                    .spaces()
-                                    .messages()
-                                    .create(
-                                        introCallback.spaceName,
-                                        GoogleChatConnectorTextMessageOut(introMessage)
-                                            .toGoogleMessage()
-                                            .setThread(Thread().setName(introCallback.threadName)),
-                                    ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
-                                    .execute()
-
-                            logger.info { "Google Chat API intro response: ${introResponse?.name}" }
-                        } catch (e: Exception) {
-                            logger.error(e) {
-                                "Failed to send intro message to Google Chat (space=${introCallback.spaceName}, thread=${introCallback.threadName})"
-                            }
-                        }
-                    }
-
                     try {
                         logger.info {
                             "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}, message=${message.toGoogleMessage()}"
