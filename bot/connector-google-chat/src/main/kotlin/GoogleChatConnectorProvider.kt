@@ -131,11 +131,12 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
         )
     }
 
-    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials {
-        return try {
+    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials =
+        try {
             val credentialInputStream = getCredentialInputStream(connectorConfiguration)
             val creds =
-                ServiceAccountCredentials.fromStream(credentialInputStream)
+                ServiceAccountCredentials
+                    .fromStream(credentialInputStream)
                     .createScoped("https://www.googleapis.com/auth/cloud-platform")
 
             logger.info { "Loaded explicit service account: ${(creds as ServiceAccountCredentials).clientEmail}" }
@@ -143,13 +144,13 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             creds
         } catch (e: Exception) {
             logger.info { "No explicit credentials found, using Application Default Credentials" }
-            GoogleCredentials.getApplicationDefault()
+            GoogleCredentials
+                .getApplicationDefault()
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
         }
-    }
 
-    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream {
-        return connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
+    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream =
+        connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
             ?.let { resourceAsStream(it) }
             ?: connectorConfiguration.parameters[SERVICE_CREDENTIAL_CONTENT_PARAMETER]
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
@@ -158,7 +159,6 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
                     "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
-    }
 
     private fun loadCredentials(inputStream: InputStream): GoogleCredentials =
         ServiceAccountCredentials

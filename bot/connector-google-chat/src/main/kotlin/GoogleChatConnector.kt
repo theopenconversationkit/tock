@@ -78,8 +78,8 @@ class GoogleChatConnector(
                                             spaceName,
                                             threadName,
                                             chatService,
-                                            introMessage
-                                        )
+                                            introMessage,
+                                        ),
                                     ),
                                 )
                             }
@@ -119,8 +119,7 @@ class GoogleChatConnector(
                                 .create(
                                     callback.spaceName,
                                     message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
-                                )
-                                .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                                ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
                                 .execute()
 
                         logger.info { "Google Chat API response: ${response?.name}" }

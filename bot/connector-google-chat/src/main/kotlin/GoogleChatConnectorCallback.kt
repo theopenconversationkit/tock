@@ -30,7 +30,6 @@ data class GoogleChatConnectorCallback(
     private val chatService: HangoutsChat,
     private val introMessage: String?,
 ) : ConnectorCallbackBase(applicationId, googleChatConnectorType) {
-
     private val logger = KotlinLogging.logger {}
 
     /**
@@ -49,9 +48,7 @@ data class GoogleChatConnectorCallback(
      * - An intro message is configured
      * - The user timeline has no bot actions (new conversation)
      */
-    private fun shouldSendIntro(userTimeline: UserTimeline): Boolean {
-        return introMessage != null && !userTimeline.containsBotAction()
-    }
+    private fun shouldSendIntro(userTimeline: UserTimeline): Boolean = introMessage != null && !userTimeline.containsBotAction()
 
     /**
      * Sends the intro message to the Google Chat space/thread.
@@ -64,17 +61,17 @@ data class GoogleChatConnectorCallback(
                 "Sending intro message to Google Chat: space=$spaceName, thread=$threadName"
             }
 
-            val response = chatService
-                .spaces()
-                .messages()
-                .create(
-                    spaceName,
-                    GoogleChatConnectorTextMessageOut(introMessage)
-                        .toGoogleMessage()
-                        .setThread(Thread().setName(threadName))
-                )
-                .setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
-                .execute()
+            val response =
+                chatService
+                    .spaces()
+                    .messages()
+                    .create(
+                        spaceName,
+                        GoogleChatConnectorTextMessageOut(introMessage)
+                            .toGoogleMessage()
+                            .setThread(Thread().setName(threadName)),
+                    ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                    .execute()
 
             logger.info { "Google Chat API intro response: ${response?.name}" }
         } catch (e: Exception) {
