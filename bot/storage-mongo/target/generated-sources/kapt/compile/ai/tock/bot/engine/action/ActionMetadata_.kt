@@ -39,6 +39,8 @@ private val __StreamedResponse: KProperty1<ActionMetadata, Boolean?>
     get() = ActionMetadata::streamedResponse
 private val __ObservabilityInfo: KProperty1<ActionMetadata, ObservabilityInfo?>
     get() = ActionMetadata::observabilityInfo
+private val __Feedback: KProperty1<ActionMetadata, ActionFeedback?>
+    get() = ActionMetadata::feedback
 class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ActionMetadata?>) :
         KPropertyPath<T, ActionMetadata?>(previous,property) {
     val lastAnswer: KPropertyPath<T, Boolean?>
@@ -83,6 +85,9 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
     val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
         get() = KPropertyPath(this,__ObservabilityInfo)
 
+    val feedback: KPropertyPath<T, ActionFeedback?>
+        get() = KPropertyPath(this,__Feedback)
+
     companion object {
         val LastAnswer: KProperty1<ActionMetadata, Boolean?>
             get() = __LastAnswer
@@ -111,7 +116,9 @@ class ActionMetadata_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         val StreamedResponse: KProperty1<ActionMetadata, Boolean?>
             get() = __StreamedResponse
         val ObservabilityInfo: KProperty1<ActionMetadata, ObservabilityInfo?>
-            get() = __ObservabilityInfo}
+            get() = __ObservabilityInfo
+        val Feedback: KProperty1<ActionMetadata, ActionFeedback?>
+            get() = __Feedback}
 }
 
 class ActionMetadata_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -158,6 +165,9 @@ class ActionMetadata_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1
 
     val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
         get() = KPropertyPath(this,__ObservabilityInfo)
+
+    val feedback: KPropertyPath<T, ActionFeedback?>
+        get() = KPropertyPath(this,__Feedback)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMetadata_<T> =
@@ -207,6 +217,9 @@ class ActionMetadata_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProper
 
     val observabilityInfo: KPropertyPath<T, ObservabilityInfo?>
         get() = KPropertyPath(this,__ObservabilityInfo)
+
+    val feedback: KPropertyPath<T, ActionFeedback?>
+        get() = KPropertyPath(this,__Feedback)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ActionMetadata_<T> =

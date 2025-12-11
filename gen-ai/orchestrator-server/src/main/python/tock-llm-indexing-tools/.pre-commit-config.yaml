@@ -33,6 +33,10 @@ repos:
       hooks:
         - id: pycln
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.0
+    rev: v2.9.0
     hooks:
       - id: pip-audit
+        additional_dependencies:
+          - "pip>=25.3"
+          - "filelock>=3.20.1"
+          - "urllib3>=2.6.3"
