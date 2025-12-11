@@ -47,4 +47,6 @@ data class DialogStatsQueryResult(
     val knownIntentUserActions: List<CountResult> = emptyList(),
     val unknownIntentUserActions: List<CountResult> = emptyList(),
     val unknownIntentUserActionsExceptRag: List<CountResult> = emptyList(),
+    val allFeedbackUp: List<CountResult> = emptyList(),
+    val allFeedbackDown: List<CountResult> = emptyList(),
 )

@@ -117,6 +117,22 @@
           </div>
         </div>
 
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          User feedback (👍):
+          <div>
+            <span class="stats-value">{{ dialogStats?.prod?.allFeedbackUp || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.allFeedbackUp || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          User feedback (👎):
+          <div>
+            <span class="stats-value">{{ dialogStats?.prod?.allFeedbackDown || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.allFeedbackDown || 0 }}</span>
+          </div>
+        </div>
+
         <h6 class="mt-3 mb-2">Bot (NLP) Statistics</h6>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">

@@ -95,7 +95,9 @@
           [date]="action.date"
           [reply]="action.isBot()"
           [replay]="true"
-          [sender]="getUserName(action)"
+          [sender]="(action.metadata?.feedback?.vote === 'UP' ? ' 👍' :
+            action.metadata?.feedback?.vote === 'DOWN' ? ' 👎' : '') + ' ' +
+            getUserName(action)"
           [avatar]="getUserAvatar(action)"
           [applicationId]="action.applicationId"
           id="action-anchor-{{ action.id }}"
