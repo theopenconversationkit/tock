@@ -21,10 +21,12 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.EndConversationEvent
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.FeedbackEvent
 import ai.tock.bot.engine.event.NoInputEvent
 import ai.tock.bot.engine.event.OneToOneEvent
 import ai.tock.bot.engine.event.PassThreadControlEvent
 import ai.tock.bot.engine.event.StartConversationEvent
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -70,9 +72,50 @@ open class EventListenerBase : EventListener {
                 is StartConversationEvent -> helloStory.sendChoice(event, true)
                 is EndConversationEvent -> goodbyeStory.sendChoice(event)
                 is NoInputEvent -> goodbyeStory.sendChoice(event)
+                is FeedbackEvent -> applyFeedback(controller, event)
                 is PassThreadControlEvent -> passThreadControlEventListener(controller, connectorData, event)
                 else -> false
             }
+        }
+    }
+
+    /**
+     * Applies feedback from a [FeedbackEvent] to the corresponding action in the user's timeline.
+     *
+     * This function attempts to find the action with the given `actionId` in the last valid dialog
+     * of the user's timeline. If the action is found, it updates its metadata with the provided
+     * feedback and saves the updated timeline. If the action is not found, a warning is logged.
+     *
+     * @param controller the [ConnectorController] containing bot definitions and story loaders.
+     * @param event the [FeedbackEvent] carrying the user ID, action ID, and feedback to apply.
+     */
+    protected open fun applyFeedback(
+        controller: ConnectorController,
+        event: FeedbackEvent,
+    ): Boolean {
+        with(controller.botDefinition) {
+            val userTimelineDAO: UserTimelineDAO by injector.instance()
+            runBlocking {
+                val timeline =
+                    userTimelineDAO.loadWithLastValidDialog(
+                        namespace,
+                        event.userId,
+                        storyDefinitionProvider = controller.storyDefinitionLoader(event.connectorId),
+                    )
+
+                val action =
+                    timeline.currentDialog
+                        ?.allActions()
+                        ?.firstOrNull { it.id.toString() == event.actionId && PlayerType.bot == it.playerId.type }
+
+                if (action != null) {
+                    action.metadata.feedback = event.feedback
+                    userTimelineDAO.save(timeline, controller.botDefinition)
+                } else {
+                    logger.warn("Feedback ignored: no action found with id ${event.actionId} in the current dialog.")
+                }
+            }
+            return false
         }
     }
 

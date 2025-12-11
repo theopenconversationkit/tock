@@ -20,6 +20,7 @@ import ai.tock.bot.admin.annotation.BotAnnotationReasonType
 import ai.tock.bot.admin.annotation.BotAnnotationState
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.engine.action.FeedbackVote
 import ai.tock.bot.engine.dialog.SortDirection
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.admin.model.PaginatedQuery
@@ -50,6 +51,7 @@ data class DialogsSearchQuery(
     val annotationCreationDateTo: ZonedDateTime? = null,
     val dialogCreationDateFrom: ZonedDateTime? = null,
     val dialogCreationDateTo: ZonedDateTime? = null,
+    val feedback: FeedbackVote? = null,
 ) : PaginatedQuery() {
     fun toDialogReportQuery(): DialogReportQuery {
         return DialogReportQuery(
@@ -79,6 +81,7 @@ data class DialogsSearchQuery(
             annotationCreationDateTo = annotationCreationDateTo,
             dialogCreationDateFrom = dialogCreationDateFrom,
             dialogCreationDateTo = dialogCreationDateTo,
+            feedback = feedback,
         )
     }
 }

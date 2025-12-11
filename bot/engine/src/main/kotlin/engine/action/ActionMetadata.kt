@@ -47,4 +47,6 @@ data class ActionMetadata(
     var streamedResponse: Boolean = false,
     /** ObservabilityInfo **/
     val observabilityInfo: ObservabilityInfo? = null,
+    /** Feedback **/
+    var feedback: ActionFeedback? = null,
 )

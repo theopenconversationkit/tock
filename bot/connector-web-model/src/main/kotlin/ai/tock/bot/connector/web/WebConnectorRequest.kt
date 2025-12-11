@@ -18,6 +18,11 @@ package ai.tock.bot.connector.web
 
 import java.util.Locale
 
+data class FeedbackParams(
+    val actionId: String,
+    val vote: String? = null,
+)
+
 interface WebConnectorRequestContract {
     val query: String?
     val payload: String?
@@ -28,6 +33,7 @@ interface WebConnectorRequestContract {
     val returnsHistory: Boolean get() = false
     val sourceWithContent: Boolean get() = false
     val streamedResponse: Boolean get() = false
+    val feedback: FeedbackParams?
 }
 
 data class WebConnectorRequestContent(
@@ -40,4 +46,5 @@ data class WebConnectorRequestContent(
     override val returnsHistory: Boolean = false,
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
+    override val feedback: FeedbackParams? = null,
 ) : WebConnectorRequestContract

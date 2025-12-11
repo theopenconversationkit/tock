@@ -129,7 +129,6 @@ internal class TockConnectorController(
                         executor.launchCoroutine {
                             handleAction(event, 0, data)
                         }
-
                     else -> callback.eventSkipped(event)
                 }
             } else {

@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.web.WebConnector.Companion.sendSseResponse
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
@@ -80,5 +81,10 @@ internal class WebConnectorCallback(
     fun sendStreamedResponse(action: Action) {
         context?.response()
             ?.sendSseResponse(createResponse(listOf(action)))
+    }
+
+    override fun eventSkipped(event: Event) {
+        super.eventSkipped(event)
+        sendResponse()
     }
 }
