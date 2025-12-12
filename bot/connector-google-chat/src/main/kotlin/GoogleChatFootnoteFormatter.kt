@@ -68,10 +68,11 @@ object GoogleChatFootnoteFormatter {
     ): String {
         val unique = footnotes.distinctBy { (it.url ?: "") to it.title.toString().trim() }
         val links =
-            unique.mapIndexed { idx, fn ->
-                val num = idx + 1
-                fn.url?.let { "[[$num]]($it)" } ?: "[$num]"
-            }.joinToString(" ")
+            unique
+                .mapIndexed { idx, fn ->
+                    val num = idx + 1
+                    fn.url?.let { "[[$num]]($it)" } ?: "[$num]"
+                }.joinToString(" ")
 
         val header = if (unique.size > 1) "Sources" else "Source"
         return "$text\n\n*$header:* $links"
