@@ -97,7 +97,7 @@ internal data class DialogCol(
         dialog.stories.map { StoryMongoWrapper(it) },
         userTimeline.applicationIds,
         groupId = dialog.groupId,
-        test = userTimeline.userPreferences.test,
+        test = userTimeline.applicationIds.any { it.startsWith("test-") },
         namespace = userTimeline.namespace,
         review = dialog.review,
         rating = dialog.rating,
