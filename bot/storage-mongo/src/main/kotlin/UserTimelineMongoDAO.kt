@@ -750,6 +750,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                                 query.applicationId,
                                             )
                                     },
+                                    if (query.feedback != null) eq("stories.actions.botMetadata.feedback.vote", query.feedback) else null,
                                     if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
                                     if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
                                     if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
