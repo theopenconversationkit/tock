@@ -26,6 +26,7 @@ import ai.tock.bot.engine.event.NoInputEvent
 import ai.tock.bot.engine.event.OneToOneEvent
 import ai.tock.bot.engine.event.PassThreadControlEvent
 import ai.tock.bot.engine.event.StartConversationEvent
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -105,7 +106,7 @@ open class EventListenerBase : EventListener {
                 val action =
                     timeline.currentDialog
                         ?.allActions()
-                        ?.firstOrNull { it.id.toString() == event.actionId }
+                        ?.firstOrNull { it.id.toString() == event.actionId && PlayerType.bot == it.playerId.type }
 
                 if (action != null) {
                     action.metadata.feedback = event.feedback
