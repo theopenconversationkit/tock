@@ -1,0 +1,34 @@
+{
+  "bot": {
+    "namespace": "my-ns",
+    "bot_id": "my-bot",
+    "file_location": "/tmp/tock/ingestion"
+  },
+  "em_setting": {
+    "api_base": "https://my-em.net",
+    "api_key": {
+      "secret": "XXX",
+      "type": "Raw"
+    },
+    "api_version": "2024-03-01-preview",
+    "deployment_name": "my-em-deployment",
+    "model": "text-embedding-ada-002",
+    "provider": "AzureOpenAIService"
+  },
+  "vector_store_setting": {
+    "provider": "PGVector",
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": {
+      "type": "Raw",
+      "secret": "XXX"
+    }
+  },
+  "data_csv_file": "my_data.csv",
+  "document_index_name": null,
+  "chunk_size": 5000,
+  "embedding_bulk_size": 10,
+  "ignore_source": false,
+  "append_doc_title_and_chunk": false
+}
