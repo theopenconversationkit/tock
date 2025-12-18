@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendChoice.Companion.REFERRAL_PARAMETER
@@ -25,7 +26,17 @@ import ai.tock.bot.engine.event.ReferralParametersEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
 import ai.tock.shared.defaultLocale
+import org.litote.kmongo.Id
 import java.util.Locale
+
+enum class FeedBackVote{
+    UP, DOWN
+}
+
+data class FeedbackParams(
+    val actionId: Id<Action>,
+    val vote: FeedBackVote? = null,
+)
 
 data class WebConnectorRequest(
     override val query: String? = null,
@@ -37,6 +48,8 @@ data class WebConnectorRequest(
     override val returnsHistory: Boolean = false,
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
+    val feedback: FeedbackParams? = null,
+
 ) : WebConnectorRequestContract {
     fun toEvent(applicationId: String): Event =
         if (query != null) {
