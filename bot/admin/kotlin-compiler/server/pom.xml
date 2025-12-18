@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot-admin-kotlin-compiler</artifactId>
-        <version>25.10.3</version>
+        <version>25.10.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-admin-kotlin-compiler-server</artifactId>
