@@ -16,11 +16,14 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.engine.action.ActionFeedback
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.FeedbackVote
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendChoice.Companion.REFERRAL_PARAMETER
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.FeedbackEvent
 import ai.tock.bot.engine.event.ReferralParametersEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
@@ -37,6 +40,7 @@ data class WebConnectorRequest(
     override val returnsHistory: Boolean = false,
     override val sourceWithContent: Boolean = false,
     override val streamedResponse: Boolean = false,
+    override val feedback: FeedbackParams? = null,
 ) : WebConnectorRequestContract {
     fun toEvent(applicationId: String): Event =
         if (query != null) {
@@ -51,6 +55,14 @@ data class WebConnectorRequest(
                         sourceWithContent = sourceWithContent,
                         streamedResponse = streamedResponse,
                     ),
+            )
+        } else if (feedback != null) {
+            FeedbackEvent(
+                userId = PlayerId(userId),
+                applicationId = applicationId,
+                recipientId = PlayerId(applicationId, bot),
+                actionId = feedback.actionId,
+                feedback = feedback.vote?.let { ActionFeedback(vote = FeedbackVote.valueOf(it)) },
             )
         } else if (payload != null) {
             val (intent, parameters) = SendChoice.decodeChoiceId(payload)

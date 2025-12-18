@@ -28,15 +28,15 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                 val stringText = action.stringText
 
                 if (stringText != null) {
-                    WebMessage(postProcess(stringText))
+                    WebMessage(text = postProcess(stringText), actionId = action.id.toString())
                 } else {
-                    postProcess(action.message(webConnectorType) as? WebMessage)
+                    postProcess(action.message(webConnectorType) as? WebMessage, actionId = action.id.toString())
                 }
             }
             is SendSentenceWithFootnotes -> {
                 val stringText = action.text.toString()
                 WebMessage(
-                    postProcess(stringText),
+                    text = postProcess(stringText),
                     footnotes =
                         action.footnotes.map { footnote ->
                             Footnote(
@@ -47,15 +47,19 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                                 footnote.score,
                             )
                         },
+                    actionId = action.id.toString(),
                 )
             }
             else -> null
         }
     }
 
-    private fun postProcess(message: WebMessage?): WebMessage? {
+    private fun postProcess(
+        message: WebMessage?,
+        actionId: String,
+    ): WebMessage? {
         if (message?.text != null) {
-            return message.copy(text = postProcess(message.text))
+            return message.copy(text = postProcess(message.text), actionId = actionId)
         }
 
         return message

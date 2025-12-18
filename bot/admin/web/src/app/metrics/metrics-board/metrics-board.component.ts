@@ -148,6 +148,8 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
       knownIntentUserActions : stats.knownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
       unknownIntentUserActions : stats.unknownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
       unknownIntentUserActionsExceptRag : stats.unknownIntentUserActionsExceptRag.reduce((sum, item) => sum + item.total, 0),
+      allFeedbackUp : stats.allFeedbackUp.reduce((sum, item) => sum + item.total, 0),
+      allFeedbackDown : stats.allFeedbackDown.reduce((sum, item) => sum + item.total, 0),
     }
   }
 

@@ -42,6 +42,7 @@ data class WebMessage(
     override val version: String = "1",
     override val deepLink: WebDeepLink? = null,
     override val footnotes: List<Footnote> = emptyList(),
+    override val actionId: String? = null,
 ) : WebMessageContract, WebConnectorMessage {
     constructor(content: WebMessageContent) : this(
         content.text,
@@ -53,6 +54,7 @@ data class WebMessage(
         content.version,
         content.deepLink,
         content.footnotes,
+        content.actionId,
     )
 
     @get:JsonIgnore
