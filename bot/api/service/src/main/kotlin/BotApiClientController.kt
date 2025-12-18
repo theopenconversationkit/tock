@@ -130,8 +130,8 @@ internal class BotApiClientController(
                     }
                 } else {
                     val holder = setHolder(request.requestId)
-                    sendWithSse(request, lastConfiguration?.version, sendResponse)
                     holder.waitForResponse(sendResponse)
+                    sendWithSse(request, lastConfiguration?.version, sendResponse)
                 }
             }
     }
@@ -144,8 +144,8 @@ internal class BotApiClientController(
         if (pushHandler != null) {
             val holder = setHolder(request.requestId)
             logger.debug { "send request ${request.requestId}" }
-            pushHandler.invoke(mapper.writeValueAsString(request))
             holder.waitForResponse(sendResponse)
+            pushHandler.invoke(mapper.writeValueAsString(request))
         } else {
             if (request.configuration != true) {
                 error("no websocket handler for $apiKey and no webhook reachable")

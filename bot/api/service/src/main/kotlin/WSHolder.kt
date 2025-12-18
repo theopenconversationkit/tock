@@ -52,19 +52,25 @@ internal class WSHolder {
     private var latch: CountDownLatch = CountDownLatch(1)
 
     fun receive(response: ResponseData) {
+        logger.debug { "add to holder: $response" }
         this.response.add(response)
-        latch.countDown()
+        synchronized(response) {
+            latch.countDown()
+        }
     }
 
-    @Synchronized
     fun wait(): List<ResponseData> {
+        logger.debug { "start await" }
         latch.await(timeoutInSeconds, SECONDS)
-        val r = response.sortedBy { it.botResponse?.context?.date ?: Instant.now() }
-        logger.debug { r }
-        if (r.lastOrNull()?.botResponse?.context?.lastResponse == false) {
-            latch = CountDownLatch(1)
+        synchronized(response) {
+            val r = response.sortedBy { it.botResponse?.context?.date ?: Instant.now() }
+            logger.debug { "responses: $r" }
+            if (r.lastOrNull()?.botResponse?.context?.lastResponse == false) {
+                latch = CountDownLatch(1)
+            }
+
+            return r.filterNot { seen.contains(it) }.apply { seen.addAll(this) }
         }
-        return r.filterNot { seen.contains(it) }.apply { seen.addAll(this) }
     }
 
     fun waitForResponse(sendResponse: (ResponseData?) -> Unit = {}): Unit =

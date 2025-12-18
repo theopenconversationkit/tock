@@ -40,7 +40,9 @@ class MetadataEvent(val type: String, val value: String, applicationId: String) 
         const val STREAM_RESPONSE_METADATA = "TOCK_STREAM_RESPONSE"
     }
 
-    fun isEndStreamMetadata(): Boolean = type == STREAM_RESPONSE_METADATA && value != "true"
+    fun isEndStreamMetadata(): Boolean = isStreamMetadata() && value != "true"
+
+    fun isStreamMetadata(): Boolean = type == STREAM_RESPONSE_METADATA
 }
 
 fun Map<String, String>.hasStreamMetadata(): Boolean = this[STREAM_RESPONSE_METADATA] == "true"
