@@ -18,8 +18,8 @@ import math
 import time
 from typing import List
 
+from langfuse._client.datasets import DatasetItemClient
 from langfuse.api import TraceWithFullDetails
-from langfuse.client import DatasetItemClient
 from ragas.dataset_schema import SingleTurnSample
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.llms import LangchainLLMWrapper
@@ -37,6 +37,7 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
 
 logger = logging.getLogger(__name__)
 
+
 class RagasEvaluator:
     def __init__(self, langfuse_client, evaluation_input: RunEvaluationInput):
         global logger
@@ -53,7 +54,9 @@ class RagasEvaluator:
 
         # Filter selected metrics
         self.metrics = [
-            metric for metric in ragas_available_metrics if metric['name'] in evaluation_input.metric_names
+            metric
+            for metric in ragas_available_metrics
+            if metric['name'] in evaluation_input.metric_names
         ]
 
         # Initialize metrics
@@ -69,16 +72,23 @@ class RagasEvaluator:
 
     def fetch_statements_reasons(self, trace_id):
         time.sleep(3)  # Waiting for trace update
-        trace_full = self.langfuse_client.get_trace(trace_id)
+        trace_full = self.langfuse_client.api.trace.get(trace_id)
         observations = trace_full.observations
-        last_gen_item = next((obs for obs in reversed(observations) if obs.type == 'GENERATION'), None)
+        last_gen_item = next(
+            (obs for obs in reversed(observations) if obs.type == 'GENERATION'), None
+        )
         if last_gen_item and last_gen_item.output:
-            parsed_data = json.loads(last_gen_item.output['content'].strip('```json').strip('```'))
+            parsed_data = json.loads(
+                last_gen_item.output['content'].strip('```json').strip('```')
+            )
+            logger.info(parsed_data.get('statements', []))
             if parsed_data.get('statements', []):
-                return ' | '.join([stmt['reason'] for stmt in parsed_data['statements']])
+                return ' | '.join(parsed_data['statements'])
         return ''
 
-    def calculate_metric_score(self, metric, metric_name, sample, item, experiment_name):
+    def calculate_metric_score(
+        self, metric, metric_name, sample, item, experiment_name
+    ):
         logger.info(
             f"Calculating {metric_name} score for item '{item.id}' of dataset '{item.dataset_name}' in experiment '{experiment_name}"
         )
@@ -86,9 +96,17 @@ class RagasEvaluator:
             observability_setting=self.observability_setting, trace_name=metric_name
         )
         score = metric.single_turn_score(sample, callbacks=[observability_handler])
-        return -1 if math.isnan(float(score)) else score, observability_handler.trace
+        return (
+            -1 if math.isnan(float(score)) else score,
+            observability_handler.last_trace_id,
+        )
 
-    def score_with_ragas(self, item: DatasetItemClient, run_trace_details: TraceWithFullDetails, experiment_name: str) -> List[MetricScore]:
+    def score_with_ragas(
+        self,
+        item: DatasetItemClient,
+        run_trace_details: TraceWithFullDetails,
+        experiment_name: str,
+    ) -> List[MetricScore]:
         query = item.input['question']
         chunks = [doc['page_content'] for doc in run_trace_details.output['documents']]
         answer = run_trace_details.output['answer']
@@ -98,30 +116,43 @@ class RagasEvaluator:
         for m in self.metrics:
             metric = m['metric']
             metric_name = m['name']
-            sample = SingleTurnSample(user_input=query, retrieved_contexts=chunks, response=answer,
-                                      reference=ground_truth)
+            sample = SingleTurnSample(
+                user_input=query,
+                retrieved_contexts=chunks,
+                response=answer,
+                reference=ground_truth,
+            )
 
-            score, trace = self.calculate_metric_score(metric, metric_name, sample, item, experiment_name)
+            score, trace_id = self.calculate_metric_score(
+                metric, metric_name, sample, item, experiment_name
+            )
 
-            statements_reasons = 'The score is not a number! There must be an error in the metric calculation.' if score == -1 else ''
+            statements_reasons = (
+                'The score is not a number! There must be an error in the metric calculation.'
+                if score == -1
+                else ''
+            )
             if score != -1 and m['hasReason']:
-                statements_reasons = self.fetch_statements_reasons(trace.id)
+                statements_reasons = self.fetch_statements_reasons(trace_id)
 
-            metric_scores.append(MetricScore(
-                metric_name=metric_name,
-                value=score,
-                reason=statements_reasons,
-                trace_id=trace.id,
-            ))
+            metric_scores.append(
+                MetricScore(
+                    metric_name=metric_name,
+                    value=score,
+                    reason=statements_reasons,
+                    trace_id=trace_id,
+                )
+            )
             logger.info(f"Metric {metric_name} -> score = {score}")
 
-
         for metric_score in metric_scores:
-            self.langfuse_client.score(
+            self.langfuse_client.create_score(
                 trace_id=run_trace_details.id,
                 name=metric_score.metric_name,
                 value=metric_score.value,
-                comment=' : '.join(filter(None, [metric_score.trace_id, metric_score.reason]))
+                comment=' : '.join(
+                    filter(None, [metric_score.trace_id, metric_score.reason])
+                ),
             )
 
         return metric_scores

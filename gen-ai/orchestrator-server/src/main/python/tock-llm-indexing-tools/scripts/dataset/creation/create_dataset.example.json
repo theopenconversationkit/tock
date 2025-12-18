@@ -1,0 +1,25 @@
+{
+  "bot": {
+    "namespace": "my-ns",
+    "bot_id": "my-bot",
+    "file_location": "/tmp/tock/ingestion"
+  },
+  "dataset": {
+    "name": "my-dataset",
+    "description": "Dataset description",
+    "metadata": {},
+    "template": {
+      "type": "xlsx",
+      "file": "my-dataset.xlsx"
+    }
+  },
+  "observability_setting": {
+    "provider": "Langfuse",
+    "url": "http://localhost:3000",
+    "secret_key": {
+      "type": "Raw",
+      "secret": "XXX"
+    },
+    "public_key": "XXX"
+  }
+}
