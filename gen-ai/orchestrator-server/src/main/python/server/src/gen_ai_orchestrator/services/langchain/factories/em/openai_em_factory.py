@@ -50,6 +50,7 @@ class OpenAIEMFactory(LangChainEMFactory):
             base_url=self.setting.base_url,
             model=self.setting.model,
             timeout=application_settings.em_provider_timeout,
+            chunk_size=self.setting.chunk_size,
         )
 
     @openai_exception_handler(provider='OpenAI')
