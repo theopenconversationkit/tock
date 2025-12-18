@@ -46,6 +46,10 @@ export class DialogReport {
   }
 }
 
+export interface FeedbackParams {
+  vote: string
+}
+
 export interface ActionReportMetadata {
   isGenAiRagAnswer: boolean;
   observabilityInfo?: {
@@ -53,6 +57,7 @@ export interface ActionReportMetadata {
     traceName: string;
     traceUrl: string;
   };
+  feedback?: FeedbackParams;
 }
 
 export class ActionReport {
@@ -450,6 +455,8 @@ export interface DialogStatsQueryResult {
   knownIntentUserActions: CountResult[];
   unknownIntentUserActions: CountResult[];
   unknownIntentUserActionsExceptRag: CountResult[];
+  allFeedbackUp: CountResult[];
+  allFeedbackDown: CountResult[];
 }
 
 export interface CountResult {
@@ -469,5 +476,7 @@ export interface DialogCounts {
   knownIntentUserActions: number;
   unknownIntentUserActions: number;
   unknownIntentUserActionsExceptRag: number;
+  allFeedbackUp: number;
+  allFeedbackDown: number;
 }
 

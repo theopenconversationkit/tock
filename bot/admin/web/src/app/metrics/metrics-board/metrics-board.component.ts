@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NbCalendarRange, NbDatepickerDirective, NbDateService, NbDialogService } from '@nebular/theme';
+import { Component, effect, OnDestroy, OnInit, signal } from '@angular/core';
+import { NbCalendarRange, NbDateService, NbDialogService, NbToastrService } from '@nebular/theme';
 import type { EChartsOption } from 'echarts';
 import { forkJoin, Observable, Subject, take, takeUntil } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -28,17 +28,27 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { heuristicValueColorDetection } from '../commons/utils';
-import { IndicatorDefinition, IndicatorValueDefinition, MetricGroupResult, MetricResult, RagCounts, RagStats, StorySummary } from '../models';
+import {
+  IndicatorDefinition,
+  IndicatorValueDefinition,
+  MetricGroupResult,
+  MetricResult,
+  RagCounts,
+  RagStats,
+  StorySummary
+} from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
-import { toISOStringWithoutOffset } from '../../shared/utils';
-import { DialogStats as DialogStats, CountResult, DialogStatsQuery, DialogStatsQueryResult, DialogStatsGroupResult, DialogCounts } from 'src/app/shared/model/dialog-data';
+import { roundMinutesToNextTen, toISOStringWithoutOffset } from '../../shared/utils';
+import { DialogStats as DialogStats, DialogStatsQueryResult, DialogStatsGroupResult, DialogCounts } from 'src/app/shared/model/dialog-data';
 
 export enum TimeRanges {
   day = 1,
   week = 7,
   month = 31,
-  quarter = 92
+  quarter = 92,
+  halfYear = 183,
+  year = 365
 }
 
 enum StoriesFilterType {
@@ -61,15 +71,20 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   loading: boolean = true;
   configurations: BotApplicationConfiguration[];
-  range: NbCalendarRange<Date>;
+
   timeRanges = TimeRanges;
+  range = signal<NbCalendarRange<Date>>({
+    start: this.dateService.setSeconds(this.dateService.addDay(this.dateService.today(), -this.timeRanges.week), 0),
+    end: roundMinutesToNextTen(this.dateService.today())
+  });
+
+  debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
   indicators: IndicatorDefinition[];
   stories: StorySummary[];
   dialogStats: DialogStats;
   ragStats: RagStats;
   storiesFilterType = StoriesFilterType;
-
-  @ViewChild(NbDatepickerDirective) dateRangeInputDirectiveRef;
 
   constructor(
     private stateService: StateService,
@@ -77,12 +92,33 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     private analyticsService: AnalyticsService,
     private botConfiguration: BotConfigurationService,
     private rest: RestService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private toastrService: NbToastrService
   ) {
-    this.range = {
-      start: this.dateService.addDay(this.dateService.today(), -this.timeRanges.week),
-      end: this.dateService.today()
-    };
+    effect(
+      () => {
+        const currentRange = this.range();
+        if (!currentRange.start || !currentRange.end) {
+          return;
+        }
+        if (this.debounceTimer) {
+          clearTimeout(this.debounceTimer);
+        }
+        this.debounceTimer = setTimeout(() => {
+          if (currentRange.start < currentRange.end) {
+            this.setMinAndMax();
+            this.loadMetrics();
+          } else {
+            this.toastrService.show('The end date of the period must be later than the start date.', 'Incorrect time interval', {
+              duration: 3000,
+              status: 'danger'
+            });
+          }
+        }, 1000);
+      },
+      { allowSignalWrites: true }
+    );
+    this.setMinAndMax();
   }
 
   ngOnInit(): void {
@@ -92,6 +128,42 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       if (confs.length) {
         this.loadIndicatorsAndStories();
       }
+    });
+  }
+
+  updateStart(newStart: Date): void {
+    if (!newStart) {
+      this.toastrService.show('The provided start date is invalid. Please enter a valid date.', 'Invalid Date Format', {
+        duration: 3000,
+        status: 'danger'
+      });
+      return;
+    }
+    this.range.set({ ...this.range(), start: newStart });
+  }
+
+  updateEnd(newEnd: Date): void {
+    if (!newEnd) {
+      this.toastrService.show('The provided end date is invalid. Please enter a valid date.', 'Invalid Date Format', {
+        duration: 3000,
+        status: 'danger'
+      });
+      return;
+    }
+    this.range.set({ ...this.range(), end: newEnd });
+  }
+
+  min: Date;
+  max: Date;
+  setMinAndMax(): void {
+    this.min = this.range().start;
+    this.max = this.range().end;
+  }
+
+  setTimeRange(timeRange: TimeRanges): void {
+    this.range.set({
+      start: this.dateService.addDay(this.dateService.today(), -timeRange),
+      end: roundMinutesToNextTen(this.dateService.today())
     });
   }
 
@@ -112,8 +184,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     const payload = {
       namespace: this.stateService.currentApplication.namespace,
       applicationName: this.stateService.currentApplication.name,
-      from: this.range.start,
-      to: this.range.end
+      from: this.range().start,
+      to: this.range().end
     };
 
     return this.rest.post(url, payload);
@@ -133,42 +205,44 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     return this.rest.post(url, payload);
   }
 
-private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
+  private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
     return {
-      test : this.buildDialogStats(stats.test),
-      prod : this.buildDialogStats(stats.prod)
+      test: this.buildDialogStats(stats.test),
+      prod: this.buildDialogStats(stats.prod)
     };
   }
 
   private buildDialogStats(stats: DialogStatsQueryResult): DialogCounts {
     return {
-      allUserActions : stats.allUserActions.reduce((sum, item) => sum + item.total, 0),
-      allUserActionsExceptRag : stats.allUserActionsExceptRag.reduce((sum, item) => sum + item.total, 0),
-      allUserRagActions : stats.allUserRagActions.reduce((sum, item) => sum + item.total, 0),
-      knownIntentUserActions : stats.knownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
-      unknownIntentUserActions : stats.unknownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
-      unknownIntentUserActionsExceptRag : stats.unknownIntentUserActionsExceptRag.reduce((sum, item) => sum + item.total, 0),
-    }
+      allUserActions: stats.allUserActions.reduce((sum, item) => sum + item.total, 0),
+      allUserActionsExceptRag: stats.allUserActionsExceptRag.reduce((sum, item) => sum + item.total, 0),
+      allUserRagActions: stats.allUserRagActions.reduce((sum, item) => sum + item.total, 0),
+      knownIntentUserActions: stats.knownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
+      unknownIntentUserActions: stats.unknownIntentUserActions.reduce((sum, item) => sum + item.total, 0),
+      unknownIntentUserActionsExceptRag: stats.unknownIntentUserActionsExceptRag.reduce((sum, item) => sum + item.total, 0),
+      allFeedbackUp: stats.allFeedbackUp.reduce((sum, item) => sum + item.total, 0),
+      allFeedbackDown: stats.allFeedbackDown.reduce((sum, item) => sum + item.total, 0)
+    };
   }
 
   private accumulateRagStats(stats: MetricGroupResult): RagStats {
     return {
-      test : this.buildRagMetrics(stats.test),
-      prod : this.buildRagMetrics(stats.prod)
+      test: this.buildRagMetrics(stats.test),
+      prod: this.buildRagMetrics(stats.prod)
     };
   }
 
   private buildRagMetrics(stats: MetricResult[]): RagCounts {
-    const counts = { failure: 0, success: 0, noAnswer: 0 }
-    this.accumulateDimensionMetrics(stats).forEach(item => {
+    const counts = { failure: 0, success: 0, noAnswer: 0 };
+    this.accumulateDimensionMetrics(stats).forEach((item) => {
       switch (item.row.indicatorValueName.toLowerCase()) {
-        case "failure":
+        case 'failure':
           counts.failure = item.count;
           break;
-        case "success":
+        case 'success':
           counts.success = item.count;
           break;
-        case "no answer":
+        case 'no answer':
           counts.noAnswer = item.count;
           break;
       }
@@ -194,9 +268,9 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
         row: {
           type,
           indicatorName,
-          indicatorValueName,
+          indicatorValueName
         },
-        count,
+        count
       };
     });
   }
@@ -211,7 +285,7 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
 
     return Object.entries(resultMap).map(([trackedStoryId, count]) => ({
       row: { trackedStoryId },
-      count,
+      count
     }));
   }
 
@@ -226,15 +300,23 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
       this.getDialogStatsQuery().pipe(take(1))
     ];
 
-    forkJoin(loaders).subscribe(([messages, storiesHits, dimensionMetrics, ragStats, dialogStats]: [UserAnalyticsQueryResult, MetricGroupResult, MetricGroupResult, MetricGroupResult, DialogStatsGroupResult]) => {
-      this.initMessagesChart(messages);
-      this.storiesMetrics = this.accumulateStoryMetrics(storiesHits.prod); // Only prod data
-      this.ragStats = this.accumulateRagStats(ragStats);
-      this.dialogStats = this.accumulateDialogStats(dialogStats);
-      this.initStoriesHitsChart();
-      this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(dimensionMetrics.prod)); // Only prod data
-      this.loading = false;
-    });
+    forkJoin(loaders).subscribe(
+      ([messages, storiesHits, dimensionMetrics, ragStats, dialogStats]: [
+        UserAnalyticsQueryResult,
+        MetricGroupResult,
+        MetricGroupResult,
+        MetricGroupResult,
+        DialogStatsGroupResult
+      ]) => {
+        this.initMessagesChart(messages);
+        this.storiesMetrics = this.accumulateStoryMetrics(storiesHits.prod); // Only prod data
+        this.ragStats = this.accumulateRagStats(ragStats);
+        this.dialogStats = this.accumulateDialogStats(dialogStats);
+        this.initStoriesHitsChart();
+        this.initCurrentDimensionMetricsChart(this.accumulateDimensionMetrics(dimensionMetrics.prod)); // Only prod data
+        this.loading = false;
+      }
+    );
   }
 
   private loadCurrentDimensionMetrics(): void {
@@ -257,8 +339,8 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
         this.stateService.currentApplication.name,
         undefined,
         undefined,
-        toISOStringWithoutOffset(this.range.start),
-        toISOStringWithoutOffset(this.range.end),
+        toISOStringWithoutOffset(this.range().start),
+        toISOStringWithoutOffset(this.range().end),
         !environment.production // In dev, we ask for test messages to dispose of some usable content
       )
     );
@@ -268,8 +350,8 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
     const query = {
       filter: {
         types: ['STORY_HANDLED'],
-        creationDateSince: this.range.start,
-        creationDateUntil: this.range.end
+        creationDateSince: this.range().start,
+        creationDateUntil: this.range().end
       },
       groupBy: ['APPLICATION_ID', 'TRACKED_STORY_ID']
     };
@@ -431,15 +513,15 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
   }
 
   private getRagDimensionMetricsQuery(): Observable<MetricGroupResult> {
-    return this.getDimensionMetricsQuery(["rag"]);
+    return this.getDimensionMetricsQuery(['rag']);
   }
 
   private getDimensionMetricsQuery(indicatorNames: string[]): Observable<MetricGroupResult> {
     const query = {
       filter: {
         indicatorNames: indicatorNames,
-        creationDateSince: this.range.start,
-        creationDateUntil: this.range.end
+        creationDateSince: this.range().start,
+        creationDateUntil: this.range().end
       },
       groupBy: ['APPLICATION_ID', 'TYPE', 'INDICATOR_NAME', 'INDICATOR_VALUE_NAME']
     };
@@ -518,7 +600,7 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
       context: {
         indicatorName: indicatorName,
         indicatorLabel: this.getIndicatorLabelByName(indicatorName),
-        range: this.range,
+        range: this.range(),
         indicators: this.indicators,
         stories: this.stories
       }
@@ -589,20 +671,6 @@ private accumulateDialogStats(stats: DialogStatsGroupResult): DialogStats {
 
   storiesFilterSelected(): void {
     this.initStoriesHitsChart();
-  }
-
-  setTimeRange(timeRange: TimeRanges): void {
-    this.range.start = this.dateService.addDay(this.dateService.today(), -timeRange);
-    this.range.end = this.dateService.today();
-
-    this.dateRangeInputDirectiveRef.writeValue(this.range);
-    this.loadMetrics();
-  }
-
-  datePickerChange(event: NbCalendarRange<Date>): void {
-    if (event.end) {
-      this.loadMetrics();
-    }
   }
 
   doesStoriesHitsEcxeed(nb: number): boolean {
