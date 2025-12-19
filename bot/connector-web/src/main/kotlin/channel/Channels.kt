@@ -19,6 +19,7 @@ import ai.tock.bot.connector.web.WebConnectorResponse
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -30,13 +31,18 @@ internal class Channels {
 
     init {
         channelDAO.listenChanges { (appId, recipientId, response) ->
-            Future.all<Unit>(
-                (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
-                    channel.onAction(response)
-                },
-            ).map { it.list<Unit>().isNotEmpty() }
+            process(appId, recipientId, response)
         }
     }
+
+    private fun process(
+        appId: String,
+        recipientId: String,
+        response: WebConnectorResponse
+    ): Future<Boolean> =
+        Future.all<CompositeFuture>((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+            channel.onAction(response)
+        }).map { futures -> futures.size() > 0 }
 
     fun register(
         appId: String,
@@ -64,8 +70,15 @@ internal class Channels {
     fun send(
         applicationId: String,
         recipientId: PlayerId,
-        response: WebConnectorResponse,
-    ) {
-        channelDAO.save(ChannelEvent(applicationId, recipientId.id, response))
+        response: WebConnectorResponse
+    ): Future<Unit> {
+        // First, attempt to send the response directly on this local instance
+        return process(applicationId, recipientId.id, response).transform {
+            // If we have to send it later or through another backend instance, go through database
+            if (!(it.succeeded() && it.result())) {
+                channelDAO.save(ChannelEvent(applicationId, recipientId.id, response))
+            }
+            Future.succeededFuture()
+        }
     }
 }
