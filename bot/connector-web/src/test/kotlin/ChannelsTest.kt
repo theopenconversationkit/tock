@@ -33,10 +33,10 @@ import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import io.vertx.core.Future
-import java.io.IOException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.IOException
 
 internal class ChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()

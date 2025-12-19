@@ -38,11 +38,13 @@ internal class Channels {
     private fun process(
         appId: String,
         recipientId: String,
-        response: WebConnectorResponse
+        response: WebConnectorResponse,
     ): Future<Boolean> =
-        Future.all<CompositeFuture>((channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
-            channel.onAction(response)
-        }).map { futures -> futures.size() > 0 }
+        Future.all<CompositeFuture>(
+            (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+                channel.onAction(response)
+            },
+        ).map { futures -> futures.size() > 0 }
 
     fun register(
         appId: String,
@@ -70,7 +72,7 @@ internal class Channels {
     fun send(
         applicationId: String,
         recipientId: PlayerId,
-        response: WebConnectorResponse
+        response: WebConnectorResponse,
     ): Future<Unit> {
         // First, attempt to send the response directly on this local instance
         return process(applicationId, recipientId.id, response).transform {
