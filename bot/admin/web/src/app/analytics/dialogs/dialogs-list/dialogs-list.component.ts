@@ -90,7 +90,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       ...this.filters,
       ...filters
     };
-
     this.search();
   }
 
@@ -157,7 +156,8 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.filters.annotationReasons,
       this.filters.annotationSort,
       this.filters.annotationCreationDateFrom,
-      this.filters.annotationCreationDateTo
+      this.filters.annotationCreationDateTo,
+      this.filters.feedback
     );
 
     this.analytics.dialogs(this.dialogReportQuery).subscribe((result) => {

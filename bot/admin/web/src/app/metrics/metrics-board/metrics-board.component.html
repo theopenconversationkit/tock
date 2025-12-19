@@ -26,22 +26,63 @@
   *ngIf="configurations?.length > 0"
 >
   <nb-card-header class="d-flex gap-1">
-    <nb-form-field>
-      <nb-icon
-        nbPrefix
-        icon="calendar-range"
-      ></nb-icon>
-      <input
-        #dateRangeInput
-        nbInput
-        fieldSize="medium"
-        placeholder="Pick date range"
-        [nbDatepicker]="dateRangePicker"
-        [(ngModel)]="range"
-      />
-    </nb-form-field>
+    <div class="row">
+      <div class="col-12 col-xl-6">
+        <nb-form-field class="mb-2">
+          <nb-icon
+            nbPrefix
+            icon="calendar-plus"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            placeholder="From date"
+            nbTooltip="Show data collected after this date"
+            [nbDatepicker]="from_date"
+            [(ngModel)]="range().start"
+            (ngModelChange)="updateStart($event)"
+          />
+        </nb-form-field>
 
-    <div>
+        <nb-date-timepicker
+          #from_date
+          [max]="max"
+          [showCurrentTimeButton]="false"
+          [step]="10"
+          singleColumn
+          format="y/MM/dd HH:mm"
+        ></nb-date-timepicker>
+      </div>
+
+      <div class="col-12 col-xl-6">
+        <nb-form-field class="mb-2">
+          <nb-icon
+            nbPrefix
+            icon="calendar-minus"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            placeholder="To date"
+            nbTooltip="Show data collected before this date"
+            [nbDatepicker]="to_date"
+            [(ngModel)]="range().end"
+            (ngModelChange)="updateEnd($event)"
+          />
+        </nb-form-field>
+
+        <nb-date-timepicker
+          #to_date
+          [min]="min"
+          [showCurrentTimeButton]="false"
+          [step]="10"
+          singleColumn
+          format="y/MM/dd HH:mm"
+        ></nb-date-timepicker>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-start">
       <button
         nbButton
         ghost
@@ -78,66 +119,117 @@
       >
         3m
       </button>
+      <button
+        nbButton
+        ghost
+        status="info"
+        nbTooltip="Display metrics for the last 6 months"
+        (click)="setTimeRange(timeRanges.halfYear)"
+      >
+        6m
+      </button>
+      <button
+        nbButton
+        ghost
+        status="info"
+        nbTooltip="Display metrics for the last year"
+        (click)="setTimeRange(timeRanges.year)"
+      >
+        1y
+      </button>
     </div>
   </nb-card-header>
 
-  <nb-rangepicker
-    #dateRangePicker
-    [(range)]="range"
-    (rangeChange)="datePickerChange($event)"
-  ></nb-rangepicker>
-
   <nb-card-body class="main-card-body">
-    <div class="row mt-3">
+    <div class="row mt-0">
       <div class="col-12 mb-3">
-
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
           <strong>&nbsp;</strong>
-          <div>
+          <div class="d-flex">
             <span class="stats-value">End-user</span>
-            <span class="stats-value test">Sandbox</span>
+            <span class="stats-value test">Tests</span>
           </div>
         </div>
 
-        <h6 class="mt-3 mb-2">Bot (Global) Activitiy</h6>
+        <h6 class="mt-3 mb-2">Bot (Global) Activity</h6>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Total user messages:
-          <div>
-            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserActions || 0 }}</strong></span>
-            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserActions || 0 }}</strong></span>
+          Total user messages
+          <div class="d-flex">
+            <span class="stats-value"
+              ><strong>{{ dialogStats?.prod?.allUserActions || 0 }}</strong></span
+            >
+            <span class="stats-value test"
+              ><strong>{{ dialogStats?.test?.allUserActions || 0 }}</strong></span
+            >
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Unknown user messages:
+          Unknown user messages
+          <div class="d-flex">
+            <span class="stats-value"
+              ><strong>{{ dialogStats?.prod?.unknownIntentUserActions || 0 }}</strong></span
+            >
+            <span class="stats-value test"
+              ><strong>{{ dialogStats?.test?.unknownIntentUserActions || 0 }}</strong></span
+            >
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
           <div>
-            <span class="stats-value"><strong>{{ dialogStats?.prod?.unknownIntentUserActions || 0 }}</strong></span>
-            <span class="stats-value test"><strong>{{ dialogStats?.test?.unknownIntentUserActions || 0 }}</strong></span>
+            Positive feedback
+            <nb-icon
+              icon="hand-thumbs-up-fill"
+              class="text-success font-size-small mt-2"
+            ></nb-icon>
+          </div>
+          <div class="d-flex">
+            <span class="stats-value">{{ dialogStats?.prod?.allFeedbackUp || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.allFeedbackUp || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
+          <div>
+            Negative feedback
+            <nb-icon
+              icon="hand-thumbs-down-fill"
+              class="text-danger font-size-small mt-2"
+            ></nb-icon>
+          </div>
+          <div class="d-flex">
+            <span class="stats-value">{{ dialogStats?.prod?.allFeedbackDown || 0 }}</span>
+            <span class="stats-value test">{{ dialogStats?.test?.allFeedbackDown || 0 }}</span>
           </div>
         </div>
 
         <h6 class="mt-3 mb-2">Bot (NLP) Statistics</h6>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Total NLP messages:
-          <div>
-            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserActionsExceptRag || 0 }}</strong></span>
-            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserActionsExceptRag || 0 }}</strong></span>
+          Total NLP messages
+          <div class="d-flex">
+            <span class="stats-value"
+              ><strong>{{ dialogStats?.prod?.allUserActionsExceptRag || 0 }}</strong></span
+            >
+            <span class="stats-value test"
+              ><strong>{{ dialogStats?.test?.allUserActionsExceptRag || 0 }}</strong></span
+            >
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          User messages with known Intent:
-          <div>
+          User messages with known Intent
+          <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.knownIntentUserActions || 0 }}</span>
             <span class="stats-value test">{{ dialogStats?.test?.knownIntentUserActions || 0 }}</span>
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          User messages classified as Unknown:
-          <div>
+          User messages classified as Unknown
+          <div class="d-flex">
             <span class="stats-value">{{ dialogStats?.prod?.unknownIntentUserActionsExceptRag || 0 }}</span>
             <span class="stats-value test">{{ dialogStats?.test?.unknownIntentUserActionsExceptRag || 0 }}</span>
           </div>
@@ -146,37 +238,40 @@
         <h6 class="mt-3 mb-2">Gen AI (RAG) Statistics</h6>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Total user messages sent to RAG:
-          <div>
-            <span class="stats-value"><strong>{{ dialogStats?.prod?.allUserRagActions || 0 }}</strong></span>
-            <span class="stats-value test"><strong>{{ dialogStats?.test?.allUserRagActions || 0 }}</strong></span>
+          Total user messages sent to RAG
+          <div class="d-flex">
+            <span class="stats-value"
+              ><strong>{{ dialogStats?.prod?.allUserRagActions || 0 }}</strong></span
+            >
+            <span class="stats-value test"
+              ><strong>{{ dialogStats?.test?.allUserRagActions || 0 }}</strong></span
+            >
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Success RAG Responses:
-          <div>
+          Success RAG Responses
+          <div class="d-flex">
             <span class="stats-value">{{ ragStats?.prod?.success || 0 }}</span>
             <span class="stats-value test">{{ ragStats?.test?.success || 0 }}</span>
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          No Answer RAG Responses:
-          <div>
+          No Answer RAG Responses
+          <div class="d-flex">
             <span class="stats-value">{{ ragStats?.prod?.noAnswer || 0 }}</span>
             <span class="stats-value test">{{ ragStats?.test?.noAnswer || 0 }}</span>
           </div>
         </div>
 
         <div class="stats-line d-flex justify-content-between gap-1 py-2">
-          Failed RAG Responses:
-          <div>
+          Failed RAG Responses
+          <div class="d-flex">
             <span class="stats-value">{{ ragStats?.prod?.failure || 0 }}</span>
             <span class="stats-value test">{{ ragStats?.test?.failure || 0 }}</span>
           </div>
         </div>
-
       </div>
     </div>
 

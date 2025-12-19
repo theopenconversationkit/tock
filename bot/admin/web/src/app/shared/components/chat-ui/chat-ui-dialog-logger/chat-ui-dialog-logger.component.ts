@@ -28,6 +28,7 @@ import { BotApplicationConfiguration } from '../../../../core/model/configuratio
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
 import { AnnotationComponent } from 'src/app/shared/components';
+import { FeedbackVote } from '../../../../analytics/dialogs/dialogs';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -48,6 +49,8 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
   @Input() highlightedAction?: ActionReport;
 
   allConfigurations: BotApplicationConfiguration[];
+
+  feedbackVote = FeedbackVote;
 
   constructor(
     private testDialogService: TestDialogService,

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver-es';
-
 export interface OrderBy {
   criteria: string;
   reverse: boolean;
@@ -206,4 +204,19 @@ export function getPropertyByNameSpace(namespace: string, obj: Object): any {
     if (acc) return acc[current];
     else return obj[current];
   }, undefined);
+}
+
+/**
+ * Rounds the minutes of a given date up to the nearest ten and resets seconds and milliseconds to zero.
+ * Automatically handles overflow to the next hour, day, month, or year if necessary.
+ *
+ * @param {Date} date - The input date to round.
+ * @returns {Date} A new Date object with minutes rounded up to the nearest ten and seconds/milliseconds set to zero.
+ */
+export function roundMinutesToNextTen(date: Date): Date {
+  const newDate = new Date(date);
+  const minutes = newDate.getMinutes();
+  const roundedMinutes = Math.ceil(minutes / 10) * 10;
+  newDate.setMinutes(roundedMinutes, 0, 0);
+  return newDate;
 }
