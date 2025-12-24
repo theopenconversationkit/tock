@@ -50,6 +50,13 @@ data class DialogsSearchQuery(
     val annotationCreationDateTo: ZonedDateTime? = null,
     val dialogCreationDateFrom: ZonedDateTime? = null,
     val dialogCreationDateTo: ZonedDateTime? = null,
+    /**
+     * Filter dialogs by activity period overlap.
+     * A dialog is included if its activity period (from first to last action) overlaps the filter range.
+     * Condition: activityFrom <= max(actions.date) AND min(actions.date) < activityTo
+     */
+    val dialogActivityFrom: ZonedDateTime? = null,
+    val dialogActivityTo: ZonedDateTime? = null,
 ) : PaginatedQuery() {
     fun toDialogReportQuery(): DialogReportQuery {
         return DialogReportQuery(
@@ -79,6 +86,8 @@ data class DialogsSearchQuery(
             annotationCreationDateTo = annotationCreationDateTo,
             dialogCreationDateFrom = dialogCreationDateFrom,
             dialogCreationDateTo = dialogCreationDateTo,
+            dialogActivityFrom = dialogActivityFrom,
+            dialogActivityTo = dialogActivityTo,
         )
     }
 }
