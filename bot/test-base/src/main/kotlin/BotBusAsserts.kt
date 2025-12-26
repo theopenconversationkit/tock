@@ -62,10 +62,12 @@ fun Expect<BotBusMockLog>.asGenericMessage(assertionCreator: Expect<GenericMessa
         _logic,
         Untranslatable("is a"),
         Text(GenericMessage::class.simpleName!!),
-        { Option.someIf(
-            it.action is SendSentence && it.genericMessage() != null,
-            { it.genericMessage()!! }
-        ) },
+        {
+            Option.someIf(
+                it.action is SendSentence && it.genericMessage() != null,
+                { it.genericMessage()!! },
+            )
+        },
         DefaultFailureHandlerImpl(),
         Some(assertionCreator),
     )
@@ -82,9 +84,10 @@ fun Expect<BotBusMockLog>.asGenericMessage(assertionCreator: Expect<GenericMessa
 fun Expect<GenericMessage>.toHaveGlobalText(
     expectedText: String,
     paramName: String = GenericMessage.TEXT_PARAM,
-): Expect<GenericMessage> = feature(GenericMessage::texts) {
-    getExisting(paramName).toEqual(expectedText)
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::texts) {
+        getExisting(paramName).toEqual(expectedText)
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericMessage]) contains top-level choices (buttons)
@@ -95,13 +98,14 @@ fun Expect<GenericMessage>.toHaveGlobalText(
 fun Expect<GenericMessage>.toHaveGlobalChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    feature("title", {
-        map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { toContain(expectedChoice, *otherExpectedChoices) })
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContain(expectedChoice, *otherExpectedChoices) })
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericMessage]) does _not_ contain top-level choices (buttons)
@@ -112,13 +116,14 @@ fun Expect<GenericMessage>.toHaveGlobalChoices(
 fun Expect<GenericMessage>.toHaveNotGlobalChoices(
     unexpectedChoice: String,
     vararg otherUnexpectedChoices: String,
-): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    feature("title", {
-        map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericMessage]) contains exactly the top-level choices (buttons)
@@ -129,13 +134,14 @@ fun Expect<GenericMessage>.toHaveNotGlobalChoices(
 fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    feature("title", {
-        map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericMessage]) contains only an entry holding
@@ -158,14 +164,15 @@ fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
 fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     firstChoiceAssertion: (Expect<Choice>.() -> Unit),
     vararg otherChoicesAssertions: Expect<Choice>.() -> Unit,
-    report: InOrderOnlyReportingOptions.() -> Unit = {}
-): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    toContainExactly(
-        assertionCreatorOrNull = firstChoiceAssertion,
-        otherAssertionCreatorsOrNulls = otherChoicesAssertions,
-        report = report
-    )
-}
+    report: InOrderOnlyReportingOptions.() -> Unit = {},
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        toContainExactly(
+            assertionCreatorOrNull = firstChoiceAssertion,
+            otherAssertionCreatorsOrNulls = otherChoicesAssertions,
+            report = report,
+        )
+    }
 
 /**
  * Expects that the given [index] is within the bounds of the elements in the subject of `this` expectation
@@ -176,9 +183,10 @@ fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
 fun Expect<GenericMessage>.toHaveElement(
     index: Int,
     assertionCreator: Expect<GenericElement>.() -> Unit,
-): Expect<GenericMessage> = feature(GenericMessage::subElements) {
-    get(index, assertionCreator)
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::subElements) {
+        get(index, assertionCreator)
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericElement]) has text
@@ -194,9 +202,10 @@ fun Expect<GenericMessage>.toHaveElement(
 fun Expect<GenericElement>.toHaveText(
     expectedText: String,
     paramName: String,
-): Expect<GenericElement> = feature(GenericElement::texts) {
-    getExisting(paramName).toEqual(expectedText)
-}
+): Expect<GenericElement> =
+    feature(GenericElement::texts) {
+        getExisting(paramName).toEqual(expectedText)
+    }
 
 /**
  * Expects that the subject of `this` expectation (a [GenericElement]) has a title
@@ -214,100 +223,151 @@ fun Expect<GenericElement>.toHaveTitle(expectedTitle: String): Expect<GenericEle
  */
 fun Expect<GenericElement>.toHaveSubtitle(expectedSubtitle: String): Expect<GenericElement> = toHaveText(expectedSubtitle, GenericMessage.SUBTITLE_PARAM)
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains exactly the choices (buttons)
+ * with the given button titles, in the specified order.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-): Expect<GenericElement> = feature(GenericElement::choices) {
-    feature("title", {
-        mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { toContain(expectedChoice, *otherExpectedChoices) })
-}
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContain(expectedChoice, *otherExpectedChoices) })
+    }
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) does _not_ contain choices (buttons)
+ * with the given button titles.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveNotChoices(
     unexpectedChoice: String,
     vararg otherUnexpectedChoices: String,
-): Expect<GenericElement> = feature(GenericElement::choices) {
-    feature("title", {
-        mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
-}
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
+    }
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains exactly the choices (buttons)
+ * with the given button titles, in the specified order.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveExactlyChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-): Expect<GenericElement> = feature(GenericElement::choices) {
-    feature("title", {
-        mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        }
-    }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
-}
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
+    }
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains only a choice entry holding
+ * the assertions created by [firstChoiceAssertion]
+ * and likewise an additional entry for each [otherChoicesAssertions] (if given)
+ * whereas the entries have to appear in the defined order.
+ *
+ * It is a shortcut for `expect(choices).toContain.inOrder.only.entries(firstChoiceAssertion, *otherChoicesAssertions)`
+ *
+ * @param firstChoiceAssertion The identification lambda which creates the assertions which the entry we are looking
+ *   for has to hold; or in other words, the function which defines whether an entry is the one we are looking for
+ *   or not.
+ * @param otherChoicesAssertions Additional identification lambdas which each identify (separately) an entry
+ *   which we are looking for (see [firstChoiceAssertion] for more information).
+ * @param report The lambda configuring the [InOrderOnlyReportingOptions] -- it is optional where
+ *   the default [InOrderOnlyReportingOptions] apply if not specified.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveExactlyChoices(
     firstChoiceAssertion: (Expect<Choice>.() -> Unit)?,
     vararg otherChoicesAssertions: Expect<Choice>.() -> Unit,
-): Expect<GenericElement> = feature(GenericElement::choices) {
-    toContainExactly(assertionCreatorOrNull = firstChoiceAssertion, *otherChoicesAssertions)
-}
+    report: InOrderOnlyReportingOptions.() -> Unit = {},
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        toContainExactly(
+            assertionCreatorOrNull = firstChoiceAssertion,
+            otherAssertionCreatorsOrNulls = otherChoicesAssertions,
+            report = report,
+        )
+    }
 
 fun Expect<GenericElement>.toHaveChoice(
     title: String,
     assertionCreator: Expect<Choice>.() -> Unit,
-): Expect<GenericElement> = feature(GenericElement::choices) {
-    toHaveElementsAndAny {
-        toHaveTitle(title)
-        assertionCreator()
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        toHaveElementsAndAny {
+            toHaveTitle(title)
+            assertionCreator()
+        }
     }
-}
 
 fun ConnectorMessage.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
     expect(toGenericMessage()).notToEqualNull(assertionCreator)
 }
 
-fun Expect<GenericElement>.toHaveAttachment(
-    assertionCreator: Expect<Attachment>.() -> Unit
-): Expect<GenericElement> = feature(GenericElement::attachments) {
-    toHaveElementsAndAny(assertionCreator)
-}
+fun Expect<GenericElement>.toHaveAttachment(assertionCreator: Expect<Attachment>.() -> Unit): Expect<GenericElement> =
+    feature(GenericElement::attachments) {
+        toHaveElementsAndAny(assertionCreator)
+    }
 
-fun Expect<Attachment>.toHaveUrl(url: String): Expect<Attachment> = feature(Attachment::url) {
-    toEqual(url)
-}
+fun Expect<Attachment>.toHaveUrl(url: String): Expect<Attachment> =
+    feature(Attachment::url) {
+        toEqual(url)
+    }
 
-fun Expect<Attachment>.toBeImage(): Expect<Attachment> = feature(Attachment::type) {
-    toEqual(SendAttachment.AttachmentType.image)
-}
+fun Expect<Attachment>.toBeImage(): Expect<Attachment> =
+    feature(Attachment::type) {
+        toEqual(SendAttachment.AttachmentType.image)
+    }
 
 fun Expect<GenericMessage>.toHaveChoice(
     title: String,
     assertionCreator: Expect<Choice>.() -> Unit,
-): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    toHaveElementsAndAny {
-        toHaveTitle(title)
-        assertionCreator()
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        toHaveElementsAndAny {
+            toHaveTitle(title)
+            assertionCreator()
+        }
     }
-}
 
 fun Expect<Choice>.toHaveTitle(title: String): Expect<Choice> = toHaveParameter(SendChoice.TITLE_PARAMETER, title)
 
-fun Expect<Choice>.toHaveIntent(intentName: String): Expect<Choice> = feature(Choice::intentName) {
-    toEqual(intentName)
-}
+fun Expect<Choice>.toHaveIntent(intentName: String): Expect<Choice> =
+    feature(Choice::intentName) {
+        toEqual(intentName)
+    }
 
 fun Expect<Choice>.toHaveParameter(
     key: ParameterKey,
     value: String,
-): Expect<Choice> = feature(Choice::parameters) {
-    feature(Map<String, String>::get, key.name).toEqual(value)
-}
+): Expect<Choice> =
+    feature(Choice::parameters) {
+        feature(Map<String, String>::get, key.name).toEqual(value)
+    }
 
 fun Expect<Choice>.toHaveParameter(
     key: String,
     value: String,
-): Expect<Choice> = feature(Choice::parameters) {
-    feature(Map<String, String>::get, key).toEqual(value)
-}
+): Expect<Choice> =
+    feature(Choice::parameters) {
+        feature(Map<String, String>::get, key).toEqual(value)
+    }
