@@ -25,31 +25,24 @@ import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
-import ch.tutteli.atrium.api.fluent.en_GB.any
-import ch.tutteli.atrium.api.fluent.en_GB.contains
-import ch.tutteli.atrium.api.fluent.en_GB.containsExactly
-import ch.tutteli.atrium.api.fluent.en_GB.containsNot
-import ch.tutteli.atrium.api.fluent.en_GB.notToBeNull
 import ch.tutteli.atrium.api.fluent.en_GB.feature
-import ch.tutteli.atrium.api.fluent.en_GB.feature
-import ch.tutteli.atrium.api.fluent.en_GB.toBe
-import ch.tutteli.atrium.creating.Expect
-import ch.tutteli.atrium.domain.builders.ExpectImpl
-import ch.tutteli.atrium.domain.creating.any.typetransformation.AnyTypeTransformation
-import ch.tutteli.atrium.reporting.RawString
-import ch.tutteli.atrium.reporting.translating.Untranslatable
+import ch.tutteli.atrium.api.fluent.en_GB.notToContain
+import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
+import ch.tutteli.atrium.api.fluent.en_GB.toContain
+import ch.tutteli.atrium.api.fluent.en_GB.toContainExactly
+import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.toHaveElementsAndAny
 import ch.tutteli.atrium.api.verbs.expect
-import ch.tutteli.atrium.assertions.builders.assertionBuilder
 import ch.tutteli.atrium.core.Option
 import ch.tutteli.atrium.core.Some
+import ch.tutteli.atrium.creating.Expect
 import ch.tutteli.atrium.logic._logic
-import ch.tutteli.atrium.logic.changeSubject
 import ch.tutteli.atrium.logic.creating.transformers.impl.subjectchanger.DefaultFailureHandlerImpl
 import ch.tutteli.atrium.logic.creating.transformers.subjectChanger
 import ch.tutteli.atrium.reporting.Text
-import kotlin.collections.map
+import ch.tutteli.atrium.reporting.translating.Untranslatable
 
-fun Expect<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) = feature(BotBusMockLog::text).toBe(expectedText)
+fun Expect<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) = feature(BotBusMockLog::text).toEqual(expectedText)
 
 fun Expect<BotBusMockLog>.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
     _logic.subjectChanger.reported(
@@ -69,7 +62,7 @@ fun Expect<GenericMessage>.toHaveGlobalText(
     expectedText: String,
     textName: String = "text",
 ) = feature(GenericMessage::texts) {
-    feature(Map<String, String>::get, textName).toBe(expectedText)
+    feature(Map<String, String>::get, textName).toEqual(expectedText)
 }
 
 fun Expect<GenericMessage>.toHaveGlobalChoices(
@@ -79,7 +72,7 @@ fun Expect<GenericMessage>.toHaveGlobalChoices(
         map { choice ->
             choice.parameters[SendChoice.TITLE_PARAMETER]
         }
-    }, { contains(expectedChoice, *otherExpectedChoices) })
+    }, { toContain(expectedChoice, *otherExpectedChoices) })
 
 fun Expect<GenericMessage>.toHaveNotGlobalChoices(
     unexpectedChoice: String,
@@ -88,7 +81,7 @@ fun Expect<GenericMessage>.toHaveNotGlobalChoices(
     map { choice ->
         choice.parameters[SendChoice.TITLE_PARAMETER]
     }
-}, { containsNot(unexpectedChoice, *otherUnexpectedChoices) })
+}, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
 
 fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     expectedChoice: String,
@@ -97,7 +90,7 @@ fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     map { choice ->
         choice.parameters[SendChoice.TITLE_PARAMETER]
     }
-}, { containsExactly(expectedChoice, *otherExpectedChoices) })
+}, { toContainExactly(expectedChoice, *otherExpectedChoices) })
 
 fun Expect<GenericMessage>.toHaveElement(
     index: Int,
@@ -110,7 +103,7 @@ fun Expect<GenericElement>.toHaveText(
     expectedText: String,
     textName: String,
 ): Expect<GenericElement> = feature(GenericElement::texts) {
-    feature(Map<String, String>::get, textName).toBe(expectedText)
+    feature(Map<String, String>::get, textName).toEqual(expectedText)
 }
 
 fun Expect<GenericElement>.toHaveTitle(expectedTitle: String): Expect<GenericElement> = toHaveText(expectedTitle, "title")
@@ -124,7 +117,7 @@ fun Expect<GenericElement>.toHaveChoices(
     mapNotNull { choice ->
         choice.parameters[SendChoice.TITLE_PARAMETER]
     }
-}, { contains(expectedChoice, *otherExpectedChoices) })
+}, { toContain(expectedChoice, *otherExpectedChoices) })
 
 fun Expect<GenericElement>.toHaveNotChoices(
     unexpectedChoice: String,
@@ -133,7 +126,7 @@ fun Expect<GenericElement>.toHaveNotChoices(
     mapNotNull { choice ->
         choice.parameters[SendChoice.TITLE_PARAMETER]
     }
-}, { containsNot(unexpectedChoice, *otherUnexpectedChoices) })
+}, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
 
 fun Expect<GenericElement>.toHaveExactlyChoices(
     expectedChoice: String,
@@ -142,27 +135,27 @@ fun Expect<GenericElement>.toHaveExactlyChoices(
     mapNotNull { choice ->
         choice.parameters[SendChoice.TITLE_PARAMETER]
     }
-}, { containsExactly(expectedChoice, *otherExpectedChoices) })
+}, { toContainExactly(expectedChoice, *otherExpectedChoices) })
 
 fun ConnectorMessage.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
-    expect(toGenericMessage()).notToBeNull(assertionCreator)
+    expect(toGenericMessage()).notToEqualNull(assertionCreator)
 }
 
 fun Expect<GenericElement>.toHaveAttachment(assertionCreator: Expect<Attachment>.() -> Unit) {
     feature(GenericElement::attachments) {
-        any(assertionCreator)
+        toHaveElementsAndAny(assertionCreator)
     }
 }
 
-fun Expect<Attachment>.toHaveUrl(url: String) = feature(Attachment::url).toBe(url)
+fun Expect<Attachment>.toHaveUrl(url: String) = feature(Attachment::url).toEqual(url)
 
-fun Expect<Attachment>.toBeImage() = feature(Attachment::type).toBe(SendAttachment.AttachmentType.image)
+fun Expect<Attachment>.toBeImage() = feature(Attachment::type).toEqual(SendAttachment.AttachmentType.image)
 
 fun Expect<GenericMessage>.toHaveChoice(
     title: String,
     assertionCreator: Expect<Choice>.() -> Unit,
 ): Expect<GenericMessage> = feature(GenericMessage::choices) {
-    any {
+    toHaveElementsAndAny {
         toHaveTitle(title)
         assertionCreator()
     }
@@ -173,7 +166,7 @@ fun Expect<Choice>.toHaveTitle(title: String) {
 }
 
 fun Expect<Choice>.toHaveIntent(intentName: String) {
-    feature(Choice::intentName).toBe(intentName)
+    feature(Choice::intentName).toEqual(intentName)
 }
 
 fun Expect<Choice>.toHaveParameter(
@@ -181,7 +174,7 @@ fun Expect<Choice>.toHaveParameter(
     value: String,
 ) {
     feature(Choice::parameters) {
-        feature(Map<String, String>::get, key.name).toBe(value)
+        feature(Map<String, String>::get, key.name).toEqual(value)
     }
 }
 
@@ -190,6 +183,6 @@ fun Expect<Choice>.toHaveParameter(
     value: String,
 ) {
     feature(Choice::parameters) {
-        feature(Map<String, String>::get, key).toBe(value)
+        feature(Map<String, String>::get, key).toEqual(value)
     }
 }

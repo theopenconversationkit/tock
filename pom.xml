@@ -86,7 +86,7 @@
         <mockk>1.14.6</mockk>
         <assertj>3.22.0</assertj>
         <byte-buddy>1.17.8</byte-buddy>
-        <atrium>0.15.0</atrium>
+        <atrium>1.2.0</atrium>
         <serialization>1.6.2</serialization>
 
         <plugin.surefire>3.5.3</plugin.surefire>
