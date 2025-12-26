@@ -268,15 +268,19 @@ fun ConnectorMessage.asGenericMessage(assertionCreator: Expect<GenericMessage>.(
     expect(toGenericMessage()).notToEqualNull(assertionCreator)
 }
 
-fun Expect<GenericElement>.toHaveAttachment(assertionCreator: Expect<Attachment>.() -> Unit) {
-    feature(GenericElement::attachments) {
-        toHaveElementsAndAny(assertionCreator)
-    }
+fun Expect<GenericElement>.toHaveAttachment(
+    assertionCreator: Expect<Attachment>.() -> Unit
+): Expect<GenericElement> = feature(GenericElement::attachments) {
+    toHaveElementsAndAny(assertionCreator)
 }
 
-fun Expect<Attachment>.toHaveUrl(url: String) = feature(Attachment::url).toEqual(url)
+fun Expect<Attachment>.toHaveUrl(url: String): Expect<Attachment> = feature(Attachment::url) {
+    toEqual(url)
+}
 
-fun Expect<Attachment>.toBeImage() = feature(Attachment::type).toEqual(SendAttachment.AttachmentType.image)
+fun Expect<Attachment>.toBeImage(): Expect<Attachment> = feature(Attachment::type) {
+    toEqual(SendAttachment.AttachmentType.image)
+}
 
 fun Expect<GenericMessage>.toHaveChoice(
     title: String,
