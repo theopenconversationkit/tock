@@ -47,7 +47,7 @@ abstract class AsyncStoryHandlerBase(
     @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
     override fun handle(bus: BotBus) {
         runBlocking(
-            Bot.coroutineStoryName { findStoryDefinition(bus)?.id ?: mainIntent?.name ?: "??" },
+            Bot.handlerCoroutineName { findStoryDefinition(bus)?.id ?: mainIntent?.name ?: "??" },
         ) { handle(AsyncBotBus(bus)) }
     }
 

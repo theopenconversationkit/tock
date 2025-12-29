@@ -58,7 +58,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
          */
         internal fun retrieveCurrentBus(): BotBus? = currentBus.get()
 
-        internal inline fun coroutineStoryName(storyId: () -> String) =
+        internal inline fun handlerCoroutineName(storyId: () -> String) =
             if (devEnvironment) {
                 CoroutineName("handler(${storyId()})")
             } else {
@@ -140,7 +140,7 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
             withContext(
                 AsyncBotBus.Ref(asyncBus) +
                     currentBus.asContextElement(bus) +
-                    coroutineStoryName(story.definition::id),
+                    handlerCoroutineName(story.definition::id),
             ) {
                 val closeMessageQueue = bus.deferMessageSending(this)
 
