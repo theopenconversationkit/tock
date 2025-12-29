@@ -20,6 +20,7 @@ import ai.tock.shared.Executor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
@@ -49,10 +50,12 @@ fun Executor.launchCoroutine(
 }
 
 /**
- * fire and forget a suspend block in the [Dispatchers.IO] scope.
+ * fire and forget a suspend block on [Dispatchers.IO].
  * Exceptions are logged.
+ *
+ * !! Same pitfalls as [GlobalScope]
  */
-fun fireAndForgetIO(block: suspend () -> Unit) =
+fun fireAndForgetIO(block: suspend () -> Unit): Job =
     CoroutineScope(Dispatchers.IO).launch {
         try {
             block()
@@ -63,16 +66,18 @@ fun fireAndForgetIO(block: suspend () -> Unit) =
     }
 
 /**
- * fire and forget a suspend block in the current coroutine scope.
+ * fire and forget a suspend block on the default dispatcher.
  * Exceptions are logged.
+ *
+ * !! Same pitfalls as [GlobalScope]
  */
-fun fireAndForget(block: suspend () -> Unit) =
+fun fireAndForget(block: suspend () -> Unit): Job =
     CoroutineScope(EmptyCoroutineContext).launch {
         try {
             block()
         } catch (e: Exception) {
             val logger: KLogger = KotlinLogging.logger { }
-            logger.error("Uncaught exception in a fire-and-forget-blocking-io coroutine", e)
+            logger.error("Uncaught exception in a fire-and-forget coroutine", e)
         }
     }
 
