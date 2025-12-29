@@ -34,12 +34,16 @@ import ai.tock.bot.engine.feature.DefaultFeatureType
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
+import ai.tock.shared.devEnvironment
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
 import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.CoroutineName
 
 /**
  *
@@ -54,6 +58,12 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
          * (warning: advanced usage only).
          */
         internal fun retrieveCurrentBus(): BotBus? = currentBus.get()
+
+        internal inline fun coroutineStoryName(storyId: () -> String) = if (devEnvironment) {
+            CoroutineName("handler(${storyId()})")
+        } else {
+            EmptyCoroutineContext
+        }
     }
 
     private val logger = KotlinLogging.logger {}
@@ -127,7 +137,9 @@ internal class Bot(botDefinitionBase: BotDefinition, val configuration: BotAppli
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
             val asyncBus = AsyncBotBus(bus)
 
-            withContext(AsyncBotBus.Ref(asyncBus) + currentBus.asContextElement(bus)) {
+            withContext(AsyncBotBus.Ref(asyncBus)
+                    + currentBus.asContextElement(bus)
+                    + coroutineStoryName(story.definition::id)) {
                 val closeMessageQueue = bus.deferMessageSending(this)
 
                 if (asyncBus.isFeatureEnabled(DefaultFeatureType.DISABLE_BOT)) {
