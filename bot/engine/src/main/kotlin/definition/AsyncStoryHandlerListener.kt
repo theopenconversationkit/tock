@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.definition.definition
+package ai.tock.bot.definition
 
-import ai.tock.bot.definition.StoryHandler
-import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.AsyncBus
 import ai.tock.bot.engine.BotBus
