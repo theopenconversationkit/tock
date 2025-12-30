@@ -78,7 +78,7 @@ class RestConnector(
                     }
                     val message: MessageRequest = mapper.readValue(context.body().asString())
                     val action = transformMessage(message)
-                    val locale = Locale.forLanguageTag(context.pathParam("locale"))
+                    val locale = parseLocale(context.pathParam("locale"))
                     action.state.sourceConnectorType = message.connectorType
                     action.state.targetConnectorType = message.targetConnectorType
                     action.metadata.debugEnabled = message.debugEnabled
@@ -205,4 +205,22 @@ class RestConnector(
                 else -> getTargetConnector(targetConnectorType)?.toConnectorMessage(message)?.invoke(this) ?: emptyList()
             }
         }
+
+    private fun parseLocale(rawLocale: String): Locale {
+        // Accept both BCP47 (fr-FR) and legacy underscore (fr_FR) formats.
+        val sanitized = rawLocale.replace('_', '-')
+        val fromTag = Locale.forLanguageTag(sanitized)
+        if (fromTag.language.isNotBlank()) {
+            return fromTag
+        }
+
+        // Fallback: manual split for legacy or non-standard formats
+        val legacyParts = rawLocale.replace('-', '_').split('_')
+        if (legacyParts.size >= 2 && legacyParts[0].isNotBlank()) {
+            return Locale(legacyParts[0], legacyParts[1])
+        }
+
+        //Last resort: use raw string or system default
+        return if (rawLocale.isNotBlank()) Locale(rawLocale) else Locale.getDefault()
+    }
 }
