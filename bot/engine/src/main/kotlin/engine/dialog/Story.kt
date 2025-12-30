@@ -177,7 +177,7 @@ data class Story(
             if (it is AsyncStoryHandler) {
                 it.handle(bus)
             } else {
-                it.handle(bus.botBus)
+                it.handle(bus.syncBus)
             }
         }
     }
@@ -207,14 +207,14 @@ data class Story(
                     if (this is AsyncStoryHandlerListener) {
                         startAction(bus, handler)
                     } else {
-                        startAction(bus.botBus, handler)
+                        startAction(bus.syncBus, handler)
                     }
                 }
             ) {
                 op(handler)
             }
         } finally {
-            sendEndEvent { if (this is AsyncStoryHandlerListener) endAction(bus, handler) else endAction(bus.botBus, handler) }
+            sendEndEvent { if (this is AsyncStoryHandlerListener) endAction(bus, handler) else endAction(bus.syncBus, handler) }
         }
     }
 

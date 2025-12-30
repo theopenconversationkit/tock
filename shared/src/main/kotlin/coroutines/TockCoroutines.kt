@@ -32,6 +32,9 @@ import mu.KotlinLogging
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+
+private val logger: KLogger = KotlinLogging.logger { }
+
 /**
  * Launches a new coroutine without blocking the current thread and returns a reference to the coroutine as a [Job].
  * The coroutine is cancelled when the resulting job is [cancelled][Job.cancel].
@@ -60,7 +63,6 @@ fun fireAndForgetIO(block: suspend () -> Unit): Job =
         try {
             block()
         } catch (e: Exception) {
-            val logger: KLogger = KotlinLogging.logger { }
             logger.error("Uncaught exception in a fire-and-forget-blocking-io coroutine", e)
         }
     }
@@ -76,7 +78,6 @@ fun fireAndForget(block: suspend () -> Unit): Job =
         try {
             block()
         } catch (e: Exception) {
-            val logger: KLogger = KotlinLogging.logger { }
             logger.error("Uncaught exception in a fire-and-forget coroutine", e)
         }
     }

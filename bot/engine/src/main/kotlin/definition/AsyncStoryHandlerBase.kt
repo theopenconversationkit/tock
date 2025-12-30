@@ -52,7 +52,7 @@ abstract class AsyncStoryHandlerBase(
     }
 
     override suspend fun handle(bus: AsyncBus) {
-        val baseBus = (bus as AsyncBotBus).botBus
+        val baseBus = (bus as AsyncBotBus).syncBus
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
@@ -73,13 +73,13 @@ abstract class AsyncStoryHandlerBase(
 
     protected abstract suspend fun action(bus: AsyncBus)
 
-    protected fun AsyncBus.isEndCalled() = StoryHandlerBase.isEndCalled((this as AsyncBotBus).botBus)
+    protected fun AsyncBus.isEndCalled() = StoryHandlerBase.isEndCalled((this as AsyncBotBus).syncBus)
 
     /**
      * Finds the story definition of this handler.
      */
     open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? {
-        return findStoryDefinition((bus as AsyncBotBus).botBus)
+        return findStoryDefinition((bus as AsyncBotBus).syncBus)
     }
 
     private fun findStoryDefinition(bus: BotBus): StoryDefinition? {
