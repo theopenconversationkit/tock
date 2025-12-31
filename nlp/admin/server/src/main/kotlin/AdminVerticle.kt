@@ -121,9 +121,10 @@ open class AdminVerticle : WebVerticle() {
         actionType: String,
         dataProvider: (RoutingContext) -> Any? = { null },
         applicationIdProvider: (RoutingContext, Any?) -> Id<ApplicationDefinition>? = { context, _ ->
-            context.pathParam(
-                "applicationId",
-            )?.toId()
+            context
+                .pathParam(
+                    "applicationId",
+                )?.toId()
         },
     ): RequestLogger = logger<Any>(actionType, dataProvider, applicationIdProvider)
 
@@ -131,9 +132,10 @@ open class AdminVerticle : WebVerticle() {
         actionType: String,
         noinline dataProvider: (RoutingContext) -> Any? = { null },
         crossinline applicationIdProvider: (RoutingContext, T?) -> Id<ApplicationDefinition>? = { context, _ ->
-            context.pathParam(
-                "applicationId",
-            )?.toId()
+            context
+                .pathParam(
+                    "applicationId",
+                )?.toId()
         },
     ): RequestLogger =
         object : RequestLogger {
@@ -168,11 +170,13 @@ open class AdminVerticle : WebVerticle() {
 
         // Retrieve all applications of the namespace
         blockingJsonGet("/applications") { context ->
-            front.getApplications().filter {
-                it.namespace == context.organization
-            }.map {
-                service.getApplicationWithIntents(it)
-            }
+            front
+                .getApplications()
+                .filter {
+                    it.namespace == context.organization
+                }.map {
+                    service.getApplicationWithIntents(it)
+                }
         }
 
         // Retrieve all applications of the selected namespace
@@ -181,11 +185,13 @@ open class AdminVerticle : WebVerticle() {
             val user: String = context.userLogin
 
             if (allowAccessToAllNamespaces || front.hasNamespace(user, namespace)) {
-                front.getApplications().filter {
-                    it.namespace == namespace
-                }.map {
-                    service.getApplicationWithIntents(it)
-                }
+                front
+                    .getApplications()
+                    .filter {
+                        it.namespace == namespace
+                    }.map {
+                        service.getApplicationWithIntents(it)
+                    }
             } else {
                 badRequest("Unauthorized access to namespace '$namespace'")
             }
@@ -193,12 +199,14 @@ open class AdminVerticle : WebVerticle() {
 
         // Retrieve application that matches given identifier
         blockingJsonGet("/application/:applicationId") { context ->
-            service.getApplicationWithIntents(context.pathId("applicationId"))
+            service
+                .getApplicationWithIntents(context.pathId("applicationId"))
                 ?.takeIf { it.namespace == context.organization }
         }
 
         blockingJsonGet("/application/:applicationId/model/:engine/configuration", admin) { context ->
-            front.getApplicationById(context.pathId("applicationId"))
+            front
+                .getApplicationById(context.pathId("applicationId"))
                 ?.takeIf { it.namespace == context.organization }
                 ?.let { front.getCurrentModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine"))) }
         }
@@ -208,7 +216,8 @@ open class AdminVerticle : WebVerticle() {
             admin,
             simpleLogger("Model Configuration"),
         ) { context, conf: NlpApplicationConfiguration ->
-            front.getApplicationById(context.pathId("applicationId"))
+            front
+                .getApplicationById(context.pathId("applicationId"))
                 ?.takeIf { it.namespace == context.organization && it.supportedLocales.isNotEmpty() }
                 ?.let { front.updateModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine")), conf) }
         }
@@ -583,10 +592,10 @@ open class AdminVerticle : WebVerticle() {
             supportedLanguages
                 .map {
                     it.key to
-                        it.value.getDisplayLanguage(Locale.ENGLISH)
+                        it.value
+                            .getDisplayLanguage(Locale.ENGLISH)
                             .replaceFirstChar { c -> if (c.isLowerCase()) c.titlecase(Locale.getDefault()) else c.toString() }
-                }
-                .sortedBy { it.second }
+                }.sortedBy { it.second }
         }
 
         blockingJsonPost("/parse", setOf(nlpUser)) { context, query: ParseQuery ->
@@ -635,14 +644,15 @@ open class AdminVerticle : WebVerticle() {
                 val decrypt = decrypt(key)
                 val applicationDefinition = front.getApplicationById(s.applicationId)
                 if (applicationDefinition?.namespace == context.organization &&
-                    front.search(
-                        SentencesQuery(
-                            applicationId = applicationDefinition._id,
-                            language = s.language,
-                            search = decrypt,
-                            onlyExactMatch = true,
-                        ),
-                    ).total != 0L
+                    front
+                        .search(
+                            SentencesQuery(
+                                applicationId = applicationDefinition._id,
+                                language = s.language,
+                                search = decrypt,
+                                onlyExactMatch = true,
+                            ),
+                        ).total != 0L
                 ) {
                     s.copy(text = decrypt, key = null)
                 } else {
@@ -691,7 +701,8 @@ open class AdminVerticle : WebVerticle() {
                 val sb = StringBuilder()
                 val p = newPrinter(sb)
 
-                front.export(app._id, context.pathToLocale("locale"))
+                front
+                    .export(app._id, context.pathToLocale("locale"))
                     .forEach {
                         p.printRecord(it.date, it.intent, it.text)
                     }
@@ -728,10 +739,12 @@ open class AdminVerticle : WebVerticle() {
             if (context.organization == s.namespace) {
                 front.search(
                     s.toRequestLogStatQuery(
-                        front.getApplicationByNamespaceAndName(
-                            s.namespace,
-                            s.applicationName,
-                        )!!._id,
+                        front
+                            .getApplicationByNamespaceAndName(
+                                s.namespace,
+                                s.applicationName,
+                            )!!
+                            ._id,
                     ),
                 )
             } else {
@@ -748,11 +761,13 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/intents") { context ->
-            front.getApplications().filter {
-                it.namespace == context.organization
-            }.map {
-                service.getApplicationWithIntents(it)
-            }
+            front
+                .getApplications()
+                .filter {
+                    it.namespace == context.organization
+                }.map {
+                    service.getApplicationWithIntents(it)
+                }
         }
 
         blockingJsonGet("/entity-types") { context ->
@@ -777,7 +792,8 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet("/dictionary/:qualifiedName") { context ->
             context.path("qualifiedName").let { n ->
-                n.takeUnless { it.namespace() != context.organization }
+                n
+                    .takeUnless { it.namespace() != context.organization }
                     ?.let { front.getDictionaryDataByEntityName(it) }
                     ?: DictionaryData(n.namespace(), n.name())
             }
@@ -832,7 +848,8 @@ open class AdminVerticle : WebVerticle() {
         ) { context, entityType: EntityTypeDefinition ->
             if (context.organization == entityType.name.namespace()) {
                 val update =
-                    front.getEntityTypeByName(entityType.name)
+                    front
+                        .getEntityTypeByName(entityType.name)
                         ?.run {
                             copy(
                                 description = entityType.description,
@@ -920,8 +937,7 @@ open class AdminVerticle : WebVerticle() {
                     query.namespace,
                     query.applicationName,
                 )
-            if (context.organization == app?.namespace
-            ) {
+            if (context.organization == app?.namespace) {
                 AdminService.testBuildStats(query, app)
             } else {
                 unauthorized()
@@ -943,7 +959,8 @@ open class AdminVerticle : WebVerticle() {
             simpleLogger("Update Predefined Value"),
         ) { context, query: PredefinedValueQuery ->
 
-            front.getDictionaryDataByEntityName(query.entityTypeName)
+            front
+                .getDictionaryDataByEntityName(query.entityTypeName)
                 ?.takeIf { it.namespace == context.organization }
                 ?.run {
                     val value = query.oldPredefinedValue ?: query.predefinedValue
@@ -951,7 +968,8 @@ open class AdminVerticle : WebVerticle() {
                         values =
                             values.filter { it.value != value } +
                                 (
-                                    values.find { it.value == value }
+                                    values
+                                        .find { it.value == value }
                                         ?.copy(value = query.predefinedValue)
                                         ?: PredefinedValue(
                                             query.predefinedValue,
@@ -959,8 +977,7 @@ open class AdminVerticle : WebVerticle() {
                                         )
                                 ),
                     )
-                }
-                ?.also {
+                }?.also {
                     front.save(it)
                 }
                 ?: unauthorized()
@@ -985,14 +1002,16 @@ open class AdminVerticle : WebVerticle() {
             simpleLogger("Update Predefined Labels"),
         ) { context, query: PredefinedLabelQuery ->
 
-            front.getDictionaryDataByEntityName(query.entityTypeName)
+            front
+                .getDictionaryDataByEntityName(query.entityTypeName)
                 ?.takeIf { it.namespace == context.organization }
                 ?.run {
                     copy(
                         values =
                             values.filter { it.value != query.predefinedValue } +
                                 (
-                                    values.find { it.value == query.predefinedValue }
+                                    values
+                                        .find { it.value == query.predefinedValue }
                                         ?.run {
                                             copy(
                                                 labels =
@@ -1014,8 +1033,7 @@ open class AdminVerticle : WebVerticle() {
                                         )
                                 ),
                     )
-                }
-                ?.also {
+                }?.also {
                     front.save(it)
                 }
                 ?: unauthorized()
@@ -1134,7 +1152,12 @@ open class AdminVerticle : WebVerticle() {
             val n = context.path("namespace").trim()
             if (front.hasNamespace(context.userLogin, n)) {
                 front.setCurrentNamespace(context.userLogin, n)
-                (context as UserContextInternal).setUser(context.user!!.copy(namespace = n))
+
+                val updated = context.user!!.copy(namespace = n)
+
+                // Update the user through userContext() and persist in session so next calls see the change.
+                (context.userContext() as UserContextInternal).setUser(updated)
+                context.session()?.put("tockUser", updated)
             } else {
                 unauthorized()
             }
@@ -1196,7 +1219,10 @@ open class AdminVerticle : WebVerticle() {
             val webRoot = verticleProperty("content_path", "/maven/dist")
             // swagger yaml
             router.get("${baseHref}doc/nlp.yaml").handler { context ->
-                context.vertx().fileSystem().readFile("$webRoot/doc/nlp.yaml")
+                context
+                    .vertx()
+                    .fileSystem()
+                    .readFile("$webRoot/doc/nlp.yaml")
                     .onComplete {
                         if (it.succeeded()) {
                             context.response().end(
@@ -1223,7 +1249,8 @@ open class AdminVerticle : WebVerticle() {
             val indexContentHandler =
                 Handler<RoutingContext> { context ->
                     if (indexContent != null) {
-                        context.response()
+                        context
+                            .response()
                             .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
                             .end(indexContent)
                     } else {
@@ -1231,20 +1258,23 @@ open class AdminVerticle : WebVerticle() {
                             if (it.succeeded()) {
                                 logger.info { "base href: $baseHref" }
                                 val content =
-                                    it.result()
+                                    it
+                                        .result()
                                         .toString(UTF_8)
                                         .replace("<base href=\"/\"", "<base href=\"$baseHref\"")
                                 logger.debug { "content: $content" }
                                 val result = Buffer.buffer(content)
                                 indexContent = result
 
-                                context.response()
+                                context
+                                    .response()
                                     .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
                                     .end(result)
                             } else {
                                 logger.warn { "Can't find $webRoot/index.html" }
                                 context.response().statusCode = 404
-                                context.response()
+                                context
+                                    .response()
                                     .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
                                     .end("<html><body><h1>Resource not found</h1></body></html>")
                             }
@@ -1258,7 +1288,8 @@ open class AdminVerticle : WebVerticle() {
             router.route(GET, baseHref).handler(indexContentHandler)
             router.route(GET, "${baseHref}index.html").handler(indexContentHandler)
 
-            router.route(GET, "$baseHref*")
+            router
+                .route(GET, "$baseHref*")
                 .handler(StaticHandler.create(FileSystemAccess.ROOT, webRoot))
                 .handler(indexContentHandler)
         } else {
@@ -1273,18 +1304,14 @@ open class AdminVerticle : WebVerticle() {
     protected open fun saveApplication(
         existingApp: ApplicationDefinition?,
         app: ApplicationDefinition,
-    ): ApplicationDefinition {
-        return front.save(app)
-    }
+    ): ApplicationDefinition = front.save(app)
 
     override fun configure() {
         configureServices()
         configureStaticHandling()
     }
 
-    override fun defaultHealthcheck(): (RoutingContext) -> Unit {
-        return { it.response().end() }
-    }
+    override fun defaultHealthcheck(): (RoutingContext) -> Unit = { it.response().end() }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit =
         detailedHealthcheck(

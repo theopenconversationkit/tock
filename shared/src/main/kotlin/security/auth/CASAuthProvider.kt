@@ -50,7 +50,9 @@ import org.pac4j.vertx.handler.impl.CallbackHandlerOptions
 import org.pac4j.vertx.handler.impl.SecurityHandler
 import org.pac4j.vertx.handler.impl.SecurityHandlerOptions
 
-abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
+abstract class CASAuthProvider(
+    vertx: Vertx,
+) : SSOTockAuthProvider(vertx) {
     protected val sessionStore: VertxSessionStore
     private val executor: Executor get() = injector.provide()
 
@@ -122,7 +124,8 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         for ((namespace, roles) in rolesByNamespace) {
             user =
                 injector.provide<TockUserListener>().registerUser(
-                    TockUser(username, namespace, roles), isJoinNamespace,
+                    TockUser(username, namespace, roles),
+                    isJoinNamespace,
                 )
         }
         return user!! // !! is because user is already guaranteed to be not null
@@ -193,7 +196,13 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         verticle.router.route("/*").handler(
             WithExcludedPathHandler(excluded) { rc ->
                 val user = rc.user()
-                if (user != null && user !is TockUser) { // user is Pac4jUser
+                val sessionTockUser = rc.session()?.get("tockUser") as? TockUser
+
+                if (sessionTockUser != null) {
+                    // If a TockUser is already in session (ex: after a namespace switch), reuse it and don't overwrite it.
+                    (rc.userContext() as UserContextInternal).setUser(sessionTockUser)
+                    rc.next()
+                } else if (user != null && user !is TockUser) { // user is Pac4jUser
                     executor.executeBlocking {
                         upgradeToTockUser(getUserCasProfile(rc)) { hr ->
                             if (hr.succeeded()) {
