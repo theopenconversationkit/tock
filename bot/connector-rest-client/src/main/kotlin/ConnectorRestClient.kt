@@ -76,6 +76,6 @@ class ConnectorRestClient(
         locale: Locale,
         query: ClientMessageRequest,
     ): Response<ClientMessageResponse> {
-        return getService(path).talk(locale, query).execute()
+        return getService(path).talk(locale.toLanguageTag(), query).execute()
     }
 }
