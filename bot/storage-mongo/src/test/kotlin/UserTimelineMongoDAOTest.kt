@@ -42,7 +42,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.ZonedDateTime
-import java.time.ZonedDateTime.parse
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -50,7 +49,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
- * Tests for UserTimelineMongoDAO.
+ *
  */
 internal class UserTimelineMongoDAOTest : AbstractTest() {
     /**
@@ -229,10 +228,10 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
 
             try {
                 // Dialog created on Dec 10, but has an action on Dec 12
-                val firstActionDate = parse("2025-12-10T10:00:00Z")
-                val laterActionDate = parse("2025-12-12T10:00:00Z")
+                val firstActionDate = ZonedDateTime.parse("2025-12-10T10:00:00Z")
+                val laterActionDate = ZonedDateTime.parse("2025-12-12T10:00:00Z")
                 // Filter: only dialogs created after Dec 11
-                val filterDate = parse("2025-12-11T10:00:00Z")
+                val filterDate = ZonedDateTime.parse("2025-12-11T10:00:00Z")
 
                 val action1 =
                     SendSentence(
@@ -372,24 +371,24 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
 
             try {
                 // Dialog A: Dec 10-12 (overlaps filter Dec 11-13)
-                val dialogAStart = parse("2025-12-10T10:00:00Z")
-                val dialogAEnd = parse("2025-12-12T10:00:00Z")
+                val dialogAStart = ZonedDateTime.parse("2025-12-10T10:00:00Z")
+                val dialogAEnd = ZonedDateTime.parse("2025-12-12T10:00:00Z")
 
                 // Dialog B: Dec 12-14 (overlaps filter Dec 11-13)
-                val dialogBStart = parse("2025-12-12T10:00:00Z")
-                val dialogBEnd = parse("2025-12-14T10:00:00Z")
+                val dialogBStart = ZonedDateTime.parse("2025-12-12T10:00:00Z")
+                val dialogBEnd = ZonedDateTime.parse("2025-12-14T10:00:00Z")
 
                 // Dialog C: Dec 8-9 (does NOT overlap filter Dec 11-13)
-                val dialogCStart = parse("2025-12-08T10:00:00Z")
-                val dialogCEnd = parse("2025-12-09T10:00:00Z")
+                val dialogCStart = ZonedDateTime.parse("2025-12-08T10:00:00Z")
+                val dialogCEnd = ZonedDateTime.parse("2025-12-09T10:00:00Z")
 
                 // Dialog D: Dec 15-16 (does NOT overlap filter Dec 11-13)
-                val dialogDStart = parse("2025-12-15T10:00:00Z")
-                val dialogDEnd = parse("2025-12-16T10:00:00Z")
+                val dialogDStart = ZonedDateTime.parse("2025-12-15T10:00:00Z")
+                val dialogDEnd = ZonedDateTime.parse("2025-12-16T10:00:00Z")
 
                 // Filter period: Dec 11-13 (exclusive end)
-                val filterStartDate = parse("2025-12-11T10:00:00Z")
-                val filterEndDate = parse("2025-12-13T10:00:00Z")
+                val filterStartDate = ZonedDateTime.parse("2025-12-11T10:00:00Z")
+                val filterEndDate = ZonedDateTime.parse("2025-12-13T10:00:00Z")
 
                 val storyHandler =
                     object : SimpleStoryHandlerBase() {

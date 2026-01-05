@@ -780,8 +780,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (query.playerId != null || query.displayTests) null else Test eq false,
                                     if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
                                     if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                                    if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
-                                    if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                                     if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,

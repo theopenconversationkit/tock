@@ -29,18 +29,17 @@ import kotlin.test.assertNull
  * Focus on date filtering parameters (dialogCreationDateFrom/To, dialogActivityFrom/To).
  */
 class DialogSearchServiceTest {
-
     @Nested
     inner class DialogsSearchQueryMappingTest {
-
         @Test
         fun `toDialogReportQuery should map dialogCreationDateFrom correctly`() {
             // Given
             val creationDateFrom = ZonedDateTime.parse("2025-12-10T10:00:00Z")
-            val query = createSearchQuery(
-                dialogCreationDateFrom = creationDateFrom,
-                dialogCreationDateTo = null
-            )
+            val query =
+                createSearchQuery(
+                    dialogCreationDateFrom = creationDateFrom,
+                    dialogCreationDateTo = null,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -55,10 +54,11 @@ class DialogSearchServiceTest {
         fun `toDialogReportQuery should map dialogCreationDateTo correctly`() {
             // Given
             val creationDateTo = ZonedDateTime.parse("2025-12-15T10:00:00Z")
-            val query = createSearchQuery(
-                dialogCreationDateFrom = null,
-                dialogCreationDateTo = creationDateTo
-            )
+            val query =
+                createSearchQuery(
+                    dialogCreationDateFrom = null,
+                    dialogCreationDateTo = creationDateTo,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -74,10 +74,11 @@ class DialogSearchServiceTest {
             // Given
             val creationDateFrom = ZonedDateTime.parse("2025-12-10T10:00:00Z")
             val creationDateTo = ZonedDateTime.parse("2025-12-15T10:00:00Z")
-            val query = createSearchQuery(
-                dialogCreationDateFrom = creationDateFrom,
-                dialogCreationDateTo = creationDateTo
-            )
+            val query =
+                createSearchQuery(
+                    dialogCreationDateFrom = creationDateFrom,
+                    dialogCreationDateTo = creationDateTo,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -91,10 +92,11 @@ class DialogSearchServiceTest {
         fun `toDialogReportQuery should map dialogActivityFrom correctly`() {
             // Given
             val activityFrom = ZonedDateTime.parse("2025-12-10T10:00:00Z")
-            val query = createSearchQuery(
-                dialogActivityFrom = activityFrom,
-                dialogActivityTo = null
-            )
+            val query =
+                createSearchQuery(
+                    dialogActivityFrom = activityFrom,
+                    dialogActivityTo = null,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -109,10 +111,11 @@ class DialogSearchServiceTest {
         fun `toDialogReportQuery should map dialogActivityTo correctly`() {
             // Given
             val activityTo = ZonedDateTime.parse("2025-12-15T10:00:00Z")
-            val query = createSearchQuery(
-                dialogActivityFrom = null,
-                dialogActivityTo = activityTo
-            )
+            val query =
+                createSearchQuery(
+                    dialogActivityFrom = null,
+                    dialogActivityTo = activityTo,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -128,10 +131,11 @@ class DialogSearchServiceTest {
             // Given
             val activityFrom = ZonedDateTime.parse("2025-12-10T10:00:00Z")
             val activityTo = ZonedDateTime.parse("2025-12-15T10:00:00Z")
-            val query = createSearchQuery(
-                dialogActivityFrom = activityFrom,
-                dialogActivityTo = activityTo
-            )
+            val query =
+                createSearchQuery(
+                    dialogActivityFrom = activityFrom,
+                    dialogActivityTo = activityTo,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -148,12 +152,13 @@ class DialogSearchServiceTest {
             val creationDateTo = ZonedDateTime.parse("2025-12-05T10:00:00Z")
             val activityFrom = ZonedDateTime.parse("2025-12-10T10:00:00Z")
             val activityTo = ZonedDateTime.parse("2025-12-15T10:00:00Z")
-            val query = createSearchQuery(
-                dialogCreationDateFrom = creationDateFrom,
-                dialogCreationDateTo = creationDateTo,
-                dialogActivityFrom = activityFrom,
-                dialogActivityTo = activityTo
-            )
+            val query =
+                createSearchQuery(
+                    dialogCreationDateFrom = creationDateFrom,
+                    dialogCreationDateTo = creationDateTo,
+                    dialogActivityFrom = activityFrom,
+                    dialogActivityTo = activityTo,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -168,12 +173,13 @@ class DialogSearchServiceTest {
         @Test
         fun `toDialogReportQuery should handle null date parameters correctly`() {
             // Given
-            val query = createSearchQuery(
-                dialogCreationDateFrom = null,
-                dialogCreationDateTo = null,
-                dialogActivityFrom = null,
-                dialogActivityTo = null
-            )
+            val query =
+                createSearchQuery(
+                    dialogCreationDateFrom = null,
+                    dialogCreationDateTo = null,
+                    dialogActivityFrom = null,
+                    dialogActivityTo = null,
+                )
 
             // When
             val reportQuery = query.toDialogReportQuery()
@@ -209,7 +215,7 @@ class DialogSearchServiceTest {
         dialogCreationDateFrom: ZonedDateTime? = null,
         dialogCreationDateTo: ZonedDateTime? = null,
         dialogActivityFrom: ZonedDateTime? = null,
-        dialogActivityTo: ZonedDateTime? = null
+        dialogActivityTo: ZonedDateTime? = null,
     ): DialogsSearchQuery {
         return DialogsSearchQuery(
             playerId = null,
@@ -234,7 +240,7 @@ class DialogSearchServiceTest {
             dialogCreationDateFrom = dialogCreationDateFrom,
             dialogCreationDateTo = dialogCreationDateTo,
             dialogActivityFrom = dialogActivityFrom,
-            dialogActivityTo = dialogActivityTo
+            dialogActivityTo = dialogActivityTo,
         )
     }
 }

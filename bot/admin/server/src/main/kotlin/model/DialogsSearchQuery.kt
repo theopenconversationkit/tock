@@ -51,9 +51,11 @@ data class DialogsSearchQuery(
     val dialogCreationDateFrom: ZonedDateTime? = null,
     val dialogCreationDateTo: ZonedDateTime? = null,
     /**
-     * Filter dialogs by activity period overlap.
-     * A dialog is included if its activity period (from first to last action) overlaps the filter range.
-     * Condition: activityFrom <= max(actions.date) AND min(actions.date) < activityTo
+     * Filter dialogs that had activity during the specified period.
+     * A dialog is included if:
+     * - At least one action exists with date >= dialogActivityFrom (if set)
+     * - At least one action exists with date < dialogActivityTo (if set)
+     * Note: These conditions can be satisfied by different actions.
      */
     val dialogActivityFrom: ZonedDateTime? = null,
     val dialogActivityTo: ZonedDateTime? = null,

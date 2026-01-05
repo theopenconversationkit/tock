@@ -325,12 +325,14 @@ object MongoAgg {
     }
 
     /**
-     * Filters documents where the activity period overlaps with the filter period.
+     * Filters documents that had activity during the specified period.
      *
-     * Condition: fromDate <= youngestDate AND oldestDate < toDate
+     * A document is included if:
+     * - At least one action exists with date >= fromDate (if fromDate is set)
+     * - At least one action exists with date < toDate (if toDate is set)
      *
-     * A document is included if its activity period (from oldest to youngest date)
-     * overlaps the filter range. This implements period overlap logic.
+     * Note: These conditions can be satisfied by different actions.
+     * Mathematically equivalent to: fromDate <= max(dates) AND min(dates) < toDate
      *
      * @param inputField the input array field (e.g., "stories")
      * @param datePath the path to the date field within each element (e.g., "actions.date")
