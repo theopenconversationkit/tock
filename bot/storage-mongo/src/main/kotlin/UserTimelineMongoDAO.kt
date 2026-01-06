@@ -109,10 +109,12 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.from
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
+import org.litote.kmongo.gte
 import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
+import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
@@ -798,12 +800,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (annotationCreationDateFrom == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant()
+                                        Stories.actions.annotation.creationDate gte annotationCreationDateFrom?.toInstant()
                                     },
                                     if (annotationCreationDateTo == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant()
+                                        Stories.actions.annotation.creationDate lte annotationCreationDateTo?.toInstant()
                                     },
                                     buildDialogCreationDateFilter(
                                         dialogCreationDateFrom,

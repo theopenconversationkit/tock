@@ -329,15 +329,15 @@ object MongoAgg {
      *
      * A document is included if:
      * - At least one action exists with date >= fromDate (if fromDate is set)
-     * - At least one action exists with date < toDate (if toDate is set)
+     * - At least one action exists with date <= toDate (if toDate is set)
      *
      * Note: These conditions can be satisfied by different actions.
-     * Mathematically equivalent to: fromDate <= max(dates) AND min(dates) < toDate
+     * Mathematically equivalent to: fromDate <= max(dates) AND min(dates) <= toDate
      *
      * @param inputField the input array field (e.g., "stories")
      * @param datePath the path to the date field within each element (e.g., "actions.date")
      * @param fromDate optional start date filter (inclusive)
-     * @param toDate optional end date filter (exclusive)
+     * @param toDate optional end date filter (inclusive)
      * @return Bson filter expression, or null if both dates are null
      */
     fun filterByPeriodOverlap(
@@ -352,9 +352,9 @@ object MongoAgg {
                 fromDate?.let {
                     { gte(youngestDateInArray(inputField, datePath), it.toInstant()) }
                 },
-                // oldestDate < toDate (need oldest only if toDate is set)
+                // oldestDate <= toDate (need oldest only if toDate is set)
                 toDate?.let {
-                    { lt(oldestDateInArray(inputField, datePath), it.toInstant()) }
+                    { lte(oldestDateInArray(inputField, datePath), it.toInstant()) }
                 },
             )
         return buildExprFromConditionBuilders(conditionBuilders)
