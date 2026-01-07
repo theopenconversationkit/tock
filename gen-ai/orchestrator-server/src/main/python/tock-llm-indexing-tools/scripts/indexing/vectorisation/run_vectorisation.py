@@ -1,4 +1,4 @@
-#   Copyright (C) 2025 Credit Mutuel Arkea
+#   Copyright (C) 2025-2026 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -257,6 +257,9 @@ def main():
             vector_store.add_documents(
                 documents=splitted_docs[i : i + input_config.embedding_bulk_size],
                 bulk_size=input_config.embedding_bulk_size,
+            )
+            logger.debug(
+                f"Vectorized chunks : {i + input_config.embedding_bulk_size} / {chunks_count}"
             )
 
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)

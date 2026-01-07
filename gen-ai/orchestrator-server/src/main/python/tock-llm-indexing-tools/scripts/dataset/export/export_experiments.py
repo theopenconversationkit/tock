@@ -1,4 +1,4 @@
-#   Copyright (C) 2025 Credit Mutuel Arkea
+#   Copyright (C) 2025-2026 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ Examples:
 """
 
 import os
+import re
 from datetime import datetime
 
 from docopt import docopt
@@ -175,7 +176,7 @@ def create_excel_output(
             )
             sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
                 [
-                    f'{doc.get("page_content", "")}'
+                    format_document_for_excel(doc)
                     for doc in items[i].runs[j].output.get('documents', [])
                     if isinstance(doc, dict)
                 ]
@@ -189,6 +190,37 @@ def create_excel_output(
             )
 
     wb.save(output_file)
+
+
+ILLEGAL_EXCEL_CHARS = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F]')
+
+
+def sanitize_for_excel(text: str) -> str:
+    # 1. Delete ```markdown
+    if text.startswith('```'):
+        text = text.strip('`').replace('markdown\n', '', 1).strip()
+
+    # 2. Delete illegal excel chars
+    text = ILLEGAL_EXCEL_CHARS.sub('', text)
+
+    return text
+
+
+def format_document_for_excel(doc: dict) -> str:
+    """
+    Format a document as:
+    [id: title]
+    sanitized_page_content
+    """
+    metadata = doc.get('metadata', {})
+
+    doc_id = metadata.get('id', 'unknown-id')
+    title = metadata.get('title', 'untitled')
+
+    raw_content = doc.get('page_content', '')
+    clean_content = sanitize_for_excel(raw_content)
+
+    return f"[{doc_id}: {title}]\n{clean_content}"
 
 
 def timestamped_filename(filename: str) -> str:

@@ -14,7 +14,7 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/indexing/vectorisation/run_vectorisation.py" />
-    <option name="PARAMETERS" value="--json-config-file=run_vectorisation.json" />
+    <option name="PARAMETERS" value="--json-config-file=run_vectorisation.json -v" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
