@@ -308,6 +308,12 @@ fun Expect<GenericElement>.toHaveExactlyChoices(
         )
     }
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains a choice (button)
+ * holding the assertions created by [assertionCreator]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveChoice(
     title: String,
     assertionCreator: Expect<Choice>.() -> Unit,
@@ -338,7 +344,13 @@ fun Expect<Attachment>.toBeImage(): Expect<Attachment> =
         toEqual(SendAttachment.AttachmentType.image)
     }
 
-fun Expect<GenericMessage>.toHaveChoice(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains a top-level choice (buttons)
+ * holding the assertions created by [assertionCreator]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveGlobalChoice(
     title: String,
     assertionCreator: Expect<Choice>.() -> Unit,
 ): Expect<GenericMessage> =
@@ -349,6 +361,7 @@ fun Expect<GenericMessage>.toHaveChoice(
         }
     }
 
+@JvmName("toHaveChoiceTitle")
 fun Expect<Choice>.toHaveTitle(title: String): Expect<Choice> = toHaveParameter(SendChoice.TITLE_PARAMETER, title)
 
 fun Expect<Choice>.toHaveIntent(intentName: String): Expect<Choice> =
