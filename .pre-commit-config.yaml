@@ -43,4 +43,6 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
-        additional_dependencies: ["pip>=25.3"]
+        additional_dependencies:
+          - "pip>=25.3"
+          - "filelock>=3.20.1"
