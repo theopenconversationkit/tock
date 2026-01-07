@@ -16,4 +16,55 @@
 
 package model.webhook
 
-class WhatsAppCloudMessagesDeserializationTest
+import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsappCloudUnknownMessage
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import org.junit.jupiter.api.Test
+import java.time.Instant
+import kotlin.test.assertEquals
+
+class WhatsAppCloudMessagesDeserializationTest {
+    @Test
+    fun testMessageWebhookDeserialization() {
+        val m =
+            WhatsAppCloudTextMessage(
+                text = TextContent("Hello, World!"),
+                id = "aaa",
+                from = "bbb",
+                timestamp = Instant.now().toString(),
+            )
+        val s = mapper.writeValueAsString(m)
+        assertEquals(m, mapper.readValue<WhatsAppCloudMessage>(s))
+    }
+
+    @Test
+    fun testUnknownMessageDeserialization() {
+        val m =
+            WhatsappCloudUnknownMessage(
+                id = "aaa",
+                from = "bbb",
+                timestamp = "2025-12-30T10:50:52.355219Z",
+                rawType = "unsupported",
+                additionalProperties =
+                    mutableMapOf(
+                        "thing" to "Hello, World!",
+                    ),
+            )
+        val s =
+            """
+            {
+              "thing" : "Hello, World!",
+              "id" : "aaa",
+              "from" : "bbb",
+              "timestamp" : "2025-12-30T10:50:52.355219Z",
+              "errors" : [ ],
+              "type" : "unsupported"
+            }
+            """.trimIndent()
+        mapper.writeValueAsString(m)
+        assertEquals(m, mapper.readValue<WhatsAppCloudMessage>(s))
+    }
+}
