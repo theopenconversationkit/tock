@@ -35,7 +35,8 @@ jobs:
               - '**/*.kts'
               - '**/pom.xml'
             python:
-              - 'gen-ai/orchestrator-server/src/main/python/server/**'
+              - 'gen-ai/orchestrator-server/src/main/python/**'
+              - '.pre-commit-config.yaml'
             doc:
               - 'docs/**'
 
