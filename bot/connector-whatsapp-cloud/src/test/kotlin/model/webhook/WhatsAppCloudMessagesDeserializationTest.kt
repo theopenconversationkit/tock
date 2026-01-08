@@ -22,10 +22,10 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudT
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudUnknownMessage
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.jupiter.api.Test
-import java.time.Instant
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
+import java.time.Instant
 
 class WhatsAppCloudMessagesDeserializationTest {
     @Test
