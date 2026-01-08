@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { includesArray, isPrimitive, orderBy } from './utils';
+import { includesArray, isPrimitive, orderBy, roundMinutesToNextTen } from './utils';
 
 describe('OrderBy', () => {
   describe('should return type error if the argument is not an array', () => {
@@ -206,5 +206,74 @@ describe('includesArray', () => {
     expect(includesArray([[1, 2, 3], [[3, 2, 1]]], [3, 2, 1])).toBeFalse();
     expect(includesArray([{ arr: [1, 2, 3] }], [1, 2, 3])).toBeFalse();
     expect(includesArray([[{ a: 1 }]], [{ a: 1 }])).toBeFalse();
+  });
+});
+
+describe('roundMinutesToNextTen', () => {
+  it('should round minutes to next ten and reset seconds and milliseconds', () => {
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:00:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:00:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:01:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:10:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:05:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:10:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:10:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:10:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:11:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:20:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:59:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T13:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle overflow to next hour', () => {
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:55:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-01T13:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle overflow to next day', () => {
+    expect(roundMinutesToNextTen(new Date('2023-01-01T23:55:00.000Z')).toISOString()).toBe(
+      new Date('2023-01-02T00:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle overflow to next month', () => {
+    expect(roundMinutesToNextTen(new Date('2023-01-31T23:55:00.000Z')).toISOString()).toBe(
+      new Date('2023-02-01T00:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle overflow to next year', () => {
+    expect(roundMinutesToNextTen(new Date('2023-12-31T23:55:00.000Z')).toISOString()).toBe(
+      new Date('2024-01-01T00:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle leap year', () => {
+    expect(roundMinutesToNextTen(new Date('2024-02-28T23:55:00.000Z')).toISOString()).toBe(
+      new Date('2024-02-29T00:00:00.000Z').toISOString()
+    );
+  });
+
+  it('should handle milliseconds and seconds', () => {
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:00:59.999Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:10:00.000Z').toISOString()
+    );
+    expect(roundMinutesToNextTen(new Date('2023-01-01T12:09:59.999Z')).toISOString()).toBe(
+      new Date('2023-01-01T12:10:00.000Z').toISOString()
+    );
+  });
+
+  it('should not modify the original date', () => {
+    const originalDate = new Date('2023-01-01T12:01:00.000Z');
+    const originalISO = originalDate.toISOString();
+    roundMinutesToNextTen(originalDate);
+    expect(originalDate.toISOString()).toBe(originalISO);
   });
 });
