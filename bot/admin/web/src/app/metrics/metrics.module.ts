@@ -71,7 +71,7 @@ import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.
     NbFormFieldModule,
     NbSelectModule,
     NbDatepickerModule,
-    NbTimepickerModule.forRoot(),
+    NbTimepickerModule,
     NbTagModule,
     MetricsRoutingModule,
     NbSpinnerModule,

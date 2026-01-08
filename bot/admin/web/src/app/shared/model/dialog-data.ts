@@ -19,6 +19,7 @@ import { JsonUtils } from '../../model/commons';
 import { ClassifiedEntity } from '../../model/nlp';
 import { IntentName } from '../../bot/model/story';
 import { Annotation } from '../components/annotation/annotations';
+import { FeedbackVote } from '../../analytics/dialogs/dialogs';
 
 export class DialogReport {
   displayActions: boolean;
@@ -47,7 +48,7 @@ export class DialogReport {
 }
 
 export interface FeedbackParams {
-  vote: string
+  vote: FeedbackVote;
 }
 
 export interface ActionReportMetadata {
@@ -479,4 +480,3 @@ export interface DialogCounts {
   allFeedbackUp: number;
   allFeedbackDown: number;
 }
-

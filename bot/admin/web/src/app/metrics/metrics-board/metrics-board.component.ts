@@ -673,7 +673,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     this.initStoriesHitsChart();
   }
 
-  doesStoriesHitsEcxeed(nb: number): boolean {
+  doesStoriesHitsExceed(nb: number): boolean {
     return this.storiesMetrics?.length > nb;
   }
 
@@ -687,6 +687,9 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
     this.destroy.next(true);
     this.destroy.complete();
   }

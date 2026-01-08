@@ -88,7 +88,7 @@ import { DialogsListFiltersComponent } from './dialogs/dialogs-list/dialogs-list
     NbCalendarModule,
     NbUserModule,
     NbDatepickerModule,
-    NbTimepickerModule.forRoot(),
+    NbTimepickerModule,
     NbListModule,
     NbAccordionModule,
     NbContextMenuModule,
