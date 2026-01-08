@@ -19,8 +19,11 @@ import ai.tock.bot.connector.web.WebMessage
 import ai.tock.bot.connector.web.channel.ChannelDAO
 import ai.tock.bot.connector.web.channel.ChannelEvent
 import ai.tock.bot.connector.web.channel.Channels
+import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.injector
+import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
@@ -28,16 +31,19 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.verify
 import io.vertx.core.Future
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.IOException
 
 internal class ChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()
 
     @BeforeEach
     fun setUp() {
+        tockInternalInjector = KodeinInjector()
         injector.inject(
             Kodein {
                 bind<ChannelDAO>() with singleton { channelDaoMock }
@@ -60,7 +66,7 @@ internal class ChannelsTest {
                 WebConnectorResponse(listOf(WebMessage("Welcome back"))),
             )
         every { channelDaoMock.listenChanges(capture(listenerSlot)) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } answers {
+        every { channelDaoMock.handleMissedEvents(any(), any(), any()) } answers {
             val handler = thirdArg<ChannelEvent.Handler>()
             expectedMissedResponses.forEach {
                 handler(ChannelEvent(appId, recipientId, it))
@@ -70,12 +76,59 @@ internal class ChannelsTest {
         val responses = mutableListOf<WebConnectorResponse>()
         channels.register(appId, recipientId) {
             responses.add(it)
-            Future.succeededFuture()
+            Future.succeededFuture<Unit>()
         }
         assertEquals(expectedMissedResponses, responses)
         expectedNewResponses.forEach {
             listenerSlot.captured.invoke(ChannelEvent(appId, recipientId, it))
         }
         assertEquals(expectedMissedResponses + expectedNewResponses, responses)
+    }
+
+    @Test
+    fun `Channels do not go through database when unnecessary`() {
+        val appId = "my-app"
+        val recipientId = PlayerId("user1")
+        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        every { channelDaoMock.listenChanges(any()) } just runs
+        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
+        val channels = Channels()
+        val responses = mutableListOf<WebConnectorResponse>()
+        channels.register(appId, recipientId.id) {
+            responses.add(it)
+            Future.succeededFuture<Unit>()
+        }
+        channels.send(appId, recipientId, message).await()
+        assertEquals(listOf(message), responses)
+        verify(inverse = true) { channelDaoMock.save(any()) }
+    }
+
+    @Test
+    fun `Channels register in database when user unavailable on instance`() {
+        val appId = "my-app"
+        val recipientId = PlayerId("user1")
+        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        every { channelDaoMock.listenChanges(any()) } just runs
+        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
+        every { channelDaoMock.save(any()) } just runs
+        val channels = Channels()
+        channels.send(appId, recipientId, message).await()
+        verify { channelDaoMock.save(any()) }
+    }
+
+    @Test
+    fun `Channels register in database when exception occurs`() {
+        val appId = "my-app"
+        val recipientId = PlayerId("user1")
+        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        every { channelDaoMock.listenChanges(any()) } just runs
+        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
+        every { channelDaoMock.save(any()) } just runs
+        val channels = Channels()
+        channels.register(appId, recipientId.id) {
+            Future.failedFuture<Unit>(IOException("Failed to write"))
+        }
+        channels.send(appId, recipientId, message).await()
+        verify { channelDaoMock.save(any()) }
     }
 }

@@ -188,6 +188,7 @@ jobs:
     name: Pre-commit
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: ${{ needs.changes.outputs.python == 'true'  || needs.changes.outputs.gha == 'true'}}
     
     steps:
       - name: Checkout code
