@@ -26,16 +26,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * Unsupported or unknown message
  */
-data class WhatsappCloudUnknownMessage(
+data class WhatsAppCloudUnknownMessage(
     override val id: String,
     override val from: String,
     override val timestamp: String,
     override val context: ContextContent? = null,
     override val referral: Referral? = null,
     override val errors: List<ErrorItem>? = emptyList(),
-    @get:JsonProperty("type")
+    @JsonProperty("type")
     val rawType: String = WhatsAppCloudMessageType.unknown.name,
-    @get:JsonAnySetter
-    @get:JsonAnyGetter
+    @JsonAnySetter
+    @JsonAnyGetter
     val additionalProperties: MutableMap<String, Any> = mutableMapOf(),
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.unknown)

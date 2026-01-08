@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "type",
     visible = true,
-    defaultImpl = WhatsappCloudUnknownMessage::class,
+    defaultImpl = WhatsAppCloudUnknownMessage::class,
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = WhatsAppCloudTextMessage::class, name = "text"),
