@@ -17,16 +17,25 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ContextContent
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.DocumentContent
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorItem
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonProperty
 
-data class WhatsAppCloudDocumentMessage(
-    val text: DocumentContent?,
+/**
+ * Unsupported or unknown message
+ */
+data class WhatsAppCloudUnknownMessage(
     override val id: String,
     override val from: String,
     override val timestamp: String,
     override val context: ContextContent? = null,
     override val referral: Referral? = null,
     override val errors: List<ErrorItem>? = emptyList(),
-) : WhatsAppCloudMessage(WhatsAppCloudMessageType.document)
+    @JsonProperty("type")
+    val rawType: String = WhatsAppCloudMessageType.unknown.name,
+    @JsonAnySetter
+    @JsonAnyGetter
+    val additionalProperties: MutableMap<String, Any> = mutableMapOf(),
+) : WhatsAppCloudMessage(WhatsAppCloudMessageType.unknown)
