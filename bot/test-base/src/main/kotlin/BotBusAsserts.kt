@@ -17,6 +17,7 @@
 package ai.tock.bot.test
 
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -175,8 +176,9 @@ fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     }
 
 /**
- * Expects that the given [index] is within the bounds of the elements in the subject of `this` expectation
- * (a [GenericElement]) and tests the [GenericElement] at that position.
+ * Expects that the subject of `this` expectation (a [GenericMessage]) is composed of sub-elements
+ * (typically implying it represents some sort of carousel), that the given [index] is within the bounds of its elements,
+ * and tests the [GenericElement] (typically a carousel's card) at that position.
  *
  * @return an [Expect] for the subject of `this` expectation.
  */
@@ -224,8 +226,8 @@ fun Expect<GenericElement>.toHaveTitle(expectedTitle: String): Expect<GenericEle
 fun Expect<GenericElement>.toHaveSubtitle(expectedSubtitle: String): Expect<GenericElement> = toHaveText(expectedSubtitle, GenericMessage.SUBTITLE_PARAM)
 
 /**
- * Expects that the subject of `this` expectation (a [GenericElement]) contains exactly the choices (buttons)
- * with the given button titles, in the specified order.
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains the choices (buttons)
+ * with the given button titles.
  *
  * @return an [Expect] for the subject of `this` expectation.
  */
@@ -296,7 +298,7 @@ fun Expect<GenericElement>.toHaveExactlyChoices(
  * @return an [Expect] for the subject of `this` expectation.
  */
 fun Expect<GenericElement>.toHaveExactlyChoices(
-    firstChoiceAssertion: (Expect<Choice>.() -> Unit)?,
+    firstChoiceAssertion: (Expect<Choice>.() -> Unit),
     vararg otherChoicesAssertions: Expect<Choice>.() -> Unit,
     report: InOrderOnlyReportingOptions.() -> Unit = {},
 ): Expect<GenericElement> =
@@ -325,27 +327,46 @@ fun Expect<GenericElement>.toHaveChoice(
         }
     }
 
+/**
+ * Converts this [ConnectorMessage] to a [GenericMessage] and applies the given [assertionCreator]
+ * on the resulting [GenericMessage] for further assertions, similarly to [Expect.asGenericMessage].
+ */
 fun ConnectorMessage.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
     expect(toGenericMessage()).notToEqualNull(assertionCreator)
 }
 
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains an attachment matching the given assertions
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<GenericElement>.toHaveAttachment(assertionCreator: Expect<Attachment>.() -> Unit): Expect<GenericElement> =
     feature(GenericElement::attachments) {
         toHaveElementsAndAny(assertionCreator)
     }
 
+/**
+ * Expects that the subject of `this` expectation (an [Attachment]) is pointing to the specified [url]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<Attachment>.toHaveUrl(url: String): Expect<Attachment> =
     feature(Attachment::url) {
         toEqual(url)
     }
 
+/**
+ * Expects that the subject of `this` expectation (an [Attachment]) has the image attachment type
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<Attachment>.toBeImage(): Expect<Attachment> =
     feature(Attachment::type) {
         toEqual(SendAttachment.AttachmentType.image)
     }
 
 /**
- * Expects that the subject of `this` expectation (a [GenericMessage]) contains a top-level choice (buttons)
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains a top-level choice (button)
  * holding the assertions created by [assertionCreator]
  *
  * @return an [Expect] for the subject of `this` expectation.
@@ -361,22 +382,39 @@ fun Expect<GenericMessage>.toHaveGlobalChoice(
         }
     }
 
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) has the given [title].
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 @JvmName("toHaveChoiceTitle")
 fun Expect<Choice>.toHaveTitle(title: String): Expect<Choice> = toHaveParameter(SendChoice.TITLE_PARAMETER, title)
 
-fun Expect<Choice>.toHaveIntent(intentName: String): Expect<Choice> =
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) triggers the specified [intent] when selected.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Choice>.toHaveIntent(intent: IntentAware): Expect<Choice> =
     feature(Choice::intentName) {
-        toEqual(intentName)
+        toEqual(intent.wrappedIntent().name)
     }
 
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) is parameterized with the specified key-value pair.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<Choice>.toHaveParameter(
     key: ParameterKey,
     value: String,
-): Expect<Choice> =
-    feature(Choice::parameters) {
-        feature(Map<String, String>::get, key.name).toEqual(value)
-    }
+): Expect<Choice> = toHaveParameter(key.name, value)
 
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) is parameterized with the specified key-value pair.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
 fun Expect<Choice>.toHaveParameter(
     key: String,
     value: String,
