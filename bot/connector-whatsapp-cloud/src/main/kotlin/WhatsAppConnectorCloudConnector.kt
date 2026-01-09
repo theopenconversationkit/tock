@@ -73,7 +73,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
         private val syncTemplates = booleanProperty("tock_whatsapp_sync_templates", false)
         private val restrictedPhoneNumbers =
             listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList())
-                .toSet().takeIf { it.isNotEmpty() }
+                .toSet()
+                .takeIf { it.isNotEmpty() }
         private val templateProviders: List<WhatsappTemplateProvider> by lazy {
             ServiceLoader.load(WhatsappTemplateProvider::class.java).toList()
         }
@@ -204,35 +205,39 @@ class WhatsAppConnectorCloudConnector internal constructor(
         controller: ConnectorController,
     ) {
         requestBody.entry.forEach { entry: Entry ->
-            entry.changes.filter {
-                it.value.metadata.phoneNumberId == phoneNumberId
-            }.forEach { change: Change ->
-                change.value.messages.filter {
-                    restrictedPhoneNumbers?.contains(it.from) ?: true
-                }.forEach { message: WhatsAppCloudMessage ->
-                    logger.debug { "received message $message" }
-                    executor.executeBlocking {
-                        val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
-                        if (event != null) {
+            entry.changes
+                .filter {
+                    it.value.metadata.phoneNumberId == phoneNumberId
+                }.forEach { change: Change ->
+                    change.value.messages
+                        .filter {
+                            restrictedPhoneNumbers?.contains(it.from) ?: true
+                        }.forEach { message: WhatsAppCloudMessage ->
+                            logger.debug { "received message $message" }
                             executor.executeBlocking {
-                                whatsAppCloudApiService.sendTypingIndicator(message.from, message.id)
+                                val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
+                                if (event != null) {
+                                    whatsAppCloudApiService.sendTypingIndicator(phoneNumberId, message.id)
+                                    controller.handle(
+                                        event,
+                                        ConnectorData(
+                                            WhatsAppConnectorCloudCallback(
+                                                applicationId = event.connectorId,
+                                                phoneNumber = message.from,
+                                                username =
+                                                    change.value.contacts
+                                                        .find { it.waId == message.from }
+                                                        ?.profile
+                                                        ?.name,
+                                            ),
+                                        ),
+                                    )
+                                } else {
+                                    logger.warn("unable to convert $message to event")
+                                }
                             }
-                            controller.handle(
-                                event,
-                                ConnectorData(
-                                    WhatsAppConnectorCloudCallback(
-                                        applicationId = event.connectorId,
-                                        phoneNumber = message.from,
-                                        username = change.value.contacts.find { it.waId == message.from }?.profile?.name,
-                                    ),
-                                ),
-                            )
-                        } else {
-                            logger.warn("unable to convert $message to event")
                         }
-                    }
                 }
-            }
         }
     }
 
@@ -277,10 +282,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
     override fun loadProfile(
         callback: ConnectorCallback,
         userId: PlayerId,
-    ): UserPreferences? {
-        return (callback as? WhatsAppConnectorCloudCallback)
+    ): UserPreferences? =
+        (callback as? WhatsAppConnectorCloudCallback)
             ?.run { UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
-    }
 
     override fun addSuggestions(
         text: CharSequence,
