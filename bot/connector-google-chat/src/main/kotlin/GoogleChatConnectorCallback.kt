@@ -29,6 +29,7 @@ data class GoogleChatConnectorCallback(
     val threadName: String,
     private val chatService: HangoutsChat,
     private val introMessage: String?,
+    val useThread: Boolean,
 ) : ConnectorCallbackBase(applicationId, googleChatConnectorType) {
     private val logger = KotlinLogging.logger {}
 
@@ -54,29 +55,50 @@ data class GoogleChatConnectorCallback(
      * Sends the intro message to the Google Chat space/thread.
      */
     private fun sendIntroMessage() {
-        if (introMessage == null) return
+        val message = introMessage ?: return
+        logger.info {
+            "Sending Google Chat intro message: space=$spaceName" +
+                if (useThread) ", thread=$threadName" else ""
+        }
+        sendGoogleMessage(
+            GoogleChatConnectorTextMessageOut(message),
+        )
+    }
 
+    /**
+     * Sends message to the Google Chat space/thread.
+     */
+    fun sendGoogleMessage(message: GoogleChatConnectorMessage) {
         try {
-            logger.info {
-                "Sending intro message to Google Chat: space=$spaceName, thread=$threadName"
+            val googleMessage = message.toGoogleMessage()
+            logger.debug { "Google Message content: $googleMessage" }
+
+            if (useThread) {
+                googleMessage.thread = Thread().setName(threadName)
             }
 
-            val response =
+            logger.info {
+                "Sending Google Chat message: space=$spaceName" +
+                    if (useThread) ", thread=$threadName" else ""
+            }
+
+            val request =
                 chatService
                     .spaces()
                     .messages()
-                    .create(
-                        spaceName,
-                        GoogleChatConnectorTextMessageOut(introMessage)
-                            .toGoogleMessage()
-                            .setThread(Thread().setName(threadName)),
-                    ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
-                    .execute()
+                    .create(spaceName, googleMessage)
 
-            logger.info { "Google Chat API intro response: ${response?.name}" }
+            if (useThread) {
+                request.messageReplyOption = "REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD"
+            }
+
+            val response = request.execute()
+            logger.info { "Google Chat API response: ${response?.name}" }
         } catch (e: Exception) {
             logger.error(e) {
-                "Failed to send intro message to Google Chat (space=$spaceName, thread=$threadName)"
+                "Failed to send Google Chat message: " +
+                    "space=$spaceName" +
+                    if (useThread) ", thread=$threadName" else ""
             }
         }
     }
