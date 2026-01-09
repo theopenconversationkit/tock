@@ -51,7 +51,9 @@ import java.util.Base64
 import java.util.Date
 import java.util.UUID
 
-class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
+class WhatsAppCloudApiService(
+    private val apiClient: WhatsAppCloudApiClient,
+) {
     private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO get() = injector.provide()
     private val executor: Executor get() = injector.provide()
@@ -103,18 +105,17 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         return res.id
     }
 
-    fun shortenPayload(parameters: PayloadParameter): PayloadParameter {
-        return parameters.payload?.takeIf { it.length >= 128 }?.let {
+    fun shortenPayload(parameters: PayloadParameter): PayloadParameter =
+        parameters.payload?.takeIf { it.length >= 128 }?.let {
             val uuidPayload = UUID.randomUUID().toString()
             executor.executeBlocking {
                 payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, it, Date.from(Instant.now())))
             }
             parameters.copy(payload = uuidPayload)
         } ?: parameters
-    }
 
-    fun shortenPayload(payload: String): String {
-        return if (payload.length >= 256) {
+    fun shortenPayload(payload: String): String =
+        if (payload.length >= 256) {
             val uuidPayload = UUID.randomUUID().toString()
             executor.executeBlocking {
                 payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, payload, Date.from(Instant.now())))
@@ -123,7 +124,6 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         } else {
             payload
         }
-    }
 
     private fun sendMedia(
         fileUrl: String,
@@ -196,7 +196,8 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         synchronized(template.name.intern()) {
             val existingTemplate =
                 call(template.name, apiClient::getMessageTemplates)
-                    .data.firstOrNull { it.language == template.language }
+                    .data
+                    .firstOrNull { it.language == template.language }
 
             if (existingTemplate == null) {
                 logger.info { "Creating template ${template.name} for language ${template.language}" }
@@ -309,8 +310,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private fun retrieveMedia(fileUrl: String): ByteArray {
         val request =
-            Request.Builder()
-                .url(fileUrl).build()
+            Request
+                .Builder()
+                .url(fileUrl)
+                .build()
 
         return client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) error("Failed to download file: $fileUrl - ${response.message}")
@@ -318,9 +321,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun throwError(errorMessage: String): Nothing {
-        throw ConnectorException(errorMessage)
-    }
+    private fun throwError(errorMessage: String): Nothing = throw ConnectorException(errorMessage)
 }
 
 private const val IMAGE_ID_CACHE = "whatsapp_image_id_cache"
