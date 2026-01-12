@@ -109,10 +109,12 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.from
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
+import org.litote.kmongo.gte
 import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
+import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
@@ -130,7 +132,53 @@ import java.time.Instant.now
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.DAYS
+import kotlin.Boolean
+import kotlin.Exception
+import kotlin.String
+import kotlin.Unit
+import kotlin.also
+import kotlin.apply
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableList
+import kotlin.collections.Set
+import kotlin.collections.any
+import kotlin.collections.associate
+import kotlin.collections.emptyList
+import kotlin.collections.emptyMap
+import kotlin.collections.emptySet
+import kotlin.collections.filter
+import kotlin.collections.filterNotNullTo
+import kotlin.collections.find
+import kotlin.collections.firstNotNullOfOrNull
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.indexOfFirst
+import kotlin.collections.isNotEmpty
+import kotlin.collections.joinToString
+import kotlin.collections.lastOrNull
+import kotlin.collections.listOf
+import kotlin.collections.listOfNotNull
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.mapOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableSetOf
+import kotlin.collections.orEmpty
+import kotlin.collections.plus
+import kotlin.collections.plusAssign
+import kotlin.collections.setOf
+import kotlin.collections.sumOf
+import kotlin.collections.toSet
+import kotlin.let
 import kotlin.reflect.KProperty1
+import kotlin.takeIf
+import kotlin.text.isNotEmpty
+import kotlin.text.isNullOrBlank
+import kotlin.text.take
+import kotlin.text.trim
+import kotlin.to
+import kotlin.with
 
 /**
  *
@@ -734,8 +782,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (query.playerId != null || query.displayTests) null else Test eq false,
                                     if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
                                     if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                                    if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
-                                    if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                                     if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
@@ -754,23 +800,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (annotationCreationDateFrom == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant()
+                                        Stories.actions.annotation.creationDate gte annotationCreationDateFrom?.toInstant()
                                     },
                                     if (annotationCreationDateTo == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant()
+                                        Stories.actions.annotation.creationDate lte annotationCreationDateTo?.toInstant()
                                     },
-                                    if (dialogCreationDateFrom == null) {
-                                        null
-                                    } else {
-                                        Stories.actions.date gt dialogCreationDateFrom?.toInstant()
-                                    },
-                                    if (dialogCreationDateTo == null) {
-                                        null
-                                    } else {
-                                        Stories.actions.date lt dialogCreationDateTo?.toInstant()
-                                    },
+                                    buildDialogCreationDateFilter(
+                                        dialogCreationDateFrom,
+                                        dialogCreationDateTo,
+                                    ),
+                                    buildDialogActivityFilter(
+                                        query.dialogActivityFrom,
+                                        query.dialogActivityTo,
+                                    ),
                                 )
                             logger.debug { "dialog search query: $filter" }
                             val c = dialogCol.withReadPreference(secondaryPreferred())
@@ -1165,6 +1209,50 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     ) {
         fromDate?.let { filters += gte("stories.actions.date", it.toInstant()) }
         toDate?.let { filters += lte("stories.actions.date", it.toInstant()) }
+    }
+
+    /**
+     * Builds a filter for dialog creation date based on the first action date.
+     *
+     * Filters dialogs where the oldest action date (creation date) is within the specified period.
+     * Condition: creationDateFrom <= oldestDate <= creationDateTo
+     *
+     * @param creationDateFrom optional start date filter (inclusive)
+     * @param creationDateTo optional end date filter (inclusive)
+     * @return Bson filter expression, or null if both dates are null
+     */
+    private fun buildDialogCreationDateFilter(
+        creationDateFrom: ZonedDateTime?,
+        creationDateTo: ZonedDateTime?,
+    ): Bson? {
+        return MongoAgg.filterByOldestDateInPeriod(
+            inputField = "stories",
+            datePath = "actions.date",
+            fromDate = creationDateFrom,
+            toDate = creationDateTo,
+        )
+    }
+
+    /**
+     * Builds a filter for dialog activity period overlap.
+     *
+     * A dialog is included if its activity period (from first to last action) overlaps the filter range.
+     * Condition: activityFrom <= youngest(actions.date) AND oldest(actions.date) < activityTo
+     *
+     * @param activityFrom optional start date filter (inclusive)
+     * @param activityTo optional end date filter (exclusive)
+     * @return Bson filter expression, or null if both dates are null
+     */
+    private fun buildDialogActivityFilter(
+        activityFrom: ZonedDateTime?,
+        activityTo: ZonedDateTime?,
+    ): Bson? {
+        return MongoAgg.filterByPeriodOverlap(
+            inputField = "stories",
+            datePath = "actions.date",
+            fromDate = activityFrom,
+            toDate = activityTo,
+        )
     }
 
     /**
