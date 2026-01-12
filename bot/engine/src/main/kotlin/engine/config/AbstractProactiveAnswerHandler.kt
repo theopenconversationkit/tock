@@ -39,8 +39,14 @@ interface AbstractProactiveAnswerHandler {
 
     fun handle(botBus: BotBus) {
         with(botBus) {
+            val userId = userId.id
+            logger.debug { "handle(): userId=$userId, BEFORE startProactiveConversation, thread=${Thread.currentThread().name}" }
             startProactiveConversation()
+            val statusAfterStart = getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS)
+            logger.debug { "handle(): userId=$userId, AFTER startProactiveConversation, status=$statusAfterStart, thread=${Thread.currentThread().name}" }
+
             executor.executeBlocking {
+                logger.debug { "handle(): userId=$userId, INSIDE executeBlocking, thread=${Thread.currentThread().name}" }
                 val noAnswerStory = handleProactiveAnswer(this)
 
                 if (noAnswerStory != null) {
@@ -54,9 +60,13 @@ interface AbstractProactiveAnswerHandler {
                     handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
                 } else {
                     // Standard case : flush & clean properly
+                    val statusBeforeFlush = getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS)
                     logger.info { "Handling standard proactive answer : flush + end" }
+                    logger.debug { "handle(): userId=$userId, BEFORE flush, status=$statusBeforeFlush, thread=${Thread.currentThread().name}" }
                     flushProactiveConversation()
+                    logger.debug { "handle(): userId=$userId, AFTER flush, BEFORE endProactiveConversation, thread=${Thread.currentThread().name}" }
                     endProactiveConversation()
+                    logger.debug { "handle(): userId=$userId, AFTER endProactiveConversation, thread=${Thread.currentThread().name}" }
                 }
 
                 // Save the dialog
@@ -66,29 +76,41 @@ interface AbstractProactiveAnswerHandler {
                     }
                 }
             }
+            logger.debug { "handle(): userId=$userId, AFTER executeBlocking (returned immediately if async), thread=${Thread.currentThread().name}" }
         }
     }
 
     private fun BotBus.startProactiveConversation() {
-        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == null) {
+        val currentStatus = getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS)
+        logger.debug { "startProactiveConversation(): userId=${userId.id}, currentStatus=$currentStatus" }
+        if (currentStatus == null) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, LUNCHED)
-            if (underlyingConnector.startProactiveConversation(connectorData.callback, this)) {
+            val result = underlyingConnector.startProactiveConversation(connectorData.callback, this)
+            logger.debug { "startProactiveConversation(): userId=${userId.id}, connectorResult=$result" }
+            if (result) {
                 setBusContextValue(PROACTIVE_CONVERSATION_STATUS, STARTED)
             }
         }
     }
 
     fun BotBus.flushProactiveConversation() {
-        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
+        val status = getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS)
+        logger.debug { "flushProactiveConversation(): userId=${userId.id}, status=$status, willFlush=${status == STARTED}" }
+        if (status == STARTED) {
             underlyingConnector.flushProactiveConversation(connectorData.callback, connectorData.metadata)
+            logger.debug { "flushProactiveConversation(): userId=${userId.id}, DONE" }
         }
     }
 
     private fun BotBus.endProactiveConversation() {
-        if (getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == STARTED) {
+        val status = getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS)
+        logger.debug { "endProactiveConversation(): userId=${userId.id}, status=$status, willCallConnector=${status == STARTED}, willCallEnd=${status != STARTED}" }
+        if (status == STARTED) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, CLOSED)
             underlyingConnector.endProactiveConversation(connectorData.callback, connectorData.metadata)
+            logger.debug { "endProactiveConversation(): userId=${userId.id}, connector.endProactiveConversation DONE (bus.end NOT called)" }
         } else {
+            logger.debug { "endProactiveConversation(): userId=${userId.id}, calling bus.end()" }
             end()
         }
     }
