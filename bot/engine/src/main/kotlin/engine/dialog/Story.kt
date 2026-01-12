@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.dialog
 
 import ai.tock.bot.definition.AsyncStoryHandler
+import ai.tock.bot.definition.AsyncStoryHandlerListener
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
@@ -24,7 +25,6 @@ import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS
 import ai.tock.bot.definition.StoryTag.CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT
-import ai.tock.bot.definition.definition.AsyncStoryHandlerListener
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
@@ -177,7 +177,7 @@ data class Story(
             if (it is AsyncStoryHandler) {
                 it.handle(bus)
             } else {
-                it.handle(bus.botBus)
+                it.handle(bus.syncBus)
             }
         }
     }
@@ -204,14 +204,17 @@ data class Story(
     ) {
         try {
             if (sendStartEvent {
-                    this is AsyncStoryHandlerListener && startAction(bus, handler) ||
-                        startAction(bus.botBus, handler)
+                    if (this is AsyncStoryHandlerListener) {
+                        startAction(bus, handler)
+                    } else {
+                        startAction(bus.syncBus, handler)
+                    }
                 }
             ) {
                 op(handler)
             }
         } finally {
-            sendEndEvent { if (this is AsyncStoryHandlerListener) endAction(bus, handler) else endAction(bus.botBus, handler) }
+            sendEndEvent { if (this is AsyncStoryHandlerListener) endAction(bus, handler) else endAction(bus.syncBus, handler) }
         }
     }
 

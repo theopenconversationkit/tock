@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>25.10.3-SNAPSHOT</version>
+        <version>25.10.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>bot-test-base</artifactId>
@@ -77,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>ch.tutteli.atrium</groupId>
-            <artifactId>atrium-cc-en_GB-robstoll</artifactId>
+            <artifactId>atrium-fluent-jvm</artifactId>
             <version>${atrium}</version>
             <scope>compile</scope>
         </dependency>

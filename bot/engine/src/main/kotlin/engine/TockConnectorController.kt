@@ -187,6 +187,9 @@ internal class TockConnectorController(
                             storyDefinitionLoader(action.applicationId),
                         )
 
+                    // Notify callback that timeline has been loaded
+                    callback.initialUserTimelineLoaded(userTimeline)
+
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 
                     bot.handleAction(transformedAction, userTimeline, this, data)

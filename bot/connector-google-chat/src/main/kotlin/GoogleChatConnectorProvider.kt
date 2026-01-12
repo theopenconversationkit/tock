@@ -44,6 +44,7 @@ private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialConte
 private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
+private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -83,12 +84,12 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 connectorConfiguration.parameters[CONDENSED_FOOTNOTES_PARAMETER] == "1"
 
             val chatService =
-                HangoutsChat.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    requestInitializer,
-                )
-                    .setApplicationName(connectorId)
+                HangoutsChat
+                    .Builder(
+                        GoogleNetHttpTransport.newTrustedTransport(),
+                        JacksonFactory.getDefaultInstance(),
+                        requestInitializer,
+                    ).setApplicationName(connectorId)
                     .build()
 
             val authorisationHandler =
@@ -97,12 +98,16 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                         ?: error("Parameter Bot project number not present"),
                 )
 
+            val introMessage =
+                connectorConfiguration.parameters[INTRO_MESSAGE_PARAMETER]?.takeIf { it.isNotBlank() }
+
             return GoogleChatConnector(
                 connectorId,
                 path,
                 chatService,
                 authorisationHandler,
                 useCondensedFootnotes,
+                introMessage,
             )
         }
     }
@@ -126,11 +131,12 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
         )
     }
 
-    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials {
-        return try {
+    private fun getSourceCredentials(connectorConfiguration: ConnectorConfiguration): GoogleCredentials =
+        try {
             val credentialInputStream = getCredentialInputStream(connectorConfiguration)
             val creds =
-                ServiceAccountCredentials.fromStream(credentialInputStream)
+                ServiceAccountCredentials
+                    .fromStream(credentialInputStream)
                     .createScoped("https://www.googleapis.com/auth/cloud-platform")
 
             logger.info { "Loaded explicit service account: ${(creds as ServiceAccountCredentials).clientEmail}" }
@@ -138,13 +144,13 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             creds
         } catch (e: Exception) {
             logger.info { "No explicit credentials found, using Application Default Credentials" }
-            GoogleCredentials.getApplicationDefault()
+            GoogleCredentials
+                .getApplicationDefault()
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
         }
-    }
 
-    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream {
-        return connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
+    private fun getCredentialInputStream(connectorConfiguration: ConnectorConfiguration): InputStream =
+        connectorConfiguration.parameters[SERVICE_CREDENTIAL_PATH_PARAMETER]
             ?.let { resourceAsStream(it) }
             ?: connectorConfiguration.parameters[SERVICE_CREDENTIAL_CONTENT_PARAMETER]
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
@@ -153,7 +159,6 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
                     "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
-    }
 
     private fun loadCredentials(inputStream: InputStream): GoogleCredentials =
         ServiceAccountCredentials
@@ -187,6 +192,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Use condensed footnotes (true = 1, false = 0)",
                     CONDENSED_FOOTNOTES_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Introductory message (sent only once per new session)",
+                    INTRO_MESSAGE_PARAMETER,
                     false,
                 ),
             ),

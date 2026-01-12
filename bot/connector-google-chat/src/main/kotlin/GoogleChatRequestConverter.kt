@@ -37,29 +37,56 @@ internal object GoogleChatRequestConverter {
         val playerId = PlayerId(userId)
         val botId = PlayerId(applicationId, PlayerType.bot)
         return when (event.type) {
-            "ADDED_TO_SPACE" -> StartConversationEvent(playerId, botId, applicationId)
-            "REMOVED_FROM_SPACE" -> EndConversationEvent(playerId, botId, applicationId)
-            "MESSAGE" -> SendSentence(playerId, applicationId, botId, event.message?.text)
-            "CARD_CLICKED" ->
+            "ADDED_TO_SPACE" -> {
+                StartConversationEvent(playerId, botId, applicationId)
+            }
+
+            "REMOVED_FROM_SPACE" -> {
+                EndConversationEvent(playerId, botId, applicationId)
+            }
+
+            "MESSAGE" -> {
+                SendSentence(playerId, applicationId, botId, event.message?.text)
+            }
+
+            "CARD_CLICKED" -> {
                 when (event.action.actionMethodName) {
-                    GOOGLE_CHAT_ACTION_SEND_SENTENCE ->
+                    GOOGLE_CHAT_ACTION_SEND_SENTENCE -> {
                         SendSentence(
                             playerId,
                             applicationId,
                             botId,
-                            event.action.parameters.first { it.key == GOOGLE_CHAT_ACTION_TEXT_PARAMETER }.value,
+                            event.action.parameters
+                                .first { it.key == GOOGLE_CHAT_ACTION_TEXT_PARAMETER }
+                                .value,
                         )
-                    GOOGLE_CHAT_ACTION_SEND_CHOICE ->
+                    }
+
+                    GOOGLE_CHAT_ACTION_SEND_CHOICE -> {
                         SendChoice(
                             playerId,
                             applicationId,
                             botId,
-                            intentName = event.action.parameters.first { it.key == GOOGLE_CHAT_ACTION_INTENT_PARAMETER }.value,
-                            parameters = event.action.parameters.map { it.key to it.value }.toMap(),
+                            intentName =
+                                event.action.parameters
+                                    .first { it.key == GOOGLE_CHAT_ACTION_INTENT_PARAMETER }
+                                    .value,
+                            parameters =
+                                event.action.parameters
+                                    .map { it.key to it.value }
+                                    .toMap(),
                         )
-                    else -> null
+                    }
+
+                    else -> {
+                        null
+                    }
                 }
-            else -> null
+            }
+
+            else -> {
+                null
+            }
         }
     }
 }

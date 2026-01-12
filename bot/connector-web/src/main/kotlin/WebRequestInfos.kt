@@ -16,10 +16,14 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.engine.action.SendSentence
 import com.google.common.cache.CacheBuilder
 import io.vertx.core.MultiMap
 import io.vertx.core.http.Cookie
 import io.vertx.core.http.HttpServerRequest
+import mu.KotlinLogging
 import java.util.concurrent.TimeUnit
 
 object WebRequestInfosByEvent {
@@ -40,7 +44,8 @@ object WebRequestInfosByEvent {
 data class WebRequestInfos(
     private val headers: MultiMap = MultiMap.caseInsensitiveMultiMap(),
     private val cookies: Set<Cookie> = emptySet(),
-    private val streamedResponse: StringBuilder = StringBuilder(),
+    @Volatile
+    private var streamedResponse: SendSentence? = null,
 ) {
     internal constructor(request: HttpServerRequest) : this(request.headers(), request.cookies())
 
@@ -50,14 +55,53 @@ data class WebRequestInfos(
 
     fun firstCookie(name: String): String? = cookies.firstOrNull { it.name == name }?.value
 
-    internal fun addStreamedResponse(response: String?): String {
-        if (response != null) {
-            streamedResponse.append(response)
-        }
-        return streamedResponse.toString()
+    internal fun addStreamedResponse(
+        response: SendSentence,
+        connectorType: ConnectorType,
+    ): SendSentence {
+        val s =
+            streamedResponse?.run {
+                val originalMessage = message(connectorType) as? WebMessage
+                if (originalMessage != null) {
+                    val newMessage = response.message(connectorType) as? WebMessage
+                    if (newMessage == null) {
+                        logger.warn { "no custom message in streamed message - but the previous message is custom - ignore" }
+                        return this
+                    }
+
+                    changeConnectorMessage(
+                        WebMessage(
+                            text = (originalMessage.text ?: "") + (newMessage.text ?: ""),
+                            buttons = originalMessage.buttons + newMessage.buttons,
+                            card =
+                                originalMessage.card?.let {
+                                    it.copy(
+                                        title = (it.title?.toString() ?: "") + (newMessage.card?.title?.toString() ?: ""),
+                                        subTitle = (it.subTitle?.toString() ?: "") + (newMessage.card?.subTitle?.toString() ?: ""),
+                                        file = newMessage.card?.file ?: it.file,
+                                        buttons = it.buttons + (newMessage.card?.buttons ?: emptyList()),
+                                    )
+                                } ?: newMessage.card,
+                            carousel = ((originalMessage.carousel?.cards ?: emptyList()) + (newMessage.carousel?.cards ?: emptyList())).takeUnless { it.isEmpty() }?.let { WebCarousel(it) },
+                            widget = newMessage.widget ?: originalMessage.widget,
+                            image = newMessage.image ?: originalMessage.image,
+                            version = newMessage.version,
+                            deepLink = newMessage.deepLink ?: originalMessage.deepLink,
+                            footnotes = originalMessage.footnotes + newMessage.footnotes,
+                        ),
+                    )
+                    this
+                } else {
+                    withText((text?.toString() ?: "") + (response.text?.toString() ?: ""))
+                }
+            } ?: response
+        streamedResponse = s
+        return s
     }
 
     internal fun clearStreamedResponse() {
-        streamedResponse.clear()
+        streamedResponse = null
     }
 }
+
+private val logger = KotlinLogging.logger {}

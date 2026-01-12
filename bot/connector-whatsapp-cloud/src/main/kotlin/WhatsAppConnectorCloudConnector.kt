@@ -94,7 +94,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     val verifyTokenMeta = queryParams.get("hub.verify_token")
                     val challenge = queryParams.get("hub.challenge")
                     if (modeHub == WEBHOOK_SUBSCRIBE_MODE && verifyToken == verifyTokenMeta) {
-                        logger.info("WEBHOOK_VERIFIED")
+                        logger.info { "WhatsApp Cloud API webhook verified for $connectorId" }
                         context.response().setStatusCode(200).end(challenge)
                     } else {
                         context.response().end("Invalid verify token")
@@ -113,7 +113,6 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_webhook")
                 try {
                     val body = context.body().asString()
-                    logger.info { body }
                     val requestBody = mapper.readValue<WebHookEventReceiveMessage>(body)
 
                     handleWebHook(requestBody, controller)
@@ -136,12 +135,10 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
                 try {
                     val body = context.body().asString()
-                    logger.info { body }
+                    logger.debug { "creating template: $body" }
                     val requestBody = mapper.readValue<WhatsappTemplate>(body)
 
                     whatsAppCloudApiService.createOrUpdateTemplate(requestBody)
-
-                    logger.info { "ok" }
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -213,6 +210,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 change.value.messages.filter {
                     restrictedPhoneNumbers?.contains(it.from) ?: true
                 }.forEach { message: WhatsAppCloudMessage ->
+                    logger.debug { "received message $message" }
                     executor.executeBlocking {
                         val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
                         if (event != null) {

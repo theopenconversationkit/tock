@@ -50,7 +50,7 @@ internal class WebConnectorCallback(
 
     fun addMetadata(metadata: MetadataEvent) {
         this.metadata[metadata.type] = metadata.value
-        if (metadata.isEndStreamMetadata()) {
+        if (metadata.isStreamMetadata()) {
             WebRequestInfosByEvent.get(eventId)?.clearStreamedResponse()
         }
     }
@@ -60,7 +60,7 @@ internal class WebConnectorCallback(
             actions.mapNotNull { a ->
                 val action =
                     if (a is SendSentence && metadata.hasStreamMetadata() && mergeStreamResponse) {
-                        a.withText(WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a.stringText))
+                        WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a, webConnectorType)
                     } else {
                         a
                     }

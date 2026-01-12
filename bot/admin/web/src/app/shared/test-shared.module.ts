@@ -19,7 +19,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { NbThemeModule } from '@nebular/theme';
 
 @NgModule({
@@ -30,8 +29,7 @@ import { NbThemeModule } from '@nebular/theme';
     ReactiveFormsModule,
     RouterModule.forRoot([]),
 
-    NbThemeModule.forRoot({ name: 'default' }),
-    NbEvaIconsModule
+    NbThemeModule.forRoot({ name: 'default' })
   ],
   exports: [CommonModule, FormsModule, ReactiveFormsModule]
 })

@@ -109,7 +109,7 @@
                 fullWidth
                 fieldSize="small"
                 placeholder="Data collected after"
-                nbTooltip="Show dialogs created after this date"
+                nbTooltip="Show dialogs containing messages created after this date"
                 [nbDatepicker]="from_date"
                 formControlName="dialogCreationDateFrom"
               />
@@ -125,7 +125,14 @@
                 <nb-icon icon="x"></nb-icon>
               </button>
             </nb-form-field>
-            <nb-datepicker #from_date></nb-datepicker>
+
+            <nb-date-timepicker
+              #from_date
+              [step]="10"
+              singleColumn
+              format="y/MM/dd HH:mm"
+              [showCurrentTimeButton]="false"
+            ></nb-date-timepicker>
           </div>
 
           <div class="col-6 col-lg-3">
@@ -139,7 +146,7 @@
                 fullWidth
                 fieldSize="small"
                 placeholder="Data collected before"
-                nbTooltip="Show dialogs created before this date"
+                nbTooltip="Show dialogs containing messages created before this date"
                 [nbDatepicker]="to_date"
                 formControlName="dialogCreationDateTo"
               />
@@ -155,7 +162,14 @@
                 <nb-icon icon="x"></nb-icon>
               </button>
             </nb-form-field>
-            <nb-datepicker #to_date></nb-datepicker>
+
+            <nb-date-timepicker
+              #to_date
+              [step]="10"
+              singleColumn
+              format="y/MM/dd HH:mm"
+              [showCurrentTimeButton]="false"
+            ></nb-date-timepicker>
           </div>
 
           <div class="col-6 col-lg-3">
@@ -291,6 +305,48 @@
             </nb-form-field>
           </div>
 
+          <!-- Feedback filters -->
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="hand-thumbs-up"
+                *ngIf="!getFormControl('feedback').value"
+              ></nb-icon>
+              <nb-icon
+                nbPrefix
+                icon="hand-thumbs-up"
+                *ngIf="getFormControl('feedback').value === 'UP'"
+                class="text-success"
+              ></nb-icon>
+              <nb-icon
+                nbPrefix
+                icon="hand-thumbs-down"
+                *ngIf="getFormControl('feedback').value === 'DOWN'"
+                class="text-danger"
+              ></nb-icon>
+              <nb-select
+                fullWidth
+                size="small"
+                nbTooltip="Dialogues containing messages with feedback."
+                placeholder="Feedback"
+                formControlName="feedback"
+              >
+                <nb-option>Clear filter</nb-option>
+                <nb-option
+                  *ngFor="let vote of feedbackVotes"
+                  [value]="vote.value"
+                >
+                  <nb-icon
+                    icon="hand-thumbs-{{ vote.value.toLowerCase() }}"
+                    class="select-icon align-self-center mr-2 font-size-small"
+                  ></nb-icon>
+                  {{ vote.label }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
           <div class="col-6 col-lg-3 pt-1">
             <nb-checkbox
               nbTooltip="Display dialogues held from the studio test view"
@@ -406,7 +462,13 @@
                 <nb-icon icon="x"></nb-icon>
               </button>
             </nb-form-field>
-            <nb-datepicker #from_date_annotation></nb-datepicker>
+            <nb-date-timepicker
+              #from_date_annotation
+              [step]="10"
+              singleColumn
+              format="y/MM/dd HH:mm"
+              [showCurrentTimeButton]="false"
+            ></nb-date-timepicker>
           </div>
 
           <div
@@ -439,7 +501,13 @@
                 <nb-icon icon="x"></nb-icon>
               </button>
             </nb-form-field>
-            <nb-datepicker #to_date_annotation></nb-datepicker>
+            <nb-date-timepicker
+              #to_date_annotation
+              [step]="10"
+              singleColumn
+              format="y/MM/dd HH:mm"
+              [showCurrentTimeButton]="false"
+            ></nb-date-timepicker>
           </div>
 
           <div

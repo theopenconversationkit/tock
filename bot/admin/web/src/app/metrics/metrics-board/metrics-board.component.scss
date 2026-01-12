@@ -26,10 +26,6 @@
   padding-top: 1rem;
 }
 
-.stats-line {
-  border-bottom: 1px solid var(--color-basic-transparent-400);
-}
-
 .help-badge {
   display: inline-block;
   border-radius: 10rem;
@@ -63,12 +59,15 @@
   height: 250px !important;
 }
 
+.stats-line {
+  border-bottom: 1px solid var(--color-basic-transparent-400);
+}
+
 .stats-value {
-  display: inline-block;
-  width: 80px;
+  width: 5em;
   text-align: center;
-  margin-left: 10px;
 }
 .stats-value.test {
-  color: #6c757d;
+  font-size: small;
+  color: var(--color-basic-600);
 }
