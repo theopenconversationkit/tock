@@ -16,6 +16,8 @@
 
 import { Component } from '@angular/core';
 import { tock_info } from '../../../../environments/manifest';
+import { BotSharedService } from '../../../shared/bot-shared.service';
+import { AdminConfiguration } from '../../../shared/model/conf';
 
 @Component({
   selector: 'tock-footer',
@@ -23,5 +25,9 @@ import { tock_info } from '../../../../environments/manifest';
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
+  constructor(private botSharedService: BotSharedService) {}
+
   tock_info = tock_info;
+
+  configuration = this.botSharedService.getConfiguration()
 }

@@ -18,6 +18,7 @@ package ai.tock.bot.api.service
 
 import ai.tock.bot.BotIoc
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.definition.BotProviderId
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.BotRepository.botAPI
 import ai.tock.shared.injector
@@ -40,8 +41,11 @@ fun main() {
     dao.listenBotChanges {
         logger.info("reload bot configurations")
         dao.getBotConfigurations().forEach {
-            val provider = BotApiDefinitionProvider(it)
-            BotRepository.registerBotProvider(provider)
+            val oldProvider: BotApiDefinitionProvider? = BotRepository.getBotProvider(BotProviderId(it.botId, it.namespace, it.name)) as? BotApiDefinitionProvider
+            if (oldProvider == null || oldProvider.configuration != it) {
+                logger.info("reload bot configuration api: $it")
+                BotRepository.registerBotProvider(BotApiDefinitionProvider(it))
+            }
         }
         BotRepository.checkBotConfigurations()
     }

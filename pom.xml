@@ -116,6 +116,7 @@
 
         <node>v22.20.0</node>
         <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
+        <ktlint.fail>true</ktlint.fail>
     </properties>
 
     <modules>
@@ -879,7 +880,7 @@
                         <phase>verify</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="${ktlint.fail}" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
 
                                     <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
                                     <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
@@ -895,7 +896,7 @@
                         <id>ktlint-format</id>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="${ktlint.fail}" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
                                     <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
                                     <arg value="-F" />

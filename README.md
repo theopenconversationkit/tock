@@ -44,6 +44,12 @@ In order to format your code with [ktlint](https://pinterest.github.io/ktlint):
 mvn antrun:run@ktlint-format
 ```
 
+You may need to build snapshot before:
+```bash
+mvn install -Dktlint.fail=false
+```
+
+
 ## Python developers : use Pre-commit
 
 The python part of the project uses **pre-commit** to automate code checks and formatting before each commit, ensuring consistent code quality and reducing errors.<br/>

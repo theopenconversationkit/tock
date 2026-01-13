@@ -1,8 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="BotAdmin" type="JetRunConfigurationType">
     <envs>
-      <env name="botadminverticle_port" value="7999" />
       <env name="botadminverticle_body_limit" value="-1" />
+      <env name="botadminverticle_port" value="7999" />
+      <env name="tock_bot_global_message" value="Dev platform" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="ai.tock.bot.admin.StartBotAdminServerKt" />
     <module name="tock-bot-admin-server" />

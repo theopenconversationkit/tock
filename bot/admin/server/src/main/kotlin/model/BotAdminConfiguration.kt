@@ -19,6 +19,7 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.property
 import ai.tock.shared.propertyExists
 
 data class BotAdminConfiguration(
@@ -26,4 +27,5 @@ data class BotAdminConfiguration(
     val compilerAvailable: Boolean = !KotlinCompilerClient.compilerDisabled,
     val xrayAvailable: Boolean = propertyExists("tock_bot_test_xray_url"),
     val botApiBaseUrl: String = defaultBaseUrl,
+    val globalMessage: String = property("tock_bot_global_message", ""),
 )
