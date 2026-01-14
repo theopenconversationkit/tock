@@ -350,4 +350,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     this.destroy.next(true);
     this.destroy.complete();
   }
+
+  normalizeLocaleCode(code: string): string {
+    return StateService.normalizeLocaleCode(code);
+  }
 }

@@ -111,7 +111,7 @@
               class="locale-display"
               [nbTooltip]="state.localeName(message.locale)"
             >
-              {{ message.locale }}
+              {{ normalizeLocaleCode(message.locale) }}
             </div>
             <button
               *ngIf="message.hasNlpStats"
