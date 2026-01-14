@@ -39,8 +39,6 @@ data class DialogReportQuery(
     val dialogId: String? = null,
     val intentName: String? = null,
     val exactMatch: Boolean = false,
-    val from: ZonedDateTime? = null,
-    val to: ZonedDateTime? = null,
     val connectorType: ConnectorType? = null,
     /**
      * Display test dialogs.
@@ -68,7 +66,15 @@ data class DialogReportQuery(
     val dialogSort: SortDirection? = null,
     val annotationCreationDateFrom: ZonedDateTime? = null,
     val annotationCreationDateTo: ZonedDateTime? = null,
-    val dialogCreationDateFrom: ZonedDateTime? = null,
-    val dialogCreationDateTo: ZonedDateTime? = null,
     val feedback: FeedbackVote? = null,
+    /**
+     * Filter dialogs that had activity during the specified period.
+     * A dialog is included if:
+     * - At least one action exists with date >= dialogActivityFrom (if set)
+     * - At least one action exists with date <= dialogActivityTo (if set)
+     * Note: These conditions can be satisfied by different actions.
+     * Both bounds are inclusive.
+     */
+    val dialogActivityFrom: ZonedDateTime? = null,
+    val dialogActivityTo: ZonedDateTime? = null,
 )

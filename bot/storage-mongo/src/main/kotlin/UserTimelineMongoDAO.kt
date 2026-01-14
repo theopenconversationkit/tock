@@ -112,10 +112,12 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.from
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
+import org.litote.kmongo.gte
 import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
+import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
@@ -737,8 +739,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (query.playerId != null || query.displayTests) null else Test eq false,
                                     if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
                                     if (dialogIds.isEmpty()) null else _id `in` dialogIds,
-                                    if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
-                                    if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                                     if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                                     if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                                     if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
@@ -758,23 +758,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     if (annotationCreationDateFrom == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate gt annotationCreationDateFrom?.toInstant()
+                                        Stories.actions.annotation.creationDate gte annotationCreationDateFrom?.toInstant()
                                     },
                                     if (annotationCreationDateTo == null) {
                                         null
                                     } else {
-                                        Stories.actions.annotation.creationDate lt annotationCreationDateTo?.toInstant()
+                                        Stories.actions.annotation.creationDate lte annotationCreationDateTo?.toInstant()
                                     },
-                                    if (dialogCreationDateFrom == null) {
-                                        null
-                                    } else {
-                                        Stories.actions.date gt dialogCreationDateFrom?.toInstant()
-                                    },
-                                    if (dialogCreationDateTo == null) {
-                                        null
-                                    } else {
-                                        Stories.actions.date lt dialogCreationDateTo?.toInstant()
-                                    },
+                                    buildDialogCreationDateFilter(
+                                        dialogCreationDateFrom,
+                                        dialogCreationDateTo,
+                                    ),
+                                    buildDialogActivityFilter(
+                                        query.dialogActivityFrom,
+                                        query.dialogActivityTo,
+                                    ),
                                 )
                             logger.debug { "dialog search query: $filter" }
                             val c = dialogCol.withReadPreference(secondaryPreferred())
@@ -1202,6 +1200,54 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     ) {
         fromDate?.let { filters += gte("stories.actions.date", it.toInstant()) }
         toDate?.let { filters += lte("stories.actions.date", it.toInstant()) }
+    }
+
+    /**
+     * Builds a filter for dialog creation date based on the first action date.
+     *
+     * Filters dialogs where the oldest action date (creation date) is within the specified period.
+     * Condition: creationDateFrom <= oldestDate <= creationDateTo
+     *
+     * @param creationDateFrom optional start date filter (inclusive)
+     * @param creationDateTo optional end date filter (inclusive)
+     * @return Bson filter expression, or null if both dates are null
+     */
+    private fun buildDialogCreationDateFilter(
+        creationDateFrom: ZonedDateTime?,
+        creationDateTo: ZonedDateTime?,
+    ): Bson? {
+        return MongoAgg.filterByOldestDateInPeriod(
+            inputField = "stories",
+            datePath = "actions.date",
+            fromDate = creationDateFrom,
+            toDate = creationDateTo,
+        )
+    }
+
+    /**
+     * Builds a filter for dialogs that had activity during the specified period.
+     *
+     * A dialog is included if:
+     * - At least one action exists with date >= activityFrom (if set)
+     * - At least one action exists with date <= activityTo (if set)
+     *
+     * Note: These conditions can be satisfied by different actions.
+     * Both bounds are inclusive.
+     *
+     * @param activityFrom optional start date filter (inclusive)
+     * @param activityTo optional end date filter (inclusive)
+     * @return Bson filter expression, or null if both dates are null
+     */
+    private fun buildDialogActivityFilter(
+        activityFrom: ZonedDateTime?,
+        activityTo: ZonedDateTime?,
+    ): Bson? {
+        val conditions =
+            listOfNotNull(
+                activityFrom?.let { Stories.actions.date gte it.toInstant() },
+                activityTo?.let { Stories.actions.date lte it.toInstant() },
+            )
+        return if (conditions.isEmpty()) null else and(conditions)
     }
 
     /**

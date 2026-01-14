@@ -49,9 +49,17 @@ data class DialogsSearchQuery(
     val dialogSort: SortDirection? = null,
     val annotationCreationDateFrom: ZonedDateTime? = null,
     val annotationCreationDateTo: ZonedDateTime? = null,
-    val dialogCreationDateFrom: ZonedDateTime? = null,
-    val dialogCreationDateTo: ZonedDateTime? = null,
     val feedback: FeedbackVote? = null,
+    /**
+     * Filter dialogs that had activity during the specified period.
+     * A dialog is included if:
+     * - At least one action exists with date >= dialogActivityFrom (if set)
+     * - At least one action exists with date <= dialogActivityTo (if set)
+     * Note: These conditions can be satisfied by different actions.
+     * Both bounds are inclusive.
+     */
+    val dialogActivityFrom: ZonedDateTime? = null,
+    val dialogActivityTo: ZonedDateTime? = null,
 ) : PaginatedQuery() {
     fun toDialogReportQuery(): DialogReportQuery {
         return DialogReportQuery(
@@ -79,9 +87,9 @@ data class DialogsSearchQuery(
             dialogSort = dialogSort,
             annotationCreationDateFrom = annotationCreationDateFrom,
             annotationCreationDateTo = annotationCreationDateTo,
-            dialogCreationDateFrom = dialogCreationDateFrom,
-            dialogCreationDateTo = dialogCreationDateTo,
             feedback = feedback,
+            dialogActivityFrom = dialogActivityFrom,
+            dialogActivityTo = dialogActivityTo,
         )
     }
 }

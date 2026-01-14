@@ -18,6 +18,7 @@ environment.dev.ts
 *.launch
 .settings/
 *.sublime-workspace
+.cursor/*
 
 # IDE - VSCode
 .vscode/*
