@@ -21,6 +21,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
+import mu.KotlinLogging
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -42,6 +43,7 @@ internal class Channels {
     ): Future<Boolean> =
         Future.all<CompositeFuture>(
             (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
+                logger.debug { "call onAction for $channel" }
                 channel.onAction(response)
             },
         ).map { futures -> futures.size() > 0 }
@@ -84,3 +86,5 @@ internal class Channels {
         }
     }
 }
+
+private val logger = KotlinLogging.logger {}

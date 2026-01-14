@@ -18,6 +18,7 @@ import io.vertx.ext.auth.oauth2.providers.GithubAuth
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
+import io.vertx.ext.web.impl.UserContextInternal
 import mu.KLogger
 import mu.KotlinLogging
 
@@ -71,7 +72,13 @@ internal class GithubOAuthProvider(
 
         verticle.router.route("/*").handler { rc ->
             val user = rc.user()
-            if (user != null && user !is TockUser) {
+            val sessionTockUser = rc.session()?.get("tockUser") as? TockUser
+
+            if (sessionTockUser != null) {
+                // If a TockUser is already in session (ex: after a namespace switch), reuse it and don't overwrite it.
+                (rc.userContext() as UserContextInternal).setUser(sessionTockUser)
+                rc.next()
+            } else if (user != null && user !is TockUser) {
                 executor.executeBlocking {
                     val login = RetrofitGithubClient.login(user.principal().getString("access_token"))
                     val tockUser =
