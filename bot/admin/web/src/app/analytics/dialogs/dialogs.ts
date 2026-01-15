@@ -20,6 +20,10 @@ import { ConnectorType } from '../../core/model/configuration';
 import { AnnotationReason, AnnotationState } from '../../shared/components/annotation/annotations';
 import { SortOrder } from '../../shared/model/misc';
 
+export enum FeedbackVote {
+  UP = 'UP',
+  DOWN = 'DOWN'
+}
 export class DialogReportQuery extends PaginatedQuery {
   constructor(
     public override namespace: string,
@@ -46,7 +50,8 @@ export class DialogReportQuery extends PaginatedQuery {
     public annotationReasons?: AnnotationReason[],
     public annotationSort?: SortOrder,
     public annotationCreationDateFrom?: Date,
-    public annotationCreationDateTo?: Date
+    public annotationCreationDateTo?: Date,
+    public feedback?: FeedbackVote
   ) {
     super(namespace, applicationName, language, start, size);
   }

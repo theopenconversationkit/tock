@@ -46,13 +46,15 @@ class GoogleChatConnector(
     private val chatService: HangoutsChat,
     private val authorisationHandler: GoogleChatAuthorisationHandler,
     private val useCondensedFootnotes: Boolean,
+    private val introMessage: String? = null,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.post(path)
+            router
+                .post(path)
                 .handler(authorisationHandler)
                 .handler { context ->
                     try {
@@ -70,7 +72,15 @@ class GoogleChatConnector(
                             executor.executeBlocking {
                                 controller.handle(
                                     event,
-                                    ConnectorData(GoogleChatConnectorCallback(connectorId, spaceName, threadName)),
+                                    ConnectorData(
+                                        GoogleChatConnectorCallback(
+                                            connectorId,
+                                            spaceName,
+                                            threadName,
+                                            chatService,
+                                            introMessage,
+                                        ),
+                                    ),
                                 )
                             }
                         } else {
@@ -94,14 +104,30 @@ class GoogleChatConnector(
             if (message != null) {
                 callback as GoogleChatConnectorCallback
                 executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-                    chatService.spaces().messages().create(
-                        callback.spaceName,
-                        message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
-                    )
-                        .setMessageReplyOption(
-                            "REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD",
-                        ) // Creates the message as a reply to the thread specified by [thread ID] If it fails, the message starts a new thread instead.
-                        .execute()
+                    try {
+                        logger.info {
+                            "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}"
+                        }
+                        logger.debug {
+                            "Message content: ${message.toGoogleMessage()}"
+                        }
+
+                        val response =
+                            chatService
+                                .spaces()
+                                .messages()
+                                .create(
+                                    callback.spaceName,
+                                    message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
+                                ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
+                                .execute()
+
+                        logger.info { "Google Chat API response: ${response?.name}" }
+                    } catch (e: Exception) {
+                        logger.error(e) {
+                            "Failed to send message to Google Chat (space=${callback.spaceName}, thread=${callback.threadName})"
+                        }
+                    }
                 }
             }
         }
@@ -139,6 +165,7 @@ class GoogleChatConnector(
                         }
                     }
                 }
+
                 is GoogleChatConnectorTextMessageOut -> {
                     card {
                         section {
@@ -149,14 +176,17 @@ class GoogleChatConnector(
                         }
                     }
                 }
-                else -> message.also { logger.warn { "Add suggestion to message $message not handled" } }
+
+                else -> {
+                    message.also { logger.warn { "Add suggestion to message $message not handled" } }
+                }
             }
         }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
         {
             when (message) {
-                is MediaAction ->
+                is MediaAction -> {
                     listOf(
                         card {
                             section {
@@ -166,19 +196,27 @@ class GoogleChatConnector(
                             }
                         },
                     )
-                is MediaCard ->
+                }
+
+                is MediaCard -> {
                     listOf(
                         card {
                             sectionFromMediaCard(message)
                         },
                     )
-                is MediaCarousel ->
+                }
+
+                is MediaCarousel -> {
                     listOf(
                         card {
                             message.cards.forEach { sectionFromMediaCard(it) }
                         },
                     )
-                else -> emptyList()
+                }
+
+                else -> {
+                    emptyList()
+                }
             }
         }
 

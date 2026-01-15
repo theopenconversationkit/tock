@@ -18,12 +18,15 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.engine.AsyncBotBus
 import ai.tock.bot.engine.AsyncBus
+import ai.tock.bot.engine.Bot
+import ai.tock.bot.engine.BotBus
 import ai.tock.shared.InternalTockApi
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.I18nLocalizedLabel
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 /**
@@ -41,8 +44,15 @@ abstract class AsyncStoryHandlerBase(
     override var i18nNamespace: String = defaultNamespace
         @InternalTockApi set
 
+    @Deprecated("Use coroutines to call this interface", replaceWith = ReplaceWith("handle(asyncBus)"))
+    override fun handle(bus: BotBus) {
+        runBlocking(
+            Bot.handlerCoroutineName { findStoryDefinition(bus)?.id ?: mainIntent?.name ?: "??" },
+        ) { handle(AsyncBotBus(bus)) }
+    }
+
     override suspend fun handle(bus: AsyncBus) {
-        val baseBus = (bus as AsyncBotBus).botBus
+        val baseBus = (bus as AsyncBotBus).syncBus
         val storyDefinition = findStoryDefinition(bus)
         // if not supported user interface, use unknown
         if (storyDefinition?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
@@ -63,12 +73,18 @@ abstract class AsyncStoryHandlerBase(
 
     protected abstract suspend fun action(bus: AsyncBus)
 
-    protected fun AsyncBus.isEndCalled() = StoryHandlerBase.isEndCalled((this as AsyncBotBus).botBus)
+    protected fun AsyncBus.isEndCalled() = StoryHandlerBase.isEndCalled((this as AsyncBotBus).syncBus)
 
     /**
      * Finds the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? = (bus as AsyncBotBus).botBus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
+    open fun findStoryDefinition(bus: AsyncBus): StoryDefinition? {
+        return findStoryDefinition((bus as AsyncBotBus).syncBus)
+    }
+
+    private fun findStoryDefinition(bus: BotBus): StoryDefinition? {
+        return bus.botDefinition.findStoryByStoryHandler(this, bus.connectorId)
+    }
 
     /**
      * Story i18n category.

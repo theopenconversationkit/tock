@@ -17,6 +17,7 @@
 package ai.tock.bot.test
 
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -25,180 +26,399 @@ import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
-import ch.tutteli.atrium.api.cc.en_GB.any
-import ch.tutteli.atrium.api.cc.en_GB.contains
-import ch.tutteli.atrium.api.cc.en_GB.containsExactly
-import ch.tutteli.atrium.api.cc.en_GB.containsNot
-import ch.tutteli.atrium.api.cc.en_GB.notToBeNull
-import ch.tutteli.atrium.api.cc.en_GB.property
-import ch.tutteli.atrium.api.cc.en_GB.returnValueOf
-import ch.tutteli.atrium.api.cc.en_GB.toBe
-import ch.tutteli.atrium.creating.Assert
-import ch.tutteli.atrium.domain.builders.AssertImpl
-import ch.tutteli.atrium.domain.creating.any.typetransformation.AnyTypeTransformation
-import ch.tutteli.atrium.reporting.RawString
+import ch.tutteli.atrium.api.fluent.en_GB.feature
+import ch.tutteli.atrium.api.fluent.en_GB.get
+import ch.tutteli.atrium.api.fluent.en_GB.getExisting
+import ch.tutteli.atrium.api.fluent.en_GB.notToContain
+import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
+import ch.tutteli.atrium.api.fluent.en_GB.toContain
+import ch.tutteli.atrium.api.fluent.en_GB.toContainExactly
+import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.toHaveElementsAndAny
+import ch.tutteli.atrium.api.verbs.expect
+import ch.tutteli.atrium.core.Option
+import ch.tutteli.atrium.core.Some
+import ch.tutteli.atrium.creating.Expect
+import ch.tutteli.atrium.logic._logic
+import ch.tutteli.atrium.logic.creating.iterablelike.contains.reporting.InOrderOnlyReportingOptions
+import ch.tutteli.atrium.logic.creating.transformers.impl.subjectchanger.DefaultFailureHandlerImpl
+import ch.tutteli.atrium.logic.creating.transformers.subjectChanger
+import ch.tutteli.atrium.reporting.Text
 import ch.tutteli.atrium.reporting.translating.Untranslatable
-import ch.tutteli.atrium.verbs.expect
 
-fun Assert<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) = returnValueOf(BotBusMockLog::text).toBe(expectedText)
+/**
+ * Expects that the subject of `this` expectation (a [BotBusMockLog]) is a simple text message
+ * with the value [expectedText].
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<BotBusMockLog>.toBeSimpleTextMessage(expectedText: String) = feature(BotBusMockLog::text).toEqual(expectedText)
 
-fun Assert<BotBusMockLog>.asGenericMessage(assertionCreator: Assert<GenericMessage>.() -> Unit) {
-    val parameterObject =
-        AnyTypeTransformation.ParameterObject(
-            Untranslatable("is a"),
-            RawString.create(GenericMessage::class.simpleName!!),
-            this,
-            assertionCreator,
-            Untranslatable("cannot be converted to generic message : is not a send sentence"),
-        )
-    AssertImpl.any.typeTransformation.transform(
-        parameterObject,
-        { it.action is SendSentence && it.genericMessage() != null },
-        { it.genericMessage()!! },
-        AssertImpl.any.typeTransformation.failureHandlers.newExplanatory(),
+/**
+ * Expects that the subject of `this` expectation (a [BotBusMockLog]) is a [ConnectorMessage],
+ * and converts it to a [GenericMessage] for further assertions.
+ */
+fun Expect<BotBusMockLog>.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
+    _logic.subjectChanger.reported(
+        _logic,
+        Untranslatable("is a"),
+        Text(GenericMessage::class.simpleName!!),
+        {
+            Option.someIf(
+                it.action is SendSentence && it.genericMessage() != null,
+                { it.genericMessage()!! },
+            )
+        },
+        DefaultFailureHandlerImpl(),
+        Some(assertionCreator),
     )
 }
 
-fun Assert<GenericMessage>.toHaveGlobalText(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) has top-level text
+ * with the value [expectedText].
+ *
+ * @param paramName the name of the text parameter to check (connector-dependant).
+ *   Common values are [GenericMessage.TEXT_PARAM], [GenericMessage.TITLE_PARAM], or [GenericMessage.SUBTITLE_PARAM].
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveGlobalText(
     expectedText: String,
-    textName: String = "text",
-) = property(GenericMessage::texts).addAssertionsCreatedBy {
-    returnValueOf(Map<String, String>::get, textName).toBe(expectedText)
-}
-
-fun Assert<GenericMessage>.toHaveGlobalChoices(
-    expectedChoice: String,
-    vararg otherExpectedChoices: String,
-) = property(GenericMessage::choices).addAssertionsCreatedBy {
-    expect(
-        subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).contains(expectedChoice, *otherExpectedChoices)
-}
-
-fun Assert<GenericMessage>.toHaveNotGlobalChoices(
-    unexpectedChoice: String,
-    vararg otherUnexpectedChoices: String,
-) = property(GenericMessage::choices).addAssertionsCreatedBy {
-    expect(
-        subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).containsNot(unexpectedChoice, *otherUnexpectedChoices)
-}
-
-fun Assert<GenericMessage>.toHaveExactlyGlobalChoices(
-    expectedChoice: String,
-    vararg otherExpectedChoices: String,
-) = property(GenericMessage::choices).addAssertionsCreatedBy {
-    expect(
-        subject.map { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).containsExactly(expectedChoice, *otherExpectedChoices)
-}
-
-fun Assert<GenericMessage>.toHaveElement(
-    index: Int,
-    assertionCreator: Assert<GenericElement>.() -> Unit,
-) = property(GenericMessage::subElements).addAssertionsCreatedBy {
-    returnValueOf(List<GenericElement>::get, index) {
-        addAssertionsCreatedBy(assertionCreator)
+    paramName: String = GenericMessage.TEXT_PARAM,
+): Expect<GenericMessage> =
+    feature(GenericMessage::texts) {
+        getExisting(paramName).toEqual(expectedText)
     }
-}
 
-fun Assert<GenericElement>.toHaveText(
-    expectedText: String,
-    textName: String,
-) = property(GenericElement::texts).addAssertionsCreatedBy {
-    returnValueOf(Map<String, String>::get, textName).toBe(expectedText)
-}
-
-fun Assert<GenericElement>.toHaveTitle(expectedTitle: String) = toHaveText(expectedTitle, "title")
-
-fun Assert<GenericElement>.toHaveSubtitle(expectedSubtitle: String) = toHaveText(expectedSubtitle, "subtitle")
-
-fun Assert<GenericElement>.toHaveChoices(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains top-level choices (buttons)
+ * with the given button titles.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveGlobalChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-) = property(GenericElement::choices).addAssertionsCreatedBy {
-    expect(
-        subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).contains(expectedChoice, *otherExpectedChoices)
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContain(expectedChoice, *otherExpectedChoices) })
+    }
 
-fun Assert<GenericElement>.toHaveNotChoices(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) does _not_ contain top-level choices (buttons)
+ * with the given button titles.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveNotGlobalChoices(
     unexpectedChoice: String,
     vararg otherUnexpectedChoices: String,
-) = property(GenericElement::choices).addAssertionsCreatedBy {
-    expect(
-        subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).containsNot(unexpectedChoice, *otherUnexpectedChoices)
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
+    }
 
-fun Assert<GenericElement>.toHaveExactlyChoices(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains exactly the top-level choices (buttons)
+ * with the given button titles, in the specified order.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
     expectedChoice: String,
     vararg otherExpectedChoices: String,
-) = property(GenericElement::choices).addAssertionsCreatedBy {
-    expect(
-        subject.mapNotNull { choice ->
-            choice.parameters[SendChoice.TITLE_PARAMETER]
-        },
-    ).containsExactly(expectedChoice, *otherExpectedChoices)
-}
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        feature("title", {
+            map { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
+    }
 
-fun ConnectorMessage.asGenericMessage(assertionCreator: Assert<GenericMessage>.() -> Unit) {
-    expect(toGenericMessage()).notToBeNull(assertionCreator)
-}
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains only an entry holding
+ * the assertions created by [firstChoiceAssertion]
+ * and likewise an additional entry for each [otherChoicesAssertions] (if given)
+ * whereas the entries have to appear in the defined order.
+ *
+ * It is a shortcut for `toContain.inOrder.only.entries(firstChoiceAssertion, *otherChoicesAssertions)`
+ *
+ * @param firstChoiceAssertion The identification lambda which creates the assertions which the entry we are looking
+ *   for has to hold; or in other words, the function which defines whether an entry is the one we are looking for
+ *   or not.
+ * @param otherChoicesAssertions Additional identification lambdas which each identify (separately) an entry
+ *   which we are looking for (see [firstChoiceAssertion] for more information).
+ * @param report The lambda configuring the [InOrderOnlyReportingOptions] -- it is optional where
+ *   the default [InOrderOnlyReportingOptions] apply if not specified.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveExactlyGlobalChoices(
+    firstChoiceAssertion: (Expect<Choice>.() -> Unit),
+    vararg otherChoicesAssertions: Expect<Choice>.() -> Unit,
+    report: InOrderOnlyReportingOptions.() -> Unit = {},
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        toContainExactly(
+            assertionCreatorOrNull = firstChoiceAssertion,
+            otherAssertionCreatorsOrNulls = otherChoicesAssertions,
+            report = report,
+        )
+    }
 
-fun Assert<GenericElement>.toHaveAttachment(assertionCreator: Assert<Attachment>.() -> Unit) =
-    property(GenericElement::attachments).addAssertionsCreatedBy {
-        any {
-            addAssertionsCreatedBy(assertionCreator)
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) is composed of sub-elements
+ * (typically implying it represents some sort of carousel), that the given [index] is within the bounds of its elements,
+ * and tests the [GenericElement] (typically a carousel's card) at that position.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveElement(
+    index: Int,
+    assertionCreator: Expect<GenericElement>.() -> Unit,
+): Expect<GenericMessage> =
+    feature(GenericMessage::subElements) {
+        get(index, assertionCreator)
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) has text
+ * with the value [expectedText].
+ *
+ * @param paramName the name of the text parameter to check (connector-dependant).
+ *   Common values are [GenericMessage.TEXT_PARAM], [GenericMessage.TITLE_PARAM], or [GenericMessage.SUBTITLE_PARAM]
+ * @return an [Expect] for the subject of `this` expectation.
+ *
+ * @see toHaveTitle
+ * @see toHaveSubtitle
+ */
+fun Expect<GenericElement>.toHaveText(
+    expectedText: String,
+    paramName: String,
+): Expect<GenericElement> =
+    feature(GenericElement::texts) {
+        getExisting(paramName).toEqual(expectedText)
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) has a title
+ * with the value [expectedTitle].
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveTitle(expectedTitle: String): Expect<GenericElement> = toHaveText(expectedTitle, GenericMessage.TITLE_PARAM)
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) has a subtitle
+ * with the value [expectedSubtitle].
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveSubtitle(expectedSubtitle: String): Expect<GenericElement> = toHaveText(expectedSubtitle, GenericMessage.SUBTITLE_PARAM)
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains the choices (buttons)
+ * with the given button titles.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveChoices(
+    expectedChoice: String,
+    vararg otherExpectedChoices: String,
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContain(expectedChoice, *otherExpectedChoices) })
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) does _not_ contain choices (buttons)
+ * with the given button titles.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveNotChoices(
+    unexpectedChoice: String,
+    vararg otherUnexpectedChoices: String,
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { notToContain(unexpectedChoice, *otherUnexpectedChoices) })
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains exactly the choices (buttons)
+ * with the given button titles, in the specified order.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveExactlyChoices(
+    expectedChoice: String,
+    vararg otherExpectedChoices: String,
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        feature("title", {
+            mapNotNull { choice ->
+                choice.parameters[SendChoice.TITLE_PARAMETER]
+            }
+        }, { toContainExactly(expectedChoice, *otherExpectedChoices) })
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains only a choice entry holding
+ * the assertions created by [firstChoiceAssertion]
+ * and likewise an additional entry for each [otherChoicesAssertions] (if given)
+ * whereas the entries have to appear in the defined order.
+ *
+ * It is a shortcut for `expect(choices).toContain.inOrder.only.entries(firstChoiceAssertion, *otherChoicesAssertions)`
+ *
+ * @param firstChoiceAssertion The identification lambda which creates the assertions which the entry we are looking
+ *   for has to hold; or in other words, the function which defines whether an entry is the one we are looking for
+ *   or not.
+ * @param otherChoicesAssertions Additional identification lambdas which each identify (separately) an entry
+ *   which we are looking for (see [firstChoiceAssertion] for more information).
+ * @param report The lambda configuring the [InOrderOnlyReportingOptions] -- it is optional where
+ *   the default [InOrderOnlyReportingOptions] apply if not specified.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveExactlyChoices(
+    firstChoiceAssertion: (Expect<Choice>.() -> Unit),
+    vararg otherChoicesAssertions: Expect<Choice>.() -> Unit,
+    report: InOrderOnlyReportingOptions.() -> Unit = {},
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        toContainExactly(
+            assertionCreatorOrNull = firstChoiceAssertion,
+            otherAssertionCreatorsOrNulls = otherChoicesAssertions,
+            report = report,
+        )
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains a choice (button)
+ * holding the assertions created by [assertionCreator]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveChoice(
+    title: String,
+    assertionCreator: Expect<Choice>.() -> Unit,
+): Expect<GenericElement> =
+    feature(GenericElement::choices) {
+        toHaveElementsAndAny {
+            toHaveTitle(title)
+            assertionCreator()
         }
     }
 
-fun Assert<Attachment>.toHaveUrl(url: String) = property(Attachment::url).toBe(url)
+/**
+ * Converts this [ConnectorMessage] to a [GenericMessage] and applies the given [assertionCreator]
+ * on the resulting [GenericMessage] for further assertions, similarly to [Expect.asGenericMessage].
+ */
+fun ConnectorMessage.asGenericMessage(assertionCreator: Expect<GenericMessage>.() -> Unit) {
+    expect(toGenericMessage()).notToEqualNull(assertionCreator)
+}
 
-fun Assert<Attachment>.toBeImage() = property(Attachment::type).toBe(SendAttachment.AttachmentType.image)
-
-fun Assert<GenericMessage>.toHaveChoice(
-    title: String,
-    assertionCreator: Assert<Choice>.() -> Unit,
-) = property(GenericMessage::choices).addAssertionsCreatedBy {
-    any {
-        toHaveTitle(title)
-        addAssertionsCreatedBy(assertionCreator)
+/**
+ * Expects that the subject of `this` expectation (a [GenericElement]) contains an attachment matching the given assertions
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericElement>.toHaveAttachment(assertionCreator: Expect<Attachment>.() -> Unit): Expect<GenericElement> =
+    feature(GenericElement::attachments) {
+        toHaveElementsAndAny(assertionCreator)
     }
-}
 
-fun Assert<Choice>.toHaveTitle(title: String) {
-    toHaveParameter(SendChoice.TITLE_PARAMETER, title)
-}
+/**
+ * Expects that the subject of `this` expectation (an [Attachment]) is pointing to the specified [url]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Attachment>.toHaveUrl(url: String): Expect<Attachment> =
+    feature(Attachment::url) {
+        toEqual(url)
+    }
 
-fun Assert<Choice>.toHaveIntent(intentName: String) {
-    property(Choice::intentName).toBe(intentName)
-}
+/**
+ * Expects that the subject of `this` expectation (an [Attachment]) has the image attachment type
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Attachment>.toBeImage(): Expect<Attachment> =
+    feature(Attachment::type) {
+        toEqual(SendAttachment.AttachmentType.image)
+    }
 
-fun Assert<Choice>.toHaveParameter(
+/**
+ * Expects that the subject of `this` expectation (a [GenericMessage]) contains a top-level choice (button)
+ * holding the assertions created by [assertionCreator]
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<GenericMessage>.toHaveGlobalChoice(
+    title: String,
+    assertionCreator: Expect<Choice>.() -> Unit,
+): Expect<GenericMessage> =
+    feature(GenericMessage::choices) {
+        toHaveElementsAndAny {
+            toHaveTitle(title)
+            assertionCreator()
+        }
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) has the given [title].
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+@JvmName("toHaveChoiceTitle")
+fun Expect<Choice>.toHaveTitle(title: String): Expect<Choice> = toHaveParameter(SendChoice.TITLE_PARAMETER, title)
+
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) triggers the specified [intent] when selected.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Choice>.toHaveIntent(intent: IntentAware): Expect<Choice> =
+    feature(Choice::intentName) {
+        toEqual(intent.wrappedIntent().name)
+    }
+
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) is parameterized with the specified key-value pair.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Choice>.toHaveParameter(
     key: ParameterKey,
     value: String,
-) {
-    property(Choice::parameters).addAssertionsCreatedBy {
-        returnValueOf(Map<String, String>::get, key.name).toBe(value)
-    }
-}
+): Expect<Choice> = toHaveParameter(key.name, value)
 
-fun Assert<Choice>.toHaveParameter(
+/**
+ * Expects that the subject of `this` expectation (a [Choice]) is parameterized with the specified key-value pair.
+ *
+ * @return an [Expect] for the subject of `this` expectation.
+ */
+fun Expect<Choice>.toHaveParameter(
     key: String,
     value: String,
-) {
-    property(Choice::parameters).addAssertionsCreatedBy {
-        returnValueOf(Map<String, String>::get, key).toBe(value)
+): Expect<Choice> =
+    feature(Choice::parameters) {
+        feature(Map<String, String>::get, key).toEqual(value)
     }
-}

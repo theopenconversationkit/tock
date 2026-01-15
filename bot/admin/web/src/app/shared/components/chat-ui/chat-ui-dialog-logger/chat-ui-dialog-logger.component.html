@@ -116,6 +116,19 @@
               {{ normalizeLocaleCode(action._nlpStats.locale) }}
             </div>
           </div>
+
+          <nb-icon
+            icon="hand-thumbs-up-fill"
+            class="text-success font-size-small mt-2"
+            nbTooltip="This message received positive feedback."
+            *ngIf="action.metadata?.feedback?.vote === feedbackVote.UP"
+          ></nb-icon>
+          <nb-icon
+            icon="hand-thumbs-down-fill"
+            class="text-danger font-size-small mt-2"
+            nbTooltip="This message received negative feedback."
+            *ngIf="action.metadata?.feedback?.vote === feedbackVote.DOWN"
+          ></nb-icon>
         </tock-chat-ui-message>
       </div>
 

@@ -26,6 +26,7 @@ interface WebMessageContract {
     val widget: WebWidget?
     val image: WebImage?
     val version: String
+    val actionId: String?
 }
 
 data class WebMessageContent(
@@ -38,4 +39,5 @@ data class WebMessageContent(
     override val image: WebImage? = null,
     override val version: String = "1",
     override val footnotes: List<Footnote> = emptyList(),
+    override val actionId: String? = null,
 ) : WebMessageContract

@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>25.10.3-SNAPSHOT</version>
+    <version>25.10.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -86,7 +86,7 @@
         <mockk>1.14.6</mockk>
         <assertj>3.22.0</assertj>
         <byte-buddy>1.17.8</byte-buddy>
-        <atrium>0.15.0</atrium>
+        <atrium>1.2.0</atrium>
         <serialization>1.6.2</serialization>
 
         <plugin.surefire>3.5.3</plugin.surefire>
@@ -116,6 +116,7 @@
 
         <node>v22.20.0</node>
         <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
+        <ktlint.fail>true</ktlint.fail>
     </properties>
 
     <modules>
@@ -879,7 +880,7 @@
                         <phase>verify</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="${ktlint.fail}" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
 
                                     <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
                                     <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
@@ -895,7 +896,7 @@
                         <id>ktlint-format</id>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="${ktlint.fail}" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <jvmarg value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
                                     <!-- see https://pinterest.github.io/ktlint/install/cli/#command-line-usage for more information -->
                                     <arg value="-F" />

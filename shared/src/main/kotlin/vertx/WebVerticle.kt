@@ -315,7 +315,7 @@ abstract class WebVerticle : AbstractVerticle() {
                     logger.info { "$verticleName started on port $port" }
                     promise.complete()
                 } else {
-                    logger.error { "$verticleName NOT started on port $port" }
+                    logger.error { "$verticleName NOT started on port $port - stack: ${ar.cause()}" }
                     promise.fail(ar.cause())
                 }
             }

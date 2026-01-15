@@ -40,6 +40,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.RAGStoryDefinition.Companion.RAG_STORY_NAME
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.FeedbackVote
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
@@ -84,7 +85,9 @@ import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.Accumulators.sum
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.gte
+import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.lte
+import com.mongodb.client.model.Filters.or
 import com.mongodb.client.model.IndexOptions
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -747,6 +750,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                                 query.applicationId,
                                             )
                                     },
+                                    if (query.feedback != null) eq("stories.actions.botMetadata.feedback.vote", query.feedback) else null,
                                     if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null,
                                     if (query.withAnnotations == true) Stories.actions.annotation.state `in` BotAnnotationState.entries else null,
                                     if (query.annotationStates.isNotEmpty()) Stories.actions.annotation.state `in` query.annotationStates else null,
@@ -1062,6 +1066,39 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     /**
+     * Counts the number of actions in the bot stories that have received a specific feedback vote.
+     *
+     * This function filters actions by:
+     *  - bot player type (`"bot"`)
+     *  - feedback vote matching the provided [vote]
+     *  - optional date range between [fromDate] and [toDate]
+     *
+     * @param namespace the namespace to search in.
+     * @param applicationIds the set of application IDs.
+     * @param fromDate optional start date (inclusive).
+     * @param toDate optional end date (inclusive).
+     * @param vote the [FeedbackVote] to filter actions by.
+     *
+     * @return Counts grouped by applicationId
+     */
+    fun countFeedbackActions(
+        namespace: String,
+        applicationIds: Set<String>,
+        fromDate: ZonedDateTime? = null,
+        toDate: ZonedDateTime? = null,
+        vote: FeedbackVote,
+    ): List<CountResult> {
+        val filters =
+            mutableListOf<Bson>(
+                eq("stories.actions.playerId.type", "bot"),
+                eq("stories.actions.botMetadata.feedback.vote", vote.name),
+            )
+        applyDateFilters(filters, fromDate, toDate)
+
+        return runBlocking { buildAndExecuteCountPipeline(namespace, applicationIds, filters) }
+    }
+
+    /**
      * Counts user actions within dialogs for a given namespace and set of applications.
      *
      * @param namespace the namespace
@@ -1249,6 +1286,24 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 includeGenAIRag = false,
             )
 
+        val allFeedbackUp =
+            countFeedbackActions(
+                namespace = query.namespace,
+                applicationIds = applicationIds,
+                fromDate = query.from,
+                toDate = query.to,
+                vote = FeedbackVote.UP,
+            )
+
+        val allFeedbackDown =
+            countFeedbackActions(
+                namespace = query.namespace,
+                applicationIds = applicationIds,
+                fromDate = query.from,
+                toDate = query.to,
+                vote = FeedbackVote.DOWN,
+            )
+
         return DialogStatsQueryResult(
             allUserActions = allUserActions,
             allUserActionsExceptRag = allUserActionsExceptRag,
@@ -1256,6 +1311,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             knownIntentUserActions = allUserActionsOnlyKnownIntent,
             unknownIntentUserActions = allUserActionsOnlyUnknownIntentWithAIGenRag,
             unknownIntentUserActionsExceptRag = allUserActionsOnlyUnknownIntentExceptAIGenRag,
+            allFeedbackUp = allFeedbackUp,
+            allFeedbackDown = allFeedbackDown,
         )
     }
 }

@@ -59,13 +59,9 @@ fun <T : Bus<T>> T.endForGoogleChat(
  * Adds a Google Chat [ConnectorMessage] if the current connector is [googleChatConnectorType].
  * You need to call [Bus.send] or [Bus.end] later to send this message.
  */
-fun <T : Bus<T>> T.withGoogleChat(messageProvider: () -> GoogleChatConnectorMessage): T {
-    return withMessage(googleChatConnectorType, messageProvider)
-}
+fun <T : Bus<T>> T.withGoogleChat(messageProvider: () -> GoogleChatConnectorMessage): T = withMessage(googleChatConnectorType, messageProvider)
 
 fun I18nTranslator.textMessage(
     message: CharSequence,
     vararg args: Any?,
-): GoogleChatConnectorTextMessageOut {
-    return GoogleChatConnectorTextMessageOut(translate(message, args).toString())
-}
+): GoogleChatConnectorTextMessageOut = GoogleChatConnectorTextMessageOut(translate(message, args).toString())

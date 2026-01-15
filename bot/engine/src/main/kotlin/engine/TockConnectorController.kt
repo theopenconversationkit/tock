@@ -129,7 +129,6 @@ internal class TockConnectorController(
                         executor.launchCoroutine {
                             handleAction(event, 0, data)
                         }
-
                     else -> callback.eventSkipped(event)
                 }
             } else {
@@ -186,6 +185,9 @@ internal class TockConnectorController(
                             data.groupId,
                             storyDefinitionLoader(action.applicationId),
                         )
+
+                    // Notify callback that timeline has been loaded
+                    callback.initialUserTimelineLoaded(userTimeline)
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 

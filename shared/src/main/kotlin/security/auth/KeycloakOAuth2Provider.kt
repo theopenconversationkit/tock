@@ -37,6 +37,7 @@ import io.vertx.ext.auth.oauth2.OAuth2Options
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
+import io.vertx.ext.web.impl.UserContextInternal
 import mu.KotlinLogging
 import java.util.Base64
 
@@ -97,7 +98,13 @@ internal class KeycloakOAuth2Provider(
 
         verticle.router.route("/*").handler { context ->
             val user = context.user()
-            if (user?.containsKey("access_token") == true) {
+            val sessionTockUser = context.session()?.get("tockUser") as? TockUser
+
+            if (sessionTockUser != null) {
+                // If a TockUser is already in session (ex: after a namespace switch), reuse it and don't overwrite it.
+                (context.userContext() as UserContextInternal).setUser(sessionTockUser)
+                context.next()
+            } else if (user?.containsKey("access_token") == true) {
                 user.also { u ->
                     val data =
                         if (u.containsKey("email")) {

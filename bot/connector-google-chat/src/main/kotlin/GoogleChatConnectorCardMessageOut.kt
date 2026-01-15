@@ -23,16 +23,17 @@ import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
 import com.google.api.services.chat.v1.model.Message
 
-data class GoogleChatConnectorCardMessageOut(val card: ChatCard) : GoogleChatConnectorMessage() {
+data class GoogleChatConnectorCardMessageOut(
+    val card: ChatCard,
+) : GoogleChatConnectorMessage() {
     override fun toGoogleMessage(): Message = card.toCardMessage()
 
-    override fun toGenericMessage(): GenericMessage? {
-        return GenericMessage(
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             this,
             subElements =
                 card.children.filterIsInstance(ChatSection::class.java).map {
                     GenericElement()
                 },
         )
-    }
 }

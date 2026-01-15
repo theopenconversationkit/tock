@@ -19,6 +19,7 @@ import { JsonUtils } from '../../model/commons';
 import { ClassifiedEntity } from '../../model/nlp';
 import { IntentName } from '../../bot/model/story';
 import { Annotation } from '../components/annotation/annotations';
+import { FeedbackVote } from '../../analytics/dialogs/dialogs';
 
 export class DialogReport {
   displayActions: boolean;
@@ -46,6 +47,10 @@ export class DialogReport {
   }
 }
 
+export interface FeedbackParams {
+  vote: FeedbackVote;
+}
+
 export interface ActionReportMetadata {
   isGenAiRagAnswer: boolean;
   observabilityInfo?: {
@@ -53,6 +58,7 @@ export interface ActionReportMetadata {
     traceName: string;
     traceUrl: string;
   };
+  feedback?: FeedbackParams;
 }
 
 export class ActionReport {
@@ -450,6 +456,8 @@ export interface DialogStatsQueryResult {
   knownIntentUserActions: CountResult[];
   unknownIntentUserActions: CountResult[];
   unknownIntentUserActionsExceptRag: CountResult[];
+  allFeedbackUp: CountResult[];
+  allFeedbackDown: CountResult[];
 }
 
 export interface CountResult {
@@ -469,5 +477,6 @@ export interface DialogCounts {
   knownIntentUserActions: number;
   unknownIntentUserActions: number;
   unknownIntentUserActionsExceptRag: number;
+  allFeedbackUp: number;
+  allFeedbackDown: number;
 }
-

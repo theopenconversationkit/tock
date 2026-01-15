@@ -61,7 +61,11 @@ private const val WHATSAPP_API_BASE_URL = "https://graph.facebook.com"
 private const val VERSION = "22.0"
 private const val WHATSAPP_API_URL = "$WHATSAPP_API_BASE_URL/v$VERSION"
 
-class WhatsAppCloudApiClient(private val token: String, val businessAccountId: String, val phoneNumberId: String) {
+class WhatsAppCloudApiClient(
+    private val token: String,
+    val businessAccountId: String,
+    val phoneNumberId: String,
+) {
     interface GraphApi {
         @POST("v$VERSION/{phoneNumberId}/messages")
         fun sendMessage(
@@ -147,8 +151,7 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
             longProperty("tock_whatsappcloud_request_timeout_ms", 30000),
             logger,
             requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", false),
-        )
-            .baseUrl(WHATSAPP_API_BASE_URL)
+        ).baseUrl(WHATSAPP_API_BASE_URL)
             .addJacksonConverter()
             .build()
             .create()
@@ -157,7 +160,9 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
         graphApi.uploadMediaInWhatsAppAccount(
             phoneNumberId,
             "Bearer $token",
-            MultipartBody.Builder().setType(MultipartBody.FORM)
+            MultipartBody
+                .Builder()
+                .setType(MultipartBody.FORM)
                 .addFormDataPart("file", "fileimage", file)
                 .addFormDataPart("messaging_product", "whatsapp")
                 .build(),
@@ -207,7 +212,8 @@ class WhatsAppCloudApiClient(private val token: String, val businessAccountId: S
         val url = "$WHATSAPP_API_URL/$uploadId"
         val requestBody = fileContents.toRequestBody("application/octet-stream".toMediaTypeOrNull())
         val request =
-            Request.Builder()
+            Request
+                .Builder()
                 .url(url)
                 .post(requestBody)
                 .addHeader("file_offset", "0")

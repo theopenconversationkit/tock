@@ -35,7 +35,8 @@ jobs:
               - '**/*.kts'
               - '**/pom.xml'
             python:
-              - 'gen-ai/orchestrator-server/src/main/python/server/**'
+              - 'gen-ai/orchestrator-server/src/main/python/**'
+              - '.pre-commit-config.yaml'
             doc:
               - 'docs/**'
 
@@ -187,7 +188,9 @@ jobs:
   precommit:
     name: Pre-commit
     runs-on: ubuntu-latest
+    needs: changes
     timeout-minutes: 15
+    if: ${{ needs.changes.outputs.python == 'true'  || needs.changes.outputs.gha == 'true'}}
     
     steps:
       - name: Checkout code

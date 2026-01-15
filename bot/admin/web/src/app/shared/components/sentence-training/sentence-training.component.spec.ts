@@ -17,15 +17,17 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NbSpinnerModule, NbToastrService, NbToggleModule } from '@nebular/theme';
-import { of, Subject } from 'rxjs';
+import { NbSpinnerModule, NbToastrService, NbToggleModule, NbDialogService } from '@nebular/theme';
+import { of, Subject, throwError } from 'rxjs';
 
 import { StateService } from '../../../core-nlp/state.service';
-import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../../model/nlp';
+import { Classification, Intent, PaginatedResult, SearchQuery, SentenceStatus, TranslateSentencesQuery } from '../../../model/nlp';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { TestSharedModule } from '../../../shared/test-shared.module';
-import { Action } from './models';
+import { Action, SentenceTrainingMode } from './models';
 import { SentenceTrainingComponent, SentenceExtended } from './sentence-training.component';
+import { ChoiceDialogComponent } from '../choice-dialog/choice-dialog.component';
+import * as FileSaver from 'file-saver-es';
 
 const mockSentences: SentenceExtended[] = [
   {
@@ -34,7 +36,8 @@ const mockSentences: SentenceExtended[] = [
     classification: <Classification>{
       intentId: '1',
       intentProbability: 1,
-      entitiesProbability: 1
+      entitiesProbability: 1,
+      entities: []
     },
     creationDate: new Date('2022-08-03T09:50:24.952Z'),
     _showDialog: false,
@@ -48,7 +51,8 @@ const mockSentences: SentenceExtended[] = [
     classification: <Classification>{
       intentId: '1',
       intentProbability: 1,
-      entitiesProbability: 1
+      entitiesProbability: 1,
+      entities: []
     },
     creationDate: new Date('2022-08-03T09:50:24.952Z'),
     _showDialog: false,
@@ -62,7 +66,8 @@ const mockSentences: SentenceExtended[] = [
     classification: <Classification>{
       intentId: '1',
       intentProbability: 1,
-      entitiesProbability: 1
+      entitiesProbability: 1,
+      entities: []
     },
     creationDate: new Date('2022-08-03T09:50:24.952Z'),
     _showDialog: false,
@@ -76,7 +81,8 @@ const mockSentences: SentenceExtended[] = [
     classification: <Classification>{
       intentId: '1',
       intentProbability: 1,
-      entitiesProbability: 1
+      entitiesProbability: 1,
+      entities: []
     },
     creationDate: new Date('2022-08-03T09:50:24.952Z'),
     _showDialog: false,
@@ -94,17 +100,21 @@ const mockSentencesPaginatedResult: PaginatedResult<SentenceExtended> = {
 };
 
 class StateServiceMock {
+  currentApplication = { namespace: 'app', name: 'app' };
+  currentLocale = 'fr';
   createPaginatedQuery() {
     return {
       namespace: 'app',
-      application: 'app',
+      applicationName: 'app',
       language: 'fr',
       start: 0,
       size: 10
     };
   }
-
   configurationChange: Subject<boolean> = new Subject();
+  hasRole(_role: string): boolean {
+    return true;
+  }
 }
 
 class NlpServiceMock {
@@ -112,24 +122,47 @@ class NlpServiceMock {
     const sentencesPayload = JSON.parse(JSON.stringify(mockSentencesPaginatedResult));
     return of(sentencesPayload);
   }
-
   updateSentence() {
     return of(mockSentences[0]);
+  }
+  updateSentences() {
+    return of({ nbUpdates: 1 });
+  }
+  translateSentences(_query: TranslateSentencesQuery) {
+    return of({ nbTranslations: 1 });
+  }
+  getSentencesDump() {
+    return of(new Blob());
+  }
+}
+
+class NbToastrServiceMock {
+  success = jasmine.createSpy('success');
+  show = jasmine.createSpy('show');
+}
+
+class NbDialogServiceMock {
+  open() {
+    return { onClose: of(null) };
   }
 }
 
 describe('SentenceTrainingComponent', () => {
   let component: SentenceTrainingComponent;
   let fixture: ComponentFixture<SentenceTrainingComponent>;
+  let nlpService: NlpServiceMock;
+  let toastrService: NbToastrServiceMock;
+  let dialogService: NbDialogServiceMock;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SentenceTrainingComponent],
+      declarations: [SentenceTrainingComponent, ChoiceDialogComponent],
       imports: [TestSharedModule, NbSpinnerModule, NbToggleModule],
       providers: [
         { provide: NlpService, useClass: NlpServiceMock },
         { provide: StateService, useClass: StateServiceMock },
-        { provide: NbToastrService, useValue: { success: () => {} } }
+        { provide: NbToastrService, useClass: NbToastrServiceMock },
+        { provide: NbDialogService, useClass: NbDialogServiceMock }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -138,6 +171,9 @@ describe('SentenceTrainingComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SentenceTrainingComponent);
     component = fixture.componentInstance;
+    nlpService = TestBed.inject(NlpService) as unknown as NlpServiceMock;
+    toastrService = TestBed.inject(NbToastrService) as unknown as NbToastrServiceMock;
+    dialogService = TestBed.inject(NbDialogService) as unknown as NbDialogServiceMock;
     fixture.detectChanges();
   });
 
@@ -157,7 +193,7 @@ describe('SentenceTrainingComponent', () => {
     expect(filtersComponent).toBeTruthy();
   });
 
-  it('should show no data component when the list of faq is empty', () => {
+  it('should show no data component when the list of sentences is empty', () => {
     component.sentences = [];
     fixture.detectChanges();
     const noDataComponent = fixture.debugElement.query(By.css('tock-no-data-found'));
@@ -224,247 +260,255 @@ describe('SentenceTrainingComponent', () => {
     });
   });
 
-  describe('#handleAction', () => {
-    it('should update the sentence according to the action', () => {
-      const sentence: Sentence = JSON.parse(JSON.stringify(component.sentences[0]));
-      const expectedSentence: Sentence = JSON.parse(JSON.stringify(component.sentences[0]));
-
-      // Delete action
-      expectedSentence.status = SentenceStatus.deleted;
-      component.handleAction({ action: Action.DELETE, sentence });
-
-      expect(sentence).toEqual(expectedSentence);
-
-      // Unknown action
-      expectedSentence.classification.intentId = Intent.unknown;
-      expectedSentence.classification.entities = [];
-      expectedSentence.status = SentenceStatus.validated;
-      component.handleAction({ action: Action.UNKNOWN, sentence });
-
-      expect(sentence).toEqual(expectedSentence);
-
-      // Validate action
-      expectedSentence.status = SentenceStatus.validated;
-      component.handleAction({ action: Action.VALIDATE, sentence });
-
-      expect(sentence).toEqual(expectedSentence);
+  describe('#setSentenceAccordingToAction', () => {
+    it('should set sentence status to deleted for Action.DELETE', () => {
+      const sentence: SentenceExtended = {
+        ...mockSentences[0],
+        getIntentLabel: () => 'intent label',
+        getText: () => 'sentence 1',
+        intentLabel: 'intent label',
+        notRetainedEntitiesContainer: null
+      } as unknown as SentenceExtended;
+      component['setSentenceAccordingToAction'](Action.DELETE, sentence);
+      expect(sentence.status).toBe(SentenceStatus.deleted);
     });
 
-    it('should call the method to update sentence', () => {
-      const sentence: Sentence = JSON.parse(JSON.stringify(component.sentences[0]));
-      spyOn(component['nlp'], 'updateSentence').and.returnValue(of(sentence));
-
-      component.handleAction({ action: Action.VALIDATE, sentence });
-
-      expect(component['nlp'].updateSentence).toHaveBeenCalledOnceWith(sentence);
+    it('should set intent to unknown and clear entities for Action.UNKNOWN', () => {
+      const sentence: SentenceExtended = {
+        ...mockSentences[0],
+        getIntentLabel: () => 'intent label',
+        getText: () => 'sentence 1',
+        intentLabel: 'intent label',
+        notRetainedEntitiesContainer: null
+      } as unknown as SentenceExtended;
+      component['setSentenceAccordingToAction'](Action.UNKNOWN, sentence);
+      expect(sentence.classification.intentId).toBe(Intent.unknown);
+      expect(sentence.classification.entities).toEqual([]);
+      expect(sentence.status).toBe(SentenceStatus.validated);
     });
 
-    it('should unselect the sentence when the action is performed and is the sentence is selected', fakeAsync(() => {
-      const sentence: Sentence = JSON.parse(JSON.stringify(component.sentences[0]));
-      component.selection.select(sentence);
+    it('should set intent to ragExcluded and clear entities for Action.RAGEXCLUDED', () => {
+      const sentence: SentenceExtended = {
+        ...mockSentences[0],
+        getIntentLabel: () => 'intent label',
+        getText: () => 'sentence 1',
+        intentLabel: 'intent label',
+        notRetainedEntitiesContainer: null
+      } as unknown as SentenceExtended;
+      component['setSentenceAccordingToAction'](Action.RAGEXCLUDED, sentence);
+      expect(sentence.classification.intentId).toBe(Intent.ragExcluded);
+      expect(sentence.classification.entities).toEqual([]);
+      expect(sentence.status).toBe(SentenceStatus.validated);
+    });
 
-      expect(component.selection.isSelected(sentence)).toBeTrue();
+    it('should set status to validated for Action.VALIDATE if intentId is set', () => {
+      const sentence: SentenceExtended = {
+        ...mockSentences[0],
+        getIntentLabel: () => 'intent label',
+        getText: () => 'sentence 1',
+        intentLabel: 'intent label',
+        notRetainedEntitiesContainer: null
+      } as unknown as SentenceExtended;
+      component['setSentenceAccordingToAction'](Action.VALIDATE, sentence);
+      expect(sentence.status).toBe(SentenceStatus.validated);
+    });
 
-      component.handleAction({ action: Action.VALIDATE, sentence });
-      tick();
-
-      expect(component.selection.isSelected(sentence)).toBeFalse();
-    }));
-
-    it('should remove the sentence in the list when the action is performed', fakeAsync(() => {
-      const sentence = component.sentences[0];
-      expect(component.sentences).toContain(sentence);
-
-      component.handleAction({ action: Action.VALIDATE, sentence: sentence });
-      tick();
-
-      expect(component.sentences).not.toContain(sentence);
-    }));
-
-    it('should reduce the pagination total when the action is performed', fakeAsync(() => {
-      expect(component.pagination.total).toBe(4);
-
-      component.handleAction({ action: Action.VALIDATE, sentence: component.sentences[0] });
-      tick();
-
-      expect(component.pagination.total).toBe(3);
-    }));
-
-    /**
-     * This scenario occurs when there are several pages and the action performed is performed on a page that does not correspond to the last one
-     */
-    it('should load a sentence when the pagination end is inferior to the pagination total', fakeAsync(() => {
-      component.pagination.end = 2;
-      component.pagination.size = 2;
-      spyOn(component, 'loadData');
-
-      component.handleAction({ action: Action.VALIDATE, sentence: component.sentences[0] });
-      tick();
-
-      expect(component.loadData).toHaveBeenCalledOnceWith(1, 1, true, true, true);
-    }));
-
-    /**
-     * This scenario occurs when you are on the last page and this page contains several sentences after updating the pagination variables
-     */
-    it('should not load a sentence when the pagination end is superior to the pagination total and the pagination total is not equal to the pagination start', fakeAsync(() => {
-      component.pagination.start = 2;
-      component.pagination.end = 4;
-      component.pagination.size = 2;
-      spyOn(component, 'loadData');
-
-      component.handleAction({ action: Action.VALIDATE, sentence: component.sentences[3] });
-      tick();
-
-      expect(component.pagination.end).toBe(3);
-      expect(component.loadData).not.toHaveBeenCalled();
-    }));
-
-    /**
-     * This scenario occurs when you are on the last page and this page no longer has a sentence after updating the pagination variables
-     */
-    it('should load a sentence when the pagination end is superior to the pagination total and the pagination total is equal to the pagination start and upper than 0', fakeAsync(() => {
-      component.pagination.start = 3;
-      component.pagination.end = 4;
-      component.pagination.size = 3;
-      spyOn(component, 'loadData');
-
-      component.handleAction({ action: Action.VALIDATE, sentence: component.sentences[3] });
-      tick();
-
-      expect(component.pagination.end).toBe(3);
-      expect(component.loadData).toHaveBeenCalledOnceWith(0);
-    }));
+    it('should not change sentence if intentId is null for Action.VALIDATE', () => {
+      const sentence: SentenceExtended = {
+        ...mockSentences[0],
+        classification: { ...mockSentences[0].classification, intentId: null },
+        getIntentLabel: () => 'intent label',
+        getText: () => 'sentence 1',
+        intentLabel: 'intent label',
+        notRetainedEntitiesContainer: null
+      } as unknown as SentenceExtended;
+      component['setSentenceAccordingToAction'](Action.VALIDATE, sentence);
+      expect(toastrService.show).toHaveBeenCalledWith('Please select an intent first');
+      expect(sentence.status).not.toBe(SentenceStatus.validated);
+    });
   });
 
   describe('#handleBatchAction', () => {
     beforeEach(() => {
-      [0, 1].forEach((v) => {
-        component.selection.select(component.sentences[v]);
-      });
+      component.selection.select(mockSentences[0], mockSentences[1]);
     });
 
-    it('should update all sentences according to the action', () => {
-      // Delete action
+    it('should update all selected sentences and call nlp.updateSentence for each', fakeAsync(() => {
+      spyOn(nlpService, 'updateSentence').and.returnValue(of(mockSentences[0]));
+      spyOn(component as any, 'loadSentencesAfterActionPerformed');
       component.handleBatchAction(Action.DELETE);
-
-      component.selection.selected.forEach((s) => {
-        const expectedSentence: Sentence = JSON.parse(JSON.stringify(s));
-        expectedSentence.status = SentenceStatus.deleted;
-
-        expect(s).toEqual(expectedSentence);
-      });
-
-      // Unknown action
-      component.handleBatchAction(Action.UNKNOWN);
-
-      component.selection.selected.forEach((s) => {
-        const expectedSentence: Sentence = JSON.parse(JSON.stringify(s));
-        expectedSentence.classification.intentId = Intent.unknown;
-        expectedSentence.classification.entities = [];
-        expectedSentence.status = SentenceStatus.validated;
-
-        expect(s).toEqual(expectedSentence);
-      });
-
-      // Validate action
-      component.handleBatchAction(Action.VALIDATE);
-
-      component.selection.selected.forEach((s) => {
-        const expectedSentence: Sentence = JSON.parse(JSON.stringify(s));
-        expectedSentence.status = SentenceStatus.validated;
-
-        expect(s).toEqual(expectedSentence);
-      });
-    });
-
-    it('should call the method to update sentence for each selected sentences', () => {
-      spyOn(component['nlp'], 'updateSentence').and.returnValue(of(mockSentences[0]));
-
-      component.handleBatchAction(Action.VALIDATE);
-
-      component.selection.selected.forEach((s) => {
-        expect(component['nlp'].updateSentence).toHaveBeenCalledWith(s);
-      });
-    });
-
-    it('should unselect the sentence when the action is performed and is the sentence is selected', fakeAsync(() => {
-      component.handleBatchAction(Action.VALIDATE);
       tick();
-
+      expect(nlpService.updateSentence).toHaveBeenCalledTimes(2);
+      expect((component as any).loadSentencesAfterActionPerformed).toHaveBeenCalledWith(2);
       expect(component.selection.isEmpty()).toBeTrue();
     }));
 
-    it('should remove all sentences in the list when the action is performed', fakeAsync(() => {
-      component.selection.selected.forEach((s) => {
-        expect(component.sentences).toContain(s);
-      });
-
-      component.handleBatchAction(Action.VALIDATE);
+    it('should show success toast after batch action', fakeAsync(() => {
+      spyOn(nlpService, 'updateSentence').and.returnValue(of(mockSentences[0]));
+      component.handleBatchAction(Action.UNKNOWN);
       tick();
-
-      component.selection.selected.forEach((s) => {
-        expect(component.sentences).not.toContain(s);
-      });
+      expect(toastrService.success).toHaveBeenCalledWith('Unknown 2 sentences', 'Unknown', { duration: 2000, status: 'basic' });
     }));
 
-    it('should reduce the pagination total when the action is performed', fakeAsync(() => {
-      expect(component.pagination.total).toBe(4);
-
-      component.handleBatchAction(Action.VALIDATE);
+    it('should remove selected sentences from the list', fakeAsync(() => {
+      spyOn(nlpService, 'updateSentence').and.returnValue(of(mockSentences[0]));
+      const selectedSentences = [...component.selection.selected];
+      component.handleBatchAction(Action.DELETE);
       tick();
-
-      expect(component.pagination.total).toBe(2);
+      selectedSentences.forEach((s) => expect(component.sentences).not.toContain(s));
     }));
+  });
 
-    /**
-     * This scenario occurs when there are several pages and the action performed is performed on a page that does not correspond to the last one
-     */
-    it('should load sentences when the pagination end is inferior to the pagination total', fakeAsync(() => {
-      component.pagination.end = 2;
-      component.pagination.size = 2;
+  describe('#loadSentencesAfterActionPerformed', () => {
+    it('should load new sentences if pagination.end <= pagination.total', () => {
+      component.pagination = { start: 0, end: 2, size: 10, total: 4 };
       spyOn(component, 'loadData');
+      component['loadSentencesAfterActionPerformed'](1);
+      expect(component.loadData).toHaveBeenCalledWith(1, 1, true, true, true);
+    });
 
-      component.handleBatchAction(Action.VALIDATE);
-      tick();
-
-      expect(component.loadData).toHaveBeenCalledOnceWith(0, 2, true, true, true);
-    }));
-
-    /**
-     * This scenario occurs when you are on the last page and this page contains several sentences after updating the pagination variables
-     */
-    it('should not load a sentence when the pagination end is superior to the pagination total and the pagination total is not equal to the pagination start', fakeAsync(() => {
-      component.selection.clear();
-      component.selection.select(component.sentences[3]);
-      component.pagination.start = 2;
-      component.pagination.end = 4;
-      component.pagination.size = 2;
+    it('should adjust pagination.end and load new sentences if pagination.end > pagination.total and pagination.start > 0', () => {
+      component.pagination = { start: 3, end: 4, size: 3, total: 3 };
       spyOn(component, 'loadData');
-
-      component.handleBatchAction(Action.VALIDATE);
-      tick();
-
+      component['loadSentencesAfterActionPerformed'](1);
       expect(component.pagination.end).toBe(3);
+      expect(component.loadData).toHaveBeenCalledWith(0);
+    });
+
+    it('should not load new sentences if pagination.end > pagination.total and pagination.start === pagination.total', () => {
+      component.pagination = { start: 3, end: 4, size: 3, total: 3 };
+      spyOn(component, 'loadData');
+      component['loadSentencesAfterActionPerformed'](1);
       expect(component.loadData).not.toHaveBeenCalled();
-    }));
+    });
+  });
 
-    /**
-     * This scenario occurs when you are on the last page and this page no longer has a sentence after updating the pagination variables
-     */
-    it('should load a sentence when the pagination end is superior to the pagination total and the pagination total is equal to the pagination start and upper than 0', fakeAsync(() => {
-      component.selection.clear();
-      component.selection.select(component.sentences[3]);
-      component.pagination.start = 3;
-      component.pagination.end = 4;
-      component.pagination.size = 3;
+  describe('#retrieveSentence', () => {
+    it('should show dialog for existing sentence', () => {
+      const sentence = component.sentences[0];
+      component.retrieveSentence(sentence);
+      expect(sentence._showDialog).toBeTrue();
+      expect(component.dialogDetailsSentence).toEqual(sentence);
+    });
+
+    it('should update filter if sentence not found and tryCount < max', () => {
+      const sentence: SentenceExtended = {
+        text: 'unknown sentence',
+        status: SentenceStatus.inbox,
+        classification: { intentId: '1', intentProbability: 1, entitiesProbability: 1, entities: [] }
+      } as SentenceExtended;
+      spyOn(component.sentenceTrainingFilter, 'updateFilter');
+      component.retrieveSentence(sentence);
+      expect(component.sentenceTrainingFilter.updateFilter).toHaveBeenCalledWith({ search: sentence.text });
+    });
+  });
+
+  describe('#toggleSort and #sortSentenceTraining', () => {
+    it('should toggle isSorted and reload data', () => {
       spyOn(component, 'loadData');
+      component.toggleSort();
+      expect(component.isSorted).toBeTrue();
+      expect(component.loadData).toHaveBeenCalled();
+    });
 
-      component.handleBatchAction(Action.VALIDATE);
-      tick();
+    it('should update sort order and reload data', () => {
+      spyOn(component, 'loadData');
+      component.sortSentenceTraining(true);
+      expect(component.filters.sort[0].second).toBeTrue();
+      expect(component.loadData).toHaveBeenCalled();
+    });
+  });
 
-      expect(component.pagination.end).toBe(3);
-      expect(component.loadData).toHaveBeenCalledOnceWith(0);
-    }));
+  describe('#filterSentenceTraining', () => {
+    it('should update filters and reload data', () => {
+      const newFilters: Partial<SearchQuery> = { search: 'test', status: [SentenceStatus.validated] };
+      spyOn(component, 'loadData');
+      component.filterSentenceTraining(newFilters);
+      expect(component.filters.search).toBe('test');
+      expect(component.filters.status).toEqual([SentenceStatus.validated]);
+      expect(component.loadData).toHaveBeenCalled();
+    });
+  });
+
+  describe('#initFilters', () => {
+    it('should set intentId to null and status to [inbox] for SentenceTrainingMode.INBOX', () => {
+      component.sentenceTrainingMode = SentenceTrainingMode.INBOX;
+      component.initFilters();
+      expect(component.filters.intentId).toBeNull();
+      expect(component.filters.status).toEqual([SentenceStatus.inbox]);
+    });
+
+    it('should set intentId to unknown and status to [validated, model] for SentenceTrainingMode.UNKNOWN', () => {
+      component.sentenceTrainingMode = SentenceTrainingMode.UNKNOWN;
+      component.initFilters();
+      expect(component.filters.intentId).toBe(Intent.unknown);
+      expect(component.filters.status).toEqual([SentenceStatus.validated, SentenceStatus.model]);
+    });
+  });
+
+  describe('#changeSentencesIntent and #changeSentencesEntity', () => {
+    it('should open dialog if no sentence is selected', () => {
+      spyOn(dialogService, 'open');
+      component.changeSentencesIntent('newIntent');
+      expect(dialogService.open).toHaveBeenCalled();
+    });
+
+    it('should call nlp.updateSentences if sentences are selected', () => {
+      component.selection.select(mockSentences[0]);
+      spyOn(nlpService, 'updateSentences').and.returnValue(of({ nbUpdates: 1 }));
+      component.changeSentencesIntent('newIntent');
+      expect(nlpService.updateSentences).toHaveBeenCalled();
+      expect(toastrService.show).toHaveBeenCalledWith('1 sentence updated', 'UPDATE', { duration: 2000 });
+    });
+  });
+
+  describe('#downloadSentencesDump', () => {
+    beforeEach(() => {
+      spyOn(FileSaver, 'saveAs').and.callFake((blob: Blob, filename: string) => {
+        // Mock de saveAs
+      });
+    });
+    it('should call nlp.getSentencesDump and save file', () => {
+      spyOn(nlpService, 'getSentencesDump').and.returnValue(of(new Blob(['test'], { type: 'application/json' })));
+      component.downloadSentencesDump();
+      expect(nlpService.getSentencesDump).toHaveBeenCalled();
+      expect(window.saveAs).toHaveBeenCalled();
+      expect(toastrService.success).toHaveBeenCalledWith('Dump provided', 'Sentences dump');
+    });
+  });
+
+  describe('#getCurrentSearchQuery', () => {
+    it('should return a SearchQuery with current filters', () => {
+      const query = component.getCurrentSearchQuery();
+      expect(query.search).toBe(component.filters.search);
+    });
+  });
+
+  describe('#documentClick', () => {
+    it('should delegate to sentenceTrainingService.documentClick', () => {
+      const event = new MouseEvent('click');
+      spyOn((component as any).sentenceTrainingService, 'documentClick');
+      component.documentClick(event);
+      expect((component as any).sentenceTrainingService.documentClick).toHaveBeenCalledWith(event);
+    });
+  });
+
+  describe('#loadData error handling', () => {
+    it('should set loading to false if search fails', () => {
+      spyOn(nlpService, 'searchSentences').and.returnValue(throwError(() => new Error('test error')));
+      component.loadData();
+      expect(component.loading).toBeFalse();
+    });
+  });
+
+  describe('#ngOnDestroy', () => {
+    it('should set unloading to true and complete destroy$', () => {
+      spyOn((component as any).destroy$, 'next');
+      spyOn((component as any).destroy$, 'complete');
+      component.ngOnDestroy();
+      expect(component.unloading).toBeTrue();
+      expect((component as any).destroy$.next).toHaveBeenCalledWith(true);
+      expect((component as any).destroy$.complete).toHaveBeenCalled();
+    });
   });
 });

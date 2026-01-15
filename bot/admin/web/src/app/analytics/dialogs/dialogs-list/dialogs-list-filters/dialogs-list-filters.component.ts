@@ -30,6 +30,12 @@ import {
   AnnotationStates
 } from '../../../../shared/components/annotation/annotations';
 import { SortOrder, SortOrders } from '../../../../shared/model/misc';
+import { FeedbackVote } from '../../dialogs';
+
+export const FeedbackVotes = [
+  { label: 'Positive feedback', value: FeedbackVote.UP },
+  { label: 'Negative feedback', value: FeedbackVote.DOWN }
+] as const;
 
 interface DialogListFiltersForm {
   exactMatch: FormControl<boolean>;
@@ -51,6 +57,7 @@ interface DialogListFiltersForm {
   annotationSort?: FormControl<SortOrder>;
   annotationCreationDateFrom?: FormControl<Date>;
   annotationCreationDateTo?: FormControl<Date>;
+  feedback?: FormControl<FeedbackVote>;
 }
 
 export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
@@ -62,6 +69,7 @@ export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
 })
 export class DialogsListFiltersComponent implements OnInit {
   private readonly destroy$: Subject<boolean> = new Subject();
+  private lastEmittedValue: Partial<DialogListFilters> | null = null;
 
   advanced: boolean = false;
   connectorTypes: ConnectorType[] = [];
@@ -70,6 +78,7 @@ export class DialogsListFiltersComponent implements OnInit {
   annotationStates = AnnotationStates;
   annotationReasons = AnnotationReasons;
   sortOrders = SortOrders;
+  feedbackVotes = FeedbackVotes;
 
   @Input() initialFilters: Partial<DialogListFilters>;
   @Output() onFilter = new EventEmitter<Partial<DialogListFilters>>();
@@ -93,11 +102,16 @@ export class DialogsListFiltersComponent implements OnInit {
         });
     });
 
+    this.lastEmittedValue = { ...this.form.value };
+
     if (this.initialFilters) {
       this.form.patchValue(this.initialFilters);
+      this.lastEmittedValue = { ...this.form.value };
     }
 
-    this.form.valueChanges.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(() => this.submitFiltersChange());
+    this.form.valueChanges.pipe(debounceTime(800), takeUntil(this.destroy$)).subscribe(() => {
+      this.submitFiltersChange();
+    });
   }
 
   form = new FormGroup<DialogListFiltersForm>({
@@ -119,7 +133,8 @@ export class DialogsListFiltersComponent implements OnInit {
     annotationReasons: new FormControl([]),
     annotationSort: new FormControl(),
     annotationCreationDateFrom: new FormControl(),
-    annotationCreationDateTo: new FormControl()
+    annotationCreationDateTo: new FormControl(),
+    feedback: new FormControl()
   });
 
   getFormControl(formControlName: string): FormControl {
@@ -128,8 +143,10 @@ export class DialogsListFiltersComponent implements OnInit {
 
   submitFiltersChange(): void {
     const formValue = this.form.value;
-
-    this.onFilter.emit(formValue);
+    if (JSON.stringify(formValue) !== JSON.stringify(this.lastEmittedValue)) {
+      this.onFilter.emit(formValue);
+      this.lastEmittedValue = { ...formValue };
+    }
   }
 
   resetControl(ctrl: FormControl, input?: HTMLInputElement): void {
@@ -139,7 +156,7 @@ export class DialogsListFiltersComponent implements OnInit {
     }
   }
 
-  patchControl(ctrl: FormControl, value: any): void {
+  patchControl(ctrl: FormControl, value: boolean): void {
     ctrl.patchValue(value);
   }
 

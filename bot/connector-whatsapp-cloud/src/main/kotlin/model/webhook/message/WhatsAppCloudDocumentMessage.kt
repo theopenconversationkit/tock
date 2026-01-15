@@ -22,7 +22,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.ErrorI
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referral
 
 data class WhatsAppCloudDocumentMessage(
-    val text: DocumentContent,
+    val text: DocumentContent?,
     override val id: String,
     override val from: String,
     override val timestamp: String,

@@ -23,18 +23,9 @@
   text-align: center;
   color: nb-theme(text-hint-color);
 
-  .socials {
-    font-size: 2rem;
-
-    a {
-      padding: 0.4rem;
-      color: nb-theme(text-hint-color);
-      transition: color ease-out 0.1s;
-
-      &:hover {
-        color: nb-theme(text-basic-color);
-      }
-    }
+  .message {
+    font-size: 1rem;
+    color: red;
   }
 
   .info {

@@ -263,6 +263,11 @@ object BotRepository {
     }
 
     /**
+     * Check if bot provider has changed
+     */
+    fun getBotProvider(botProviderId: BotProviderId): BotProvider? = botProviders[botProviderId]
+
+    /**
      * Register built-in story definitions.
      */
     fun registerBuiltInStoryDefinitions(botProvider: BotProvider) {
@@ -416,7 +421,7 @@ object BotRepository {
                         botsInstalled = true
                         // listen future changes
                         botConfigurationDAO.listenChanges { checkAsyncBotConfigurations() }
-                        botConfigurationDAO.listenBotChanges { checkAsyncBotConfigurations(true) }
+                        botConfigurationDAO.listenBotChanges { checkAsyncBotConfigurations() }
                     } else {
                         logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
                     }
@@ -434,18 +439,15 @@ object BotRepository {
         return connectorProviders.firstOrNull { it.connectorType == connectorType }
     }
 
-    private fun checkAsyncBotConfigurations(botConfigurationChanged: Boolean = false) {
-        executor.executeBlocking { checkBotConfigurations(botConfigurationChanged = botConfigurationChanged) }
+    private fun checkAsyncBotConfigurations() {
+        executor.executeBlocking { checkBotConfigurations() }
     }
 
     /**
      * Checks that configurations are synchronized with the database.
      */
     @Synchronized
-    fun checkBotConfigurations(
-        startup: Boolean = false,
-        botConfigurationChanged: Boolean = false,
-    ) {
+    fun checkBotConfigurations(startup: Boolean = false) {
         logger.debug { "check configurations" }
         // the application definition cache
         val botConfigurationsCache = mutableSetOf<BotConfiguration>()
@@ -475,7 +477,6 @@ object BotRepository {
             if (provider != null &&
                 (
                     provider.configurationUpdated ||
-                        botConfigurationChanged ||
                         existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
                 )
             ) {
@@ -490,6 +491,7 @@ object BotRepository {
                             // install new conf
                             createBot(botDefinition, connector, c, botConfigurationsCache)
                             if (oldConfigurationController != null) {
+                                logger.info { "update configuration: $c" }
                                 // remove old conf
                                 removeBot(oldConfigurationController)
                                 if (oldConfiguration != c) {

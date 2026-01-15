@@ -52,7 +52,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.safeCast
 
 @ExperimentalTockCoroutines
-open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
+open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
     companion object {
         /**
          * Helper method to retrieve the current bus,
@@ -61,25 +61,28 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         suspend fun retrieveCurrentBus(): AsyncBotBus? = currentCoroutineContext()[Ref]?.bus
     }
 
+    @Deprecated("Use syncBus instead", ReplaceWith("syncBus"))
+    val botBus get() = syncBus
+
     private val executor: Executor get() = injector.provide()
     private val featureDao: FeatureDAO get() = injector.provide()
 
     override val connectorId: String
-        get() = botBus.connectorId
+        get() = syncBus.connectorId
     override val targetConnectorType: ConnectorType
-        get() = botBus.targetConnectorType
+        get() = syncBus.targetConnectorType
     override val botId: PlayerId
-        get() = botBus.botId
+        get() = syncBus.botId
     override val userId: PlayerId
-        get() = botBus.userId
+        get() = syncBus.userId
     override val userLocale: Locale
-        get() = botBus.userLocale
+        get() = syncBus.userLocale
     override val userInterfaceType: UserInterfaceType
-        get() = botBus.userInterfaceType
+        get() = syncBus.userInterfaceType
     override val intent: IntentAware?
-        get() = botBus.intent
+        get() = syncBus.intent
     override val currentIntent: IntentAware?
-        get() = botBus.currentIntent
+        get() = syncBus.currentIntent
     override val currentStoryDefinition: StoryDefinition
         get() = story.definition
     override var step: AsyncStoryStep<*>?
@@ -88,81 +91,81 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
             story.step = step?.name
         }
     override val userInfo: UserPreferences
-        get() = botBus.userPreferences
+        get() = syncBus.userPreferences
     override val userState: UserState
-        get() = botBus.userTimeline.userState
-    val story: Story get() = botBus.story
+        get() = syncBus.userTimeline.userState
+    val story: Story get() = syncBus.story
 
-    override fun defaultAnswerDelay() = botBus.defaultDelay(botBus.currentAnswerIndex)
+    override fun defaultAnswerDelay() = syncBus.defaultDelay(syncBus.currentAnswerIndex)
 
     override suspend fun constrainNlp(nextActionState: NextUserActionState) {
-        botBus.nextUserActionState = nextActionState
+        syncBus.nextUserActionState = nextActionState
     }
 
     override fun choice(key: ParameterKey): String? {
-        return botBus.choice(key)
+        return syncBus.choice(key)
     }
 
     override fun booleanChoice(key: ParameterKey): Boolean {
-        return botBus.booleanChoice(key)
+        return syncBus.booleanChoice(key)
     }
 
     override fun hasActionEntity(role: String): Boolean {
-        return botBus.hasActionEntity(role)
+        return syncBus.hasActionEntity(role)
     }
 
     override fun <T : Value> entityValue(
         role: String,
         valueTransformer: (EntityValue) -> T?,
     ): T? {
-        return synchronized(botBus) { botBus.entityValue(role, valueTransformer) }
+        return synchronized(syncBus) { syncBus.entityValue(role, valueTransformer) }
     }
 
     override fun entityValueDetails(role: String): EntityValue? {
-        return synchronized(botBus) { botBus.entityValueDetails(role) }
+        return synchronized(syncBus) { syncBus.entityValueDetails(role) }
     }
 
     override fun changeEntityValue(
         role: String,
         newValue: EntityValue?,
     ) {
-        synchronized(botBus) { botBus.changeEntityValue(role, newValue) }
+        synchronized(syncBus) { syncBus.changeEntityValue(role, newValue) }
     }
 
     override fun changeEntityValue(
         entity: Entity,
         newValue: Value?,
     ) {
-        return synchronized(botBus) { botBus.changeEntityValue(entity, newValue) }
+        return synchronized(syncBus) { syncBus.changeEntityValue(entity, newValue) }
     }
 
     override fun removeAllEntityValues() {
         // Synchronized to avoid ConcurrentModificationException with other entity setters
-        synchronized(botBus) {
-            botBus.removeAllEntityValues()
+        synchronized(syncBus) {
+            syncBus.removeAllEntityValues()
         }
     }
 
     override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? {
-        return botBus.dialog.state.context[key.name]?.let(key.type::safeCast)
+        return syncBus.dialog.state.context[key.name]?.let(key.type::safeCast)
     }
 
     override fun <T : Any> setContextValue(
         key: DialogContextKey<T>,
         value: T?,
     ) {
-        botBus.dialog.state.setContextValue(key, value)
+        syncBus.dialog.state.setContextValue(key, value)
     }
 
     override fun <T : Any> setBusContextValue(
         key: DialogContextKey<T>,
         value: T?,
     ) {
-        botBus.setBusContextValue(key.name, value)
+        syncBus.setBusContextValue(key.name, value)
     }
 
     override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return botBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
+        return syncBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
     }
 
     override suspend fun isFeatureEnabled(
@@ -170,8 +173,8 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         default: Boolean,
     ): Boolean =
         featureDao.isEnabled(
-            botBus.botDefinition.botId,
-            botBus.botDefinition.namespace,
+            syncBus.botDefinition.botId,
+            syncBus.botDefinition.namespace,
             feature,
             connectorId,
             default,
@@ -183,13 +186,13 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         starterIntent: Intent,
         step: StoryStepDef?,
     ) {
-        synchronized(botBus) {
-            botBus.stepDef = step
-            botBus.switchStory(storyDefinition, starterIntent)
-            botBus.hasCurrentSwitchStoryProcess = false
+        synchronized(syncBus) {
+            syncBus.stepDef = step
+            syncBus.switchStory(storyDefinition, starterIntent)
+            syncBus.hasCurrentSwitchStoryProcess = false
         }
         (storyDefinition.storyHandler as? AsyncStoryHandler)?.handle(this)
-            ?: storyDefinition.storyHandler.handle(botBus)
+            ?: storyDefinition.storyHandler.handle(syncBus)
     }
 
     override fun i18nWithKey(
@@ -197,7 +200,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         defaultLabel: String,
         vararg args: Any?,
     ): I18nLabelValue {
-        return botBus.i18nKey(key, defaultLabel, *args)
+        return syncBus.i18nKey(key, defaultLabel, *args)
     }
 
     override fun i18nWithKey(
@@ -206,14 +209,14 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         defaultI18n: Set<I18nLocalizedLabel>,
         vararg args: Any?,
     ): I18nLabelValue {
-        return botBus.i18nKey(key, defaultLabel, defaultI18n, *args)
+        return syncBus.i18nKey(key, defaultLabel, defaultI18n, *args)
     }
 
     override fun i18n(
         defaultLabel: CharSequence,
         args: List<Any?>,
     ): I18nLabelValue {
-        return botBus.i18n(defaultLabel, args)
+        return syncBus.i18n(defaultLabel, args)
     }
 
     override suspend fun send(
@@ -221,8 +224,8 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         delay: Long,
     ) {
         withContext(executor.asCoroutineDispatcher()) {
-            synchronized(botBus) {
-                botBus.send(i18nText, delay = delay)
+            synchronized(syncBus) {
+                syncBus.send(i18nText, delay = delay)
             }
         }
     }
@@ -232,8 +235,8 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         vararg i18nArgs: Any?,
     ) {
         withContext(executor.asCoroutineDispatcher()) {
-            synchronized(botBus) {
-                botBus.send(i18nText, *i18nArgs)
+            synchronized(syncBus) {
+                syncBus.send(i18nText, *i18nArgs)
             }
         }
     }
@@ -243,8 +246,8 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         delay: Long,
     ) {
         withContext(executor.asCoroutineDispatcher()) {
-            synchronized(botBus) {
-                botBus.end(i18nText, delay = delay)
+            synchronized(syncBus) {
+                syncBus.end(i18nText, delay = delay)
             }
         }
     }
@@ -254,8 +257,8 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         vararg i18nArgs: Any?,
     ) {
         withContext(executor.asCoroutineDispatcher()) {
-            synchronized(botBus) {
-                botBus.end(i18nText, *i18nArgs)
+            synchronized(syncBus) {
+                syncBus.end(i18nText, *i18nArgs)
             }
         }
     }
@@ -265,11 +268,11 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         messageProvider: Bus<*>.() -> Any?,
     ) {
         val messages = toMessageList(messageProvider)
-        synchronized(botBus) {
+        synchronized(syncBus) {
             if (messages.messages.isEmpty()) {
-                botBus.send(delay)
+                syncBus.send(delay)
             } else {
-                botBus.send(messages, delay)
+                syncBus.send(messages, delay)
             }
         }
     }
@@ -279,11 +282,11 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         messageProvider: Bus<*>.() -> Any?,
     ) {
         val messages = toMessageList(messageProvider)
-        synchronized(botBus) {
+        synchronized(syncBus) {
             if (messages.messages.isEmpty()) {
-                botBus.end(delay)
+                syncBus.end(delay)
             } else {
-                botBus.end(messages, delay)
+                syncBus.end(messages, delay)
             }
         }
     }
@@ -292,7 +295,7 @@ open class AsyncBotBus(val botBus: BotBus) : AsyncBus {
         // calls to `translate` are blocking (database and possibly translator API),
         // so we ensure they are done in a worker thread
         withContext(executor.asCoroutineDispatcher()) {
-            toMessageList(null, botBus, messageProvider)
+            toMessageList(null, syncBus, messageProvider)
         }
 
     data class Ref(val bus: AsyncBotBus) : CoroutineContext.Element {

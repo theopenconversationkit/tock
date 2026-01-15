@@ -30,7 +30,8 @@ import {
   NbToastrModule,
   NbWindowModule,
   NbThemeModule,
-  NbIconLibraries
+  NbIconLibraries,
+  NbTimepickerModule
 } from '@nebular/theme';
 
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
@@ -54,6 +55,7 @@ import { NlpService } from './core-nlp/nlp.service';
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),
+    NbTimepickerModule.forRoot(),
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),

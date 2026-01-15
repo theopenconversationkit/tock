@@ -29,4 +29,4 @@ data class WhatsAppCloudAudioMessage(
     override val context: ContextContent? = null,
     override val referral: Referral? = null,
     override val errors: List<ErrorItem>? = emptyList(),
-) : WhatsAppCloudMessage(WhatsAppCloudMessageType.text)
+) : WhatsAppCloudMessage(WhatsAppCloudMessageType.audio)

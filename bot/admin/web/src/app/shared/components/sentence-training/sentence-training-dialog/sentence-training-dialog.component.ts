@@ -21,9 +21,8 @@ import { take } from 'rxjs/operators';
 import { AnalyticsService } from '../../../../analytics/analytics.service';
 import { DialogReportQuery } from '../../../../analytics/dialogs/dialogs';
 import { StateService } from '../../../../core-nlp/state.service';
-import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } from '../../../../shared/model/dialog-data';
+import { ActionReport, DialogReport, Sentence } from '../../../../shared/model/dialog-data';
 import { SentenceExtended } from '../sentence-training.component';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 import { Router } from '@angular/router';
 
 @Component({

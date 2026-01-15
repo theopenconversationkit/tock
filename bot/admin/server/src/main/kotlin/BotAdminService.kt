@@ -624,6 +624,8 @@ object BotAdminService {
         val knownIntentUserActionsGroup = groupByAppConfigType(stats.knownIntentUserActions)
         val unknownIntentUserActionsGroup = groupByAppConfigType(stats.unknownIntentUserActions)
         val unknownIntentUserActionsExceptRagGroup = groupByAppConfigType(stats.unknownIntentUserActionsExceptRag)
+        val allFeedbackUp = groupByAppConfigType(stats.allFeedbackUp)
+        val allFeedbackDown = groupByAppConfigType(stats.allFeedbackDown)
 
         fun buildResult(env: String) =
             DialogStatsQueryResult(
@@ -633,6 +635,8 @@ object BotAdminService {
                 knownIntentUserActions = knownIntentUserActionsGroup[env] ?: emptyList(),
                 unknownIntentUserActions = unknownIntentUserActionsGroup[env] ?: emptyList(),
                 unknownIntentUserActionsExceptRag = unknownIntentUserActionsExceptRagGroup[env] ?: emptyList(),
+                allFeedbackUp = allFeedbackUp[env] ?: emptyList(),
+                allFeedbackDown = allFeedbackDown[env] ?: emptyList(),
             )
 
         return DialogStatsGroupResponse(

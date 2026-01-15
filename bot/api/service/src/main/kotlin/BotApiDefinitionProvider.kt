@@ -32,7 +32,7 @@ import ai.tock.shared.withoutNamespace
 import mu.KotlinLogging
 
 internal class BotApiDefinitionProvider(
-    private val configuration: BotConfiguration,
+    val configuration: BotConfiguration,
 ) : BotProvider {
     private val logger = KotlinLogging.logger {}
 

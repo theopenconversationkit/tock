@@ -161,6 +161,7 @@ class TestCoreService : TestService {
                         "test_bot_${conf._id}_${request.currentLanguage}",
                         request.message.toClientMessage(),
                         conf.targetConnectorType.toClientConnectorType(),
+                        test = true,
                         debugEnabled = debugEnabled,
                         sourceWithContent = sourceWithContent,
                     ),

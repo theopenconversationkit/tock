@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.web.WebConnector.Companion.sendSseResponse
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.hasStreamMetadata
 import ai.tock.shared.booleanProperty
@@ -50,7 +51,7 @@ internal class WebConnectorCallback(
 
     fun addMetadata(metadata: MetadataEvent) {
         this.metadata[metadata.type] = metadata.value
-        if (metadata.isEndStreamMetadata()) {
+        if (metadata.isStreamMetadata()) {
             WebRequestInfosByEvent.get(eventId)?.clearStreamedResponse()
         }
     }
@@ -60,7 +61,7 @@ internal class WebConnectorCallback(
             actions.mapNotNull { a ->
                 val action =
                     if (a is SendSentence && metadata.hasStreamMetadata() && mergeStreamResponse) {
-                        a.withText(WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a.stringText))
+                        WebRequestInfosByEvent.getOrPut(eventId).addStreamedResponse(a, webConnectorType)
                     } else {
                         a
                     }
@@ -80,5 +81,10 @@ internal class WebConnectorCallback(
     fun sendStreamedResponse(action: Action) {
         context?.response()
             ?.sendSseResponse(createResponse(listOf(action)))
+    }
+
+    override fun eventSkipped(event: Event) {
+        super.eventSkipped(event)
+        sendResponse()
     }
 }

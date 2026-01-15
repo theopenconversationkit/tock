@@ -258,7 +258,7 @@ class WebConnector internal constructor(
                 streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
             )
         if (sseEnabled) {
-            // Uniquely identify each response, so they can be reconciliated between SSE and POST
+            // Uniquely identify each response, so they can be reconciled between SSE and POST
             callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
         }
         controller.handle(

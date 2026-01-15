@@ -80,7 +80,7 @@
       <tbody>
         <tr *ngFor="let row of dataSource; index as i">
           <td>
-            {{ row.date | date: 'YYYY-MM-dd HH:mm' }}
+            {{ row.date | date: 'y/MM/dd HH:mm:ss' }}
           </td>
           <td>
             {{ row.type }}

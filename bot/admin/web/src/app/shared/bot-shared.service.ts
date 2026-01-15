@@ -20,7 +20,7 @@ import { Injectable } from '@angular/core';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { Observable, of } from 'rxjs';
 import { ConnectorType, ConnectorTypeConfiguration } from '../core/model/configuration';
-import { NlpCallStats } from './model/dialog-data';
+import {ActionNlpStats, DialogReport, NlpCallStats} from './model/dialog-data';
 import { AdminConfiguration } from './model/conf';
 
 export interface TockSimpleSessionStorage {
@@ -77,6 +77,22 @@ export class BotSharedService {
       }
       return this.getConfigurationPending;
     }
+  }
+
+  getDialogWithNlpStats(applicationId: string, dialogId: string): Observable<DialogReport> {
+    return this.rest.get(`/dialog/${applicationId}/${dialogId}`, (json: any) => {
+      const dialog = DialogReport.fromJSON(json.dialog);
+      const nlpStats: ActionNlpStats[] = json.nlpStats || [];
+
+      dialog.actions.forEach((action) => {
+        const actionNlpStats = nlpStats.find((ns) => ns.actionId === action.id);
+        if (actionNlpStats) {
+          action._nlpStats = actionNlpStats.stats;
+        }
+      });
+
+      return dialog;
+    });
   }
 
   set session_storage(value: TockSimpleSessionStorage) {

@@ -19,7 +19,8 @@ export class AdminConfiguration {
     public botApiSupport: boolean,
     public compilerAvailable: boolean,
     public xrayAvailable: boolean,
-    public botApiBaseUrl: string
+    public botApiBaseUrl: string,
+    public globalMessage: string
   ) {}
 
   static fromJSON(json?: any): AdminConfiguration {

@@ -81,7 +81,7 @@ export class StateService implements AuthListener {
   }
 
   static normalizeLocaleCode(code: string): string {
-    return code.split('_')[0];
+    return code ? code.split(/[-_]/)[0] : code;
   }
 
   constructor(private auth: AuthService, private settings: SettingsService) {

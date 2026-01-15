@@ -18,6 +18,7 @@ package ai.tock.bot.connector
 
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.UserTimeline
 
 /**
  * Used by connector implementations to check lifecycle of an user event.
@@ -55,4 +56,12 @@ interface ConnectorCallback {
         event: Event,
         throwable: Throwable,
     )
+
+    /**
+     * Called when the initial UserTimeline is loaded.
+     * Allows connectors to react to the timeline state, such as sending
+     * welcome messages for new conversations.
+     */
+    fun initialUserTimelineLoaded(userTimeline: UserTimeline) {
+    }
 }
