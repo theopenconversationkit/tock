@@ -287,30 +287,44 @@ internal class TockBotBus(
         timeout: Duration = Duration.ofSeconds(cleanupTimeoutProperty),
     ): () -> Unit {
         val closed = AtomicBoolean(false)
+        logger.debug { "deferMessageSending(): userId=${userId.id}, timeout=${timeout.seconds}s, thread=${Thread.currentThread().name}" }
         customActionSender.set { action, delay ->
             // we queue in the current thread to preserve message ordering
+            logger.debug {
+                "deferMessageSending.customActionSender(): userId=${userId.id}, actionType=${action::class.simpleName}, lastAnswer=${action.metadata.lastAnswer}, thread=${Thread.currentThread().name}"
+            }
             scope.launch(start = CoroutineStart.UNDISPATCHED) {
                 messageChannel.send(QueuedAction(action, delay))
+                logger.debug { "deferMessageSending.customActionSender(): userId=${userId.id}, SENT to channel, lastAnswer=${action.metadata.lastAnswer}" }
                 // the following code may happen in a different thread if the channel's buffer was full
                 if (action.metadata.lastAnswer) {
+                    logger.debug { "deferMessageSending.customActionSender(): userId=${userId.id}, lastAnswer=true, CLOSING channel" }
                     closed.store(true)
                     messageChannel.close()
                 }
             }
         }
         scope.launch(injector.provide<Executor>().asCoroutineDispatcher()) {
+            logger.debug { "deferMessageSending.consumer(): userId=${userId.id}, STARTED, thread=${Thread.currentThread().name}" }
             for ((action, delay) in messageChannel) {
+                logger.debug { "deferMessageSending.consumer(): userId=${userId.id}, RECEIVED from channel, actionType=${action::class.simpleName}, calling doSend()" }
                 doSend(action, delay)
+                logger.debug { "deferMessageSending.consumer(): userId=${userId.id}, doSend() COMPLETED" }
             }
+            logger.debug { "deferMessageSending.consumer(): userId=${userId.id}, channel CLOSED, consumer EXITING" }
         }
         return {
             if (!closed.load()) {
+                logger.debug { "deferMessageSending.cleanup(): userId=${userId.id}, scheduling force-close in ${timeout.seconds}s" }
                 injector.provide<Executor>().executeBlocking(timeout) {
                     if (!closed.load()) {
                         logger.info("force-closing message channel")
+                        logger.debug { "deferMessageSending.cleanup(): userId=${userId.id}, FORCE-CLOSING (lastAnswer never received)" }
                         messageChannel.close()
                     }
                 }
+            } else {
+                logger.debug { "deferMessageSending.cleanup(): userId=${userId.id}, channel already closed (lastAnswer received)" }
             }
         }
     }

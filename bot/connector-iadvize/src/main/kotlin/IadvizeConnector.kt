@@ -304,14 +304,26 @@ class IadvizeConnector internal constructor(
         delayInMs: Long,
     ) {
         val iadvizeCallback = callback as? IadvizeConnectorCallback
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug {
+            "send(): caller=$caller, proactiveEnabled=$proactiveAnswerEnabled, " +
+                "lastAnswer=${(event as? Action)?.metadata?.lastAnswer}, " +
+                "eventType=${event::class.simpleName}, " +
+                "callbackNull=${iadvizeCallback == null}, " +
+                "thread=${Thread.currentThread().name}"
+        }
+
         iadvizeCallback?.addAction(event, delayInMs)
 
-        // Send message proactively if this mode is already started
         if (proactiveAnswerEnabled) {
             flushProactiveConversation(callback, proactiveParameters)
         } else {
             if (event is Action && event.metadata.lastAnswer) {
+                logger.debug { "send(): lastAnswer=true, calling answerWithResponse()" }
                 iadvizeCallback?.answerWithResponse()
+            } else {
+                logger.debug { "send(): proactiveEnabled=false AND lastAnswer=false → NO ACTION" }
             }
         }
     }
@@ -320,12 +332,21 @@ class IadvizeConnector internal constructor(
         callback: ConnectorCallback,
         botBus: BotBus,
     ): Boolean {
-        // Set proactive answer mode, and save parameters
+        logger.debug {
+            "startProactiveConversation(): BEFORE proactiveEnabled=$proactiveAnswerEnabled, " +
+                "metadata=${botBus.connectorData.metadata}, thread=${Thread.currentThread().name}"
+        }
+
         proactiveAnswerEnabled = true
         proactiveParameters = botBus.connectorData.metadata
 
+        logger.debug {
+            "startProactiveConversation(): AFTER proactiveEnabled=$proactiveAnswerEnabled, " +
+                "CONVERSATION_ID=${proactiveParameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]}, " +
+                "CHAT_BOT_ID=${proactiveParameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]}"
+        }
+
         if (!proactiveStartMessage.isNullOrBlank()) {
-            // Send a RAG start message
             botBus.send(proactiveStartMessage)
         }
         (callback as? IadvizeConnectorCallback)?.answerWithResponse()
@@ -337,7 +358,22 @@ class IadvizeConnector internal constructor(
         parameters: Map<String, String>,
     ) {
         val iadvizeCallback = callback as? IadvizeConnectorCallback
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug {
+            "flushProactiveConversation(): caller=$caller, actions.size=${iadvizeCallback?.actions?.size ?: "NULL"}, " +
+                "callbackNull=${iadvizeCallback == null}, " +
+                "CONVERSATION_ID=${parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]}, " +
+                "CHAT_BOT_ID=${parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]}, " +
+                "thread=${Thread.currentThread().name}"
+        }
+
+        if (iadvizeCallback?.actions?.isEmpty() == true) {
+            logger.debug { "flushProactiveConversation(): EMPTY LIST - nothing to send" }
+        }
+
         iadvizeCallback?.actions?.forEach {
+            logger.debug { "flushProactiveConversation(): adding to queue action=${it.action::class.simpleName}" }
             queue.add(it.action, it.delayInMs) { action ->
                 sendProactiveMessage(iadvizeCallback, action, parameters)
             }
@@ -345,35 +381,47 @@ class IadvizeConnector internal constructor(
         iadvizeCallback?.actions?.clear()
     }
 
-    /**
-     * Send [Action] using GraphQL
-     * @param callback the [IadvizeConnectorCallback]
-     * @param action the action to send
-     * @param parameters the key value map of parameters
-     */
     private fun sendProactiveMessage(
         callback: IadvizeConnectorCallback,
         action: Action,
         parameters: Map<String, String>,
     ) {
+        logger.debug {
+            "sendProactiveMessage(): actionType=${action::class.simpleName}, " +
+                "CONVERSATION_ID=${parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]}, " +
+                "CHAT_BOT_ID=${parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]}, " +
+                "thread=${Thread.currentThread().name}"
+        }
+
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotId = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "sendProactiveMessage(): MISSING PARAMS - CONVERSATION_ID=$conversationId, CHAT_BOT_ID=$chatBotId" }
+        }
+
         when (action) {
-            is SendSentenceWithFootnotes -> action.sendByGraphQL(parameters)
+            is SendSentenceWithFootnotes -> {
+                logger.debug { "sendProactiveMessage(): SendSentenceWithFootnotes -> sendByGraphQL()" }
+                action.sendByGraphQL(parameters)
+            }
             is SendSentence -> {
                 if (action.messages.isEmpty()) {
                     action.text?.let {
-                        // Simple message
-                        IadvizeMessage(TextPayload(it)).sendByGraphQL(
-                            parameters,
-                            callback,
-                        )
+                        logger.debug { "sendProactiveMessage(): SendSentence -> sendByGraphQL() text='${it.take(50)}...'" }
+                        IadvizeMessage(TextPayload(it)).sendByGraphQL(parameters, callback)
+                    } ?: run {
+                        logger.debug { "sendProactiveMessage(): SendSentence with text=null, NOTHING SENT" }
                     }
                 } else {
-                    // Complex message
+                    logger.debug { "sendProactiveMessage(): SendSentence complex, messages.size=${action.messages.size}" }
                     action.messages
                         .filterIsInstance<IadvizeConnectorMessage>()
                         .flatMap { it.replies }
                         .map { it.sendByGraphQL(parameters, callback) }
                 }
+            }
+            else -> {
+                logger.debug { "sendProactiveMessage(): unhandled action type: ${action::class.simpleName}" }
             }
         }
     }
@@ -382,9 +430,12 @@ class IadvizeConnector internal constructor(
         callback: ConnectorCallback,
         parameters: Map<String, String>,
     ) {
+        logger.debug { "endProactiveConversation(): BEFORE proactiveEnabled=$proactiveAnswerEnabled, thread=${Thread.currentThread().name}" }
+
         flushProactiveConversation(callback, parameters)
-        // Turn off the proactive answer mode
         proactiveAnswerEnabled = false
+
+        logger.debug { "endProactiveConversation(): AFTER proactiveEnabled=$proactiveAnswerEnabled" }
     }
 
     /**
@@ -409,60 +460,82 @@ class IadvizeConnector internal constructor(
         }
     }
 
-    /**
-     * Send [SendSentenceWithFootnotes] markdown using GraphQL
-     * @param parameters the key value map of parameters
-     */
     private fun SendSentenceWithFootnotes.sendByGraphQL(parameters: Map<String, String>) {
-        IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
-            actionOrMessage =
-                ChatbotActionOrMessageInput(
-                    chatbotMessage =
-                        ChatbotMessageInput(
-                            chatbotSimpleTextMessage = this.toMarkdown(),
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotIdStr = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        val chatBotId = chatBotIdStr?.toIntOrNull()
+        val messageText = this.toMarkdown()
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): caller=$caller, conversationId=$conversationId, chatBotId=$chatBotId, messageLength=${messageText.length}" }
+
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): ABORT - MISSING PARAMS conversationId=$conversationId, chatBotIdStr=$chatBotIdStr, chatBotId=$chatBotId" }
+            return
+        }
+
+        try {
+            val startTime = System.currentTimeMillis()
+            val result =
+                IadvizeGraphQLClient().sendProactiveActionOrMessage(
+                    conversationId,
+                    chatBotId,
+                    actionOrMessage =
+                        ChatbotActionOrMessageInput(
+                            chatbotMessage = ChatbotMessageInput(chatbotSimpleTextMessage = messageText),
                         ),
-                ),
-        )
+                )
+            val duration = System.currentTimeMillis() - startTime
+            logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): result=$result, duration=${duration}ms" }
+        } catch (e: Exception) {
+            logger.debug(e) { "SendSentenceWithFootnotes.sendByGraphQL(): EXCEPTION ${e.message}" }
+        }
     }
 
-    /**
-     * Send [IadvizeReply] using GraphQL
-     * @param parameters the key value map of parameters
-     * @param callback the [IadvizeConnectorCallback]
-     */
     private fun IadvizeReply.sendByGraphQL(
         parameters: Map<String, String>,
         callback: IadvizeConnectorCallback,
     ) {
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotIdStr = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        val chatBotId = chatBotIdStr?.toIntOrNull()
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug { "IadvizeReply.sendByGraphQL(): caller=$caller, replyType=${this::class.simpleName}, conversationId=$conversationId, chatBotId=$chatBotId" }
+
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "IadvizeReply.sendByGraphQL(): ABORT - MISSING PARAMS conversationId=$conversationId, chatBotIdStr=$chatBotIdStr, chatBotId=$chatBotId" }
+            return
+        }
+
         val actionOrMessage =
             when (this) {
                 is IadvizeTransfer -> {
-                    // Check if a rule is available for distribution
                     val response = callback.addDistributionRulesOnTransfer(this)
                     if (response is IadvizeTransfer) {
                         response.toChatBotActionOrMessageInput()
                     } else {
-                        // If the distribution rule is not available, send the configured message when
                         ChatbotActionOrMessageInput(
-                            chatbotMessage =
-                                ChatbotMessageInput(
-                                    chatbotSimpleTextMessage = distributionRuleUnavailableMessage,
-                                ),
+                            chatbotMessage = ChatbotMessageInput(chatbotSimpleTextMessage = distributionRuleUnavailableMessage),
                         )
                     }
                 }
-
                 else -> this.toChatBotActionOrMessageInput()
             }
 
-        // Send a proactive action or message
-        IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
-            actionOrMessage = actionOrMessage,
-        )
+        try {
+            val startTime = System.currentTimeMillis()
+            val result =
+                IadvizeGraphQLClient().sendProactiveActionOrMessage(
+                    conversationId,
+                    chatBotId,
+                    actionOrMessage = actionOrMessage,
+                )
+            val duration = System.currentTimeMillis() - startTime
+            logger.debug { "IadvizeReply.sendByGraphQL(): result=$result, duration=${duration}ms" }
+        } catch (e: Exception) {
+            logger.debug(e) { "IadvizeReply.sendByGraphQL(): EXCEPTION ${e.message}" }
+        }
     }
 
     internal fun handleRequest(
