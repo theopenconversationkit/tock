@@ -1,0 +1,47 @@
+{
+  "metric_names": [
+    "LLMContextPrecisionWithoutReference",
+    "LLMContextRecall",
+    "ResponseRelevancy",
+    "Faithfulness",
+    "FactualCorrectness",
+    "SemanticSimilarity"
+  ],
+  "llm_setting": {
+    "api_base": "https://my-llm.net",
+    "api_key": {
+      "secret": "XXX",
+      "type": "Raw"
+    },
+    "api_version": "2024-03-01-preview",
+    "deployment_name": "my-llm-deployment",
+    "model": "gpt-4o",
+    "temperature": 0.7,
+    "provider": "AzureOpenAIService"
+  },
+  "em_setting": {
+    "api_base": "https://my-em.net",
+    "api_key": {
+      "secret": "XXX",
+      "type": "Raw"
+    },
+    "api_version": "2024-03-01-preview",
+    "deployment_name": "my-em-deployment",
+    "model": "text-embedding-ada-002",
+    "provider": "AzureOpenAIService"
+  },
+  "observability_setting": {
+    "provider": "Langfuse",
+    "url": "http://localhost:3000",
+    "secret_key": {
+      "type": "Raw",
+      "secret": "XXX"
+    },
+    "public_key": "XXX"
+  },
+  "dataset_experiment": {
+    "dataset_name": "my-dataset",
+    "experiment_name": "my-experiment",
+    "experiment_description": "Experiment description"
+  }
+}

@@ -1,0 +1,29 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="export_experiments" type="PythonConfigurationType" factoryName="Python">
+    <module name="tock-llm-indexing-tools" />
+    <option name="ENV_FILES" value="" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="http_proxy" value="http://localhost:3128" />
+      <env name="https_proxy" value="http://localhost:3128" />
+      <env name="SSL_CERT_FILE" value="/etc/ssl/certs/ca-certificates.crt" />
+      <env name="REQUESTS_CA_BUNDLE" value="/etc/ssl/certs/ca-certificates.crt1" />
+    </envs>
+    <option name="SDK_HOME" value="" />
+    <option name="SDK_NAME" value="Poetry (tock-llm-indexing-tools) (2)" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts/dataset/export" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/dataset/export/export_experiments.py" />
+    <option name="PARAMETERS" value="--json-config-file=export_experiments.json -v" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <option name="EMULATE_TERMINAL" value="false" />
+    <option name="MODULE_MODE" value="false" />
+    <option name="REDIRECT_INPUT" value="false" />
+    <option name="INPUT_FILE" value="" />
+    <method v="2" />
+  </configuration>
+</component>

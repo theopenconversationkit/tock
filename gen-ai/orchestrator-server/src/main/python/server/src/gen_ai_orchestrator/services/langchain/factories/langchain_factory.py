@@ -26,7 +26,7 @@ import logging
 from typing import Any, Optional
 
 from langchain_core.embeddings import Embeddings
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
