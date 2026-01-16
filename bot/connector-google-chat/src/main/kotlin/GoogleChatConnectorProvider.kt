@@ -45,6 +45,7 @@ private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
+private const val USE_THREAD_PARAMETER = "useThread"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -101,6 +102,9 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             val introMessage =
                 connectorConfiguration.parameters[INTRO_MESSAGE_PARAMETER]?.takeIf { it.isNotBlank() }
 
+            val useThread =
+                connectorConfiguration.parameters[USE_THREAD_PARAMETER] == "1"
+
             return GoogleChatConnector(
                 connectorId,
                 path,
@@ -108,6 +112,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 authorisationHandler,
                 useCondensedFootnotes,
                 introMessage,
+                useThread,
             )
         }
     }
@@ -197,6 +202,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Introductory message (sent only once per new session)",
                     INTRO_MESSAGE_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Use thread (true = 1, false = 0)",
+                    USE_THREAD_PARAMETER,
                     false,
                 ),
             ),

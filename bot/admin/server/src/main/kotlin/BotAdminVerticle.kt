@@ -540,11 +540,9 @@ open class BotAdminVerticle : AdminVerticle() {
                                 connectorProvider
                                     .configuration()
                                     .fields
-                                    .filter { it.mandatory && !bot.parameters.containsKey(it.key) }
-                                    .map {
+                                    .filter { it.mandatory && !bot.parameters.containsKey(it.key) }.associate {
                                         it.key to "Please fill a value"
                                     }
-                                    .toMap()
                             conf.copy(parameters = conf.parameters + additionalProperties)
                         } else {
                             conf

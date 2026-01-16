@@ -36,7 +36,6 @@ import com.github.salomonbrys.kodein.instance
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.chat.v1.HangoutsChat
 import com.google.api.services.chat.v1.model.DeprecatedEvent
-import com.google.api.services.chat.v1.model.Thread
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -47,6 +46,7 @@ class GoogleChatConnector(
     private val authorisationHandler: GoogleChatAuthorisationHandler,
     private val useCondensedFootnotes: Boolean,
     private val introMessage: String? = null,
+    private val useThread: Boolean = false,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
@@ -79,6 +79,7 @@ class GoogleChatConnector(
                                             threadName,
                                             chatService,
                                             introMessage,
+                                            useThread,
                                         ),
                                     ),
                                 )
@@ -99,37 +100,18 @@ class GoogleChatConnector(
         delayInMs: Long,
     ) {
         logger.debug { "event: $event" }
-        if (event is Action) {
-            val message = GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
-            if (message != null) {
-                callback as GoogleChatConnectorCallback
-                executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-                    try {
-                        logger.info {
-                            "Sending to Google Chat: space=${callback.spaceName}, thread=${callback.threadName}"
-                        }
-                        logger.debug {
-                            "Message content: ${message.toGoogleMessage()}"
-                        }
+        if (event !is Action) return
 
-                        val response =
-                            chatService
-                                .spaces()
-                                .messages()
-                                .create(
-                                    callback.spaceName,
-                                    message.toGoogleMessage().setThread(Thread().setName(callback.threadName)),
-                                ).setMessageReplyOption("REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD")
-                                .execute()
+        val message =
+            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
+                ?: return
 
-                        logger.info { "Google Chat API response: ${response?.name}" }
-                    } catch (e: Exception) {
-                        logger.error(e) {
-                            "Failed to send message to Google Chat (space=${callback.spaceName}, thread=${callback.threadName})"
-                        }
-                    }
-                }
-            }
+        callback as GoogleChatConnectorCallback
+
+        executor.executeBlocking(Duration.ofMillis(delayInMs)) {
+            callback.sendGoogleMessage(
+                message,
+            )
         }
     }
 
