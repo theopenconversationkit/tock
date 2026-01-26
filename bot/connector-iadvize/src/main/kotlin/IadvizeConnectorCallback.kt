@@ -44,6 +44,7 @@ import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.Locale
 import java.util.Properties
+import java.util.concurrent.ConcurrentLinkedQueue
 
 private const val UNSUPPORTED_MESSAGE_REQUEST = "tock_iadvize_unsupported_message_request"
 
@@ -55,11 +56,22 @@ class IadvizeConnectorCallback(
     val request: IadvizeRequest,
     distributionRule: String?,
     distributionRuleUnvailableMessage: String,
-    val actions: MutableList<ActionWithDelay> = mutableListOf(),
 ) : ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    /**
+     * Thread-safe queue for actions (used in standard mode).
+     */
+    val actions: ConcurrentLinkedQueue<ActionWithDelay> = ConcurrentLinkedQueue()
+
+    /**
+     * Coordinator for deferred mode (per conversation).
+     * Set by IadvizeConnector.handleRequest() when deferred mode is activated.
+     * Null means standard mode (HTTP response with messages).
+     */
+    var deferredCoordinator: DeferredMessageCoordinator? = null
 
     @Volatile
     internal var answered: Boolean = false
@@ -127,7 +139,7 @@ class IadvizeConnectorCallback(
             is ConversationsRequest -> response
 
             is MessageRequest -> {
-                response.replies.addAll(toListIadvizeReply(actions))
+                response.replies.addAll(toListIadvizeReply(actions.toList()))
                 return response
             }
 

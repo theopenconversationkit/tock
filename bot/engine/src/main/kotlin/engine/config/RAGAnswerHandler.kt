@@ -30,6 +30,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
+import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.genai.orchestratorclient.requests.ChatMessage
 import ai.tock.genai.orchestratorclient.requests.ChatMessageType
 import ai.tock.genai.orchestratorclient.requests.DialogDetails
@@ -45,7 +46,8 @@ import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import engine.config.AbstractProactiveAnswerHandler
+import com.github.salomonbrys.kodein.instance
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 
 private val technicalErrorMessage =
@@ -54,12 +56,31 @@ private val technicalErrorMessage =
         defaultValue = "Technical error :( sorry!",
     )
 
-object RAGAnswerHandler : AbstractProactiveAnswerHandler {
+/**
+ * RAG Answer Handler.
+ *
+ * This handler is connector-agnostic. It simply:
+ * 1. Calls the RAG API
+ * 2. Sends the answer using bus.end() (sets lastAnswer=true)
+ * 3. Or switches to noAnswerStory if needed
+ *
+ * For connectors that support deferred mode (like iAdvize):
+ * - The connector automatically starts deferred mode in handleRequest()
+ * - bus.end() triggers the flush of collected messages via GraphQL
+ *
+ * For standard connectors:
+ * - bus.end() sends the response via the normal HTTP response
+ */
+object RAGAnswerHandler {
     private val logger = KotlinLogging.logger {}
     private val ragService: RAGService get() = injector.provide()
+    private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
-    override fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? {
-        return with(botBus) {
+    /**
+     * Main entry point called by the RAG story handler.
+     */
+    fun handle(botBus: BotBus) {
+        with(botBus) {
             // Save story handled metric
             BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
 
@@ -78,7 +99,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
                 val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
-                send(
+                // Use end() to signal this is the final message (sets lastAnswer=true)
+                // This triggers the deferred flush in connectors that support it
+                end(
                     SendSentenceWithFootnotes(
                         botId,
                         connectorId,
@@ -94,15 +117,23 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                     it.score,
                                 )
                             }.toMutableList(),
-                        // modifiedObservabilityInfo includes the public langfuse URL if filled.
                         metadata = ActionMetadata(isGenAiRagAnswer = true, observabilityInfo = modifiedObservabilityInfo),
                     ),
                 )
+            } else if (noAnswerStory != null) {
+                logger.info { "No-answer story detected → switching to ${noAnswerStory.id}" }
+                handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
             } else {
-                logger.info { "No RAG answer to send, because a noAnswerStory is returned." }
+                logger.warn { "RAG returned no answer and no noAnswerStory - ending conversation" }
+                end()
             }
 
-            noAnswerStory
+            // Save the dialog
+            if (connectorData.saveTimeline) {
+                runBlocking {
+                    userTimelineDAO.save(userTimeline, botDefinition)
+                }
+            }
         }
     }
 
