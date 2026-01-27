@@ -19,6 +19,7 @@ package ai.tock.genai.orchestratorclient.api
 import ai.tock.genai.orchestratorclient.requests.CompletionRequest
 import ai.tock.genai.orchestratorclient.responses.CompletionResponse
 import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
+import ai.tock.genai.orchestratorclient.responses.SentenceParsingResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -33,4 +34,9 @@ internal interface CompletionApi {
     fun generateSentences(
         @Body query: CompletionRequest,
     ): Call<SentenceCompletionResponse>
+
+    @POST("/completion/parsing")
+    fun parseSentence(
+        @Body query: CompletionRequest,
+    ): Call<SentenceParsingResponse>
 }

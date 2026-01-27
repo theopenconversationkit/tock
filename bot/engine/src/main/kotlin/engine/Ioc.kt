@@ -35,6 +35,8 @@ import ai.tock.genai.orchestratorclient.services.impl.RAGServiceImpl
 import ai.tock.genai.orchestratorclient.services.impl.VectorStoreProviderServiceImpl
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.TockNlpClient
+import ai.tock.nlp.front.service.ApplicationConfigurationService
+import ai.tock.nlp.front.shared.ApplicationConfiguration
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
@@ -55,4 +57,5 @@ val botModule =
         bind<ObservabilityProviderService>() with singleton { ObservabilityProviderServiceImpl() }
         bind<VectorStoreProviderService>() with singleton { VectorStoreProviderServiceImpl() }
         bind<DocumentCompressorProviderService>() with singleton { DocumentCompressorProviderServiceImpl() }
+        bind<ApplicationConfiguration>() with provider { ApplicationConfigurationService }
     }

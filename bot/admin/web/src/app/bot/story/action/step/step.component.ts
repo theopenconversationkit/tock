@@ -251,7 +251,7 @@ export class StepComponent implements OnInit {
       if (step.intent.name.length === 0 && !step.entity) {
         const app = this.state.currentApplication;
         const language = this.state.currentLocale;
-        this.nlp.parse(new ParseQuery(app.namespace, app.name, language, changedSentence, true)).subscribe((r) => {
+        /*this.nlp.parse(new ParseQuery(app.namespace, app.name, language, changedSentence, true)).subscribe((r) => {
           if (r.classification.intentId) {
             const intent = this.state.findIntentById(r.classification.intentId);
             if (intent) {
@@ -261,7 +261,21 @@ export class StepComponent implements OnInit {
               this.validateIntent(step, false);
             }
           }
-        });
+        });*/
+
+
+      this.nlp.gen_ai_parse({ sentence: changedSentence }).subscribe((sentence) => {
+        if (sentence.classification.intentId) {
+            const intent = this.state.findIntentById(sentence.classification.intentId);
+            if (intent) {
+              step.intentDefinition = intent;
+              step.intent = new IntentName(intent.name);
+              this.onIntentChange(step, intent.name);
+              this.validateIntent(step, false);
+            }
+          }
+      });
+
       } else {
         this.checkStep();
       }

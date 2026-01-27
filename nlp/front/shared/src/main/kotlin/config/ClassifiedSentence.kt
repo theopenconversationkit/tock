@@ -28,6 +28,11 @@ import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
+data class ValidatedSentence(
+    val text: String,
+    val intent: String,
+)
+
 /**
  * A sentence with its classification for a given [Locale] and an [ApplicationDefinition].
  */

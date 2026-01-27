@@ -6,6 +6,7 @@
       <env name="tock_web_sse" value="true" />
       <env name="tock_websocket_enabled" value="true" />
       <env name="tock_web_enable_markdown" value="true" />
+      <env name="tock_mongo_url" value="mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="ai.tock.bot.api.service.StartBotApiKt" />
     <module name="tock-bot-api-service" />

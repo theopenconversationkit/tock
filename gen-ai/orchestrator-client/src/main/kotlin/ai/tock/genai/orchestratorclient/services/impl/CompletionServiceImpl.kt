@@ -20,6 +20,7 @@ import ai.tock.genai.orchestratorclient.api.CompletionApi
 import ai.tock.genai.orchestratorclient.requests.CompletionRequest
 import ai.tock.genai.orchestratorclient.responses.CompletionResponse
 import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
+import ai.tock.genai.orchestratorclient.responses.SentenceParsingResponse
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorClient
 import ai.tock.genai.orchestratorclient.services.CompletionService
 
@@ -30,4 +31,6 @@ class CompletionServiceImpl : CompletionService {
     override fun generate(query: CompletionRequest): CompletionResponse? = completionApi.generate(query).execute().body()
 
     override fun generateSentences(query: CompletionRequest): SentenceCompletionResponse? = completionApi.generateSentences(query).execute().body()
+
+    override fun parseSentence(query: CompletionRequest): SentenceParsingResponse? = completionApi.parseSentence(query).execute().body()
 }

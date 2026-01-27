@@ -19,6 +19,7 @@ import time
 
 from langchain_core.output_parsers import (
     NumberedListOutputParser,
+    PydanticOutputParser,
     StrOutputParser,
 )
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
@@ -33,6 +34,7 @@ from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
 from gen_ai_orchestrator.routers.responses.responses import (
     PlaygroundResponse,
     SentenceGenerationResponse,
+    SentenceParsingResponse,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     create_observability_callback_handler,
@@ -46,6 +48,7 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def generate(
@@ -91,9 +94,12 @@ async def generate(
     logger.info(
         'Prompt completion (Playground) - End of execution. (Duration : %.2f seconds)',
         time.time() - start_time,
-        )
+    )
 
-    return PlaygroundResponse(answer=parsedLlmAnswer, observability_info=get_observability_info(observability_handler))
+    return PlaygroundResponse(
+        answer=parsedLlmAnswer,
+        observability_info=get_observability_info(observability_handler),
+    )
 
 
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -126,17 +132,79 @@ async def generate_sentences(
     config = None
     # Create a RunnableConfig containing the observability callback handler
     if request.observability_setting is not None:
-        config = {'callbacks': [
-            create_observability_callback_handler(
-                observability_setting=request.observability_setting,
-                trace_name=ObservabilityTrace.SENTENCE_GENERATION.value
-            )]}
+        config = {
+            'callbacks': [
+                create_observability_callback_handler(
+                    observability_setting=request.observability_setting,
+                    trace_name=ObservabilityTrace.SENTENCE_GENERATION.value,
+                )
+            ]
+        }
 
     sentences = await chain.ainvoke(request.prompt.inputs, config=config)
 
     logger.info(
         'Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)',
         time.time() - start_time,
-        )
+    )
 
     return SentenceGenerationResponse(sentences=sentences)
+
+
+import json
+
+
+# TODO MASS: comment/logs and docstring
+@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+async def parse_sentence(
+    request: CompletionRequest,
+) -> SentenceParsingResponse:
+    start_time = time.time()
+
+    validate_prompt_template(request.prompt, 'Sentence parsing prompt')
+
+    parser = PydanticOutputParser(pydantic_object=SentenceParsingResponse)
+    prompt = LangChainPromptTemplate.from_template(
+        template=request.prompt.template,
+        template_format=request.prompt.formatter.value,
+        partial_variables={'format_instructions': parser.get_format_instructions()},
+    )
+    model = get_llm_factory(request.llm_setting).get_language_model()
+
+    chain = prompt | model | parser
+
+    config = None
+    # Create a RunnableConfig containing the observability callback handler
+    if request.observability_setting is not None:
+        config = {
+            'callbacks': [
+                create_observability_callback_handler(
+                    observability_setting=request.observability_setting,
+                    trace_name=ObservabilityTrace.SENTENCE_GENERATION.value,
+                )
+            ]
+        }
+
+    inputs = {
+        'sentence': request.prompt.inputs['sentence'],
+        'examples': json.dumps(
+            request.prompt.inputs['examples'], ensure_ascii=False, indent=2
+        ),
+    }
+
+    logger.info('---------------------------')
+    logger.info(inputs)
+    logger.info('---------------------------')
+
+    answer: SentenceParsingResponse = await chain.ainvoke(inputs, config=config)
+
+    logger.info('---------------------------')
+    logger.info(answer)
+    logger.info('---------------------------')
+
+    logger.info(
+        'Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)',
+        time.time() - start_time,
+    )
+
+    return answer

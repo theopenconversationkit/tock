@@ -25,21 +25,31 @@ import ai.tock.bot.admin.model.genai.BotSentenceGenerationInfoDTO
 import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
 import ai.tock.bot.admin.model.genai.PlaygroundRequest
 import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.bot.admin.model.genai.model.genai.SentenceParsingRequest
 import ai.tock.bot.admin.service.CompletionService
 import ai.tock.bot.admin.service.DocumentCompressorService
 import ai.tock.bot.admin.service.ObservabilityService
 import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
 import ai.tock.bot.admin.service.VectorStoreService
+import ai.tock.genai.orchestratorclient.responses.SentenceParsingResponse
+import ai.tock.nlp.admin.AdminService
+import ai.tock.nlp.admin.model.SentenceReport
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
+import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.parser.ParseResult
 import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.withNamespace
 import io.vertx.ext.web.RoutingContext
+import org.litote.kmongo.toId
+import java.util.Locale
 
 /**
  * [GenAIVerticle] contains all the routes and actions associated with the AI tasks
@@ -56,6 +66,8 @@ class GenAIVerticle {
 
         // Completion
         private const val PATH_COMPLETION_SENTENCE_GENERATION = "/gen-ai/bots/:botId/completion/sentence-generation"
+        private const val PATH_COMPLETION_SENTENCE_PARSING = "/gen-ai/bots/:botId/completion/sentence-parsing"
+
         private const val PATH_COMPLETION_PLAYGROUND = "/gen-ai/bots/:botId/completion/playground"
     }
 
@@ -277,8 +289,68 @@ class GenAIVerticle {
                     CompletionService.generate(request, app.namespace, app.name)
                 }
             }
+
+            // ---------------------------------- Generation - Parsing --------------------------
+            blockingJsonPost(
+                PATH_COMPLETION_SENTENCE_PARSING,
+                nlpUser,
+            ) { context: RoutingContext, request: SentenceParsingRequest ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) { app ->
+                    logger.info { "GEN AI - Sentence Parsing..." }
+                    val parsedSentence: SentenceParsingResponse? =
+                        CompletionService.parseSentence(
+                            request,
+                            app.namespace,
+                            botId = app.name,
+                            appId = app._id,
+                        )
+
+                    parsedSentence?.let {
+                        val language = Locale.forLanguageTag(it.language)
+
+                        val result =
+                            ParseResult(
+                                intent = it.intent,
+                                intentNamespace = app.namespace,
+                                language = Locale.forLanguageTag(it.language),
+                                entities = emptyList(),
+                                notRetainedEntities = emptyList(),
+                                intentProbability = it.score,
+                                entitiesProbability = 0.0,
+                                retainedQuery = request.sentence,
+                                otherIntentsProbabilities = it.suggestions.associate { o -> o.intent to o.score },
+                                originalIntentsProbabilities = emptyMap(),
+                            )
+
+                        val intentId =
+                            when (val intentWithNamespace = result.intent.withNamespace(result.intentNamespace)) {
+                                UNKNOWN_INTENT_NAME -> UNKNOWN_INTENT_NAME.toId()
+                                RAG_EXCLUDED_INTENT_NAME -> RAG_EXCLUDED_INTENT_NAME.toId()
+                                else -> AdminService.front.getIntentIdByQualifiedName(intentWithNamespace)!!
+                            }
+
+                        SentenceReport(result, language, app._id, intentId)
+                    }
+                }
+            }
         }
     }
+
+//    fun parseSentence(query: ParseQuery): SentenceReport {
+//        var result = AdminService.front.parse(query.toQuery())
+//        result = ai.tock.genai.orchestratorclient.services.CompletionService.parseSentence(
+//            request, app.namespace, botId = app.name, appId = app._id)
+//
+//        val intentWithNamespace = result.intent.withNamespace(result.intentNamespace)
+//        val intentId =
+//            when (intentWithNamespace) {
+//                UNKNOWN_INTENT_NAME -> UNKNOWN_INTENT_NAME.toId()
+//                RAG_EXCLUDED_INTENT_NAME -> RAG_EXCLUDED_INTENT_NAME.toId()
+//                else -> AdminService.front.getIntentIdByQualifiedName(intentWithNamespace)!!
+//            }
+//        val application = AdminService.front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+//        return SentenceReport(result, query.currentLanguage, application._id, intentId)
+//    }
 
     /**
      * Get the namespace from the context

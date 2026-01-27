@@ -19,9 +19,12 @@ package ai.tock.genai.orchestratorclient.services
 import ai.tock.genai.orchestratorclient.requests.CompletionRequest
 import ai.tock.genai.orchestratorclient.responses.CompletionResponse
 import ai.tock.genai.orchestratorclient.responses.SentenceCompletionResponse
+import ai.tock.genai.orchestratorclient.responses.SentenceParsingResponse
 
 interface CompletionService {
     fun generate(query: CompletionRequest): CompletionResponse?
 
     fun generateSentences(query: CompletionRequest): SentenceCompletionResponse?
+
+    fun parseSentence(query: CompletionRequest): SentenceParsingResponse?
 }

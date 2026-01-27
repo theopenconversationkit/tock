@@ -39,7 +39,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
+object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
     private val logger = KotlinLogging.logger {}
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {

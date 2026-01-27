@@ -35,10 +35,12 @@ from gen_ai_orchestrator.routers.requests.requests import CompletionRequest
 from gen_ai_orchestrator.routers.responses.responses import (
     PlaygroundResponse,
     SentenceGenerationResponse,
+    SentenceParsingResponse,
 )
 from gen_ai_orchestrator.services.completion.completion_service import (
     generate,
     generate_sentences,
+    parse_sentence,
 )
 
 logger = logging.getLogger(__name__)
@@ -47,6 +49,7 @@ completion_router = APIRouter(
     prefix='/completion',
     tags=['Prompt completion'],
 )
+
 
 @completion_router.post('/')
 async def completion(request: CompletionRequest) -> PlaygroundResponse:
@@ -68,7 +71,9 @@ async def completion(request: CompletionRequest) -> PlaygroundResponse:
 
 
 @completion_router.post('/sentences')
-async def completion_sentences(request: CompletionRequest) -> SentenceGenerationResponse:
+async def completion_sentences(
+    request: CompletionRequest,
+) -> SentenceGenerationResponse:
     """
     Sentence Generation API
 
@@ -85,3 +90,21 @@ async def completion_sentences(request: CompletionRequest) -> SentenceGeneration
     logger.info('Generate sentences from %s', request.prompt.inputs)
     return await generate_sentences(request)
 
+
+@completion_router.post('/parsing')
+async def completion_parsing(request: CompletionRequest) -> SentenceParsingResponse:
+    """
+    Sentence Generation API
+
+    Args:
+        request: The Sentence Generation Request
+
+    Returns:
+        The list of generated sentences.
+
+    Raises:
+        GenAIPromptTemplateException: if the prompt template is incorrect
+    """
+
+    logger.info('Generate sentences from %s', request.prompt.inputs)
+    return await parse_sentence(request)

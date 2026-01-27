@@ -18,6 +18,7 @@ package ai.tock.bot
 
 import ai.tock.bot.engine.botModule
 import ai.tock.bot.mongo.botMongoModule
+import ai.tock.nlp.front.storage.mongo.frontMongoModule
 import ai.tock.shared.Loader
 import ai.tock.shared.injector
 import ai.tock.shared.service.BotAdditionalModulesService
@@ -40,7 +41,7 @@ object BotIoc {
     val coreModules: List<Module> =
         run {
             val additionalModulesService = Loader.loadServices<BotAdditionalModulesService>()
-            listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
+            listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule, frontMongoModule)
                 .plus(additionalModulesService.flatMap { it.defaultModules() }.toList())
                 // Add custom modules/services to override default modules/services.
                 // The order is very important: we need to inject the default modules/services first, then the custom modules/services.

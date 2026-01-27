@@ -14,7 +14,7 @@
 #
 """Module for Response Models"""
 
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -82,7 +82,8 @@ class VectorStoreProviderResponse(BaseModel):
     """The response model of the Vector Store provider"""
 
     provider: VectorStoreProvider = Field(
-        description='The Vector Store Provider ID', default=[VectorStoreProvider.OPEN_SEARCH]
+        description='The Vector Store Provider ID',
+        default=[VectorStoreProvider.OPEN_SEARCH],
     )
 
 
@@ -90,7 +91,8 @@ class ObservabilityProviderResponse(BaseModel):
     """The response model of the Observability provider"""
 
     provider: ObservabilityProvider = Field(
-        description='The Observability Provider ID', default=[ObservabilityProvider.LANGFUSE]
+        description='The Observability Provider ID',
+        default=[ObservabilityProvider.LANGFUSE],
     )
 
 
@@ -98,7 +100,8 @@ class DocumentCompressorProviderResponse(BaseModel):
     """The response model of the Document Compressor provider"""
 
     provider: DocumentCompressorProvider = Field(
-        description='The Document Compressor Provider ID', default=[DocumentCompressorProvider.BLOOMZ]
+        description='The Document Compressor Provider ID',
+        default=[DocumentCompressorProvider.BLOOMZ],
     )
 
 
@@ -114,15 +117,10 @@ class EMProviderResponse(BaseModel):
 class ObservabilityInfo(BaseModel):
     """The Observability Info model"""
 
-    trace_id: str = Field(
-        description='The observability trace id.'
-    )
-    trace_name: str = Field(
-        description='The observability trace name.'
-    )
-    trace_url: str = Field(
-        description='The observability trace url.'
-    )
+    trace_id: str = Field(description='The observability trace id.')
+    trace_name: str = Field(description='The observability trace name.')
+    trace_url: str = Field(description='The observability trace url.')
+
 
 class RAGResponse(BaseModel):
     """The RAG response model"""
@@ -136,9 +134,9 @@ class RAGResponse(BaseModel):
         default=None,
     )
     observability_info: Optional[ObservabilityInfo] = Field(
-        description='The observability info.',
-        default=None
+        description='The observability info.', default=None
     )
+
 
 class QAResponse(BaseModel):
     """The QA response model"""
@@ -155,13 +153,52 @@ class SentenceGenerationResponse(BaseModel):
         description='The list of generated sentences.', default=[]
     )
 
+
+from enum import Enum
+
+
+class SimilarityLevel(str, Enum):
+    """
+    Represents the confidence level of the intent matching.
+
+    Attributes:
+        HIGH: Strong confidence that the detected intent is correct.
+        MEDIUM: Moderate confidence; the intent is likely correct but not certain.
+        LOW: Weak confidence; the match may be incorrect.
+        AMBIGUOUS: Multiple intents have similar scores, making the result unclear.
+    """
+
+    HIGH = 'HIGH'
+    STRONG = 'STRONG'
+    MEDIUM = 'MEDIUM'
+    LOW = 'LOW'
+    AMBIGUOUS = 'AMBIGUOUS'
+
+
+class IntentSuggestion(BaseModel):
+    intent: str = Field(..., description='Suggested intent name')
+    similarity: SimilarityLevel = Field(
+        ..., description='Confidence level of the intent match'
+    )
+    score: float = Field(..., description='Similarity score')
+
+
+class SentenceParsingResponse(BaseModel):
+    language: str = Field(..., description='Detected language of the input sentence')
+    intent: str = Field(..., description='Intent detected as the best match')
+    similarity: SimilarityLevel = Field(
+        ..., description='Confidence level of the intent match'
+    )
+    score: float = Field(..., description='Similarity score')
+    suggestions: List[IntentSuggestion] = Field(
+        ..., description='List of alternative intent suggestions ranked by similarity'
+    )
+
+
 class PlaygroundResponse(BaseModel):
     """The playground response model"""
 
-    answer: str = Field(
-        description='The playground answer.'
-    )
+    answer: str = Field(description='The playground answer.')
     observability_info: Optional[ObservabilityInfo] = Field(
-        description='The observability info.',
-        default=None
+        description='The observability info.', default=None
     )

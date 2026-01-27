@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-export interface CompletionRequest {
-  sentences: string[];
-  locale: string;
-  options: CompletionOptions;
-  llmTemperature: number;
-}
+package ai.tock.bot.admin.model.genai.model.genai
 
-export interface SentenceParsingRequest {
-  sentence: string;
-}
-
-export interface CompletionOptions {
-  abbreviatedLanguage: boolean;
-  smsLanguage: boolean;
-  spellingMistakes: boolean;
-}
-
-export interface CompletionResponse {
-  sentences: string[];
-}
+data class SentenceParsingRequest(
+    val sentence: String,
+)

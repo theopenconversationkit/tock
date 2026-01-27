@@ -40,6 +40,7 @@ import {
 import { Observable } from 'rxjs';
 import { Application } from '../model/application';
 import { FileUploader } from 'ng2-file-upload';
+import { SentenceParsingRequest } from '../shared/components/sentences-generation/models';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +57,17 @@ export class NlpService {
 
   parse(parseQuery: ParseQuery): Observable<Sentence> {
     return this.rest.post('/parse', parseQuery, Sentence.fromJSON);
+  }
+
+  /*generateSentences(body: CompletionRequest): Observable<CompletionResponse> {
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/completion/sentence-generation`;
+
+    return this.restService.post<CompletionRequest, CompletionResponse>(url, body);
+  }*/
+
+  gen_ai_parse(body: SentenceParsingRequest): Observable<Sentence> {
+    const url = `/gen-ai/bots/${this.state.currentApplication.name}/completion/sentence-parsing`;
+    return this.rest.post(url, body, Sentence.fromJSON);
   }
 
   saveIntent(intent: Intent): Observable<Intent> {

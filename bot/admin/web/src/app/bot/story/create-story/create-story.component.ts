@@ -104,7 +104,20 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       this.toastrService.show(`Please enter a non-empty sentence`, 'ERROR', { duration: 2000 });
     } else {
       this.loading = true;
+
+      /*
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe((sentence) => {
+        this.sentence = sentence;
+        const intent = this.initIntentName(v, sentence.classification.intentId);
+        this.story.userSentence = v;
+        this.story.storyId = intent;
+        this.story.intent = new IntentName(intent);
+        this.story.name = v;
+        this.displayStory = true;
+        this.loading = false;
+      });*/
+
+      this.nlp.gen_ai_parse({ sentence: v }).subscribe((sentence) => {
         this.sentence = sentence;
         const intent = this.initIntentName(v, sentence.classification.intentId);
         this.story.userSentence = v;

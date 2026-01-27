@@ -20,6 +20,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { NlpService } from '../../../core-nlp/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbToastrService } from '@nebular/theme';
+import { SentenceParsingRequest } from 'src/app/shared/components/sentences-generation/models';
 
 @Component({
   selector: 'tock-sentence-new',
@@ -29,6 +30,7 @@ import { NbToastrService } from '@nebular/theme';
 export class SentenceNewComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   sentence: Sentence;
+  sentenceOld: Sentence;
   skipCache: boolean = false;
   queryState: string;
 
@@ -48,8 +50,15 @@ export class SentenceNewComponent implements OnInit, OnDestroy {
     if (v.length == 0) {
       this.toastrService.show(`Please enter a non-empty query`, 'ERROR', { duration: 2000 });
     } else {
+      this.toastrService.show(`${v}`, 'INFO', { duration: 1000 });
       this.sentence = null;
-      this.nlp
+      this.sentenceOld = null;
+
+      this.nlp.gen_ai_parse({ sentence: v }).subscribe((sentence) => {
+        this.sentence = sentence;
+      });
+
+      /*this.nlp
         .parse(
           new ParseQuery(
             app.namespace,
@@ -61,8 +70,9 @@ export class SentenceNewComponent implements OnInit, OnDestroy {
           )
         )
         .subscribe((sentence) => {
-          this.sentence = sentence;
-        });
+          this.sentenceOld = sentence;
+        });*/
+
     }
   }
 
