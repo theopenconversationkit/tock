@@ -17,7 +17,7 @@
 import logging
 from typing import Optional
 
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,

@@ -18,7 +18,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any
 
-from langfuse.callback.langchain import LangchainCallbackHandler
+from langfuse.langchain.CallbackHandler import LangchainCallbackHandler
 from pydantic import BaseModel
 
 from gen_ai_orchestrator.models.observability.observability_setting import (
