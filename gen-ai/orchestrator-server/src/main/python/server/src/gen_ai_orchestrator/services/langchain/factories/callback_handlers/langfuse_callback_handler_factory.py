@@ -24,7 +24,7 @@ from httpx import Client
 from httpx_auth_awssigv4 import SigV4Auth
 from langfuse import Langfuse
 from langfuse.api.core import ApiError
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,

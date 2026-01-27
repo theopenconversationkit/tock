@@ -41,7 +41,7 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 from langchain_core.vectorstores import VectorStoreRetriever
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 from typing_extensions import Any
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
