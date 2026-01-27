@@ -9,7 +9,7 @@
       <env name="http_proxy" value="http://localhost:3128" />
       <env name="https_proxy" value="http://localhost:3128" />
       <env name="SSL_CERT_FILE" value="/etc/ssl/certs/ca-certificates.crt" />
-      <env name="REQUESTS_CA_BUNDLE" value="/etc/ssl/certs/ca-certificates.crt1" />
+      <env name="REQUESTS_CA_BUNDLE" value="/etc/ssl/certs/ca-certificates.crt" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="SDK_NAME" value="Poetry (tock-llm-indexing-tools) (2)" />
