@@ -85,7 +85,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((_) =>
         this.auth.loadUser().subscribe((_) => {
-          this.applicationService.resetConfiguration();
+          // Looks like this call to resetConfiguration is superfluous as applicationService already calls it via resetConfigurationUnsuscriber. We comment it out to avoid double calls on components rerender when changing namespace. We will see if it causes any issue.
+          // this.applicationService.resetConfiguration();
 
           this.applicationService
             .getApplications()

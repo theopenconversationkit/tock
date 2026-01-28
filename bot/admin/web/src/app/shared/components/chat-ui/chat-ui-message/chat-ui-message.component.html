@@ -93,7 +93,13 @@
         </button>
       </div>
 
-      <div class="text">
+      <div
+        class="text"
+        [ngClass]="{
+          'reply-bg-positive': reply && replyBgPositive,
+          'reply-bg-negative': reply && replyBgNegative
+        }"
+      >
         <tock-chat-ui-message-sentence
           *ngIf="message.isSentence()"
           [sentence]="$any(message)"
@@ -132,6 +138,6 @@
 </div>
 
 <tock-chat-ui-message-debug
-  *ngIf="message.isDebug()"
+  *ngIf="showDebug && message.isDebug()"
   [message]="$any(message)"
 ></tock-chat-ui-message-debug>

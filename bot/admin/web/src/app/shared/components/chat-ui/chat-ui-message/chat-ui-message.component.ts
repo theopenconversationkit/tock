@@ -33,6 +33,9 @@ export class ChatUiMessageComponent {
   @Input() date?: Date;
   @Input() applicationId?: string;
   @Input() switchFormattingPos: 'afterSender' | 'afterAvatar' = 'afterSender';
+  @Input() showDebug: boolean = true;
+  @Input() replyBgPositive: boolean = false;
+  @Input() replyBgNegative: boolean = false;
 
   @Input()
   set avatar(value: string) {

@@ -37,7 +37,8 @@ import {
   NbListModule,
   NbToggleModule,
   NbDatepickerModule,
-  NbTagModule
+  NbTagModule,
+  NbContextMenuModule
 } from '@nebular/theme';
 
 import {
@@ -84,6 +85,7 @@ import {
   TestDialogComponent,
   BotConfigurationSelectorComponent,
   ChatUiDialogLoggerComponent,
+  ChatUiDialogEvaluatorComponent,
   ChatUiDisplayMarkupComponent,
   AnnotationComponent,
   AnnotationCommentComponent
@@ -122,7 +124,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     NbWindowModule,
     NbListModule,
     NbToggleModule,
-    NbTagModule
+    NbTagModule,
+    NbContextMenuModule
   ],
   declarations: [
     SelectBotComponent,
@@ -142,6 +145,7 @@ import { ScrollComponent } from '../scroll/scroll.component';
     ChatUiMessageDebugComponent,
     ChatUiMessageSentenceFootnotesComponent,
     ChatUiDialogLoggerComponent,
+    ChatUiDialogEvaluatorComponent,
     ChatUiDisplayMarkupComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
@@ -186,6 +190,8 @@ import { ScrollComponent } from '../scroll/scroll.component';
     ChatUiComponent,
     ChatUiMessageComponent,
     ChatUiDialogLoggerComponent,
+    ChatUiDialogEvaluatorComponent,
+    ChatUiDisplayMarkupComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,

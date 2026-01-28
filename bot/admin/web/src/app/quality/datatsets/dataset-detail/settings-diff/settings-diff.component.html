@@ -1,0 +1,88 @@
+<nb-card class="min-width-90vw min-height-90vh">
+  <nb-card-header class="p-0">
+    <div class="d-flex justify-content-between align-items-start gap-1 px-4 py-3">
+      Settings comparison
+
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        (click)="dialogRef.close('cancel')"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </div>
+
+    <div class="d-flex justify-content-between w-100 px-4 tabs">
+      <div class="d-flex gap-05">
+        <button
+          nbButton
+          class="tab-button"
+          [status]="currentTab === currentTabs.AnsweringPrompt ? 'primary' : 'basic'"
+          (click)="switchCurrentTab(currentTabs.AnsweringPrompt)"
+        >
+          Answering Prompt
+        </button>
+        <button
+          nbButton
+          class="tab-button"
+          [status]="currentTab === currentTabs.CondensingPrompt ? 'primary' : 'basic'"
+          (click)="switchCurrentTab(currentTabs.CondensingPrompt)"
+        >
+          Condensing Prompt
+        </button>
+
+        <button
+          nbButton
+          class="tab-button"
+          [status]="currentTab === currentTabs.RagSettings ? 'primary' : 'basic'"
+          (click)="switchCurrentTab(currentTabs.RagSettings)"
+        >
+          Rag Settings
+        </button>
+      </div>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div [ngClass]="comparisonRun ? 'comparison' : ''">
+      <div>
+        <h4 class="text-uppercase monospace text-primary">Run A</h4>
+        <div
+          *ngIf="currentTab !== currentTabs.RagSettings && htmlRunA"
+          class="chat-ui-message-content-styling"
+          [innerHTML]="htmlRunA"
+        ></div>
+
+        <div
+          *ngIf="currentTab === currentTabs.RagSettings"
+          class="chat-ui-message-content-styling"
+        >
+          <pre><code class="lineHeight-1-5" [innerHTML]="getJson('current')"></code></pre>
+        </div>
+      </div>
+
+      <div
+        class="separator"
+        *ngIf="comparisonRun"
+      ></div>
+
+      <div *ngIf="comparisonRun">
+        <h4 class="text-uppercase monospace text-success">Run B</h4>
+        <div
+          *ngIf="currentTab !== currentTabs.RagSettings && htmlRunB"
+          class="chat-ui-message-content-styling"
+          [innerHTML]="htmlRunB"
+        ></div>
+
+        <div
+          *ngIf="currentTab === currentTabs.RagSettings"
+          class="chat-ui-message-content-styling"
+        >
+          <pre><code class="lineHeight-1-5" [innerHTML]="getJson('compare')"></code></pre>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

@@ -1,50 +1,45 @@
-# Bot Admin frontend
+# Bot Admin Frontend
 
 ## Local run instructions
 
 ```
 cd bot/admin/web
 npm install
-npm install -g @angular/cli
-ng serve
+npm run start
 ```
+
+> `npm install` will automatically install the git pre-commit hook (see [Git hooks](#git-hooks) below).
 
 > Don't forget to start the
 > [_Bot Admin_ server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).
 
+## Git hooks
+
+A `pre-commit` hook is included in this repository. It automatically sanitizes `package-lock.json` before each commit by replacing any private registry URLs with the standard public registry (`https://registry.npmjs.org`).
+
+This is useful when working behind a corporate npm mirror: the mirror URLs never end up committed to the repository.
+
+### Installation
+
+The hook is installed automatically when you run `npm install`. No manual step required.
+
+If for any reason you need to install it manually:
+
+```
+node scripts/hooks/install-hooks.js
+```
+
+### Dry-run
+
+To preview what the hook would replace without modifying any file:
+
+```
+DRY_RUN=1 bash .git/hooks/pre-commit
+```
+
 ## Troubleshooting
 
-### Windows setup
+### Windows setup
 
-Windows users may get NPM errors because of missing Python 2 and/or .NET Framework SDK / Visual C++ Build Tools.
-Although these build tools can be installed separately, some users prefer the following one-liner:
-
-> To run as Administrator:
-
-```
-// install Python 2 and Visual C++ Build Tools
-npm install --global windows-build-tools
-```
-
-> Note that the installation may take time...
-
-Please visit [the `windows-build-tools` project](https://github.com/felixrieseberg/windows-build-tools) for details and available options.
-
-### Python 2.7 not in Path
-
-Build takes Python from `Path`, and requires [Python 2.7](https://www.python.org/downloads/release/python-272/).
-If you have different/multiple Python versions, or Python is not in your `Path`, tell NPM like this:
-
-> The following examples mention `python.exe` for Windows users
-
-```
-npm install --python=D:/devhome/opt/Python27/python.exe
-npm install --python=D:/devhome/opt/Python27/python.exe -g @angular/cli
-ng serve
-```
-
-Alternative:
-
-```
-npm config set python D:/devhome/opt/Python27/python.exe
-```
+Windows users may get NPM errors because of missing .NET Framework SDK / Visual C++ Build Tools.
+These can be installed via the [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) installer — select the **"Desktop development with C++"** workload.

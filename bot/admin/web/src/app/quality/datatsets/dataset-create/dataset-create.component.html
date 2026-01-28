@@ -1,0 +1,139 @@
+<nb-card class="mb-2">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    <div class="pt-1">{{ isEditMode ? 'Edit dataset' : 'New dataset' }}</div>
+
+    <button
+      type="button"
+      nbButton
+      shape="round"
+      nbTooltip="Close"
+      (click)="dialogRef.close()"
+    >
+      <nb-icon icon="x-lg"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="col-12">
+          <tock-form-control
+            name="name"
+            label="Dataset name"
+            [controls]="getFormControl('name')"
+            [showError]="isSubmitted"
+          >
+            <nb-form-field>
+              <input
+                nbInput
+                fullWidth
+                placeholder="Name of the dataset"
+                formControlName="name"
+              />
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12">
+          <tock-form-control
+            name="description"
+            label="Dataset description"
+            [controls]="getFormControl('description')"
+            [showError]="isSubmitted"
+          >
+            <nb-form-field>
+              <textarea
+                nbInput
+                fullWidth
+                placeholder="Description of the dataset"
+                formControlName="description"
+              ></textarea>
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12">
+          <tock-form-control
+            name="questions"
+            label="Questions"
+            [controls]="getFormControl('questions')"
+            [showError]="isSubmitted"
+          >
+            <div formArrayName="questions">
+              <div
+                *ngFor="let questionGroup of questions.controls; let i = index"
+                [formGroupName]="i"
+                class="mb-3"
+              >
+                <div class="d-flex gap-05 align-items-center">
+                  <input
+                    #questionInput
+                    nbInput
+                    fullWidth
+                    formControlName="question"
+                    placeholder="Question {{ i + 1 }}…"
+                    [status]="isSubmitted && questionGroup.controls.question.invalid && !isLastEntry(i) ? 'danger' : 'basic'"
+                    (input)="onQuestionInput(i)"
+                    class="flex-grow-1"
+                  />
+
+                  <button
+                    *ngIf="!isLastEntry(i) || questions.length === 1"
+                    nbButton
+                    ghost
+                    shape="round"
+                    status="danger"
+                    nbTooltip="Delete question"
+                    tabindex="-1"
+                    (click)="removeQuestion(i)"
+                  >
+                    <nb-icon icon="trash"></nb-icon>
+                  </button>
+                </div>
+
+                <textarea
+                  *ngIf="questionGroup.controls.question.value.trim()"
+                  nbInput
+                  fullWidth
+                  formControlName="groundTruth"
+                  placeholder="Ground truth (optional)"
+                  rows="2"
+                  class="mt-1"
+                ></textarea>
+              </div>
+            </div>
+          </tock-form-control>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost="true"
+      [disabled]="isLoading"
+      tabindex="-1"
+      (click)="dialogRef.close()"
+    >
+      CANCEL
+    </button>
+
+    <button
+      #submitButton
+      nbButton
+      status="primary"
+      [nbTooltip]="isEditMode ? 'Save changes' : 'Create dataset'"
+      class="d-flex align-items-center"
+      [nbSpinner]="isLoading"
+      [disabled]="isLoading"
+      (click)="submit()"
+    >
+      <nb-icon
+        [icon]="isEditMode ? 'check-lg' : 'plus-lg'"
+        class="mr-2"
+      ></nb-icon>
+      {{ isEditMode ? 'SAVE' : 'CREATE' }}
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,210 @@
+<!--
+  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="dialog-summary shadow-sm py-1 pl-3 pr-1 d-flex align-items-center justify-content-between">
+  <div class="d-flex gap-1 text-muted font-size-small">
+    <div
+      class="d-flex align-items-center pr-3 border-right"
+      [nbTooltip]="getDialogConfigurationDetail()"
+    >
+      <img
+        src="{{ getDialogConnectorIconUrl() }}"
+        class="connector-icon align-text-top mr-2"
+      />
+      {{ getDialogConnectorLabel() }}
+    </div>
+
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of user inputs"
+    >
+      <nb-icon
+        icon="person"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbUserQuestions() }}
+    </div>
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of bot responses"
+    >
+      <nb-icon
+        icon="robot"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbBotAnswers() }}
+    </div>
+    <div
+      class="d-flex align-items-center"
+      nbTooltip="Number of Rag answers"
+    >
+      <nb-icon
+        icon="lightbulb"
+        class="font-size-small mr-1"
+      ></nb-icon>
+      {{ nbRagAnswers() }}
+    </div>
+  </div>
+
+  <div class="d-flex gap-05">
+    <a
+      nbButton
+      ghost
+      size="small"
+      nbTooltip="Open dialog"
+      href="analytics/dialogs/{{ state.currentApplication.namespace }}/{{ state.currentApplication._id }}/{{ dialog.id }}"
+      target="_blank"
+    >
+      <nb-icon icon="box-arrow-up-right"></nb-icon>
+    </a>
+
+    <div
+      nbTooltip="{{ nbEvaluatedBotAnswers() }} evaluated bot responses out of {{ nbAssessableBotAnswers() }}. {{
+        !isVisible ? '\nClick to expand.' : ''
+      }}"
+      class="m-n1 py-1 px-2 d-flex align-items-center pointer"
+      [ngClass]="{
+        'bg-primary': isDialogEvaluated(),
+        'text-white': isDialogEvaluated(),
+        'background-basic-color-3': !isDialogEvaluated()
+      }"
+      (click)="switchVisibility()"
+    >
+      <nb-icon
+        icon="check"
+        *ngIf="isDialogEvaluated()"
+      ></nb-icon>
+      <nb-icon
+        icon="inbox"
+        *ngIf="!isDialogEvaluated()"
+      ></nb-icon>
+    </div>
+  </div>
+</div>
+
+<div
+  class="pt-3 pl-3 pb-3"
+  *ngIf="isVisible"
+>
+  <ng-container *ngFor="let action of dialog.actions; let first = first">
+    <div
+      *ngIf="$any(action).message.text || $any(action).message.messages?.length"
+      class="dialogs-messages-grid"
+      [class.mt-2]="!first && !action.isBot()"
+    >
+      <div class="flex-grow-1 align-self-center">
+        <tock-chat-ui-message
+          [message]="action.message"
+          [date]="action.date"
+          [reply]="action.isBot()"
+          [replay]="true"
+          [sender]="getUserName(action)"
+          [avatar]="getUserAvatar(action)"
+          [applicationId]="action.applicationId"
+          [showDebug]="false"
+          [replyBgPositive]="action._evaluation?.status === evaluationDirection.UP"
+          [replyBgNegative]="action._evaluation?.status === evaluationDirection.DOWN"
+          id="action-anchor-{{ action.id }}"
+        >
+          <div
+            *ngIf="action._nlpStats"
+            class="d-flex align-items-center justify-content-between font-size-small mt-n2"
+          >
+            <div
+              class="locale-display"
+              [nbTooltip]="state.localeName(action._nlpStats.locale)"
+            >
+              {{ normalizeLocaleCode(action._nlpStats.locale) }}
+            </div>
+          </div>
+        </tock-chat-ui-message>
+      </div>
+
+      <div
+        class="dialog-vertical-separator"
+        [class.horizontal-separation-start]="!action.isBot()"
+        [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
+      ></div>
+
+      <div>
+        <div
+          class="pl-1 text-center"
+          *ngIf="action.isBotAnswerWithContent()"
+        >
+          <div class="button-horizontal-separator mb-2"></div>
+          <ng-container *ngIf="action._evaluation">
+            <button
+              *ngIf="action._evaluation?.status !== evaluationDirection.UP"
+              nbButton
+              size="small"
+              ghost
+              shape="round"
+              status="success"
+              nbTooltip="Evaluate positively"
+              (click)="evaluateActionOk(action)"
+              class="mb-1"
+            >
+              <nb-icon icon="hand-thumbs-up-fill"></nb-icon>
+            </button>
+
+            <div
+              *ngIf="action._evaluation?.status === evaluationDirection.UP"
+              nbTooltip="Response evaluated positively by «{{ action._evaluation.evaluator?.id }}»"
+              nbTooltipStatus="success"
+              class="bg-success text-white text-center p-2 rounded-circle"
+            >
+              <nb-icon
+                icon="hand-thumbs-up-fill"
+                class="font-size-small mt-n2"
+              ></nb-icon>
+            </div>
+
+            <div nbTooltip="Evaluate negatively">
+              <button
+                nbButton
+                size="small"
+                ghost
+                shape="round"
+                status="warning"
+                *ngIf="action._evaluation?.status !== evaluationDirection.DOWN"
+                class="mt-1"
+                [nbContextMenu]="reasonItems"
+                nbContextMenuTag="actionEvaluation_{{ dialog.id }}_{{ action.id }}"
+                nbContextMenuTrigger="click"
+              >
+                <nb-icon icon="hand-thumbs-down-fill"></nb-icon>
+              </button>
+            </div>
+
+            <div
+              nbTooltip="Response evaluated negatively by «{{ action._evaluation.evaluator?.id }}». Reason: «{{
+                getActionEvaluationReason(action)
+              }}» "
+              nbTooltipStatus="warning"
+              *ngIf="action._evaluation?.status === evaluationDirection.DOWN"
+              class="bg-warning text-white text-center p-2 rounded-circle"
+            >
+              <nb-icon
+                icon="hand-thumbs-down-fill"
+                class="font-size-small"
+              ></nb-icon>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

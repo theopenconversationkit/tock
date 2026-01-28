@@ -24,8 +24,8 @@ import { StateService } from '../../core-nlp/state.service';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { CoreConfig } from '../../core-nlp/core.config';
 import { Log, LogsQuery, PaginatedResult, Sentence } from '../../model/nlp';
-import { PaginatedQuery, SearchMark } from '../../model/commons';
-import { copyToClipboard, getExportFileName } from '../../shared/utils';
+import { PaginatedQuery } from '../../model/commons';
+import { copyToClipboard, getExportFileName, scrollToPageTop } from '../../shared/utils';
 import { Pagination } from '../../shared/components';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
@@ -118,7 +118,7 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
           }
 
           if (scrollToTop) {
-            this.scrollToTop();
+            scrollToPageTop(this.document);
           }
 
           this.loading = false;
@@ -146,14 +146,6 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
 
   resetSearch(): void {
     this.searchString.reset();
-  }
-
-  scrollToTop(): void {
-    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.scrollToTop.bind(this));
-      window.scrollTo(0, currentScroll - currentScroll / 4);
-    }
   }
 
   form = new FormGroup<IntentsLogsFilterForm>({

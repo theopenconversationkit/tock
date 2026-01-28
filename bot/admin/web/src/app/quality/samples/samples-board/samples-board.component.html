@@ -1,0 +1,175 @@
+<div class="d-flex align-items-center mb-2">
+  <h1 class="flex-grow-1 m-0">Evaluation Samples</h1>
+  <section class="grid-actions">
+    <button
+      nbButton
+      status="primary"
+      size="medium"
+      nbTooltip="Create new evaluation sample"
+      class="d-flex align-items-center"
+      (click)="createSample()"
+    >
+      <nb-icon
+        icon="plus-lg"
+        class="mr-2"
+      ></nb-icon>
+      <span>NEW SAMPLE</span>
+    </button>
+  </section>
+</div>
+
+<nb-card
+  *ngIf="loading"
+  [nbSpinner]="loading"
+  class="shadow-sm mt-2"
+>
+  <nb-card-body class="main-card-body p-4">&nbsp;</nb-card-body>
+</nb-card>
+
+<tock-no-data-found
+  *ngIf="configurations?.length === 0"
+  title="No bot configuration detected"
+></tock-no-data-found>
+
+<tock-no-data-found
+  *ngIf="!samples?.length && !loading"
+  title="No evaluation samples found"
+  message="Create your first sample using the &#34;NEW SAMPLE&#34; button above."
+  class="mt-3"
+></tock-no-data-found>
+
+<ng-container *ngIf="!loading && samples?.length">
+  <div class="list-grid list-header text-muted ellipsis">
+    <div class="ellipsis">Sample</div>
+    <div class="ellipsis">State</div>
+    <div class="ellipsis">Positive Score</div>
+    <div class="ellipsis">Dialogues</div>
+    <div class="ellipsis">Answers</div>
+    <div class="ellipsis">Creation</div>
+    <div class="ellipsis">Validation</div>
+    <div class="ellipsis"></div>
+  </div>
+
+  <nb-card
+    class="shadow-sm hover-lift mb-3"
+    *ngFor="let sample of samples"
+  >
+    <nb-card-body class="list-grid">
+      <div
+        class="d-flex flex-column justify-content-center pointer"
+        routerLink="/quality/samples/detail/{{ sample._id }}"
+        nbTooltip="{{ sample.name }}"
+      >
+        <div class="list-entry-name font-weight-bold">{{ sample.name }}</div>
+        <div
+          class="list-entry-desc text-muted"
+          *ngIf="sample.description"
+        >
+          {{ sample.description }}
+        </div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center">
+        <div
+          class="list-entry-name text-uppercase"
+          [ngClass]="getStatusInfo(sample.status).status"
+        >
+          {{ getStatusInfo(sample.status).text }}
+        </div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center">
+        <div
+          class="d-flex align-items-center small"
+          [ngClass]="{
+            'text-success': getScore(sample).percentage >= 75,
+            'text-warning': getScore(sample).percentage < 75,
+            'text-danger': getScore(sample).percentage < 50
+          }"
+          nbTooltip="Evaluation score: {{ getScore(sample).ok }} OK / {{ sample.botActionCount }} answers"
+        >
+          <span class="lineHeight-1">
+            <strong>{{ getScore(sample).ok }}</strong> /
+            {{ sample.botActionCount }}
+            <span class="text-muted">({{ getScore(sample).percentage }}%)</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center">
+        <div class="list-entry-name font-weight-bold">{{ sample.dialogsCount }}</div>
+        <div class="list-entry-desc text-muted">dialogues</div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center">
+        <div class="list-entry-name">{{ sample.botActionCount }}</div>
+        <div class="list-entry-desc text-muted">answers</div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center text-muted">
+        <div
+          class="list-entry-desc"
+          nbTooltip="Created by {{ sample.createdBy }}"
+        >
+          <span>{{ sample.createdBy }}</span>
+        </div>
+
+        <div
+          class="list-entry-desc"
+          nbTooltip="Creation date: {{ sample.creationDate | date: 'y/MM/dd HH:mm:ss' }}"
+        >
+          <span>{{ sample.creationDate | date: 'y/MM/dd HH:mm:ss' }}</span>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center text-muted">
+        <ng-container *ngIf="sample.status !== evaluationSampleStatus.VALIDATED"> - </ng-container>
+
+        <ng-container *ngIf="sample.status === evaluationSampleStatus.VALIDATED">
+          <div
+            class="list-entry-desc"
+            nbTooltip="Validated by {{ sample.statusChangedBy }}"
+          >
+            <span>{{ sample.statusChangedBy }}</span>
+          </div>
+
+          <div
+            class="list-entry-desc"
+            nbTooltip="Validation date: {{ sample.statusChangeDate | date: 'y/MM/dd HH:mm:ss' }}"
+          >
+            <span>{{ sample.statusChangeDate | date: 'y/MM/dd HH:mm:ss' }}</span>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="d-flex flex-column justify-content-center">
+        <div class="d-flex flex-wrap">
+          <button
+            nbButton
+            ghost
+            shape="round"
+            status="{{ sample.status === evaluationSampleStatus.IN_PROGRESS ? 'success' : 'info' }}"
+            size="small"
+            nbTooltip="{{ sample.status === evaluationSampleStatus.IN_PROGRESS ? 'Resume evaluation' : 'View details' }}"
+            class="mr-2"
+            routerLink="/quality/samples/detail/{{ sample._id }}"
+          >
+            <nb-icon icon="{{ sample.status === evaluationSampleStatus.IN_PROGRESS ? 'play-circle' : 'eye-fill' }}"></nb-icon>
+          </button>
+          <button
+            *ngIf="sample.status === evaluationSampleStatus.IN_PROGRESS"
+            nbButton
+            ghost
+            shape="round"
+            status="danger"
+            size="small"
+            nbTooltip="Delete sample"
+            (click)="confirmDeleteSample(sample)"
+          >
+            <nb-icon icon="trash"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</ng-container>

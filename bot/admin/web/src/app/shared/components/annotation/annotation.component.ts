@@ -17,22 +17,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActionReport, Debug, DialogReport, Sentence } from '../../model/dialog-data';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
-import {
-  Annotation,
-  AnnotationEvent,
-  AnnotationEventType,
-  AnnotationEventTypes,
-  AnnotationReason,
-  AnnotationReasons,
-  AnnotationState,
-  AnnotationStates
-} from './annotations';
+import { Annotation, AnnotationEvent, AnnotationEventType, AnnotationEventTypes, AnnotationState, AnnotationStates } from './annotations';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormType, G } from 'ngx-mf';
 import { RestService } from '../../../core-nlp/rest/rest.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { deepCopy } from '../../utils';
 import { SortOrder } from '../../model/misc';
+import { ResponseIssueReason, ResponseIssueReasons } from '../../model/response-issue';
 
 type AnnotationForm = FormType<Omit<Annotation, '_id' | 'user' | 'createdAt' | 'lastUpdateDate' | 'expiresAt'> & { comment: string }>;
 type AnnotationFormGroupKeysType = AnnotationForm[G];
@@ -47,7 +39,7 @@ export class AnnotationComponent implements OnInit {
 
   annotationStates = AnnotationStates;
 
-  annotationReasons = AnnotationReasons;
+  annotationReasons = ResponseIssueReasons;
 
   annotationEventType = AnnotationEventType;
   annotationEventTypes = AnnotationEventTypes;
@@ -170,7 +162,7 @@ export class AnnotationComponent implements OnInit {
     return this.annotationStates.find((s) => s.value === state)?.label || state;
   }
 
-  getReasonLabel(reason: AnnotationReason): string {
+  getReasonLabel(reason: ResponseIssueReason): string {
     return this.annotationReasons.find((s) => s.value === reason)?.label || reason;
   }
 

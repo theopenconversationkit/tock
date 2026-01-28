@@ -16,6 +16,7 @@
 
 import { DOCUMENT } from '@angular/common';
 import { Component, HostListener, Inject, Input, OnInit } from '@angular/core';
+import { scrollToPageTop } from '../../utils';
 
 @Component({
   selector: 'tock-scroll-top-button',
@@ -38,10 +39,6 @@ export class ScrollTopButtonComponent {
   }
 
   scrollToTop(): void {
-    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.scrollToTop.bind(this));
-      window.scrollTo(0, currentScroll - currentScroll / this.smoothness);
-    }
+    scrollToPageTop(this.document);
   }
 }

@@ -26,6 +26,7 @@ import { I18nCategoryFilterAll, I18nFilters, I18nLocaleFilters } from './models'
 import { I18nExportComponent } from './i18n-export/i18n-export.component';
 import { I18nImportComponent } from './i18n-import/i18n-import.component';
 import { DOCUMENT } from '@angular/common';
+import { scrollToPageTop } from '../../shared/utils';
 
 @Component({
   selector: 'tock-i18n',
@@ -220,15 +221,7 @@ export class I18nComponent implements OnInit, OnDestroy {
     this.pagination.total = this.filteredI18n.length;
     this.pagination.end = Math.min(this.pagination.start + this.pagination.size, this.filteredI18n.length);
 
-    this.scrollToTop();
-  }
-
-  scrollToTop(): void {
-    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.scrollToTop.bind(this));
-      window.scrollTo(0, currentScroll - currentScroll / 2);
-    }
+    scrollToPageTop(this.document);
   }
 
   pagedItems(): I18nLabel[] {

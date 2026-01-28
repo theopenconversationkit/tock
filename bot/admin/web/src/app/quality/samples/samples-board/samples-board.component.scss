@@ -1,0 +1,28 @@
+.list-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(130px, 1fr) minmax(60px, 110px) minmax(40px, 100px) minmax(60px, 80px) minmax(60px, 80px) minmax(40px, 130px) minmax(40px, 130px)
+    minmax(20px, 80px);
+  gap: 0.5rem;
+  padding: var(--card-padding);
+}
+
+.list-header {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.list-entry-name {
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-entry-desc {
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

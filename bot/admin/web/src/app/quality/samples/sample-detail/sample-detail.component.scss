@@ -1,0 +1,25 @@
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.2rem 0.7rem;
+
+  border-radius: 10rem;
+  color: var(--button-filled-basic-text-color);
+  background-color: var(--button-filled-basic-background-color);
+  font-size: 0.8rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+
+  nb-icon {
+    font-size: 0.9em;
+  }
+
+  &.success {
+    color: white;
+    background-color: var(--button-filled-success-background-color);
+  }
+  &.warning {
+    color: white;
+    background-color: var(--button-filled-warning-background-color);
+  }
+}

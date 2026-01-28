@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ConnectorType } from '../../../../core/model/configuration';
 import { Subject, debounceTime, take, takeUntil } from 'rxjs';
@@ -23,12 +23,7 @@ import { BotSharedService } from '../../../../shared/bot-shared.service';
 import { StateService } from '../../../../core-nlp/state.service';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RestService } from '../../../../core-nlp/rest/rest.service';
-import {
-  AnnotationReason,
-  AnnotationReasons,
-  AnnotationState,
-  AnnotationStates
-} from '../../../../shared/components/annotation/annotations';
+import { AnnotationState, AnnotationStates } from '../../../../shared/components/annotation/annotations';
 import { SortOrder, SortOrders } from '../../../../shared/model/misc';
 import { FeedbackVote } from '../../dialogs';
 
@@ -36,6 +31,7 @@ export const FeedbackVotes = [
   { label: 'Positive feedback', value: FeedbackVote.UP },
   { label: 'Negative feedback', value: FeedbackVote.DOWN }
 ] as const;
+import { ResponseIssueReason, ResponseIssueReasons } from '../../../../shared/model/response-issue';
 
 interface DialogListFiltersForm {
   exactMatch: FormControl<boolean>;
@@ -53,7 +49,7 @@ interface DialogListFiltersForm {
   dialogActivityTo?: FormControl<Date>;
   withAnnotations?: FormControl<boolean>;
   annotationStates?: FormControl<AnnotationState[]>;
-  annotationReasons?: FormControl<AnnotationReason[]>;
+  annotationReasons?: FormControl<ResponseIssueReason[]>;
   annotationSort?: FormControl<SortOrder>;
   annotationCreationDateFrom?: FormControl<Date>;
   annotationCreationDateTo?: FormControl<Date>;
@@ -67,7 +63,7 @@ export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
   templateUrl: './dialogs-list-filters.component.html',
   styleUrl: './dialogs-list-filters.component.scss'
 })
-export class DialogsListFiltersComponent implements OnInit {
+export class DialogsListFiltersComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
   private lastEmittedValue: Partial<DialogListFilters> | null = null;
 
@@ -76,7 +72,7 @@ export class DialogsListFiltersComponent implements OnInit {
   configurationNameList: { label: string; applicationId: string }[];
 
   annotationStates = AnnotationStates;
-  annotationReasons = AnnotationReasons;
+  annotationReasons = ResponseIssueReasons;
   sortOrders = SortOrders;
   feedbackVotes = FeedbackVotes;
 

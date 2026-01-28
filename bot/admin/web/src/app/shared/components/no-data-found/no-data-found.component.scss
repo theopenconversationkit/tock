@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+:host {
+  display: block;
+}
+
 .tock-robot {
   width: 4rem;
   height: fit-content;

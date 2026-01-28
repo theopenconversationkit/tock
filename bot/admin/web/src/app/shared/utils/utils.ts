@@ -220,3 +220,81 @@ export function roundMinutesToNextTen(date: Date): Date {
   newDate.setMinutes(roundedMinutes, 0, 0);
   return newDate;
 }
+
+/**
+ * Returns the first day of the previous month at 00:00:00 for a given date.
+ * Automatically handles year transition if the previous month is in the previous year.
+ *
+ * @param {Date} date - The input date.
+ * @returns {Date} The first day of the previous month at 00:00:00.
+ */
+export function getFirstDayOfPreviousMonth(date: Date): Date {
+  const previousMonth = new Date(date);
+  previousMonth.setMonth(date.getMonth() - 1, 1); // Move to the previous month and set the day to 1
+  previousMonth.setHours(0, 0, 0, 0); // Set time to midnight
+  return previousMonth;
+}
+
+/**
+ * Returns the last day of the previous month at 23:59:59 for a given date.
+ * Automatically handles year transition if the previous month is in the previous year.
+ *
+ * @param {Date} date - The input date.
+ * @returns {Date} The last day of the previous month at 23:59:59.
+ */
+export function getLastDayOfPreviousMonth(date: Date): Date {
+  const previousMonth = new Date(date);
+  previousMonth.setMonth(date.getMonth(), 0); // Move to the last day of the previous month
+  previousMonth.setHours(23, 59, 59, 999); // Set time to the last millisecond of the day
+  return previousMonth;
+}
+
+/**
+ * Smoothly scrolls the window to the top of the page using requestAnimationFrame.
+ * Stops recursion when the scroll position is close enough to 0 (≤ 1px).
+ *
+ * @param {Document} document - The Document object to use for scrolling.
+ * @param {number} [stepDivisor=2] - Optional. Divisor to control scroll speed (higher = slower).
+ */
+export function scrollToPageTop(document: Document, stepDivisor: number = 2): void {
+  const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  if (currentScroll <= 5) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  window.requestAnimationFrame(() => scrollToPageTop(document, stepDivisor));
+  window.scrollTo(0, currentScroll - currentScroll / stepDivisor);
+}
+
+/**
+ * Checks if two objects have any differences, excluding specified keys from the comparison.
+ *
+ * @template T - The type of the objects to compare.
+ * @param {T} oldObj - The original object.
+ * @param {T} newObj - The new object to compare against the original.
+ * @param {string[]} [excludeKeys=[]] - Array of keys to exclude from the comparison.
+ * @returns {boolean} `true` if there is at least one difference (excluding specified keys), otherwise `false`.
+ *
+ * @example
+ * const oldObj = { a: 1, b: { c: 2, d: 3 }, questionAnsweringPrompt: "exclude" };
+ * const newObj = { a: 1, b: { c: 2, d: 4 }, questionCondensingPrompt: "exclude" };
+ * const excludeKeys = ["questionAnsweringPrompt", "questionCondensingPrompt", "indexSessionId"];
+ * console.log(hasDiffExcluding(oldObj, newObj, excludeKeys)); // true
+ */
+export function hasDiffExcluding<T extends Record<string, any>>(oldObj: T, newObj: T, excludeKeys: string[] = []): boolean {
+  const filterObj = (obj: T) => {
+    const result: Partial<T> = {};
+    for (const key in obj) {
+      if (!excludeKeys.includes(key)) {
+        result[key] = obj[key];
+      }
+    }
+    return result;
+  };
+
+  const filteredOld = filterObj(oldObj);
+  const filteredNew = filterObj(newObj);
+
+  return JSON.stringify(filteredOld) !== JSON.stringify(filteredNew);
+}

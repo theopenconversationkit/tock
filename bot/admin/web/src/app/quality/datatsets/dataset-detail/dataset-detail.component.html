@@ -1,0 +1,157 @@
+<div class="d-flex align-items-center mb-3">
+  <div class="flex-grow-1">
+    <h1 class="m-0">Dataset run</h1>
+    <div class="lead">{{ dataset?.name }}</div>
+    <small>
+      {{ dataset?.description }}
+    </small>
+  </div>
+</div>
+
+<tock-sticky-menu *ngIf="!loading">
+  <div class="vs-wrapper mb-1">
+    <nb-card class="mb-0">
+      <nb-card-body>
+        <div class="d-flex gap-05 justify-content-between">
+          <span class="text-uppercase monospace text-primary"> Run A </span>
+          <span class="text-muted font-size-small"> {{ currentRun.id }} </span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between text-muted font-size-small mt-1">
+          <span class="text-nowrap">{{ currentRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
+          <i class="bi bi-chevron-bar-right"></i>
+          <span class="text-nowrap font-weight-bold">{{ getRunDuration(currentRun) }}</span>
+          <i class="bi bi-chevron-bar-left"></i>
+          <span class="text-nowrap">{{ currentRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
+          <div
+            class="flex-fill justify-content-center tag prompt pointer"
+            [class.diff]="hasPromptsDiff()"
+            nbTooltip="Click to see the prompts used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
+          >
+            prompts
+          </div>
+          <div
+            class="flex-fill justify-content-center tag settings pointer"
+            [class.diff]="hasSettingsDiff()"
+            nbTooltip="Click to see the settings used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
+          >
+            settings
+          </div>
+          <div
+            class="flex-fill justify-content-center tag corpus"
+            [class.diff]="hasIndexingSessionDiff()"
+            nbTooltip="Indexing session id"
+          >
+            {{ currentRun.settingsSnapshot.indexSessionId }}
+          </div>
+        </div>
+      </nb-card-body>
+
+      <nb-card-footer
+        *ngIf="comparableRuns.length > 1"
+        class="p-0 background-basic-color-2"
+      >
+        <div class="d-flex prev-entries">
+          <div
+            *ngFor="let entry of comparableRuns; let i = index"
+            class="prev-entry"
+            [ngClass]="{
+              current: entry.id === currentRun.id,
+              unselectable: !isRunSelectable('current', entry)
+            }"
+            [nbTooltip]="getPrevEntryTooltip(entry)"
+            (click)="selectCurrentRun(entry)"
+          >
+            {{ i }}
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+
+    <div
+      class="vs-badge text-muted"
+      *ngIf="comparisonRun"
+    >
+      VS
+    </div>
+
+    <nb-card
+      class="mb-0"
+      *ngIf="comparisonRun"
+    >
+      <nb-card-body>
+        <div class="d-flex gap-05 justify-content-between">
+          <span class="text-uppercase monospace text-success"> Run B </span>
+          <span class="text-muted font-size-small"> {{ comparisonRun.id }} </span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between text-muted font-size-small mt-1">
+          <span class="text-nowrap">{{ comparisonRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
+          <i class="bi bi-chevron-bar-right"></i>
+          <span class="text-nowrap font-weight-bold">{{ getRunDuration(comparisonRun) }}</span>
+          <i class="bi bi-chevron-bar-left"></i>
+          <span class="text-nowrap">{{ comparisonRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
+          <div
+            class="flex-fill justify-content-center tag prompt pointer"
+            nbTooltip="Click to see answering the prompt used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
+          >
+            prompts
+          </div>
+          <div
+            class="flex-fill justify-content-center tag settings pointer"
+            nbTooltip="Click to see the settings used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
+          >
+            settings
+          </div>
+          <div
+            class="flex-fill justify-content-center tag corpus"
+            nbTooltip="Indexing session id"
+          >
+            {{ comparisonRun.settingsSnapshot.indexSessionId }}
+          </div>
+        </div>
+      </nb-card-body>
+
+      <nb-card-footer class="p-0 background-basic-color-2">
+        <div class="d-flex prev-entries">
+          <div
+            *ngFor="let entry of comparableRuns; let i = index"
+            class="prev-entry"
+            [ngClass]="{
+              current: entry.id === comparisonRun.id,
+              unselectable: !isRunSelectable('compared', entry),
+            }"
+            [nbTooltip]="getPrevEntryTooltip(entry)"
+            (click)="selectComparableRun(entry)"
+          >
+            {{ i }}
+          </div>
+        </div>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</tock-sticky-menu>
+
+<div
+  *ngIf="!loading"
+  class="mt-4"
+>
+  <ng-container *ngFor="let question of dataset.questions">
+    <tock-dataset-detail-entry
+      *ngIf="currentRunActions"
+      [currentRunActions]="currentRunActions"
+      [comparisonRunActions]="comparisonRunActions"
+      [question]="question"
+    ></tock-dataset-detail-entry>
+  </ng-container>
+</div>

@@ -113,7 +113,7 @@ export class FullscreenDirective implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('document:fullscreenchange', ['$event'])
+  @HostListener('document:fullscreenchange')
   onFullscreenChangeEvent(): void {
     this.onFullscreenChange.emit(this.isFullscreen);
 

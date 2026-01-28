@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lexer } from 'marked';
+import { lexer, Marked } from 'marked';
 import type { Tokens, TokenizerExtension, RendererExtension } from 'marked';
 import katex from 'katex';
 
@@ -31,6 +31,9 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeRemark from 'rehype-remark';
 import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
+import { markedHighlight } from 'marked-highlight';
+import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
 
 export enum MarkupFormats {
   PLAINTEXT = 'PLAINTEXT',
@@ -214,3 +217,21 @@ export const katexInlineExtension: TokenizerExtension & RendererExtension = {
     return undefined;
   }
 };
+
+export const markedParser = new Marked({
+  async: false,
+  ...markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang, info) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      return hljs.highlight(code, { language }).value;
+    }
+  }),
+  hooks: {
+    postprocess: (html) => DOMPurify.sanitize(html)
+  },
+  extensions: [katexBlockExtension, katexInlineExtension],
+  breaks: true,
+  gfm: true
+});
