@@ -22,7 +22,7 @@ import ai.tock.translator.UserInterfaceType
  * The definition of a "Story".
  * A story holds a list of actions of the same domain.
  * The story provides a set of starter intents.
- * When theses intents are detected, The story is started.
+ * When these intents are detected, The story is started.
  *
  * Story definitions should usually not directly extend this class,
  * but instead extend [SimpleStoryHandlerBase] or [StoryDefinitionBase].

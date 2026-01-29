@@ -19,7 +19,9 @@ package ai.tock.bot.engine
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.user.PlayerId
 
 /**
@@ -174,6 +176,14 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         title: String,
         data: Any?,
     ): T
+
+    /**
+     * Handles the action and switches the context to the specified story definition.
+     */
+    fun handleAndSwitchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent = storyDefinition.mainIntent(),
+    )
 
     /**
      * Sends i18nText as last bot answer.

@@ -516,12 +516,9 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
         currentDialog.state.currentIntent = starterIntent
     }
 
-    /**
-     * Handles the action and switches the context to the specified story definition.
-     */
-    fun handleAndSwitchStory(
+    override fun handleAndSwitchStory(
         storyDefinition: StoryDefinition,
-        starterIntent: Intent = storyDefinition.mainIntent(),
+        starterIntent: Intent,
     ) {
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false

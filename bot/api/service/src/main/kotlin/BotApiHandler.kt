@@ -24,16 +24,21 @@ import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.message.bot.BotMessage
 import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
+import ai.tock.bot.api.model.message.bot.CustomAction
+import ai.tock.bot.api.model.message.bot.CustomActionType.SWITCH_STORY
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.Debug
 import ai.tock.bot.api.model.message.bot.Event
 import ai.tock.bot.api.model.message.bot.EventCategory
 import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.bot.api.model.message.bot.STARTER_INTENT
+import ai.tock.bot.api.model.message.bot.SWITCH_STORY_ID
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaFile
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotBus
@@ -82,7 +87,7 @@ internal class BotApiHandler(
         response: BotResponse?,
     ) {
         if (response != null) {
-            // Check if there is a configuration for Ending story
+            // Check if there is a configuration for ending story
             val storySetting =
                 storyDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     botDefinition.namespace,
@@ -184,6 +189,19 @@ internal class BotApiHandler(
                 is Event -> {
                     send(toEvent(message))
                     return
+                }
+
+                is CustomAction -> {
+                    when (message.type) {
+                        SWITCH_STORY -> {
+                            val storyId = message.parameters[SWITCH_STORY_ID] ?: error("no $SWITCH_STORY_ID parameter")
+
+                            val story = botDefinition.findStoryDefinitionById(storyId, connectorId)
+                            val starterIntent = message.parameters[STARTER_INTENT]?.let { Intent(it) } ?: story.mainIntent()
+                            handleAndSwitchStory(story, starterIntent)
+                            return
+                        }
+                    }
                 }
 
                 else -> error("unsupported message $message")

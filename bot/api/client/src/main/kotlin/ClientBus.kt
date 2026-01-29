@@ -169,6 +169,14 @@ interface ClientBus : Bus<ClientBus> {
     }
 
     /**
+     * Handles the action and switches the context to the specified story definition.
+     */
+    fun handleAndSwitchStory(
+        storyId: String,
+        starterIntent: String? = null,
+    )
+
+    /**
      * Creates a new [Card].
      */
     fun newCard(

@@ -23,11 +23,15 @@ import ai.tock.bot.api.model.context.Entity
 import ai.tock.bot.api.model.message.bot.BotMessage
 import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
+import ai.tock.bot.api.model.message.bot.CustomAction
+import ai.tock.bot.api.model.message.bot.CustomActionType
 import ai.tock.bot.api.model.message.bot.CustomMessage
 import ai.tock.bot.api.model.message.bot.Debug
 import ai.tock.bot.api.model.message.bot.Event
 import ai.tock.bot.api.model.message.bot.EventCategory
 import ai.tock.bot.api.model.message.bot.I18nText
+import ai.tock.bot.api.model.message.bot.STARTER_INTENT
+import ai.tock.bot.api.model.message.bot.SWITCH_STORY_ID
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.api.model.message.bot.Suggestion
 import ai.tock.bot.api.model.message.user.UserMessage
@@ -36,6 +40,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.event.MetadataEvent.Companion.STREAM_RESPONSE_METADATA
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.ConstrainedValueWrapper
@@ -64,10 +69,10 @@ class TockClientBus(
     override val userLocale: Locale = request.context.language
     override val userInterfaceType: UserInterfaceType = request.context.userInterface
 
-    // Source connector : is the connector which initialize a conversation
+    // Source connector: is the connector which initialize a conversation
     override val sourceConnectorType: ConnectorType = request.context.sourceConnectorType
 
-    // Target connector : is the connector for which the message is produced
+    // Target connector: is the connector for which the message is produced
     override val targetConnectorType: ConnectorType = request.context.targetConnectorType
 
     override val contextId: String = request.context.userId.id
@@ -288,6 +293,28 @@ class TockClientBus(
             category,
             defaultLabel,
             args,
+        )
+    }
+
+    override fun handleAndSwitchStory(
+        storyDefinition: StoryDefinition,
+        starterIntent: Intent,
+    ) {
+        handleAndSwitchStory(storyDefinition.id, starterIntent.wrappedIntent().name)
+    }
+
+    override fun handleAndSwitchStory(
+        storyId: String,
+        starterIntent: String?,
+    ) {
+        addMessage(
+            CustomAction(
+                CustomActionType.SWITCH_STORY,
+                mapOf(
+                    SWITCH_STORY_ID to storyId,
+                    STARTER_INTENT to starterIntent,
+                ),
+            ),
         )
     }
 }
