@@ -47,8 +47,9 @@ from uuid import uuid4
 
 from docopt import docopt
 from langfuse import Langfuse
+from langfuse._client.datasets import DatasetItemClient
 from langfuse.api import NotFoundError
-from langfuse.client import DatasetItemClient
+from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import ActivityStatus, StatusWithReason
 from scripts.dataset.evaluation.models import DatasetExperiment
@@ -58,10 +59,7 @@ from scripts.dataset.experiment.models import (
 )
 
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
-from gen_ai_orchestrator.services.langchain.rag_chain import (
-    create_rag_chain,
-    execute_rag_chain,
-)
+from gen_ai_orchestrator.services.langchain.rag_chain import execute_rag_chain
 from gen_ai_orchestrator.services.security.security_service import (
     fetch_secret_key_value,
 )
@@ -156,7 +154,7 @@ async def main():
     try:
         logger.info('Loading input data...')
         input_config = RunExperimentInput.from_json_file(cli_args['--json-config-file'])
-        location = f'{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}/output'
+        location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}/output"
         os.makedirs(location, exist_ok=True)
         dataset_experiment = input_config.dataset_experiment
 
@@ -169,7 +167,7 @@ async def main():
                 "Detected UUID in experiment name – will resume '%s'.", experiment_name
             )
         else:
-            experiment_name = f'{base_name}-{str(uuid4())[:8]}'
+            experiment_name = f"{base_name}-{str(uuid4())[:8]}"
             logger.info("Starting new experiment '%s'.", experiment_name)
 
         dataset_experiment.experiment_name = experiment_name
@@ -189,9 +187,9 @@ async def main():
         processed_item_ids = set()
         if resume_run:
             try:
-                dataset_run = client.get_dataset_run(
+                dataset_run = client.api.datasets.get_run(
                     dataset_name=dataset_experiment.dataset_name,
-                    dataset_run_name=experiment_name,
+                    run_name=experiment_name,
                 )
                 processed_item_ids = {
                     ri.dataset_item_id for ri in dataset_run.dataset_run_items
@@ -206,14 +204,13 @@ async def main():
                     experiment_name,
                 )
                 processed_item_ids.clear()
-                resume_run = False
 
         for item in dataset_items:
             if item.id in processed_item_ids:
                 logger.debug('Skipping item %s (already processed).', item.id)
                 continue
 
-            handler = item.get_langchain_handler(
+            with item.run(
                 run_name=experiment_name,
                 run_description=dataset_experiment.experiment_description,
                 run_metadata={
@@ -230,19 +227,23 @@ async def main():
                     'document_index_name': rag_query.document_index_name,
                     'k': rag_query.document_search_params.k,
                 },
-            )
+            ) as root_span:
+                observability_handler = LangfuseCallbackHandler(update_trace=True)
+                rag_query.question_answering_prompt.inputs['question'] = item.input[
+                    'question'
+                ]
 
-            rag_query.question_answering_prompt.inputs['question'] = item.input[
-                'question'
-            ]
-            await execute_rag_chain(
-                request=rag_query, debug=False, custom_observability_handler=handler
-            )
-            tested_items.append(item)
+                await execute_rag_chain(
+                    request=rag_query,
+                    debug=False,
+                    custom_observability_handler=observability_handler,
+                )
+                tested_items.append(item)
 
-            print(f'Item:{item.id} - Trace:{handler.get_trace_url()}')
-            print(f'Waiting for rate limit delay ({input_config.rate_limit_delay}s)...')
-            await asyncio.sleep(input_config.rate_limit_delay)
+                print(
+                    f"Waiting for rate limit delay ({input_config.rate_limit_delay}s)..."
+                )
+                await asyncio.sleep(input_config.rate_limit_delay)
 
         export_cfg = input_config.export_settings or {}
 
@@ -251,7 +252,7 @@ async def main():
         rag_dict = _deep_copy_without_keys(
             rag_dict, export_cfg.get('rag_exclude_keys', [])
         )
-        rag_file = f'{location}/{dataset_experiment.experiment_name}-RagSettings.json'
+        rag_file = f"{location}/{dataset_experiment.experiment_name}-RagSettings.json"
         with open(rag_file, 'w', encoding='utf-8') as f:
             json.dump(rag_dict, f, indent=2, ensure_ascii=False)
 
@@ -261,7 +262,7 @@ async def main():
             comp_dict, export_cfg.get('compressor_exclude_keys', [])
         )
         comp_file = (
-            f'{location}/{dataset_experiment.experiment_name}-CompressorSettings.json'
+            f"{location}/{dataset_experiment.experiment_name}-CompressorSettings.json"
         )
         with open(comp_file, 'w', encoding='utf-8') as f:
             json.dump(comp_dict, f, indent=2, ensure_ascii=False)
@@ -270,9 +271,9 @@ async def main():
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
 
     except Exception as e:
-        full_exception_name = f'{type(e).__module__}.{type(e).__name__}'
+        full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
         activity_status = StatusWithReason(
-            status=ActivityStatus.FAILED, status_reason=f'{full_exception_name} : {e}'
+            status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}"
         )
         logger.error(e, exc_info=True)
 
@@ -287,7 +288,7 @@ async def main():
         if len_dataset_items > 0
         else 0,
     )
-    logger.debug(f'\n{output.format()}')
+    logger.debug(f"\n{output.format()}")
 
 
 if __name__ == '__main__':

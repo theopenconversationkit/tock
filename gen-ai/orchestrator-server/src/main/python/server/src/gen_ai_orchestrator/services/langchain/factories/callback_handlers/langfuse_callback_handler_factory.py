@@ -25,6 +25,7 @@ from httpx_auth_awssigv4 import SigV4Auth
 from langfuse import Langfuse
 from langfuse.api.core import ApiError
 from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
+from pydantic import PrivateAttr
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -59,16 +60,64 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
 
     setting: ObservabilitySetting
 
+    # Internal client cache
+    _langfuse_client: Optional[Langfuse] = PrivateAttr(default=None)
+
+    def _get_langfuse_client(self) -> Langfuse:
+        """
+        Create or return the initialized Langfuse client
+        """
+        if self._langfuse_client is None:
+            settings = self._fetch_settings()
+            self._langfuse_client = Langfuse(
+                public_key=settings['public_key'],
+                secret_key=settings['secret_key'],
+                base_url=settings['base_url'],
+                timeout=settings['timeout'],
+                httpx_client=self._get_httpx_client(),
+            )
+        return self._langfuse_client
+
     def get_callback_handler(self, **kwargs: Any) -> LangfuseCallbackHandler:
-        return LangfuseCallbackHandler(**self._fetch_settings(), httpx_client=self._get_httpx_client(), **kwargs)
+        """
+        Create Langfuse CallbackHandler
+        """
+        self._get_langfuse_client()
+
+        # Ignore Langfuse V2 parameters to stay backward-compatible
+        if kwargs:
+            logger.debug(
+                'Ignoring unsupported Langfuse CallbackHandler kwargs in V3: %s',
+                list(kwargs.keys()),
+            )
+
+        # Langfuse SDK maintains an internal map / pool of clients based on there public key, that why the client isn't passed to the callbackhandler constructor.
+        return LangfuseCallbackHandler(
+            public_key=self.setting.public_key,
+        )
 
     def check_observability_setting(self) -> bool:
         """Check if the provided credentials (public and secret key) are valid,
         while tracing a sample phrase"""
         try:
-            self.get_callback_handler().auth_check()
-            Langfuse(**self._fetch_settings(), httpx_client=self._get_httpx_client()).trace(
-                name=ObservabilityTrace.CHECK_OBSERVABILITY_SETTINGS.value, output='Check observability setting trace')
+            client = self._get_langfuse_client()
+            logger.debug('Lang')
+
+            if not client.auth_check():
+                logger.error('Langfuse auth_check() returned False')
+                raise GenAIObservabilityErrorException(
+                    'Langfuse authentication check failed'
+                )
+
+            with client.start_as_current_observation(
+                as_type='span',
+                name=ObservabilityTrace.CHECK_OBSERVABILITY_SETTINGS.value,
+                input={'message': 'Check observability setting'},
+            ) as span:
+                span.update(output='Check observability setting trace')
+
+            client.flush()
+
         except ApiError as exc:
             logger.error(exc)
             raise GenAIObservabilityErrorException(
@@ -76,13 +125,17 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
             )
         return True
 
-    def _fetch_settings(self):
+    def _fetch_settings(self) -> dict:
+        """
+        Fetch necessary parameters to initialise Langfuse client.
+        """
         return {
-            'host': str(self.setting.url),
+            'base_url': str(self.setting.url),
             'public_key': self.setting.public_key,
             'secret_key': fetch_secret_key_value(self.setting.secret_key),
             'timeout': application_settings.observability_provider_timeout,
-            'max_retries': application_settings.observability_provider_max_retries
+            # kept for backward-compatibility, not used anymore
+            'max_retries': application_settings.observability_provider_max_retries,
         }
 
     def _get_httpx_client(self) -> Optional[Client]:
