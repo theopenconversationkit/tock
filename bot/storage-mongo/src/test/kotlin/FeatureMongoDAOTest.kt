@@ -314,6 +314,94 @@ internal class FeatureMongoDAOTest {
                     `assert that feature is persisted with`(id, false)
                 }
             }
+
+            @Test
+            fun `addFeature rejects feature name with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category", "name+invalid", null, null)
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects feature name with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category", "name,invalid", null, null)
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects category with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category+invalid", "name", null, null)
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects category with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category,invalid", "name", null, null)
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
+
+            @Test
+            fun `enable rejects feature name with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.enable(botId, namespace, "category", "name+invalid", null, null)
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `enable rejects category with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.enable(botId, namespace, "category,invalid", "name", null, null)
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
+
+            @Test
+            fun `disable rejects feature name with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.disable(botId, namespace, "category", "name+invalid")
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `disable rejects category with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.disable(botId, namespace, "category,invalid", "name")
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
         }
 
         @Test
