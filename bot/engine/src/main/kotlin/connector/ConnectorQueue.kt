@@ -22,6 +22,7 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.Executor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
 import java.time.InstantSource
@@ -30,6 +31,8 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * A Queue to ensure the calls from the same user id are sent sequentially.
@@ -139,14 +142,17 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
         recipient: PlayerId,
         actionWrapper: ScheduledAction<T>,
     ) {
+        logger.debug { "add0(): recipientId=${recipient.id}, action=$actionWrapper, lastAnswer=${actionWrapper.lastInAnswer}, thread=${Thread.currentThread().name}" }
         val queue =
             messagesByRecipientMap
                 .get(recipient.id) { UserQueue() }
                 .apply {
                     if (enqueueMessage(actionWrapper)) {
+                        logger.debug { "add0(): recipientId=${recipient.id}, QUEUED (waiting for previous), queueSize=$size" }
                         return
                     }
                 }
+        logger.debug { "add0(): recipientId=${recipient.id}, sending immediately" }
         sendNextAction(actionWrapper, queue)
     }
 
@@ -159,11 +165,16 @@ class ConnectorQueue(private val executor: Executor, private val clock: InstantS
                 Duration.between(clock.instant(), action.scheduledFor),
                 if (queue.answerInProgress.get()) BotDefinition.minBreath else Duration.ZERO,
             )
+        logger.debug { "sendNextAction(): action=$action, timeToWait=${timeToWait.toMillis()}ms, answerInProgress=${queue.answerInProgress.get()}, thread=${Thread.currentThread().name}" }
         executor.executeBlocking(timeToWait) {
             try {
+                logger.debug { "sendNextAction(): EXECUTING action=$action, thread=${Thread.currentThread().name}" }
                 action.joinAndSend()
+                logger.debug { "sendNextAction(): COMPLETED action=$action" }
             } finally {
-                queue.dequeueMessage()?.also { a ->
+                val next = queue.dequeueMessage()
+                logger.debug { "sendNextAction(): DEQUEUED, next=$next, remainingQueueSize=${queue.size}" }
+                next?.also { a ->
                     sendNextAction(a, queue)
                 }
             }
