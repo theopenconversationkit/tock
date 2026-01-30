@@ -314,6 +314,50 @@ internal class FeatureMongoDAOTest {
                     `assert that feature is persisted with`(id, false)
                 }
             }
+
+            @Test
+            fun `addFeature rejects feature name with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category", "name+invalid", null, null)
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects feature name with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category", "name,invalid", null, null)
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects category with plus sign`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category+invalid", "name", null, null)
+                        }
+                    assertTrue(exception.message?.contains("+") ?: false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects category with comma`() {
+                runBlocking {
+                    val exception =
+                        org.junit.jupiter.api.assertThrows<IllegalArgumentException> {
+                            featureDAO.addFeature(botId, namespace, true, "category,invalid", "name", null, null)
+                        }
+                    assertTrue(exception.message?.contains(",") ?: false)
+                }
+            }
         }
 
         @Test

@@ -19,6 +19,13 @@ package ai.tock.bot.engine.feature
 /**
  * A feature with a name and a category.
  * Usually implemented by an enum.
+ *
+ * **Important:** Feature names and categories must not contain the following characters:
+ * - `+` (plus sign) - reserved for internal use as applicationId separator
+ * - `,` (comma) - reserved for internal use as category/name separator
+ *
+ * Attempting to use these characters will result in an [IllegalArgumentException]
+ * when the feature is added or modified.
  */
 interface FeatureType {
     val name: String
