@@ -38,7 +38,6 @@ import kotlinx.coroutines.runBlocking
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.eq
 import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -204,150 +203,6 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 newId,
                 UserTimelineMongoDAO.loadWithoutDialogs("namespace", newId).playerId,
             )
-        }
-
-    @Test
-    fun `dialogCreationDateFrom should filter on first action date only`() =
-        runBlocking {
-            val namespace = "test_date_filter"
-            val applicationId = "test_app"
-            val botId = "test_bot"
-            val nlpModel = "test_model"
-            val userId = PlayerId("user_test", PlayerType.user)
-            val botPlayerId = PlayerId(botId, PlayerType.bot)
-
-            val botConfig =
-                BotApplicationConfiguration(
-                    applicationId,
-                    botId,
-                    namespace,
-                    nlpModel,
-                    ConnectorType("test"),
-                )
-            BotApplicationConfigurationMongoDAO.save(botConfig)
-
-            try {
-                // Dialog created on Dec 10, but has an action on Dec 12
-                val firstActionDate = ZonedDateTime.parse("2025-12-10T10:00:00Z")
-                val laterActionDate = ZonedDateTime.parse("2025-12-12T10:00:00Z")
-                // Filter: only dialogs created after Dec 11
-                val filterDate = ZonedDateTime.parse("2025-12-11T10:00:00Z")
-
-                val action1 =
-                    SendSentence(
-                        userId,
-                        applicationId,
-                        botPlayerId,
-                        "first action",
-                        mutableListOf(),
-                        newId(),
-                        firstActionDate.toInstant(),
-                        EventState(),
-                        ActionMetadata(),
-                    )
-
-                val action2 =
-                    SendSentence(
-                        userId,
-                        applicationId,
-                        botPlayerId,
-                        "later action",
-                        mutableListOf(),
-                        newId(),
-                        laterActionDate.toInstant(),
-                        EventState(),
-                        ActionMetadata(),
-                    )
-
-                val storyHandler =
-                    object : SimpleStoryHandlerBase() {
-                        override fun action(bus: BotBus) {
-                            // Empty handler for test
-                        }
-                    }
-                val storyDef = StoryDefinitionBase("test_story", storyHandler)
-
-                val story =
-                    Story(
-                        storyDef,
-                        Intent("test"),
-                        actions = mutableListOf(action1, action2),
-                    )
-
-                val dialog =
-                    Dialog(
-                        playerIds = setOf(userId, botPlayerId),
-                        stories = mutableListOf(story),
-                    )
-
-                val userTimeline =
-                    UserTimeline(
-                        playerId = userId,
-                        dialogs = mutableListOf(dialog),
-                    )
-
-                UserTimelineMongoDAO.save(userTimeline, namespace)
-
-                // Verify dialog is saved
-                val savedDialog =
-                    UserTimelineMongoDAO.dialogCol.findOne(
-                        DialogCol::_id eq dialog.id,
-                    )
-                assertTrue(savedDialog != null, "Dialog should be saved")
-
-                // Wait a bit for async save to complete
-                delay(100)
-
-                // Test without date filter to verify dialog is found
-                val queryWithoutFilter =
-                    DialogReportQuery(
-                        namespace = namespace,
-                        nlpModel = nlpModel,
-                        applicationId = applicationId,
-                        dialogCreationDateFrom = null,
-                        dialogCreationDateTo = null,
-                        displayTests = true,
-                    )
-                val resultWithoutFilter = UserTimelineMongoDAO.search(queryWithoutFilter)
-                assertTrue(
-                    resultWithoutFilter.total > 0L,
-                    "Dialog should be found without date filter. Found: ${resultWithoutFilter.total}. " +
-                        "Saved dialog applicationIds: ${savedDialog?.applicationIds}, " +
-                        "Query applicationId: $applicationId, " +
-                        "Query nlpModel: test",
-                )
-
-                val query =
-                    DialogReportQuery(
-                        namespace = namespace,
-                        nlpModel = nlpModel,
-                        applicationId = applicationId,
-                        dialogCreationDateFrom = filterDate,
-                        dialogCreationDateTo = null,
-                    )
-
-                // Verify that the filter is correctly generated
-                val filter =
-                    MongoAgg.filterByOldestDateInPeriod(
-                        inputField = "stories",
-                        datePath = "actions.date",
-                        fromDate = filterDate,
-                        toDate = null,
-                    )
-                assertFilterContainsExpr(filter, "\$gte")
-
-                val result = UserTimelineMongoDAO.search(query)
-                assertEquals(
-                    0L,
-                    result.total,
-                    "BUG REPRODUCTION: Dialog with first action ($firstActionDate) before filter ($filterDate) " +
-                        "should NOT be included, even if a later action ($laterActionDate) is after the filter. " +
-                        "Current buggy behavior: Stories.actions.date matches ANY action, causing dialog to be incorrectly included. " +
-                        "Actual result: ${result.total}",
-                )
-            } finally {
-                BotApplicationConfigurationMongoDAO.delete(botConfig)
-            }
         }
 
     @Test
@@ -598,41 +453,7 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                 UserTimelineMongoDAO.save(userTimeline, namespace)
                 delay(100)
 
-                // Test 1: dialogCreationDateFrom inclusive - dialog at exact date should be included
-                val queryCreationFrom =
-                    DialogReportQuery(
-                        namespace = namespace,
-                        nlpModel = nlpModel,
-                        applicationId = applicationId,
-                        dialogCreationDateFrom = filterDate,
-                        dialogCreationDateTo = null,
-                        displayTests = true,
-                    )
-                val resultCreationFrom = UserTimelineMongoDAO.search(queryCreationFrom)
-                assertTrue(
-                    resultCreationFrom.total >= 2L,
-                    "dialogCreationDateFrom should be INCLUSIVE: dialogs at exact date ($dialogAtExactDate) and after ($dialogAfterDate) " +
-                        "should be included. Found: ${resultCreationFrom.total}",
-                )
-
-                // Test 2: dialogCreationDateTo inclusive - dialog at exact date should be included
-                val queryCreationTo =
-                    DialogReportQuery(
-                        namespace = namespace,
-                        nlpModel = nlpModel,
-                        applicationId = applicationId,
-                        dialogCreationDateFrom = null,
-                        dialogCreationDateTo = filterDate,
-                        displayTests = true,
-                    )
-                val resultCreationTo = UserTimelineMongoDAO.search(queryCreationTo)
-                assertTrue(
-                    resultCreationTo.total >= 2L,
-                    "dialogCreationDateTo should be INCLUSIVE: dialogs at exact date ($dialogAtExactDate) and before ($dialogBeforeDate) " +
-                        "should be included. Found: ${resultCreationTo.total}",
-                )
-
-                // Test 3: dialogActivityFrom inclusive - dialog at exact date should be included
+                // Test 1: dialogActivityFrom inclusive - dialog at exact date should be included
                 val queryActivityFrom =
                     DialogReportQuery(
                         namespace = namespace,
@@ -649,7 +470,7 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                         "should be included. Found: ${resultActivityFrom.total}",
                 )
 
-                // Test 4: dialogActivityTo inclusive - dialog at exact date should be included
+                // Test 2: dialogActivityTo inclusive - dialog at exact date should be included
                 val queryActivityTo =
                     DialogReportQuery(
                         namespace = namespace,

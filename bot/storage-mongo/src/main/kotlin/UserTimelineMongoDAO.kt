@@ -765,10 +765,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     } else {
                                         Stories.actions.annotation.creationDate lte annotationCreationDateTo?.toInstant()
                                     },
-                                    buildDialogCreationDateFilter(
-                                        dialogCreationDateFrom,
-                                        dialogCreationDateTo,
-                                    ),
                                     buildDialogActivityFilter(
                                         query.dialogActivityFrom,
                                         query.dialogActivityTo,
@@ -1200,28 +1196,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     ) {
         fromDate?.let { filters += gte("stories.actions.date", it.toInstant()) }
         toDate?.let { filters += lte("stories.actions.date", it.toInstant()) }
-    }
-
-    /**
-     * Builds a filter for dialog creation date based on the first action date.
-     *
-     * Filters dialogs where the oldest action date (creation date) is within the specified period.
-     * Condition: creationDateFrom <= oldestDate <= creationDateTo
-     *
-     * @param creationDateFrom optional start date filter (inclusive)
-     * @param creationDateTo optional end date filter (inclusive)
-     * @return Bson filter expression, or null if both dates are null
-     */
-    private fun buildDialogCreationDateFilter(
-        creationDateFrom: ZonedDateTime?,
-        creationDateTo: ZonedDateTime?,
-    ): Bson? {
-        return MongoAgg.filterByOldestDateInPeriod(
-            inputField = "stories",
-            datePath = "actions.date",
-            fromDate = creationDateFrom,
-            toDate = creationDateTo,
-        )
     }
 
     /**
