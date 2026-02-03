@@ -39,7 +39,7 @@ import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import io.vertx.core.Future
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
@@ -107,11 +107,11 @@ internal class SseChannelsTest {
             responses.add(it)
             Future.succeededFuture<Unit>()
         }.also(channels::sendMissedEvents)
-        Assertions.assertEquals(expectedMissedResponses, responses)
+        assertEquals(expectedMissedResponses, responses)
         expectedNewResponses.forEach {
             listenerSlot.captured.invoke(ChannelEvent(appId, recipientId, it))
         }
-        Assertions.assertEquals(expectedMissedResponses + expectedNewResponses, responses)
+        assertEquals(expectedMissedResponses + expectedNewResponses, responses)
     }
 
     @Test
@@ -119,8 +119,6 @@ internal class SseChannelsTest {
         val appId = "my-app"
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
-        every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
         val channels = SseChannels()
         val responses = mutableListOf<WebConnectorResponseContract>()
         channels.register(appId, recipientId) {
@@ -128,7 +126,7 @@ internal class SseChannelsTest {
             Future.succeededFuture<Unit>()
         }
         channels.send(appId, recipientId, message).await()
-        Assertions.assertEquals(listOf(message), responses)
+        assertEquals(listOf(message), responses)
         verify(inverse = true) { channelDaoMock.save(any()) }
     }
 
@@ -137,8 +135,6 @@ internal class SseChannelsTest {
         val appId = "my-app"
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
-        every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
         every { channelDaoMock.save(any()) } just runs
         val channels = SseChannels()
         channels.send(appId, recipientId, message).await()
@@ -150,8 +146,6 @@ internal class SseChannelsTest {
         val appId = "my-app"
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
-        every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
         every { channelDaoMock.save(any()) } just runs
         val channels = SseChannels()
         channels.register(appId, recipientId) {
