@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package ai.tock.bot.connector.web.sse.channel
 
-package ai.tock.shared.security.auth.spi
+import java.util.UUID
 
-import io.vertx.core.Handler
-import io.vertx.ext.web.RoutingContext
-
-const val TOCK_USER_ID = "tock_user_id"
-
-/**
- * Handler to manage authentication.
- * All implementations MUST call routingContext.next() in a blocking thread.
- *
- * Custom implementations should store the final user id in the [RoutingContext] using `routingContext.put(TOCK_USER_ID, userId)`.
- */
-interface WebSecurityHandler : Handler<RoutingContext>
+internal data class SseChannel(val appId: String, val uuid: UUID, val userId: String, val onAction: ChannelCallback)

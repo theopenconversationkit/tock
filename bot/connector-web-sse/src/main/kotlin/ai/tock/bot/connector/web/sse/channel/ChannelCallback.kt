@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.connector.web.channel
+package ai.tock.bot.connector.web.sse.channel
 
-internal interface ChannelDAO {
-    fun listenChanges(listener: ChannelEvent.Handler)
+import ai.tock.bot.connector.web.WebConnectorResponseContract
+import io.vertx.core.Future
 
-    fun handleMissedEvents(
-        appId: String,
-        recipientId: String,
-        handler: ChannelEvent.Handler,
-    )
-
-    fun save(channelEvent: ChannelEvent)
-}
+internal typealias ChannelCallback = (webConnectorResponse: WebConnectorResponseContract) -> Future<*>

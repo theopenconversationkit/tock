@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.connector.web.channel
+package ai.tock.bot.connector.web.sse.channel
 
-import ai.tock.bot.connector.web.WebConnectorResponse
-import ai.tock.bot.engine.user.PlayerId
-import ai.tock.shared.injector
-import ai.tock.shared.provide
+import ai.tock.bot.connector.web.WebConnectorResponseContract
 import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
 import mu.KotlinLogging
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicBoolean
 
-internal class Channels {
-    private val channelDAO: ChannelDAO = injector.provide()
-    private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>()
+internal class SseChannels(private val channelDAO: ChannelDAO) {
+    private val initialized = AtomicBoolean(false)
+    private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<SseChannel>>()
 
-    init {
-        channelDAO.listenChanges { (appId, recipientId, response) ->
-            process(appId, recipientId, response)
+    fun initListeners() {
+        if (!initialized.getAndSet(true)) {
+            channelDAO.listenChanges { (appId, recipientId, response) ->
+                process(appId, recipientId, response)
+            }
         }
     }
 
     private fun process(
         appId: String,
         recipientId: String,
-        response: WebConnectorResponse,
+        response: WebConnectorResponseContract,
     ): Future<Boolean> =
         Future.all<CompositeFuture>(
             (channelsByUser[recipientId] ?: emptyList()).filter { it.appId == appId }.map { channel ->
@@ -52,35 +52,36 @@ internal class Channels {
         appId: String,
         userId: String,
         onAction: ChannelCallback,
-    ): Channel {
+    ): SseChannel {
         val channels =
             channelsByUser.getOrPut(userId) {
                 CopyOnWriteArrayList()
             }
-        val channel = Channel(appId, UUID.randomUUID(), userId, onAction)
-        channels.add(channel)
-        channelDAO.handleMissedEvents(appId, userId) { (_, _, response) ->
-            channel.onAction(response).map { true }
-        }
-        return channel
+        return SseChannel(appId, UUID.randomUUID(), userId, onAction).also(channels::add)
     }
 
-    fun unregister(channel: Channel) {
+    fun sendMissedEvents(channel: SseChannel) {
+        channelDAO.handleMissedEvents(channel.appId, channel.userId) { (_, _, response) ->
+            channel.onAction(response).map { true }
+        }
+    }
+
+    fun unregister(channel: SseChannel) {
         channelsByUser[channel.userId]?.removeIf {
             it.uuid == channel.uuid
         }
     }
 
     fun send(
-        applicationId: String,
-        recipientId: PlayerId,
-        response: WebConnectorResponse,
+        appId: String,
+        recipientId: String,
+        response: WebConnectorResponseContract,
     ): Future<Unit> {
         // First, attempt to send the response directly on this local instance
-        return process(applicationId, recipientId.id, response).transform {
+        return process(appId, recipientId, response).transform {
             // If we have to send it later or through another backend instance, go through database
             if (!(it.succeeded() && it.result())) {
-                channelDAO.save(ChannelEvent(applicationId, recipientId.id, response))
+                channelDAO.save(ChannelEvent(appId, recipientId, response))
             }
             Future.succeededFuture()
         }

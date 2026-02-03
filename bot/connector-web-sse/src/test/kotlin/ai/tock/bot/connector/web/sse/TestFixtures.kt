@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.connector.web.channel
 
-import ai.tock.bot.connector.web.WebConnectorResponse
-import io.vertx.core.Future
+package ai.tock.bot.connector.web.sse
 
-internal typealias ChannelCallback = (webConnectorResponse: WebConnectorResponse) -> Future<*>
+import ai.tock.bot.connector.web.WebConnectorResponseContent
+import ai.tock.bot.connector.web.send.WebMessageContent
+
+fun botResponse(msg: String) = WebConnectorResponseContent(listOf(WebMessageContent(text = msg)))
