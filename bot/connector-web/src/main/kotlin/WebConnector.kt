@@ -31,6 +31,7 @@ import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.connector.web.sse.SseEndpoint
+import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -63,13 +64,9 @@ import ai.tock.shared.propertyOrNull
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.WebSecurityCookiesHandler
-import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.setupSSE
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
-import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
@@ -104,13 +101,6 @@ class WebConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val webMapper =
-            mapper.copy().registerModules(
-                SimpleModule().apply {
-                    // fallback for serializing CharSequence
-                    addSerializer(CharSequence::class.java, ToStringSerializer())
-                },
-            )
         private val messageProcessor =
             WebMessageProcessor(
                 processMarkdown =
@@ -119,8 +109,6 @@ class WebConnector internal constructor(
                         ?: propertyOrNull("allow_markdown").toBoolean(),
             )
         private val sseEndpoint = SseEndpoint(webMapper)
-
-        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponseContract) = sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
     }
 
     override fun register(controller: ConnectorController) {
@@ -148,7 +136,7 @@ class WebConnector internal constructor(
             router.route("$path*").handler(corsHandler)
 
             if (sseEnabled) {
-                sseEndpoint.configureRoute(router, path, connectorId, webSecurityHandler)
+                sseEndpoint.configureRoute(router, "$path/sse", connectorId, webSecurityHandler)
             }
 
             if (directSseEnabled) {

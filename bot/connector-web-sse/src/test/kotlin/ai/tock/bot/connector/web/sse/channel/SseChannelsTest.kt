@@ -17,8 +17,7 @@
 package ai.tock.bot.connector.web.sse.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
-import ai.tock.bot.connector.web.sse.TestWebMessage
-import ai.tock.bot.connector.web.sse.WebConnectorResponse
+import ai.tock.bot.connector.web.sse.botResponse
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -41,12 +40,12 @@ internal class SseChannelsTest {
         val recipientId = "user1"
         val expectedMissedResponses =
             listOf(
-                WebConnectorResponse(TestWebMessage("Hello, are you still there?")),
-                WebConnectorResponse(TestWebMessage("I think the connection broke")),
+                botResponse("Hello, are you still there?"),
+                botResponse("I think the connection broke"),
             )
         val expectedNewResponses =
             listOf(
-                WebConnectorResponse(TestWebMessage("Welcome back")),
+                botResponse("Welcome back"),
             )
         every { channelDaoMock.listenChanges(capture(listenerSlot)) } just runs
         every { channelDaoMock.handleMissedEvents(any(), any(), any()) } answers {
@@ -72,7 +71,7 @@ internal class SseChannelsTest {
     fun `Channels do not go through database when unnecessary`() {
         val appId = "my-app"
         val recipientId = "user1"
-        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
+        val message = botResponse("Welcome back")
         val responses = mutableListOf<WebConnectorResponseContract>()
         channels.register(appId, recipientId) {
             responses.add(it)
@@ -87,7 +86,7 @@ internal class SseChannelsTest {
     fun `Channels register in database when user unavailable on instance`() {
         val appId = "my-app"
         val recipientId = "user1"
-        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
+        val message = botResponse("Welcome back")
         every { channelDaoMock.save(any()) } just runs
         channels.send(appId, recipientId, message).await()
         verify { channelDaoMock.save(any()) }
@@ -97,7 +96,7 @@ internal class SseChannelsTest {
     fun `Channels register in database when exception occurs`() {
         val appId = "my-app"
         val recipientId = "user1"
-        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
+        val message = botResponse("Welcome back")
         every { channelDaoMock.save(any()) } just runs
         channels.register(appId, recipientId) {
             Future.failedFuture<Unit>(IOException("Failed to write"))

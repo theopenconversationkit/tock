@@ -51,7 +51,7 @@ class SseEndpointTest {
     private val channels = SseChannels(channelDAO)
     private val endpoint = SseEndpoint(mapper, channels)
 
-    private val basePath = "/api/bot"
+    private val path = "/api/bot/sse"
     private val connectorId = "test-connector"
     private val userId = "integration-test-user"
     private val port = 8888
@@ -68,7 +68,7 @@ class SseEndpointTest {
         client = vertx.createHttpClient(HttpClientOptions().setDefaultPort(port).setDefaultHost("localhost"))
 
         val router = Router.router(vertx)
-        endpoint.configureRoute(router, basePath, connectorId, webSecurityHandler)
+        endpoint.configureRoute(router, path, connectorId, webSecurityHandler)
 
         vertx.createHttpServer()
             .requestHandler(router)
@@ -80,13 +80,13 @@ class SseEndpointTest {
     fun VertxTestContext.`SSE endpoint establishes connection and receives events`() {
         val text1 = "Hello from SSE!"
         val text2 = "Second message"
-        val message1 = WebConnectorResponse(TestWebMessage(text1))
-        val message2 = WebConnectorResponse(TestWebMessage(text2))
+        val message1 = botResponse(text1)
+        val message2 = botResponse(text2)
 
         val checkpoint = checkpoint(1)
 
         // Connect to SSE endpoint
-        client.request(HttpMethod.GET, "$basePath/sse?${SseEndpoint.USER_ID_QUERY_PARAM}=$userId")
+        client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$userId")
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { httpResponse ->
@@ -129,7 +129,7 @@ class SseEndpointTest {
 
     @Test
     fun VertxTestContext.`SSE endpoint rejects request without userId`() {
-        client.request(HttpMethod.GET, "$basePath/sse")
+        client.request(HttpMethod.GET, path)
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { response ->
@@ -146,7 +146,7 @@ class SseEndpointTest {
             context.put(TOCK_USER_ID, "test")
             context.next()
         }
-        client.request(HttpMethod.GET, "$basePath/sse")
+        client.request(HttpMethod.GET, path)
             .compose(HttpClientRequest::send)
             .onComplete(
                 succeeding { response ->
@@ -159,7 +159,7 @@ class SseEndpointTest {
 
     @Test
     fun VertxTestContext.`sendResponse saves to database when no local connection exists`() {
-        val message = WebConnectorResponse(TestWebMessage("Offline message"))
+        val message = botResponse("Offline message")
 
         endpoint.sendResponse(connectorId, "offline-user", message)
             .onComplete {
@@ -179,7 +179,7 @@ class SseEndpointTest {
 
         // Connect first client
         val future1 =
-            client.request(HttpMethod.GET, "$basePath/sse?${SseEndpoint.USER_ID_QUERY_PARAM}=$user1")
+            client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user1")
                 .compose(HttpClientRequest::send)
                 .onComplete(
                     succeeding { response1 ->
@@ -194,7 +194,7 @@ class SseEndpointTest {
 
         // Connect second client
         val future2 =
-            client.request(HttpMethod.GET, "$basePath/sse?${SseEndpoint.USER_ID_QUERY_PARAM}=$user2")
+            client.request(HttpMethod.GET, "$path?${SseEndpoint.USER_ID_QUERY_PARAM}=$user2")
                 .compose(HttpClientRequest::send)
                 .onComplete(
                     succeeding { response2 ->
@@ -210,10 +210,10 @@ class SseEndpointTest {
         Future.all(future1, future2).onComplete { _ ->
             // Send messages to different users
             listenerSlot.captured.invoke(
-                ChannelEvent(connectorId, user1, WebConnectorResponse(TestWebMessage("Message for user 1"))),
+                ChannelEvent(connectorId, user1, botResponse("Message for user 1")),
             )
             listenerSlot.captured.invoke(
-                ChannelEvent(connectorId, user2, WebConnectorResponse(TestWebMessage("Message for user 2"))),
+                ChannelEvent(connectorId, user2, botResponse("Message for user 2")),
             )
         }
     }

@@ -19,12 +19,15 @@ package ai.tock.bot.connector.web.sse
 import ai.tock.bot.connector.web.WebConnectorResponseContract
 import ai.tock.bot.connector.web.sse.channel.SseChannels
 import ai.tock.shared.injector
+import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.sendSseMessage
 import ai.tock.shared.vertx.setupSSE
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Router
@@ -36,19 +39,27 @@ class SseEndpoint internal constructor(
 ) {
     companion object {
         const val USER_ID_QUERY_PARAM = "userId"
+
+        val webMapper: ObjectMapper =
+            mapper.copy().registerModules(
+                SimpleModule().apply {
+                    // fallback for serializing CharSequence
+                    addSerializer(CharSequence::class.java, ToStringSerializer())
+                },
+            )
     }
 
     private val logger = KotlinLogging.logger {}
 
-    constructor(responseSerializer: ObjectMapper) : this(responseSerializer, SseChannels(injector.provide()))
+    constructor(responseSerializer: ObjectMapper = webMapper) : this(responseSerializer, SseChannels(injector.provide()))
 
     fun configureRoute(
         router: Router,
-        basePath: String,
+        path: String,
         connectorId: String,
         webSecurityHandler: WebSecurityHandler,
     ) {
-        router.get("$basePath/sse")
+        router.get(path)
             .handler(webSecurityHandler)
             .handler { context ->
                 try {
@@ -65,19 +76,19 @@ class SseEndpoint internal constructor(
     }
 
     fun sendResponse(
-        applicationId: String,
+        connectorId: String,
         recipientId: String,
         response: WebConnectorResponseContract,
-    ): Future<Unit> = channels.send(applicationId, recipientId, response)
+    ): Future<Unit> = channels.send(appId = connectorId, recipientId, response)
 
     private fun SseChannels.register(
         response: HttpServerResponse,
-        appId: String,
+        connectorId: String,
         userId: String,
     ) {
         initListeners()
         val channel =
-            register(appId, userId) { msg ->
+            register(appId = connectorId, userId) { msg ->
                 logger.debug { "send response from channel: $msg" }
                 response.sendSseMessage(responseSerializer.writeValueAsString(msg))
             }

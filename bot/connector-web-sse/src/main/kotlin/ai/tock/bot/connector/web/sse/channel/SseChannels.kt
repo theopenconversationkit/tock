@@ -73,15 +73,15 @@ internal class SseChannels(private val channelDAO: ChannelDAO) {
     }
 
     fun send(
-        applicationId: String,
+        appId: String,
         recipientId: String,
         response: WebConnectorResponseContract,
     ): Future<Unit> {
         // First, attempt to send the response directly on this local instance
-        return process(applicationId, recipientId, response).transform {
+        return process(appId, recipientId, response).transform {
             // If we have to send it later or through another backend instance, go through database
             if (!(it.succeeded() && it.result())) {
-                channelDAO.save(ChannelEvent(applicationId, recipientId, response))
+                channelDAO.save(ChannelEvent(appId, recipientId, response))
             }
             Future.succeededFuture()
         }
