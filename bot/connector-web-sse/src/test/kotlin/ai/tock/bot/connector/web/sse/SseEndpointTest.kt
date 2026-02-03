@@ -119,7 +119,7 @@ class SseEndpointTest {
                             }
                             checkpoint.flag()
                         } else {
-                            println("received: $chunk")
+                            println("[SSE endpoint test] received SSE chunk: '${chunk.trim()}'")
                         }
                     }
 
