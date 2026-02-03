@@ -37,11 +37,10 @@ Examples:
 """
 
 import os
+import re
 from datetime import datetime
 
-import requests
 from docopt import docopt
-from dotenv import load_dotenv
 from langfuse import Langfuse
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
@@ -74,7 +73,7 @@ def fetch_trace_by_item_and_dataset_run(client, dataset_run, item):
     """
     for item_run in dataset_run:
         if item.id == item_run.dataset_item_id:
-            trace = client.get_trace(item_run.trace_id)
+            trace = client.api.trace.get(item_run.trace_id)
             return trace
     return None
 
@@ -85,8 +84,9 @@ def append_runs_langfuse(
     runs: list[DatasetExperimentItemRun] = []
 
     for run_name in dataset_experiments.experiment_names:
-        dataset_run = client.get_dataset_run(
-            dataset_name=dataset_experiments.dataset_name, dataset_run_name=run_name
+        dataset_run = client.api.datasets.get_run(
+            dataset_name=dataset_experiments.dataset_name,
+            run_name=run_name,
         )
         trace = fetch_trace_by_item_and_dataset_run(
             client, dataset_run.dataset_run_items, dataset_item
@@ -144,7 +144,7 @@ def create_excel_output(
             if items:
                 no_rag_percentages[
                     run_idx
-                ] = f'{round(no_rag_count / len(items) * 100)}%'
+                ] = f"{round(no_rag_count / len(items) * 100)}%"
             else:
                 no_rag_percentages[run_idx] = '0%'
 
@@ -153,38 +153,38 @@ def create_excel_output(
         sheet.merge_cells(
             start_row=start_row, start_column=2, end_row=12 + 6 * i, end_column=2
         )
-        sheet[f'B{start_row}'] = iterations[i]
-        sheet[f'C{start_row}'] = items[0].runs[i].metadata['llm']['model']
-        sheet[f'D{start_row}'] = items[0].runs[i].metadata['llm']['temperature']
-        sheet[f'E{start_row}'] = (
+        sheet[f"B{start_row}"] = iterations[i]
+        sheet[f"C{start_row}"] = items[0].runs[i].metadata['llm']['model']
+        sheet[f"D{start_row}"] = items[0].runs[i].metadata['llm']['temperature']
+        sheet[f"E{start_row}"] = (
             no_rag_percentages.get(i, 'N/A') if 'NoRagStat' in metric_names else ''
         )
-        sheet[f'F{start_row}'] = items[0].runs[0].metadata['k']
-        sheet[f'G{start_row}'] = items[0].runs[i].metadata['document_index_name']
+        sheet[f"F{start_row}"] = items[0].runs[0].metadata['k']
+        sheet[f"G{start_row}"] = items[0].runs[i].metadata['document_index_name']
 
     for i in range(len(items)):
         col_letter = get_column_letter(
             10 + i
         )  # Start at col J (index 9 as indexes starts at 0 for letter A)
-        sheet[f'{col_letter}3'] = items[i].metadata.get('topic', '')
-        sheet[f'{col_letter}4'] = items[i].input.get('question', '')
-        sheet[f'{col_letter}5'] = items[i].expected_output.get('answer', '')
+        sheet[f"{col_letter}3"] = items[i].metadata.get('topic', '')
+        sheet[f"{col_letter}4"] = items[i].input.get('question', '')
+        sheet[f"{col_letter}5"] = items[i].expected_output.get('answer', '')
         for j in range(len(iterations)):
             start_row = 7 + 6 * j
-            sheet[f'{col_letter}{start_row}'] = (
+            sheet[f"{col_letter}{start_row}"] = (
                 items[i].runs[j].output.get('answer', '')
             )
-            sheet[f'{col_letter}{start_row + 1}'] = '\n\n'.join(
+            sheet[f"{col_letter}{start_row + 1}"] = '\n\n'.join(
                 [
-                    f'{doc.get("page_content", "")}'
+                    format_document_for_excel(doc)
                     for doc in items[i].runs[j].output.get('documents', [])
                     if isinstance(doc, dict)
                 ]
             )
-            sheet[f'{col_letter}{start_row + 5}'] = '\n\n'.join(
+            sheet[f"{col_letter}{start_row + 5}"] = '\n\n'.join(
                 f"{s.name} : {s.value:.2f} ({s.comment.split(':', 1)[1].strip()})"
                 if ':' in s.comment
-                else f'{s.name} : {s.value:.2f}'
+                else f"{s.name} : {s.value:.2f}"
                 for s in items[i].runs[j].scores
                 if s.name in metric_names and s.name != 'NoRagStat'
             )
@@ -192,10 +192,41 @@ def create_excel_output(
     wb.save(output_file)
 
 
+ILLEGAL_EXCEL_CHARS = re.compile(r'[\x00-\x08\x0B\x0C\x0E-\x1F]')
+
+
+def sanitize_for_excel(text: str) -> str:
+    # 1. Delete ```markdown
+    if text.startswith('```'):
+        text = text.strip('`').replace('markdown\n', '', 1).strip()
+
+    # 2. Delete illegal excel chars
+    text = ILLEGAL_EXCEL_CHARS.sub('', text)
+
+    return text
+
+
+def format_document_for_excel(doc: dict) -> str:
+    """
+    Format a document as:
+    [id: title]
+    sanitized_page_content
+    """
+    metadata = doc.get('metadata', {})
+
+    doc_id = metadata.get('id', 'unknown-id')
+    title = metadata.get('title', 'untitled')
+
+    raw_content = doc.get('page_content', '')
+    clean_content = sanitize_for_excel(raw_content)
+
+    return f"[{doc_id}: {title}]\n{clean_content}"
+
+
 def timestamped_filename(filename: str) -> str:
     base, ext = os.path.splitext(filename)
     timestamped = datetime.now().strftime('%Y%m%d-%H%M%S')
-    return f'{base}-{timestamped}{ext}'
+    return f"{base}-{timestamped}{ext}"
 
 
 def main():
@@ -210,11 +241,11 @@ def main():
         input_config = ExportExperimentsInput.from_json_file(
             cli_args['--json-config-file']
         )
-        logger.debug(f'\n{input_config.format()}')
+        logger.debug(f"\n{input_config.format()}")
 
-        location = f'{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}/output'
+        location = f"{input_config.bot.file_location}/{input_config.bot.namespace}-{input_config.bot.bot_id}/output"
         template_file_path = (
-            f'{location}/{timestamped_filename(input_config.template.file)}'
+            f"{location}/{timestamped_filename(input_config.template.file)}"
         )
 
         client = Langfuse(
@@ -246,9 +277,9 @@ def main():
 
         activity_status = StatusWithReason(status=ActivityStatus.COMPLETED)
     except Exception as e:
-        full_exception_name = f'{type(e).__module__}.{type(e).__name__}'
+        full_exception_name = f"{type(e).__module__}.{type(e).__name__}"
         activity_status = StatusWithReason(
-            status=ActivityStatus.FAILED, status_reason=f'{full_exception_name} : {e}'
+            status=ActivityStatus.FAILED, status_reason=f"{full_exception_name} : {e}"
         )
         logger.error(e, exc_info=True)
 
@@ -259,7 +290,7 @@ def main():
         items_count=len(items),
         success_rate=100,
     )
-    logger.debug(f'\n{output.format()}')
+    logger.debug(f"\n{output.format()}")
 
 
 if __name__ == '__main__':

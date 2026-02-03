@@ -1,0 +1,84 @@
+{
+  "bot": {
+    "namespace": "my-ns",
+    "bot_id": "my-bot",
+    "file_location": "/tmp/tock/ingestion"
+  },
+  "rag_query": {
+    "compressor_setting": null,
+    "dialog": {
+      "dialog_id": "dialog_id_123",
+      "user_id": "user_id_123",
+      "tags": [
+        "tag_1",
+        "tag_2"
+      ],
+      "history": []
+    },
+    "document_index_name": "my_index_88ff818b_7726_4ad4_a3ec_e0d84fe85f7e",
+    "document_search_params": {
+      "filter": null,
+      "k": 4,
+      "provider": "PGVector"
+    },
+    "embedding_question_em_setting": {
+      "api_base": "https://my-em.net",
+      "api_key": {
+        "secret": "XXX",
+        "type": "Raw"
+      },
+      "api_version": "2024-03-01-preview",
+      "deployment_name": "my-em-deployment",
+      "model": "text-embedding-ada-002",
+      "provider": "AzureOpenAIService"
+    },
+    "guardrail_setting": null,
+    "question_answering_llm_setting": {
+      "api_base": "https://my-llm.net",
+      "api_key": {
+        "secret": "XXX",
+        "type": "Raw"
+      },
+      "api_version": "2024-03-01-preview",
+      "deployment_name": "my-llm-deployment",
+      "model": "gpt-4o",
+      "temperature": 0.7,
+      "provider": "AzureOpenAIService"
+    },
+    "question_answering_prompt": {
+      "formatter": "jinja2",
+      "inputs": {
+        "locale": "French",
+        "no_answer": "[no_answer] Sorry, I don t know.",
+        "question": "Parle moi des assurances."
+      },
+      "template": "## Documentation\\n\\nUse the following documentation to answer the question:\\n\\n{{context}}\\n\\n## Question\\n\\n{{question}}"
+    },
+    "vector_store_setting": {
+      "provider": "PGVector",
+      "host": "localhost",
+      "port": 5432,
+      "username": "postgres",
+      "password": {
+        "type": "Raw",
+        "secret": "XXX"
+      }
+    },
+    "observability_setting": {
+      "provider": "Langfuse",
+      "url": "http://localhost:3000",
+      "secret_key": {
+        "type": "Raw",
+        "secret": "XXX"
+      },
+      "public_key": "XXX"
+    }
+  },
+  "dataset_experiment": {
+    "dataset_name": "my-dataset",
+    "experiment_name": "my-experiment",
+    "experiment_description": "Experiment description"
+  },
+  "rate_limit_delay": 15,
+  "export_settings": null
+}
