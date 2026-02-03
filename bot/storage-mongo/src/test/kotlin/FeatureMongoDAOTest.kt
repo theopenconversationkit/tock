@@ -334,6 +334,9 @@ internal class FeatureMongoDAOTest {
                     assertThrows<IllegalArgumentException> {
                         featureDAO.addFeature(botId, namespace, true, "category+invalid", "name", null, null)
                     }
+                    assertThrows<IllegalArgumentException> {
+                        featureDAO.addFeature(botId, namespace, true, "category,invalid", "name", null, null)
+                    }
                 }
             }
         }
