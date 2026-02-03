@@ -47,12 +47,9 @@ import io.mockk.verify as verifyMockk
 @ExtendWith(VertxExtension::class)
 class SseEndpointTest {
     private val channelDAO: ChannelDAO = mockk()
+    private val webSecurityHandler: WebSecurityHandler = mockk()
     private val channels = SseChannels(channelDAO)
     private val endpoint = SseEndpoint(mapper, channels)
-    private val webSecurityHandler: WebSecurityHandler =
-        mockk {
-            every { handle(any()) } answers { firstArg<RoutingContext>().next() }
-        }
 
     private val basePath = "/api/bot"
     private val connectorId = "test-connector"
@@ -66,6 +63,7 @@ class SseEndpointTest {
         every { channelDAO.listenChanges(any()) } just runs
         every { channelDAO.handleMissedEvents(any(), any(), any()) } just runs
         every { channelDAO.save(any()) } just runs
+        every { webSecurityHandler.handle(any()) } answers { firstArg<RoutingContext>().next() }
 
         client = vertx.createHttpClient(HttpClientOptions().setDefaultPort(port).setDefaultHost("localhost"))
 
