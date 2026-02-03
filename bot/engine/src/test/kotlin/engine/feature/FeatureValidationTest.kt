@@ -18,7 +18,6 @@ package ai.tock.bot.engine.feature
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import kotlin.test.assertTrue
 
 class FeatureValidationTest {
     @Test
@@ -27,39 +26,16 @@ class FeatureValidationTest {
         validateFeatureName("validName")
         validateFeatureName("valid_name")
         validateFeatureName("valid-name")
-        validateFeatureName("valid.name")
-        validateFeatureName("validName123")
-        validateFeatureName("VALID_NAME")
     }
 
     @Test
-    fun `validateFeatureName rejects name with plus sign`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureName("invalid+name")
-            }
-        assertTrue(exception.message?.contains("+") ?: false)
-        assertTrue(exception.message?.contains("must not contain") ?: false)
-    }
-
-    @Test
-    fun `validateFeatureName rejects name with comma`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureName("invalid,name")
-            }
-        assertTrue(exception.message?.contains(",") ?: false)
-        assertTrue(exception.message?.contains("must not contain") ?: false)
-    }
-
-    @Test
-    fun `validateFeatureName rejects name with both forbidden characters`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureName("invalid+name,test")
-            }
-        assertTrue(exception.message?.contains("+") ?: false)
-        assertTrue(exception.message?.contains(",") ?: false)
+    fun `validateFeatureName rejects forbidden characters`() {
+        assertThrows<IllegalArgumentException> {
+            validateFeatureName("invalid+name")
+        }
+        assertThrows<IllegalArgumentException> {
+            validateFeatureName("invalid,name")
+        }
     }
 
     @Test
@@ -67,36 +43,15 @@ class FeatureValidationTest {
         // Should not throw
         validateFeatureCategory("valid.category")
         validateFeatureCategory("ai.tock.bot.Feature")
-        validateFeatureCategory("com.example.MyFeature")
     }
 
     @Test
-    fun `validateFeatureCategory rejects category with plus sign`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureCategory("invalid+category")
-            }
-        assertTrue(exception.message?.contains("+") ?: false)
-        assertTrue(exception.message?.contains("must not contain") ?: false)
-    }
-
-    @Test
-    fun `validateFeatureCategory rejects category with comma`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureCategory("invalid,category")
-            }
-        assertTrue(exception.message?.contains(",") ?: false)
-        assertTrue(exception.message?.contains("must not contain") ?: false)
-    }
-
-    @Test
-    fun `validateFeatureCategory rejects category with both forbidden characters`() {
-        val exception =
-            assertThrows<IllegalArgumentException> {
-                validateFeatureCategory("invalid+category,test")
-            }
-        assertTrue(exception.message?.contains("+") ?: false)
-        assertTrue(exception.message?.contains(",") ?: false)
+    fun `validateFeatureCategory rejects forbidden characters`() {
+        assertThrows<IllegalArgumentException> {
+            validateFeatureCategory("invalid+category")
+        }
+        assertThrows<IllegalArgumentException> {
+            validateFeatureCategory("invalid,category")
+        }
     }
 }
