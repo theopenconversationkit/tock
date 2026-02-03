@@ -18,6 +18,8 @@ package ai.tock.bot.connector.web.sse
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
 import ai.tock.bot.connector.web.sse.channel.SseChannels
+import ai.tock.shared.injector
+import ai.tock.shared.provide
 import ai.tock.shared.security.auth.spi.TOCK_USER_ID
 import ai.tock.shared.security.auth.spi.WebSecurityHandler
 import ai.tock.shared.vertx.sendSseMessage
@@ -28,13 +30,17 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
 
-class SseEndpoint(internal val responseSerializer: ObjectMapper) {
+class SseEndpoint internal constructor(
+    private val responseSerializer: ObjectMapper,
+    private val channels: SseChannels,
+) {
     companion object {
         const val USER_ID_QUERY_PARAM = "userId"
     }
 
     private val logger = KotlinLogging.logger {}
-    private val channels = SseChannels()
+
+    constructor(responseSerializer: ObjectMapper) : this(responseSerializer, SseChannels(injector.provide()))
 
     fun configureRoute(
         router: Router,
@@ -46,8 +52,12 @@ class SseEndpoint(internal val responseSerializer: ObjectMapper) {
             .handler(webSecurityHandler)
             .handler { context ->
                 try {
-                    val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()[USER_ID_QUERY_PARAM]
-                    channels.register(context.response(), connectorId, userId)
+                    val userId: String? = context.get<String>(TOCK_USER_ID) ?: context.queryParams()[USER_ID_QUERY_PARAM]
+                    if (userId != null) {
+                        channels.register(context.response(), connectorId, userId)
+                    } else {
+                        context.fail(400, NullPointerException("missing userId in request"))
+                    }
                 } catch (t: Throwable) {
                     context.fail(t)
                 }

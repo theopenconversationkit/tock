@@ -17,21 +17,8 @@
 package ai.tock.bot.connector.web.sse.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
-import ai.tock.bot.connector.web.send.Button
-import ai.tock.bot.connector.web.send.Footnote
-import ai.tock.bot.connector.web.send.WebCard
-import ai.tock.bot.connector.web.send.WebCarousel
-import ai.tock.bot.connector.web.send.WebDeepLink
-import ai.tock.bot.connector.web.send.WebImage
-import ai.tock.bot.connector.web.send.WebMessageContract
-import ai.tock.bot.connector.web.send.WebWidget
-import ai.tock.shared.injector
-import ai.tock.shared.tockInternalInjector
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.singleton
+import ai.tock.bot.connector.web.sse.TestWebMessage
+import ai.tock.bot.connector.web.sse.WebConnectorResponse
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -40,44 +27,13 @@ import io.mockk.slot
 import io.mockk.verify
 import io.vertx.core.Future
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
 internal class SseChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()
+    private val channels = SseChannels(channelDaoMock)
 
-    @BeforeEach
-    fun setUp() {
-        tockInternalInjector = KodeinInjector()
-        injector.inject(
-            Kodein {
-                bind<ChannelDAO>() with singleton { channelDaoMock }
-            },
-        )
-    }
-
-    internal data class WebConnectorResponse(
-        override val responses: List<WebMessageContract>,
-        override val metadata: Map<String, String> = emptyMap(),
-    ) : WebConnectorResponseContract {
-        constructor(vararg messages: WebMessageContract) : this(listOf(*messages))
-    }
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    internal data class TestWebMessage(
-        override val text: String? = null,
-    ) : WebMessageContract {
-        override val buttons: List<Button> = emptyList()
-        override val card: WebCard? = null
-        override val carousel: WebCarousel? = null
-        override val widget: WebWidget? = null
-        override val image: WebImage? = null
-        override val version: String = "1"
-        override val deepLink: WebDeepLink? = null
-        override val footnotes: List<Footnote> = emptyList()
-        override val actionId: String? = null
-    }
 
     @Test
     fun `Channels process both missed and new events`() {
@@ -100,7 +56,6 @@ internal class SseChannelsTest {
                 handler(ChannelEvent(appId, recipientId, it))
             }
         }
-        val channels = SseChannels()
         val responses = mutableListOf<WebConnectorResponseContract>()
         channels.initListeners()
         channels.register(appId, recipientId) {
@@ -119,7 +74,6 @@ internal class SseChannelsTest {
         val appId = "my-app"
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
-        val channels = SseChannels()
         val responses = mutableListOf<WebConnectorResponseContract>()
         channels.register(appId, recipientId) {
             responses.add(it)
@@ -136,7 +90,6 @@ internal class SseChannelsTest {
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
         every { channelDaoMock.save(any()) } just runs
-        val channels = SseChannels()
         channels.send(appId, recipientId, message).await()
         verify { channelDaoMock.save(any()) }
     }
@@ -147,7 +100,6 @@ internal class SseChannelsTest {
         val recipientId = "user1"
         val message = WebConnectorResponse(TestWebMessage("Welcome back"))
         every { channelDaoMock.save(any()) } just runs
-        val channels = SseChannels()
         channels.register(appId, recipientId) {
             Future.failedFuture<Unit>(IOException("Failed to write"))
         }

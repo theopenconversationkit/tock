@@ -16,8 +16,6 @@
 package ai.tock.bot.connector.web.sse.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
-import ai.tock.shared.injector
-import ai.tock.shared.provide
 import io.vertx.core.CompositeFuture
 import io.vertx.core.Future
 import mu.KotlinLogging
@@ -26,9 +24,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class SseChannels {
+internal class SseChannels(private val channelDAO: ChannelDAO) {
     private val initialized = AtomicBoolean(false)
-    private val channelDAO: ChannelDAO = injector.provide()
     private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<SseChannel>>()
 
     fun initListeners() {
