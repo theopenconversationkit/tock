@@ -15,8 +15,10 @@
  */
 package ai.tock.bot.connector.web.sse.channel
 
+import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.connector.web.WebConnectorResponseContract
 import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.vertx.core.Future
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -28,6 +30,7 @@ import java.time.Instant
 internal data class ChannelEvent(
     val appId: String = "unknown",
     val recipientId: String,
+    @get:JsonDeserialize(`as` = WebConnectorResponseContent::class)
     val webConnectorResponse: WebConnectorResponseContract,
     val status: Status = Status.ENQUEUED,
     val enqueuedAt: Instant = Instant.now(),
