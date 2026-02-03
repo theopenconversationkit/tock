@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web
+package ai.tock.bot.connector.web.sse
 
-import ai.tock.bot.connector.web.channel.ChannelDAO
-import ai.tock.bot.connector.web.channel.ChannelMongoDAO
+import ai.tock.bot.connector.web.sse.channel.ChannelDAO
+import ai.tock.bot.connector.web.sse.channel.ChannelMongoDAO
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind

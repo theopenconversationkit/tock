@@ -26,11 +26,11 @@ import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
-import ai.tock.bot.connector.web.channel.Channels
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.sse.SseEndpoint
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -118,9 +118,9 @@ class WebConnector internal constructor(
                         // Fallback to previous property name for backward compatibility
                         ?: propertyOrNull("allow_markdown").toBoolean(),
             )
-        private val channels by lazy { Channels() }
+        private val sseEndpoint = SseEndpoint(webMapper)
 
-        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponse) = sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
+        internal fun HttpServerResponse.sendSseResponse(webConnectorResponse: WebConnectorResponseContract) = sendSseMessage(webMapper.writeValueAsString(webConnectorResponse))
     }
 
     override fun register(controller: ConnectorController) {
@@ -148,23 +148,9 @@ class WebConnector internal constructor(
             router.route("$path*").handler(corsHandler)
 
             if (sseEnabled) {
-                router.route("$path/sse")
-                    .handler(webSecurityHandler)
-                    .handler { context ->
-                        try {
-                            val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
-                            val response = context.response()
-                            val channelId =
-                                channels.register(connectorId, userId) { webConnectorResponse ->
-                                    logger.debug { "send response from channel: $webConnectorResponse" }
-                                    response.sendSseResponse(webConnectorResponse)
-                                }
-                            response.setupSSE { channels.unregister(channelId) }
-                        } catch (t: Throwable) {
-                            context.fail(t)
-                        }
-                    }
+                sseEndpoint.configureRoute(router, path, connectorId, webSecurityHandler)
             }
+
             if (directSseEnabled) {
                 router.route("$path/sse/direct")
                     .handler { context ->
@@ -186,7 +172,7 @@ class WebConnector internal constructor(
                 .handler(webSecurityHandler)
                 .handler { context ->
                     // Override the user on the request body
-                    val tockUserId = context.get<String>(TOCK_USER_ID)
+                    val tockUserId: String? = context.get<String>(TOCK_USER_ID)
                     val body =
                         tockUserId?.let {
                             val jsonBody = context.body().asJsonObject() ?: JsonObject()
@@ -403,13 +389,17 @@ class WebConnector internal constructor(
     ) {
         if (callback.streamedResponse) {
             if (event.metadata.lastAnswer) {
-                callback.addMetadata(MetadataEvent.lastAnswer(event.applicationId))
+                callback.addMetadata(MetadataEvent.lastAnswer(event.connectorId))
             }
             callback.sendStreamedResponse(event)
         } else {
             callback.addAction(event)
             if (sseEnabled) {
-                channels.send(event.applicationId, event.recipientId, callback.createResponse(listOf(event)))
+                sseEndpoint.sendResponse(
+                    event.connectorId,
+                    event.recipientId.id,
+                    callback.createResponse(listOf(event)),
+                )
             }
             if (event.metadata.lastAnswer) {
                 callback.sendResponse()

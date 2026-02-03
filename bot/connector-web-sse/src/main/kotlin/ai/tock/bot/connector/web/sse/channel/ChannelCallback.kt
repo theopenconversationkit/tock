@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.bot.connector.web.channel
+package ai.tock.bot.connector.web.sse.channel
 
-import java.util.UUID
+import ai.tock.bot.connector.web.WebConnectorResponseContract
+import io.vertx.core.Future
 
-internal data class Channel(val appId: String, val uuid: UUID, val userId: String, val onAction: ChannelCallback)
+internal typealias ChannelCallback = (webConnectorResponse: WebConnectorResponseContract) -> Future<*>

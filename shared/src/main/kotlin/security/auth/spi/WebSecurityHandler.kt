@@ -25,5 +25,6 @@ const val TOCK_USER_ID = "tock_user_id"
  * Handler to manage authentication.
  * All implementations MUST call routingContext.next() in a blocking thread.
  *
+ * Custom implementations should store the final user id in the [RoutingContext] using `routingContext.put(TOCK_USER_ID, userId)`.
  */
 interface WebSecurityHandler : Handler<RoutingContext>

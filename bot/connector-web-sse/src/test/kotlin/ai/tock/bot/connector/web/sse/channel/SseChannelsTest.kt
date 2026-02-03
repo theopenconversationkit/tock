@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import ai.tock.bot.connector.web.WebConnectorResponse
-import ai.tock.bot.connector.web.WebMessage
-import ai.tock.bot.connector.web.channel.ChannelDAO
-import ai.tock.bot.connector.web.channel.ChannelEvent
-import ai.tock.bot.connector.web.channel.Channels
-import ai.tock.bot.engine.user.PlayerId
+package ai.tock.bot.connector.web.sse.channel
+
+import ai.tock.bot.connector.web.WebConnectorResponseContract
+import ai.tock.bot.connector.web.send.Button
+import ai.tock.bot.connector.web.send.Footnote
+import ai.tock.bot.connector.web.send.WebCard
+import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.connector.web.send.WebDeepLink
+import ai.tock.bot.connector.web.send.WebImage
+import ai.tock.bot.connector.web.send.WebMessageContract
+import ai.tock.bot.connector.web.send.WebWidget
 import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
@@ -33,12 +39,12 @@ import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import io.vertx.core.Future
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.IOException
 
-internal class ChannelsTest {
+internal class SseChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()
 
     @BeforeEach
@@ -51,6 +57,28 @@ internal class ChannelsTest {
         )
     }
 
+    internal data class WebConnectorResponse(
+        override val responses: List<WebMessageContract>,
+        override val metadata: Map<String, String> = emptyMap(),
+    ) : WebConnectorResponseContract {
+        constructor(vararg messages: WebMessageContract) : this(listOf(*messages))
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    internal data class TestWebMessage(
+        override val text: String? = null,
+    ) : WebMessageContract {
+        override val buttons: List<Button> = emptyList()
+        override val card: WebCard? = null
+        override val carousel: WebCarousel? = null
+        override val widget: WebWidget? = null
+        override val image: WebImage? = null
+        override val version: String = "1"
+        override val deepLink: WebDeepLink? = null
+        override val footnotes: List<Footnote> = emptyList()
+        override val actionId: String? = null
+    }
+
     @Test
     fun `Channels process both missed and new events`() {
         val listenerSlot = slot<ChannelEvent.Handler>()
@@ -58,12 +86,12 @@ internal class ChannelsTest {
         val recipientId = "user1"
         val expectedMissedResponses =
             listOf(
-                WebConnectorResponse(listOf(WebMessage("Hello, are you still there?"))),
-                WebConnectorResponse(listOf(WebMessage("I think the connection broke"))),
+                WebConnectorResponse(TestWebMessage("Hello, are you still there?")),
+                WebConnectorResponse(TestWebMessage("I think the connection broke")),
             )
         val expectedNewResponses =
             listOf(
-                WebConnectorResponse(listOf(WebMessage("Welcome back"))),
+                WebConnectorResponse(TestWebMessage("Welcome back")),
             )
         every { channelDaoMock.listenChanges(capture(listenerSlot)) } just runs
         every { channelDaoMock.handleMissedEvents(any(), any(), any()) } answers {
@@ -72,46 +100,47 @@ internal class ChannelsTest {
                 handler(ChannelEvent(appId, recipientId, it))
             }
         }
-        val channels = Channels()
-        val responses = mutableListOf<WebConnectorResponse>()
+        val channels = SseChannels()
+        val responses = mutableListOf<WebConnectorResponseContract>()
+        channels.initListeners()
         channels.register(appId, recipientId) {
             responses.add(it)
             Future.succeededFuture<Unit>()
-        }
-        assertEquals(expectedMissedResponses, responses)
+        }.also(channels::sendMissedEvents)
+        Assertions.assertEquals(expectedMissedResponses, responses)
         expectedNewResponses.forEach {
             listenerSlot.captured.invoke(ChannelEvent(appId, recipientId, it))
         }
-        assertEquals(expectedMissedResponses + expectedNewResponses, responses)
+        Assertions.assertEquals(expectedMissedResponses + expectedNewResponses, responses)
     }
 
     @Test
     fun `Channels do not go through database when unnecessary`() {
         val appId = "my-app"
-        val recipientId = PlayerId("user1")
-        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        val recipientId = "user1"
+        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
         every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
-        val channels = Channels()
-        val responses = mutableListOf<WebConnectorResponse>()
-        channels.register(appId, recipientId.id) {
+        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
+        val channels = SseChannels()
+        val responses = mutableListOf<WebConnectorResponseContract>()
+        channels.register(appId, recipientId) {
             responses.add(it)
             Future.succeededFuture<Unit>()
         }
         channels.send(appId, recipientId, message).await()
-        assertEquals(listOf(message), responses)
+        Assertions.assertEquals(listOf(message), responses)
         verify(inverse = true) { channelDaoMock.save(any()) }
     }
 
     @Test
     fun `Channels register in database when user unavailable on instance`() {
         val appId = "my-app"
-        val recipientId = PlayerId("user1")
-        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        val recipientId = "user1"
+        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
         every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
+        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
         every { channelDaoMock.save(any()) } just runs
-        val channels = Channels()
+        val channels = SseChannels()
         channels.send(appId, recipientId, message).await()
         verify { channelDaoMock.save(any()) }
     }
@@ -119,13 +148,13 @@ internal class ChannelsTest {
     @Test
     fun `Channels register in database when exception occurs`() {
         val appId = "my-app"
-        val recipientId = PlayerId("user1")
-        val message = WebConnectorResponse(listOf(WebMessage("Welcome back")))
+        val recipientId = "user1"
+        val message = WebConnectorResponse(TestWebMessage("Welcome back"))
         every { channelDaoMock.listenChanges(any()) } just runs
-        every { channelDaoMock.handleMissedEvents(appId, recipientId.id, any()) } just runs
+        every { channelDaoMock.handleMissedEvents(appId, recipientId, any()) } just runs
         every { channelDaoMock.save(any()) } just runs
-        val channels = Channels()
-        channels.register(appId, recipientId.id) {
+        val channels = SseChannels()
+        channels.register(appId, recipientId) {
             Future.failedFuture<Unit>(IOException("Failed to write"))
         }
         channels.send(appId, recipientId, message).await()

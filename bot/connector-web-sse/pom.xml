@@ -23,32 +23,21 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>tock-bot-connector-web</artifactId>
-    <name>Tock Bot Web Connector</name>
-    <description>Bot Connector for REST API</description>
-
+    <artifactId>tock-bot-connector-web-sse</artifactId>
+    <name>Tock Bot Web Connector SSE</name>
     <dependencies>
-
         <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-web-model</artifactId>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-connector-web-sse</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-engine-jackson</artifactId>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-orchestration</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo</artifactId>
@@ -57,6 +46,18 @@
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo-async</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-web-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-shared</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ai.tock</groupId>
@@ -64,36 +65,19 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.launchdarkly</groupId>
-            <artifactId>okhttp-eventsource</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.commonmark</groupId>
-            <artifactId>commonmark</artifactId>
-        </dependency>
     </dependencies>
+
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>

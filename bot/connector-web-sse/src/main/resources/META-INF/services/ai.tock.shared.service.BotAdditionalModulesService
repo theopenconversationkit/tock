@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-ai.tock.bot.connector.web.IOCModulesService
+ai.tock.bot.connector.web.sse.IOCModulesService
