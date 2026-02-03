@@ -34,7 +34,6 @@ internal class SseChannelsTest {
     private val channelDaoMock: ChannelDAO = mockk()
     private val channels = SseChannels(channelDaoMock)
 
-
     @Test
     fun `Channels process both missed and new events`() {
         val listenerSlot = slot<ChannelEvent.Handler>()
