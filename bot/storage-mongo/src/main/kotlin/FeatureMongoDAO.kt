@@ -18,6 +18,8 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
+import ai.tock.bot.engine.feature.validateFeatureCategory
+import ai.tock.bot.engine.feature.validateFeatureName
 import ai.tock.bot.mongo.Feature_.Companion.BotId
 import ai.tock.bot.mongo.Feature_.Companion.Namespace
 import ai.tock.bot.mongo.Feature_.Companion._id
@@ -160,6 +162,8 @@ internal class FeatureMongoDAO(
         applicationId: String?,
         graduation: Int?,
     ) {
+        validateFeatureCategory(category)
+        validateFeatureName(name)
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate, graduation)
 
@@ -173,6 +177,8 @@ internal class FeatureMongoDAO(
         name: String,
         applicationId: String?,
     ) {
+        validateFeatureCategory(category)
+        validateFeatureName(name)
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", false, botId, namespace)
         col.save(feature)
@@ -209,6 +215,8 @@ internal class FeatureMongoDAO(
         applicationId: String?,
         graduation: Int?,
     ) {
+        validateFeatureCategory(category)
+        validateFeatureName(name)
         val id = calculateId(botId, namespace, category, name, applicationId)
         val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate, graduation)
         col.save(feature)

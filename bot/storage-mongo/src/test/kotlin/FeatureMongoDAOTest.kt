@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.CoroutineFindPublisher
 import org.litote.kmongo.coroutine.coroutine
@@ -312,6 +313,30 @@ internal class FeatureMongoDAOTest {
                     assertFalse(featureDAO.isEnabled(botId, namespace, feature, false))
 
                     `assert that feature is persisted with`(id, false)
+                }
+            }
+
+            @Test
+            fun `addFeature rejects forbidden characters in name`() {
+                runBlocking {
+                    assertThrows<IllegalArgumentException> {
+                        featureDAO.addFeature(botId, namespace, true, "category", "name+invalid", null, null)
+                    }
+                    assertThrows<IllegalArgumentException> {
+                        featureDAO.addFeature(botId, namespace, true, "category", "name,invalid", null, null)
+                    }
+                }
+            }
+
+            @Test
+            fun `addFeature rejects forbidden characters in category`() {
+                runBlocking {
+                    assertThrows<IllegalArgumentException> {
+                        featureDAO.addFeature(botId, namespace, true, "category+invalid", "name", null, null)
+                    }
+                    assertThrows<IllegalArgumentException> {
+                        featureDAO.addFeature(botId, namespace, true, "category,invalid", "name", null, null)
+                    }
                 }
             }
         }
