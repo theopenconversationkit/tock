@@ -37,6 +37,6 @@ repos:
     hooks:
       - id: pip-audit
         additional_dependencies:
-          - "pip>=25.3"
+          - "pip>=26.0"
           - "filelock>=3.20.3"
           - "urllib3>=2.6.3"
