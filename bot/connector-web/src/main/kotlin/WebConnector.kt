@@ -26,6 +26,7 @@ import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.connector.web.channel.Channel
 import ai.tock.bot.connector.web.channel.Channels
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
@@ -154,12 +155,15 @@ class WebConnector internal constructor(
                         try {
                             val userId = context.get<String>(TOCK_USER_ID) ?: context.queryParams()["userId"]
                             val response = context.response()
-                            val channelId =
+                            // Setup SSE before registering channel to avoid "Response head already sent" error
+                            // when missed events are immediately sent during registration
+                            var channelId: Channel? = null
+                            response.setupSSE { channelId?.let { channels.unregister(it) } }
+                            channelId =
                                 channels.register(connectorId, userId) { webConnectorResponse ->
                                     logger.debug { "send response from channel: $webConnectorResponse" }
                                     response.sendSseResponse(webConnectorResponse)
                                 }
-                            response.setupSSE { channels.unregister(channelId) }
                         } catch (t: Throwable) {
                             context.fail(t)
                         }
