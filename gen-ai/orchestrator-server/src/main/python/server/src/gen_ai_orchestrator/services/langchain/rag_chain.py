@@ -23,9 +23,6 @@ from functools import partial
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from langchain.chains.conversational_retrieval.base import (
-    ConversationalRetrievalChain,
-)
 from langchain.retrievers.contextual_compression import (
     ContextualCompressionRetriever,
 )
@@ -40,6 +37,7 @@ from langchain_core.runnables import (
     RunnablePassthrough,
     RunnableSerializable,
 )
+from langchain_core.runnables.config import RunnableConfig
 from langchain_core.vectorstores import VectorStoreRetriever
 from langfuse import get_client, propagate_attributes
 from typing_extensions import Any
@@ -71,10 +69,7 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     TextWithFootnotes,
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
-from gen_ai_orchestrator.routers.responses.responses import (
-    ObservabilityInfo,
-    RAGResponse,
-)
+from gen_ai_orchestrator.routers.responses.responses import RAGResponse
 from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
     RAGCallbackHandler,
 )
@@ -129,9 +124,9 @@ async def execute_rag_chain(
                 message_history.add_user_message(msg.text)
             else:
                 message_history.add_ai_message(msg.text)
-        session_id = (request.dialog.dialog_id,)
-        user_id = (request.dialog.user_id,)
-        tags = (request.dialog.tags,) or []
+        session_id = request.dialog.dialog_id
+        user_id = request.dialog.user_id
+        tags = request.dialog.tags or []
 
     logger.debug(
         'RAG chain - Use chat history: %s',
@@ -165,18 +160,18 @@ async def execute_rag_chain(
 
     metadata = {}
     if user_id is not None:
-        metadata['langfuse_user_id'] = str(user_id)
+        metadata['langfuse_user_id'] = user_id
     if session_id is not None:
-        metadata['langfuse_session_id'] = str(session_id)
+        metadata['langfuse_session_id'] = session_id
     if tags:
-        metadata['langfuse_tags'] = list(tags)
+        metadata['langfuse_tags'] = tags
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
-        config={
-            'callbacks': callback_handlers,
-            'metadata': metadata,
-        },
+        config=RunnableConfig(
+            callbacks=callback_handlers,
+            metadata=metadata,
+        ),
     )
 
     # RAG Guard
