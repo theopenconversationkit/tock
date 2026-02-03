@@ -157,9 +157,9 @@ class WebConnector internal constructor(
                             val response = context.response()
                             // Setup SSE before registering channel to avoid "Response head already sent" error
                             // when missed events are immediately sent during registration
-                            var channelId: Channel? = null
-                            response.setupSSE { channelId?.let { channels.unregister(it) } }
-                            channelId =
+                            var channel: Channel? = null
+                            response.setupSSE { channel?.let { channels.unregister(it) } }
+                            channel =
                                 channels.register(connectorId, userId) { webConnectorResponse ->
                                     logger.debug { "send response from channel: $webConnectorResponse" }
                                     response.sendSseResponse(webConnectorResponse)
