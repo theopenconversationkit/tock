@@ -35,114 +35,18 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.defaultNamespace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.bson.Document
-import org.bson.conversions.Bson
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
-import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
  *
  */
 internal class UserTimelineMongoDAOTest : AbstractTest() {
-    /**
-     * Helper function to extract Document from Bson.
-     * All DSL functions return Document instances wrapped as Bson, so direct cast is safe.
-     */
-    private fun org.bson.conversions.Bson.toDocument(): Document =
-        when (this) {
-            is Document -> this
-            else -> throw IllegalArgumentException("Expected Document but got ${this::class.simpleName}")
-        }
-
-    /**
-     * Converts a Document to a JSON string representation, handling Instant values safely.
-     * This is needed because MongoDB's default codec doesn't support Instant serialization.
-     */
-    private fun Document.toJsonSafe(): String {
-        // Convert Instant values to ISO strings for safe JSON serialization
-        val converted = Document()
-        this.forEach { (key, value) ->
-            converted[key] =
-                when (value) {
-                    is java.time.Instant -> value.toString()
-                    is Document -> value.toJsonSafe()
-                    is List<*> ->
-                        value.map {
-                            when (it) {
-                                is java.time.Instant -> it.toString()
-                                is Document -> it.toJsonSafe()
-                                else -> it
-                            }
-                        }
-                    else -> value
-                }
-        }
-        return converted.toJson()
-    }
-
-    /**
-     * Verifies that a filter contains an $expr with the expected structure.
-     */
-    private fun assertFilterContainsExpr(
-        filter: org.bson.conversions.Bson?,
-        expectedOperator: String? = null,
-    ) {
-        assertNotNull(filter, "Filter should not be null")
-        val doc = filter.toDocument()
-        assertTrue(
-            doc.containsKey("\$expr"),
-            "Filter should contain \$expr. Filter: ${doc.toJsonSafe()}",
-        )
-        val expr = doc.get("\$expr")
-        if (expectedOperator != null && expr is Document) {
-            assertTrue(
-                expr.containsKey(expectedOperator),
-                "Filter \$expr should contain $expectedOperator. Expr: ${expr.toJsonSafe()}",
-            )
-        }
-    }
-
-    /**
-     * Verifies that a filter contains an $expr with $and containing multiple conditions.
-     */
-    private fun assertFilterContainsExprWithAnd(filter: org.bson.conversions.Bson?) {
-        assertNotNull(filter, "Filter should not be null")
-        val doc = filter.toDocument()
-        assertTrue(
-            doc.containsKey("\$expr"),
-            "Filter should contain \$expr. Filter: ${doc.toJsonSafe()}",
-        )
-        val expr = doc.get("\$expr")
-        assertTrue(
-            expr is Document && expr.containsKey("\$and"),
-            "Filter \$expr should contain \$and for multiple conditions. Expr: ${expr?.let { (it as? Document)?.toJsonSafe() }}",
-        )
-    }
-
-    /**
-     * Verifies that a filter contains an $expr with a single condition (no $and).
-     */
-    private fun assertFilterContainsExprWithoutAnd(filter: org.bson.conversions.Bson?) {
-        assertNotNull(filter, "Filter should not be null")
-        val doc = filter.toDocument()
-        assertTrue(
-            doc.containsKey("\$expr"),
-            "Filter should contain \$expr. Filter: ${doc.toJsonSafe()}",
-        )
-        val expr = doc.get("\$expr")
-        assertTrue(
-            expr is Document && !expr.containsKey("\$and"),
-            "Filter \$expr should NOT contain \$and for single condition. Expr: ${expr?.let { (it as? Document)?.toJsonSafe() }}",
-        )
-    }
-
     @Test
     fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() =
         runBlocking {
