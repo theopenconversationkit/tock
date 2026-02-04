@@ -111,16 +111,16 @@
                 placeholder="Data collected after"
                 nbTooltip="Show dialogs containing messages created after this date"
                 [nbDatepicker]="from_date"
-                formControlName="dialogCreationDateFrom"
+                formControlName="dialogActivityFrom"
               />
               <button
-                *ngIf="!!getFormControl('dialogCreationDateFrom').value"
+                *ngIf="!!getFormControl('dialogActivityFrom').value"
                 nbButton
                 nbSuffix
                 ghost
                 nbTooltip="Clear"
                 type="button"
-                (click)="resetControl(getFormControl('dialogCreationDateFrom'))"
+                (click)="resetControl(getFormControl('dialogActivityFrom'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>
@@ -148,16 +148,16 @@
                 placeholder="Data collected before"
                 nbTooltip="Show dialogs containing messages created before this date"
                 [nbDatepicker]="to_date"
-                formControlName="dialogCreationDateTo"
+                formControlName="dialogActivityTo"
               />
               <button
-                *ngIf="!!getFormControl('dialogCreationDateTo').value"
+                *ngIf="!!getFormControl('dialogActivityTo').value"
                 nbButton
                 nbSuffix
                 ghost
                 nbTooltip="Clear"
                 type="button"
-                (click)="resetControl(getFormControl('dialogCreationDateTo'))"
+                (click)="resetControl(getFormControl('dialogActivityTo'))"
               >
                 <nb-icon icon="x"></nb-icon>
               </button>

@@ -49,8 +49,8 @@ interface DialogListFiltersForm {
   intentsToHide?: FormControl<string[]>;
   isGenAiRagDialog?: FormControl<boolean>;
   dialogSort?: FormControl<SortOrder>;
-  dialogCreationDateFrom?: FormControl<Date>;
-  dialogCreationDateTo?: FormControl<Date>;
+  dialogActivityFrom?: FormControl<Date>;
+  dialogActivityTo?: FormControl<Date>;
   withAnnotations?: FormControl<boolean>;
   annotationStates?: FormControl<AnnotationState[]>;
   annotationReasons?: FormControl<AnnotationReason[]>;
@@ -126,8 +126,8 @@ export class DialogsListFiltersComponent implements OnInit {
     intentsToHide: new FormControl([]),
     isGenAiRagDialog: new FormControl(),
     dialogSort: new FormControl(),
-    dialogCreationDateFrom: new FormControl(),
-    dialogCreationDateTo: new FormControl(),
+    dialogActivityFrom: new FormControl(),
+    dialogActivityTo: new FormControl(),
     withAnnotations: new FormControl(),
     annotationStates: new FormControl([]),
     annotationReasons: new FormControl([]),
