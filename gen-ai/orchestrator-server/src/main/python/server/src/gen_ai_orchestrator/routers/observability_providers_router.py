@@ -121,11 +121,21 @@ async def get_observability_provider_setting_by_id(
             public_key='pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
             url='https://cloud.langfuse.com',
         )
+    else:
+        raise GenAIUnknownProviderException(
+            create_error_info_not_found(
+                http_request,
+                provider_id,
+                [provider.value for provider in ObservabilityProvider],
+            )
+        )
 
 
 @observability_providers_router.post('/{provider_id}/setting/status')
 async def check_observability_provider_setting(
-    http_request: Request, provider_id: str, request: ObservabilityProviderSettingStatusRequest
+    http_request: Request,
+    provider_id: str,
+    request: ObservabilityProviderSettingStatusRequest,
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given Observability Provider Setting
@@ -157,7 +167,9 @@ async def check_observability_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(http_request: Request, provider_id: str, setting: ObservabilitySetting):
+def validate_query(
+    http_request: Request, provider_id: str, setting: ObservabilitySetting
+):
     """
     Check the consistency of the Provider ID with the request body
     Args:
@@ -191,6 +203,8 @@ def validate_observability_provider(http_request: Request, provider_id: str):
     if not ObservabilityProvider.has_value(provider_id):
         raise GenAIUnknownObservabilityProviderException(
             create_error_info_not_found(
-                http_request, provider_id, [provider.value for provider in ObservabilityProvider]
+                http_request,
+                provider_id,
+                [provider.value for provider in ObservabilityProvider],
             )
         )

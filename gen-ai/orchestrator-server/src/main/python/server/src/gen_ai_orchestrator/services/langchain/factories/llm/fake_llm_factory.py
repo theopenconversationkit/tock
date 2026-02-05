@@ -14,8 +14,8 @@
 #
 """Model for creating FakeLLMFactory"""
 
-from langchain.base_language import BaseLanguageModel
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models import BaseLanguageModel
 
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
@@ -27,6 +27,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
 
 class FakeLLMFactory(LangChainLLMFactory):
     """A class for LangChain Fake LLM Factory"""
+
     setting: FakeLLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:

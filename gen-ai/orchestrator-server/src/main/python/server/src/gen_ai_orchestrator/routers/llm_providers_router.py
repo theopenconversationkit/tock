@@ -17,6 +17,7 @@
 import logging
 
 from fastapi import APIRouter, Request
+from pydantic import HttpUrl
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
     AIProviderBadRequestException,
@@ -117,7 +118,6 @@ async def get_llm_provider_setting_by_id(
             api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             model='gpt-3.5-turbo',
             temperature=1.3,
-            prompt='How to learn to ride a bike without wheels!',
         )
     elif provider_id == LLMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAILLMSetting(
@@ -125,10 +125,15 @@ async def get_llm_provider_setting_by_id(
             api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
             model='gpt-4o',
-            api_base='https://doc.tock.ai/tock',
+            api_base=HttpUrl('https://doc.tock.ai/tock'),
             api_version='2023-05-15',
             temperature=0.7,
-            prompt='How to learn to ride a bike without wheels!',
+        )
+    else:
+        raise GenAIUnknownProviderException(
+            create_error_info_not_found(
+                http_request, provider_id, [provider.value for provider in LLMProvider]
+            )
         )
 
 

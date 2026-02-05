@@ -15,8 +15,8 @@
 """Model for creating OllamaLLMFactory"""
 from typing import Optional
 
-from langchain.base_language import BaseLanguageModel
 from langchain_community.chat_models import ChatOllama
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
 
@@ -40,9 +40,11 @@ class OllamaLLMFactory(LangChainLLMFactory):
         return ChatOllama(
             base_url=self.setting.base_url,
             model=self.setting.model,
-            temperature=self.setting.temperature
+            temperature=self.setting.temperature,
         )
 
     @ollama_exception_handler(provider='Ollama')
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
         return await super().invoke(_input, config)

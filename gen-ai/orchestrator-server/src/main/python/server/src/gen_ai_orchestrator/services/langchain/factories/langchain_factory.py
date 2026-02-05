@@ -26,7 +26,7 @@ import logging
 from typing import Any, Optional
 
 from langchain_core.embeddings import Embeddings
-from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -86,9 +86,6 @@ from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
 )
 from gen_ai_orchestrator.models.observability.observability_setting import (
     BaseObservabilitySetting,
-)
-from gen_ai_orchestrator.models.observability.observability_trace import (
-    ObservabilityTrace,
 )
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
@@ -246,11 +243,11 @@ def get_vector_store_factory(
 
     # Helper function to create OpenSearchFactory
     def create_opensearch_factory(
-            vs_setting: Optional[OpenSearchVectorStoreSetting],
+        vs_setting: Optional[OpenSearchVectorStoreSetting],
     ) -> OpenSearchFactory:
         return OpenSearchFactory(
             setting=vs_setting
-                    or OpenSearchVectorStoreSetting(
+            or OpenSearchVectorStoreSetting(
                 host=application_settings.vector_store_host,
                 port=application_settings.vector_store_port,
                 username=vector_store_credentials.username,
@@ -262,12 +259,12 @@ def get_vector_store_factory(
 
     # Helper function to create PGVectorFactory
     def create_pgvector_factory(
-            vs_setting: Optional[PGVectorStoreSetting],
+        vs_setting: Optional[PGVectorStoreSetting],
     ) -> PGVectorFactory:
         vector_store_credentials = fetch_default_vector_store_credentials()
         return PGVectorFactory(
             setting=vs_setting
-                    or PGVectorStoreSetting(
+            or PGVectorStoreSetting(
                 host=application_settings.vector_store_host,
                 port=application_settings.vector_store_port,
                 username=vector_store_credentials.username,
@@ -284,8 +281,8 @@ def get_vector_store_factory(
 
         # Validate required default settings
         if (
-                application_settings.vector_store_provider is None
-                or vector_store_credentials is None
+            application_settings.vector_store_provider is None
+            or vector_store_credentials is None
         ):
             logger.error('No default Vector Store defined!')
             raise GenAIUnknownVectorStoreProviderSettingException()
@@ -299,7 +296,7 @@ def get_vector_store_factory(
         # Create factory based on the provider type
         provider = application_settings.vector_store_provider
         if provider in factory_dispatch:
-            logger.debug(f'Creating Vector Store Factory from environment - {provider}')
+            logger.debug(f"Creating Vector Store Factory from environment - {provider}")
             return factory_dispatch[provider](None)
 
         logger.error('Unknown Vector Store provider in environment!')
@@ -342,9 +339,8 @@ def get_callback_handler_factory(
 
 
 def create_observability_callback_handler(
-    observability_setting: Optional[ObservabilitySetting],
-    **kwargs: Any
-) -> Optional[LangfuseCallbackHandler]:
+    observability_setting: Optional[ObservabilitySetting], **kwargs: Any
+) -> Optional[CallbackHandler]:
     """
     Create the Observability Callback Handler
 
@@ -378,7 +374,9 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
         raise GenAIUnknownProviderSettingException()
 
 
-def get_compressor_factory(setting: BaseDocumentCompressorSetting) -> DocumentCompressorFactory:
+def get_compressor_factory(
+    setting: BaseDocumentCompressorSetting,
+) -> DocumentCompressorFactory:
     """
     Creates a  Compressor Factory according to the compressor provider
     Args:

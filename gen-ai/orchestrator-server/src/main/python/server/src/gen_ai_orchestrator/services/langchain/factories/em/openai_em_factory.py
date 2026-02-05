@@ -17,7 +17,6 @@ from typing import List
 
 from langchain.embeddings.base import Embeddings
 from langchain_openai import OpenAIEmbeddings
-from openai import base_url
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -27,9 +26,6 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 )
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
     OpenAIEMSetting,
-)
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
-    RawSecretKey,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
