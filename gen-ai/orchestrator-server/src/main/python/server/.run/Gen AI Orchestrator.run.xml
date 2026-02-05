@@ -6,9 +6,14 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="http_proxy" value="http://localhost:3128" />
+      <env name="https_proxy" value="http://localhost:3128" />
+      <env name="no_proxy" value="localhost" />
+      <env name="SSL_CERT_FILE" value="/etc/ssl/certs/ca-certificates.crt" />
+      <env name="REQUESTS_CA_BUNDLE" value="/etc/ssl/certs/ca-certificates.crt" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="SDK_NAME" value="Poetry (server)" />
+    <option name="SDK_NAME" value="Python 3.13 virtualenv at ~/.cache/pypoetry/virtualenvs/gen-ai-orchestrator-gxnDIixK-py3.13" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />

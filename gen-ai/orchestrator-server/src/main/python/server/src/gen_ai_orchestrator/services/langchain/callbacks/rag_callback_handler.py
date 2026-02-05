@@ -17,7 +17,7 @@
 import logging
 from typing import Any, Dict
 
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompt_values import ChatPromptValue, StringPromptValue
 
@@ -51,11 +51,16 @@ class RAGCallbackHandler(BaseCallbackHandler):
             self.records['documents'] = inputs['documents']
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
-        """Print out that we finished a chain.""" # if outputs is instance of StringPromptValue
+        """Print out that we finished a chain."""  # if outputs is instance of StringPromptValue
 
         if isinstance(outputs, ChatPromptValue):
             self.records['chat_prompt'] = next(
-                (msg.content for msg in outputs.messages if isinstance(msg, SystemMessage)), None
+                (
+                    msg.content
+                    for msg in outputs.messages
+                    if isinstance(msg, SystemMessage)
+                ),
+                None,
             )
 
         if isinstance(outputs, StringPromptValue):

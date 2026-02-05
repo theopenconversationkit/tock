@@ -15,9 +15,9 @@
 """Model for creating AzureOpenAILLMFactory"""
 from typing import Optional
 
-from langchain.base_language import BaseLanguageModel
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.runnables import RunnableConfig
-from langchain_core.runnables.utils import Input, Output
+from langchain_core.runnables.utils import Input
 from langchain_openai import AzureChatOpenAI
 
 from gen_ai_orchestrator.configurations.environment.settings import (
@@ -45,17 +45,18 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
 
     def get_language_model(self) -> BaseLanguageModel:
         return AzureChatOpenAI(
-            openai_api_key=fetch_secret_key_value(self.setting.api_key),
-            openai_api_version=self.setting.api_version,
+            api_key=fetch_secret_key_value(self.setting.api_key),
+            api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
             model=self.setting.model,
             temperature=self.setting.temperature,
-            request_timeout=application_settings.llm_provider_timeout,
+            timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
-            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None
+            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None,
+            reasoning_effort=application_settings.llm_reasoning_effort or 'minimal',
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None):
         return await super().invoke(_input, config)

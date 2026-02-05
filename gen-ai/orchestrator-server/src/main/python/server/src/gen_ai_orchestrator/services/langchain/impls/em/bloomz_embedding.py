@@ -18,7 +18,7 @@ from typing import List, Union
 from urllib.parse import urljoin
 
 import requests
-from langchain.schema.embeddings import Embeddings
+from langchain.embeddings.base import Embeddings
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)

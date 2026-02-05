@@ -28,21 +28,22 @@ urls_prefix = '/llm-providers'
 
 def test_get_all_llm_providers():
     """Test getting all LLM providers."""
-    response = client.get(f'{urls_prefix}')
+    response = client.get(f"{urls_prefix}")
     assert response.status_code == 200
     assert len(response.json()) == len(LLMProvider)
 
 
 def test_get_llm_provider_by_id():
     """Test getting provider by id (use first provider listed provider class)."""
-    response = client.get(f'{urls_prefix}/{list(LLMProvider)[0]}')
+    provider_id = list(LLMProvider)[0].value
+    response = client.get(f"{urls_prefix}/{provider_id}")
     assert response.status_code == 200
-    assert response.json()['provider'] == list(LLMProvider)[0]
+    assert response.json()['provider'] == provider_id
 
 
 def test_get_llm_provider_by_id_wrong_id():
     """Test getting provider by id, with an id that does not exist."""
-    response = client.get(f'{urls_prefix}/wrong_id')
+    response = client.get(f"{urls_prefix}/wrong_id")
     assert response.status_code == 400
     assert (
         response.json()['message']
@@ -52,17 +53,17 @@ def test_get_llm_provider_by_id_wrong_id():
 
 def test_get_llm_provider_setting_by_id():
     """Test getting provider setting example for id (use first provider listed provider class)."""
-    response = client.get(f'{urls_prefix}/{list(LLMProvider)[0]}/setting/example')
+    provider_id = list(LLMProvider)[0].value
+    response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
     assert response.status_code == 200
-    assert response.json()['provider'] == list(LLMProvider)[0]
+    assert response.json()['provider'] == provider_id
 
 
 def test_check_llm_provider_setting():
     """Test checking a provider setting (use example for checking)."""
-    response = client.get(f'{urls_prefix}/{list(LLMProvider)[0]}/setting/example')
+    provider_id = list(LLMProvider)[0].value
+    response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
     data = {'setting': response.json()}
-    response = client.post(
-        f'{urls_prefix}/{list(LLMProvider)[0]}/setting/status', json=data
-    )
+    response = client.post(f"{urls_prefix}/{provider_id}/setting/status", json=data)
     assert response.status_code == 200
     assert response.json()['valid'] == False
