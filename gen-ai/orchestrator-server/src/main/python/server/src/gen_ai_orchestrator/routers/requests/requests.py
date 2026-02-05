@@ -66,7 +66,9 @@ class ObservabilityProviderSettingStatusRequest(BaseModel):
 class DocumentCompressorProviderSettingStatusRequest(BaseModel):
     """The request for the Document Compressor Provider Setting Status"""
 
-    setting: DocumentCompressorSetting = Field(description='The Document Compressor Provider setting to be checked.')
+    setting: DocumentCompressorSetting = Field(
+        description='The Document Compressor Provider setting to be checked.'
+    )
 
 
 class BaseRequest(BaseModel):
@@ -144,21 +146,28 @@ class VectorStoreProviderSettingStatusRequest(BaseModel):
         default=None,
     )
 
+
 class DialogDetails(BaseModel):
     """The dialog details model"""
 
     dialog_id: Optional[str] = Field(
         description='The dialog/session ID, attached to the observability traces if '
-                    'the observability provider support it.',
-        default=None, examples=['uuid-0123'])
+        'the observability provider support it.',
+        default=None,
+        examples=['uuid-0123'],
+    )
     user_id: Optional[str] = Field(
         description='The user ID, attached to the observability traces if the observability provider support it',
-        default=None, examples=['address@mail.com'])
+        default=None,
+        examples=['address@mail.com'],
+    )
     history: list[ChatMessage] = Field(
-        description="Conversation history, used to reformulate the user's question.")
+        description="Conversation history, used to reformulate the user's question."
+    )
     tags: list[str] = Field(
         description='List of tags, attached to the observability trace, if the observability provider support it.',
-        examples=[['my-Tag']])
+        examples=[['my-Tag']],
+    )
 
 
 class RAGRequest(BaseRequest):
@@ -166,15 +175,16 @@ class RAGRequest(BaseRequest):
 
     dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
     question_condensing_llm_setting: Optional[LLMSetting] = Field(
-        description="LLM setting, used to condense the user's question.", default=None)
+        description="LLM setting, used to condense the user's question.", default=None
+    )
     question_condensing_prompt: Optional[PromptTemplate] = Field(
         description='Prompt template, used to create a prompt with inputs for jinja and fstring format',
-        default = None
+        default=None,
     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
     )
-    question_answering_prompt : PromptTemplate = Field(
+    question_answering_prompt: PromptTemplate = Field(
         description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
     guardrail_setting: Optional[GuardrailSetting] = Field(
@@ -182,8 +192,8 @@ class RAGRequest(BaseRequest):
     )
     documents_required: Optional[bool] = Field(
         description='Specifies whether the presence of documents is mandatory for generating answers. '
-                    'If set to True, the system will only provide answers when relevant documents are found. '
-                    'If set to False, the system can respond without requiring document sources. Default is True.',
+        'If set to True, the system will only provide answers when relevant documents are found. '
+        'If set to False, the system can respond without requiring document sources. Default is True.',
         default=True,
     )
 
@@ -191,7 +201,7 @@ class RAGRequest(BaseRequest):
         'json_schema_extra': {
             'examples': [
                 {
-                    'dialog' : {
+                    'dialog': {
                         'history': [
                             {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
                             {
@@ -212,7 +222,7 @@ class RAGRequest(BaseRequest):
                     'question_answering_prompt': {
                         'formatter': 'f-string',
                         'template': """Use the following context to answer the question at the end.
-If you don't know the answer, just say {no_answer}.
+If you don't know the answer, just say I don't know.
 
 Context:
 {context}
@@ -223,9 +233,8 @@ Question:
 Answer in {locale}:""",
                         'inputs': {
                             'question': 'How to get started playing guitar ?',
-                            'no_answer': 'Sorry, I don t know.',
                             'locale': 'French',
-                        }
+                        },
                     },
                     'embedding_question_em_setting': {
                         'provider': 'OpenAI',

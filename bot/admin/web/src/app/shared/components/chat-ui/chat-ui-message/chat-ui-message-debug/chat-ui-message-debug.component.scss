@@ -14,26 +14,56 @@
  * limitations under the License.
  */
 
-@import '@nebular/theme/styles/theming';
-@import '@nebular/theme/styles/themes';
-
 :host {
   display: flex;
-  justify-content: center;
 
   .debug {
-    cursor: pointer;
+    width: 100%;
 
-    color: var(--chat-message-sender-text-color);
-    border-bottom: 1px dashed var(--chat-message-sender-text-color);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 
-    height: 11px;
-    margin-bottom: 10px;
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10rem;
+      background-color: var(--border-basic-color-3);
+      font-size: 0.7rem;
+      line-height: 1rem;
+      white-space: nowrap;
+      cursor: pointer;
 
-    span {
-      background: var(--card-background-color);
-      padding: 0 5px;
-      border-radius: 0.5rem;
+      &.status-success {
+        background-color: var(--color-success-500);
+        color: white;
+      }
+      &.status-warning {
+        background-color: var(--color-warning-500);
+        color: white;
+      }
+      &.status-info {
+        background-color: var(--color-info-500);
+        color: white;
+      }
+      &.status-danger {
+        background-color: var(--color-danger-500);
+        color: white;
+      }
+
+      &.topic {
+        background-color: var(--color-success-300);
+        color: var(--color-success-600);
+      }
+      &.suggested-topics {
+        background-color: var(--color-warning-300);
+        color: var(--color-warning-600);
+      }
+
+      &.confidence {
+        background-color: var(--color-default-300);
+        color: var(--text-basic-color);
+      }
     }
   }
 }

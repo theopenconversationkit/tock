@@ -40,21 +40,27 @@ rag_router = APIRouter(prefix='/rag', tags=['Retrieval Augmented Generation'])
 
 
 @rag_router.post('')
-async def ask_rag(http_request: Request, request: RAGRequest, debug: bool = False) -> RAGResponse:
+async def ask_rag(
+    http_request: Request, request: RAGRequest, debug: bool = False
+) -> RAGResponse:
     """
     ## Ask a RAG System
     Ask question to a RAG System, and return answer by using a knowledge base (documents)
     """
     # Check the consistency of the Vector Store Provider with the request body
-    validate_vector_store_rag_query(http_request, request.vector_store_setting, request.document_search_params)
+    validate_vector_store_rag_query(
+        http_request, request.vector_store_setting, request.document_search_params
+    )
 
     # execute RAG
     return await rag(request, debug)
 
+
 def validate_vector_store_rag_query(
-        http_request: Request,
-        vector_store_setting: VectorStoreSetting,
-        vector_store_search_params: DocumentSearchParams):
+    http_request: Request,
+    vector_store_setting: VectorStoreSetting,
+    vector_store_search_params: DocumentSearchParams,
+):
     """
     Check the consistency of the Vector Store Provider with the request body
     Args:
@@ -73,11 +79,15 @@ def validate_vector_store_rag_query(
         vector_store_provider = vector_store_setting.provider
 
     if vector_store_provider != vector_store_search_params.provider:
-        logger.error('Inconsistency between vector store provider and document search parameters (%s Vs %s)',
-                     vector_store_provider.value, vector_store_search_params.provider.value)
+        logger.error(
+            'Inconsistency between vector store provider and document search parameters (%s Vs %s)',
+            vector_store_provider.value,
+            vector_store_search_params.provider.value,
+        )
         raise AIProviderBadRequestException(
             create_error_info_bad_request(
-                request=http_request,
+                http_request=http_request,
                 provider=vector_store_search_params.provider,
-                cause='Inconsistency between vector store provider and document search parameters')
+                cause='Inconsistency between vector store provider and document search parameters',
+            )
         )
