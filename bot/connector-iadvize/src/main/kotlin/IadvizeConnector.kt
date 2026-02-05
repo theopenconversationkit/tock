@@ -47,6 +47,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.user.PlayerId
 import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
 import ai.tock.iadvize.client.graphql.ChatbotMessageInput
 import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
@@ -74,14 +75,18 @@ private const val QUERY_ID_CONVERSATION: String = "idConversation"
 private const val TYPE_TEXT: String = "text"
 private const val ROLE_OPERATOR: String = "operator"
 
-// This is related to and iAdvize issue DERCBOT-850, iAdvize ticket number 119048.
-// RAG responses are proactive, very time-consuming, we don't have UX for that
-// So we're compensating with this message. It will be removed when the iAdvize problem is solved.
-private const val PROPERTY_TOCK_BOT_API_PROACTIVE_START_MESSAGE = "tock_bot_api_proactive_start_message"
-private val proactiveStartMessage: String? = propertyOrNull(PROPERTY_TOCK_BOT_API_PROACTIVE_START_MESSAGE)
+// Configurable error message for deferred mode timeout/error
+private const val PROPERTY_TOCK_BOT_API_DEFERRED_ERROR_MESSAGE = "tock_bot_api_deferred_error_message"
+private const val DEFAULT_DEFERRED_ERROR_MESSAGE = "Sorry, an error occurred while processing your request."
+private val deferredErrorMessage: String = propertyOrNull(PROPERTY_TOCK_BOT_API_DEFERRED_ERROR_MESSAGE) ?: DEFAULT_DEFERRED_ERROR_MESSAGE
 
 /**
+ * iAdvize connector with support for deferred messaging.
  *
+ * Implements [DeferredConnector] to support asynchronous RAG responses:
+ * - Sends HTTP 200 immediately upon receiving a request
+ * - Processes the request asynchronously
+ * - Sends responses via GraphQL API when ready
  */
 class IadvizeConnector internal constructor(
     val applicationId: String,
@@ -92,7 +97,7 @@ class IadvizeConnector internal constructor(
     val secretToken: String?,
     val distributionRuleUnavailableMessage: String,
     val localeCode: String?,
-) : ConnectorBase(IadvizeConnectorProvider.connectorType) {
+) : ConnectorBase(IadvizeConnectorProvider.connectorType), DeferredConnector {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -101,8 +106,6 @@ class IadvizeConnector internal constructor(
 
     private val executor: Executor by injector.instance()
     private val queue: ConnectorQueue = ConnectorQueue(executor)
-    private var proactiveAnswerEnabled: Boolean = false
-    private var proactiveParameters: Map<String, String> = emptyMap()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -304,87 +307,82 @@ class IadvizeConnector internal constructor(
         delayInMs: Long,
     ) {
         val iadvizeCallback = callback as? IadvizeConnectorCallback
-        iadvizeCallback?.addAction(event, delayInMs)
+        val coordinator = iadvizeCallback?.deferredCoordinator
 
-        // Send message proactively if this mode is already started
-        if (proactiveAnswerEnabled) {
-            flushProactiveConversation(callback, proactiveParameters)
+        logger.debug {
+            "send(): deferredMode=${coordinator != null}, " +
+                "lastAnswer=${(event as? Action)?.metadata?.lastAnswer}, " +
+                "eventType=${event::class.simpleName}"
+        }
+
+        if (coordinator != null && event is Action) {
+            // DEFERRED MODE: collect message for later sending via GraphQL
+            coordinator.collect(IadvizeConnectorCallback.ActionWithDelay(event, delayInMs))
+            logger.debug { "Message collected in deferred coordinator" }
+
+            // Detect end via lastAnswer=true
+            if (event.metadata.lastAnswer) {
+                logger.debug { "lastAnswer=true detected - ending deferred and flushing" }
+                val params = coordinator.getParameters()
+                coordinator.end { actionWithDelay ->
+                    queue.add(actionWithDelay.action, actionWithDelay.delayInMs) { action ->
+                        sendProactiveMessage(iadvizeCallback, action, params)
+                    }
+                }
+                iadvizeCallback.deferredCoordinator = null // Cleanup
+            }
         } else {
+            // STANDARD MODE: add to callback and respond on lastAnswer
+            iadvizeCallback?.addAction(event, delayInMs)
             if (event is Action && event.metadata.lastAnswer) {
                 iadvizeCallback?.answerWithResponse()
             }
         }
     }
 
-    override fun startProactiveConversation(
-        callback: ConnectorCallback,
-        botBus: BotBus,
-    ): Boolean {
-        // Set proactive answer mode, and save parameters
-        proactiveAnswerEnabled = true
-        proactiveParameters = botBus.connectorData.metadata
-
-        if (!proactiveStartMessage.isNullOrBlank()) {
-            // Send a RAG start message
-            botBus.send(proactiveStartMessage)
-        }
-        (callback as? IadvizeConnectorCallback)?.answerWithResponse()
-        return true
-    }
-
-    override fun flushProactiveConversation(
-        callback: ConnectorCallback,
-        parameters: Map<String, String>,
-    ) {
-        val iadvizeCallback = callback as? IadvizeConnectorCallback
-        iadvizeCallback?.actions?.forEach {
-            queue.add(it.action, it.delayInMs) { action ->
-                sendProactiveMessage(iadvizeCallback, action, parameters)
-            }
-        }
-        iadvizeCallback?.actions?.clear()
-    }
-
-    /**
-     * Send [Action] using GraphQL
-     * @param callback the [IadvizeConnectorCallback]
-     * @param action the action to send
-     * @param parameters the key value map of parameters
-     */
     private fun sendProactiveMessage(
         callback: IadvizeConnectorCallback,
         action: Action,
         parameters: Map<String, String>,
     ) {
+        logger.debug {
+            "sendProactiveMessage(): actionType=${action::class.simpleName}, " +
+                "CONVERSATION_ID=${parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]}, " +
+                "CHAT_BOT_ID=${parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]}, " +
+                "thread=${Thread.currentThread().name}"
+        }
+
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotId = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "sendProactiveMessage(): MISSING PARAMS - CONVERSATION_ID=$conversationId, CHAT_BOT_ID=$chatBotId" }
+        }
+
         when (action) {
-            is SendSentenceWithFootnotes -> action.sendByGraphQL(parameters)
+            is SendSentenceWithFootnotes -> {
+                logger.debug { "sendProactiveMessage(): SendSentenceWithFootnotes -> sendByGraphQL()" }
+                action.sendByGraphQL(parameters)
+            }
             is SendSentence -> {
                 if (action.messages.isEmpty()) {
                     action.text?.let {
-                        // Simple message
-                        IadvizeMessage(TextPayload(it)).sendByGraphQL(
-                            parameters,
-                            callback,
-                        )
+                        logger.debug { "sendProactiveMessage(): SendSentence -> sendByGraphQL() text='${it.take(50)}...'" }
+                        IadvizeMessage(TextPayload(it)).sendByGraphQL(parameters, callback)
+                    } ?: run {
+                        logger.debug { "sendProactiveMessage(): SendSentence with text=null, NOTHING SENT" }
                     }
                 } else {
-                    // Complex message
+                    logger.debug { "sendProactiveMessage(): SendSentence complex, messages.size=${action.messages.size}" }
                     action.messages
                         .filterIsInstance<IadvizeConnectorMessage>()
                         .flatMap { it.replies }
                         .map { it.sendByGraphQL(parameters, callback) }
                 }
             }
+            else -> {
+                logger.debug { "sendProactiveMessage(): unhandled action type: ${action::class.simpleName}" }
+            }
         }
-    }
-
-    override fun endProactiveConversation(
-        callback: ConnectorCallback,
-        parameters: Map<String, String>,
-    ) {
-        flushProactiveConversation(callback, parameters)
-        // Turn off the proactive answer mode
-        proactiveAnswerEnabled = false
     }
 
     /**
@@ -409,60 +407,82 @@ class IadvizeConnector internal constructor(
         }
     }
 
-    /**
-     * Send [SendSentenceWithFootnotes] markdown using GraphQL
-     * @param parameters the key value map of parameters
-     */
     private fun SendSentenceWithFootnotes.sendByGraphQL(parameters: Map<String, String>) {
-        IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
-            actionOrMessage =
-                ChatbotActionOrMessageInput(
-                    chatbotMessage =
-                        ChatbotMessageInput(
-                            chatbotSimpleTextMessage = this.toMarkdown(),
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotIdStr = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        val chatBotId = chatBotIdStr?.toIntOrNull()
+        val messageText = this.toMarkdown()
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): caller=$caller, conversationId=$conversationId, chatBotId=$chatBotId, messageLength=${messageText.length}" }
+
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): ABORT - MISSING PARAMS conversationId=$conversationId, chatBotIdStr=$chatBotIdStr, chatBotId=$chatBotId" }
+            return
+        }
+
+        try {
+            val startTime = System.currentTimeMillis()
+            val result =
+                IadvizeGraphQLClient().sendProactiveActionOrMessage(
+                    conversationId,
+                    chatBotId,
+                    actionOrMessage =
+                        ChatbotActionOrMessageInput(
+                            chatbotMessage = ChatbotMessageInput(chatbotSimpleTextMessage = messageText),
                         ),
-                ),
-        )
+                )
+            val duration = System.currentTimeMillis() - startTime
+            logger.debug { "SendSentenceWithFootnotes.sendByGraphQL(): result=$result, duration=${duration}ms" }
+        } catch (e: Exception) {
+            logger.debug(e) { "SendSentenceWithFootnotes.sendByGraphQL(): EXCEPTION ${e.message}" }
+        }
     }
 
-    /**
-     * Send [IadvizeReply] using GraphQL
-     * @param parameters the key value map of parameters
-     * @param callback the [IadvizeConnectorCallback]
-     */
     private fun IadvizeReply.sendByGraphQL(
         parameters: Map<String, String>,
         callback: IadvizeConnectorCallback,
     ) {
+        val conversationId = parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]
+        val chatBotIdStr = parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]
+        val chatBotId = chatBotIdStr?.toIntOrNull()
+        val caller = Thread.currentThread().stackTrace.getOrNull(2)?.methodName ?: "unknown"
+
+        logger.debug { "IadvizeReply.sendByGraphQL(): caller=$caller, replyType=${this::class.simpleName}, conversationId=$conversationId, chatBotId=$chatBotId" }
+
+        if (conversationId == null || chatBotId == null) {
+            logger.debug { "IadvizeReply.sendByGraphQL(): ABORT - MISSING PARAMS conversationId=$conversationId, chatBotIdStr=$chatBotIdStr, chatBotId=$chatBotId" }
+            return
+        }
+
         val actionOrMessage =
             when (this) {
                 is IadvizeTransfer -> {
-                    // Check if a rule is available for distribution
                     val response = callback.addDistributionRulesOnTransfer(this)
                     if (response is IadvizeTransfer) {
                         response.toChatBotActionOrMessageInput()
                     } else {
-                        // If the distribution rule is not available, send the configured message when
                         ChatbotActionOrMessageInput(
-                            chatbotMessage =
-                                ChatbotMessageInput(
-                                    chatbotSimpleTextMessage = distributionRuleUnavailableMessage,
-                                ),
+                            chatbotMessage = ChatbotMessageInput(chatbotSimpleTextMessage = distributionRuleUnavailableMessage),
                         )
                     }
                 }
-
                 else -> this.toChatBotActionOrMessageInput()
             }
 
-        // Send a proactive action or message
-        IadvizeGraphQLClient().sendProactiveActionOrMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
-            actionOrMessage = actionOrMessage,
-        )
+        try {
+            val startTime = System.currentTimeMillis()
+            val result =
+                IadvizeGraphQLClient().sendProactiveActionOrMessage(
+                    conversationId,
+                    chatBotId,
+                    actionOrMessage = actionOrMessage,
+                )
+            val duration = System.currentTimeMillis() - startTime
+            logger.debug { "IadvizeReply.sendByGraphQL(): result=$result, duration=${duration}ms" }
+        } catch (e: Exception) {
+            logger.debug(e) { "IadvizeReply.sendByGraphQL(): EXCEPTION ${e.message}" }
+        }
     }
 
     internal fun handleRequest(
@@ -483,28 +503,133 @@ class IadvizeConnector internal constructor(
 
         when (iadvizeRequest) {
             is MessageRequest -> {
-                val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
-                controller.handle(
-                    event,
-                    ConnectorData(
-                        callback,
-                        metadata =
-                            mapOf(
-                                IadvizeConnectorMetadata.CONVERSATION_ID.name to iadvizeRequest.idConversation,
-                                IadvizeConnectorMetadata.OPERATOR_ID.name to iadvizeRequest.idOperator,
-                                // iAdvize environment sd- or ha-
-                                IadvizeConnectorMetadata.IADVIZE_ENV.name to iadvizeRequest.idOperator.split("-")[0],
-                                // the operator id (=chatbotId) prefixed with the iAdvize environment
-                                IadvizeConnectorMetadata.CHAT_BOT_ID.name to (iadvizeRequest.idOperator.split("-").getOrNull(1) ?: "unknown"),
-                            ),
-                    ),
-                )
+                val chatBotId = iadvizeRequest.idOperator.split("-").getOrNull(1)
+                val metadata =
+                    mapOf(
+                        IadvizeConnectorMetadata.CONVERSATION_ID.name to iadvizeRequest.idConversation,
+                        IadvizeConnectorMetadata.OPERATOR_ID.name to iadvizeRequest.idOperator,
+                        IadvizeConnectorMetadata.IADVIZE_ENV.name to iadvizeRequest.idOperator.split("-")[0],
+                        IadvizeConnectorMetadata.CHAT_BOT_ID.name to (chatBotId ?: "unknown"),
+                    )
+
+                // Check if deferred mode can be used (chatBotId must be valid integer)
+                val canUseDeferred = chatBotId?.toIntOrNull() != null
+
+                if (canUseDeferred) {
+                    // DEFERRED MODE: send HTTP 200 immediately, process async, flush via GraphQL
+                    val coordinator = DeferredMessageCoordinator(callback, metadata)
+                    callback.deferredCoordinator = coordinator
+                    coordinator.start() // Sends HTTP 200
+
+                    logger.debug { "Deferred mode started for conversation ${iadvizeRequest.idConversation}" }
+
+                    val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
+                    // Note: controller.handle() returns immediately as RAG processing is async
+                    // The coordinator timeout (via TockBotBus.deferMessageSending 60s) handles errors
+                    // DO NOT use finally block here - it would execute before async processing completes
+                    executor.executeBlocking {
+                        controller.handle(event, ConnectorData(callback, metadata = metadata))
+                    }
+                } else {
+                    // STANDARD MODE: process sync, respond via HTTP
+                    logger.debug { "Standard mode (invalid chatBotId) for conversation ${iadvizeRequest.idConversation}" }
+                    val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
+                    controller.handle(event, ConnectorData(callback, metadata = metadata))
+                }
             }
 
             // Only MessageRequest are supported, other messages are UnsupportedMessage
             // and UnsupportedResponse can be sent immediately
             else -> callback.answerWithResponse()
         }
+    }
+
+    /**
+     * Force flush the deferred coordinator (for timeout/error scenarios).
+     * Creates an error action and sends it with collected messages.
+     */
+    private fun forceFlushCoordinator(
+        callback: IadvizeConnectorCallback,
+        reason: String,
+        sendErrorMessage: Boolean = true,
+    ) {
+        val coordinator = callback.deferredCoordinator ?: return
+        val params = coordinator.getParameters()
+
+        // Create error action if requested
+        val errorAction =
+            if (sendErrorMessage) {
+                IadvizeConnectorCallback.ActionWithDelay(
+                    SendSentence(
+                        playerId = PlayerId("bot"),
+                        applicationId = applicationId,
+                        recipientId = PlayerId("user"),
+                        text = deferredErrorMessage,
+                    ),
+                    delayInMs = 0,
+                )
+            } else {
+                null
+            }
+
+        coordinator.forceEnd(
+            sendAction = { actionWithDelay ->
+                queue.add(actionWithDelay.action, actionWithDelay.delayInMs) { action ->
+                    sendProactiveMessage(callback, action, params)
+                }
+            },
+            errorAction = errorAction,
+            logMessage = reason,
+        )
+
+        callback.deferredCoordinator = null // Cleanup
+    }
+
+    // ==============================
+    // DeferredConnector Implementation
+    // ==============================
+
+    override fun isDeferredMode(callback: ConnectorCallback): Boolean {
+        return (callback as? IadvizeConnectorCallback)?.deferredCoordinator != null
+    }
+
+    override fun acknowledge(callback: ConnectorCallback) {
+        (callback as? IadvizeConnectorCallback)?.answerWithResponse()
+    }
+
+    override fun beginDeferred(
+        callback: ConnectorCallback,
+        parameters: Map<String, String>,
+    ) {
+        val iadvizeCallback = callback as? IadvizeConnectorCallback ?: return
+        val coordinator = DeferredMessageCoordinator(iadvizeCallback, parameters)
+        iadvizeCallback.deferredCoordinator = coordinator
+        coordinator.start()
+        logger.debug { "Deferred mode started for callback" }
+    }
+
+    override fun endDeferred(callback: ConnectorCallback) {
+        val iadvizeCallback = callback as? IadvizeConnectorCallback ?: return
+        val coordinator = iadvizeCallback.deferredCoordinator ?: return
+        val params = coordinator.getParameters()
+
+        coordinator.end { actionWithDelay ->
+            queue.add(actionWithDelay.action, actionWithDelay.delayInMs) { action ->
+                sendProactiveMessage(iadvizeCallback, action, params)
+            }
+        }
+
+        iadvizeCallback.deferredCoordinator = null
+        logger.debug { "Deferred mode ended for callback" }
+    }
+
+    override fun forceEndDeferred(
+        callback: ConnectorCallback,
+        reason: String,
+        sendErrorMessage: Boolean,
+    ) {
+        val iadvizeCallback = callback as? IadvizeConnectorCallback ?: return
+        forceFlushCoordinator(iadvizeCallback, reason, sendErrorMessage)
     }
 
     override fun addSuggestions(
