@@ -19,6 +19,7 @@ package ai.tock.bot.engine.config
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
@@ -31,6 +32,9 @@ import ai.tock.bot.engine.BotRepository.botAPI
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.shared.mapNotNullValues
+import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 
 /**
@@ -49,6 +53,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     // all stories
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
+
+    private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO by injector.instance()
 
     override fun disableBot(
         timeline: UserTimeline,
@@ -103,6 +109,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                 .values.flatten()
 
         this.allStoriesById = allStories.associateBy { it.id }
+        val builtinStoriesNotFounds = botDefinition.stories.map(StoryDefinition::id) - configuredStories.map(StoryDefinitionConfiguration::storyId).toSet()
+        configuredStories.filter { builtinStoriesNotFounds.contains(it.storyId) }.forEach(storyDefinitionConfigurationDAO::delete).also {
+            logger.info { "${builtinStoriesNotFounds.size} story definition not found and deleted" }
+        }
     }
 
     override val stories: List<StoryDefinition>
