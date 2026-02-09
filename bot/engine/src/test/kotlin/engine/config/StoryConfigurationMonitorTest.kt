@@ -20,6 +20,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.SimpleBotDefinition
 import ai.tock.bot.definition.story
 import ai.tock.bot.engine.Bot
@@ -33,6 +34,8 @@ class StoryConfigurationMonitorTest {
     fun `StoryConfigurationMonitor deletes obsolete builtin story configurations`() {
         val namespace = "test-namespace"
         val botId = "test-bot-id"
+        val storyId = "test-story"
+        val unregisteredStoryId = "unregistered-builtin-story"
         val dao: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
         val monitor = StoryConfigurationMonitor(dao)
         val botApplication =
@@ -43,7 +46,7 @@ class StoryConfigurationMonitorTest {
                 nlpModel = "",
                 connectorType = ConnectorType.none,
             )
-        val testStory = story("test-story") {}
+        val testStory = story(storyId) {}
         val definition =
             SimpleBotDefinition(
                 botId = botId,
@@ -56,7 +59,10 @@ class StoryConfigurationMonitorTest {
                 every { botDefinition } returns BotDefinitionWrapper(definition)
             }
         val builtinStoryConfiguration = StoryDefinitionConfiguration(definition, testStory, null)
-        val unregisteredStoryConfiguration = builtinStoryConfiguration.copy(storyId = "unregistered-story-definition")
+        val unregisteredStoryConfiguration = builtinStoryConfiguration.copy(
+            storyId = unregisteredStoryId,
+            intent = IntentWithoutNamespace(unregisteredStoryId),
+        )
         every { dao.getStoryDefinitionsByNamespaceAndBotId(namespace, botId) } returns
             listOf(
                 builtinStoryConfiguration,

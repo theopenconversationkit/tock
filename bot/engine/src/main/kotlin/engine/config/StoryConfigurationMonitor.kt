@@ -55,7 +55,7 @@ internal class StoryConfigurationMonitor(private val storyDAO: StoryDefinitionCo
         val (valid, missing) = bot.botDefinition.checkValidity(configuredStories)
         if (missing.isNotEmpty()) {
             missing.forEach(storyDAO::delete)
-            logger.info { "${missing.size} story definitions not found and deleted" }
+            logger.warn { "${missing.size} story definitions not found and deleted (${missing.joinToString()})" }
         }
         bot.botDefinition.updateStories(valid)
     }
