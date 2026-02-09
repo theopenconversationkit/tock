@@ -45,7 +45,7 @@ import kotlin.test.assertTrue
 /**
  *
  */
-class BotTest : BotEngineTest() {
+internal class BotTest : BotEngineTest() {
     private fun Bot.handle(
         action: Action,
         userTimeline: UserTimeline,

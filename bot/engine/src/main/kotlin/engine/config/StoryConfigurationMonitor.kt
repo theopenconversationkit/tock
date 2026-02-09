@@ -18,18 +18,15 @@ package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.Bot
-import ai.tock.shared.injector
-import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  *
  */
-internal object StoryConfigurationMonitor {
+internal class StoryConfigurationMonitor(private val storyDAO: StoryDefinitionConfigurationDAO) {
     private val logger = KotlinLogging.logger {}
 
-    private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()
 
     init {
@@ -54,8 +51,12 @@ internal object StoryConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.updateStories(
-            storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId),
-        )
+        val configuredStories = storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
+        val (valid, missing) = bot.botDefinition.checkValidity(configuredStories)
+        if (missing.isNotEmpty()) {
+            missing.forEach(storyDAO::delete)
+            logger.warn { "${missing.size} story definitions not found and deleted (${missing.joinToString()})" }
+        }
+        bot.botDefinition.updateStories(valid)
     }
 }

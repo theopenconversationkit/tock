@@ -45,7 +45,7 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class BotRepositoryTest : BotEngineTest() {
+internal class BotRepositoryTest : BotEngineTest() {
     @Test
     fun `installBots calls nlpClient#createApplication`() {
         BotRepository.registerBotProvider(

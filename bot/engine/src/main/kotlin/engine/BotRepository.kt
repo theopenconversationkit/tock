@@ -89,6 +89,7 @@ object BotRepository {
     private val statsMetricDAO: MetricDAO get() = injector.provide()
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
+    private val storyConfigurationMonitor: StoryConfigurationMonitor get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = CopyOnWriteArrayList()
     private val nlpListeners: MutableList<AsyncNlpListener> = CopyOnWriteArrayList(listOf(LegacyNlpListenerAdapter(BuiltInKeywordListener)))
@@ -587,7 +588,7 @@ object BotRepository {
                     connectorService.install(controller, conf)
                 }
                 // monitor bot
-                StoryConfigurationMonitor.monitor(bot)
+                storyConfigurationMonitor.monitor(bot)
                 BotRAGConfigurationMonitor.monitor(bot)
                 BotObservabilityConfigurationMonitor.monitor(bot)
                 BotVectorStoreConfigurationMonitor.monitor(bot)
@@ -609,7 +610,7 @@ object BotRepository {
             logger.debug { "unregister $controller" }
             controller.unregisterServices()
             if (controller is TockConnectorController) {
-                StoryConfigurationMonitor.unmonitor(controller.bot)
+                storyConfigurationMonitor.unmonitor(controller.bot)
                 BotRAGConfigurationMonitor.unmonitor(controller.bot)
                 BotObservabilityConfigurationMonitor.unmonitor(controller.bot)
                 BotVectorStoreConfigurationMonitor.unmonitor(controller.bot)

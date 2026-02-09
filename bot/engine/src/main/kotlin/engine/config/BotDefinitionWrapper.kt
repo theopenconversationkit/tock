@@ -75,6 +75,15 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     // only built-in
     private val builtInStoriesMap: Map<String, StoryDefinition> = botDefinition.stories.associateBy { it.id }
 
+    /**
+     * @return a pair of lists, where *first* list contains story configurations that are currently valid,
+     * while *second* list contains story configurations that should be pruned
+     */
+    fun checkValidity(configuredStories: List<StoryDefinitionConfiguration>) =
+        configuredStories.partition {
+            it.currentType != builtin || it.storyId in builtInStoriesMap
+        }
+
     fun updateStories(configuredStories: List<StoryDefinitionConfiguration>) {
         val activatedModules = findActivatedModules(configuredStories.map { it.storyId })
         val botStoryHandlers = activatedModules.flatMap { it.storiesById.entries }.associateBy({ it.key }) { it.value }

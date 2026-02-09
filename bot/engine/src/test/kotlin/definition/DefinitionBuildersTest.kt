@@ -26,7 +26,7 @@ import kotlin.test.assertNotNull
 /**
  *
  */
-class DefinitionBuildersTest : BotEngineTest() {
+internal class DefinitionBuildersTest : BotEngineTest() {
     @Suppress("ktlint:standard:enum-entry-name-case")
     enum class Step : StoryStep<StoryHandlerDefinition> {
         a,
