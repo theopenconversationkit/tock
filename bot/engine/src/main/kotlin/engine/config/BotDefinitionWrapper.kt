@@ -81,7 +81,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
      */
     fun checkValidity(configuredStories: List<StoryDefinitionConfiguration>) =
         configuredStories.partition {
-            it.currentType == builtin && it.storyId !in builtInStoriesMap
+            it.currentType != builtin || it.storyId in builtInStoriesMap
         }
 
     fun updateStories(configuredStories: List<StoryDefinitionConfiguration>) {
