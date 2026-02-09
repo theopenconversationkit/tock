@@ -59,10 +59,11 @@ class StoryConfigurationMonitorTest {
                 every { botDefinition } returns BotDefinitionWrapper(definition)
             }
         val builtinStoryConfiguration = StoryDefinitionConfiguration(definition, testStory, null)
-        val unregisteredStoryConfiguration = builtinStoryConfiguration.copy(
-            storyId = unregisteredStoryId,
-            intent = IntentWithoutNamespace(unregisteredStoryId),
-        )
+        val unregisteredStoryConfiguration =
+            builtinStoryConfiguration.copy(
+                storyId = unregisteredStoryId,
+                intent = IntentWithoutNamespace(unregisteredStoryId),
+            )
         every { dao.getStoryDefinitionsByNamespaceAndBotId(namespace, botId) } returns
             listOf(
                 builtinStoryConfiguration,
