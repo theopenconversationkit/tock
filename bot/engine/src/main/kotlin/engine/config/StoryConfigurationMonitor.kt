@@ -54,8 +54,12 @@ internal object StoryConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.updateStories(
-            storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId),
-        )
+        val configuredStories = storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
+        val (valid, missing) = bot.botDefinition.checkValidity(configuredStories)
+        if (missing.isNotEmpty()) {
+            configuredStories.forEach(storyDAO::delete)
+            logger.info { "${missing.size} story definitions not found and deleted" }
+        }
+        bot.botDefinition.updateStories(valid)
     }
 }
