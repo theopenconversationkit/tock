@@ -46,7 +46,7 @@ import kotlin.test.assertTrue
 /**
  *
  */
-class NlpTest : BotEngineTest() {
+internal class NlpTest : BotEngineTest() {
     @Test
     suspend fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)

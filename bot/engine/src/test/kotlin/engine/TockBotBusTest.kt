@@ -27,7 +27,7 @@ import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class TockBotBusTest : BotEngineTest() {
+internal class TockBotBusTest : BotEngineTest() {
     @BeforeEach
     fun beforeTest() {
         TestExecutorRecorder.clear()

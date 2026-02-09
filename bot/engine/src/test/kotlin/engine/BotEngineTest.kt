@@ -31,6 +31,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.engine.TestStoryDefinition.test
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.feature.FeatureDAO
@@ -60,13 +61,14 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 
 /**
  *
  */
-abstract class BotEngineTest {
+internal abstract class BotEngineTest {
     val userLock: UserLock = mockk(relaxed = true)
     val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
@@ -88,6 +90,7 @@ abstract class BotEngineTest {
     val featureDAO: FeatureDAO = mockk(relaxed = true)
     val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
     val botDocumentCompressorConfigurationDAO: BotDocumentCompressorConfigurationDAO = mockk(relaxed = true)
+    val storyConfigurationMonitor: StoryConfigurationMonitor = spyk(StoryConfigurationMonitor(storyDefinitionConfigurationDAO))
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
@@ -140,6 +143,7 @@ abstract class BotEngineTest {
             bind<BotVectorStoreConfigurationDAO>() with provider { botVectorStoreConfigurationDAO }
             bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
             bind<BotDocumentCompressorConfigurationDAO>() with provider { botDocumentCompressorConfigurationDAO }
+            bind<StoryConfigurationMonitor>() with provider { storyConfigurationMonitor }
         }
     }
 

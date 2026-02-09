@@ -52,7 +52,7 @@ import kotlin.test.assertNull
 /**
  *
  */
-class BotBusTest : BotEngineTest() {
+internal class BotBusTest : BotEngineTest() {
     private fun Bot.handle(
         action: Action,
         userTimeline: UserTimeline,

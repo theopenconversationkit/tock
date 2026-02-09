@@ -31,7 +31,7 @@ import kotlin.test.assertNotEquals
 /**
  *
  */
-class StoryHandlerBaseTest : BotEngineTest() {
+internal class StoryHandlerBaseTest : BotEngineTest() {
     @Test
     fun handleAndSwitchStory_shouldCreateANewStory_IfStoryHandlerFound() {
         assertEquals(test, bus.story.definition)

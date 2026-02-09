@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTockCoroutines::class)
-class AsyncBotBusTest : AsyncBotEngineTest() {
+internal class AsyncBotBusTest : AsyncBotEngineTest() {
     @Test
     fun retrieveCurrentBus() =
         runBlocking {

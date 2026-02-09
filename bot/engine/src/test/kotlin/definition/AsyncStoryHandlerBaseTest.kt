@@ -31,7 +31,7 @@ import kotlin.system.measureTimeMillis
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTockCoroutines::class)
-class AsyncStoryHandlerBaseTest : AsyncBotEngineTest() {
+internal class AsyncStoryHandlerBaseTest : AsyncBotEngineTest() {
     @Test
     fun `messages are sent in sequence`() =
         runBlocking {
