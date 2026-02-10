@@ -69,7 +69,7 @@ export class ChatUiMessageDebugComponent {
     const score = this.message.data.answer?.confidence_score;
     if (score != null) {
       const bg = getInterpolatedColor(score);
-      const fg = getContrastYIQ(bg);
+      const fg = getContrastYIQ(bg, '#3a3a3a');
       return { bg, fg };
     }
     return { bg: '', fg: '' };
