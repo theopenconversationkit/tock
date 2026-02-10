@@ -31,10 +31,6 @@ import ai.tock.bot.admin.service.ObservabilityService
 import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
 import ai.tock.bot.admin.service.VectorStoreService
-import ai.tock.nlp.front.client.FrontClient
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.shared.exception.rest.NotFoundException
-import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.nlpUser
@@ -44,7 +40,7 @@ import io.vertx.ext.web.RoutingContext
 /**
  * [GenAIVerticle] contains all the routes and actions associated with the AI tasks
  */
-class GenAIVerticle {
+class GenAIVerticle : AbstractNamespaceRetriever() {
     companion object {
         // Configuration
         private const val PATH_CONFIG_RAG = "/gen-ai/bots/:botId/configuration/rag"
@@ -59,29 +55,14 @@ class GenAIVerticle {
         private const val PATH_COMPLETION_PLAYGROUND = "/gen-ai/bots/:botId/completion/playground"
     }
 
-    private val front = FrontClient
-
     fun configure(webVerticle: WebVerticle) {
         with(webVerticle) {
-            /**
-             * lamdba calling database to retrieve application definition from request context
-             * @return [ApplicationDefinition]
-             */
-            val currentContextApp: (RoutingContext) -> ApplicationDefinition? = { context ->
-                val botId = context.pathParam("botId")
-                getNamespace(context)?.let { namespace ->
-                    front.getApplicationByNamespaceAndName(
-                        namespace, botId,
-                    )
-                } ?: throw NotFoundException(404, "Could not find $botId in namespace")
-            }
-
             // --------------------------------------- Config - RAG ----------------------------------------
             blockingJsonPost(
                 PATH_CONFIG_RAG,
                 admin,
             ) { context: RoutingContext, request: BotRAGConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
                     logger.info { "Saving 'RAG' configuration..." }
                     BotRAGConfigurationDTO(
                         RAGService.saveRag(request),
@@ -93,7 +74,7 @@ class GenAIVerticle {
                 PATH_CONFIG_RAG,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'RAG' configuration..." }
                     RAGService.getRAGConfiguration(app.namespace, app.name)?.let { BotRAGConfigurationDTO(it) }
                 }
@@ -103,7 +84,7 @@ class GenAIVerticle {
                 PATH_CONFIG_RAG,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'RAG' configuration..." }
                     RAGService.deleteConfig(app.namespace, app.name)
                 }
@@ -114,7 +95,7 @@ class GenAIVerticle {
                 PATH_CONFIG_SENTENCE_GENERATION,
                 admin,
             ) { context: RoutingContext, request: BotSentenceGenerationConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
                     logger.info { "Saving 'Sentence Generation' configuration..." }
                     BotSentenceGenerationConfigurationDTO(
                         SentenceGenerationService.saveSentenceGeneration(request),
@@ -126,7 +107,7 @@ class GenAIVerticle {
                 PATH_CONFIG_SENTENCE_GENERATION,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'Sentence Generation' configuration..." }
                     SentenceGenerationService.getSentenceGenerationConfiguration(app.namespace, app.name)
                         ?.let { BotSentenceGenerationConfigurationDTO(it) }
@@ -137,7 +118,7 @@ class GenAIVerticle {
                 PATH_CONFIG_SENTENCE_GENERATION_INFO,
                 nlpUser,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'Sentence Generation' configuration info..." }
                     SentenceGenerationService.getSentenceGenerationConfiguration(app.namespace, app.name)
                         ?.let { BotSentenceGenerationInfoDTO(it) } ?: BotSentenceGenerationInfoDTO()
@@ -148,7 +129,7 @@ class GenAIVerticle {
                 PATH_CONFIG_SENTENCE_GENERATION,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Sentence Generation' configuration..." }
                     SentenceGenerationService.deleteConfig(app.namespace, app.name)
                 }
@@ -159,7 +140,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_STORE,
                 admin,
             ) { context: RoutingContext, request: BotVectorStoreConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
                     logger.info { "Saving 'Vector Store' configuration..." }
                     BotVectorStoreConfigurationDTO(
                         VectorStoreService.saveVectorStore(request),
@@ -171,7 +152,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_STORE,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'Vector Store' configuration..." }
                     VectorStoreService.getVectorStoreConfiguration(app.namespace, app.name)
                         ?.let { BotVectorStoreConfigurationDTO(it) }
@@ -182,7 +163,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_STORE,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Vector Store' configuration..." }
                     VectorStoreService.deleteConfig(app.namespace, app.name)
                 }
@@ -193,7 +174,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_OBSERVABILITY,
                 admin,
             ) { context: RoutingContext, request: BotObservabilityConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
                     logger.info { "Saving 'Observability' configuration..." }
                     BotObservabilityConfigurationDTO(
                         ObservabilityService.saveObservability(request),
@@ -205,7 +186,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_OBSERVABILITY,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'Observability' configuration..." }
                     ObservabilityService.getObservabilityConfiguration(app.namespace, app.name)
                         ?.let { BotObservabilityConfigurationDTO(it) }
@@ -216,7 +197,7 @@ class GenAIVerticle {
                 PATH_CONFIG_VECTOR_OBSERVABILITY,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Observability' configuration..." }
                     ObservabilityService.deleteConfig(app.namespace, app.name)
                 }
@@ -227,7 +208,7 @@ class GenAIVerticle {
                 PATH_CONFIG_DOCUMENT_COMPRESSOR,
                 admin,
             ) { context: RoutingContext, request: BotDocumentCompressorConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
                     logger.info { "Saving 'Document Compressor' configuration..." }
                     BotDocumentCompressorConfigurationDTO(
                         DocumentCompressorService.saveDocumentCompressor(request),
@@ -239,7 +220,7 @@ class GenAIVerticle {
                 PATH_CONFIG_DOCUMENT_COMPRESSOR,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Retrieving 'Document Compressor' configuration..." }
                     DocumentCompressorService.getDocumentCompressorConfiguration(app.namespace, app.name)
                         ?.let { BotDocumentCompressorConfigurationDTO(it) }
@@ -250,7 +231,7 @@ class GenAIVerticle {
                 PATH_CONFIG_DOCUMENT_COMPRESSOR,
                 admin,
             ) { context: RoutingContext ->
-                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Document Compressor' configuration..." }
                     DocumentCompressorService.deleteConfig(app.namespace, app.name)
                 }
@@ -261,7 +242,7 @@ class GenAIVerticle {
                 PATH_COMPLETION_SENTENCE_GENERATION,
                 botUser,
             ) { context: RoutingContext, request: SentenceGenerationRequest ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) { app ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "GEN AI - Generating sentences..." }
                     CompletionService.generateSentences(request, app.namespace, app.name)
                 }
@@ -272,19 +253,13 @@ class GenAIVerticle {
                 PATH_COMPLETION_PLAYGROUND,
                 admin,
             ) { context: RoutingContext, request: PlaygroundRequest ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, currentContextApp) { app ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "GEN AI - Playground..." }
                     CompletionService.generate(request, app.namespace, app.name)
                 }
             }
         }
     }
-
-    /**
-     * Get the namespace from the context
-     * @param context : the vertx routing context
-     */
-    private fun getNamespace(context: RoutingContext): String? = ((context.user() ?: context.session()?.get("tockUser")) as? TockUser)?.namespace
 
     /**
      * Merge namespace and botId on requested [MetricFilter]
