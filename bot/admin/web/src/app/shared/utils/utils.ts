@@ -186,7 +186,7 @@ export function shadeColor(hexcolor: string, amount: number) {
  * // Returns a color halfway between #acbef4 and #3366ff
  * const interpolatedColor = getInterpolatedColor(0.5, "#acbef4", "#3366ff");
  */
-export function getInterpolatedColor(value: number, colorStart: string = '#acbef4', colorEnd: string = '#3366ff'): string {
+export function getInterpolatedColor(value: number, colorStart: string = '#a2a2a2', colorEnd: string = '#009463'): string {
   // Clamp value between 0 and 1
   const clampedValue = Math.min(1, Math.max(0, value));
 
