@@ -20,8 +20,8 @@ import ai.tock.bot.connector.web.WebMessageProcessor
 import ai.tock.bot.connector.web.send.QuickReply
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
-import org.junit.Test
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class WebMessageProcessorTest {
     private val markdownText = "Hello *user*"
@@ -32,7 +32,7 @@ class WebMessageProcessorTest {
         val playerId = PlayerId("")
         val action = SendSentence(playerId, "", playerId, markdownText)
         val messageProcessor = WebMessageProcessor(false)
-        Assertions.assertEquals(WebMessage(markdownText), messageProcessor.process(action))
+        assertEquals(WebMessage(markdownText, actionId = action.id.toString()), messageProcessor.process(action))
     }
 
     @Test
@@ -40,7 +40,7 @@ class WebMessageProcessorTest {
         val playerId = PlayerId("")
         val action = SendSentence(playerId, "", playerId, markdownText)
         val messageProcessor = WebMessageProcessor(true)
-        Assertions.assertEquals(WebMessage(renderedText), messageProcessor.process(action))
+        assertEquals(WebMessage(renderedText, actionId = action.id.toString()), messageProcessor.process(action))
     }
 
     @Test
@@ -49,6 +49,6 @@ class WebMessageProcessorTest {
         val quickReplies = listOf(QuickReply("QR", null, null))
         val action = SendSentence(playerId, "", playerId, null, mutableListOf(WebMessage(markdownText, quickReplies)))
         val messageProcessor = WebMessageProcessor(true)
-        Assertions.assertEquals(WebMessage(renderedText, quickReplies), messageProcessor.process(action))
+        assertEquals(WebMessage(renderedText, quickReplies, actionId = action.id.toString()), messageProcessor.process(action))
     }
 }
