@@ -194,6 +194,7 @@ internal fun vertxExecutor(): Executor {
                             val v = blocking.call()
                             promise.complete(v)
                         } catch (e: Throwable) {
+                            logger.error(e)
                             promise.fail(e)
                         } finally {
                             promise.tryFail("call not completed")

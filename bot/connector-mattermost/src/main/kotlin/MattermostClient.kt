@@ -19,6 +19,7 @@ package ai.tock.bot.connector.mattermost
 import ai.tock.bot.connector.mattermost.model.MattermostMessageOut
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
+import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
@@ -56,7 +57,11 @@ internal class MattermostClient(
             .create()
 
     fun sendMessage(message: MattermostMessageOut) {
-        val response = mattermostApi.sendMessage(mattermostToken, message).execute()
-        logger.debug { response }
+        try {
+            val response = mattermostApi.sendMessage(mattermostToken, message).execute()
+            logger.debug { response }
+        } catch (e: Throwable) {
+            logger.error(e)
+        }
     }
 }
