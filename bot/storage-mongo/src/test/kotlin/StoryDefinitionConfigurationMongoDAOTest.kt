@@ -17,7 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.mongo.StoryDefinitionConfigurationMongoDAO.customRegexToFindWord
-import junit.framework.TestCase.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class StoryDefinitionConfigurationMongoDAOTest : AbstractTest() {

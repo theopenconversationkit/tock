@@ -49,7 +49,7 @@
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>5.0.4</vertx>
+        <vertx>5.0.7</vertx>
         <retrofit>3.0.0</retrofit>
         <okhttp>5.2.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
@@ -83,7 +83,7 @@
         <junit-jupiter>6.0.0</junit-jupiter>
         <testcontainer>1.21.3</testcontainer>
 
-        <mockk>1.14.6</mockk>
+        <mockk>1.14.9</mockk>
         <assertj>3.22.0</assertj>
         <byte-buddy>1.17.8</byte-buddy>
         <atrium>1.2.0</atrium>
