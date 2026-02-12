@@ -15,29 +15,42 @@
   -->
 
 <div>
-  <div class="message" *ngIf="configuration && (configuration | async).globalMessage">
-    {{ (configuration | async).globalMessage}}
+  <div
+    class="message"
+    *ngIf="globalMessage"
+  >
+    {{ globalMessage }}
   </div>
+
   <div class="info">
     Tock v{{ tock_info.build_version }}
-      <a
-        href="https://doc.tock.ai"
-        target="_blank"
-        title="Tock Homepage"
+    <a
+      href="https://doc.tock.ai"
+      target="_blank"
+      title="Tock Homepage"
       ><nb-icon
         icon="info-circle"
         nbTooltip="Tock documentation '{{ tock_info.platform_type }}' version {{ tock_info.build_version }}
              (built from {{ tock_info.source_commit_id }} the {{ tock_info.build_date }})"
-      ></nb-icon></a>
-      &nbsp;
-      <a
-        href="https://github.com/theopenconversationkit/tock"
-        target="_blank"
-      ><nb-icon icon="github" nbTooltip="Tock Sources on GitHub"></nb-icon></a>
-      &nbsp;
-      <a
-        href="https://gitter.im/tockchat/Lobby"
-        target="_blank"
-      ><nb-icon icon="chat-left-text"  nbTooltip="Tock Chat on Gitter"></nb-icon></a>
+      ></nb-icon
+    ></a>
+    &nbsp;
+    <a
+      href="https://github.com/theopenconversationkit/tock"
+      target="_blank"
+      ><nb-icon
+        icon="github"
+        nbTooltip="Tock Sources on GitHub"
+      ></nb-icon
+    ></a>
+    &nbsp;
+    <a
+      href="https://gitter.im/tockchat/Lobby"
+      target="_blank"
+      ><nb-icon
+        icon="chat-left-text"
+        nbTooltip="Tock Chat on Gitter"
+      ></nb-icon
+    ></a>
   </div>
 </div>

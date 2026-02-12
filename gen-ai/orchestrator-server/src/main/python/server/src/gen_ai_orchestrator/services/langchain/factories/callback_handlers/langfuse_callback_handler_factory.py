@@ -120,9 +120,7 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
 
         except ApiError as exc:
             logger.error(exc)
-            raise GenAIObservabilityErrorException(
-                create_error_info_langfuse(exc)
-            )
+            raise GenAIObservabilityErrorException(create_error_info_langfuse(exc))
         return True
 
     def _fetch_settings(self) -> dict:
@@ -140,7 +138,10 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
 
     def _get_httpx_client(self) -> Optional[Client]:
         langfuse_settings = self._fetch_settings()
-        if ProxyServerType.AWS_LAMBDA == application_settings.observability_proxy_server:
+        if (
+            ProxyServerType.AWS_LAMBDA
+            == application_settings.observability_proxy_server
+        ):
             """
             This AWSLambda proxy is used when the architecture implemented for the Langfuse
             observability tool places it behind an API Gateway which requires its

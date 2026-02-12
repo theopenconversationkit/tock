@@ -16,9 +16,23 @@
 
 package ai.tock.genai.orchestratorclient.responses
 
-data class TextWithFootnotes(
-    val text: String,
-    val footnotes: List<Footnote> = emptyList(),
+data class ChunkSentences(
+    val chunk: String? = null,
+    val sentences: List<String>? = emptyList(),
+    val usedInResponse: Boolean? = false,
+    val reason: String? = null,
+)
+
+data class LLMAnswer(
+    val status: String?,
+    val answer: String?,
+    val confidenceScore: Double? = 0.0,
+    val displayAnswer: Boolean? = true,
+    val topic: String? = null,
+    val suggestedTopics: List<String>? = null,
+    val understanding: String? = null,
+    val redirectionIntent: String? = null,
+    val contextUsage: List<ChunkSentences>? = null,
 )
 
 data class Footnote(

@@ -93,7 +93,24 @@
         </button>
       </div>
 
-      <div class="text">
+      <div
+        class="text position-relative"
+        (mouseenter)="showCopyButton = true"
+        (mouseleave)="showCopyButton = false"
+      >
+        <button
+          *ngIf="canBeCopied()"
+          nbButton
+          status="primary"
+          size="small"
+          nbTooltip="Copy message content"
+          class="copy-button"
+          [class.d-none]="!showCopyButton"
+          (click)="copyToClipboard()"
+        >
+          <nb-icon icon="copy"></nb-icon>
+        </button>
+
         <tock-chat-ui-message-sentence
           *ngIf="message.isSentence()"
           [sentence]="$any(message)"

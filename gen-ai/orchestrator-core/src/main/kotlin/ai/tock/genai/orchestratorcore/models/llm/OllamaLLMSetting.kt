@@ -27,5 +27,3 @@ data class OllamaLLMSetting<T>(
         return this.copy(temperature = temperature)
     }
 }
-
-// TODO MASS : Check Compile + TU (car dernier commit)
