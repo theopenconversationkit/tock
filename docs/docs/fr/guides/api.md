@@ -77,7 +77,7 @@ la dépendance `tock-bot-api-websocket` incluse :
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <plugin.kotlin.version>1.3.41</plugin.kotlin.version>
         <plugin.source.version>3.1.0</plugin.source.version>
-        <lib.tock.version>25.10.6</lib.tock.version>
+        <lib.tock.version>25.10.7</lib.tock.version>
     </properties>
 
     <dependencies>
