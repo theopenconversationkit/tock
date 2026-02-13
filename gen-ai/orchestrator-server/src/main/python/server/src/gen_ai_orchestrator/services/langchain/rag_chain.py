@@ -21,7 +21,6 @@ import json
 import logging
 import time
 from functools import partial
-from logging import ERROR, WARNING
 from operator import itemgetter
 from typing import List, Optional, Tuple
 
@@ -180,9 +179,6 @@ async def execute_rag_chain(
         ),
     )
     llm_answer = LLMAnswer(**response['answer'])
-
-    # RAG Guard
-    rag_guard(inputs, llm_answer, response, request.documents_required)
 
     # Guardrail
     if request.guardrail_setting:
@@ -465,46 +461,6 @@ def contextualize_question(inputs: dict, chat_chain) -> str:
     if inputs.get('chat_history') and len(inputs['chat_history']) > 0:
         return chat_chain
     return inputs['question']
-
-
-def rag_guard(question, answer, response, documents_required):
-    """
-    Validates the RAG system's response based on the presence or absence of source documents
-    and the `documentsRequired` setting.
-
-    Args:
-        question: user question
-        answer: the LLM answer
-        response: the RAG response
-        documents_required (bool): Specifies whether documents are mandatory for the response.
-    """
-
-    if (
-        documents_required
-        and answer.status == 'found_in_context'
-        and len(response['documents']) == 0
-    ):
-        message = 'No documents were retrieved, yet an answer was attempted.'
-        rag_log(
-            level=ERROR,
-            message=message,
-            question=question,
-            answer=answer.answer,
-            response=response,
-        )
-        raise GenAIGuardCheckException(ErrorInfo(cause=message))
-
-    if answer.status == 'not_found_in_context' and len(response['documents']) > 0:
-        # If the answer is not found in context and some documents are retrieved, so we remove them from the RAG response.
-        message = 'No answer found in the retrieved context. The documents are therefore removed from the RAG response.'
-        rag_log(
-            level=WARNING,
-            message=message,
-            question=question,
-            answer=answer.answer,
-            response=response,
-        )
-        response['documents'] = []
 
 
 def rag_log(level, message, question, answer, response):

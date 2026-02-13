@@ -20,6 +20,8 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -87,6 +89,7 @@ object BotRepository {
     // load only specified configuration ids (dev mode)
     private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
     private val statsMetricDAO: MetricDAO get() = injector.provide()
+    private val indicatorDAO: IndicatorDAO get() = injector.provide()
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
@@ -116,7 +119,7 @@ object BotRepository {
         ConcurrentHashMap()
 
     private val applicationIdBotApplicationConfigurationMap:
-        ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
+            ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
     internal var botsInstalled: Boolean = false
@@ -476,9 +479,9 @@ object BotRepository {
             // is there a configuration change ?
             if (provider != null &&
                 (
-                    provider.configurationUpdated ||
-                        existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
-                )
+                        provider.configurationUpdated ||
+                                existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
+                        )
             ) {
                 val botDefinition = provider.botDefinition()
                 if (botDefinition.namespace == c.namespace) {
@@ -630,4 +633,8 @@ object BotRepository {
      * @param metrics a set of [Metric] to save
      */
     fun saveMetrics(metrics: List<Metric>) = statsMetricDAO.saveAll(metrics)
+
+    fun getIndicatorByName(name: String, namespace: String, botId: String) = indicatorDAO.findByNameAndBotId(name, namespace, botId)
+    fun saveIndicator(indicator: Indicator) = indicatorDAO.save(indicator)
+
 }

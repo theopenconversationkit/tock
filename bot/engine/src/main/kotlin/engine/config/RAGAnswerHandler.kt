@@ -16,6 +16,9 @@
 
 package ai.tock.bot.engine.config
 
+import ai.tock.bot.admin.indicators.Dimensions
+import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorValue
 import ai.tock.bot.admin.indicators.IndicatorValues
 import ai.tock.bot.admin.indicators.Indicators
 import ai.tock.bot.admin.indicators.metric.MetricType
@@ -229,16 +232,21 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
                     )
 
-                debug = response?.debug
-                if (response?.answer?.status.equals("not_found_in_context", ignoreCase = true)) {
-                    // Save no answer metric
-                    saveRagMetric(IndicatorValues.NO_ANSWER)
-                } else {
-                    // Save success metric
-                    saveRagMetric(IndicatorValues.SUCCESS)
+                // Save metrics
+                response?.answer?.status?.let { status ->
+                    saveRagIndicator(
+                        indicatorLabel = "RAG Status",
+                        indicatorValue = IndicatorValue(generateIdFromLabel(status), status))
+                }
+
+                response?.answer?.topic?.let { topic ->
+                    saveRagIndicator(
+                        indicatorLabel = "RAG Topics",
+                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic))
                 }
 
                 // Handle RAG response
+                debug = response?.debug
                 return RAGResult(
                     answer = response?.answer,
                     footnotes = response?.footnotes,
@@ -248,8 +256,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
             } catch (exc: Exception) {
                 logger.error { exc }
-                // Save failure metric
-                saveRagMetric(IndicatorValues.FAILURE)
+                // Save error metric
+                saveRagIndicator(
+                    indicatorLabel = "RAG Status",
+                    indicatorValue = IndicatorValue(name = "technical_error", label = "Technical Error"))
 
                 val ragError =
                     when (exc) {
@@ -259,7 +269,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         else -> RAGError(errorMessage = exc.message)
                     }
 
-                (debug as MutableMap<String, Any?>)["error"] = ragError
+                debug = (debug as? MutableMap<String, Any?> ?: mutableMapOf()).apply {
+                    this["error"] = ragError
+                }
 
                 return RAGResult(
                     answer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage),
@@ -309,14 +321,42 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // take last 10 messages
             .takeLast(n = nLastMessages)
 
-    private fun BotBus.saveRagMetric(indicator: IndicatorValues) {
+    private fun BotBus.saveRagIndicator(indicatorLabel: String, indicatorValue: IndicatorValue) {
+        val indicatorName = generateIdFromLabel(indicatorLabel)
+        val indicator = BotRepository.getIndicatorByName(
+            indicatorName,
+            this.botDefinition.namespace,
+            this.botDefinition.botId
+        ) ?: Indicator(
+            name = indicatorName,
+            label = indicatorLabel,
+            namespace = this.botDefinition.namespace,
+            botId = this.botDefinition.botId,
+            dimensions = setOf(Dimensions.RAG.value),
+            values = setOf()
+        )
+
+        BotRepository.saveIndicator(
+            indicator.copy(values = indicator.values + indicatorValue)
+        )
+
         BotRepository.saveMetric(
             createMetric(
-                MetricType.QUESTION_REPLIED,
-                Indicators.RAG.value.name,
-                indicator.value.name,
+                type = MetricType.QUESTION_REPLIED,
+                indicatorName = indicatorName,
+                indicatorValueName = indicatorValue.name,
             ),
         )
+    }
+
+    private fun generateIdFromLabel(label: String): String {
+        return label
+            .trim()
+            .lowercase()
+            // keep letters (including accents) + numbers + spaces
+            .replace(Regex("[^\\p{L}\\p{Nd}\\s]"), "_")
+            // replace spaces with _
+            .replace(Regex("\\s+"), "_")
     }
 }
 

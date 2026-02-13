@@ -160,7 +160,6 @@ Answer in {locale}:""",
             'min_score': 0.7,
             'endpoint': 'http://test-rerank.com',
         },
-        'documents_required': True,
     }
     request = RAGRequest(**query_dict)
     inputs = {
@@ -229,10 +228,6 @@ Answer in {locale}:""",
     mocked_guardrail_parse.assert_called_once_with(
         os.path.join(request.guardrail_setting.api_base, 'guardrail'),
         json={'text': [mocked_rag_answer['answer']['answer']]},
-    )
-    # Assert the rag guard is called
-    mocked_rag_guard.assert_called_once_with(
-        inputs, llm_answer, response, request.documents_required
     )
 
 
@@ -459,91 +454,3 @@ def test_check_guardrail_output_is_ok():
     }
 
     assert check_guardrail_output(guardrail_output) is True
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
-def test_rag_guard_fails_if_no_docs_in_valid_answer(mocked_log):
-    question = 'Hi!'
-    response = {
-        'answer': {'status': 'found_in_context', 'answer': 'a valid answer'},
-        'documents': [],
-    }
-    try:
-        rag_chain.rag_guard(
-            question, LLMAnswer(**response['answer']), response, documents_required=True
-        )
-    except Exception as e:
-        assert isinstance(e, GenAIGuardCheckException)
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
-def test_rag_guard_accepts_no_answer_even_with_docs(mocked_log):
-    question = 'Hi!'
-    response = {
-        'answer': {
-            'status': 'not_found_in_context',
-            'answer': 'Sorry, I don t know.',
-            'context': [
-                {
-                    'chunk': 1,
-                    'sentences': ['str1'],
-                }
-            ],
-        },
-        'documents': ['a doc as a string'],
-    }
-    rag_chain.rag_guard(
-        question, LLMAnswer(**response['answer']), response, documents_required=True
-    )
-    # No answer found in the retrieved context. The documents are therefore removed from the RAG response.
-    assert response['documents'] == []
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
-def test_rag_guard_valid_answer_with_docs(mocked_log):
-    question = 'Hi!'
-    response = {
-        'answer': {
-            'status': 'found_in_context',
-            'answer': 'a valid answer',
-        },
-        'documents': ['doc1', 'doc2'],
-    }
-    rag_chain.rag_guard(
-        question, LLMAnswer(**response['answer']), response, documents_required=True
-    )
-    assert response['documents'] == ['doc1', 'doc2']
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
-def test_rag_guard_no_answer_with_no_docs(mocked_log):
-    question = 'Hi!'
-    response = {
-        'answer': {'status': 'not_found_in_context', 'answer': 'Sorry, I don t know.'},
-        'documents': [],
-    }
-    rag_chain.rag_guard(
-        question, LLMAnswer(**response['answer']), response, documents_required=True
-    )
-    assert response['documents'] == []
-
-
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.rag_log')
-def test_rag_guard_without_no_answer_input(mocked_log):
-    """Test that __rag_guard handles missing no_answer input correctly."""
-    question = 'Hi!'
-    response = {
-        'answer': {
-            'status': 'found_in_context',
-            'answer': 'a valid answer',
-        },
-        'documents': [],
-    }
-    with pytest.raises(GenAIGuardCheckException) as exc:
-        rag_chain.rag_guard(
-            question, LLMAnswer(**response['answer']), response, documents_required=True
-        )
-
-    mocked_log.assert_called_once()
-
-    assert isinstance(exc.value, GenAIGuardCheckException)

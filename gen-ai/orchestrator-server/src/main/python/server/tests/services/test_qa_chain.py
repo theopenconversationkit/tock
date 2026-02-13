@@ -51,7 +51,10 @@ async def test_qa_chain(
         'user_query': 'How to get started playing guitar ?',
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
-            'api_key': {'type': 'Raw', 'secret': 'ab7***************************A1IV4B'},
+            'api_key': {
+                'type': 'Raw',
+                'secret': 'ab7***************************A1IV4B',
+            },
             'model': 'text-embedding-ada-002',
         },
         'document_index_name': 'my-index-name',
@@ -66,7 +69,6 @@ async def test_qa_chain(
             ],
             'k': 4,
         },
-        'documents_required': True,
     }
     request = QARequest(**query_dict)
 
