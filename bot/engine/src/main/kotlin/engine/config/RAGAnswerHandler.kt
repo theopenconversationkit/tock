@@ -245,6 +245,13 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     )
                 }
 
+                response?.answer?.suggestedTopics?.map { topic ->
+                    saveRagIndicator(
+                        indicatorLabel = "RAG Out Of Scope",
+                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic),
+                    )
+                }
+
                 // Handle RAG response
                 debug = response?.debug
                 return RAGResult(
