@@ -93,6 +93,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                     if (action.metadata.sourceWithContent) it.content else null,
                                     it.score,
                                     it.isTitleFallback,
+                                    it.metadata,
                                 )
                             }.toMutableList(),
                         // modifiedObservabilityInfo includes the public langfuse URL if filled.

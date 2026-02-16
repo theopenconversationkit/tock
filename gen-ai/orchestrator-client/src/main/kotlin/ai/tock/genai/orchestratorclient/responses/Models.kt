@@ -28,6 +28,7 @@ data class Footnote(
     val content: String? = null,
     val score: Float? = null,
     val isTitleFallback: Boolean? = null,
+    val metadata: Map<String, Any?>? = null,
 )
 
 data class ObservabilityInfo(

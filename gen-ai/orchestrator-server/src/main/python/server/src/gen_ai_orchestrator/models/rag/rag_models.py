@@ -15,7 +15,7 @@
 """Module for RAG Models"""
 
 from enum import Enum, unique
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Field, HttpUrl
 
@@ -55,6 +55,9 @@ class Footnote(Source):
     identifier: str = Field(description='Footnote identifier', examples=['1'])
     is_title_fallback: Optional[bool] = Field(
         description='Whether the title is a fallback value.', default=None
+    )
+    metadata: Optional[dict[str, Any]] = Field(
+        description='Document metadata associated to the footnote.', default=None
     )
 
 
