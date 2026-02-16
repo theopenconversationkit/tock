@@ -51,7 +51,7 @@ enum class Indicators(val value: Indicator) {
                     IndicatorValues.NO_ANSWER.value,
                 ),
         ),
-    )
+    ),
 }
 
 object PredefinedIndicators {

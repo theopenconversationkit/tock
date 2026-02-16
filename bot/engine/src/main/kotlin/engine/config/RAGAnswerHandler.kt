@@ -19,8 +19,6 @@ package ai.tock.bot.engine.config
 import ai.tock.bot.admin.indicators.Dimensions
 import ai.tock.bot.admin.indicators.Indicator
 import ai.tock.bot.admin.indicators.IndicatorValue
-import ai.tock.bot.admin.indicators.IndicatorValues
-import ai.tock.bot.admin.indicators.Indicators
 import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.RAGStoryDefinition.Companion.RAG_STORY_NAME
@@ -232,17 +230,19 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
                     )
 
-                // Save metrics
+                // Save metrics for status
                 response?.answer?.status?.let { status ->
                     saveRagIndicator(
                         indicatorLabel = "RAG Status",
-                        indicatorValue = IndicatorValue(generateIdFromLabel(status), status))
+                        indicatorValue = IndicatorValue(generateIdFromLabel(status), generateLabelFromId(status)),
+                    )
                 }
-
+                // Save metrics for topics
                 response?.answer?.topic?.let { topic ->
                     saveRagIndicator(
                         indicatorLabel = "RAG Topics",
-                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic))
+                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic),
+                    )
                 }
 
                 // Handle RAG response
@@ -259,7 +259,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 // Save error metric
                 saveRagIndicator(
                     indicatorLabel = "RAG Status",
-                    indicatorValue = IndicatorValue(name = "technical_error", label = "Technical Error"))
+                    indicatorValue = IndicatorValue(name = "technical_error", label = "Technical error"),
+                )
 
                 val ragError =
                     when (exc) {
@@ -269,9 +270,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         else -> RAGError(errorMessage = exc.message)
                     }
 
-                debug = (debug as? MutableMap<String, Any?> ?: mutableMapOf()).apply {
-                    this["error"] = ragError
-                }
+                debug =
+                    (debug as? MutableMap<String, Any?> ?: mutableMapOf()).apply {
+                        this["error"] = ragError
+                    }
 
                 return RAGResult(
                     answer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage),
@@ -321,23 +323,27 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // take last 10 messages
             .takeLast(n = nLastMessages)
 
-    private fun BotBus.saveRagIndicator(indicatorLabel: String, indicatorValue: IndicatorValue) {
+    private fun BotBus.saveRagIndicator(
+        indicatorLabel: String,
+        indicatorValue: IndicatorValue,
+    ) {
         val indicatorName = generateIdFromLabel(indicatorLabel)
-        val indicator = BotRepository.getIndicatorByName(
-            indicatorName,
-            this.botDefinition.namespace,
-            this.botDefinition.botId
-        ) ?: Indicator(
-            name = indicatorName,
-            label = indicatorLabel,
-            namespace = this.botDefinition.namespace,
-            botId = this.botDefinition.botId,
-            dimensions = setOf(Dimensions.RAG.value),
-            values = setOf()
-        )
+        val indicator =
+            BotRepository.getIndicatorByName(
+                indicatorName,
+                this.botDefinition.namespace,
+                this.botDefinition.botId,
+            ) ?: Indicator(
+                name = indicatorName,
+                label = indicatorLabel,
+                namespace = this.botDefinition.namespace,
+                botId = this.botDefinition.botId,
+                dimensions = setOf(Dimensions.RAG.value),
+                values = setOf(),
+            )
 
         BotRepository.saveIndicator(
-            indicator.copy(values = indicator.values + indicatorValue)
+            indicator.copy(values = indicator.values + indicatorValue),
         )
 
         BotRepository.saveMetric(
@@ -349,14 +355,56 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         )
     }
 
+    /**
+     * Generates a technical ID from a human-readable label.
+     *
+     * The function:
+     * 1. Trims leading and trailing whitespace.
+     * 2. Converts all characters to lowercase.
+     * 3. Replaces all characters except letters (including accents), digits, and spaces with underscores.
+     * 4. Replaces all spaces (including multiple consecutive spaces) with a single underscore.
+     *
+     * Example:
+     * ```
+     * generateIdFromLabel("Found in documentation") // returns "found_in_documentation"
+     * ```
+     *
+     * @param label The human-readable label to convert.
+     * @return A normalized ID suitable for technical use (e.g., keys, identifiers).
+     */
     private fun generateIdFromLabel(label: String): String {
         return label
             .trim()
             .lowercase()
-            // keep letters (including accents) + numbers + spaces
+            // keep letters (including accents) + numbers + spaces, replace others with "_"
             .replace(Regex("[^\\p{L}\\p{Nd}\\s]"), "_")
-            // replace spaces with _
+            // replace spaces (including multiple spaces) with "_"
             .replace(Regex("\\s+"), "_")
+    }
+
+    /**
+     * Generates a human-readable label from a technical ID.
+     *
+     * The function:
+     * 1. Trims leading and trailing whitespace.
+     * 2. Replaces underscores with spaces.
+     * 3. Collapses multiple consecutive spaces into a single space.
+     * 4. Capitalizes the first letter of the resulting string.
+     *
+     * Example:
+     * ```
+     * generateLabelFromId("not_found_in_context") // returns "Not found in context"
+     * ```
+     *
+     * @param id The technical ID to convert.
+     * @return A human-readable label.
+     */
+    fun generateLabelFromId(id: String): String {
+        return id
+            .trim()
+            .replace("_", " ")              // replace underscores with spaces
+            .replace(Regex("\\s+"), " ")    // collapse multiple spaces
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } // capitalize first letter
     }
 }
 
