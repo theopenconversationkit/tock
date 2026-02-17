@@ -25,6 +25,5 @@ data class ClientFootnote(
     val url: String?,
     val content: String?,
     val score: Float?,
-    val isTitleFallback: Boolean? = null,
     val metadata: Map<String, Any?>? = null,
 )

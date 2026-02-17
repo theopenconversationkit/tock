@@ -201,7 +201,6 @@ async def execute_rag_chain(
                         url=doc.metadata['source'],
                         content=get_source_content(doc),
                         score=doc.metadata.get('retriever_score', None),
-                        is_title_fallback=doc.metadata.get('is_title_fallback', None),
                         metadata=doc.metadata.copy(),
                     ),
                     response['documents'],

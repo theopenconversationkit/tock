@@ -92,7 +92,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                     it.url,
                                     if (action.metadata.sourceWithContent) it.content else null,
                                     it.score,
-                                    it.isTitleFallback,
                                     it.metadata,
                                 )
                             }.toMutableList(),

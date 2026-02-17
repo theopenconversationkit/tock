@@ -53,9 +53,6 @@ class Footnote(Source):
     """A footnote model, used to associate document sources with the RAG answer"""
 
     identifier: str = Field(description='Footnote identifier', examples=['1'])
-    is_title_fallback: Optional[bool] = Field(
-        description='Whether the title is a fallback value.', default=None
-    )
     metadata: Optional[dict[str, Any]] = Field(
         description='Document metadata associated to the footnote.', default=None
     )
