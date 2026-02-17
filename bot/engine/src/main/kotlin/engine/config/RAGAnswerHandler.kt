@@ -230,26 +230,13 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         debug = action.metadata.debugEnabled || ragConfiguration.debugEnabled,
                     )
 
-                // Save metrics for status
-                response?.answer?.status?.let { status ->
-                    saveRagIndicator(
-                        indicatorLabel = "RAG Status",
-                        indicatorValue = IndicatorValue(generateIdFromLabel(status), generateLabelFromId(status)),
-                    )
-                }
-                // Save metrics for topics
-                response?.answer?.topic?.let { topic ->
-                    saveRagIndicator(
-                        indicatorLabel = "RAG Topics",
-                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic),
-                    )
-                }
-
-                response?.answer?.suggestedTopics?.map { topic ->
-                    saveRagIndicator(
-                        indicatorLabel = "RAG Out Of Scope",
-                        indicatorValue = IndicatorValue(generateIdFromLabel(topic), topic),
-                    )
+                // Save RAG metrics
+                response?.answer?.let { answer ->
+                    answer.status?.let { saveRagIndicator("RAG Status", it) }
+                    answer.topic?.let { saveRagIndicator("RAG Topics", it) }
+                    answer.suggestedTopics?.forEach {
+                        saveRagIndicator("RAG Out Of Scope", it)
+                    }
                 }
 
                 // Handle RAG response
@@ -266,7 +253,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 // Save error metric
                 saveRagIndicator(
                     indicatorLabel = "RAG Status",
-                    indicatorValue = IndicatorValue(name = "technical_error", label = "Technical error"),
+                    indicatorValueTag = "technical_error",
                 )
 
                 val ragError =
@@ -330,11 +317,11 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // take last 10 messages
             .takeLast(n = nLastMessages)
 
-    private fun BotBus.saveRagIndicator(
-        indicatorLabel: String,
-        indicatorValue: IndicatorValue,
-    ) {
-        val indicatorName = generateIdFromLabel(indicatorLabel)
+    private fun BotBus.saveRagIndicator(indicatorLabel: String, indicatorValueTag: String) {
+
+        // Ex: RAG Topics -> rag_topics
+        val indicatorName = generateNameFromTag(indicatorLabel)
+
         val indicator =
             BotRepository.getIndicatorByName(
                 indicatorName,
@@ -348,6 +335,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 dimensions = setOf(Dimensions.RAG.value),
                 values = setOf(),
             )
+
+        // Ex: Small talk -> small_talk
+        val indicatorValueName = generateNameFromTag(indicatorValueTag)
+        // Ex: found_in_context -> Found in context
+        val indicatorValueLabel = generateLabelFromTag(indicatorValueTag)
+        val indicatorValue = IndicatorValue(indicatorValueName, indicatorValueLabel)
 
         BotRepository.saveIndicator(
             indicator.copy(values = indicator.values + indicatorValue),
@@ -379,7 +372,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param label The human-readable label to convert.
      * @return A normalized ID suitable for technical use (e.g., keys, identifiers).
      */
-    private fun generateIdFromLabel(label: String): String {
+    private fun generateNameFromTag(label: String): String {
         return label
             .trim()
             .lowercase()
@@ -406,7 +399,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param id The technical ID to convert.
      * @return A human-readable label.
      */
-    fun generateLabelFromId(id: String): String {
+    fun generateLabelFromTag(id: String): String {
         return id
             .trim()
             .replace("_", " ")              // replace underscores with spaces
