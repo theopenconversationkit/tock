@@ -41,4 +41,8 @@ data class Footnote(
      * A footnote score
      */
     val score: Float?,
+    /**
+     * Document metadata associated to the footnote
+     */
+    val metadata: Map<String, Any?>? = null,
 )
