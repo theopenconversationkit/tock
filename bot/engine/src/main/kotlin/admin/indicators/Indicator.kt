@@ -32,6 +32,7 @@ import org.litote.kmongo.newId
  */
 data class Indicator(
     val _id: Id<Indicator> = newId(),
+    val type: IndicatorType = IndicatorType.CUSTOM,
     val name: String,
     val label: String,
     val description: String? = null,
@@ -39,4 +40,11 @@ data class Indicator(
     val botId: String,
     val dimensions: Set<String> = mutableSetOf(),
     val values: Set<IndicatorValue>,
-)
+) {
+    fun isCustom() = IndicatorType.CUSTOM == type
+}
+
+enum class IndicatorType {
+    PREDEFINED,
+    CUSTOM,
+}

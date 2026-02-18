@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model.indicator
 
 import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorType
 import ai.tock.bot.admin.indicators.IndicatorValue
 
 /**
@@ -32,6 +33,7 @@ fun toIndicator(
     request: SaveIndicatorRequest,
 ): Indicator {
     return Indicator(
+        type = IndicatorType.CUSTOM,
         name = request.name,
         label = request.label,
         description = request.description,
@@ -50,6 +52,7 @@ fun toIndicator(
 fun toResponse(indicator: Indicator): IndicatorResponse =
     IndicatorResponse(
         id = indicator._id.toString(),
+        type = indicator.type,
         name = indicator.name,
         label = indicator.label,
         description = indicator.description,

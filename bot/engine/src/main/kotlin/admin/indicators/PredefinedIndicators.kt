@@ -36,6 +36,7 @@ enum class Indicators(val value: Indicator) {
     @Deprecated("Use RAG status")
     GEN_AI(
         Indicator(
+            type = IndicatorType.PREDEFINED,
             name = "rag",
             label = "GEN AI",
             description = "Predefined indicator for the RAG Story.",

@@ -18,6 +18,7 @@ package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.indicators.Dimensions
 import ai.tock.bot.admin.indicators.Indicator
+import ai.tock.bot.admin.indicators.IndicatorType
 import ai.tock.bot.admin.indicators.IndicatorValue
 import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.definition.BotDefinition
@@ -317,8 +318,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // take last 10 messages
             .takeLast(n = nLastMessages)
 
-    private fun BotBus.saveRagIndicator(indicatorLabel: String, indicatorValueTag: String) {
-
+    private fun BotBus.saveRagIndicator(
+        indicatorLabel: String,
+        indicatorValueTag: String,
+    ) {
         // Ex: RAG Topics -> rag_topics
         val indicatorName = generateNameFromTag(indicatorLabel)
 
@@ -328,6 +331,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 this.botDefinition.namespace,
                 this.botDefinition.botId,
             ) ?: Indicator(
+                type = IndicatorType.PREDEFINED,
                 name = indicatorName,
                 label = indicatorLabel,
                 namespace = this.botDefinition.namespace,
@@ -402,8 +406,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     fun generateLabelFromTag(id: String): String {
         return id
             .trim()
-            .replace("_", " ")              // replace underscores with spaces
-            .replace(Regex("\\s+"), " ")    // collapse multiple spaces
+            .replace("_", " ") // replace underscores with spaces
+            .replace(Regex("\\s+"), " ") // collapse multiple spaces
             .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } // capitalize first letter
     }
 }
