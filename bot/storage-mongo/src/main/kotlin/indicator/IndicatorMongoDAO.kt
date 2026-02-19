@@ -18,6 +18,7 @@ package indicator
 
 import ai.tock.bot.admin.indicators.Indicator
 import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.IndicatorType
 import ai.tock.bot.mongo.MongoBotConfiguration
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
@@ -93,6 +94,7 @@ object IndicatorMongoDAO : IndicatorDAO {
             Indicator::name eq name,
             Indicator::namespace eq namespace,
             Indicator::botId eq botId,
+            Indicator::type eq IndicatorType.CUSTOM,
         ).deletedCount == 1L
 
     override fun deleteByApplicationName(

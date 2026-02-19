@@ -23,7 +23,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { normalizedCamelCase } from '../../shared/utils';
-import { IndicatorDefinition } from '../models';
+import { IndicatorDefinition, IndicatorType } from '../models';
 import { IndicatorsEditComponent } from './indicators-edit/indicators-edit.component';
 import { IndicatorsFilter } from './indicators-filters/indicators-filters.component';
 import { ChoiceDialogComponent } from '../../shared/components';
@@ -87,7 +87,7 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
   }
 
   indicatorIsNotPredefined(indicator) {
-    return typeof indicator.botId === 'undefined' || indicator.botId.trim().length > 0;
+    return indicator.type !== IndicatorType.PREDEFINED;
   }
 
   search(): void {
@@ -167,6 +167,7 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
     this.indicatorEdition = {
       existing: false,
       indicator: {
+        type: IndicatorType.CUSTOM,
         name: '',
         label: '',
         description: '',

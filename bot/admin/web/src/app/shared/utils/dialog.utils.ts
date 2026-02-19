@@ -28,3 +28,19 @@ export function getDialogMessageUserAvatar(isBot: boolean): string {
   if (isBot) return dialogMessageUserIdentities.bot.avatar;
   return dialogMessageUserIdentities.client.avatar;
 }
+
+export enum RagAnswerStatus {
+  FOUND_IN_CONTEXT = 'found_in_context',
+  NOT_FOUND_IN_CONTEXT = 'not_found_in_context',
+  SMALL_TALK = 'small_talk',
+  OUT_OF_SCOPE = 'out_of_scope',
+  HUMAN_ESCALATION = 'human_escalation'
+}
+
+export const RagAnswerStatusLabels: Record<RagAnswerStatus, string> = {
+  [RagAnswerStatus.FOUND_IN_CONTEXT]: 'Found in context',
+  [RagAnswerStatus.NOT_FOUND_IN_CONTEXT]: 'Not found in context',
+  [RagAnswerStatus.SMALL_TALK]: 'Small talk',
+  [RagAnswerStatus.OUT_OF_SCOPE]: 'Out of scope',
+  [RagAnswerStatus.HUMAN_ESCALATION]: 'Human escalation'
+};

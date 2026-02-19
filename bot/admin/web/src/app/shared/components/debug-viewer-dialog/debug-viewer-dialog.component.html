@@ -29,6 +29,9 @@
   </nb-card-header>
 
   <nb-card-body>
-    <tock-json-iterator [data]="debug"></tock-json-iterator>
+    <tock-json-iterator
+      [data]="debug"
+      [customOrder]="['user_question', 'condensed_question', 'error', 'answer', 'question_answering_prompt', 'documents']"
+    ></tock-json-iterator>
   </nb-card-body>
 </nb-card>

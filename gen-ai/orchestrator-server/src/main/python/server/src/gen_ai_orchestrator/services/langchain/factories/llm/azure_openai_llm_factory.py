@@ -44,6 +44,11 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
     setting: AzureOpenAILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:
+        print(
+            'llm_reasoning_effort',
+            application_settings.llm_reasoning_effort or 'minimal',
+        )
+
         return AzureChatOpenAI(
             openai_api_key=fetch_secret_key_value(self.setting.api_key),
             openai_api_version=self.setting.api_version,
@@ -53,9 +58,12 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
             request_timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
-            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None
+            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None,
+            reasoning_effort=application_settings.llm_reasoning_effort or 'minimal',
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
         return await super().invoke(_input, config)

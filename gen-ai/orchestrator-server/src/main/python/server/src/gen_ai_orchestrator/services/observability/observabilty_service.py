@@ -42,7 +42,9 @@ def check_observability_setting(setting: ObservabilitySetting) -> bool:
          True for a valid Observability setting. Raise exception otherwise.
     """
 
-    logger.info('Get the Callback handler Factory, then check the Observability setting.')
+    logger.info(
+        'Get the Callback handler Factory, then check the Observability setting.'
+    )
     return get_callback_handler_factory(setting).check_observability_setting()
 
 

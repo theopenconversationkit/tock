@@ -18,11 +18,14 @@ package ai.tock.bot.admin.indicators
 
 sealed class IndicatorError(override val message: String) : Exception(message) {
     class IndicatorAlreadyExists(val name: String, val label: String, val namespace: String, val botId: String) :
-        IndicatorError("Indicator already exists for bot $botId with following name: $name or/and label: $label")
+        IndicatorError("An indicator with name '$name' or label '$label' already exists for bot '$botId'.")
 
     class IndicatorNotFound(val name: String, val namespace: String, val botId: String) :
-        IndicatorError("Indicator $name not found for bot $botId")
+        IndicatorError("Indicator '$name' not found for bot '$botId'.")
 
     class IndicatorDeletionFailed(val name: String, val namespace: String, val botId: String) :
-        IndicatorError("Indicator $name for bot $botId deletion failed")
+        IndicatorError("Failed to delete indicator '$name' for bot '$botId'.")
+
+    class IndicatorUnauthorizedUpdate(val name: String, val namespace: String, val botId: String) :
+        IndicatorError("Failed to update indicator '$name' for bot '$botId'.")
 }
