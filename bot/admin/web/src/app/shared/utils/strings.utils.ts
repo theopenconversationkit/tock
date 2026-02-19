@@ -78,6 +78,22 @@ export function normalizedCamelCase(str: string): string {
     });
 }
 
+/**
+ * Converts a snake_case string into a human-readable display label by:
+ * 1. Replacing underscores with spaces.
+ * 2. Capitalizing only the first letter of the resulting string.
+ *
+ * @example
+ * // returns "Not found"
+ * snakeCaseToDisplayLabel("not_found");
+ *
+ * @param {string} value - The snake_case string to convert (e.g., "not_found").
+ * @returns {string} The formatted display label (e.g., "Not found").
+ */
+export function snakeCaseToDisplayLabel(value: string): string {
+  return value.replace(/_/g, ' ').replace(/^(.)/, (c) => c.toUpperCase());
+}
+
 export function isUrl(str: string): boolean {
   const reg = /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
   return reg.test(str);

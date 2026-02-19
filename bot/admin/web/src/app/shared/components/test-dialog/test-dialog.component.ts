@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable, Subject, of, take, takeUntil } from 'rxjs';
 import { PaginatedQuery, randomString } from '../../../model/commons';
 import { StateService } from '../../../core-nlp/state.service';
@@ -88,6 +88,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
 
   @ViewChild(TextareaAutocompleteDirective) textareaAutocompleteDirectiveRef: TextareaAutocompleteDirective<HTMLTextAreaElement>;
+
+  @ViewChild('textareaElement') textareaElementRef!: ElementRef<HTMLTextAreaElement>;
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -223,7 +225,7 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     if (event) {
       const targetEvent = event.target as HTMLInputElement;
       results = results.filter((sentence: string) => sentence.toLowerCase().includes(targetEvent.value.trim().toLowerCase()));
-      this.updateMessageInputHeight(targetEvent);
+      this.updateMessageInputHeight();
     }
 
     this.userMessageAutocompleteValues = of(results);
@@ -231,7 +233,8 @@ export class TestDialogComponent implements OnInit, OnDestroy {
     if (event && event.key !== 'Escape') this.textareaAutocompleteDirectiveRef.updatePosition();
   }
 
-  updateMessageInputHeight(element): void {
+  updateMessageInputHeight(): void {
+    const element = this.textareaElementRef?.nativeElement;
     if (element) {
       element.style.height = 'auto';
       element.style.height = Math.min(element.scrollHeight + 2, 250) + 'px';
@@ -270,6 +273,7 @@ export class TestDialogComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.textareaAutocompleteDirectiveRef.hide();
+      this.updateMessageInputHeight();
     });
   }
 

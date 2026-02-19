@@ -16,9 +16,9 @@
 
 import { Component, Input } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
-import { Debug, RagAnswerStatus, RagAnswerStatusLabels } from '../../../../model/dialog-data';
+import { Debug } from '../../../../model/dialog-data';
 import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-viewer-dialog.component';
-import { getContrastYIQ, getInterpolatedColor } from '../../../../utils';
+import { getContrastYIQ, getInterpolatedColor, RagAnswerStatus, RagAnswerStatusLabels, snakeCaseToDisplayLabel } from '../../../../utils';
 
 @Component({
   selector: 'tock-chat-ui-message-debug',
@@ -60,7 +60,7 @@ export class ChatUiMessageDebugComponent {
   getStatusLabel(): string {
     const status = this.message.data.answer?.status;
     if (status) {
-      return RagAnswerStatusLabels[status.toLowerCase()] || status.replace(/_/g, ' ').replace(/^(.)|\s+(.)/g, (c) => c.toUpperCase());
+      return RagAnswerStatusLabels[status.toLowerCase()] || snakeCaseToDisplayLabel(status);
     }
     return '';
   }

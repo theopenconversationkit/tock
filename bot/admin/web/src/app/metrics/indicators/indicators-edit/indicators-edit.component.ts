@@ -211,6 +211,7 @@ export class IndicatorsEditComponent implements OnChanges {
       this.onSave.emit({
         existing: this.indicatorEdition.existing,
         indicator: {
+          type: this.indicatorEdition.indicator.type,
           name: this.indicatorEdition.indicator.name,
           label: form.label,
           description: form.description,

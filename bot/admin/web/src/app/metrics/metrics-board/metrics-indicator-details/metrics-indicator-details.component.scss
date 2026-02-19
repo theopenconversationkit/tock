@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-export enum IndicatorType {
-  PREDEFINED = 'PREDEFINED',
-  CUSTOM = 'CUSTOM'
+.main-card {
+  max-width: 90vw;
+  min-width: 50vw;
+  max-height: 90vh;
 }
 
-export interface IndicatorDefinition {
-  name: string;
-  label: string;
-  description: string;
-  values: IndicatorValueDefinition[];
-  dimensions: string[];
-  type: IndicatorType;
-}
-
-export interface IndicatorValueDefinition {
-  name: string;
-  label: string;
+.stats-line {
+  border-bottom: 1px solid var(--color-basic-transparent-400);
 }

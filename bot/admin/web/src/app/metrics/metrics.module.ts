@@ -35,7 +35,8 @@ import {
   NbTagModule,
   NbSpinnerModule,
   NbAutocompleteModule,
-  NbAlertModule
+  NbAlertModule,
+  NbCheckboxModule
 } from '@nebular/theme';
 import { IndicatorsComponent } from './indicators/indicators.component';
 import { NgxEchartsModule } from 'ngx-echarts';
@@ -45,6 +46,7 @@ import { IndicatorsFiltersComponent } from './indicators/indicators-filters/indi
 import { AnalyticsService } from '../analytics/analytics.service';
 import { MetricsByStoriesComponent } from './metrics-board/metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.component';
+import { MetricsIndicatorDetailsComponent } from './metrics-board/metrics-indicator-details/metrics-indicator-details.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,8 @@ import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.
     IndicatorsComponent,
     IndicatorsEditComponent,
     IndicatorsFiltersComponent,
-    StoriesHitsComponent
+    StoriesHitsComponent,
+    MetricsIndicatorDetailsComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -77,6 +80,7 @@ import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.
     NbSpinnerModule,
     NbAutocompleteModule,
     NbAlertModule,
+    NbCheckboxModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     })

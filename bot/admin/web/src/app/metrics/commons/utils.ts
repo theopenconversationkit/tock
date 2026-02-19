@@ -15,11 +15,13 @@
  */
 
 export function heuristicValueColorDetection(value: string): string {
-  const no_answer = [
-    'no answer' // Rag indicator
+  const missing_context = [
+    'not_found_in_context', // Rag dimension indicator
+    'no answer' // Gen Ai dimension indicator
   ];
   const positive = [
-    'success', // Rag indicator
+    'found_in_context', // Rag dimension indicator
+    'success', // Gen Ai dimension indicator
     'true',
     'yes',
     'vrai',
@@ -50,7 +52,8 @@ export function heuristicValueColorDetection(value: string): string {
     'exacto'
   ];
   const negative = [
-    'failure', // Rag indicator
+    'technical error', // Rag dimension indicator
+    'failure', // Gen Ai dimension indicator
     'false',
     'no',
     'faux',
@@ -78,7 +81,7 @@ export function heuristicValueColorDetection(value: string): string {
     'inexacte',
     'inaccurate'
   ];
-  if (no_answer.includes(value.toLowerCase())) return '#ffaa00';
+  if (missing_context.includes(value.toLowerCase())) return '#ffaa00';
   if (positive.includes(value.toLowerCase())) return '#91cc75';
   if (negative.includes(value.toLowerCase())) return '#ff3d71';
   return undefined;

@@ -315,20 +315,6 @@ export class Debug extends BotMessage {
   }
 }
 
-export enum RagAnswerStatus {
-  FOUND_IN_CONTEXT = 'found_in_context',
-  NOT_FOUND_IN_CONTEXT = 'not_found_in_context',
-  SMALL_TALK = 'small_talk',
-  OUT_OF_SCOPE = 'out_of_scope'
-}
-
-export const RagAnswerStatusLabels: Record<RagAnswerStatus, string> = {
-  [RagAnswerStatus.FOUND_IN_CONTEXT]: 'Found in context',
-  [RagAnswerStatus.NOT_FOUND_IN_CONTEXT]: 'Not found in context',
-  [RagAnswerStatus.SMALL_TALK]: 'Small talk',
-  [RagAnswerStatus.OUT_OF_SCOPE]: 'Out of scope'
-};
-
 export class SentenceElement {
   constructor(
     public connectorType: ConnectorType,
