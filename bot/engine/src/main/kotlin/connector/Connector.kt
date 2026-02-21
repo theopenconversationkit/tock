@@ -65,9 +65,11 @@ interface Connector {
 
     /**
      * Send an event with this connector for the specified delay.
-     * End the conversation when event.metadata.lastAnswer is activated
-     * If the connector implements the proactive conversation functions,
-     * the end must take account the start of the proactive conversation
+     * End the conversation when event.metadata.lastAnswer is activated.
+     *
+     * For connectors supporting deferred mode:
+     * - Messages are collected during handler execution
+     * - When lastAnswer=true, all collected messages are flushed
      *
      * @param event the event to send
      * @param callback the initial connector callback
@@ -78,36 +80,6 @@ interface Connector {
         callback: ConnectorCallback,
         delayInMs: Long = 0,
     )
-
-    /**
-     * Start a proactive conversation
-     * @param callback the initial connector callback
-     * @param botBus the bot bus
-     */
-    fun startProactiveConversation(
-        callback: ConnectorCallback,
-        botBus: BotBus,
-    ): Boolean = false
-
-    /**
-     * Proactively send messages to connector
-     * @param callback the initial connector callback
-     * @param parameters the parameters to be used for a proactive response
-     */
-    fun flushProactiveConversation(
-        callback: ConnectorCallback,
-        parameters: Map<String, String>,
-    ) = run { }
-
-    /**
-     * End the proactive conversation
-     * @param callback the initial connector callback
-     * @param parameters the parameters to be used for a proactive response
-     */
-    fun endProactiveConversation(
-        callback: ConnectorCallback,
-        parameters: Map<String, String>,
-    ) = run { }
 
     /**
      * Sends a notification to the connector.
