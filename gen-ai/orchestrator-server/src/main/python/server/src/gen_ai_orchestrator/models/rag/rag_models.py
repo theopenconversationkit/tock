@@ -15,7 +15,7 @@
 """Module for RAG Models"""
 
 from enum import Enum, unique
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Field, HttpUrl
 
@@ -53,6 +53,9 @@ class Footnote(Source):
     """A footnote model, used to associate document sources with the RAG answer"""
 
     identifier: str = Field(description='Footnote identifier', examples=['1'])
+    metadata: Optional[dict[str, Any]] = Field(
+        description='Document metadata associated to the footnote.', default=None
+    )
 
 
 class TextWithFootnotes(BaseModel):
