@@ -16,7 +16,7 @@ import json
 import logging
 import math
 import time
-from typing import List
+from typing import Any, List
 
 from langfuse._client.datasets import DatasetItemClient
 from langfuse.api import TraceWithFullDetails
@@ -70,6 +70,40 @@ class RagasEvaluator:
             metric.init(run_config)
             logger.debug(f"Init run configuration of '{metric.name}'")
 
+    def _coerce_text(self, value: Any) -> str:
+        if isinstance(value, str):
+            return value
+
+        if isinstance(value, dict):
+            for key in ('answer', 'display_answer', 'content', 'text', 'message'):
+                candidate = value.get(key)
+                if isinstance(candidate, str):
+                    return candidate
+
+            content = value.get('content')
+            if isinstance(content, list):
+                text_parts = [
+                    entry.get('text')
+                    for entry in content
+                    if isinstance(entry, dict) and isinstance(entry.get('text'), str)
+                ]
+                if text_parts:
+                    return '\n'.join(text_parts)
+
+            return json.dumps(value, ensure_ascii=False)
+
+        if isinstance(value, list):
+            text_parts = [entry for entry in value if isinstance(entry, str)]
+            if text_parts:
+                return '\n'.join(text_parts)
+
+            return json.dumps(value, ensure_ascii=False)
+
+        if value is None:
+            return ''
+
+        return str(value)
+
     def fetch_statements_reasons(self, trace_id):
         time.sleep(3)  # Waiting for trace update
         trace_full = self.langfuse_client.api.trace.get(trace_id)
@@ -107,10 +141,34 @@ class RagasEvaluator:
         run_trace_details: TraceWithFullDetails,
         experiment_name: str,
     ) -> List[MetricScore]:
-        query = item.input['question']
-        chunks = [doc['page_content'] for doc in run_trace_details.output['documents']]
-        answer = run_trace_details.output['answer']
-        ground_truth = item.expected_output.get('answer') or ''
+        trace_output = run_trace_details.output or {}
+        query = self._coerce_text(
+            item.input.get('question') if isinstance(item.input, dict) else item.input
+        )
+
+        raw_documents = (
+            trace_output.get('documents', [])
+            if isinstance(trace_output, dict)
+            else []
+        )
+        if not isinstance(raw_documents, list):
+            raw_documents = []
+
+        chunks = []
+        for doc in raw_documents:
+            page_content = doc.get('page_content') if isinstance(doc, dict) else None
+            if isinstance(page_content, str):
+                chunks.append(page_content)
+
+        answer = self._coerce_text(
+            trace_output.get('answer') if isinstance(trace_output, dict) else None
+        )
+        expected_answer = (
+            item.expected_output.get('answer')
+            if isinstance(item.expected_output, dict)
+            else item.expected_output
+        )
+        ground_truth = self._coerce_text(expected_answer)
 
         metric_scores: List[MetricScore] = []
         for m in self.metrics:

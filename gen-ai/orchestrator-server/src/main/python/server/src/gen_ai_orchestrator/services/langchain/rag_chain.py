@@ -129,7 +129,9 @@ async def execute_rag_chain(
     conversational_retrieval_chain = create_rag_chain(request=request)
 
     message_history = ChatMessageHistory()
-    metadata = {}
+    session_id = None
+    user_id = None
+    tags = []
 
     if request.dialog:
         for msg in request.dialog.history:
