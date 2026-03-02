@@ -23,6 +23,7 @@ from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions im
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
+    GenAIUnknownProviderException,
 )
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderException,
@@ -37,6 +38,9 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
 )
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
     OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
+    PGVectorStoreSetting,
 )
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
     VectorStoreSetting,
@@ -124,11 +128,29 @@ async def get_vector_store_provider_setting_by_id(
             username='admin',
             password=RawSecretKey(secret='admin'),
         )
+    elif provider_id == VectorStoreProvider.PGVECTOR:
+        return PGVectorStoreSetting(
+            provider=VectorStoreProvider.PGVECTOR,
+            host='localhost',
+            port=5433,
+            username='postgres',
+            password=RawSecretKey(secret='ChangeMe'),
+        )
+    else:
+        raise GenAIUnknownProviderException(
+            create_error_info_not_found(
+                http_request,
+                provider_id,
+                [provider.value for provider in VectorStoreProvider],
+            )
+        )
 
 
 @vector_store_providers_router.post('/{provider_id}/setting/status')
 async def check_vector_store_provider_setting(
-    http_request: Request, provider_id: str, request: VectorStoreProviderSettingStatusRequest
+    http_request: Request,
+    provider_id: str,
+    request: VectorStoreProviderSettingStatusRequest,
 ) -> ProviderSettingStatusResponse:
     """
     Check the validity of a given Vector Store Provider Setting
@@ -151,7 +173,11 @@ async def check_vector_store_provider_setting(
 
     try:
         # Vector Store setting check
-        await check_vector_store_setting(request.vector_store_setting, request.em_setting, request.document_index_name)
+        await check_vector_store_setting(
+            request.vector_store_setting,
+            request.em_setting,
+            request.document_index_name,
+        )
 
         logger.info('The Vector Store setting is valid')
         return ProviderSettingStatusResponse(valid=True)
@@ -161,7 +187,9 @@ async def check_vector_store_provider_setting(
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
-def validate_query(http_request: Request, provider_id: str, setting: VectorStoreSetting):
+def validate_query(
+    http_request: Request, provider_id: str, setting: VectorStoreSetting
+):
     """
     Check the consistency of the Provider ID with the request body
     Args:
@@ -195,6 +223,8 @@ def validate_vector_store_provider(http_request: Request, provider_id: str):
     if not VectorStoreProvider.has_value(provider_id):
         raise GenAIUnknownVectorStoreProviderException(
             create_error_info_not_found(
-                http_request, provider_id, [provider.value for provider in VectorStoreProvider]
+                http_request,
+                provider_id,
+                [provider.value for provider in VectorStoreProvider],
             )
         )

@@ -18,7 +18,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any
 
-from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
+from langfuse.langchain import CallbackHandler
 from pydantic import BaseModel
 
 from gen_ai_orchestrator.models.observability.observability_setting import (
@@ -34,7 +34,7 @@ class LangChainCallbackHandlerFactory(ABC, BaseModel):
     setting: BaseObservabilitySetting
 
     @abstractmethod
-    def get_callback_handler(self, **kwargs: Any) -> LangfuseCallbackHandler:
+    def get_callback_handler(self, **kwargs: Any) -> CallbackHandler:
         """
         Fabric a callback handler.
         :return: LangchainCallbackHandler.
@@ -49,5 +49,3 @@ class LangChainCallbackHandlerFactory(ABC, BaseModel):
         :raises BusinessException: For incorrect setting
         """
         pass
-
-

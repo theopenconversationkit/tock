@@ -18,18 +18,13 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from langchain.base_language import BaseLanguageModel
-from langchain.callbacks.base import (
-    BaseCallbackHandler as LangchainBaseCallbackHandler,
-)
-from langchain_core.rate_limiters import BaseRateLimiter, InMemoryRateLimiter
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.rate_limiters import InMemoryRateLimiter
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
 from pydantic import BaseModel
 
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 logger = logging.getLogger(__name__)
@@ -49,7 +44,9 @@ class LangChainLLMFactory(ABC, BaseModel):
         pass
 
     async def check_llm_setting(
-            self, observability_callback_handler: Optional[LangchainBaseCallbackHandler] = None) -> bool:
+        self,
+        observability_callback_handler: Optional[BaseCallbackHandler] = None,
+    ) -> bool:
         """
         check the LLM setting validity, by pinging the AI Provider API
         Args:
@@ -63,14 +60,21 @@ class LangChainLLMFactory(ABC, BaseModel):
         """
         logger.info('Invoke LLM provider to check setting')
         text = 'Hi, are you there?'
-        response = await self.invoke(text, config={
-            'callbacks': [observability_callback_handler] if observability_callback_handler else []
-        })
+        response = await self.invoke(
+            text,
+            config=RunnableConfig(
+                callbacks=[observability_callback_handler]
+                if observability_callback_handler
+                else None
+            ),
+        )
         logger.info('Invocation successful')
         logger.debug('[text: %s], [response: %s]', text, response)
         return True
 
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
         """
         This is a delegate method that performs the llm invoke.
 

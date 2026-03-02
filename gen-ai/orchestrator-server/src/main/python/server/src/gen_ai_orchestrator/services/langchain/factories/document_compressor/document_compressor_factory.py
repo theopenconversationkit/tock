@@ -14,9 +14,7 @@
 #
 from abc import ABC, abstractmethod
 
-from langchain.retrievers.document_compressors.base import (
-    BaseDocumentCompressor,
-)
+from langchain_core.documents import BaseDocumentCompressor
 from pydantic import BaseModel
 
 from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import (

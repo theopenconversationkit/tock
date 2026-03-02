@@ -23,9 +23,7 @@ from functools import partial
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from langchain.retrievers.contextual_compression import (
-    ContextualCompressionRetriever,
-)
+from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.documents import Document

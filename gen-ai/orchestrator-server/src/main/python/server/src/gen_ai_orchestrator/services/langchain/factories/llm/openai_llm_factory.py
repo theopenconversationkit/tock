@@ -15,7 +15,7 @@
 """Model for creating OpenAILLMFactory"""
 from typing import Optional
 
-from langchain.base_language import BaseLanguageModel
+from langchain_core.language_models import BaseLanguageModel
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
 from langchain_openai import ChatOpenAI
@@ -45,15 +45,17 @@ class OpenAILLMFactory(LangChainLLMFactory):
 
     def get_language_model(self) -> BaseLanguageModel:
         return ChatOpenAI(
-            openai_api_key=fetch_secret_key_value(self.setting.api_key),
+            api_key=fetch_secret_key_value(self.setting.api_key),
             base_url=self.setting.base_url,
-            model_name=self.setting.model,
+            model=self.setting.model,
             temperature=self.setting.temperature,
-            request_timeout=application_settings.llm_provider_timeout,
+            timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
-            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None
+            rate_limiter=rate_limiter if application_settings.llm_rate_limits else None,
         )
 
     @openai_exception_handler(provider='OpenAI')
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
         return await super().invoke(_input, config)

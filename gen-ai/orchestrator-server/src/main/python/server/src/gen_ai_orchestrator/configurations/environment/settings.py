@@ -26,9 +26,6 @@ from path import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gen_ai_orchestrator.models.security.proxy_server_type import (
-    ProxyServerType,
-)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
@@ -56,21 +53,24 @@ class _Settings(BaseSettings):
 
     application_environment: _Environment = _Environment.DEV
     application_logging_config_ini: str = (
-            Path(__file__).dirname() + '/../logging/config.ini'
+        Path(__file__).dirname() + '/../logging/config.ini'
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30
     llm_provider_max_retries: int = 0
     """ Enable or not the rate limit for the LLM call"""
     llm_rate_limits: bool = True
+    llm_reasoning_effort: str = 'minimal'
     em_provider_timeout: int = 4
 
-    vector_store_provider: Optional[VectorStoreProvider] = VectorStoreProvider.OPEN_SEARCH
+    vector_store_provider: Optional[
+        VectorStoreProvider
+    ] = VectorStoreProvider.OPEN_SEARCH
     vector_store_host: Optional[str] = 'localhost'
     vector_store_port: Optional[str] = '9200'
     vector_store_user: Optional[str] = 'admin'
     vector_store_pwd: Optional[str] = 'admin'
-    vector_store_database: Optional[str] = None # Only if necessary. Example: PGVector
+    vector_store_database: Optional[str] = None  # Only if necessary. Example: PGVector
     vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
     vector_store_credentials_secret_name: Optional[str] = None
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
@@ -83,16 +83,6 @@ class _Settings(BaseSettings):
     observability_provider_max_retries: int = 0
     """Request timeout (in seconds)."""
     observability_provider_timeout: int = 3
-    """
-    This AWSLambda proxy is used when the architecture implemented for the Langfuse
-    observability tool places it behind an API Gateway which requires its
-    own authentication, itself invoked by an AWS Lambda.
-    The API Gateway uses the standard "Authorization" header,
-    and uses observability_proxy_server_authorization_header_name
-    to define the "Authorization bearer token" for Langfuse.
-    """
-    observability_proxy_server: Optional[ProxyServerType] = None
-    observability_proxy_server_authorization_header_name: Optional[str] = None
 
     """GCP"""
     # GCP project ID used for GCP Secrets
