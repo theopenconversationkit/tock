@@ -71,3 +71,21 @@ To run them manually on all files, use:
    ```bash
    pre-commit run --all-files
    ```
+
+
+## 贡献指南
+
+欢迎贡献！请查看[CONTRIBUTING.md](CONTRIBUTING.md)了解详细指南。
+
+### 开发流程
+1. Fork本仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
+
+### 代码规范
+- 遵循PEP 8 (Python)或相应语言规范
+- 添加适当的注释
+- 编写测试用例
+- 更新相关文档
