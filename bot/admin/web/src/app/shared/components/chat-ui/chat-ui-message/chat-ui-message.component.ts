@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { BotMessage } from '../../../model/dialog-data';
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { take } from 'rxjs';
+import { copyToClipboard } from '../../../utils';
 
 @Component({
   selector: 'tock-chat-ui-message',
   templateUrl: './chat-ui-message.component.html',
   styleUrls: ['./chat-ui-message.component.scss']
 })
-export class ChatUiMessageComponent {
+export class ChatUiMessageComponent implements OnInit {
   @Input() message: BotMessage;
   @Input() replay: boolean = false;
   @Input() sender?: string;
@@ -40,6 +41,8 @@ export class ChatUiMessageComponent {
   }
 
   allConfigurations: BotApplicationConfiguration[];
+
+  showCopyButton: boolean = false;
 
   isMessageEmpty() {
     //@ts-ignore
@@ -95,5 +98,13 @@ export class ChatUiMessageComponent {
 
   switchFormatting() {
     this.formatting = !this.formatting;
+  }
+
+  canBeCopied() {
+    return (this.message as any).text;
+  }
+
+  copyToClipboard() {
+    copyToClipboard((this.message as any).text);
   }
 }

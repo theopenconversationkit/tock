@@ -30,7 +30,11 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.observability.observability_provider import (
     ObservabilityProvider,
 )
-from gen_ai_orchestrator.models.rag.rag_models import Source, TextWithFootnotes
+from gen_ai_orchestrator.models.rag.rag_models import (
+    Footnote,
+    LLMAnswer,
+    Source,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
@@ -82,7 +86,8 @@ class VectorStoreProviderResponse(BaseModel):
     """The response model of the Vector Store provider"""
 
     provider: VectorStoreProvider = Field(
-        description='The Vector Store Provider ID', default=[VectorStoreProvider.OPEN_SEARCH]
+        description='The Vector Store Provider ID',
+        default=[VectorStoreProvider.OPEN_SEARCH],
     )
 
 
@@ -90,7 +95,8 @@ class ObservabilityProviderResponse(BaseModel):
     """The response model of the Observability provider"""
 
     provider: ObservabilityProvider = Field(
-        description='The Observability Provider ID', default=[ObservabilityProvider.LANGFUSE]
+        description='The Observability Provider ID',
+        default=[ObservabilityProvider.LANGFUSE],
     )
 
 
@@ -98,7 +104,8 @@ class DocumentCompressorProviderResponse(BaseModel):
     """The response model of the Document Compressor provider"""
 
     provider: DocumentCompressorProvider = Field(
-        description='The Document Compressor Provider ID', default=[DocumentCompressorProvider.BLOOMZ]
+        description='The Document Compressor Provider ID',
+        default=[DocumentCompressorProvider.BLOOMZ],
     )
 
 
@@ -114,31 +121,25 @@ class EMProviderResponse(BaseModel):
 class ObservabilityInfo(BaseModel):
     """The Observability Info model"""
 
-    trace_id: str = Field(
-        description='The observability trace id.'
-    )
-    trace_name: str = Field(
-        description='The observability trace name.'
-    )
-    trace_url: str = Field(
-        description='The observability trace url.'
-    )
+    trace_id: str = Field(description='The observability trace id.')
+    trace_name: str = Field(description='The observability trace name.')
+    trace_url: str = Field(description='The observability trace url.')
+
 
 class RAGResponse(BaseModel):
     """The RAG response model"""
 
-    answer: TextWithFootnotes = Field(
-        description='The RAG answer, with outside sources.'
-    )
+    answer: Optional[LLMAnswer] = Field(description='The RAG answer')
+    footnotes: set[Footnote] = Field(description='Set of footnotes')
     debug: Optional[Any] = Field(
         description='Debug data',
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
         default=None,
     )
     observability_info: Optional[ObservabilityInfo] = Field(
-        description='The observability info.',
-        default=None
+        description='The observability info.', default=None
     )
+
 
 class QAResponse(BaseModel):
     """The QA response model"""
@@ -155,13 +156,11 @@ class SentenceGenerationResponse(BaseModel):
         description='The list of generated sentences.', default=[]
     )
 
+
 class PlaygroundResponse(BaseModel):
     """The playground response model"""
 
-    answer: str = Field(
-        description='The playground answer.'
-    )
+    answer: str = Field(description='The playground answer.')
     observability_info: Optional[ObservabilityInfo] = Field(
-        description='The observability info.',
-        default=None
+        description='The observability info.', default=None
     )

@@ -122,9 +122,8 @@ open class BotAdminVerticle : AdminVerticle() {
                     FaqAdminService.makeMigration()
                 }
 
-                if (booleanProperty(Properties.UPDATING_CUSTOM_METRIC_ENABLED, false)) {
-                    DataMigrationService.migrateMetrics()
-                    DataMigrationService.migrateIndicators()
+                if (booleanProperty(Properties.UPDATING_CUSTOM_METRIC_ENABLED, true)) {
+                    DataMigrationService.updateIndicatorsType()
                 }
             }
         }
