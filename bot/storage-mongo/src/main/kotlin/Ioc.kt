@@ -23,6 +23,8 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.evaluation.EvaluationDAO
+import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -77,4 +79,6 @@ val botMongoModule =
         bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
         bind<IndicatorDAO>() with provider { IndicatorMongoDAO }
         bind<MetricDAO>() with provider { MetricMongoDAO }
+        bind<EvaluationSampleDAO>() with provider { EvaluationSampleMongoDAO }
+        bind<EvaluationDAO>() with provider { EvaluationMongoDAO }
     }

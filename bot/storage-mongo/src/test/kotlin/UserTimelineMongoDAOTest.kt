@@ -25,10 +25,14 @@ import ai.tock.bot.definition.SimpleStoryHandlerBase
 import ai.tock.bot.definition.StoryDefinitionBase
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
@@ -389,6 +393,380 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
                     resultActivityTo.total >= 2L,
                     "dialogActivityTo should be INCLUSIVE: dialogs with activity at exact date ($dialogAtExactDate) and before ($dialogBeforeDate) " +
                         "should be included. Found: ${resultActivityTo.total}",
+                )
+            } finally {
+                BotApplicationConfigurationMongoDAO.delete(botConfig)
+            }
+        }
+
+    @Test
+    fun `evaluableActionsOnly filter excludes dialogs with only debug or empty text actions`() =
+        runBlocking {
+            val namespace = "test_evaluable_actions_filter"
+            val applicationId = "test_app_evaluable"
+            val nlpModel = "test_model_evaluable"
+            val userId = PlayerId("user_evaluable_test", PlayerType.user)
+            val botPlayerId = PlayerId("bot_evaluable_test", PlayerType.bot)
+
+            val botConfig =
+                BotApplicationConfiguration(
+                    applicationId = applicationId,
+                    botId = botPlayerId.id,
+                    namespace = namespace,
+                    nlpModel = nlpModel,
+                    connectorType = ConnectorType("test"),
+                )
+            BotApplicationConfigurationMongoDAO.save(botConfig)
+
+            try {
+                val storyHandler =
+                    object : SimpleStoryHandlerBase() {
+                        override fun action(bus: BotBus) {}
+                    }
+                val storyDef = StoryDefinitionBase("test_story_evaluable", storyHandler)
+                val actionDate = ZonedDateTime.parse("2025-12-15T10:00:00Z").toInstant()
+
+                // Dialog A: bot Sentence with non-empty text (evaluable)
+                val dialogA =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendSentence(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "Hello",
+                                                mutableListOf(),
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                // Dialog B: only SendDebug (not evaluable)
+                val dialogB =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendDebug(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "debug text",
+                                                null,
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                // Dialog C: bot Sentence with empty text (not evaluable)
+                val dialogC =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendSentence(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "",
+                                                mutableListOf(),
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                // Dialog D: only SendChoice (evaluable - new behavior)
+                val dialogD =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendChoice(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "test_intent",
+                                                emptyMap(),
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                val userTimeline =
+                    UserTimeline(
+                        playerId = userId,
+                        dialogs = mutableListOf(dialogA, dialogB, dialogC, dialogD),
+                    )
+
+                UserTimelineMongoDAO.save(userTimeline, namespace)
+                delay(100)
+
+                val queryWithFilter =
+                    DialogReportQuery(
+                        namespace = namespace,
+                        nlpModel = nlpModel,
+                        applicationId = applicationId,
+                        displayTests = true,
+                        evaluableActionsOnly = true,
+                    )
+                val resultWithFilter = UserTimelineMongoDAO.search(queryWithFilter)
+
+                assertEquals(
+                    2L,
+                    resultWithFilter.total,
+                    "DialogA (Sentence with text) and DialogD (Choice) should be included. " +
+                        "DialogB (Debug) and DialogC (empty text) should be excluded. Found: ${resultWithFilter.total}",
+                )
+
+                val queryWithoutFilter =
+                    DialogReportQuery(
+                        namespace = namespace,
+                        nlpModel = nlpModel,
+                        applicationId = applicationId,
+                        displayTests = true,
+                        evaluableActionsOnly = false,
+                    )
+                val resultWithoutFilter = UserTimelineMongoDAO.search(queryWithoutFilter)
+
+                assertTrue(
+                    resultWithoutFilter.total >= 4L,
+                    "Without evaluableActionsOnly filter, all 4 dialogs should be included. Found: ${resultWithoutFilter.total}",
+                )
+            } finally {
+                BotApplicationConfigurationMongoDAO.delete(botConfig)
+            }
+        }
+
+    @Test
+    fun `evaluableActionsOnly includes dialogs with only Attachment actions`() =
+        runBlocking {
+            val namespace = "test_evaluable_attachment"
+            val applicationId = "test_app_attachment"
+            val nlpModel = "test_model_attachment"
+            val userId = PlayerId("user_attachment_test", PlayerType.user)
+            val botPlayerId = PlayerId("bot_attachment_test", PlayerType.bot)
+
+            val botConfig =
+                BotApplicationConfiguration(
+                    applicationId = applicationId,
+                    botId = botPlayerId.id,
+                    namespace = namespace,
+                    nlpModel = nlpModel,
+                    connectorType = ConnectorType("test"),
+                )
+            BotApplicationConfigurationMongoDAO.save(botConfig)
+
+            try {
+                val storyHandler =
+                    object : SimpleStoryHandlerBase() {
+                        override fun action(bus: BotBus) {}
+                    }
+                val storyDef = StoryDefinitionBase("test_story_attachment", storyHandler)
+                val actionDate = ZonedDateTime.parse("2025-12-15T10:00:00Z").toInstant()
+
+                val dialogWithAttachment =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendAttachment(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "https://example.com/file.pdf",
+                                                SendAttachment.AttachmentType.file,
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                val userTimeline =
+                    UserTimeline(
+                        playerId = userId,
+                        dialogs = mutableListOf(dialogWithAttachment),
+                    )
+
+                UserTimelineMongoDAO.save(userTimeline, namespace)
+                delay(100)
+
+                val query =
+                    DialogReportQuery(
+                        namespace = namespace,
+                        nlpModel = nlpModel,
+                        applicationId = applicationId,
+                        displayTests = true,
+                        evaluableActionsOnly = true,
+                    )
+                val result = UserTimelineMongoDAO.search(query)
+
+                assertEquals(
+                    1L,
+                    result.total,
+                    "Dialog with only SendAttachment should be included. Found: ${result.total}",
+                )
+            } finally {
+                BotApplicationConfigurationMongoDAO.delete(botConfig)
+            }
+        }
+
+    @Test
+    fun `evaluableActionsOnly filters actions when returning evaluable dialogs`() =
+        runBlocking {
+            val namespace = "test_evaluable_filter_actions"
+            val applicationId = "test_app_filter_actions"
+            val nlpModel = "test_model_filter_actions"
+            val userId = PlayerId("user_filter_test", PlayerType.user)
+            val botPlayerId = PlayerId("bot_filter_test", PlayerType.bot)
+
+            val botConfig =
+                BotApplicationConfiguration(
+                    applicationId = applicationId,
+                    botId = botPlayerId.id,
+                    namespace = namespace,
+                    nlpModel = nlpModel,
+                    connectorType = ConnectorType("test"),
+                )
+            BotApplicationConfigurationMongoDAO.save(botConfig)
+
+            try {
+                val storyHandler =
+                    object : SimpleStoryHandlerBase() {
+                        override fun action(bus: BotBus) {}
+                    }
+                val storyDef = StoryDefinitionBase("test_story_filter", storyHandler)
+                val actionDate = ZonedDateTime.parse("2025-12-15T10:00:00Z").toInstant()
+
+                val dialogWithMixedActions =
+                    Dialog(
+                        playerIds = setOf(userId, botPlayerId),
+                        stories =
+                            mutableListOf(
+                                Story(
+                                    storyDef,
+                                    Intent("test"),
+                                    actions =
+                                        mutableListOf(
+                                            SendSentence(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "Hello",
+                                                mutableListOf(),
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                            SendDebug(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "debug text",
+                                                null,
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                            SendChoice(
+                                                botPlayerId,
+                                                applicationId,
+                                                userId,
+                                                "test_intent",
+                                                emptyMap(),
+                                                newId(),
+                                                actionDate,
+                                                EventState(),
+                                                ActionMetadata(),
+                                            ),
+                                        ),
+                                ),
+                            ),
+                    )
+
+                val userTimeline =
+                    UserTimeline(
+                        playerId = userId,
+                        dialogs = mutableListOf(dialogWithMixedActions),
+                    )
+
+                UserTimelineMongoDAO.save(userTimeline, namespace)
+                delay(100)
+
+                val query =
+                    DialogReportQuery(
+                        namespace = namespace,
+                        nlpModel = nlpModel,
+                        applicationId = applicationId,
+                        displayTests = true,
+                        evaluableActionsOnly = true,
+                    )
+                val result = UserTimelineMongoDAO.search(query)
+
+                assertEquals(1, result.dialogs.size)
+                val dialogReport = result.dialogs.first()
+                assertEquals(
+                    2,
+                    dialogReport.actions.size,
+                    "DialogReport should contain only Sentence and Choice (Debug excluded). Found: ${dialogReport.actions.size}",
+                )
+                val hasDebugMessage =
+                    dialogReport.actions.any { it.message is DebugMessage }
+                assertTrue(
+                    !hasDebugMessage,
+                    "DialogReport actions should not contain DebugMessage",
                 )
             } finally {
                 BotApplicationConfigurationMongoDAO.delete(botConfig)

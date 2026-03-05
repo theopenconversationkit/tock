@@ -38,6 +38,7 @@ import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.shared.checkMaxLengthAllowed
 import ai.tock.shared.jackson.AnyValueWrapper
@@ -117,12 +118,15 @@ internal data class DialogCol(
         }
     }
 
-    fun toDialogReport(): DialogReport {
-        return DialogReport(
+    fun toDialogReport(evaluableActionsOnly: Boolean = false): DialogReport {
+        val actions =
             stories
                 .flatMap { it.actions }
                 .asSequence()
                 .distinctBy { it.id }
+                .let { seq ->
+                    if (evaluableActionsOnly) seq.filter { it.isEvaluable() } else seq
+                }
                 .map { it.toAction(_id) }
                 .toList()
                 .run {
@@ -163,7 +167,9 @@ internal data class DialogCol(
                         )
                     }
                 }
-                .toList(),
+                .toList()
+        return DialogReport(
+            actions,
             stories
                 .flatMap { it.actions }
                 .firstOrNull { it.state.userInterface != null }
@@ -286,6 +292,16 @@ internal data class DialogCol(
         }
 
         abstract fun toAction(dialogId: Id<Dialog>): Action
+
+        fun isEvaluable(): Boolean {
+            if (playerId.type != PlayerType.bot) return false
+            return when (this) {
+                is SendDebugMongoWrapper -> false
+                is SendSentenceMongoWrapper -> !text.isNullOrBlank()
+                is SendSentenceWithFootnotesMongoWrapper -> text.isNotBlank()
+                else -> true
+            }
+        }
     }
 
     @JsonTypeName(value = "sentence")

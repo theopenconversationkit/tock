@@ -39,6 +39,8 @@ interface DialogReportDAO {
 
     fun getDialog(id: Id<Dialog>): DialogReport?
 
+    fun findByDialogByIds(ids: Set<Id<Dialog>>): Set<DialogReport>
+
     fun getNlpStats(
         dialogIds: List<Id<Dialog>>,
         namespace: String,

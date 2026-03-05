@@ -53,6 +53,7 @@ import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogStatsQueryResult
 import ai.tock.bot.admin.dialog.RatingReportQueryResult
+import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
@@ -156,6 +157,7 @@ object BotAdminService {
     private val i18n: I18nDAO by injector.instance()
     private val indicatorDAO: IndicatorDAO by injector.instance()
     private val metricDAO: MetricDAO get() = injector.provide()
+    private val evaluationSampleDAO: EvaluationSampleDAO get() = injector.provide()
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
@@ -1656,6 +1658,9 @@ object BotAdminService {
         // delete Indicators and Metrics
         indicatorDAO.deleteByApplicationName(app.namespace, app.name)
         metricDAO.deleteByApplicationName(app.namespace, app.name)
+
+        // delete evaluation samples and their evaluations
+        evaluationSampleDAO.deleteByNamespaceAndBotId(app.namespace, app.name)
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {

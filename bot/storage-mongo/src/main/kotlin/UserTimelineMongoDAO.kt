@@ -83,11 +83,13 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.sumByLong
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.Accumulators.sum
+import com.mongodb.client.model.Aggregates.sample
+import com.mongodb.client.model.Filters.elemMatch
 import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.Filters.exists
 import com.mongodb.client.model.Filters.gte
-import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.lte
-import com.mongodb.client.model.Filters.or
+import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.IndexOptions
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -136,6 +138,9 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.DAYS
 import kotlin.reflect.KProperty1
+import com.mongodb.client.model.Filters.and as filtersAnd
+import com.mongodb.client.model.Filters.or as filtersOr
+import com.mongodb.client.model.Filters.regex as filtersRegex
 
 /**
  *
@@ -708,20 +713,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                     DialogCol::applicationIds `in` applicationsIds,
                                     DialogCol::namespace eq namespace,
                                 ),
-                            )?.toDialogReport()
+                            )?.toDialogReport(query.evaluableActionsOnly)
 
                         dialog?.let(::listOf).orEmpty().let {
                             DialogReportQueryResult(1, 0, 1, it)
                         }
                     } else {
                         val dialogIds =
-                            if (query.text.isNullOrBlank()) {
-                                emptySet()
-                            } else {
-                                if (query.exactMatch) {
+                            when {
+                                !query.dialogIds.isNullOrEmpty() -> query.dialogIds!!.map { it.toId<Dialog>() }.toSet()
+                                query.text.isNullOrBlank() -> emptySet()
+                                query.exactMatch -> {
                                     dialogTextCol.find(Text eq textKey(query.text!!.trim())).toList().map { it.dialogId }
                                         .toSet()
-                                } else {
+                                }
+                                else -> {
                                     dialogTextCol
                                         .find(Text.regex(textKey(query.text!!.trim()), "i"))
                                         .toList()
@@ -769,43 +775,61 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                         query.dialogActivityFrom,
                                         query.dialogActivityTo,
                                     ),
+                                    if (query.evaluableActionsOnly) buildEvaluableActionsFilter() else null,
                                 )
                             logger.debug { "dialog search query: $filter" }
                             val c = dialogCol.withReadPreference(secondaryPreferred())
                             val count = c.countDocuments(filter, defaultCountOptions)
-                            if (count > start) {
-                                val sortBson =
-                                    when {
-                                        annotationSort != null -> {
-                                            if (annotationSort == SortDirection.ASC) {
-                                                ascending(Stories.actions.annotation.lastUpdateDate)
-                                            } else {
-                                                descending(Stories.actions.annotation.lastUpdateDate)
-                                            }
-                                        }
-
-                                        dialogSort != null -> {
-                                            if (dialogSort == SortDirection.ASC) {
-                                                orderBy(mapOf(Stories.actions.date to true))
-                                            } else {
-                                                orderBy(mapOf(Stories.actions.date to false))
-                                            }
-                                        }
-
-                                        // If no filter is specified, we keep default filtering
-                                        else -> descending(LastUpdateDate)
+                            val list =
+                                if (query.random) {
+                                    if (count > 0) {
+                                        c.aggregate<DialogCol>(
+                                            listOf(
+                                                match(filter),
+                                                sample(size.coerceAtLeast(1)),
+                                            ),
+                                        ).toList().map { it.toDialogReport(query.evaluableActionsOnly) }
+                                    } else {
+                                        emptyList()
                                     }
-                                val list =
+                                } else if (count > start) {
+                                    val sortBson =
+                                        when {
+                                            annotationSort != null -> {
+                                                if (annotationSort == SortDirection.ASC) {
+                                                    ascending(Stories.actions.annotation.lastUpdateDate)
+                                                } else {
+                                                    descending(Stories.actions.annotation.lastUpdateDate)
+                                                }
+                                            }
+
+                                            dialogSort != null -> {
+                                                if (dialogSort == SortDirection.ASC) {
+                                                    orderBy(mapOf(Stories.actions.date to true))
+                                                } else {
+                                                    orderBy(mapOf(Stories.actions.date to false))
+                                                }
+                                            }
+
+                                            // If no filter is specified, we keep default filtering
+                                            else -> descending(LastUpdateDate)
+                                        }
                                     c.find(filter)
                                         .skip(start.toInt())
                                         .limit(size)
                                         .sort(sortBson)
                                         .toList()
-                                        .map { it.toDialogReport() }
-                                DialogReportQueryResult(count, start, start + list.size, list)
-                            } else {
-                                DialogReportQueryResult(0, 0, 0, emptyList())
-                            }
+                                        .map { it.toDialogReport(query.evaluableActionsOnly) }
+                                } else {
+                                    emptyList()
+                                }
+                            val result =
+                                if (query.random) {
+                                    DialogReportQueryResult(count, 0L, list.size.toLong(), list)
+                                } else {
+                                    DialogReportQueryResult(count, start, start + list.size, list)
+                                }
+                            result
                         }
                     }
                 }
@@ -860,6 +884,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getDialog(id: Id<Dialog>): DialogReport? {
         return runBlocking {
             dialogCol.findOneById(id)?.toDialogReport()
+        }
+    }
+
+    override fun findByDialogByIds(ids: Set<Id<Dialog>>): Set<DialogReport> {
+        return runBlocking {
+            dialogCol.find(_id `in` ids).toList()
+                .mapNotNull { it.toDialogReport() }
+                .toSet()
         }
     }
 
@@ -1223,6 +1255,40 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             )
         return if (conditions.isEmpty()) null else and(conditions)
     }
+
+    /**
+     * Builds a filter for dialogs that contain at least one evaluable bot action.
+     * Evaluable actions: Choice, Attachment, Location; Sentence/SentenceWithFootnotes with non-blank text; excludes Debug.
+     * If performance becomes an issue, consider adding a multikey index on stories.actions.type and stories.actions.playerId.type.
+     */
+    private fun buildEvaluableActionsFilter(): Bson =
+        elemMatch(
+            "stories",
+            elemMatch(
+                "actions",
+                filtersAnd(
+                    eq("playerId.type", "bot"),
+                    filtersOr(
+                        eq("type", "choice"),
+                        eq("type", "attachment"),
+                        eq("type", "location"),
+                        filtersAnd(
+                            eq("type", "sentence"),
+                            exists("text", true),
+                            ne("text", null),
+                            ne("text", ""),
+                            filtersRegex("text", "\\S"),
+                        ),
+                        filtersAnd(
+                            eq("type", "sentenceWithFootnotes"),
+                            exists("text", true),
+                            ne("text", ""),
+                            filtersRegex("text", "\\S"),
+                        ),
+                    ),
+                ),
+            ),
+        )
 
     /**
      * Calculates dialog statistics for a given [DialogStatsQuery].
