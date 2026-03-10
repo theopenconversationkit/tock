@@ -86,11 +86,9 @@ import com.mongodb.client.model.Accumulators.sum
 import com.mongodb.client.model.Aggregates.sample
 import com.mongodb.client.model.Filters.elemMatch
 import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.Filters.exists
 import com.mongodb.client.model.Filters.gte
 import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.lte
-import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.IndexOptions
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -1276,7 +1274,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         filtersAnd(
                             `in`("type", listOf("sentence", "sentenceWithFootnotes")),
                             filtersRegex("text", "\\S"),
-                        )
+                        ),
                     ),
                 ),
             ),
