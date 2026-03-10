@@ -31,81 +31,81 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>2.2.20</kotlin>
+        <kotlin>2.3.10</kotlin>
         <coroutine>1.10.2</coroutine>
 
         <slf4j>2.0.17</slf4j>
-        <logback>1.5.19</logback>
+        <logback>1.5.32</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>5.5.1</kmongo>
-        <jackson>2.20.0</jackson>
-        <jackson-annotation>2.20</jackson-annotation>
-        <jackson-databind>2.20.0</jackson-databind>
-        <jackson-module>2.20.0</jackson-module>
+        <kmongo>5.6.0</kmongo>
+        <jackson>2.21.1</jackson>
+        <jackson-annotation>2.21</jackson-annotation>
+        <jackson-databind>2.21.1</jackson-databind>
+        <jackson-module>2.21.1</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>5.0.7</vertx>
+        <vertx>5.0.8</vertx>
         <retrofit>3.0.0</retrofit>
-        <okhttp>5.2.0</okhttp>
+        <okhttp>5.3.2</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>33.5.0-jre</guava>
         <google-auth>1.39.0</google-auth>
-        <google-http-client>2.0.1</google-http-client>
+        <google-http-client>2.1.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.14.1</commons-csv>
-        <commons-io>2.20.0</commons-io>
-        <commons-text>1.14.0</commons-text>
+        <commons-io>2.21.0</commons-io>
+        <commons-text>1.15.0</commons-text>
         <emoji>5.1.1</emoji>
-        <commons-codec>1.19.0</commons-codec>
-        <commons-lang>3.19.0</commons-lang>
-        <commons-logging>1.3.5</commons-logging>
-        <commonmark>0.26.0</commonmark>
-        <json>20250517</json>
+        <commons-codec>1.21.0</commons-codec>
+        <commons-lang>3.20.0</commons-lang>
+        <commons-logging>1.3.6</commons-logging>
+        <commonmark>0.27.1</commonmark>
+        <json>20251224</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.69.0</google>
-        <aws-sdk>1.12.792</aws-sdk>
-        <aws-sagemaker>2.35.3</aws-sagemaker>
-        <pac4j>6.2.2</pac4j>
+        <google>26.77.0</google>
+        <aws-sdk>1.12.797</aws-sdk>
+        <aws-sagemaker>2.42.9</aws-sagemaker>
+        <pac4j>6.3.3</pac4j>
         <vertx-pac4j>7.0.2</vertx-pac4j>
-        <okhttp-eventsource>4.1.1</okhttp-eventsource>
+        <okhttp-eventsource>4.2.0</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
-        <openai>4.0.1</openai>
+        <openai>4.1.0</openai>
 
-        <junit-jupiter>6.0.0</junit-jupiter>
-        <testcontainer>1.21.3</testcontainer>
+        <junit-jupiter>6.0.3</junit-jupiter>
+        <testcontainer>1.21.4</testcontainer>
 
         <mockk>1.14.9</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.17.8</byte-buddy>
+        <byte-buddy>1.18.7</byte-buddy>
         <atrium>1.2.0</atrium>
         <serialization>1.6.2</serialization>
 
-        <plugin.surefire>3.5.3</plugin.surefire>
-        <plugin.source>3.3.1</plugin.source>
-        <plugin.release>3.1.1</plugin.release>
-        <plugin.gpg>3.2.7</plugin.gpg>
+        <plugin.surefire>3.5.5</plugin.surefire>
+        <plugin.source>3.4.0</plugin.source>
+        <plugin.release>3.3.1</plugin.release>
+        <plugin.gpg>3.2.8</plugin.gpg>
         <plugin.publishing-maven>0.8.0</plugin.publishing-maven>
-        <plugin.dokka>2.0.0</plugin.dokka>
-        <plugin.assembly>3.4.2</plugin.assembly>
-        <plugin.frontend>1.12.1</plugin.frontend>
-        <plugin.clean>3.2.0</plugin.clean>
-        <plugin.jar>3.3.0</plugin.jar>
+        <plugin.dokka>2.1.0</plugin.dokka>
+        <plugin.assembly>3.8.0</plugin.assembly>
+        <plugin.frontend>2.0.0</plugin.frontend>
+        <plugin.clean>3.5.0</plugin.clean>
+        <plugin.jar>3.5.0</plugin.jar>
         <plugin.ant>3.1.0</plugin.ant>
-        <plugin.shade>3.4.1</plugin.shade>
-        <plugin.dependency>3.3.0</plugin.dependency>
-        <plugin.resources>3.3.0</plugin.resources>
-        <plugin.deploy>3.0.0</plugin.deploy>
+        <plugin.shade>3.6.2</plugin.shade>
+        <plugin.dependency>3.10.0</plugin.dependency>
+        <plugin.resources>3.5.0</plugin.resources>
+        <plugin.deploy>3.1.4</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
-        <plugin.ant>3.1.0</plugin.ant>
+        <plugin.ant>3.2.0</plugin.ant>
         <plugin.ktlint>0.51.0-FINAL</plugin.ktlint>
 
 

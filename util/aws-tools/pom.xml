@@ -29,7 +29,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <aws-secretsmanager-caching>1.0.2</aws-secretsmanager-caching>
+        <aws-secretsmanager-caching>1.1.0</aws-secretsmanager-caching>
     </properties>
 
     <build>
