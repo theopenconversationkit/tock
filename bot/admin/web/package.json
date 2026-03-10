@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "mavenbuild": "ng build --configuration production",
-    "prepare": "node scripts/hooks/install-hooks.js"
+    "prepare": "node scripts/hooks/install-hooks.js || true"
   },
   "private": true,
   "overrides": {
