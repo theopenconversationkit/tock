@@ -1,8 +1,14 @@
 .list-grid {
   display: grid;
   grid-template-columns:
-    minmax(130px, 1fr) minmax(60px, 110px) minmax(40px, 100px) minmax(60px, 80px) minmax(60px, 80px) minmax(40px, 130px) minmax(40px, 130px)
-    minmax(20px, 80px);
+    minmax(8rem, 1fr)
+    minmax(2.5rem, 6.875rem)
+    minmax(2.5rem, 6.25rem)
+    minmax(2rem, 5rem)
+    minmax(2rem, 5rem)
+    minmax(3.5rem, 8.125rem)
+    minmax(3.5rem, 8.125rem)
+    minmax(1.25rem, 4.5rem);
   gap: 0.5rem;
   padding: var(--card-padding);
 }

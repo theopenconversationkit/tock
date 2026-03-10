@@ -22,6 +22,8 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
+import ai.tock.bot.admin.dataset.DatasetDAO
+import ai.tock.bot.admin.dataset.DatasetRunDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.evaluation.EvaluationDAO
 import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
@@ -67,6 +69,8 @@ val botMongoModule =
         bind<BotDocumentCompressorConfigurationDAO>() with provider { BotDocumentCompressorConfigurationMongoDAO }
         bind<BotVectorStoreConfigurationDAO>() with provider { BotVectorStoreConfigurationMongoDAO }
         bind<BotSentenceGenerationConfigurationDAO>() with provider { BotSentenceGenerationConfigurationMongoDAO }
+        bind<DatasetDAO>() with provider { DatasetMongoDAO }
+        bind<DatasetRunDAO>() with provider { DatasetMongoDAO }
         bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }
         bind<I18nDAO>() with provider { I18nMongoDAO }
         bind<UserTimelineDAO>() with provider { UserTimelineMongoDAO }

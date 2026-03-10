@@ -45,6 +45,7 @@ import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
+import ai.tock.bot.admin.dataset.DatasetDAO
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogReport
@@ -150,6 +151,7 @@ object BotAdminService {
     private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
     private val documentProcessorConfigurationDAO: BotDocumentCompressorConfigurationDAO get() = injector.provide()
     private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
+    private val datasetDAO: DatasetDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -1654,6 +1656,8 @@ object BotAdminService {
             vectorStoreConfigurationDAO.delete(config._id)
             SecurityUtils.deleteSecret(config.setting.password)
         }
+
+        datasetDAO.deleteByNamespaceAndBotId(app.namespace, app.name)
 
         // delete Indicators and Metrics
         indicatorDAO.deleteByApplicationName(app.namespace, app.name)

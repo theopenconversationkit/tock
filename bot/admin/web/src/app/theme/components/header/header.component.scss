@@ -32,15 +32,22 @@
   }
 
   @include media-breakpoint-down(sm) {
-    .logo-txt,
-    .mode-switch {
+    .logo-txt {
       display: none !important;
     }
   }
 
-  @include media-breakpoint-down(is) {
-    nb-select {
-      display: none;
+  .header-tools {
+    display: grid;
+    gap: 0.5rem;
+    padding: var(--card-padding);
+
+    // Default grid: without the optional logout button (6 columns)
+    grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em;
+
+    // If a 7th child is present (logout button), add the extra column
+    &:has(> :nth-child(7)) {
+      grid-template-columns: 2.5em minmax(7em, auto) minmax(7em, auto) minmax(5em, auto) 2.5em 2.5em 2.5em;
     }
   }
 }

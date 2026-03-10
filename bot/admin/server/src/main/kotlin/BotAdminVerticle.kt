@@ -44,10 +44,12 @@ import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.DataMigrationService
+import ai.tock.bot.admin.service.DatasetRunWorker
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.DatasetsVerticle
 import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.EvaluationVerticle
 import ai.tock.bot.admin.verticle.GenAIVerticle
@@ -101,6 +103,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val indicatorVerticle = IndicatorVerticle()
     private val dialogVerticle = DialogVerticle()
     private val aiVerticle = GenAIVerticle()
+    private val datasetsVerticle = DatasetsVerticle()
     private val evaluationVerticle = EvaluationVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
@@ -120,6 +123,8 @@ open class BotAdminVerticle : AdminVerticle() {
     override fun configureServices() {
         vertx.eventBus().consumer<Boolean>(ServerStatus.SERVER_STARTED) {
             if (it.body()) {
+                DatasetRunWorker.start()
+
                 if (booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
                     FaqAdminService.makeMigration()
                 }
@@ -163,6 +168,7 @@ open class BotAdminVerticle : AdminVerticle() {
         indicatorVerticle.configure(this)
         dialogVerticle.configure(this)
         aiVerticle.configure(this)
+        datasetsVerticle.configure(this)
         evaluationVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->

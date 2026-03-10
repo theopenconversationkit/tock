@@ -178,8 +178,12 @@ export const katexInlineExtension: TokenizerExtension & RendererExtension = {
   },
 
   tokenizer(src: string): katexInlineToken | undefined {
-    // 1) $...$
-    const rule1 = /^\$([^$]+?)\$/;
+    // Matches $...$ inline math only when:
+    // - not preceded by a digit (avoids currency like $20)
+    // - no whitespace immediately after opening $ or before closing $
+    // - content is non-empty and does not itself contain $
+    // This avoids false positives on prices, variable names like $t, $route, etc.
+    const rule1 = /^\$(?!\s)([^$\n]+?)(?<!\s)\$(?!\d)/;
     const match1 = rule1.exec(src);
     if (match1) {
       const token: katexInlineToken = {
@@ -232,6 +236,28 @@ export const markedParser = new Marked({
     postprocess: (html) => DOMPurify.sanitize(html)
   },
   extensions: [katexBlockExtension, katexInlineExtension],
+  breaks: true,
+  gfm: true
+});
+
+export const markedParserForDiff = new Marked({
+  async: false,
+  ...markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang, info) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      return hljs.highlight(code, { language }).value;
+    }
+  }),
+  hooks: {
+    postprocess: (html) =>
+      DOMPurify.sanitize(html, {
+        // Allow spans with class 'added' or 'removed' for diff highlighting, but no other classes or tags to minimize XSS risks
+        ADD_TAGS: ['span'],
+        ADD_ATTR: ['class']
+      })
+  },
   breaks: true,
   gfm: true
 });

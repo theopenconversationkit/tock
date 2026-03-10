@@ -64,7 +64,9 @@ export class ApplicationService implements OnDestroy {
   resetConfiguration() {
     this.getLocales().subscribe((locales) => (this.state.locales = locales));
     this.getNlpEngineTypes().subscribe((engines) => (this.state.supportedNlpEngines = engines));
-    this.getNamespaces().subscribe((namespaces) => (this.state.namespaces = namespaces));
+    this.getNamespaces().subscribe((namespaces) => {
+      this.state.namespaces = namespaces.sort((a, b) => a.namespace.localeCompare(b.namespace));
+    });
     this.getApplications().subscribe((applications) => {
       this.state.applications = applications;
       this.state.currentApplication = null;

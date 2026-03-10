@@ -16,52 +16,33 @@
 
 package ai.tock.bot.admin.test
 
-import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.test.model.BotDialogRequest
-import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.admin.test.model.TestPlanUpdate
-import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
-import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.shared.Dice
-import ai.tock.shared.error
-import ai.tock.shared.exception.rest.UnauthorizedException
-import ai.tock.shared.injector
-import ai.tock.shared.property
-import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext
-import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
 
 class TestCoreService : TestService {
-    private val logger = KotlinLogging.logger {}
-    private val defaultRestConnectorBaseUrl =
-        property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
-    private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
-
     override fun registerServices(): (AdminVerticle).() -> Unit =
         {
-            fun RoutingContext.loadTestPlan(): TestPlan {
-                return TestPlanService.getTestPlan(pathId("planId"))?.run {
+            fun RoutingContext.loadTestPlan(): TestPlan =
+                TestPlanService.getTestPlan(pathId("planId"))?.run {
                     if (organization != namespace) {
                         Companion.unauthorized()
                     } else {
                         this
                     }
                 } ?: Companion.notFound()
-            }
 
             blockingJsonGet("/test/plans", botUser) { context ->
                 TestPlanService.getTestPlansByNamespace(context.organization)
@@ -137,56 +118,12 @@ class TestCoreService : TestService {
                 if (context.organization == query.namespace) {
                     val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
                     val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
-                    talk(query, debugEnabled, sourceWithContent)
+                    TestTalkService.talk(query, debugEnabled, sourceWithContent)
                 } else {
                     Companion.unauthorized()
                 }
             }
         }
-
-    private fun talk(
-        request: BotDialogRequest,
-        debugEnabled: Boolean,
-        sourceWithContent: Boolean,
-    ): BotDialogResponse {
-        val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
-        return try {
-            val restClient = getRestClient(conf)
-            val response =
-                restClient.talk(
-                    conf.path ?: conf.applicationId,
-                    request.currentLanguage,
-                    ClientMessageRequest(
-                        "test_${conf._id}_${request.currentLanguage}_${request.userIdModifier}",
-                        "test_bot_${conf._id}_${request.currentLanguage}",
-                        request.message.toClientMessage(),
-                        conf.targetConnectorType.toClientConnectorType(),
-                        test = true,
-                        debugEnabled = debugEnabled,
-                        sourceWithContent = sourceWithContent,
-                    ),
-                )
-
-            if (response.isSuccessful) {
-                response.body()?.run {
-                    BotDialogResponse(messages, userLocale, userActionId, hasNlpStats)
-                } ?: BotDialogResponse(emptyList())
-            } else {
-                logger.error { "error with $conf : ${response.errorBody()?.string()}" }
-                BotDialogResponse(listOf(ClientSentence("technical error :( ${response.errorBody()?.string()}]")))
-            }
-        } catch (throwable: Throwable) {
-            logger.error(throwable)
-            BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
-        }
-    }
-
-    private fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
-        val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
-        return restConnectorClientCache.getOrPut(baseUrl) {
-            ConnectorRestClient(baseUrl)
-        }
-    }
 
     /**
      * This function saves the current test plan in the mongo database and
@@ -198,26 +135,15 @@ class TestCoreService : TestService {
         testPlan: TestPlan,
         executionId: Id<TestPlanExecution>,
     ): TestPlanExecution =
-        getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
+        TestTalkService
+            .getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
             .let {
                 TestPlanService.saveAndRunTestPlan(
-                    getRestClient(it),
+                    TestTalkService.getRestClient(it),
                     testPlan,
                     executionId,
                 )
             }
-
-    private fun getBotConfiguration(
-        botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        namespace: String,
-    ): BotApplicationConfiguration {
-        val applicationConfigurationDAO: BotApplicationConfigurationDAO = injector.provide()
-        val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
-        if (conf?.namespace != namespace) {
-            throw UnauthorizedException()
-        }
-        return conf
-    }
 
     private fun executeTestPlan(testPlan: TestPlan): Id<TestPlanExecution> {
         val executionId = Dice.newId()
@@ -233,8 +159,8 @@ class TestCoreService : TestService {
         // save the test plan execution into the database
         TestPlanService.saveTestPlanExecution(exec)
         TestPlanService.runTestPlan(
-            getRestClient(
-                getBotConfiguration(
+            TestTalkService.getRestClient(
+                TestTalkService.getBotConfiguration(
                     testPlan.botApplicationConfigurationId,
                     testPlan.namespace,
                 ),

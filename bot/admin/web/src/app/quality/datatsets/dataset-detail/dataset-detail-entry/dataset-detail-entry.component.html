@@ -1,0 +1,329 @@
+<!--
+  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card [ngClass]="{'mb-4':!folded,'mb-1':folded,}">
+  <nb-card-body class="p-0">
+    <div class="border-bottom p-3">
+      <div class="d-flex gap-1 align-items-center">
+        <div class="flex-grow-1 min-width-0">
+          <div
+            class="font-weight-bold pointer"
+            [class.ellipsis]="truncateTitle"
+            [class.white-space-pre-line]="!truncateTitle"
+            (click)="switchTruncateTitle()"
+          >
+            {{ question.question }}
+          </div>
+          <div
+            *ngIf="question.groundTruth"
+            class="font-size-small text-muted pointer"
+            [class.ellipsis]="truncateTitle"
+            [class.white-space-pre-line]="!truncateTitle"
+            (click)="switchTruncateTitle()"
+          >
+            <span class="tag">Ground truth</span> {{ question.groundTruth }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-05">
+          <ng-container *ngIf="sourceDiff">
+            <ng-container *ngIf="sourceDiff as sourcesDiff">
+              <span
+                *ngIf="sourcesDiff.added.length"
+                class="tag text-nowrap added"
+                nbTooltip="Added source(s)"
+              >
+                <i class="bi bi-file-earmark-fill"></i> {{ sourcesDiff.added.length }} added
+              </span>
+              <span
+                *ngIf="sourcesDiff.modified.length"
+                class="tag text-nowrap changed"
+                nbTooltip="Modified source(s)"
+              >
+                <i class="bi bi-file-earmark-fill"></i> {{ sourcesDiff.modified.length }} modified
+              </span>
+              <span
+                *ngIf="sourcesDiff.removed.length"
+                class="tag text-nowrap removed"
+                nbTooltip="Removed source(s)"
+              >
+                <i class="bi bi-file-earmark-fill"></i> {{ sourcesDiff.removed.length }} removed
+              </span>
+            </ng-container>
+          </ng-container>
+          <!-- <span class="tag text-nowrap settings">RAG > INTENT</span>
+          <span class="tag text-nowrap settings">INTENT > RAG</span> -->
+        </div>
+
+        <button
+          nbButton
+          ghost
+          (click)="folded = !folded"
+        >
+          <nb-icon
+            *ngIf="!folded"
+            class="align-middle"
+            icon="chevron-down-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="folded"
+            class="align-middle"
+            icon="chevron-left-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="loading && !folded"
+      [nbSpinner]="loading"
+      class="p-4"
+    ></div>
+
+    <div
+      #hideableContainer
+      class="py-3 hideable-container border-bottom"
+      [class.collapsed]="isCollapsed"
+      *ngIf="!loading && !folded"
+    >
+      <!-- title -->
+      <div [class.comparison]="comparisonAction">
+        <div class="px-3">
+          <div class="d-flex gap-05 justify-content-between align-items-center">
+            <div class="text-uppercase monospace text-primary font-size-small">Run A</div>
+            <div
+              *ngIf="currentActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
+              class="tag text-muted"
+            >
+              {{ getActionTypeLabel('A') }}
+            </div>
+
+            <button
+              nbButton
+              size="small"
+              ghost
+              nbTooltip="Switch message formatting"
+              class="mt-1"
+              (click)="switchFormatting()"
+            >
+              <nb-icon
+                *ngIf="!formatting"
+                icon="body-text"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="formatting"
+                icon="code-square"
+              ></nb-icon>
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="comparisonAction"
+          class="separator"
+        ></div>
+
+        <div
+          *ngIf="comparisonAction"
+          class="px-3"
+        >
+          <div class="d-flex gap-05 justify-content-between align-items-center">
+            <div class="text-uppercase monospace text-success font-size-small">Run B</div>
+            <div
+              *ngIf="comparisonActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
+              class="tag text-muted"
+            >
+              {{ getActionTypeLabel('B') }}
+            </div>
+
+            <button
+              nbButton
+              size="small"
+              ghost
+              nbTooltip="Switch message formatting"
+              class="mt-1"
+              (click)="switchFormatting()"
+            >
+              <nb-icon
+                *ngIf="!formatting"
+                icon="body-text"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="formatting"
+                icon="code-square"
+              ></nb-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- answer -->
+      <div [class.comparison]="comparisonAction">
+        <div class="px-3">
+          <ng-container [ngSwitch]="currentActionDisplayState">
+            <div
+              *ngSwitchCase="null"
+              class="text-muted text-center"
+            >
+              It appears that this question was not part of the dataset during this run.
+            </div>
+            <div
+              *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
+              class="text-danger text-center"
+            >
+              This action failed during run and produced no output.
+            </div>
+            <div
+              *ngSwitchCase="DatasetRunActionDisplayState.PURGED"
+              class="text-warning text-center"
+            >
+              The dialogue associated with this result has been purged and is no longer available.
+            </div>
+
+            <ng-container *ngSwitchCase="DatasetRunActionDisplayState.SUCCESS">
+              <div
+                *ngIf="formatting"
+                class="chat-ui-message-content-styling"
+                [innerHTML]="currentActionAnswer"
+              ></div>
+              <div *ngIf="!formatting">{{ currentAction?.action?.message?.text }}</div>
+            </ng-container>
+          </ng-container>
+        </div>
+
+        <div
+          *ngIf="!loading && comparisonAction"
+          class="separator"
+        ></div>
+
+        <div
+          *ngIf="!loading && comparisonAction"
+          class="px-3"
+        >
+          <ng-container [ngSwitch]="comparisonActionDisplayState">
+            <div
+              *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
+              class="text-danger text-center"
+            >
+              This action failed during run and produced no output.
+            </div>
+            <div
+              *ngSwitchCase="DatasetRunActionDisplayState.PURGED"
+              class="text-warning text-center"
+            >
+              The dialogue associated with this result has been purged and is no longer available.
+            </div>
+            <ng-container *ngSwitchCase="DatasetRunActionDisplayState.SUCCESS">
+              <div
+                *ngIf="formatting"
+                class="chat-ui-message-content-styling"
+                [innerHTML]="comparisonActionAnswer"
+              ></div>
+              <div *ngIf="!formatting">{{ comparisonAction?.action?.message?.text }}</div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- sources -->
+      <div
+        [class.comparison]="comparisonAction"
+        *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
+      >
+        <div class="px-3 border-top pt-3">
+          <div class="d-flex flex-column gap-05">
+            <ng-container *ngIf="currentAction?.action?.message?.footnotes?.length">
+              <ng-container *ngFor="let source of currentFootnotesOrdered">
+                <div
+                  class="tag pointer"
+                  [class.added]="isSourceAdded(source)"
+                  [class.changed]="isSourceChanged(source)"
+                  [nbTooltip]="getSourceDiffTooltip(source)"
+                  (click)="showSourceDetail(source)"
+                >
+                  <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+                </div>
+                <div *ngIf="source._detail">
+                  <div class="mt-1 mx-2 font-size-small">
+                    <div><strong>TITLE:</strong> {{ source.title ?? 'N/A' }}</div>
+                    <div><strong>URL:</strong> {{ source.url ?? 'N/A' }}</div>
+                    <div>
+                      <strong>CONTENT:</strong><br />
+                      {{ source.content }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+
+        <div
+          *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
+          class="separator"
+        ></div>
+
+        <div
+          *ngIf="currentAction?.action?.message?.footnotes?.length || comparisonAction?.action?.message?.footnotes?.length"
+          class="px-3 border-top pt-3"
+        >
+          <div
+            *ngIf="!loading && comparisonAction"
+            class="d-flex flex-column gap-05"
+          >
+            <ng-container *ngIf="comparisonAction?.action?.message?.footnotes?.length">
+              <ng-container *ngFor="let source of comparisonFootnotesOrdered">
+                <div
+                  class="tag muted pointer"
+                  [class.removed]="isSourceRemoved(source)"
+                  [class.changed]="isSourceChanged(source)"
+                  [nbTooltip]="getSourceDiffTooltip(source)"
+                  (click)="showSourceDetail(source)"
+                >
+                  <i class="bi bi-file-earmark-fill"></i> {{ source.title }}
+                </div>
+                <div *ngIf="source._detail">
+                  <div class="mt-1 mx-2 font-size-small">
+                    <div><strong>TITLE:</strong> {{ source.title ?? 'N/A' }}</div>
+                    <div><strong>URL:</strong> {{ source.url ?? 'N/A' }}</div>
+                    <div>
+                      <strong>CONTENT:</strong><br />
+                      {{ source.content }}
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      *ngIf="!folded && showToggleButton"
+      nbButton
+      ghost
+      fullWidth
+      size="tiny"
+      (click)="toggleCollapse()"
+      class="d-flex flex-column"
+    >
+      {{ isCollapsed ? 'Show more' : 'Show less' }}
+    </button>
+  </nb-card-body>
+</nb-card>

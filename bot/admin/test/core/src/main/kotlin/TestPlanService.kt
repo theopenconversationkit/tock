@@ -56,24 +56,16 @@ object TestPlanService {
     private val applicationIdPathCache: Cache<String, String> =
         CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(1)).build()
 
-    fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
-        return testPlanDAO.getPlanExecutions(plan._id)
-    }
+    fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> = testPlanDAO.getPlanExecutions(plan._id)
 
     fun getTestPlansByNamespaceAndNlpModel(
         namespace: String,
         nlpModel: String,
-    ): List<TestPlan> {
-        return testPlanDAO.getTestPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
-    }
+    ): List<TestPlan> = testPlanDAO.getTestPlans().filter { it.namespace == namespace && it.nlpModel == nlpModel }
 
-    fun getTestPlansByNamespace(namespace: String): List<TestPlan> {
-        return testPlanDAO.getTestPlans().filter { it.namespace == namespace }
-    }
+    fun getTestPlansByNamespace(namespace: String): List<TestPlan> = testPlanDAO.getTestPlans().filter { it.namespace == namespace }
 
-    fun getTestPlansByApplication(applicationId: String): List<TestPlan> {
-        return testPlanDAO.getPlansByApplicationId(applicationId)
-    }
+    fun getTestPlansByApplication(applicationId: String): List<TestPlan> = testPlanDAO.getPlansByApplicationId(applicationId)
 
     fun removeDialogFromTestPlan(
         plan: TestPlan,
@@ -97,16 +89,12 @@ object TestPlanService {
         testPlanDAO.saveTestPlan(plan)
     }
 
-    fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
-        return testPlanDAO.getTestPlan(planId)
-    }
+    fun getTestPlan(planId: Id<TestPlan>): TestPlan? = testPlanDAO.getTestPlan(planId)
 
     fun getTestPlanExecution(
         testPlan: TestPlan,
         testExecutionId: Id<TestPlanExecution>,
-    ): TestPlanExecution? {
-        return testPlanDAO.getTestPlanExecution(testPlan, testExecutionId)
-    }
+    ): TestPlanExecution? = testPlanDAO.getTestPlanExecution(testPlan, testExecutionId)
 
     fun saveTestPlanExecution(testPlanExecution: TestPlanExecution) {
         testPlanDAO.saveTestExecution(testPlanExecution)
@@ -231,8 +219,11 @@ object TestPlanService {
                         val body = answer.body()
                         logger.debug { "ANSWER -- : $body" }
                         // go over the bot answer to remove emoticons
-                        botMessages = body?.messages?.map { it as ClientSentence }
-                            ?.map { it.copy(text = it.text?.cleanSurrogateChars()) }?.toMutableList() ?: mutableListOf()
+                        botMessages = body
+                            ?.messages
+                            ?.map { it as ClientSentence }
+                            ?.map { it.copy(text = it.text?.cleanSurrogateChars()) }
+                            ?.toMutableList() ?: mutableListOf()
                         logger.debug { "ANSWER without surrogate -- : $botMessages" }
                     } else {
                         logger.error { "ERROR : " + answer.errorBody()?.string() }
@@ -325,7 +316,8 @@ object TestPlanService {
             return "Text differs : \"${this.text}\" / expected \"${expectedMessage.text}\""
         }
 
-        return messages.zip(expectedMessage.messages)
+        return messages
+            .zip(expectedMessage.messages)
             .mapNotNull { (subMessage, expectedSubMessage) -> subMessage.partiallyEquals(expectedSubMessage) }
             .firstOrNull()
     }
@@ -336,13 +328,17 @@ private fun ClientGenericMessage.partiallyEquals(expected: ClientGenericMessage)
         return "Message text differs : \"$texts\" / expected \"${expected.texts}\""
     }
 
-    choices.zip(expected.choices)
+    choices
+        .zip(expected.choices)
         .mapNotNull { (obtainedChoice, expectedChoice) -> obtainedChoice.partiallyEquals(expectedChoice) }
-        .firstOrNull()?.let { return it }
+        .firstOrNull()
+        ?.let { return it }
 
-    subElements.zip(expected.subElements)
+    subElements
+        .zip(expected.subElements)
         .mapNotNull { (obtainedSubElement, expectedSubElement) -> obtainedSubElement.partiallyEquals(expectedSubElement) }
-        .firstOrNull()?.let { return it }
+        .firstOrNull()
+        ?.let { return it }
 
     return null
 }
@@ -352,7 +348,8 @@ private fun ClientGenericElement.partiallyEquals(expected: ClientGenericElement)
         return "Sub-element text differs : \"$texts\" / expected \"${expected.texts}\""
     }
 
-    return choices.zip(expected.choices)
+    return choices
+        .zip(expected.choices)
         .mapNotNull { (obtainedChoice, expectedChoice) -> obtainedChoice.partiallyEquals(expectedChoice) }
         .firstOrNull()
 }
