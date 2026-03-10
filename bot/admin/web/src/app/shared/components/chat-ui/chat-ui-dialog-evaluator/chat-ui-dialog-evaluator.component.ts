@@ -19,6 +19,7 @@ export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   @Input() dialog: DialogReport;
+  @Input() canEvaluate: boolean;
 
   @Output() onActionEvaluation = new EventEmitter<any>();
 

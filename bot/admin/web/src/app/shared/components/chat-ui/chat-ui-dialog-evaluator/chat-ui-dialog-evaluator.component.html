@@ -147,7 +147,7 @@
           <div class="button-horizontal-separator mb-2"></div>
           <ng-container *ngIf="action._evaluation">
             <button
-              *ngIf="action._evaluation?.status !== evaluationDirection.UP"
+              *ngIf="canEvaluate && action._evaluation?.status !== evaluationDirection.UP"
               nbButton
               size="small"
               ghost
@@ -179,7 +179,7 @@
                 ghost
                 shape="round"
                 status="warning"
-                *ngIf="action._evaluation?.status !== evaluationDirection.DOWN"
+                *ngIf="canEvaluate && action._evaluation?.status !== evaluationDirection.DOWN"
                 class="mt-1"
                 [nbContextMenu]="reasonItems"
                 nbContextMenuTag="actionEvaluation_{{ dialog.id }}_{{ action.id }}"

@@ -247,6 +247,7 @@
         <tock-chat-ui>
           <tock-chat-ui-dialog-evaluator
             [dialog]="dialog"
+            [canEvaluate]="sample.status !== evaluationSampleStatus.VALIDATED"
             (onActionEvaluation)="evaluateBotAction($event)"
             #dialogEvaluator
           ></tock-chat-ui-dialog-evaluator>
