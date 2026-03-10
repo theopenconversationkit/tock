@@ -9,6 +9,23 @@ const path = require('path');
 
 const HOOKS_SRC = __dirname;
 
+// Skip silently in CI environments (GitHub Actions, Jenkins, GitLab CI, etc.)
+// CI systems set the CI environment variable by convention.
+if (process.env.CI) {
+  console.log('[hooks] CI environment detected — skipping hook installation.');
+  process.exit(0);
+}
+
+// Guard: if this script is not running from its expected location within the
+// source tree (e.g. frontend-maven-plugin copies package.json into a temp
+// target/ directory but not the scripts/ folder), exit silently.
+// We detect this by checking that the pre-commit hook source file actually exists.
+const HOOK_GUARD = path.join(HOOKS_SRC, 'pre-commit');
+if (!fs.existsSync(HOOK_GUARD)) {
+  console.log('[hooks] Hook sources not found — skipping installation (build tool temp directory?).');
+  process.exit(0);
+}
+
 // Walk up the directory tree from a given folder until .git is found
 function findGitRoot(dir) {
   if (fs.existsSync(path.join(dir, '.git'))) return dir;
@@ -20,7 +37,7 @@ function findGitRoot(dir) {
 const ROOT = findGitRoot(__dirname);
 
 if (!ROOT) {
-  console.log('[hooks] No .git directory found — skipping hook installation (CI?).');
+  console.log('[hooks] No .git directory found — skipping hook installation.');
   process.exit(0);
 }
 
