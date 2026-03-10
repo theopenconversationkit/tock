@@ -88,6 +88,7 @@ import com.mongodb.client.model.Filters.elemMatch
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.exists
 import com.mongodb.client.model.Filters.gte
+import com.mongodb.client.model.Filters.`in`
 import com.mongodb.client.model.Filters.lte
 import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.IndexOptions
@@ -1273,18 +1274,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         eq("type", "attachment"),
                         eq("type", "location"),
                         filtersAnd(
-                            eq("type", "sentence"),
-                            exists("text", true),
-                            ne("text", null),
-                            ne("text", ""),
+                            `in`("type", listOf("sentence", "sentenceWithFootnotes")),
                             filtersRegex("text", "\\S"),
-                        ),
-                        filtersAnd(
-                            eq("type", "sentenceWithFootnotes"),
-                            exists("text", true),
-                            ne("text", ""),
-                            filtersRegex("text", "\\S"),
-                        ),
+                        )
                     ),
                 ),
             ),
