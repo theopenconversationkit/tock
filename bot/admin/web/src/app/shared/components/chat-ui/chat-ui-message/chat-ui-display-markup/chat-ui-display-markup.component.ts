@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Sentence, SentenceWithFootnotes } from '../../../../model/dialog-data';
 
-import { Marked } from 'marked';
 import DOMPurify from 'dompurify';
-import hljs from 'highlight.js';
-import { markedHighlight } from 'marked-highlight';
-import { katexBlockExtension, katexInlineExtension } from '../../../../utils/markup.utils';
+import { markedParser } from '../../../../utils/markup.utils';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 DOMPurify.addHook('afterSanitizeAttributes', (node) => {
@@ -36,27 +33,9 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
   templateUrl: './chat-ui-display-markup.component.html',
   styleUrl: './chat-ui-display-markup.component.scss'
 })
-export class ChatUiDisplayMarkupComponent {
+export class ChatUiDisplayMarkupComponent implements OnChanges {
   @Input() sentence: Sentence | SentenceWithFootnotes;
   @Input() formatting: boolean = true;
-
-  marked = new Marked({
-    async: false,
-    ...markedHighlight({
-      emptyLangClass: 'hljs',
-      langPrefix: 'hljs language-',
-      highlight(code, lang, info) {
-        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-        return hljs.highlight(code, { language }).value;
-      }
-    }),
-    hooks: {
-      postprocess: (html) => DOMPurify.sanitize(html)
-    },
-    extensions: [katexBlockExtension, katexInlineExtension],
-    breaks: true,
-    gfm: true
-  });
 
   markup: SafeHtml;
 
@@ -69,6 +48,6 @@ export class ChatUiDisplayMarkupComponent {
   }
 
   getMarkup(str: string): string {
-    return this.marked.parse(str) as string;
+    return markedParser.parse(str) as string;
   }
 }

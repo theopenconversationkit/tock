@@ -45,7 +45,7 @@
 
 @mixin code-blocks-styling() {
   overflow-x: auto;
-  background-color: var(--background-basic-color-1);
+  background-color: rgb(from var(--background-basic-color-1) r g b / 0.7);
   border: 1px solid var(--border-basic-color-5);
   margin: 0 2px;
   padding: 3px 5px 1px 5px;
@@ -221,7 +221,7 @@ code::-webkit-scrollbar-track {
     .hljs-template-variable,
     .hljs-title,
     .hljs-type {
-      color: #a31515;
+      color: #2f5b36;
     }
     .hljs-deletion,
     .hljs-meta,
@@ -279,7 +279,7 @@ code::-webkit-scrollbar-track {
       .hljs-template-variable,
       .hljs-title,
       .hljs-type {
-        color: #c54848;
+        color: #5eb96d;
       }
       .hljs-deletion,
       .hljs-meta,
@@ -291,7 +291,7 @@ code::-webkit-scrollbar-track {
         color: gray;
       }
       .hljs-attr {
-        color: #f82c2c;
+        color: #bd6565;
       }
       .hljs-bullet,
       .hljs-link,

@@ -1,0 +1,318 @@
+<div class="d-flex align-items-center mb-3">
+  <div class="flex-grow-1">
+    <h1 class="m-0">Sample</h1>
+    <div class="lead">{{ sample?.name }}</div>
+    <small>
+      Period covered: {{ sample?.dialogActivityFrom | date: 'y/MM/dd HH:mm' }} to {{ sample?.dialogActivityTo | date: 'y/MM/dd HH:mm' }}
+    </small>
+  </div>
+
+  <section
+    class="d-flex gap-1"
+    *ngIf="!loading"
+  >
+    <button
+      *ngIf="sample.status !== evaluationSampleStatus.VALIDATED"
+      nbButton
+      status="success"
+      class="d-flex align-items-center"
+      [nbTooltip]="!isSampleCompleted() ? 'All responses must be evaluated in order to validate the sample.' : 'Validate this sample'"
+      [nbTooltipStatus]="!isSampleCompleted() ? 'danger' : ''"
+      [disabled]="!isSampleCompleted()"
+      (click)="validationModal()"
+    >
+      <nb-icon
+        icon="check"
+        class="mr-2"
+      ></nb-icon>
+      Validate
+    </button>
+
+    <button
+      *ngIf="sample.status === evaluationSampleStatus.VALIDATED"
+      nbButton
+      status="primary"
+      nbTooltip="Export sample as PDF"
+      class="d-flex align-items-center"
+      (click)="exportSample()"
+    >
+      <nb-icon
+        icon="download"
+        class="mr-2"
+      ></nb-icon>
+      Export
+    </button>
+  </section>
+</div>
+
+<nb-card
+  [nbSpinner]="loading"
+  class="mb-3"
+>
+  <nb-card-body *ngIf="!loading">
+    <div
+      class="d-flex gap-1 align-items-center justify-content-between pointer"
+      (click)="switchDetails()"
+      nbTooltip="Click to show details"
+    >
+      <div class="d-flex align-items-center">
+        <div
+          class="d-flex align-items-center text-muted mr-4"
+          nbTooltip="Number of dialogues contained in this sample"
+        >
+          <nb-icon
+            icon="wechat"
+            class="mr-2"
+          ></nb-icon>
+
+          {{ sample.dialogsCount }} dialogues
+        </div>
+
+        <div
+          class="d-flex align-items-center text-muted mr-4"
+          nbTooltip="Number of answers contained in this sample"
+        >
+          <nb-icon
+            icon="chat"
+            class="mr-2"
+          ></nb-icon>
+          <span class="lineHeight-1">{{ sample.botActionCount }} answers</span>
+        </div>
+      </div>
+
+      <nb-icon
+        *ngIf="!detailsVisible"
+        icon="chevron-down-outline"
+        pack="nebular-essentials"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="detailsVisible"
+        icon="chevron-up-outline"
+        pack="nebular-essentials"
+      ></nb-icon>
+    </div>
+
+    <div
+      *ngIf="detailsVisible"
+      class="text-muted mt-3"
+    >
+      <table class="table mb-0">
+        <tbody>
+          <tr>
+            <td style="width: 35%">Created by</td>
+            <td>
+              <span class="font-italic">{{ sample?.createdBy }}</span> on {{ sample?.creationDate | date: 'y/MM/dd HH:mm' }}
+            </td>
+          </tr>
+          <tr *ngIf="sample.status === evaluationSampleStatus.VALIDATED">
+            <td>Validated by</td>
+            <td>
+              <span class="font-italic">{{ sample.statusChangedBy }}</span> on
+              {{ sample?.statusChangeDate | date: 'y/MM/dd HH:mm' }}
+            </td>
+          </tr>
+          <tr>
+            <td>May include test dialogues</td>
+            <td>
+              {{ sample?.allowTestDialogs ? 'Yes' : 'No' }}
+            </td>
+          </tr>
+
+          <tr>
+            <td>Number of requested dialogues</td>
+            <td>
+              {{ sample?.requestedDialogCount }}
+            </td>
+          </tr>
+          <tr>
+            <td>Number of actual dialogues</td>
+            <td>
+              {{ sample?.dialogsCount }}
+            </td>
+          </tr>
+
+          <tr>
+            <td>Total number of dialogues recorded for this bot during the period covered</td>
+            <td>
+              {{ sample?.totalDialogCount }}
+            </td>
+          </tr>
+          <tr>
+            <td>Sample coverage rate</td>
+            <td>{{ getCoverage() }}%</td>
+          </tr>
+
+          <tr>
+            <td>Description</td>
+            <td>
+              {{ sample?.description ? sample?.description : 'N/A' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<tock-sticky-menu *ngIf="!loading">
+  <div class="mt-2 mb-1 d-flex gap-1 align-items-center">
+    <div class="d-flex gap-05 align-items-center">
+      <div
+        class="tag success d-flex align-items-center"
+        nbTooltip="Positive evaluations: {{ sample.evaluationsResult.positiveCount }}"
+      >
+        <nb-icon
+          icon="hand-thumbs-up-fill"
+          class="ml-n1 mr-1"
+        ></nb-icon>
+        <strong>{{ getEvaluationRate('positive') }}%</strong>
+      </div>
+      <div
+        class="tag warning d-flex align-items-center"
+        nbTooltip="Negative evaluations: {{ sample.evaluationsResult.negativeCount }}"
+      >
+        <nb-icon
+          icon="hand-thumbs-down-fill"
+          class="ml-n1 mr-1"
+        ></nb-icon>
+        <strong>{{ getEvaluationRate('negative') }}%</strong>
+      </div>
+    </div>
+
+    <div class="flex-grow-1">
+      <nb-progress-bar
+        *ngIf="getCompletionRate() > 0"
+        [value]="getCompletionRate()"
+        status="primary"
+        class="flex-grow-1 progress-bar-bg-card"
+        size="giant"
+        nbTooltip="Progress of the evaluation for this sample"
+      >
+        <span *ngIf="getCompletionRate() > 5"> {{ getCompletionRate() }}% </span>
+        <span
+          class="d-none d-xl-inline"
+          *ngIf="getCompletionRate() > 30"
+          >&nbsp;completed</span
+        ></nb-progress-bar
+      >
+    </div>
+
+    <tock-pagination
+      [pagination]="pagination"
+      (onPaginationChange)="paginationChange()"
+    ></tock-pagination>
+  </div>
+
+  <nb-alert
+    *ngIf="missingDialogsWarning"
+    class="my-3"
+    status="danger"
+    closable
+    (close)="onMissingDialogsWarningAlertClose()"
+  >
+    At least {{ missingDialogsCount }} dialog(s) linked to this sample were not found. This is likely due to a scheduled data purge of old
+    dialogues.
+    <br />
+    WARNING: It will not be possible to validate this sample.
+  </nb-alert>
+</tock-sticky-menu>
+
+<tock-no-data-found
+  *ngIf="!loading && pagination.total === 0"
+  title="No sample found"
+  class="mt-3"
+></tock-no-data-found>
+
+<tock-no-data-found
+  *ngIf="!loading && pagination.total > 0 && !data?.dialogs?.length"
+  title="No dialog found"
+  class="mt-3"
+></tock-no-data-found>
+
+<div
+  class="mt-3"
+  *ngIf="!loading && data?.dialogs?.length"
+  infinite-scroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="300"
+  (scrolled)="onScroll()"
+>
+  <div *ngFor="let dialog of data.dialogs">
+    <nb-card
+      id="dialog-wrapper-{{ dialog.id }}"
+      status="basic"
+      class="mb-1"
+    >
+      <nb-card-body class="p-0">
+        <tock-chat-ui>
+          <tock-chat-ui-dialog-evaluator
+            [dialog]="dialog"
+            [canEvaluate]="sample.status !== evaluationSampleStatus.VALIDATED"
+            (onActionEvaluation)="evaluateBotAction($event)"
+            #dialogEvaluator
+          ></tock-chat-ui-dialog-evaluator>
+        </tock-chat-ui>
+      </nb-card-body>
+    </nb-card>
+    <div
+      *ngIf="dialogEvaluator.isVisible"
+      class="mb-3"
+    ></div>
+  </div>
+</div>
+
+<tock-scroll-top-button></tock-scroll-top-button>
+
+<ng-template #sampleValidationModal>
+  <nb-card class="min-width-90vw">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Validate sample
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeValidationModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <tock-form-control
+        name="comment"
+        label="Comment"
+      >
+        <nb-form-field>
+          <textarea
+            nbInput
+            fullWidth
+            placeholder="Validation comment"
+            [(ngModel)]="validationComment"
+            rows="5"
+          ></textarea>
+        </nb-form-field>
+      </tock-form-control>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeValidationModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="validateSample()"
+      >
+        Validate
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

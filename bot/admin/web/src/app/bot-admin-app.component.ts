@@ -207,13 +207,6 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         title: 'Gen AI',
         icon: 'cpu',
         children: [
-          // {
-          //   link: '/rag/sources',
-          //   title: 'Rag sources',
-          //   icon: 'cloud-download-outline',
-          //   hidden: !this.state.hasRole(UserRole.admin)
-          // },
-
           {
             link: '/rag/settings',
             title: 'Rag settings',
@@ -276,6 +269,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           }
         ]
       },
+
       {
         title: 'Analytics',
         icon: 'activity',
@@ -332,6 +326,19 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             link: '/business-metrics/indicators',
             title: 'Indicators',
             icon: 'sign-merge-left'
+          }
+        ]
+      },
+      {
+        title: 'Answers Quality',
+        icon: 'award',
+        hidden: !this.state.hasRole(UserRole.botUser),
+
+        children: [
+          {
+            link: '/quality/samples',
+            title: 'Evaluations',
+            icon: 'eyedropper'
           }
         ]
       },

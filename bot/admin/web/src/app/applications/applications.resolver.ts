@@ -23,7 +23,7 @@ import { StateService } from '../core-nlp/state.service';
 import { ApplicationService } from '../core-nlp/applications.service';
 
 @Injectable()
-export class ApplicationsResolver  {
+export class ApplicationsResolver {
   constructor(private appService: ApplicationService, private state: StateService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application[]> {

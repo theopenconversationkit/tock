@@ -22,7 +22,7 @@ import { AnalyticsService } from '../../analytics.service';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { saveAs } from 'file-saver-es';
-import { getExportFileName } from '../../../shared/utils';
+import { getExportFileName, scrollToPageTop } from '../../../shared/utils';
 import { DOCUMENT, Location } from '@angular/common';
 import { Pagination } from '../../../shared/components';
 import { DialogListFilters } from './dialogs-list-filters/dialogs-list-filters.component';
@@ -183,7 +183,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.loading = false;
 
       if (scrollToTop) {
-        this.scrollToTop();
+        scrollToPageTop(this.document);
       }
 
       if (this.dialogAnchorRef) {
@@ -196,14 +196,6 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
         }, 300);
       }
     });
-  }
-
-  scrollToTop(): void {
-    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.scrollToTop.bind(this));
-      window.scrollTo(0, currentScroll - currentScroll / 4);
-    }
   }
 
   formattedTotal() {

@@ -94,7 +94,7 @@ export class RestService {
     value?: I,
     parseFunction?: (value: any) => O,
     baseUrl?: string,
-    returnErrorOn400 = false,
+    returnErrorOn400422 = false,
     params = {}
   ): Observable<O> {
     return this.http
@@ -105,11 +105,11 @@ export class RestService {
       })
       .pipe(
         map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
-        catchError((e) => this.handleError(this, e, returnErrorOn400))
+        catchError((e) => this.handleError(this, e, returnErrorOn400422))
       );
   }
 
-  postFormData<I, O>(path: string, data?: FormData, baseUrl?: string, returnErrorOn400 = false, params = {}): Observable<O> {
+  postFormData<I, O>(path: string, data?: FormData, baseUrl?: string, returnErrorOn400422 = false, params = {}): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, data, {
         headers: this.headers(),
@@ -118,7 +118,7 @@ export class RestService {
       })
       .pipe(
         map((res: string) => (res || {}) as O),
-        catchError((e) => this.handleError(this, e, returnErrorOn400))
+        catchError((e) => this.handleError(this, e, returnErrorOn400422))
       );
   }
 
@@ -169,7 +169,7 @@ export class RestService {
     return uploader;
   }
 
-  private handleError(rest: RestService, error: Response | any, returnErrorOn400 = false) {
+  private handleError(rest: RestService, error: Response | any, returnErrorOn400422 = false) {
     console.log(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
@@ -179,15 +179,15 @@ export class RestService {
         rest.router.navigateByUrl('/login');
         return NEVER;
       }
-      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
-      if (returnErrorOn400 && e.status === 400) {
+      // returnErrorOn400422 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400422 && [400, 422].includes(e.status)) {
         return observableThrowError(error);
       }
 
-      errMsg = e.status === 400 ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
+      errMsg = [400, 422].includes(e.status) ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
-      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
-      if (returnErrorOn400 && e.status === 400) {
+      // returnErrorOn400422 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400422 && [400, 422].includes(e.status)) {
         return observableThrowError(error);
       }
 

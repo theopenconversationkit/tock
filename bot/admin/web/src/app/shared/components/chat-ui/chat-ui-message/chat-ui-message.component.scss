@@ -129,3 +129,19 @@
   background: #192038;
   color: #ffffff;
 }
+
+:host.reply .message-text .reply-bg-positive {
+  background-color: #eafdeb !important;
+}
+
+:host.reply .message-text .reply-bg-negative {
+  background-color: #fff5df !important;
+}
+
+.nb-theme-dark :host.reply .message-text .reply-bg-positive {
+  background-color: #183015 !important;
+}
+
+.nb-theme-dark :host.reply .message-text .reply-bg-negative {
+  background-color: #302315 !important;
+}

@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+#
+# pre-commit hook
+# Replaces any registry URL that does NOT point to registry.npmjs.org
+# with https://registry.npmjs.org/ in any package-lock.json staged for commit.
+#
+# No configuration required — works out-of-the-box for all contributors.
+#
+# Installation (handled automatically via `npm install`):
+#   node scripts/hooks/install-hooks.js
+#
+# Dry-run mode (no files modified, no re-staging):
+#   DRY_RUN=1 bash .git/hooks/pre-commit
+
+# ─── Configuration ────────────────────────────────────────────────────────────
+
+PUBLIC_REGISTRY="https://registry.npmjs.org"
+DRY_RUN="${DRY_RUN:-0}"
+
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+log_info()  { echo -e "${GREEN}[pre-commit]${NC} $*"; }
+log_warn()  { echo -e "${YELLOW}[pre-commit]${NC} $*"; }
+log_error() { echo -e "${RED}[pre-commit]${NC} $*" >&2; }
+log_dry()   { echo -e "${CYAN}[pre-commit][dry-run]${NC} $*"; }
+
+if [ "${DRY_RUN}" = "1" ]; then
+  log_dry "Dry-run mode enabled — no files will be modified or re-staged."
+fi
+
+# ─── Dependency check ─────────────────────────────────────────────────────────
+
+if ! command -v python3 &>/dev/null; then
+  log_error "python3 is required but not found. Cannot sanitize package-lock.json."
+  exit 1
+fi
+
+# ─── Find staged package-lock.json files (any depth) ─────────────────────────
+
+# In dry-run mode, scan all tracked lockfiles rather than only staged ones
+if [ "${DRY_RUN}" = "1" ]; then
+  LOCKFILES=$(git ls-files | grep 'package-lock\.json$' || true)
+else
+  LOCKFILES=$(git diff --cached --name-only | grep 'package-lock\.json$' || true)
+fi
+
+if [ -z "${LOCKFILES}" ]; then
+  log_info "No package-lock.json found — nothing to do."
+  exit 0
+fi
+
+# ─── Python replacement script ────────────────────────────────────────────────
+# Uses non-greedy matching to correctly handle:
+#   - simple packages:  /prefix/name/-/name-1.0.0.tgz
+#   - scoped packages:  /prefix/@scope/name/-/name-1.0.0.tgz
+# regardless of how many prefix segments the private mirror adds.
+
+PYTHON_SCRIPT=$(cat << 'PYEOF'
+import re, sys
+
+PUBLIC = "https://registry.npmjs.org"
+dry_run = sys.argv[2] == "1"
+
+pattern = re.compile(
+    r'"resolved": "https?://.*?/(@[^/"]+/[^/"]+|[^/@"][^/"]*)/-/([^"]+)"'
+)
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+def replace(m):
+    return f'"resolved": "{PUBLIC}/{m.group(1)}/-/{m.group(2)}"'
+
+new_content = pattern.sub(replace, content)
+
+if not dry_run:
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(new_content)
+PYEOF
+)
+
+# ─── Process each lockfile ────────────────────────────────────────────────────
+
+HOOK_FAILED=0
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
+while IFS= read -r LOCKFILE_REL; do
+
+  LOCKFILE_ABS="${GIT_ROOT}/${LOCKFILE_REL}"
+
+  if [ ! -f "${LOCKFILE_ABS}" ]; then
+    log_error "${LOCKFILE_ABS} not found on disk."
+    HOOK_FAILED=1
+    continue
+  fi
+
+  # ─── Detection ──────────────────────────────────────────────────────────────
+
+  if [ "${DRY_RUN}" = "1" ]; then
+    # In dry-run, read the file from disk directly
+    SCAN_CONTENT=$(cat "${LOCKFILE_ABS}")
+  else
+    # In normal mode, read the staged version
+    SCAN_CONTENT=$(git show ":${LOCKFILE_REL}")
+  fi
+
+  FOREIGN_URLS=$(echo "${SCAN_CONTENT}" \
+    | grep -oE '"resolved": "https?://[^"]*"' \
+    | grep -v "\"${PUBLIC_REGISTRY}" \
+    || true)
+
+  if [ -z "${FOREIGN_URLS}" ]; then
+    [ "${DRY_RUN}" = "1" ] && log_dry "✔ ${LOCKFILE_REL} — no foreign URLs found."
+    continue
+  fi
+
+  COUNT=$(echo "${FOREIGN_URLS}" | wc -l | tr -d ' ')
+
+  if [ "${DRY_RUN}" = "1" ]; then
+    log_dry "⚠ ${COUNT} non-public registry URL(s) would be replaced in ${LOCKFILE_REL}:"
+    echo "${FOREIGN_URLS}" | head -5 | sed 's/^/    /'
+    [ "${COUNT}" -gt 5 ] && echo "    ... and $((COUNT - 5)) more"
+    continue
+  fi
+
+  log_warn "⚠ ${COUNT} non-public registry URL(s) detected in ${LOCKFILE_REL}:"
+  echo "${FOREIGN_URLS}" | head -5 | sed 's/^/    /' >&2
+  [ "${COUNT}" -gt 5 ] && echo "    ... and $((COUNT - 5)) more" >&2
+  log_info "Replacing with ${PUBLIC_REGISTRY} ..."
+
+  # ─── Replacement ────────────────────────────────────────────────────────────
+
+  python3 -c "${PYTHON_SCRIPT}" "${LOCKFILE_ABS}" "${DRY_RUN}"
+
+  if [ $? -ne 0 ]; then
+    log_error "Replacement failed on ${LOCKFILE_REL}."
+    HOOK_FAILED=1
+    continue
+  fi
+
+  # ─── Re-staging ─────────────────────────────────────────────────────────────
+
+  git -C "${GIT_ROOT}" add -- "${LOCKFILE_REL}"
+  log_info "✔ ${LOCKFILE_REL} cleaned and re-staged."
+
+  # ─── Final check ────────────────────────────────────────────────────────────
+
+  REMAINING=$(git show ":${LOCKFILE_REL}" \
+    | grep -oE '"resolved": "https?://[^"]*"' \
+    | grep -v "\"${PUBLIC_REGISTRY}" \
+    || true)
+
+  if [ -n "${REMAINING}" ]; then
+    log_error "Non-public registry URLs still present in ${LOCKFILE_REL} after replacement!"
+    echo "${REMAINING}" | head -5 | sed 's/^/    /' >&2
+    HOOK_FAILED=1
+  fi
+
+done <<< "${LOCKFILES}"
+
+exit ${HOOK_FAILED}

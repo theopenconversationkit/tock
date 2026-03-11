@@ -20,6 +20,7 @@ import { ClassifiedEntity } from '../../model/nlp';
 import { IntentName } from '../../bot/model/story';
 import { Annotation } from '../components/annotation/annotations';
 import { FeedbackVote } from '../../analytics/dialogs/dialogs';
+import { EvaluationDefinition } from '../../quality/samples/models';
 
 export class DialogReport {
   displayActions: boolean;
@@ -78,8 +79,18 @@ export class ActionReport {
 
   _nlpStats?: NlpCallStats; // expando to store nlpStats of the action when getting a DialogReport
 
+  _evaluation?: EvaluationDefinition; // expando to store evaluation of the action in the Evaluation Sample module
+
   isBot(): boolean {
-    return this.playerId.type == PlayerType.bot;
+    return this.playerId.type === PlayerType.bot;
+  }
+
+  isBotAnswer(): boolean {
+    return this.isBot() && !this.message?.isDebug();
+  }
+
+  isBotAnswerWithContent(): boolean {
+    return this.isBotAnswer() && ((this.message as Sentence).text !== undefined || (this.message as Sentence).messages?.length > 0);
   }
 
   static fromJSON(json?: any): ActionReport {

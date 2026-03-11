@@ -17,8 +17,9 @@ import { PaginatedQuery } from '../../model/commons';
 import { ActionNlpStats, DialogReport, PlayerId } from '../../shared/model/dialog-data';
 import { PaginatedResult } from '../../model/nlp';
 import { ConnectorType } from '../../core/model/configuration';
-import { AnnotationReason, AnnotationState } from '../../shared/components/annotation/annotations';
+import { AnnotationState } from '../../shared/components/annotation/annotations';
 import { SortOrder } from '../../shared/model/misc';
+import { ResponseIssueReason } from '../../shared/model/response-issue';
 
 export enum FeedbackVote {
   UP = 'UP',
@@ -47,7 +48,7 @@ export class DialogReportQuery extends PaginatedQuery {
     public dialogActivityTo?: Date,
     public withAnnotations?: boolean,
     public annotationStates?: AnnotationState[],
-    public annotationReasons?: AnnotationReason[],
+    public annotationReasons?: ResponseIssueReason[],
     public annotationSort?: SortOrder,
     public annotationCreationDateFrom?: Date,
     public annotationCreationDateTo?: Date,

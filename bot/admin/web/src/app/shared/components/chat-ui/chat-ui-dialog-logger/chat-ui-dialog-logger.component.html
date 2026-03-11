@@ -135,9 +135,7 @@
       <div
         class="dialog-vertical-separator"
         [class.horizontal-separation-start]="!action.isBot()"
-        [class.horizontal-separation-end]="
-          action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)
-        "
+        [class.horizontal-separation-end]="action.isBotAnswerWithContent()"
       ></div>
 
       <div>
@@ -200,7 +198,7 @@
 
         <div
           class="pl-1"
-          *ngIf="action.isBot() && !action.message.isDebug() && ($any(action).message.text || $any(action).message.messages?.length)"
+          *ngIf="action.isBotAnswerWithContent()"
         >
           <div class="button-horizontal-separator mb-1"></div>
 

@@ -15,7 +15,6 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-// import * as html2pdf from 'html2pdf.js';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
 import { BotApplicationConfiguration, ConnectorType } from 'src/app/core/model/configuration';
@@ -155,17 +154,6 @@ export class ActivityComponent implements OnInit, OnDestroy {
     fileName += '.pdf';
     return fileName;
   }
-
-  // onPdfAction() {
-  //   const options = {
-  //     filename: this.getFileName(),
-  //     image: { type: 'jpeg ', quality: 0.95 },
-  //     html2canvas: {},
-  //     jsPDF: { orientation: 'landscape' }
-  //   };
-  //   const content: Element = document.getElementById('element-id');
-  //   html2pdf().from(content).set(options).save();
-  // }
 
   getConnector(connectorId: string): ConnectorType {
     let connectors = this.configurations.filter((config) => config.connectorType.id === connectorId).map((config) => config.connectorType);

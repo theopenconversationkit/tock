@@ -53,7 +53,7 @@ import { saveAs } from 'file-saver-es';
 import { SentenceTrainingService } from './sentence-training.service';
 import { getSentenceId } from './commons/utils';
 import { DOCUMENT } from '@angular/common';
-import { getExportFileName } from '../../utils';
+import { getExportFileName, scrollToPageTop } from '../../utils';
 
 export type SentenceExtended = Sentence & { _showDialog?: boolean; _showStatsDetails?: boolean; _intentBeforeClassification?: string };
 
@@ -217,7 +217,7 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
         }
 
         if (scrollToTop) {
-          this.scrollToTop();
+          scrollToPageTop(this.document);
         }
         this.loading = false;
         this.cd.markForCheck();
@@ -228,14 +228,6 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
     });
 
     return search;
-  }
-
-  scrollToTop(): void {
-    const currentScroll = this.document.documentElement.scrollTop || this.document.body.scrollTop;
-    if (currentScroll > 0) {
-      window.requestAnimationFrame(this.scrollToTop.bind(this));
-      window.scrollTo(0, currentScroll - currentScroll / 4);
-    }
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<SentenceExtended>> {

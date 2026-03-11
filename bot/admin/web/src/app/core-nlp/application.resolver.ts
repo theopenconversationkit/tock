@@ -23,7 +23,7 @@ import { ApplicationService } from './applications.service';
 import { CoreConfig } from './core.config';
 
 @Injectable()
-export class ApplicationResolver  {
+export class ApplicationResolver {
   constructor(private config: CoreConfig, private appService: ApplicationService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {
