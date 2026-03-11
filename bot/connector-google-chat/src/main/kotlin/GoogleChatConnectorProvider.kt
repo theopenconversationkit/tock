@@ -41,7 +41,7 @@ import kotlin.reflect.KClass
 private const val CHAT_SCOPE = "https://www.googleapis.com/auth/chat.bot"
 private const val SERVICE_CREDENTIAL_PATH_PARAMETER = "serviceCredentialPath"
 private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialContent"
-private const val BOT_PROJECT_NUMBER_PARAMETER = "botProjectNumber"
+private const val AUTH_AUDIENCE_PARAMETER = "authenticationAudience"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
@@ -95,8 +95,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
             val authorisationHandler =
                 GoogleChatAuthorisationHandler(
-                    connectorConfiguration.parameters[BOT_PROJECT_NUMBER_PARAMETER]
-                        ?: error("Parameter Bot project number not present"),
+                    connectorConfiguration.parameters[AUTH_AUDIENCE_PARAMETER]
+                        ?: error("Parameter Authentication Audience not present"),
                 )
 
             val introMessage =
@@ -175,8 +175,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             googleChatConnectorType,
             listOf(
                 ConnectorTypeConfigurationField(
-                    "Bot project number (application ID in google hangouts configuration page)",
-                    BOT_PROJECT_NUMBER_PARAMETER,
+                    "Authentication Audience (Google Chat app connection setting)",
+                    AUTH_AUDIENCE_PARAMETER,
                     true,
                 ),
                 ConnectorTypeConfigurationField(

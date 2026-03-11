@@ -33,9 +33,9 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
-import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.chat.v1.HangoutsChat
-import com.google.api.services.chat.v1.model.DeprecatedEvent
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -50,6 +50,7 @@ class GoogleChatConnector(
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
+    private val gson: Gson = Gson()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -59,16 +60,32 @@ class GoogleChatConnector(
                 .handler { context ->
                     try {
                         val body = context.body().asString()
-                        logger.info { "message received from Google chat: $body" }
+                        logger.debug { "message received from Google chat: $body" }
 
                         // answer immediately
-                        context.response().end()
+                        context.response()
+                            .putHeader("Content-Type", "application/json; charset=UTF-8")
+                            .setStatusCode(200)
+                            .end("{}")
+                        val messageEvent: JsonObject = gson.fromJson(body, JsonObject::class.java)
+                        val chatEvent: JsonObject = messageEvent.getAsJsonObject("chat")
 
-                        val messageEvent = JacksonFactory().fromString(body, DeprecatedEvent::class.java)
-                        val spaceName = messageEvent.space?.name
-                        val threadName = messageEvent.message?.thread?.name
-                        val event = GoogleChatRequestConverter.toEvent(messageEvent, connectorId)
-                        if (event != null && spaceName != null && threadName != null) {
+                        // https://developers.google.com/workspace/add-ons/concepts/event-objects#chat-payload
+                        if (!chatEvent.has("messagePayload")) {
+                            logger.debug {
+                                "Only messagePayload is handled. Skipped events: " +
+                                    "AddedToSpacePayload, " +
+                                    "RemovedFromSpacePayload, " +
+                                    "ButtonClickedPayload, " +
+                                    "WidgetUpdatedPayload, " +
+                                    "AppCommandPayload."
+                            }
+                        } else {
+                            val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
+                            val spaceName = message.getAsJsonObject("space").get("name").asString
+                            val threadName = message.getAsJsonObject("thread").get("name").asString
+
+                            val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
                             executor.executeBlocking {
                                 controller.handle(
                                     event,
@@ -84,11 +101,9 @@ class GoogleChatConnector(
                                     ),
                                 )
                             }
-                        } else {
-                            logger.debug { "skip message: $messageEvent" }
                         }
                     } catch (e: Throwable) {
-                        logger.error { e }
+                        logger.error(e) { "Error while handling Google Chat event" }
                     }
                 }
         }
