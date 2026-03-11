@@ -37,6 +37,10 @@ data class DialogReportQuery(
     val playerId: PlayerId? = null,
     val text: String? = null,
     val dialogId: String? = null,
+    /**
+     * When non-empty, filter dialogs by these IDs (fetches multiple dialogs by ID).
+     */
+    val dialogIds: Set<String>? = null,
     val intentName: String? = null,
     val exactMatch: Boolean = false,
     val connectorType: ConnectorType? = null,
@@ -77,4 +81,14 @@ data class DialogReportQuery(
      */
     val dialogActivityFrom: ZonedDateTime? = null,
     val dialogActivityTo: ZonedDateTime? = null,
+    /**
+     * Use random sampling instead of pagination.
+     * When true, uses MongoDB $sample to randomly select documents.
+     */
+    val random: Boolean = false,
+    /**
+     * When true, only returns dialogs that contain at least one evaluable bot action
+     * (Sentence or SentenceWithFootnotes with non-empty text, excluding DebugMessage).
+     */
+    val evaluableActionsOnly: Boolean = false,
 )

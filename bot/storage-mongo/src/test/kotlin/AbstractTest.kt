@@ -60,6 +60,9 @@ abstract class AbstractTest(private val initDb: Boolean = true) {
                             )
                         }
                     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+                    bind<EvaluationMongoDAO>() with provider { EvaluationMongoDAO }
+                    bind<EvaluationSampleMongoDAO>() with provider { EvaluationSampleMongoDAO }
+                    bind<UserTimelineMongoDAO>() with provider { UserTimelineMongoDAO }
                     bind<FeatureCache>() with provider { spyk(MongoFeatureCache()) }
                     bind<FeatureDAO>() with provider { FeatureMongoDAO(instance(), MongoBotConfiguration.asyncDatabase.getCollection<Feature>()) }
                 },
