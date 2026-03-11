@@ -5,7 +5,6 @@ import { ActionReport, DialogReport } from '../../../shared/model/dialog-data';
 import { Pagination } from '../../../shared/components';
 import { Subject, take, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
-import { AnalyticsService } from '../../../analytics/analytics.service';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { scrollToPageTop } from '../../../shared/utils';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
@@ -317,6 +316,7 @@ export class SampleDetailComponent implements OnInit, OnDestroy {
 
     action._evaluation.status = evaluation;
     if (reason) action._evaluation.reason = reason;
+    else action._evaluation.reason = undefined;
 
     if (isNewEval) {
       this.updateCountsForNewEval(evaluation);

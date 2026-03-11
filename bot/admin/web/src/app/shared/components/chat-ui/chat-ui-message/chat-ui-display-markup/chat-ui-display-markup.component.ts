@@ -42,7 +42,7 @@ export class ChatUiDisplayMarkupComponent implements OnChanges {
   constructor(private sanitizer: DomSanitizer) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.formatting && changes.formatting.currentValue !== undefined) {
+    if (changes.formatting && changes.formatting.currentValue) {
       this.markup = this.sanitizer.bypassSecurityTrustHtml(this.getMarkup(this.sentence.text));
     }
   }

@@ -15,7 +15,7 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, take, takeUntil } from 'rxjs';
+import { catchError, of, Subject, take, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
@@ -64,6 +64,17 @@ export class SamplesBoardComponent implements OnInit, OnDestroy {
     const url = getEvaluationBaseUrl(this.stateService.currentApplication.name);
     this.rest
       .get(url, (evaluations: any) => evaluations)
+      .pipe(
+        catchError(() => {
+          this.loading = false;
+          this.toastrService.danger('An error occured', 'Error', {
+            duration: 5000,
+            status: 'danger'
+          });
+
+          return of([]);
+        })
+      )
       .subscribe((res) => {
         this.samples = res;
         this.loading = false;

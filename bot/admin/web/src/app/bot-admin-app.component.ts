@@ -340,11 +340,6 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             title: 'Evaluations',
             icon: 'eyedropper'
           }
-          // {
-          //   link: '/quality/datasets',
-          //   title: 'Datasets',
-          //   icon: 'palette2'
-          // }
         ]
       },
       {

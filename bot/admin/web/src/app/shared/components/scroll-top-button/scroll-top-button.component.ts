@@ -39,6 +39,6 @@ export class ScrollTopButtonComponent {
   }
 
   scrollToTop(): void {
-    scrollToPageTop(this.document);
+    scrollToPageTop(this.document, this.smoothness);
   }
 }

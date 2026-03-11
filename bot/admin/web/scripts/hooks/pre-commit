@@ -147,7 +147,7 @@ while IFS= read -r LOCKFILE_REL; do
 
   # ─── Re-staging ─────────────────────────────────────────────────────────────
 
-  git add "${LOCKFILE_ABS}"
+  git -C "${GIT_ROOT}" add -- "${LOCKFILE_REL}"
   log_info "✔ ${LOCKFILE_REL} cleaned and re-staged."
 
   # ─── Final check ────────────────────────────────────────────────────────────
