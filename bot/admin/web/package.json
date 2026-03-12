@@ -39,6 +39,7 @@
     "highlight.js": "^11.11.1",
     "jodit": "^4.2.37",
     "jsoneditor": "^9.10.2",
+    "jszip": "^3.10.1",
     "katex": "^0.16.21",
     "linkify-html": "^4.1.1",
     "linkifyjs": "^4.1.1",

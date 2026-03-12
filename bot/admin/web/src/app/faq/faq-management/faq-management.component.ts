@@ -376,6 +376,12 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  get exportDefaultColumns(): string[] {
+    const localeColumns = this.stateService.currentApplication.supportedLocales.map((locale) => `answer.i18n.${locale}`);
+
+    return ['title', 'description', 'tags', 'utterances', ...localeColumns, 'footnotes'];
+  }
+
   getExportSearchQuery(): Observable<PaginatedFaqResult> {
     let query: PaginatedQuery = this.stateService.createPaginatedQuery(0, 9999);
     const request = this.toSearchQuery(query);

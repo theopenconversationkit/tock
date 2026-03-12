@@ -133,6 +133,8 @@
     *ngIf="isSidePanelOpen.export"
     class="aside"
     [data]="faqs"
+    [defaultColumns]="exportDefaultColumns"
+    [mdHeadingPrefix]="'Faq'"
     [deepeningPropertiesStrategies]="{
       answer: {
         path: 'i18n',
