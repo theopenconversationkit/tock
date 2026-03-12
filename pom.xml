@@ -114,7 +114,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <node>v22.20.0</node>
+        <node>v24.14.0</node>
         <maven.version.ignore>(?i).*-(alpha|beta|m|rc)([-.]?\d+)?</maven.version.ignore>
         <ktlint.fail>true</ktlint.fail>
     </properties>
