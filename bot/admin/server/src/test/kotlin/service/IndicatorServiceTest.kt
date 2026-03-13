@@ -19,6 +19,7 @@ package service
 import ai.tock.bot.admin.indicators.Indicator
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.IndicatorError
+import ai.tock.bot.admin.indicators.IndicatorType
 import ai.tock.bot.admin.indicators.IndicatorValue
 import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.indicator.IndicatorResponse
@@ -191,7 +192,7 @@ class IndicatorServiceTest {
             .then("The dao's existByNameAndBotId must be called exactly once", daoExistByFnIsCalledOnce)
             .and("The dao's save must not be called", daoSaveByFnIsNotCalled)
             .and(
-                """ 
+                """
                 - Error is not null
                 - Error is of type IndicatorAlreadyExists
                 """.trimIndent(),
@@ -313,7 +314,7 @@ class IndicatorServiceTest {
             .then("The dao's findByNameAndBotId must be called exactly once", daoFindByNameAndBotIdIsCalledOnce)
             .and("The dao's save method is never called", daoSaveByFnIsNotCalled)
             .and(
-                """ 
+                """
                 - Error is not null
                 - Error is of type IndicatorNotFound
                 """.trimIndent(),
@@ -353,7 +354,7 @@ class IndicatorServiceTest {
             .then(
                 """"
                 - response must not be null
-                - 
+                -
                 """.trimMargin(),
                 checkResponse,
             )
@@ -414,6 +415,7 @@ class IndicatorServiceTest {
     private fun indicator() =
         Indicator(
             newId(),
+            IndicatorType.CUSTOM,
             NAME,
             LABEL,
             DESCRIPTION,

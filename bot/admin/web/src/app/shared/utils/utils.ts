@@ -174,6 +174,42 @@ export function shadeColor(hexcolor: string, amount: number) {
   return '#' + RR + GG + BB;
 }
 
+/**
+ * Interpolates between two hex colors based on a value between 0 and 1.
+ *
+ * @param {number} value - A value between 0 and 1. Clamped to this range if outside.
+ * @param {string} [colorStart="#acbef4"] - The starting hex color (e.g., "#acbef4").
+ * @param {string} [colorEnd="#3366ff"] - The ending hex color (e.g., "#3366ff").
+ * @returns {string} The interpolated hex color as a string.
+ *
+ * @example
+ * // Returns a color halfway between #acbef4 and #3366ff
+ * const interpolatedColor = getInterpolatedColor(0.5, "#acbef4", "#3366ff");
+ */
+export function getInterpolatedColor(value: number, colorStart: string = '#a2a2a2', colorEnd: string = '#009463'): string {
+  // Clamp value between 0 and 1
+  const clampedValue = Math.min(1, Math.max(0, value));
+
+  // Parse hex colors to RGB
+  const parseHex = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return { r, g, b };
+  };
+
+  const start = parseHex(colorStart);
+  const end = parseHex(colorEnd);
+
+  // Interpolate each channel
+  const r = Math.round(start.r + (end.r - start.r) * clampedValue);
+  const g = Math.round(start.g + (end.g - start.g) * clampedValue);
+  const b = Math.round(start.b + (end.b - start.b) * clampedValue);
+
+  // Convert back to hex
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
 export async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard) {
     await navigator.clipboard.writeText(text);

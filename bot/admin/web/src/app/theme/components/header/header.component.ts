@@ -128,6 +128,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.menuService.navigateHome();
   }
 
+  goToDialogs() {
+    this.router.navigateByUrl('/analytics/dialogs');
+  }
+
   changeApplication(app) {
     setTimeout((_) => {
       this.state.changeApplicationWithName(app);
