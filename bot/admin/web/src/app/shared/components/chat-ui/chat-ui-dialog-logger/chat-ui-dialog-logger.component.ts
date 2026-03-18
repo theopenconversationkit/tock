@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } from '../../../model/dialog-data';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 import { NbDialogService } from '@nebular/theme';
@@ -29,6 +29,7 @@ import { BotConfigurationService } from '../../../../core/bot-configuration.serv
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
 import { AnnotationComponent } from 'src/app/shared/components';
 import { FeedbackVote } from '../../../../analytics/dialogs/dialogs';
+import { UserRole } from '../../../../model/auth';
 
 @Component({
   selector: 'tock-chat-ui-dialog-logger',
@@ -36,7 +37,7 @@ import { FeedbackVote } from '../../../../analytics/dialogs/dialogs';
   templateUrl: './chat-ui-dialog-logger.component.html',
   styleUrl: './chat-ui-dialog-logger.component.scss'
 })
-export class ChatUiDialogLoggerComponent implements OnDestroy {
+export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   @Input() dialog: DialogReport;
@@ -208,6 +209,10 @@ export class ChatUiDialogLoggerComponent implements OnDestroy {
         debug: (action.message as Debug).data
       }
     });
+  }
+
+  isAdmin(): boolean {
+    return this.state.hasRole(UserRole.admin);
   }
 
   goToPlayground(action: ActionReport) {

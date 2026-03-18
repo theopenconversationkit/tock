@@ -190,7 +190,7 @@
             nbTooltip="Open query in playground"
             (click)="goToPlayground(action)"
             class="mb-1"
-            *ngIf="$any(action).message?.data?.question_answering_prompt"
+            *ngIf="$any(action).message?.data?.question_answering_prompt && isAdmin()"
           >
             <nb-icon icon="joystick"></nb-icon>
           </button>
