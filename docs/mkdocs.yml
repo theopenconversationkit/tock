@@ -1,8 +1,7 @@
 site_name: My Docs
 use_directory_urls: false
 
-repo_url : https://github.com/theopenconversationkit/tock/tree/master/ 
-
+repo_url: https://github.com/theopenconversationkit/tock/tree/master/
 
 theme:
   icon:
@@ -11,12 +10,12 @@ theme:
     repo: fontawesome/brands/github
   name: material
   palette:
-    - scheme: default  
+    - scheme: default
       primary: blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    - scheme: slate  
+    - scheme: slate
       primary: blue
       toggle:
         icon: material/brightness-4
@@ -74,6 +73,7 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
+exclude_docs: prompt-example-type-* # Exclut les md d'exemple de prompt
 
 # Configurer l'édition dynamique
 edit_uri: "https://github.com/theopenconversationkit/tock/tree/master/docs/docs"
