@@ -41,10 +41,10 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>5.6.0</kmongo>
-        <jackson>2.21.1</jackson>
+        <jackson>2.21.2</jackson>
         <jackson-annotation>2.21</jackson-annotation>
-        <jackson-databind>2.21.1</jackson-databind>
-        <jackson-module>2.21.1</jackson-module>
+        <jackson-databind>2.21.2</jackson-databind>
+        <jackson-module>2.21.2</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -71,9 +71,9 @@
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.77.0</google>
+        <google>26.78.0</google>
         <aws-sdk>1.12.797</aws-sdk>
-        <aws-sagemaker>2.42.9</aws-sagemaker>
+        <aws-sagemaker>2.42.19</aws-sagemaker>
         <pac4j>6.3.3</pac4j>
         <vertx-pac4j>7.0.2</vertx-pac4j>
         <okhttp-eventsource>4.2.0</okhttp-eventsource>
