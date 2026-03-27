@@ -52,6 +52,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
             rate_limiter=rate_limiter if application_settings.llm_rate_limits else None,
+            reasoning_effort=self.setting.reasoning_effort,
         )
 
     @openai_exception_handler(provider='OpenAI')

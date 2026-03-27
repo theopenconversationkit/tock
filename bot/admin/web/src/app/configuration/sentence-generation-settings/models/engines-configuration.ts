@@ -21,7 +21,8 @@ import {
   OllamaLlmModelsList,
   OpenAIModelsList,
   ProvidersConfigurationParam,
-  PromptDefinitionFormatter
+  PromptDefinitionFormatter,
+  ReasoningEffortValues
 } from '../../../shared/model/ai-settings';
 
 export const DefaultPrompt: string = `# Sentences generation instructions
@@ -83,7 +84,8 @@ export const EngineConfigurations: EnginesConfiguration[] = [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
-      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 },
+      { key: 'reasoningEffort', label: 'Reasoning effort', type: 'openlist', source: ReasoningEffortValues, defaultValue: 'low' }
     ]
   },
   {
@@ -95,7 +97,8 @@ export const EngineConfigurations: EnginesConfiguration[] = [
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
-      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 },
+      { key: 'reasoningEffort', label: 'Reasoning effort', type: 'openlist', source: ReasoningEffortValues, defaultValue: 'low' }
     ]
   },
   {

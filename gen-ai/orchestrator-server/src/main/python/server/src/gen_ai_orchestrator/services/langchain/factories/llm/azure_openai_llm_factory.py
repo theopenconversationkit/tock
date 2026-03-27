@@ -44,12 +44,6 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
     setting: AzureOpenAILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:
-        #  TODO MASS : JIRA pour ajouter reasoning_effort
-        print(
-            'llm_reasoning_effort',
-            application_settings.llm_reasoning_effort or 'minimal',
-        )
-
         return AzureChatOpenAI(
             api_key=fetch_secret_key_value(self.setting.api_key),
             api_version=self.setting.api_version,
@@ -60,7 +54,7 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,
             rate_limiter=rate_limiter if application_settings.llm_rate_limits else None,
-            reasoning_effort=application_settings.llm_reasoning_effort or 'minimal',
+            reasoning_effort=self.setting.reasoning_effort,
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')

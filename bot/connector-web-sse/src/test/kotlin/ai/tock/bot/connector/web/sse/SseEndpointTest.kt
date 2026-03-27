@@ -54,8 +54,6 @@ class SseEndpointTest {
     private val path = "/api/bot/sse"
     private val connectorId = "test-connector"
     private val userId = "integration-test-user"
-    private val port = 8888
-
     private lateinit var client: HttpClient
 
     @BeforeEach
@@ -65,15 +63,19 @@ class SseEndpointTest {
         every { channelDAO.save(any()) } just runs
         every { webSecurityHandler.handle(any()) } answers { firstArg<RoutingContext>().next() }
 
-        client = vertx.createHttpClient(HttpClientOptions().setDefaultPort(port).setDefaultHost("localhost"))
-
         val router = Router.router(vertx)
         endpoint.configureRoute(router, path, connectorId, webSecurityHandler)
 
         vertx.createHttpServer()
             .requestHandler(router)
-            .listen(port)
-            .onComplete(succeedingThenComplete())
+            .listen(0)
+            .onComplete(
+                succeeding { server ->
+                    val port = server.actualPort()
+                    client = vertx.createHttpClient(HttpClientOptions().setDefaultPort(port).setDefaultHost("localhost"))
+                    completeNow()
+                },
+            )
     }
 
     @Test

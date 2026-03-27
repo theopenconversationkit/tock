@@ -135,6 +135,27 @@ def test_get_open_ai_llm_factory():
         )
     )
     assert open_ai.setting.provider == LLMProvider.OPEN_AI
+    assert open_ai.setting.reasoning_effort is None
+    assert isinstance(open_ai, OpenAILLMFactory)
+
+
+def test_get_open_ai_llm_factory_with_reasoning_effort():
+    open_ai = get_llm_factory(
+        setting=OpenAILLMSetting(
+            **{
+                'provider': 'OpenAI',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'model': 'model',
+                'temperature': '0',
+                'reasoning_effort': 'high',
+            }
+        )
+    )
+    assert open_ai.setting.provider == LLMProvider.OPEN_AI
+    assert open_ai.setting.reasoning_effort == 'high'
     assert isinstance(open_ai, OpenAILLMFactory)
 
 
@@ -156,6 +177,30 @@ def test_get_azure_open_ai_llm_factory():
         )
     )
     assert azure_open_ai.setting.provider == LLMProvider.AZURE_OPEN_AI_SERVICE
+    assert azure_open_ai.setting.reasoning_effort is None
+    assert isinstance(azure_open_ai, AzureOpenAILLMFactory)
+
+
+def test_get_azure_open_ai_llm_factory_with_reasoning_effort():
+    azure_open_ai = get_llm_factory(
+        setting=AzureOpenAILLMSetting(
+            **{
+                'provider': 'AzureOpenAIService',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'deployment_name': 'deployment_name',
+                'model': 'gpt-4o',
+                'api_base': 'https://doc.tock.ai/tock',
+                'api_version': 'version',
+                'temperature': '0',
+                'reasoning_effort': 'medium',
+            }
+        )
+    )
+    assert azure_open_ai.setting.provider == LLMProvider.AZURE_OPEN_AI_SERVICE
+    assert azure_open_ai.setting.reasoning_effort == 'medium'
     assert isinstance(azure_open_ai, AzureOpenAILLMFactory)
 
 
