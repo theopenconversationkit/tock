@@ -36,6 +36,10 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
+        args:
+          # TODO: Remove this ignore when pygments publishes a fix for GHSA-5239-wwwm-4pmq
+          - "--ignore-vuln"
+          - "GHSA-5239-wwwm-4pmq"
         additional_dependencies:
           - "pip>=26.0"
           - "filelock>=3.20.3"
