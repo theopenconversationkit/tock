@@ -44,6 +44,17 @@
     </button>
 
     <button
+      [disabled]="loading.list || loading.edit || !faqs?.length"
+      nbButton
+      status="danger"
+      outline
+      data-testid="disable-all-faqs"
+      (click)="disableAllFaqs()"
+    >
+      DISABLE ALL FAQS
+    </button>
+
+    <button
       nbButton
       status="primary"
       [disabled]="!configurations?.length"

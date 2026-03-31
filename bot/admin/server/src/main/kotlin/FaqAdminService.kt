@@ -307,6 +307,33 @@ object FaqAdminService {
         return features
     }
 
+    private fun prepareActivationFeatures(
+        existingStory: StoryDefinitionConfiguration,
+        enabled: Boolean,
+    ): List<StoryDefinitionConfigurationFeature> {
+        val features = mutableListOf<StoryDefinitionConfigurationFeature>()
+        features.addAll(existingStory.features)
+
+        val activationFeatures =
+            features.filter { feature ->
+                feature.switchToStoryId == null && feature.endWithStoryId == null
+            }
+
+        val botApplicationConfigurationId = activationFeatures.firstOrNull()?.botApplicationConfigurationId
+        features.removeAll(activationFeatures)
+        features.add(
+            0,
+            StoryDefinitionConfigurationFeature(
+                botApplicationConfigurationId = botApplicationConfigurationId,
+                enabled = enabled,
+                switchToStoryId = null,
+                endWithStoryId = null,
+            ),
+        )
+
+        return features
+    }
+
     /**
      * Create or update the story
      * @param existingStory : the optional existing story
@@ -498,6 +525,54 @@ object FaqAdminService {
         namespace: String,
     ): List<String> {
         return faqDefinitionDAO.getTags(botId, namespace)
+    }
+
+    fun disableAllFAQs(applicationDefinition: ApplicationDefinition): Int {
+        val enabledFaqs =
+            faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(
+                applicationDefinition.name,
+                applicationDefinition.namespace,
+            ).filter { it.enabled }
+
+        if (enabledFaqs.isEmpty()) {
+            return 0
+        }
+
+        val intentsById =
+            intentDAO.getIntentByIds(enabledFaqs.map { it.intentId }.toSet())
+                ?.associateBy { it._id }
+                .orEmpty()
+
+        val updateDate = Instant.now()
+
+        enabledFaqs.forEach { faq ->
+            faqDefinitionDAO.save(
+                faq.copy(
+                    enabled = false,
+                    updateDate = updateDate,
+                ),
+            )
+
+            intentsById[faq.intentId]?.let { intent ->
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    applicationDefinition.namespace,
+                    applicationDefinition.name,
+                    intent.name,
+                )?.let { story ->
+                    storyDefinitionDAO.save(
+                        story.copy(
+                            features = prepareActivationFeatures(story, false),
+                        ),
+                    )
+                }
+            }
+        }
+
+        logger.info {
+            "Disabled ${enabledFaqs.size} FAQ(s) for application '${applicationDefinition.name}' in namespace '${applicationDefinition.namespace}'"
+        }
+
+        return enabledFaqs.size
     }
 
     /**

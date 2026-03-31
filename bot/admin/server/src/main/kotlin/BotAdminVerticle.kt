@@ -1022,6 +1022,19 @@ open class BotAdminVerticle : AdminVerticle() {
             FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
         }
 
+        blockingJsonPost(
+            "/faq/disable-all/:applicationId",
+            setOf(botUser),
+            simpleLogger("Disable all FAQs"),
+        ) { context, _: ApplicationScopedQuery ->
+            val applicationDefinition = front.getApplicationById(context.pathId("applicationId"))
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.disableAllFAQs(applicationDefinition)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/faq/tags", setOf(botUser)) { context, applicationId: String ->
             val applicationDefinition = front.getApplicationById(applicationId.toId())
             if (context.organization == applicationDefinition?.namespace) {
