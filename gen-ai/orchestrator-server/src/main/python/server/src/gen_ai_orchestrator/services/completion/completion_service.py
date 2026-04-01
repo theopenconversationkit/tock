@@ -97,7 +97,7 @@ async def generate(
         answer=parsedLlmAnswer,
         observability_info=get_observability_info(
             observability_handler,
-            ObservabilityTrace.PLAYGROUND.value if observability_handler is not None else None,
+            ObservabilityTrace.PLAYGROUND.value,
         ),
     )
 
