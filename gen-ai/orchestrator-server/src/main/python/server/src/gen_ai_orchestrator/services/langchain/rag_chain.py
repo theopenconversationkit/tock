@@ -226,7 +226,7 @@ async def execute_rag_chain(
         },
         observability_info=get_observability_info(
             observability_handler,
-            ObservabilityTrace.RAG.value if observability_handler is not None else None,
+            ObservabilityTrace.RAG.value,
         ),
         debug=get_rag_debug_data(request, records_callback_handler, rag_duration)
         if debug

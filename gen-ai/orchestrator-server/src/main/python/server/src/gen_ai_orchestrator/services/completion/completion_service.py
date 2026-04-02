@@ -93,7 +93,13 @@ async def generate(
         time.time() - start_time,
         )
 
-    return PlaygroundResponse(answer=parsedLlmAnswer, observability_info=get_observability_info(observability_handler))
+    return PlaygroundResponse(
+        answer=parsedLlmAnswer,
+        observability_info=get_observability_info(
+            observability_handler,
+            ObservabilityTrace.PLAYGROUND.value,
+        ),
+    )
 
 
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
