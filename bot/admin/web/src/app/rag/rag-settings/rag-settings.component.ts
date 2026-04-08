@@ -340,7 +340,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       this.resetFormGroupControls(group);
 
       requiredConfiguration.params.forEach((param) => {
-        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+        const isParamRequired = param.required === undefined ? true : param.required;
+        this.form.controls[group].addControl(param.key, new FormControl(param.defaultValue, isParamRequired ? Validators.required : null));
       });
 
       this.form.controls[group].addControl('provider', new FormControl(provider));
