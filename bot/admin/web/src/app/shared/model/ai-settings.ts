@@ -127,5 +127,4 @@ export const OllamaLlmModelsList: string[] = ['llama2', 'llama3', 'llama3.1', 'l
 
 export const OllamaEmModelsList: string[] = ['mxbai-embed-large', 'nomic-embed-text', 'all-minilm'];
 
-export const ReasoningEffortValues: string[] = ['low', 'medium', 'high'];
-
+export const ReasoningEffortValues: string[] = ['minimal', 'low', 'medium', 'high'];
