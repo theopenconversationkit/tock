@@ -46,12 +46,12 @@
     <button
       [disabled]="loading.list || loading.edit || !faqs?.length"
       nbButton
-      status="danger"
-      outline
-      data-testid="disable-all-faqs"
+      ghost
+      shape="round"
+      nbTooltip="Disable all currently active FAQs"
       (click)="disableAllFaqs()"
     >
-      DISABLE ALL FAQS
+      <nb-icon icon="toggle-off"></nb-icon>
     </button>
 
     <button
