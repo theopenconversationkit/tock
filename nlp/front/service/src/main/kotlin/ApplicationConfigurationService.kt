@@ -40,6 +40,8 @@ import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
+import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.injector
 import ai.tock.shared.namespace
 import ai.tock.shared.namespaceAndName
@@ -77,6 +79,37 @@ object ApplicationConfigurationService :
     private val modelCore: ModelCore get() = injector.provide()
 
     private val config: ApplicationConfiguration get() = injector.provide()
+
+    private fun normalizeLabel(
+        namespace: String,
+        label: String?,
+    ): String? = label?.trim()?.takeIf { it.isNotEmpty() && it != namespace }
+
+    private fun resolveLabel(
+        namespace: String,
+        label: String?,
+    ): String = label?.trim()?.takeIf { it.isNotEmpty() } ?: namespace
+
+    private fun normalize(configuration: NamespaceConfiguration): NamespaceConfiguration = configuration.copy(label = normalizeLabel(configuration.namespace, configuration.label))
+
+    private fun resolve(configuration: NamespaceConfiguration): NamespaceConfiguration = configuration.copy(label = resolveLabel(configuration.namespace, configuration.label))
+
+    private fun resolve(userNamespaces: List<UserNamespace>): List<UserNamespace> {
+        val labelsByNamespace = mutableMapOf<String, String>()
+        return userNamespaces.map { userNamespace ->
+            val label =
+                labelsByNamespace.getOrPut(userNamespace.namespace) {
+                    resolveLabel(userNamespace.namespace, getNamespaceConfiguration(userNamespace.namespace)?.label)
+                }
+            userNamespace.copy(label = label)
+        }
+    }
+
+    private fun initializeNamespaceConfiguration(namespace: String) {
+        if (namespaceConfigurationDAO.getNamespaceConfiguration(namespace) == null) {
+            namespaceConfigurationDAO.saveNamespaceConfiguration(NamespaceConfiguration(namespace))
+        }
+    }
 
     override fun save(application: ApplicationDefinition): ApplicationDefinition {
         if (application.normalizeText) {
@@ -346,8 +379,25 @@ object ApplicationConfigurationService :
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? = faqDefinitionDAO.getFaqDefinitionByIntentId(id)
 
+    override fun getNamespaces(user: String): List<UserNamespace> = resolve(userNamespaceDAO.getNamespaces(user))
+
+    override fun getUsers(namespace: String): List<UserNamespace> = resolve(userNamespaceDAO.getUsers(namespace))
+
+    override fun saveNamespace(namespace: UserNamespace) {
+        userNamespaceDAO.saveNamespace(namespace.copy(label = null))
+        initializeNamespaceConfiguration(namespace.namespace)
+    }
+
+    override fun saveNamespaceConfiguration(configuration: NamespaceConfiguration) {
+        namespaceConfigurationDAO.saveNamespaceConfiguration(normalize(configuration))
+    }
+
+    override fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration? = namespaceConfigurationDAO.getNamespaceConfiguration(namespace)?.let(::resolve)
+
+    override fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration> = namespaceConfigurationDAO.getSharableNamespaceConfiguration().map(::resolve)
+
     override fun getModelSharedIntents(namespace: String): List<IntentDefinition> =
-        getNamespaceConfiguration(namespace)
+        namespaceConfigurationDAO.getNamespaceConfiguration(namespace)
             ?.namespaceImportConfiguration
             ?.filterValues { it.model }
             ?.map { getIntentsByNamespace(it.key) }

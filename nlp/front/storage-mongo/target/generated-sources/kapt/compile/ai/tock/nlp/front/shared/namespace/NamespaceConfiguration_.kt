@@ -18,6 +18,8 @@ private val __DefaultSharingConfiguration: KProperty1<NamespaceConfiguration,
 private val __NamespaceImportConfiguration: KProperty1<NamespaceConfiguration, Map<String,
         NamespaceSharingConfiguration>?>
     get() = NamespaceConfiguration::namespaceImportConfiguration
+private val __Label: KProperty1<NamespaceConfiguration, String?>
+    get() = NamespaceConfiguration::label
 class NamespaceConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         NamespaceConfiguration?>) : KPropertyPath<T, NamespaceConfiguration?>(previous,property) {
     val namespace: KPropertyPath<T, String?>
@@ -30,6 +32,9 @@ class NamespaceConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProp
             NamespaceSharingConfiguration?>
         get() = KMapSimplePropertyPath(this,NamespaceConfiguration::namespaceImportConfiguration)
 
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
+
     companion object {
         val Namespace: KProperty1<NamespaceConfiguration, String?>
             get() = __Namespace
@@ -38,7 +43,9 @@ class NamespaceConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProp
             get() = __DefaultSharingConfiguration
         val NamespaceImportConfiguration: KMapSimplePropertyPath<NamespaceConfiguration, String?,
                 NamespaceSharingConfiguration?>
-            get() = KMapSimplePropertyPath(null, __NamespaceImportConfiguration)}
+            get() = KMapSimplePropertyPath(null, __NamespaceImportConfiguration)
+        val Label: KProperty1<NamespaceConfiguration, String?>
+            get() = __Label}
 }
 
 class NamespaceConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -53,6 +60,9 @@ class NamespaceConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KP
     val namespaceImportConfiguration: KMapSimplePropertyPath<T, String?,
             NamespaceSharingConfiguration?>
         get() = KMapSimplePropertyPath(this,NamespaceConfiguration::namespaceImportConfiguration)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NamespaceConfiguration_<T> =
@@ -70,6 +80,9 @@ class NamespaceConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, property:
     val namespaceImportConfiguration: KMapSimplePropertyPath<T, String?,
             NamespaceSharingConfiguration?>
         get() = KMapSimplePropertyPath(this,NamespaceConfiguration::namespaceImportConfiguration)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NamespaceConfiguration_<T> =

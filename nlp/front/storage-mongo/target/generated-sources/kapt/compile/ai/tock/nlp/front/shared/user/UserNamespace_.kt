@@ -18,6 +18,8 @@ private val __Owner: KProperty1<UserNamespace, Boolean?>
     get() = UserNamespace::owner
 private val __Current: KProperty1<UserNamespace, Boolean?>
     get() = UserNamespace::current
+private val __Label: KProperty1<UserNamespace, String?>
+    get() = UserNamespace::label
 class UserNamespace_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserNamespace?>) :
         KPropertyPath<T, UserNamespace?>(previous,property) {
     val login: KPropertyPath<T, String?>
@@ -32,6 +34,9 @@ class UserNamespace_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, 
     val current: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Current)
 
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
+
     companion object {
         val Login: KProperty1<UserNamespace, String?>
             get() = __Login
@@ -40,7 +45,9 @@ class UserNamespace_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, 
         val Owner: KProperty1<UserNamespace, Boolean?>
             get() = __Owner
         val Current: KProperty1<UserNamespace, Boolean?>
-            get() = __Current}
+            get() = __Current
+        val Label: KProperty1<UserNamespace, String?>
+            get() = __Label}
 }
 
 class UserNamespace_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -57,6 +64,9 @@ class UserNamespace_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
 
     val current: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Current)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserNamespace_<T> =
@@ -76,6 +86,9 @@ class UserNamespace_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val current: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__Current)
+
+    val label: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Label)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserNamespace_<T> =

@@ -36,4 +36,8 @@ data class UserNamespace(
      * Is it the current namespace for the user ?
      */
     val current: Boolean = false,
+    /**
+     * The namespace display label resolved for frontend consumers.
+     */
+    val label: String? = null,
 )

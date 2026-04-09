@@ -33,22 +33,46 @@
       [formGroup]="form"
       (submit)="save()"
     >
-      <label
-        for="name"
-        class="label required"
-      >
-        <abbr title="Required">*</abbr>
-        New namespace name
-      </label>
-      <input
-        tockAutofocusElement
-        nbInput
-        formControlName="name"
-        fullWidth
-        id="name"
-        type="text"
-        placeholder="Enter new namespace name"
-      />
+      <div class="form-section">
+        <tock-form-control
+          label="Namespace Label"
+          name="label"
+          [controls]="label"
+          [required]="true"
+          [showError]="isSubmitted"
+        >
+          <input
+            tockAutofocusElement
+            nbInput
+            formControlName="label"
+            fullWidth
+            id="label"
+            type="text"
+            placeholder="Enter namespace label"
+          />
+        </tock-form-control>
+      </div>
+
+      <div class="form-section mt-3">
+        <tock-form-control
+          label="Namespace Technical Name"
+          name="name"
+          [controls]="name"
+          [required]="true"
+          [showError]="isSubmitted"
+        >
+          <input
+            nbInput
+            formControlName="name"
+            fullWidth
+            id="name"
+            type="text"
+            placeholder="Enter namespace name"
+          />
+        </tock-form-control>
+
+        <div class="text-muted font-size-small">Used internally in URLs and backend config. It cannot be changed after creation.</div>
+      </div>
     </form>
   </nb-card-body>
 

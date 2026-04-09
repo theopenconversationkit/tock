@@ -26,3 +26,32 @@
     background-color: var(--background-basic-color-2);
   }
 }
+
+.settings-section + .settings-section {
+  margin-top: 1.5rem;
+}
+
+.settings-section-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.settings-section-description {
+  color: var(--text-hint-color);
+  margin-bottom: 0.75rem;
+}
+
+.settings-field {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.settings-help {
+  display: block;
+  line-height: 1.35;
+}
+
+.imported-namespaces-select {
+  width: 400px;
+  max-width: 100%;
+}

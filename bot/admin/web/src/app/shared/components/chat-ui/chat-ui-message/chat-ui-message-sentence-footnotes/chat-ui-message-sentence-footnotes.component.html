@@ -50,10 +50,10 @@
       </span>
 
       <nb-icon
-        *ngIf="footNote.score"
-        icon="trophy"
-        class="font-size-xsmall align-center ml-2"
-        nbTooltip="Compressor score : {{ footNote.score.toFixed(2) }}"
+        icon="info-circle"
+        class="font-size-xsmall align-center ml-2 pointer"
+        [nbTooltip]="getFootnoteTooltip(footNote)"
+        (click)="displayFootnoteDetails(footNote)"
       ></nb-icon>
     </span>
 

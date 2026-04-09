@@ -22,8 +22,8 @@ import { AuthService } from '../../core-nlp/auth/auth.service';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { UserRole } from '../../model/auth';
 import { ApplicationConfig } from '../application.config';
-import { CreateNamespaceComponent } from './create-namespace/create-namespace.component';
-import { Subject, takeUntil } from 'rxjs';
+import { CreateNamespaceComponent, CreateNamespaceData } from './create-namespace/create-namespace.component';
+import { Subject, take, takeUntil } from 'rxjs';
 import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
@@ -76,11 +76,38 @@ export class NamespacesComponent implements OnInit, OnDestroy {
 
   createNamespace(): void {
     const modal = this.nbDialogService.open(CreateNamespaceComponent);
-    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
+    modal.componentRef.instance.validate.pipe(take(1), takeUntil(this.destroy)).subscribe((result: CreateNamespaceData) => {
       this.loading = true;
-      this.applicationService.createNamespace(result.name.trim()).subscribe((b) => {
-        this.applicationService.resetConfiguration();
-        this.loading = false;
+      const technicalName = result.name.trim();
+      const label = result.label.trim();
+
+      this.applicationService.createNamespace(technicalName).subscribe({
+        next: () => {
+          if (label.length) {
+            this.applicationService
+              .saveNamespaceConfiguration(
+                new NamespaceConfiguration(technicalName, new NamespaceSharingConfiguration(false, false), new Map(), label)
+              )
+              .subscribe({
+                next: () => {
+                  this.applicationService.resetConfiguration();
+                  this.loading = false;
+                },
+                error: (error) => {
+                  this.applicationService.resetConfiguration();
+                  this.loading = false;
+                  this.toastrService.show(error, 'Namespace created but label update failed', { status: 'warning' });
+                }
+              });
+          } else {
+            this.applicationService.resetConfiguration();
+            this.loading = false;
+          }
+        },
+        error: (error) => {
+          this.loading = false;
+          this.toastrService.show(error, 'Error', { status: 'danger' });
+        }
       });
       this.closeEdition();
       modal.close();
@@ -92,6 +119,10 @@ export class NamespacesComponent implements OnInit, OnDestroy {
     this.managedUsers = null;
     this.namespaceConfiguration = null;
     this.importedNamespaces = null;
+  }
+
+  displayNamespace(namespace: string): string {
+    return this.state.namespaces?.find((n) => n.namespace === namespace)?.displayLabel() || namespace;
   }
 
   manageUsers(namespace: string): void {
@@ -150,7 +181,10 @@ export class NamespacesComponent implements OnInit, OnDestroy {
     this.namespaceConfiguration.namespaceImportConfiguration = new Map(
       this.sharableNamespaceConfigurations.map((c) => [c.namespace, c.defaultSharingConfiguration])
     );
-    this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => this.closeEdition());
+    this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => {
+      this.applicationService.resetConfiguration();
+      this.closeEdition();
+    });
   }
 
   confirmDeleteNamespace(namespace: UserNamespace): void {
@@ -174,7 +208,7 @@ export class NamespacesComponent implements OnInit, OnDestroy {
           .open(ChoiceDialogComponent, {
             closeOnEsc: true,
             context: {
-              title: `Delete namespace "${namespace.namespace}" ?`,
+              title: `Delete namespace "${namespace.displayLabel()}" ?`,
               subtitle: `Are you sure you want to delete this namespace?`,
               modalStatus: 'danger',
               actions: [

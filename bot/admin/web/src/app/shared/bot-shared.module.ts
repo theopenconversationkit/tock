@@ -15,7 +15,7 @@
  */
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { BotSharedService } from './bot-shared.service';
 import { MomentModule } from 'ngx-moment';
 import {
@@ -88,7 +88,8 @@ import {
   ChatUiDialogEvaluatorComponent,
   ChatUiDisplayMarkupComponent,
   AnnotationComponent,
-  AnnotationCommentComponent
+  AnnotationCommentComponent,
+  JsonViewerDialogComponent
 } from './components';
 
 import { AutofocusDirective, TextareaAutocompleteDirective } from './directives';
@@ -97,6 +98,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { ScrollComponent } from '../scroll/scroll.component';
+import { ResilientDatePipe } from './pipes/resilient-date.pipe';
 
 @NgModule({
   imports: [
@@ -177,7 +179,9 @@ import { ScrollComponent } from '../scroll/scroll.component';
     BotConfigurationSelectorComponent,
     TextareaAutocompleteDirective,
     AnnotationComponent,
-    AnnotationCommentComponent
+    AnnotationCommentComponent,
+    ResilientDatePipe,
+    JsonViewerDialogComponent
   ],
   exports: [
     SelectBotComponent,
@@ -210,8 +214,10 @@ import { ScrollComponent } from '../scroll/scroll.component';
     SentencesGenerationComponent,
     DataExportComponent,
     WysiwygEditorComponent,
-    TextareaAutocompleteDirective
+    TextareaAutocompleteDirective,
+    ResilientDatePipe,
+    JsonViewerDialogComponent
   ],
-  providers: [BotSharedService, AnalyticsService]
+  providers: [BotSharedService, AnalyticsService, ResilientDatePipe, DatePipe]
 })
 export class BotSharedModule {}

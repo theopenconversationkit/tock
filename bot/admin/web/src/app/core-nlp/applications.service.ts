@@ -66,6 +66,7 @@ export class ApplicationService implements OnDestroy {
     this.getNlpEngineTypes().subscribe((engines) => (this.state.supportedNlpEngines = engines));
     this.getNamespaces().subscribe((namespaces) => {
       this.state.namespaces = namespaces.sort((a, b) => a.namespace.localeCompare(b.namespace));
+      this.getNamespacesPending = null;
     });
     this.getApplications().subscribe((applications) => {
       this.state.applications = applications;

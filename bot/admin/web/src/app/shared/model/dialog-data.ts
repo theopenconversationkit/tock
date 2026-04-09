@@ -275,6 +275,9 @@ export class Sentence extends BotMessage {
   }
 }
 
+export interface FootnoteMetadata {
+  [key: string]: string;
+}
 export interface Footnote {
   title: string;
   url: string;
@@ -282,6 +285,7 @@ export interface Footnote {
   score?: number;
   _showFullContent?: boolean;
   identifier: string;
+  metadata?: FootnoteMetadata;
 }
 
 export class SentenceWithFootnotes extends BotMessage {

@@ -299,6 +299,8 @@ interface ApplicationConfiguration {
 
     fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration>
 
+    fun deleteNamespaceConfiguration(namespace: String)
+
     fun getModelSharedIntents(namespace: String): List<IntentDefinition>
 
     fun getSentencesForModel(

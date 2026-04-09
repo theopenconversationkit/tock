@@ -340,5 +340,6 @@ object AdminService {
         FrontClient.getUsers(namespace).forEach { userNamespace ->
             FrontClient.deleteNamespace(userNamespace.login, namespace)
         }
+        FrontClient.deleteNamespaceConfiguration(namespace)
     }
 }

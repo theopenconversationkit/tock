@@ -28,6 +28,8 @@ internal class NamespaceConfiguration_Deserializer : JsonDeserializer<NamespaceC
             var _namespaceImportConfiguration_: MutableMap<String, NamespaceSharingConfiguration>? =
                     null
             var _namespaceImportConfiguration_set : Boolean = false
+            var _label_: String? = null
+            var _label_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -54,6 +56,11 @@ internal class NamespaceConfiguration_Deserializer : JsonDeserializer<NamespaceC
                              else p.readValueAs(_namespaceImportConfiguration__reference);
                             _namespaceImportConfiguration_set = true
                             }
+                    "label" -> {
+                            _label_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _label_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -63,10 +70,10 @@ internal class NamespaceConfiguration_Deserializer : JsonDeserializer<NamespaceC
                 _token_ = currentToken
                         } 
             return if(_namespace_set && _defaultSharingConfiguration_set &&
-                    _namespaceImportConfiguration_set)
+                    _namespaceImportConfiguration_set && _label_set)
                     NamespaceConfiguration(namespace = _namespace_!!, defaultSharingConfiguration =
                             _defaultSharingConfiguration_!!, namespaceImportConfiguration =
-                            _namespaceImportConfiguration_!!)
+                            _namespaceImportConfiguration_!!, label = _label_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_namespace_set)
@@ -76,7 +83,9 @@ internal class NamespaceConfiguration_Deserializer : JsonDeserializer<NamespaceC
                             _defaultSharingConfiguration_
                     if(_namespaceImportConfiguration_set)
                     map[parameters.getValue("namespaceImportConfiguration")] =
-                            _namespaceImportConfiguration_ 
+                            _namespaceImportConfiguration_
+                    if(_label_set)
+                    map[parameters.getValue("label")] = _label_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -92,7 +101,8 @@ internal class NamespaceConfiguration_Deserializer : JsonDeserializer<NamespaceC
                 primaryConstructor.findParameterByName("namespace")!!, "defaultSharingConfiguration"
                 to primaryConstructor.findParameterByName("defaultSharingConfiguration")!!,
                 "namespaceImportConfiguration" to
-                primaryConstructor.findParameterByName("namespaceImportConfiguration")!!) }
+                primaryConstructor.findParameterByName("namespaceImportConfiguration")!!, "label" to
+                primaryConstructor.findParameterByName("label")!!) }
 
         private val _namespaceImportConfiguration__reference: TypeReference<Map<String,
                 NamespaceSharingConfiguration>> = object : TypeReference<Map<String,

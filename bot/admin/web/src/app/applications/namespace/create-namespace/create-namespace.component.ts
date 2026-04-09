@@ -14,32 +14,64 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
+import { Subject, takeUntil } from 'rxjs';
+import { normalizedSnakeCase } from '../../../shared/utils/strings.utils';
+
+export interface CreateNamespaceData {
+  label: string;
+  name: string;
+}
 
 @Component({
   selector: 'tock-create-namespace',
   templateUrl: './create-namespace.component.html',
   styleUrls: ['./create-namespace.component.scss']
 })
-export class CreateNamespaceComponent {
-  @Output() validate = new EventEmitter();
+export class CreateNamespaceComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
+  private technicalNameManuallyEdited = false;
+
+  @Output() validate = new EventEmitter<CreateNamespaceData>();
 
   constructor(private dialogRef: NbDialogRef<CreateNamespaceComponent>) {}
 
   form: FormGroup = new FormGroup({
-    name: new FormControl<string>(undefined, [Validators.required, this.noWhitespaceValidator])
+    label: new FormControl<string>('', [Validators.required, this.noWhitespaceValidator]),
+    name: new FormControl<string>('', [Validators.required, this.noWhitespaceValidator])
   });
 
+  ngOnInit(): void {
+    this.label.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      if (!this.technicalNameManuallyEdited) {
+        this.name.setValue(this.buildTechnicalName(value || ''), { emitEvent: false });
+      }
+    });
+
+    this.name.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      this.technicalNameManuallyEdited = value !== this.buildTechnicalName(this.label.value || '');
+    });
+  }
+
   public noWhitespaceValidator(control: FormControl) {
-    return (control.value || '').trim().length ? null : { whitespace: true };
+    return (control.value || '').trim().length ? null : { custom: 'Only whitespace characters are not allowed' };
+  }
+
+  private buildTechnicalName(value: string): string {
+    return normalizedSnakeCase(value).toLowerCase();
   }
 
   isSubmitted: boolean = false;
 
   get canSave(): boolean {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
+  }
+
+  get label(): FormControl {
+    return this.form.get('label') as FormControl;
   }
 
   get name(): FormControl {
@@ -49,11 +81,19 @@ export class CreateNamespaceComponent {
   save(): void {
     this.isSubmitted = true;
     if (this.canSave) {
-      this.validate.emit(this.form.value);
+      this.validate.emit({
+        label: (this.label.value || '').trim(),
+        name: (this.name.value || '').trim()
+      });
     }
   }
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
