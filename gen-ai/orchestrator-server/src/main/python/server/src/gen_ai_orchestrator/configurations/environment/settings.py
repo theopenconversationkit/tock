@@ -61,6 +61,7 @@ class _Settings(BaseSettings):
     """ Enable or not the rate limit for the LLM call"""
     llm_rate_limits: bool = True
     em_provider_timeout: int = 4
+    compressor_provider_timeout: int = 7
 
     vector_store_provider: Optional[
         VectorStoreProvider

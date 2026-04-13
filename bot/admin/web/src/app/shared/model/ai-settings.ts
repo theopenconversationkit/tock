@@ -17,11 +17,11 @@
 export interface ProvidersConfigurationParam {
   label: string;
   key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated' | 'radio';
+  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated' | 'radio' | 'boolean';
   numberControlType?: 'slider' | 'input';
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string | number;
+  defaultValue?: string | number | boolean;
   information?: string;
   min?: number;
   max?: number;

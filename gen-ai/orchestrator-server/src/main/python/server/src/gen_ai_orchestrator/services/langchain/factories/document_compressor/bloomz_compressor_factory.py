@@ -15,6 +15,9 @@
 
 from langchain_core.documents import Document
 
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
@@ -35,6 +38,8 @@ class BloomzCompressorFactory(DocumentCompressorFactory):
             endpoint=self.setting.endpoint,
             max_documents=self.setting.max_documents,
             label=self.setting.label,
+            timeout=application_settings.compressor_provider_timeout,
+            fill_to_max_documents=self.setting.fill_to_max_documents
         )
 
     def check_document_compressor_setting(self) -> bool:

@@ -20,16 +20,7 @@ import requests
 from langchain_core.callbacks import Callbacks
 from langchain_core.documents import BaseDocumentCompressor, Document
 
-from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
-    GenAIDocumentCompressorErrorException,
-    GenAIDocumentCompressorUnknownLabelException,
-)
-from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-
 logger = logging.getLogger(__name__)
-
-logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
 
 
 class BloomzRerank(BaseDocumentCompressor):
@@ -43,6 +34,10 @@ class BloomzRerank(BaseDocumentCompressor):
     """Maximum number of documents to return to avoid exceeding max tokens for text generation."""
     label: str = 'entailment'
     """Label to use for reranking."""
+    fill_to_max_documents: bool = True
+    """If True, complete with the best remaining documents up to max_documents."""
+
+    timeout: int = 5
 
     def compress_documents(
         self,
@@ -74,52 +69,68 @@ class BloomzRerank(BaseDocumentCompressor):
                         for document in documents
                     ]
                 },
+                timeout=self.timeout,
             )
 
             if response.status_code != 200:
-                logger.error("The scoring server didn't respond as expected.")
                 logger.error(
-                    f"{response.status_code} {response.reason} - {response.text}"
+                    f'[Compressor] Bad response {response.status_code} '
+                    f'{response.reason} - {response.text}'
                 )
-                raise GenAIDocumentCompressorErrorException(
-                    ErrorInfo(
-                        error=str(response.status_code),
-                        cause=f"Response: {response.text}, Reason: {response.reason}",
-                        request=f"[POST] {url}",
-                    )
-                )
-        except GenAIDocumentCompressorErrorException:
-            # Re-raise GenAIDocumentCompressorErrorException without modification
-            raise
-        except Exception as exc:
-            logger.error(f"Unknown error ! {exc}")
-            raise GenAIDocumentCompressorErrorException(
-                ErrorInfo(
-                    error=exc.__class__.__name__,
-                    cause=str(exc),
-                    request=f"[POST] {url}",
-                )
-            )
+                logger.warning('[Compressor] Fallback to original documents')
+                return documents
 
-        final_results = []
-        for i, doc_results in enumerate(response.json()['response']):
-            labels = list(map(lambda doc: doc['label'], doc_results))
+            results = response.json().get('response', [])
+
+        except Exception as exc:
+            logger.error(f'[Compressor] Exception during rerank call: {exc}')
+            logger.warning('[Compressor] Fallback to original documents')
+            return documents
+
+        scored_docs = []
+
+        for i, doc_results in enumerate(results):
             try:
                 doc_entailment = next(
-                    filter(lambda cls: cls['label'] == self.label, doc_results)
+                    d for d in doc_results if d.get('label') == self.label
                 )
-                if doc_entailment['score'] >= self.min_score:
-                    documents[i].metadata['retriever_score'] = doc_entailment['score']
-                    final_results.append(documents[i])
+
+                score = doc_entailment.get('score', 0.0)
+                documents[i].metadata['retriever_score'] = score
+                scored_docs.append(documents[i])
 
             except StopIteration:
-                message = (
-                    f"The label {self.label} doesn't match any known labels {labels}."
+                logger.warning(
+                    f'[Compressor] Label "{self.label}" not found in {doc_results}'
                 )
-                raise GenAIDocumentCompressorUnknownLabelException(
-                    ErrorInfo(cause=message)
-                )
+                continue
 
-        return sorted(
-            final_results, key=lambda d: d.metadata['retriever_score'], reverse=True
-        )[: self.max_documents]
+            except Exception as exc:
+                logger.error(f'[Compressor] Error processing result: {exc}')
+                continue
+
+        scored_docs = sorted(
+            scored_docs,
+            key=lambda d: d.metadata.get('retriever_score', 0),
+            reverse=True,
+        )
+
+        above_threshold = [
+            d for d in scored_docs
+            if d.metadata.get('retriever_score', 0) >= self.min_score
+        ]
+
+        below_threshold = [
+            d for d in scored_docs
+            if d.metadata.get('retriever_score', 0) < self.min_score
+        ]
+
+        # base result
+        result = above_threshold[: self.max_documents]
+
+        # fill-to-K
+        if self.fill_to_max_documents and len(result) < self.max_documents:
+            remaining_slots = self.max_documents - len(result)
+            result.extend(below_threshold[:remaining_slots])
+
+        return result

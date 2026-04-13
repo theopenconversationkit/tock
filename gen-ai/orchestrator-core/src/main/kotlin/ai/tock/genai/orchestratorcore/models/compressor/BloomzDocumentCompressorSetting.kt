@@ -19,10 +19,12 @@ package ai.tock.genai.orchestratorcore.models.compressor
 data class BloomzDocumentCompressorSetting(
     override val maxDocuments: Int,
     override val minScore: Float,
+    override val fillToMaxDocuments: Boolean = false,
     val label: String,
     val endpoint: String,
 ) : DocumentCompressorSettingBase(
         provider = DocumentCompressorProvider.BloomzRerank,
         maxDocuments = maxDocuments,
         minScore = minScore,
+        fillToMaxDocuments = fillToMaxDocuments,
     )

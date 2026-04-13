@@ -36,3 +36,7 @@ class BaseDocumentCompressorSetting(BaseModel):
         description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
         default=50,
     )
+    fill_to_max_documents: Optional[bool] = Field(
+        description='If True, complete with the best remaining documents up to max_documents.',
+        default=True,
+    )

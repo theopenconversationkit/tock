@@ -31,21 +31,12 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
     label: 'BloomzRerank',
     key: CompressorProvider.BloomzRerank,
     params: [
+      { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
       {
         key: 'label',
         label: 'Label',
         type: 'text',
         information: 'Name of the positive scoring output label (see models card for more info)'
-      },
-      { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
-      {
-        key: 'minScore',
-        label: 'Minimum score',
-        type: 'number',
-        min: 0,
-        max: 1,
-        step: 0.05,
-        information: 'Score below which documents will not be used to generate the answer'
       },
       {
         key: 'maxDocuments',
@@ -55,7 +46,23 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         max: 20,
         step: 1,
         information: 'Maximum number of documents to be proposed as sources for the answer'
-      }
+      },
+      {
+        key: 'fillToMaxDocuments',
+        label: 'Fill to max documents',
+        type: 'boolean',
+        defaultValue: true,
+        information: 'If activated, complete with the best remaining documents up to max_documents (even if the documents fall below the threshold)'
+      },
+      {
+        key: 'minScore',
+        label: 'Minimum score',
+        type: 'number',
+        min: 0,
+        max: 1,
+        step: 0.05,
+        information: 'Score below which documents will not be used to generate the answer'
+      },
     ]
   }
 ];
