@@ -24,6 +24,7 @@ import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.admin.AdminService
@@ -963,6 +964,98 @@ class FaqAdminServiceTest : AbstractTest() {
             assertThrows<BadRequestException> {
                 faqAdminService.deleteFaqDefinition(namespace, faqId.toString())
             }
+        }
+    }
+
+    @Nested
+    inner class DisableAllFaq {
+        @Test
+        fun `GIVEN enabled and disabled faqs WHEN disabling all THEN only enabled faqs and their stories are disabled`() {
+            val secondIntent =
+                existingIntent.copy(
+                    _id = intentId2,
+                    name = "faqtitle2",
+                    label = "FAQ TITLE 2",
+                )
+            val secondFaq = faqDefinition.copy(_id = faqId2, intentId = intentId2, i18nId = i18nId2, enabled = true)
+            val alreadyDisabledFaq = faqDefinition.copy(_id = faqId3, intentId = intentId3, i18nId = i18nId3, enabled = false)
+
+            val firstStory =
+                newFaqTestStory(
+                    storyId = "faq-story-1",
+                    type = AnswerConfigurationType.message,
+                    intentName = existingIntent.name,
+                    botName = botId,
+                ).toStoryDefinitionConfiguration().copy(
+                    features =
+                        listOf(
+                            StoryDefinitionConfigurationFeature(null, true, null, null),
+                            StoryDefinitionConfigurationFeature(null, true, null, "satisfaction-story-1"),
+                        ),
+                )
+
+            val secondStory =
+                newFaqTestStory(
+                    storyId = "faq-story-2",
+                    type = AnswerConfigurationType.message,
+                    intentName = secondIntent.name,
+                    botName = botId,
+                ).toStoryDefinitionConfiguration().copy(
+                    features =
+                        listOf(
+                            StoryDefinitionConfigurationFeature(null, true, null, null),
+                            StoryDefinitionConfigurationFeature(null, true, null, "satisfaction-story-2"),
+                        ),
+                )
+
+            every {
+                faqDefinitionDAO.getFaqDefinitionByBotIdAndNamespace(
+                    eq(applicationDefinition.name),
+                    eq(applicationDefinition.namespace),
+                )
+            } returns listOf(faqDefinition, secondFaq, alreadyDisabledFaq)
+            every { intentDAO.getIntentByIds(eq(setOf(intentId, intentId2))) } returns listOf(existingIntent, secondIntent)
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    eq(namespace),
+                    eq(botId),
+                    eq(existingIntent.name),
+                )
+            } returns firstStory
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    eq(namespace),
+                    eq(botId),
+                    eq(secondIntent.name),
+                )
+            } returns secondStory
+
+            val savedFaqs = mutableListOf<FaqDefinition>()
+            val savedStories = mutableListOf<StoryDefinitionConfiguration>()
+            every { faqDefinitionDAO.save(capture(savedFaqs)) } just Runs
+            every { storyDefinitionDAO.save(capture(savedStories)) } returns Unit
+
+            val disabledCount = FaqAdminService.disableAllFAQs(applicationDefinition)
+
+            assertEquals(2, disabledCount)
+            assertEquals(2, savedFaqs.size)
+            assertTrue(savedFaqs.all { !it.enabled })
+            assertFalse(savedFaqs.any { it._id == alreadyDisabledFaq._id })
+
+            assertEquals(2, savedStories.size)
+            assertTrue(
+                savedStories.all { story ->
+                    story.features.first { it.switchToStoryId == null && it.endWithStoryId == null }.enabled == false
+                },
+            )
+            assertEquals(
+                "satisfaction-story-1",
+                savedStories.first { it.storyId == firstStory.storyId }.features.first { it.endWithStoryId != null }.endWithStoryId,
+            )
+            assertEquals(
+                "satisfaction-story-2",
+                savedStories.first { it.storyId == secondStory.storyId }.features.first { it.endWithStoryId != null }.endWithStoryId,
+            )
         }
     }
 

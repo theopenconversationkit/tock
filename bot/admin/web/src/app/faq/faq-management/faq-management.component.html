@@ -44,6 +44,17 @@
     </button>
 
     <button
+      [disabled]="loading.list || loading.edit || !faqs?.length"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Disable all currently active FAQs"
+      (click)="disableAllFaqs()"
+    >
+      <nb-icon icon="toggle-off"></nb-icon>
+    </button>
+
+    <button
       nbButton
       status="primary"
       [disabled]="!configurations?.length"

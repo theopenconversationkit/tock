@@ -24,11 +24,13 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
+import { DialogService } from '../../core-nlp/dialog.service';
 import { PaginatedQuery } from '../../model/commons';
 import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '../models';
 import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
 import { Pagination } from '../../shared/components';
+import { ChoiceDialogComponent } from '../../shared/components';
 import { I18nLabel } from '../../bot/model/i18n';
 import { Footnote } from '../../shared/model/dialog-data';
 
@@ -75,6 +77,7 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private rest: RestService,
     public stateService: StateService,
+    private dialogService: DialogService,
     private toastrService: NbToastrService,
     private location: Location
   ) {
@@ -308,6 +311,58 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
   enableFaq(faq: FaqDefinitionExtended) {
     faq.enabled = !faq.enabled;
     this.saveFaq(faq);
+  }
+
+  disableAllFaqs() {
+    const action = 'disable all';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: 'Disable all FAQs',
+        subtitle: 'Are you sure you want to disable all FAQs for this bot ?',
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: 'Disable all', buttonStatus: 'danger' }
+        ]
+      }
+    });
+
+    dialogRef.onClose.pipe(take(1)).subscribe((result) => {
+      if (result === action) {
+        this.loading.edit = true;
+        this.rest
+          .post<unknown, number>(
+            `/faq/disable-all/${this.stateService.currentApplication._id}`,
+            this.stateService.createApplicationScopedQuery()
+          )
+          .pipe(take(1))
+          .subscribe({
+            next: (disabledCount: number) => {
+              this.stateService.resetConfiguration();
+              this.closeSidePanel();
+
+              if (disabledCount > 0) {
+                this.toastrService.success(`${
+                  disabledCount === 1 ? '1 FAQ successfully disabled' : `${disabledCount} FAQs successfully disabled`
+                }`, 'Success', {
+                  duration: 5000,
+                  status: 'success'
+                });
+              } else {
+                this.toastrService.info(`All FAQs are already disabled`, 'Info', {
+                  duration: 5000,
+                  status: 'info'
+                });
+              }
+
+              this.loading.edit = false;
+              this.search();
+            },
+            error: () => {
+              this.loading.edit = false;
+            }
+          });
+      }
+    });
   }
 
   saveFaq(faq: FaqDefinitionExtended) {
