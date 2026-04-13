@@ -264,7 +264,7 @@ object BotRepository {
             val userTimelineAfterNotification =
                 userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
             userTimelineAfterNotification.userState.botDisabled = currentState
-            userTimelineDAO.save(userTimeline, botDefinition)
+            userTimelineDAO.save(userTimelineAfterNotification, botDefinition)
         }
     }
 
