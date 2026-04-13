@@ -50,6 +50,10 @@
             <artifactId>vertx-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-kotlin-coroutines</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-front-ioc</artifactId>
         </dependency>

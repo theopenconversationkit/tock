@@ -16,7 +16,11 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.connector.NotifyBotStateModifier
 import ai.tock.bot.engine.AsyncBus
+import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.action.ActionNotificationType
+import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.translator.UserInterfaceType
 
@@ -210,3 +214,42 @@ inline fun <reified T : AsyncStoryHandling, reified S> storyDefWithSteps(
         stepsList = enumValues<S>().toList(),
         unsupportedUserInterface = unsupportedUserInterface,
     )
+
+/**
+ * Sends a notification to a connector.
+ * A [ai.tock.bot.engine.Bus] is created and the corresponding story is called.
+ *
+ * @param connectorId the configuration connector id
+ * @param recipientId the recipient identifier
+ * @param intent the notification intent
+ * @param step the optional step target
+ * @param parameters the optional parameters
+ * @param stateModifier allow the notification to bypass current user state
+ * @param notificationType the notification type if any
+ */
+suspend fun BotDefinition.pushNotification(
+    connectorId: String,
+    recipientId: PlayerId,
+    intent: IntentAware,
+    step: StoryStepDef? = null,
+    parameters: Parameters = Parameters.EMPTY,
+    stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
+    notificationType: ActionNotificationType? = null,
+) {
+    var throwable: Throwable? = null
+    BotRepository.notifyAsync(
+        applicationId = connectorId,
+        recipientId = recipientId,
+        intent = intent,
+        step = step,
+        parameters = parameters.toMap(),
+        stateModifier = stateModifier,
+        notificationType = notificationType,
+        namespace = namespace,
+        botId = botId,
+        errorListener = { throwable = it },
+    )
+    if (throwable != null) {
+        throw throwable
+    }
+}

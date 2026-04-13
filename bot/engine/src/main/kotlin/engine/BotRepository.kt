@@ -67,6 +67,7 @@ import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -99,6 +100,7 @@ object BotRepository {
     internal val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
+    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = CopyOnWriteArrayList()
     private val connectorServices: MutableSet<ConnectorService> =
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
@@ -207,6 +209,23 @@ object BotRepository {
         botId: String? = null,
         errorListener: (Throwable) -> Unit = {},
     ) {
+        runBlocking {
+            notifyAsync(namespace, botId, applicationId, recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
+        }
+    }
+
+    internal suspend fun notifyAsync(
+        namespace: String?,
+        botId: String?,
+        applicationId: String,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStepDef?,
+        parameters: Map<String, String>,
+        stateModifier: NotifyBotStateModifier,
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit,
+    ) {
         val key =
             if (namespace == null || botId == null) {
                 logger.warn { "notify without specifying namespace or botId will be removed in next release" }
@@ -219,7 +238,7 @@ object BotRepository {
             .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
     }
 
-    private fun ConnectorController.notifyAndCheckState(
+    private suspend fun ConnectorController.notifyAndCheckState(
         recipientId: PlayerId,
         intent: IntentAware,
         step: StoryStepDef?,
@@ -228,27 +247,24 @@ object BotRepository {
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ) {
-        runBlocking {
-            val userTimelineDAO: UserTimelineDAO = injector.provide()
-            val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-            val userState = userTimeline.userState
-            val currentState = userState.botDisabled
+        val userTimeline = userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+        val userState = userTimeline.userState
+        val currentState = userState.botDisabled
 
-            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
-                stateModifier == NotifyBotStateModifier.REACTIVATE
-            ) {
-                userState.botDisabled = false
-                userTimelineDAO.save(userTimeline, botDefinition)
-            }
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION ||
+            stateModifier == NotifyBotStateModifier.REACTIVATE
+        ) {
+            userState.botDisabled = false
+            userTimelineDAO.save(userTimeline, botDefinition)
+        }
 
-            notify(recipientId, intent, step, parameters, notificationType, errorListener)
+        notify(recipientId, intent, step, parameters, notificationType, errorListener)
 
-            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
-                val userTimelineAfterNotification =
-                    userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-                userTimelineAfterNotification.userState.botDisabled = currentState
-                userTimelineDAO.save(userTimeline, botDefinition)
-            }
+        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
+            val userTimelineAfterNotification =
+                userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+            userTimelineAfterNotification.userState.botDisabled = currentState
+            userTimelineDAO.save(userTimeline, botDefinition)
         }
     }
 
@@ -365,7 +381,7 @@ object BotRepository {
      * @param startupLock if not null, wait do listen until the lock is released
      */
     fun installBots(
-        routerHandlers: List<(Router) -> Any?>,
+        routerHandlers: List<CoroutineRouterSupport.(Router) -> Any?>,
         createApplicationIfNotExists: Boolean = true,
         startupLock: Lock? = null,
     ) {
