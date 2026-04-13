@@ -194,7 +194,7 @@ object BotRepository {
      * @param errorListener called when a message has not been delivered
      */
     @Deprecated(
-        "use ai.tock.bot.definition.notify",
+        "use ai.tock.bot.definition.notify or pushNotification",
         replaceWith = ReplaceWith("notify", "ai.tock.bot.definition.notify"),
     )
     fun notify(

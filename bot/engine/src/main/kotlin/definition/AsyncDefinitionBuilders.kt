@@ -23,6 +23,7 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.translator.UserInterfaceType
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Creates a new coroutine-based story.
@@ -236,7 +237,7 @@ suspend fun BotDefinition.pushNotification(
     stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
     notificationType: ActionNotificationType? = null,
 ) {
-    var throwable: Throwable? = null
+    val throwable = AtomicReference<Throwable?>(null)
     BotRepository.notifyAsync(
         applicationId = connectorId,
         recipientId = recipientId,
@@ -247,9 +248,7 @@ suspend fun BotDefinition.pushNotification(
         notificationType = notificationType,
         namespace = namespace,
         botId = botId,
-        errorListener = { throwable = it },
+        errorListener = { throwable.set(it) },
     )
-    if (throwable != null) {
-        throw throwable
-    }
+    throwable.get()?.let { throw it }
 }

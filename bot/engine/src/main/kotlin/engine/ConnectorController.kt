@@ -89,9 +89,7 @@ interface ConnectorController {
     )
 
     /**
-     * Handles an event sent by the connector. the primary goal of this controller.
-     *
-     * This method may return before the event is actually processed.
+     * Handles an event received by the connector. the primary goal of this controller.
      *
      * @param event the event to handle
      * @param data the optional additional data from the connector
@@ -109,7 +107,7 @@ interface ConnectorController {
      */
     fun support(
         action: Action,
-        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType)),
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.connectorId, connector.connectorType)),
     ): Double
 
     /**
