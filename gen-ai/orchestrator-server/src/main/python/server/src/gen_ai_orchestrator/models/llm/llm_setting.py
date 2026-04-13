@@ -39,3 +39,8 @@ class BaseLLMSetting(BaseModel):
         ge=0,
         le=2,
     )
+    reasoning_effort: Optional[str] = Field(
+        description='The reasoning effort level for reasoning models (e.g. o1). Supported values: low, medium, high.',
+        examples=['low', 'medium', 'high'],
+        default=None,
+    )

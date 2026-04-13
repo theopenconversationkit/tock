@@ -19,11 +19,12 @@ package ai.tock.genai.orchestratorcore.models.llm
 data class OpenAILLMSetting<T>(
     override val apiKey: T,
     override val temperature: String,
+    override val reasoningEffort: String? = null,
     @Deprecated("use PromptTemplate#prompt")
     override val prompt: String? = null,
     val model: String,
     val baseUrl: String,
-) : LLMSettingBase<T>(LLMProvider.OpenAI, apiKey, temperature, prompt) {
+) : LLMSettingBase<T>(LLMProvider.OpenAI, apiKey, temperature, reasoningEffort, prompt) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature = temperature)
     }

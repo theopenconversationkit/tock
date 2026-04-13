@@ -24,7 +24,8 @@ import {
   OpenAIEmbeddingModel,
   OpenAIModelsList,
   ProvidersConfigurationParam,
-  PromptDefinitionFormatter
+  PromptDefinitionFormatter,
+  ReasoningEffortValues
 } from '../../../shared/model/ai-settings';
 
 export const QuestionCondensingDefaultPrompt: string = `You are a helpful assistant that reformulates questions.
@@ -416,6 +417,14 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
+      {
+        key: 'reasoningEffort',
+        label: 'Reasoning effort',
+        type: 'openlist',
+        source: ReasoningEffortValues,
+        defaultValue: 'low',
+        required: false
+      },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
     ]
   },
@@ -428,6 +437,14 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
+      {
+        key: 'reasoningEffort',
+        label: 'Reasoning effort',
+        type: 'openlist',
+        source: ReasoningEffortValues,
+        defaultValue: 'low',
+        required: false
+      },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
     ]
   },

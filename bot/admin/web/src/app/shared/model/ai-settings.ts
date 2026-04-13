@@ -70,6 +70,7 @@ export interface llmSetting {
   apiVersion?: String;
 
   temperature?: Number;
+  reasoningEffort?: String;
 }
 
 export interface emSetting {
@@ -125,3 +126,5 @@ export const OpenAIEmbeddingModel: string[] = ['text-embedding-3-small', 'text-e
 export const OllamaLlmModelsList: string[] = ['llama2', 'llama3', 'llama3.1', 'llama3.1:8b', 'llama3.2'];
 
 export const OllamaEmModelsList: string[] = ['mxbai-embed-large', 'nomic-embed-text', 'all-minilm'];
+
+export const ReasoningEffortValues: string[] = ['minimal', 'low', 'medium', 'high'];

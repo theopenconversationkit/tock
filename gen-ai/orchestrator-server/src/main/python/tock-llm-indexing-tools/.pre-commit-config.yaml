@@ -36,6 +36,12 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
+        args:
+          # Ignored: GHSA-5239-wwwm-4pmq is a Pygments ReDoS that maintainers consider a non-issue.
+          # Pygments has no web API, and any unbounded input can cause long processing.
+          # See https://github.com/pygments/pygments/issues/2928#issuecomment-2781752684
+          - "--ignore-vuln"
+          - "GHSA-5239-wwwm-4pmq"
         additional_dependencies:
           - "pip>=26.0"
           - "filelock>=3.20.3"

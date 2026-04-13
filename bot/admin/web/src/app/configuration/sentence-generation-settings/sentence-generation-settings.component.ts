@@ -176,7 +176,11 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
       this.resetFormGroupControls('llmSetting');
 
       requiredConfiguration.params.forEach((param) => {
-        this.form.controls['llmSetting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+        const isParamRequired = param.required === undefined ? true : param.required;
+        this.form.controls['llmSetting'].addControl(
+          param.key,
+          new FormControl(param.defaultValue, isParamRequired ? Validators.required : null)
+        );
       });
 
       this.form.controls['llmSetting'].addControl('provider', new FormControl(provider));

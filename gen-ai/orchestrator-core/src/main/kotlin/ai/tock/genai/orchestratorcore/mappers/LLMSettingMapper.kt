@@ -39,6 +39,7 @@ object LLMSettingMapper {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
+                        reasoningEffort = reasoningEffort,
                         model = model,
                         baseUrl = baseUrl,
                     )
@@ -47,6 +48,7 @@ object LLMSettingMapper {
                     AzureOpenAILLMSetting(
                         apiKey = SecurityUtils.fetchSecretKeyValue(apiKey),
                         temperature = temperature,
+                        reasoningEffort = reasoningEffort,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         model = model,
@@ -87,6 +89,7 @@ object LLMSettingMapper {
                     OpenAILLMSetting(
                         apiKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
+                        reasoningEffort = reasoningEffort,
                         model = model,
                         baseUrl = baseUrl,
                     )
@@ -95,6 +98,7 @@ object LLMSettingMapper {
                     AzureOpenAILLMSetting(
                         SecurityUtils.createSecretKey(namespace, botId, feature, apiKey, rawByForce),
                         temperature = temperature,
+                        reasoningEffort = reasoningEffort,
                         apiBase = apiBase,
                         deploymentName = deploymentName,
                         apiVersion = apiVersion,
