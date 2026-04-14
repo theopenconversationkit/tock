@@ -105,9 +105,11 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
           // JSON structure validation
           if (
             !importedData.name ||
-            !importedData.description ||
+            typeof importedData.description !== 'string' ||
             !Array.isArray(importedData.questions) ||
-            !importedData.questions.every((q: any) => typeof q.question === 'string' && typeof q.groundTruth === 'string')
+            !importedData.questions.every(
+              (q: any) => typeof q.question === 'string' && typeof q.groundTruth === 'string' && q.question.trim() !== ''
+            )
           ) {
             this.toastrService.show(
               `The file must contain a 'name', 'description', and an array of 'questions' with 'question' and 'groundTruth' fields.`,
