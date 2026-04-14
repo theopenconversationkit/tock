@@ -19,6 +19,16 @@
   <section class="grid-actions">
     <button
       nbButton
+      ghost
+      shape="round"
+      nbTooltip="Import a dataset"
+      (click)="importDataset()"
+    >
+      <nb-icon icon="upload"></nb-icon>
+    </button>
+
+    <button
+      nbButton
       status="primary"
       size="medium"
       nbTooltip="Create new dataset"
@@ -35,7 +45,7 @@
 </div>
 
 <nb-card
-  *ngIf="loading"
+  *ngIf="loading && !datasets?.length"
   [nbSpinner]="loading"
   class="shadow-sm mt-2"
 >
@@ -66,6 +76,70 @@
   <div class="ellipsis"></div>
 </div>
 
-<ng-container *ngFor="let dataset of datasets; trackBy: trackById">
+<div
+  *ngFor="let dataset of datasets; trackBy: trackById"
+  [nbSpinner]="loading"
+>
   <tock-datasets-board-entry [dataset]="dataset"></tock-datasets-board-entry>
-</ng-container>
+</div>
+
+<ng-template #importModal>
+  <nb-card [nbSpinner]="loading">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Import Dataset
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeImportModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <form
+        [formGroup]="importForm"
+        (submit)="submitImportDataset()"
+      >
+        <tock-form-control
+          label="Dataset file"
+          name="importFile"
+          [required]="true"
+          [controls]="fileSource"
+          [showError]="isImportSubmitted"
+        >
+          <tock-file-upload
+            id="importFile"
+            formControlName="fileSource"
+            [autofocus]="true"
+            [fullWidth]="true"
+            [multiple]="false"
+            [fileTypeAccepted]="['json']"
+          ></tock-file-upload>
+        </tock-form-control>
+      </form>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeImportModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submitImportDataset()"
+      >
+        Import
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

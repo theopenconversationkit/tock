@@ -41,6 +41,8 @@ export class DatasetDetailEntryComponent implements OnChanges {
   // Computed once per ngOnChanges — null when no comparison or sources are not RAG
   sourceDiff: SourcesDiffResult | null = null;
 
+  actionTypeTransition: string | null = null;
+
   // Display state derived from action state + action nullability
   currentActionDisplayState: DatasetRunActionDisplayState | null = null;
   comparisonActionDisplayState: DatasetRunActionDisplayState | null = null;
@@ -71,6 +73,8 @@ export class DatasetDetailEntryComponent implements OnChanges {
     const [currentOrdered, comparisonOrdered] = this._computeSourceOrder();
     this.currentFootnotesOrdered = currentOrdered;
     this.comparisonFootnotesOrdered = comparisonOrdered;
+
+    this.actionTypeTransition = this._computeActionTypeTransition();
 
     this._generateAnswerDiff();
   }
@@ -227,6 +231,17 @@ export class DatasetDetailEntryComponent implements OnChanges {
     }
 
     return { added, modified, removed };
+  }
+
+  private _computeActionTypeTransition(): string | null {
+    if (!this.comparisonAction || !this.currentAction) return null;
+
+    const labelA = this.getActionTypeLabel('A');
+    const labelB = this.getActionTypeLabel('B');
+
+    if (labelA === labelB || labelA === '-' || labelB === '-') return null;
+
+    return `${labelA} < ${labelB}`; // ex: "INTENT > RAG" ou "RAG > INTENT"
   }
 
   private _computeDisplayState(action: DatasetRunAction | null): DatasetRunActionDisplayState | null {

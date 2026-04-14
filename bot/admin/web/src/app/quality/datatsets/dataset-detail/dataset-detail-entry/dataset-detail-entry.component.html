@@ -64,8 +64,13 @@
               </span>
             </ng-container>
           </ng-container>
-          <!-- <span class="tag text-nowrap settings">RAG > INTENT</span>
-          <span class="tag text-nowrap settings">INTENT > RAG</span> -->
+          <span
+            *ngIf="actionTypeTransition"
+            class="tag text-nowrap changed"
+            [nbTooltip]="'Answer type changed between runs: ' + actionTypeTransition"
+          >
+            {{ actionTypeTransition }}
+          </span>
         </div>
 
         <button
@@ -108,7 +113,7 @@
             <div class="text-uppercase monospace text-primary font-size-small">Run A</div>
             <div
               *ngIf="currentActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
-              class="tag text-muted"
+              class="tag text-muted font-size-small"
             >
               {{ getActionTypeLabel('A') }}
             </div>
@@ -146,7 +151,7 @@
             <div class="text-uppercase monospace text-success font-size-small">Run B</div>
             <div
               *ngIf="comparisonActionDisplayState === DatasetRunActionDisplayState.SUCCESS"
-              class="tag text-muted"
+              class="tag text-muted font-size-small"
             >
               {{ getActionTypeLabel('B') }}
             </div>

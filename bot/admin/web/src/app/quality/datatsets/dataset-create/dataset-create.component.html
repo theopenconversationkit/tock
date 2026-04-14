@@ -119,32 +119,49 @@
     </form>
   </nb-card-body>
 
-  <nb-card-footer class="card-footer-actions">
+  <nb-card-footer
+    class="card-footer-actions"
+    [ngClass]="{ 'justify-content-between': isEditMode }"
+  >
     <button
+      *ngIf="isEditMode"
       nbButton
       ghost="true"
-      [disabled]="isLoading"
+      status="primary"
       tabindex="-1"
-      (click)="dialogRef.close()"
+      [disabled]="isLoading"
+      (click)="exportDataset()"
     >
-      CANCEL
+      EXPORT DATASET
     </button>
 
-    <button
-      #submitButton
-      nbButton
-      status="primary"
-      [nbTooltip]="isEditMode ? 'Save changes' : 'Create dataset'"
-      class="d-flex align-items-center"
-      [nbSpinner]="isLoading"
-      [disabled]="isLoading"
-      (click)="submit()"
-    >
-      <nb-icon
-        [icon]="isEditMode ? 'check-lg' : 'plus-lg'"
-        class="mr-2"
-      ></nb-icon>
-      {{ isEditMode ? 'SAVE' : 'CREATE' }}
-    </button>
+    <div class="d-flex gap-1">
+      <button
+        nbButton
+        ghost="true"
+        [disabled]="isLoading"
+        tabindex="-1"
+        (click)="dialogRef.close()"
+      >
+        CANCEL
+      </button>
+
+      <button
+        #submitButton
+        nbButton
+        status="primary"
+        [nbTooltip]="isEditMode ? 'Save changes' : 'Create dataset'"
+        class="d-flex align-items-center"
+        [nbSpinner]="isLoading"
+        [disabled]="isLoading"
+        (click)="submit()"
+      >
+        <nb-icon
+          [icon]="isEditMode ? 'check-lg' : 'plus-lg'"
+          class="mr-2"
+        ></nb-icon>
+        {{ isEditMode ? 'SAVE' : 'CREATE' }}
+      </button>
+    </div>
   </nb-card-footer>
 </nb-card>

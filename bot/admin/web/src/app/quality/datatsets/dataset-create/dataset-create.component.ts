@@ -5,6 +5,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { Dataset } from '../models';
 import { DatasetsService } from '../services/datasets.service';
+import { getExportFileName } from '../../../shared/utils';
+import { saveAs } from 'file-saver-es';
 
 interface QuestionForm {
   question: FormControl<string>;
@@ -23,6 +25,7 @@ function atLeastOneFilledQuestion(control: AbstractControl): ValidationErrors | 
   return hasFilled ? null : { custom: 'At least one question is required.' };
 }
 
+const question_minLength = 2;
 const question_maxLength = 1500;
 const groundtruth_maxLength = 1500;
 
@@ -77,7 +80,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     dataset.questions.forEach((q) => {
       this.questions.push(
         new FormGroup<QuestionForm>({
-          question: new FormControl(q.question, [Validators.minLength(5), Validators.maxLength(question_maxLength)]),
+          question: new FormControl(q.question, [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
           groundTruth: new FormControl(q.groundTruth ?? '', [Validators.maxLength(groundtruth_maxLength)])
         })
       );
@@ -117,7 +120,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   private _appendEmptyQuestion(): void {
     this.questions.push(
       new FormGroup<QuestionForm>({
-        question: new FormControl('', [Validators.minLength(5), Validators.maxLength(question_maxLength)]),
+        question: new FormControl('', [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
         groundTruth: new FormControl('', [Validators.maxLength(groundtruth_maxLength)])
       })
     );
@@ -131,12 +134,12 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     this.questions.updateValueAndValidity();
   }
 
-  private _getFilledQuestions() {
+  private _getFilledQuestions(omitIds: boolean = false): { id?: string; question: string; groundTruth: string }[] {
     return this.questions.controls
       .filter((g) => g.controls.question.value.trim())
       .map((g, i) => ({
         // Preserve the original question ID when editing so the backend can diff
-        ...(this.isEditMode && this.dataset.questions[i] ? { id: this.dataset.questions[i].id } : {}),
+        ...(this.isEditMode && !omitIds && this.dataset.questions[i] ? { id: this.dataset.questions[i].id } : {}),
         question: g.controls.question.value.trim(),
         groundTruth: g.controls.groundTruth.value.trim()
       }));
@@ -158,8 +161,6 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   }
 
   private _create(): void {
-    const { namespace, name: botId } = this.stateService.currentApplication;
-
     this.datasetsService
       .createDataset({
         name: this.form.controls.name.value,
@@ -191,6 +192,27 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
           this.toastrService.danger('An error occured', 'Error', { duration: 5000 });
         }
       });
+  }
+
+  exportDataset(): void {
+    const dataStr = JSON.stringify({
+      name: this.form.controls.name.value,
+      description: this.form.controls.description.value,
+      questions: this._getFilledQuestions(true) // Omit question IDs in export since they are only relevant for diffing during updates
+    });
+
+    const exportFileName = getExportFileName(
+      this.stateService.currentApplication.namespace,
+      this.stateService.currentApplication.name,
+      'dataset',
+      'json'
+    );
+
+    const blob = new Blob([dataStr], {
+      type: 'application/json'
+    });
+
+    saveAs(blob, exportFileName);
   }
 
   onQuestionPaste(event: ClipboardEvent, index: number): void {
@@ -228,7 +250,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
         // No existing row at this position: create a new form group
         this.questions.push(
           new FormGroup<QuestionForm>({
-            question: new FormControl(line, [Validators.minLength(5), Validators.maxLength(question_maxLength)]),
+            question: new FormControl(line, [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
             groundTruth: new FormControl('', [Validators.maxLength(groundtruth_maxLength)])
           })
         );

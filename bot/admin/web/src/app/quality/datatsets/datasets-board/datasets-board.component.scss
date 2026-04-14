@@ -1,3 +1,11 @@
+.grid-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
+}
+
 .list-grid {
   display: grid;
   grid-template-columns: minmax(8rem, 1fr) minmax(3rem, 5rem) minmax(3rem, 4rem) minmax(5rem, 8.75rem) minmax(3rem, 5rem) 8.75rem;
