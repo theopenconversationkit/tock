@@ -28,22 +28,24 @@
     </div>
   </div>
 
-  <div class="d-flex align-items-center gap-1">
+  <div class="header-tools">
     <div class="d-flex gap-1 align-items-center mode-switch">
-      <nb-icon
-        nbTooltip="Light Mode"
-        icon="brightness-high"
-      ></nb-icon>
-      <nb-toggle
-        [ngModel]="isDarkTheme()"
-        (change)="switchTheme()"
-        class="darkmode-toggle nb-toggle-reset-label-margin"
-        nbTooltip="Switch mode"
-      ></nb-toggle>
-      <nb-icon
-        nbTooltip="Dark Mode"
-        icon="brightness-low"
-      ></nb-icon>
+      <button
+        nbButton
+        ghost
+        size="medium"
+        (click)="switchTheme()"
+        [nbTooltip]="isDarkTheme() ? 'Use light mode' : 'Use dark mode'"
+      >
+        <nb-icon
+          *ngIf="isDarkTheme()"
+          icon="brightness-high"
+        ></nb-icon>
+        <nb-icon
+          *ngIf="!isDarkTheme()"
+          icon="moon"
+        ></nb-icon>
+      </button>
     </div>
 
     <nb-form-field *ngIf="state.currentApplication">
@@ -55,7 +57,7 @@
         (selectedChange)="changeApplication($event)"
         [ngModel]="currentApplicationName"
         nbTooltip="Select current application"
-        class="mb-0 min-width-5 max-width-15em"
+        class="mb-0"
       >
         <nb-option
           *ngFor="let app of state.applications"
@@ -74,7 +76,7 @@
         (selectedChange)="changeNamespace($event)"
         [selected]="currentNamespaceName"
         nbTooltip="Select current namespace"
-        class="mb-0 min-width-5 max-width-15em"
+        class="mb-0"
       >
         <nb-option
           *ngFor="let namespace of state.namespaces"
@@ -93,7 +95,7 @@
         (selectedChange)="changeLocale($event)"
         [ngModel]="state.currentLocale"
         nbTooltip="Select current locale"
-        class="mb-0 min-width-5 max-width-15em"
+        class="mb-0"
       >
         <nb-option
           *ngFor="let l of state.currentApplication.supportedLocales"

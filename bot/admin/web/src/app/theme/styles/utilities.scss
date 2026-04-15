@@ -149,6 +149,10 @@
   text-overflow: ellipsis;
 }
 
+.white-space-pre-line {
+  white-space: pre-line;
+}
+
 nb-select.appearance-outline .select-button {
   min-width: auto !important;
 }
@@ -317,6 +321,9 @@ nb-menu {
 
 .max-width-15em {
   max-width: 15em !important;
+}
+.max-width-20em {
+  max-width: 20em !important;
 }
 
 .min-height-90vh {

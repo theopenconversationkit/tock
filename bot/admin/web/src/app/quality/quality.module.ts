@@ -43,9 +43,26 @@ import { QualityRoutingModule } from './quality-routing.module';
 import { SampleCreateComponent } from './samples/sample-create/sample-create.component';
 import { SampleDetailComponent } from './samples/sample-detail/sample-detail.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { DatasetsBoardComponent } from './datatsets/datasets-board/datasets-board.component';
+import { DatasetCreateComponent } from './datatsets/dataset-create/dataset-create.component';
+import { DatasetDetailComponent } from './datatsets/dataset-detail/dataset-detail.component';
+import { DatasetDetailSettingsDiffComponent } from './datatsets/dataset-detail/settings-diff/settings-diff.component';
+import { DatasetDetailEntryComponent } from './datatsets/dataset-detail/dataset-detail-entry/dataset-detail-entry.component';
+import { DatasetsBoardEntryComponent } from './datatsets/datasets-board/dataset-board-entry/datasets-board-entry.component';
 
 @NgModule({
-  declarations: [QualityTabsComponent, SamplesBoardComponent, SampleCreateComponent, SampleDetailComponent],
+  declarations: [
+    QualityTabsComponent,
+    SamplesBoardComponent,
+    SampleCreateComponent,
+    SampleDetailComponent,
+    DatasetsBoardComponent,
+    DatasetsBoardEntryComponent,
+    DatasetCreateComponent,
+    DatasetDetailComponent,
+    DatasetDetailSettingsDiffComponent,
+    DatasetDetailEntryComponent
+  ],
   imports: [
     ReactiveFormsModule,
     CommonModule,

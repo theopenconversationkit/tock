@@ -19,13 +19,26 @@
   top: 5em;
   z-index: 2;
   background: var(--layout-background-color);
+  transition: all 0.1s ease-in;
 
   &.scrolled {
     margin: -1em;
     padding: 0.5em 0.5em 0.5em 1em;
 
     box-shadow: 0px 8px 12px -12px #000000b3;
-    transition: all 0.1s ease-in;
+  }
+
+  .reduce {
+    display: none;
+
+    cursor: pointer;
+
+    position: absolute;
+
+    bottom: 0em;
+
+    left: -1.6em;
+    padding: 0.5em 0.75em;
   }
 
   ::ng-deep {
@@ -35,9 +48,47 @@
   }
 
   &.scrolled {
+    min-height: 1.75em;
+
+    .reduce {
+      display: block;
+    }
+
     ::ng-deep {
       .sticky-menu-scrolled-info {
         display: block;
+      }
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.25s ease-in-out;
+      overflow: hidden;
+
+      .content {
+        min-height: 0;
+        overflow: hidden;
+      }
+    }
+
+    &.hidden {
+      height: 1.75em;
+
+      .content-wrapper {
+        grid-template-rows: 0fr;
+      }
+    }
+  }
+}
+
+.nb-theme-dark {
+  :host {
+    .sticky {
+      .reduce {
+        background-color: var(--layout-background-color) !important;
+        border-color: var(--border-basic-color-4);
+        color: var(--card-text-color);
       }
     }
   }

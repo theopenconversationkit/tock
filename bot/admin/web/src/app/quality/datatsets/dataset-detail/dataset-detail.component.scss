@@ -1,0 +1,201 @@
+:host {
+  /* Purple */
+  --color-purple-text: #503a90;
+  --color-purple-bg: #a78bfa7d;
+  --color-purple-border: rgba(80, 58, 144, 0.3);
+  --color-purple-bg-diff: #7c3aed;
+  --color-purple-text-diff: #ffffff;
+  --color-purple-border-diff: rgba(124, 58, 237, 0.5);
+
+  /* Orange */
+  --color-orange-text: #ba7301;
+  --color-orange-bg: #f5a5247d;
+  --color-orange-border: rgba(186, 115, 1, 0.3);
+  --color-orange-bg-diff: #ffa500;
+  --color-orange-text-diff: #000000;
+  --color-orange-border-diff: rgba(255, 165, 0, 0.5);
+
+  /* Teal */
+  --color-teal-text: #066b5f;
+  --color-teal-bg: #2dd4bf7d;
+  --color-teal-border: rgba(6, 107, 95, 0.3);
+  --color-teal-bg-diff: #00d4c0;
+  --color-teal-text-diff: #ffffff;
+  --color-teal-border-diff: rgba(0, 212, 192, 0.5);
+}
+
+.nb-theme-dark {
+  :host {
+    /* Purple */
+    --color-purple-text: #a78bfa;
+    --color-purple-bg: #5749827d;
+    --color-purple-border: rgba(167, 139, 250, 0.3);
+    --color-purple-bg-diff: #8b5cf6;
+    --color-purple-text-diff: #ffffff;
+    --color-purple-border-diff: rgba(139, 92, 246, 0.5);
+
+    /* Orange */
+    --color-orange-text: #f5a524;
+    --color-orange-bg: #7d54127d;
+    --color-orange-border: rgba(245, 165, 36, 0.3);
+    --color-orange-bg-diff: #f97316;
+    --color-orange-text-diff: #4e1c03;
+    --color-orange-border-diff: rgba(249, 115, 22, 0.5);
+
+    /* Teal */
+    --color-teal-text: #2dd4bf;
+    --color-teal-bg: #19776b7d;
+    --color-teal-border: rgba(45, 212, 191, 0.3);
+    --color-teal-bg-diff: #00b8a8;
+    --color-teal-text-diff: #ffffff;
+    --color-teal-border-diff: rgba(0, 184, 168, 0.5);
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  border: 1px solid;
+
+  &.muted {
+    background-color: var(--background-basic-color-2) !important;
+    border-color: var(--color-teal-border);
+  }
+
+  &.prompt {
+    color: var(--color-purple-text);
+    background: var(--color-purple-bg);
+    border-color: var(--color-purple-border);
+    &.diff {
+      background: var(--color-purple-bg-diff);
+      color: var(--color-purple-text-diff);
+      border-color: var(--color-purple-border-diff);
+      font-weight: bold;
+    }
+  }
+
+  &.settings {
+    color: var(--color-orange-text);
+    background: var(--color-orange-bg);
+    border-color: var(--color-orange-border);
+    &.diff {
+      background: var(--color-orange-bg-diff);
+      color: var(--color-orange-text-diff);
+      border-color: var(--color-orange-border-diff);
+      font-weight: bold;
+    }
+  }
+
+  &.corpus {
+    color: var(--color-teal-text);
+    background: var(--color-teal-bg);
+    border-color: var(--color-teal-border);
+    &.diff {
+      background: var(--color-teal-bg-diff);
+      color: var(--color-teal-text-diff);
+      border-color: var(--color-teal-border-diff);
+      font-weight: bold;
+    }
+  }
+}
+
+.vs-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: start;
+  .vs-badge {
+    position: relative;
+    padding: 0.7em;
+    background: var(--card-background-color);
+    color: var(--card-text-color);
+    border: var(--card-border-width) var(--card-border-style) var(--card-border-color);
+    overflow: hidden;
+
+    &.comparison-off::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 1.5px;
+      background: currentColor;
+      opacity: 0.6;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+  }
+}
+
+.vs-no-comparison {
+  flex: 1;
+  min-height: 100px;
+  height: 100%;
+  border-style: dotted;
+  border-width: 3px;
+}
+
+.scroll-arrow {
+  flex-shrink: 0;
+  border-radius: 0;
+  padding: 0 0.3em;
+}
+
+.prev-entries {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  scrollbar-width: none; // Firefox
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome/Safari
+  }
+
+  // Fade droit — signale que le contenu déborde à droite
+  &::after {
+    content: '';
+    position: sticky;
+    right: -8px;
+    flex-shrink: 0;
+    width: 2.5rem;
+    align-self: stretch;
+    background: linear-gradient(to right, transparent, var(--background-basic-color-2));
+    pointer-events: none;
+  }
+
+  // Fade gauche — visible uniquement quand on a scrollé (classe .scrolled-left)
+  &.scrolled-left::before {
+    content: '';
+    position: sticky;
+    left: -8px;
+    flex-shrink: 0;
+    width: 2.5rem;
+    align-self: stretch;
+    background: linear-gradient(to left, transparent, var(--background-basic-color-2));
+    pointer-events: none;
+  }
+}
+
+.comparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.5rem;
+
+  > div:not(.separator) {
+    min-width: 0; /* Empêche le contenu de forcer l'expansion */
+    // overflow-wrap: break-word; /* Optionnel : gère le débordement du texte */
+    overflow-x: auto;
+  }
+
+  .separator {
+    width: 1px;
+    background-color: var(--border-basic-color-4);
+  }
+
+  &.large {
+    gap: 2em;
+  }
+}

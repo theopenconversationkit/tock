@@ -1,0 +1,258 @@
+<div class="d-flex align-items-center mb-3">
+  <div class="flex-grow-1">
+    <h1 class="m-0">Dataset run</h1>
+    <div class="lead">{{ dataset?.name }}</div>
+    <small>
+      {{ dataset?.description }}
+    </small>
+  </div>
+</div>
+
+<tock-sticky-menu
+  *ngIf="!loading"
+  [hideable]="true"
+>
+  <div class="vs-wrapper mb-1">
+    <nb-card class="mb-0">
+      <nb-card-body>
+        <div class="d-flex gap-05 justify-content-between">
+          <span class="text-uppercase monospace text-primary text-nowrap"> Run A </span>
+          <span class="text-muted font-size-small ellipsis"> {{ currentRun.id }} </span>
+        </div>
+
+        <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
+          <span class="text-nowrap">{{ currentRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
+          <i class="bi bi-chevron-bar-left"></i>
+          <span class="text-nowrap font-weight-bold">{{ getRunDuration(currentRun) }}</span>
+          <i class="bi bi-chevron-bar-right"></i>
+          <span class="text-nowrap">{{ currentRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
+          <div
+            class="flex-fill justify-content-center tag prompt pointer"
+            [class.diff]="showComparison && hasPromptsDiff()"
+            nbTooltip="Click to see the prompts used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
+          >
+            prompts
+          </div>
+          <div
+            class="flex-fill justify-content-center tag settings pointer"
+            [class.diff]="showComparison && hasSettingsDiff()"
+            nbTooltip="Click to see the settings used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
+          >
+            settings
+          </div>
+          <div
+            class="flex-fill justify-content-center tag corpus"
+            [class.diff]="showComparison && hasIndexingSessionDiff()"
+            nbTooltip="Indexing session id"
+          >
+            {{ currentRun.settingsSnapshot.indexSessionId }}
+          </div>
+        </div>
+      </nb-card-body>
+
+      <nb-card-footer
+        *ngIf="comparableRuns.length > 1"
+        class="p-0 background-basic-color-2 d-flex align-items-stretch"
+      >
+        <button
+          *ngIf="canScrollLeft('current')"
+          class="scroll-arrow"
+          nbButton
+          size="tiny"
+          ghost
+          (mousedown)="startScroll('current', 'left')"
+          (mouseup)="stopScroll()"
+          (mouseleave)="stopScroll()"
+        >
+          <nb-icon
+            icon="chevron-left-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+
+        <div
+          #runsScrollA
+          class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
+          [class.scrolled-left]="canScrollLeft('current')"
+          (scroll)="onRunsScroll('current')"
+        >
+          <button
+            *ngFor="let entry of comparableRuns; let i = index"
+            nbButton
+            size="tiny"
+            shape="round"
+            [status]="entry.id === currentRun.id ? 'info' : 'basic'"
+            [disabled]="entry.id !== currentRun.id && !isRunSelectable('current', entry)"
+            [nbTooltip]="getPrevEntryTooltip(entry)"
+            (click)="selectCurrentRun(entry)"
+          >
+            {{ i }}
+          </button>
+        </div>
+
+        <button
+          *ngIf="canScrollRight('current')"
+          class="scroll-arrow"
+          nbButton
+          size="tiny"
+          ghost
+          (mousedown)="startScroll('current', 'right')"
+          (mouseup)="stopScroll()"
+          (mouseleave)="stopScroll()"
+        >
+          <nb-icon
+            icon="chevron-right-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+      </nb-card-footer>
+    </nb-card>
+
+    <button
+      *ngIf="comparisonRun"
+      nbButton
+      shape="round"
+      status="basic"
+      class="vs-badge align-self-center"
+      [class.comparison-off]="!showComparison"
+      [nbTooltip]="showComparison ? 'Disable comparison' : 'Enable comparison'"
+      (click)="toggleShowComparison()"
+    >
+      VS
+    </button>
+
+    <nb-card
+      *ngIf="comparisonRun && !showComparison"
+      class="mb-0 vs-no-comparison"
+    >
+      <nb-card-body class="d-flex flex-column align-items-center justify-content-center gap-1">
+        <span class="text-muted font-size-small">Comparison disabled</span>
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          status="basic"
+          (click)="toggleShowComparison()"
+        >
+          Enable
+        </button>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card
+      class="mb-0"
+      *ngIf="comparisonRun && showComparison"
+    >
+      <nb-card-body>
+        <div class="d-flex gap-05 justify-content-between">
+          <span class="text-uppercase monospace text-success text-nowrap"> Run B </span>
+          <span class="text-muted font-size-small ellipsis"> {{ comparisonRun.id }} </span>
+        </div>
+
+        <div class="d-flex flex-wrap column-gap-1 justify-content-between text-muted font-size-small mt-1">
+          <span class="text-nowrap">{{ comparisonRun.startTime | date: 'y/MM/dd - HH:mm' }}</span>
+          <i class="bi bi-chevron-bar-left"></i>
+          <span class="text-nowrap font-weight-bold">{{ getRunDuration(comparisonRun) }}</span>
+          <i class="bi bi-chevron-bar-right"></i>
+          <span class="text-nowrap">{{ comparisonRun.endTime | date: 'y/MM/dd - HH:mm' }}</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-05 justify-content-between mt-2">
+          <div
+            class="flex-fill justify-content-center tag prompt pointer"
+            nbTooltip="Click to see answering the prompt used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.AnsweringPrompt)"
+          >
+            prompts
+          </div>
+          <div
+            class="flex-fill justify-content-center tag settings pointer"
+            nbTooltip="Click to see the settings used when executing this run"
+            (click)="compareSettings(settingsDiffCurrentTabs.RagSettings)"
+          >
+            settings
+          </div>
+          <div
+            class="flex-fill justify-content-center tag corpus"
+            nbTooltip="Indexing session id"
+          >
+            {{ comparisonRun.settingsSnapshot.indexSessionId }}
+          </div>
+        </div>
+      </nb-card-body>
+
+      <nb-card-footer class="p-0 background-basic-color-2 d-flex align-items-stretch">
+        <button
+          *ngIf="canScrollLeft('compared')"
+          class="scroll-arrow"
+          nbButton
+          size="tiny"
+          ghost
+          (mousedown)="startScroll('compared', 'left')"
+          (mouseup)="stopScroll()"
+          (mouseleave)="stopScroll()"
+        >
+          <nb-icon
+            icon="chevron-left-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+
+        <div
+          #runsScrollB
+          class="d-flex gap-05 px-2 py-1 prev-entries flex-grow-1"
+          [class.scrolled-left]="canScrollLeft('compared')"
+          (scroll)="onRunsScroll('compared')"
+        >
+          <button
+            *ngFor="let entry of comparableRuns; let i = index"
+            nbButton
+            size="tiny"
+            shape="round"
+            [status]="entry.id === comparisonRun.id ? 'success' : 'basic'"
+            [disabled]="entry.id !== comparisonRun.id && !isRunSelectable('compared', entry)"
+            [nbTooltip]="getPrevEntryTooltip(entry)"
+            (click)="selectComparableRun(entry)"
+          >
+            {{ i }}
+          </button>
+        </div>
+
+        <button
+          *ngIf="canScrollRight('compared')"
+          class="scroll-arrow"
+          nbButton
+          size="tiny"
+          ghost
+          (mousedown)="startScroll('compared', 'right')"
+          (mouseup)="stopScroll()"
+          (mouseleave)="stopScroll()"
+        >
+          <nb-icon
+            icon="chevron-right-outline"
+            pack="nebular-essentials"
+          ></nb-icon>
+        </button>
+      </nb-card-footer>
+    </nb-card>
+  </div>
+</tock-sticky-menu>
+
+<div
+  *ngIf="!loading"
+  class="mt-4"
+>
+  <ng-container *ngFor="let question of dataset.questions">
+    <tock-dataset-detail-entry
+      *ngIf="currentRunActions"
+      [currentRunActions]="currentRunActions"
+      [comparisonRunActions]="showComparison ? comparisonRunActions : null"
+      [question]="question"
+    ></tock-dataset-detail-entry>
+  </ng-container>
+</div>

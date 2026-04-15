@@ -33,7 +33,8 @@
               "node_modules/jodit/es2021/jodit.css",
               "node_modules/katex/dist/katex.min.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {

@@ -22,6 +22,8 @@ import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { SamplesBoardComponent } from './samples/samples-board/samples-board.component';
 import { QualityTabsComponent } from './quality-tabs.component';
 import { SampleDetailComponent } from './samples/sample-detail/sample-detail.component';
+import { DatasetsBoardComponent } from './datatsets/datasets-board/datasets-board.component';
+import { DatasetDetailComponent } from './datatsets/dataset-detail/dataset-detail.component';
 
 const routes: Routes = [
   {
@@ -47,6 +49,18 @@ const routes: Routes = [
       {
         path: 'samples/detail/:id',
         component: SampleDetailComponent
+      },
+      {
+        path: 'datasets',
+        component: DatasetsBoardComponent
+      },
+      {
+        path: 'datasets/datasets-board',
+        component: DatasetsBoardComponent
+      },
+      {
+        path: 'datasets/detail/:id',
+        component: DatasetDetailComponent
       }
     ]
   }
