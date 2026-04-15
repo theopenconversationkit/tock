@@ -45,14 +45,16 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         min: 1,
         max: 20,
         step: 1,
-        information: 'Maximum number of documents to be proposed as sources for the answer'
+        information: 'Maximum number of documents to return as sources for the answer'
       },
       {
         key: 'fillToMaxDocuments',
-        label: 'Fill to max documents',
+        label: 'Pad with lower-scoring documents',
         type: 'boolean',
         defaultValue: true,
-        information: 'If activated, complete with the best remaining documents up to max_documents (even if the documents fall below the threshold)'
+        required: false,
+        information:
+          'If enabled, fill the result set with the best available documents (even if their score is below `Minimum score`) to reach `Max documents`'
       },
       {
         key: 'minScore',
@@ -61,8 +63,9 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         min: 0,
         max: 1,
         step: 0.05,
-        information: 'Score below which documents will not be used to generate the answer'
-      },
+        information:
+          'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled'
+      }
     ]
   }
 ];
