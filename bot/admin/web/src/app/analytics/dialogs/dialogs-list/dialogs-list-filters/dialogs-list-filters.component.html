@@ -305,6 +305,36 @@
             </nb-form-field>
           </div>
 
+          <!-- RAG Answer Status filter -->
+          <div class="col-6 col-lg-3">
+            <nb-form-field class="mb-2">
+              <nb-icon
+                nbPrefix
+                icon="flag"
+              ></nb-icon>
+
+              <nb-select
+                fullWidth
+                size="small"
+                nbTooltip="Filter by RAG answer status."
+                placeholder="RAG answer status"
+                formControlName="ragAnswerStatus"
+              >
+                <nb-option>Clear filter</nb-option>
+                <nb-option
+                  *ngFor="let item of ragAnswerStatusLabels | sortByOrder: ragAnswerStatusDisplayOrder"
+                  [value]="item.key"
+                >
+                  <nb-icon
+                    [icon]="ragAnswerStatusIcons[item.key]"
+                    class="select-icon align-self-center mr-2 font-size-small"
+                  ></nb-icon>
+                  {{ item.value }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
           <!-- Feedback filters -->
           <div class="col-6 col-lg-3">
             <nb-form-field class="mb-2">
