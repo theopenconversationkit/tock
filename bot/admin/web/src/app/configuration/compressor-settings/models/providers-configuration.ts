@@ -31,21 +31,12 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
     label: 'BloomzRerank',
     key: CompressorProvider.BloomzRerank,
     params: [
+      { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
       {
         key: 'label',
         label: 'Label',
         type: 'text',
         information: 'Name of the positive scoring output label (see models card for more info)'
-      },
-      { key: 'endpoint', label: 'Endpoint', type: 'obfuscated' },
-      {
-        key: 'minScore',
-        label: 'Minimum score',
-        type: 'number',
-        min: 0,
-        max: 1,
-        step: 0.05,
-        information: 'Score below which documents will not be used to generate the answer'
       },
       {
         key: 'maxDocuments',
@@ -54,7 +45,26 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         min: 1,
         max: 20,
         step: 1,
-        information: 'Maximum number of documents to be proposed as sources for the answer'
+        information: 'Maximum number of documents to return as sources for the answer'
+      },
+      {
+        key: 'fillToMaxDocuments',
+        label: 'Pad with lower-scoring documents',
+        type: 'boolean',
+        defaultValue: false,
+        required: false,
+        information:
+          'If enabled, fill the result set with the best available documents (even if their score is below `Minimum score`) to reach `Max documents`'
+      },
+      {
+        key: 'minScore',
+        label: 'Minimum score',
+        type: 'number',
+        min: 0,
+        max: 1,
+        step: 0.05,
+        information:
+          'Minimum score threshold for documents. Documents below this score are excluded unless `Pad with lower-scoring documents` is enabled'
       }
     ]
   }

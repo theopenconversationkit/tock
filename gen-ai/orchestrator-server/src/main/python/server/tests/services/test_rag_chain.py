@@ -423,7 +423,7 @@ def test_compress_documents_with_unknown_label(mocked_rerank):
     mocked_rerank.return_value = mocked_response
 
     with pytest.raises(GenAIDocumentCompressorUnknownLabelException) as exc:
-        bloomz_reranker.compress_documents(documents=documents, query='Some query')
+        bloomz_reranker.compress_documents(documents=documents, query='Some query', isFaultTolerant=False)
 
     assert exc.value.error_code.value == 6002
     assert exc.value.message == 'Unknown Document Compressor label.'

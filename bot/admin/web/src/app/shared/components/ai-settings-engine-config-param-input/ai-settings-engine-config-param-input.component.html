@@ -54,6 +54,21 @@
         />
       </ng-container>
 
+      <ng-container *ngIf="configurationParam.type === 'boolean'">
+        <nb-toggle
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+          class="nb-toggle-small mt-2"
+          status="basic"
+        >
+          <span *ngIf="form.get(parentGroup).get(configurationParam.key).value">
+            Activated
+          </span>
+          <span *ngIf="!form.get(parentGroup).get(configurationParam.key).value">
+            Deactivated
+          </span>
+        </nb-toggle>
+      </ng-container>
+
       <ng-container *ngIf="configurationParam.type === 'prompt'">
         <textarea
           nbInput

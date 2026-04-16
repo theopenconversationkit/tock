@@ -422,7 +422,6 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
         label: 'Reasoning effort',
         type: 'openlist',
         source: ReasoningEffortValues,
-        defaultValue: 'low',
         required: false
       },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }
@@ -442,7 +441,6 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
         label: 'Reasoning effort',
         type: 'openlist',
         source: ReasoningEffortValues,
-        defaultValue: 'low',
         required: false
       },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05 }

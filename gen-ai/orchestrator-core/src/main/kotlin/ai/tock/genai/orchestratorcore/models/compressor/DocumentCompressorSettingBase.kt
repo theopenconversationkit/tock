@@ -32,6 +32,7 @@ abstract class DocumentCompressorSettingBase(
     val provider: DocumentCompressorProvider,
     open val maxDocuments: Int,
     open val minScore: Float,
+    open val fillToMaxDocuments: Boolean,
 )
 
 typealias DocumentCompressorSetting = DocumentCompressorSettingBase
