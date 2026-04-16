@@ -43,9 +43,18 @@ class BloomzCompressorFactory(DocumentCompressorFactory):
         )
 
     def check_document_compressor_setting(self) -> bool:
-        self.get_compressor().compress_documents(
+        compressed_docs = self.get_compressor().compress_documents(
             documents=[Document(page_content='Hello, world!')],
             query='Hi!'
         )
 
-        return True
+        # No document → acceptable (an extreme but valid case)
+        if not compressed_docs:
+            return True
+
+        # If at least one document has a score → OK
+        if any(doc.metadata.get('retriever_score') is not None for doc in compressed_docs):
+            return True
+
+        # Otherwise → fallback without scoring -> Problem
+        return False

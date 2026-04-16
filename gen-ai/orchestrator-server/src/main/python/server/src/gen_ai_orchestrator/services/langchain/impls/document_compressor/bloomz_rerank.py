@@ -34,7 +34,7 @@ class BloomzRerank(BaseDocumentCompressor):
     """Maximum number of documents to return to avoid exceeding max tokens for text generation."""
     label: str = 'entailment'
     """Label to use for reranking."""
-    fill_to_max_documents: bool = True
+    fill_to_max_documents: bool = False
     """If True, complete with the best remaining documents up to max_documents."""
 
     timeout: int = 5
