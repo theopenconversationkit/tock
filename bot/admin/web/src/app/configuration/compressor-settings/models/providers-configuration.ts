@@ -51,7 +51,7 @@ export const ProvidersConfigurations: CompressorProvidersConfiguration[] = [
         key: 'fillToMaxDocuments',
         label: 'Pad with lower-scoring documents',
         type: 'boolean',
-        defaultValue: true,
+        defaultValue: false,
         required: false,
         information:
           'If enabled, fill the result set with the best available documents (even if their score is below `Minimum score`) to reach `Max documents`'
