@@ -20,6 +20,12 @@ import requests
 from langchain_core.callbacks import Callbacks
 from langchain_core.documents import BaseDocumentCompressor, Document
 
+from gen_ai_orchestrator.errors.exceptions.document_compressor.document_compressor_exceptions import (
+    GenAIDocumentCompressorErrorException,
+    GenAIDocumentCompressorUnknownLabelException,
+)
+from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,6 +50,7 @@ class BloomzRerank(BaseDocumentCompressor):
         documents: Sequence[Document],
         query: str,
         callbacks: Callbacks | None = None,
+        isFaultTolerant: bool = True
     ) -> Sequence[Document]:
         """
         Compress documents.
@@ -77,6 +84,16 @@ class BloomzRerank(BaseDocumentCompressor):
                     f'[Compressor] Bad response {response.status_code} '
                     f'{response.reason} - {response.text}'
                 )
+
+                if not isFaultTolerant:
+                    raise GenAIDocumentCompressorErrorException(
+                        ErrorInfo(
+                            error=str(response.status_code),
+                            cause=f"Response: {response.text}, Reason: {response.reason}",
+                            request=f"[POST] {url}",
+                        )
+                    )
+
                 logger.warning('[Compressor] Fallback to original documents')
                 return documents
 
@@ -84,6 +101,16 @@ class BloomzRerank(BaseDocumentCompressor):
 
         except Exception as exc:
             logger.error(f'[Compressor] Exception during rerank call: {exc}')
+
+            if not isFaultTolerant:
+                raise GenAIDocumentCompressorErrorException(
+                    ErrorInfo(
+                        error=exc.__class__.__name__,
+                        cause=str(exc),
+                        request=f"[POST] {url}",
+                    )
+                )
+
             logger.warning('[Compressor] Fallback to original documents')
             return documents
 
@@ -100,9 +127,16 @@ class BloomzRerank(BaseDocumentCompressor):
                 scored_docs.append(documents[i])
 
             except StopIteration:
-                logger.warning(
+                message = (
                     f'[Compressor] Label "{self.label}" not found in {doc_results}'
                 )
+                logger.warning(message)
+
+                if not isFaultTolerant:
+                    raise GenAIDocumentCompressorUnknownLabelException(
+                        ErrorInfo(cause=message)
+                    )
+
                 continue
 
             except Exception as exc:

@@ -65,6 +65,8 @@ class ErrorCode(Enum):
     # Document Compressor Errors
     DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER = 6000
     DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER_SETTING = 6001
+    DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR = 6002
+    DOCUMENT_COMPRESSOR_API_ERROR = 6003
 
     @classmethod
     def __get_pydantic_json_schema__(
@@ -212,7 +214,13 @@ class ErrorMessages:
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
             message='Unknown Document Compressor Provider Settings.'
-        )
+        ),
+        ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR: ErrorMessage(
+            message='Unknown Document Compressor label.', detail='Check the Document Compressor label you sent.'
+        ),
+        ErrorCode.DOCUMENT_COMPRESSOR_API_ERROR: ErrorMessage(
+            message='Document Compressor API error.',
+        ),
     }
 
     def get_message(self, code: ErrorCode) -> ErrorMessage:
