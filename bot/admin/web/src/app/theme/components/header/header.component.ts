@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'default';
 
+  currentNamespaceName: string;
   currentApplicationName: string;
 
   constructor(
@@ -67,16 +68,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.state.currentLocale = this.settings.currentLocale;
     }
 
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe(() => this.refreshNamespaceName());
+
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
       this.currentApplicationName = '';
       setTimeout(() => {
         this.currentApplicationName = this.state?.currentApplication?.name;
       });
+      this.refreshNamespaceName();
     });
   }
 
-  get currentNamespaceName() {
-    return this.state.namespaces?.find((n) => n.current).namespace;
+  private refreshNamespaceName() {
+    const current = this.state.namespaces?.find((n) => n.current)?.namespace;
+    this.currentNamespaceName = null;
+    setTimeout(() => (this.currentNamespaceName = current));
   }
 
   changeNamespace(namespace: string) {

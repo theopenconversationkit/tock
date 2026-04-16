@@ -35,6 +35,11 @@ internal class NamespaceConfiguration_Serializer :
                 null
                 )
                 .serialize(_namespaceImportConfiguration_, gen, serializers)
+        gen.writeFieldName("label")
+        val _label_ = value.label
+        if(_label_ == null) { gen.writeNull() } else {
+                gen.writeString(_label_)
+                }
         gen.writeEndObject()
     }
 }

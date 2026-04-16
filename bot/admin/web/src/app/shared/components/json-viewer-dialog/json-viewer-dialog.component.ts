@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.front.shared.namespace
+import { Component, Input, OnInit } from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
 
-/**
- * A namespace configuration.
- */
-data class NamespaceConfiguration(
-    /**
-     * The applications namespace
-     */
-    val namespace: String,
-    /**
-     * Default exposure
-     */
-    val defaultSharingConfiguration: NamespaceSharingConfiguration = NamespaceSharingConfiguration(),
-    /**
-     * Namespace import configuration
-     */
-    val namespaceImportConfiguration: Map<String, NamespaceSharingConfiguration> = emptyMap(),
-    /**
-     * Optional namespace display label.
-     */
-    val label: String? = null,
-)
+@Component({
+  selector: 'tock-json-viewer-dialog',
+  templateUrl: './json-viewer-dialog.component.html',
+  styleUrls: ['./json-viewer-dialog.component.scss']
+})
+export class JsonViewerDialogComponent {
+  @Input() title?: string = 'Object infos';
+  @Input() data?: any;
+  @Input() customOrder?: string[] = [];
+
+  constructor(public dialogRef: NbDialogRef<JsonViewerDialogComponent>) {}
+
+  cancel() {
+    this.dialogRef.close();
+  }
+}

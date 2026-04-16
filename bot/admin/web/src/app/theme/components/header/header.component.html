@@ -81,7 +81,7 @@
         <nb-option
           *ngFor="let namespace of state.namespaces"
           [value]="namespace.namespace"
-          >{{ namespace.namespace }}
+          >{{ namespace.displayLabel() }}
         </nb-option>
       </nb-select>
     </nb-form-field>

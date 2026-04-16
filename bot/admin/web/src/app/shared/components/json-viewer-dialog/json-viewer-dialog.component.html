@@ -1,0 +1,21 @@
+<nb-card class="main-wrapper">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    {{ title }}
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="x-lg"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <tock-json-iterator
+      [data]="data"
+      [customOrder]="customOrder"
+    ></tock-json-iterator>
+  </nb-card-body>
+</nb-card>

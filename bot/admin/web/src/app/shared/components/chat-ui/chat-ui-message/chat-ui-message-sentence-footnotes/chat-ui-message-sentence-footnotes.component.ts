@@ -15,8 +15,11 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { SentenceWithFootnotes } from '../../../../model/dialog-data';
+import { Footnote, SentenceWithFootnotes } from '../../../../model/dialog-data';
 import { sanitizeURLSync } from 'url-sanitizer';
+import { ResilientDatePipe } from '../../../../pipes/resilient-date.pipe';
+import { NbDialogService } from '@nebular/theme';
+import { JsonViewerDialogComponent } from '../../../json-viewer-dialog/json-viewer-dialog.component';
 
 @Component({
   selector: 'tock-chat-ui-message-sentence-footnotes',
@@ -30,11 +33,43 @@ export class ChatUiMessageSentenceFootnotesComponent {
 
   @Input() formatting: boolean = true;
 
+  constructor(private resilientDatePipe: ResilientDatePipe, private nbDialogService: NbDialogService) {}
+
   isClamped(el): boolean {
     return el.offsetHeight < el.scrollHeight;
   }
 
   sanitizeUrl(url: string): string | null {
     return sanitizeURLSync(url);
+  }
+
+  getFootnoteTooltip(footnote: Footnote): string {
+    const tooltip = [];
+    if (footnote.score) tooltip.push(`Compressor score : ${footnote.score.toFixed(2)}`);
+    if (footnote.metadata?.index_datetime) {
+      const dateFormat = 'y/MM/dd HH:mm';
+      const ingestionDate = this.resilientDatePipe.transform(footnote.metadata?.index_datetime, dateFormat);
+      tooltip.push(`Ingestion date : ${ingestionDate}`);
+    }
+
+    if (tooltip.length === 0) {
+      if (footnote.title) {
+        tooltip.push(`Title : ${footnote.title}`);
+      } else {
+        return 'No additional information';
+      }
+    }
+
+    return tooltip.join(' | ');
+  }
+
+  displayFootnoteDetails(footnote: Footnote): void {
+    this.nbDialogService.open(JsonViewerDialogComponent, {
+      context: {
+        title: 'Footnote details',
+        data: footnote,
+        customOrder: ['title', 'url', 'score', 'metadata', 'content']
+      }
+    });
   }
 }

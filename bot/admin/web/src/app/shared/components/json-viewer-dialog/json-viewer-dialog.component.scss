@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2017/2025 SNCF Connect & Tech
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.front.shared.namespace
-
-/**
- * A namespace configuration.
- */
-data class NamespaceConfiguration(
-    /**
-     * The applications namespace
-     */
-    val namespace: String,
-    /**
-     * Default exposure
-     */
-    val defaultSharingConfiguration: NamespaceSharingConfiguration = NamespaceSharingConfiguration(),
-    /**
-     * Namespace import configuration
-     */
-    val namespaceImportConfiguration: Map<String, NamespaceSharingConfiguration> = emptyMap(),
-    /**
-     * Optional namespace display label.
-     */
-    val label: String? = null,
-)
+.main-wrapper {
+  min-width: 90vw;
+  max-width: 90vw;
+}

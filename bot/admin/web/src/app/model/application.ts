@@ -287,7 +287,11 @@ export class UserLogQueryResult {
 }
 
 export class UserNamespace {
-  constructor(public namespace: string, public login: string, public owner: boolean, public current: boolean) {}
+  constructor(public namespace: string, public login: string, public owner: boolean, public current: boolean, public label?: string) {}
+
+  displayLabel(): string {
+    return this.label && this.label !== this.namespace ? `${this.label} (${this.namespace})` : this.namespace;
+  }
 
   static fromJSON(json?: any): UserNamespace {
     const value = Object.create(UserNamespace.prototype);
@@ -306,8 +310,13 @@ export class NamespaceConfiguration {
   constructor(
     public namespace: string,
     public defaultSharingConfiguration: NamespaceSharingConfiguration,
-    public namespaceImportConfiguration: Map<string, NamespaceSharingConfiguration>
+    public namespaceImportConfiguration: Map<string, NamespaceSharingConfiguration>,
+    public label?: string
   ) {}
+
+  displayLabel(): string {
+    return this.label && this.label !== this.namespace ? `${this.label} (${this.namespace})` : this.namespace;
+  }
 
   static fromJSON(json?: any): NamespaceConfiguration {
     if (!json || !json.namespace) {

@@ -28,6 +28,8 @@ interface NamespaceConfigurationDAO {
 
     fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration>
 
+    fun deleteNamespaceConfiguration(namespace: String)
+
     /**
      * Listen changes on namespace configurations.
      */

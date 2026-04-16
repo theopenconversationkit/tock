@@ -16,7 +16,7 @@
 
 package ai.tock.nlp.front.service
 
-import ai.tock.nlp.front.service.storage.UserNamespaceDAO
+import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -25,7 +25,7 @@ import ai.tock.shared.security.TockUserListener
 import mu.KotlinLogging
 
 object AdminTockUserListener : TockUserListener {
-    private val namespaceDAO: UserNamespaceDAO get() = injector.provide()
+    private val configuration: ApplicationConfiguration get() = injector.provide()
 
     private val logger = KotlinLogging.logger {}
 
@@ -35,7 +35,7 @@ object AdminTockUserListener : TockUserListener {
     ): TockUser {
         logger.info { "register $user" }
         var namespace = user.namespace.lowercase()
-        val existingNamespaces = namespaceDAO.getNamespaces(user.user)
+        val existingNamespaces = configuration.getNamespaces(user.user)
         // if current: take it
         var selected = existingNamespaces.find { it.current }
         if (selected == null) {
@@ -45,14 +45,14 @@ object AdminTockUserListener : TockUserListener {
             // if existing: take it
             do {
                 selected = existingNamespaces.find { it.namespace.equals(namespace, ignoreCase = true) }?.copy(current = true)
-                if (selected == null && (joinNamespace || namespaceDAO.getUsers(namespace).isEmpty())) {
+                if (selected == null && (joinNamespace || configuration.getUsers(namespace).isEmpty())) {
                     selected = UserNamespace(user.user, namespace, true, true)
                 } else {
                     namespace = baseNamespace + (index++)
                 }
             } while (selected == null)
 
-            namespaceDAO.saveNamespace(selected)
+            configuration.saveNamespace(selected)
         }
 
         logger.debug { "selecting ${selected.namespace} for ${user.user}" }

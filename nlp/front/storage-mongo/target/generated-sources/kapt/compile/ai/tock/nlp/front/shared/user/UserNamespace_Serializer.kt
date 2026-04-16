@@ -28,6 +28,11 @@ internal class UserNamespace_Serializer : StdSerializer<UserNamespace>(UserNames
         gen.writeFieldName("current")
         val _current_ = value.current
         gen.writeBoolean(_current_)
+        gen.writeFieldName("label")
+        val _label_ = value.label
+        if(_label_ == null) { gen.writeNull() } else {
+                gen.writeString(_label_)
+                }
         gen.writeEndObject()
     }
 }

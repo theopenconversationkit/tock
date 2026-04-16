@@ -15,6 +15,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { CreateNamespaceComponent } from './create-namespace.component';
 import { NbDialogRef } from '@nebular/theme';
@@ -26,6 +27,7 @@ describe('CreateNamespaceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CreateNamespaceComponent],
+      imports: [ReactiveFormsModule],
       providers: [
         {
           provide: NbDialogRef,
@@ -41,5 +43,19 @@ describe('CreateNamespaceComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should generate the technical namespace name from the label', () => {
+    component.label.setValue('Mon Namespace RH');
+
+    expect(component.name.value).toBe('mon_namespace_rh');
+  });
+
+  it('should keep the manually edited technical namespace name', () => {
+    component.label.setValue('Mon Namespace RH');
+    component.name.setValue('rh_custom');
+    component.label.setValue('Mon Namespace RH Final');
+
+    expect(component.name.value).toBe('rh_custom');
   });
 });

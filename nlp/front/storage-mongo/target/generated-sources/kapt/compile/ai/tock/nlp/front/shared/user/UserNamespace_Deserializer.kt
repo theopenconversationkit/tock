@@ -28,6 +28,8 @@ internal class UserNamespace_Deserializer : JsonDeserializer<UserNamespace>(),
             var _owner_set : Boolean = false
             var _current_: Boolean? = null
             var _current_set : Boolean = false
+            var _label_: String? = null
+            var _label_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -58,6 +60,11 @@ internal class UserNamespace_Deserializer : JsonDeserializer<UserNamespace>(),
                              else p.booleanValue;
                             _current_set = true
                             }
+                    "label" -> {
+                            _label_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _label_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -66,9 +73,9 @@ internal class UserNamespace_Deserializer : JsonDeserializer<UserNamespace>(),
                     } 
                 _token_ = currentToken
                         } 
-            return if(_login_set && _namespace_set && _owner_set && _current_set)
+            return if(_login_set && _namespace_set && _owner_set && _current_set && _label_set)
                     UserNamespace(login = _login_!!, namespace = _namespace_!!, owner = _owner_!!,
-                            current = _current_!!)
+                            current = _current_!!, label = _label_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_login_set)
@@ -78,7 +85,9 @@ internal class UserNamespace_Deserializer : JsonDeserializer<UserNamespace>(),
                     if(_owner_set)
                     map[parameters.getValue("owner")] = _owner_
                     if(_current_set)
-                    map[parameters.getValue("current")] = _current_ 
+                    map[parameters.getValue("current")] = _current_
+                    if(_label_set)
+                    map[parameters.getValue("label")] = _label_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -93,6 +102,7 @@ internal class UserNamespace_Deserializer : JsonDeserializer<UserNamespace>(),
                 primaryConstructor.findParameterByName("login")!!, "namespace" to
                 primaryConstructor.findParameterByName("namespace")!!, "owner" to
                 primaryConstructor.findParameterByName("owner")!!, "current" to
-                primaryConstructor.findParameterByName("current")!!) }
+                primaryConstructor.findParameterByName("current")!!, "label" to
+                primaryConstructor.findParameterByName("label")!!) }
     }
 }

@@ -24,6 +24,7 @@ import ai.tock.nlp.front.shared.namespace.NamespaceSharingConfiguration
 import ai.tock.shared.watch
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import org.litote.kmongo.deleteOne
 import org.litote.kmongo.div
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -60,6 +61,10 @@ object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
             ),
         )
             .toList()
+
+    override fun deleteNamespaceConfiguration(namespace: String) {
+        col.deleteOne(Namespace eq namespace)
+    }
 
     override fun listenNamespaceConfigurationChanges(listener: () -> Unit) {
         asyncCol.watch { listener() }

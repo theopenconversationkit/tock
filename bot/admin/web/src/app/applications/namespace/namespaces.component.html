@@ -56,7 +56,7 @@
       <span
         class="lead text-nowrap"
         [ngClass]="{ 'font-weight-bold': state.currentApplication && n.namespace === state.currentApplication.namespace }"
-        >{{ n.namespace }}</span
+        >{{ n.displayLabel() }}</span
       >
 
       <div class="flex-grow-1 text-muted">
@@ -83,7 +83,7 @@
         ghost
         shape="round"
         (click)="manageSharingSettings(n.namespace)"
-        nbTooltip="Configure sharing settings"
+        nbTooltip="Configure namespace settings"
       >
         <nb-icon icon="gear"></nb-icon>
       </button>
@@ -107,7 +107,7 @@
     >
       <nb-card-header>
         <span *ngIf="state.applications.length !== 0">
-          <b>{{ managedNamespace }}</b> namespace users
+          <b>Namespace users</b>
         </span>
       </nb-card-header>
 
@@ -179,37 +179,51 @@
     >
       <nb-card-header>
         <span *ngIf="state.applications.length !== 0">
-          <b>{{ managedNamespace }}</b> namespace shared settings
+          <b>Namespace settings</b>
         </span>
       </nb-card-header>
 
       <nb-card-body>
-        <p>
-          <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model"
-            >Allow sharing <b>model</b> with other namespaces</nb-toggle
-          >
-        </p>
-        <p>
-          <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories"
-            >Allow sharing <b>stories</b> with other namespaces</nb-toggle
-          >
-        </p>
-        <p>
-          Imported namespaces:
+        <div class="settings-section">
+          <div class="settings-section-title">Display label</div>
+          <nb-form-field class="w-100 settings-field">
+            <input
+              nbInput
+              [(ngModel)]="namespaceConfiguration.label"
+              placeholder="Namespace label"
+              fullWidth
+            />
+          </nb-form-field>
+          <div class="text-muted settings-help">If empty, the technical namespace name is used.</div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Sharing</div>
+          <p>
+            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model"
+              >Allow sharing <b>model</b> with other namespaces</nb-toggle
+            >
+          </p>
+          <p>
+            <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories"
+              >Allow sharing <b>stories</b> with other namespaces</nb-toggle
+            >
+          </p>
+          <div class="settings-section-description mb-2">Imported namespaces</div>
           <nb-select
             multiple
             placeholder="None"
             [(selected)]="importedNamespaces"
-            style="width: 400px"
+            class="imported-namespaces-select"
           >
             <nb-option
               *ngFor="let c of sharableNamespaceConfigurations"
               [value]="c.namespace"
             >
-              {{ c.namespace }}
+              {{ c.displayLabel() }}
             </nb-option>
           </nb-select>
-        </p>
+        </div>
       </nb-card-body>
       <nb-card-footer class="text-right">
         <button
