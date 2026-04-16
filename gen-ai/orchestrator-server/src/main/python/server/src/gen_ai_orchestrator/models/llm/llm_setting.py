@@ -27,20 +27,20 @@ from gen_ai_orchestrator.models.security.security_types import SecretKey
 class BaseLLMSetting(BaseModel):
     """A base class for Large Language Model Setting."""
 
-    provider: LLMProvider = Field(description="The Large Language Model Provider.")
+    provider: LLMProvider = Field(description='The Large Language Model Provider.')
     api_key: Optional[SecretKey] = Field(
-        description="The secret that stores the API key used to authenticate requests to the AI Provider API.",
-        examples=[RawSecretKey(secret="ab7-************-A1IV4B")],
-        default=None,
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
+        default=None
     )
     temperature: float = Field(
-        description="The temperature that controls the randomness of the text generated.",
-        examples=["1.2"],
+        description='The temperature that controls the randomness of the text generated.',
+        examples=['1.2'],
         ge=0,
         le=2,
     )
     reasoning_effort: Optional[str] = Field(
-        description="The reasoning effort level for reasoning models (e.g. o1). Supported values: minimal, low, medium, high.",
-        examples=["minimal", "low", "medium", "high"],
+        description='The reasoning effort level for reasoning models (e.g. o1). Supported values: minimal, low, medium, high.',
+        examples=['minimal', 'low', 'medium', 'high'],
         default=None,
     )
