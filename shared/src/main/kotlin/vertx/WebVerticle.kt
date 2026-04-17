@@ -103,6 +103,12 @@ abstract class WebVerticle : AbstractVerticle() {
         }
 
         private val fileUploadDirectory = property("tock_file_upload_directory", "file-uploads")
+
+        private val vertxSessionExpiration = longProperty(
+            name = "tock_vertx_session_expiration_timeout",
+            // 6h
+            defaultValue = 6 * 60 * 60 * 1000,
+        )
     }
 
     open val logger: KLogger = KotlinLogging.logger {}
@@ -253,11 +259,13 @@ abstract class WebVerticle : AbstractVerticle() {
         authProvider: TockAuthProvider = defaultAuthProvider(),
         pathsToProtect: MutableSet<String> = protectedPaths().map { "$it/*" }.toMutableSet(),
     ) {
-        pathsToProtect.addAll(protectedPaths())
         val https = !devEnvironment && booleanProperty("tock_https_env", true)
+
+        logger.info { "Vertx session expiration: $vertxSessionExpiration (ms)" }
+
         val sessionHandler =
             SessionHandler.create(LocalSessionStore.create(vertx))
-                .setSessionTimeout(6 * 60 * 60 * 1000) // 6h
+                .setSessionTimeout(vertxSessionExpiration)
                 .setNagHttps(https)
                 .setCookieHttpOnlyFlag(https)
                 .setCookieSecureFlag(https)
