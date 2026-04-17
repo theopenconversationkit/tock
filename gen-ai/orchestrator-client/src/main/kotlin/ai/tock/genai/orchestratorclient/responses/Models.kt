@@ -26,7 +26,7 @@ data class ChunkSentences(
 data class LLMAnswer(
     val status: String?,
     val answer: String?,
-    val confidenceScore: Double? = 0.0,
+    val confidenceScore: Double? = null,
     val displayAnswer: Boolean? = true,
     val topic: String? = null,
     val suggestedTopics: List<String>? = null,

@@ -52,6 +52,7 @@ data class DialogsSearchQuery(
     val feedback: FeedbackVote? = null,
     val dialogActivityFrom: ZonedDateTime? = null,
     val dialogActivityTo: ZonedDateTime? = null,
+    val ragAnswerStatus: String? = null,
 ) : PaginatedQuery() {
     fun toDialogReportQuery(): DialogReportQuery {
         return DialogReportQuery(
@@ -83,6 +84,7 @@ data class DialogsSearchQuery(
             feedback = feedback,
             dialogActivityFrom = dialogActivityFrom,
             dialogActivityTo = dialogActivityTo,
+            ragAnswerStatus = ragAnswerStatus,
         )
     }
 }

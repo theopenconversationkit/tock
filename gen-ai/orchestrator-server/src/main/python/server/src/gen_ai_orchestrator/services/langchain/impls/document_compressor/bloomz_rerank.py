@@ -44,13 +44,14 @@ class BloomzRerank(BaseDocumentCompressor):
     """If True, complete with the best remaining documents up to max_documents."""
 
     timeout: int = 5
+    is_fault_tolerant: bool = True
+    """If True, the treatment is fault-tolerant."""
 
     def compress_documents(
         self,
         documents: Sequence[Document],
         query: str,
-        callbacks: Callbacks | None = None,
-        isFaultTolerant: bool = True
+        callbacks: Callbacks | None = None
     ) -> Sequence[Document]:
         """
         Compress documents.
@@ -85,7 +86,7 @@ class BloomzRerank(BaseDocumentCompressor):
                     f'{response.reason} - {response.text}'
                 )
 
-                if not isFaultTolerant:
+                if not self.is_fault_tolerant:
                     raise GenAIDocumentCompressorErrorException(
                         ErrorInfo(
                             error=str(response.status_code),
@@ -102,7 +103,7 @@ class BloomzRerank(BaseDocumentCompressor):
         except Exception as exc:
             logger.error(f'[Compressor] Exception during rerank call: {exc}')
 
-            if not isFaultTolerant:
+            if not self.is_fault_tolerant:
                 raise GenAIDocumentCompressorErrorException(
                     ErrorInfo(
                         error=exc.__class__.__name__,
@@ -132,7 +133,7 @@ class BloomzRerank(BaseDocumentCompressor):
                 )
                 logger.warning(message)
 
-                if not isFaultTolerant:
+                if not self.is_fault_tolerant:
                     raise GenAIDocumentCompressorUnknownLabelException(
                         ErrorInfo(cause=message)
                     )

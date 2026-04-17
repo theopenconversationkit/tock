@@ -18,6 +18,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CoreModule } from './core-nlp/core.module';
 import { BotAdminAppComponent } from './bot-admin-app.component';
+import { BotSharedModule } from './shared/bot-shared.module'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -46,7 +47,7 @@ import { NlpService } from './core-nlp/nlp.service';
     BrowserAnimationsModule,
     HttpClientModule,
     CoreModule,
-
+    BotSharedModule,
     BotCoreModule,
     BotAdminAppRoutingModule,
 

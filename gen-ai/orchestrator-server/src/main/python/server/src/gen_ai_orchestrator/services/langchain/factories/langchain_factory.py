@@ -375,18 +375,23 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
 
 
 def get_compressor_factory(
-    setting: BaseDocumentCompressorSetting,
+    setting: BaseDocumentCompressorSetting, is_fault_tolerant: bool = True
 ) -> DocumentCompressorFactory:
     """
     Creates a  Compressor Factory according to the compressor provider
     Args:
         setting: The  compressor setting
+        is_fault_tolerant: If True, the treatment is fault-tolerant.
     Returns:
         The  Compressor Factory, or raise an exception otherwise
     """
     logger.info('Get Document Compressor Factory for the given setting')
     if isinstance(setting, BloomzCompressorSetting):
-        logger.debug('Document Compressor Factory - BloomzCompressorFactory')
-        return BloomzCompressorFactory(setting=setting)
+        logger.debug(
+            'Document Compressor Factory - BloomzCompressorFactory'
+        )
+        return BloomzCompressorFactory(
+            setting=setting, is_fault_tolerant = is_fault_tolerant
+        )
     else:
         raise GenAIUnknownDocumentCompressorProviderSettingException()

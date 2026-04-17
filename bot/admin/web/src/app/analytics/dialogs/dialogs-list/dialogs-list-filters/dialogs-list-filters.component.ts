@@ -32,6 +32,7 @@ export const FeedbackVotes = [
   { label: 'Negative feedback', value: FeedbackVote.DOWN }
 ] as const;
 import { ResponseIssueReason, ResponseIssueReasons } from '../../../../shared/model/response-issue';
+import { RagAnswerStatusDisplayOrder, RagAnswerStatusIcons, RagAnswerStatusLabels } from '../../../../shared/utils';
 
 interface DialogListFiltersForm {
   exactMatch: FormControl<boolean>;
@@ -54,6 +55,7 @@ interface DialogListFiltersForm {
   annotationCreationDateFrom?: FormControl<Date>;
   annotationCreationDateTo?: FormControl<Date>;
   feedback?: FormControl<FeedbackVote>;
+  ragAnswerStatus?: FormControl<string>;
 }
 
 export type DialogListFilters = ExtractFormControlTyping<DialogListFiltersForm>;
@@ -75,6 +77,9 @@ export class DialogsListFiltersComponent implements OnInit, OnDestroy {
   annotationReasons = ResponseIssueReasons;
   sortOrders = SortOrders;
   feedbackVotes = FeedbackVotes;
+  ragAnswerStatusLabels = RagAnswerStatusLabels;
+  ragAnswerStatusIcons = RagAnswerStatusIcons;
+  ragAnswerStatusDisplayOrder = RagAnswerStatusDisplayOrder;
 
   @Input() initialFilters: Partial<DialogListFilters>;
   @Output() onFilter = new EventEmitter<Partial<DialogListFilters>>();
@@ -131,7 +136,8 @@ export class DialogsListFiltersComponent implements OnInit, OnDestroy {
     annotationSort: new FormControl(),
     annotationCreationDateFrom: new FormControl(),
     annotationCreationDateTo: new FormControl(),
-    feedback: new FormControl()
+    feedback: new FormControl(),
+    ragAnswerStatus: new FormControl()
   });
 
   getFormControl(formControlName: string): FormControl {

@@ -38,4 +38,4 @@ def check_document_compressor_setting(setting: DocumentCompressorSetting) -> boo
     """
 
     logger.info('Get the Callback handler Factory, then check the Document Compressor setting.')
-    return get_compressor_factory(setting).check_document_compressor_setting()
+    return get_compressor_factory(setting = setting, is_fault_tolerant = False).check_document_compressor_setting()

@@ -24,6 +24,7 @@ from gen_ai_orchestrator.models.document_compressor.document_compressor_setting 
 
 class DocumentCompressorFactory(ABC, BaseModel):
     setting: BaseDocumentCompressorSetting
+    is_fault_tolerant: bool = True
 
     @abstractmethod
     def get_compressor(self) -> BaseDocumentCompressor:

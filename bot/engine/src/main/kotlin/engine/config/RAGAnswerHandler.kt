@@ -266,13 +266,17 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         else -> RAGError(errorMessage = exc.message)
                     }
 
+                val errorAnswer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage)
+
                 debug =
                     (debug as? MutableMap<String, Any?> ?: mutableMapOf()).apply {
                         this["error"] = ragError
+                    }.apply {
+                        this["answer"] = errorAnswer
                     }
 
                 return RAGResult(
-                    answer = LLMAnswer(status = "technical_error", answer = technicalErrorMessage),
+                    answer = errorAnswer,
                     debug = debug,
                 )
             }

@@ -34,13 +34,37 @@ export enum RagAnswerStatus {
   NOT_FOUND_IN_CONTEXT = 'not_found_in_context',
   SMALL_TALK = 'small_talk',
   OUT_OF_SCOPE = 'out_of_scope',
-  HUMAN_ESCALATION = 'human_escalation'
+  HUMAN_ESCALATION = 'human_escalation',
+  INJECTION_ATTEMPT = 'injection_attempt',
+  TECHNICAL_ERROR = 'technical_error'
 }
 
 export const RagAnswerStatusLabels: Record<RagAnswerStatus, string> = {
   [RagAnswerStatus.FOUND_IN_CONTEXT]: 'Found in context',
   [RagAnswerStatus.NOT_FOUND_IN_CONTEXT]: 'Not found in context',
   [RagAnswerStatus.SMALL_TALK]: 'Small talk',
+  [RagAnswerStatus.HUMAN_ESCALATION]: 'Human escalation',
   [RagAnswerStatus.OUT_OF_SCOPE]: 'Out of scope',
-  [RagAnswerStatus.HUMAN_ESCALATION]: 'Human escalation'
+  [RagAnswerStatus.INJECTION_ATTEMPT]: 'Injection attempt',
+  [RagAnswerStatus.TECHNICAL_ERROR]: 'Technical error'
+};
+
+export const RagAnswerStatusDisplayOrder = [
+  RagAnswerStatus.FOUND_IN_CONTEXT,
+  RagAnswerStatus.NOT_FOUND_IN_CONTEXT,
+  RagAnswerStatus.SMALL_TALK,
+  RagAnswerStatus.HUMAN_ESCALATION,
+  RagAnswerStatus.OUT_OF_SCOPE,
+  RagAnswerStatus.INJECTION_ATTEMPT,
+  RagAnswerStatus.TECHNICAL_ERROR
+];
+
+export const RagAnswerStatusIcons: Record<RagAnswerStatus, string> = {
+  [RagAnswerStatus.FOUND_IN_CONTEXT]: 'check-circle',
+  [RagAnswerStatus.NOT_FOUND_IN_CONTEXT]: 'x-circle',
+  [RagAnswerStatus.SMALL_TALK]: 'chat-dots',
+  [RagAnswerStatus.OUT_OF_SCOPE]: 'slash-circle',
+  [RagAnswerStatus.HUMAN_ESCALATION]: 'person-raised-hand',
+  [RagAnswerStatus.INJECTION_ATTEMPT]: 'shield-exclamation',
+  [RagAnswerStatus.TECHNICAL_ERROR]: 'bug'
 };

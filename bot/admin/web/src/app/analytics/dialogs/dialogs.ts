@@ -52,7 +52,8 @@ export class DialogReportQuery extends PaginatedQuery {
     public annotationSort?: SortOrder,
     public annotationCreationDateFrom?: Date,
     public annotationCreationDateTo?: Date,
-    public feedback?: FeedbackVote
+    public feedback?: FeedbackVote,
+    public ragAnswerStatus?: string
   ) {
     super(namespace, applicationName, language, start, size);
   }

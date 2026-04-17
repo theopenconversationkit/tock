@@ -161,7 +161,8 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.filters.annotationSort,
       this.filters.annotationCreationDateFrom,
       this.filters.annotationCreationDateTo,
-      this.filters.feedback
+      this.filters.feedback,
+      this.filters.ragAnswerStatus
     );
 
     this.analytics.dialogs(this.dialogReportQuery).subscribe((result) => {

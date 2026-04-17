@@ -395,7 +395,7 @@ def test_compress_documents_should_succeed(mocked_rerank):
     'gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post'
 )
 def test_compress_documents_with_unknown_label(mocked_rerank):
-    bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com')
+    bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com', is_fault_tolerant=False)
     documents = [
         Document(
             page_content='Page content 1',
@@ -423,7 +423,7 @@ def test_compress_documents_with_unknown_label(mocked_rerank):
     mocked_rerank.return_value = mocked_response
 
     with pytest.raises(GenAIDocumentCompressorUnknownLabelException) as exc:
-        bloomz_reranker.compress_documents(documents=documents, query='Some query', isFaultTolerant=False)
+        bloomz_reranker.compress_documents(documents=documents, query='Some query')
 
     assert exc.value.error_code.value == 6002
     assert exc.value.message == 'Unknown Document Compressor label.'

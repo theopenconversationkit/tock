@@ -71,6 +71,7 @@ data class DialogReportQuery(
     val annotationCreationDateFrom: ZonedDateTime? = null,
     val annotationCreationDateTo: ZonedDateTime? = null,
     val feedback: FeedbackVote? = null,
+    val ragAnswerStatus: String? = null,
     /**
      * Filter dialogs that had activity during the specified period.
      * A dialog is included if:

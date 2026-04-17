@@ -98,6 +98,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { ScrollComponent } from '../scroll/scroll.component';
+import { SortByOrderPipe } from './pipes/sort-by-order.pipe';
 import { ResilientDatePipe } from './pipes/resilient-date.pipe';
 
 @NgModule({
@@ -180,6 +181,7 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     TextareaAutocompleteDirective,
     AnnotationComponent,
     AnnotationCommentComponent,
+    SortByOrderPipe,
     ResilientDatePipe,
     JsonViewerDialogComponent
   ],
@@ -215,9 +217,10 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     DataExportComponent,
     WysiwygEditorComponent,
     TextareaAutocompleteDirective,
+    SortByOrderPipe,
     ResilientDatePipe,
     JsonViewerDialogComponent
   ],
-  providers: [BotSharedService, AnalyticsService, ResilientDatePipe, DatePipe]
+  providers: [BotSharedService, SortByOrderPipe, AnalyticsService, ResilientDatePipe, DatePipe]
 })
 export class BotSharedModule {}
