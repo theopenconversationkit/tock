@@ -176,7 +176,13 @@ export class RestService {
     if (e instanceof Response || e instanceof HttpErrorResponse) {
       console.log('error instance of Response');
       if (e.status === 403 || e.status === 401) {
-        rest.router.navigateByUrl('/login');
+        if (this.isSSO()) {
+          console.error('invalid token - refresh');
+          location.reload();
+        } else {
+          rest.router.navigateByUrl('/login');
+        }
+
         return NEVER;
       }
       // returnErrorOn400422 : Used to receive error from calling subscription in cases where validation infos are required from server side
@@ -189,13 +195,6 @@ export class RestService {
       // returnErrorOn400422 : Used to receive error from calling subscription in cases where validation infos are required from server side
       if (returnErrorOn400422 && [400, 422].includes(e.status)) {
         return observableThrowError(error);
-      }
-
-      //strange things happen
-      if (e && e.status === 0 && this.isSSO()) {
-        console.error('invalid token - refresh');
-        location.reload();
-        return NEVER;
       }
 
       if (e.error?.errors && Array.isArray(e.error.errors)) {
@@ -215,6 +214,13 @@ export class RestService {
           ? e
           : 'Unknown error';
       }
+    }
+
+    // strange things happen
+    if (e && e.status === 0 && this.isSSO()) {
+      console.error('invalid token - refresh');
+      location.reload();
+      return NEVER;
     }
 
     rest.errorEmitter.emit(errMsg);
