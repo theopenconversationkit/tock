@@ -101,7 +101,11 @@ async def retrieve_documents_with_variants(
     for variant in variants:
         docs.extend(await retriever.ainvoke(variant))
 
-    unique_docs = {d.metadata['id']: d for d in docs}
+    unique_docs = {
+        (d.metadata.get('id'), d.metadata.get('chunk')): d
+        for d in docs
+    }
+
     return list(unique_docs.values())
 
 
