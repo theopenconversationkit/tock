@@ -47,6 +47,10 @@
             <artifactId>vertx-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-kotlin-coroutines</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
         </dependency>
