@@ -430,8 +430,7 @@ object DatasetService {
 
         return when (candidates.size) {
             0 -> throw DatasetError.InvalidRequest("No REST test configuration found for bot $botId")
-            1 -> candidates.first()
-            else -> throw DatasetError.InvalidRequest("Multiple REST test configurations found for bot $botId")
+            else -> candidates.first()
         }
     }
 
