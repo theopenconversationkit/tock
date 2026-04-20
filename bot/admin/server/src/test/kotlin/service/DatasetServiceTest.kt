@@ -62,6 +62,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -111,7 +112,7 @@ class DatasetServiceTest : AbstractTest() {
 
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getActiveRunsByDatasetId(dataset._id) } returns emptyList()
-        every { AbstractTest.applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns listOf(restConfiguration)
+        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns listOf(restConfiguration)
         every { ragConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
         every { datasetRunDAO.saveRun(capture(runSlot)) } answers { runSlot.captured }
         every { datasetRunDAO.saveQuestionResults(capture(questionResultsSlot)) } returns Unit
@@ -152,29 +153,32 @@ class DatasetServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `createRun throws when several REST configurations are available`() {
+    fun `createRun does not throws when several REST configurations are available`() {
         val dataset = newDataset()
+        val runSlot = slot<DatasetRun>()
+        val questionResultsSlot = slot<List<DatasetRunQuestionResult>>()
 
         every { datasetDAO.getDatasetById(any()) } returns dataset
         every { datasetRunDAO.getActiveRunsByDatasetId(dataset._id) } returns emptyList()
-        every { AbstractTest.applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns
+        every { applicationConfigurationDAO.getConfigurationsByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns
             listOf(
                 newRestConfiguration("test-app-a"),
                 newRestConfiguration("test-app-b"),
             )
+        every { ragConfigurationDAO.findByNamespaceAndBotId(NAMESPACE, BOT_ID) } returns null
+        every { datasetRunDAO.saveRun(capture(runSlot)) } answers { runSlot.captured }
+        every { datasetRunDAO.saveQuestionResults(capture(questionResultsSlot)) } returns Unit
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } answers { questionResultsSlot.captured }
 
-        val exception =
-            assertThrows<DatasetError.InvalidRequest> {
-                DatasetService.createRun(
-                    namespace = NAMESPACE,
-                    botId = BOT_ID,
-                    datasetId = dataset._id.toString(),
-                    request = DatasetRunCreateRequest(language = "fr"),
-                    userLogin = USER,
-                )
-            }
-
-        assertEquals("Multiple REST test configurations found for bot $BOT_ID", exception.message)
+        assertDoesNotThrow {
+            DatasetService.createRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                request = DatasetRunCreateRequest(language = "fr"),
+                userLogin = USER,
+            )
+        }
     }
 
     @Test
