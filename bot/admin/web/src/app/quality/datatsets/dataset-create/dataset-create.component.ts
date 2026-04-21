@@ -48,8 +48,8 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   }
 
   form = new FormGroup<DatasetForm>({
-    name: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
-    description: new FormControl('', [Validators.maxLength(750)]),
+    name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(5), Validators.maxLength(100)] }),
+    description: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(750)] }),
     questions: new FormArray<FormGroup<QuestionForm>>([], [atLeastOneFilledQuestion])
   });
 
@@ -64,7 +64,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (this.isEditMode) {
+    if (this.isEditMode && this.dataset) {
       this._populateForm(this.dataset);
     } else {
       this._appendEmptyQuestion();
@@ -80,8 +80,14 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     dataset.questions.forEach((q) => {
       this.questions.push(
         new FormGroup<QuestionForm>({
-          question: new FormControl(q.question, [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
-          groundTruth: new FormControl(q.groundTruth ?? '', [Validators.maxLength(groundtruth_maxLength)])
+          question: new FormControl(q.question, {
+            nonNullable: true,
+            validators: [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]
+          }),
+          groundTruth: new FormControl(q.groundTruth ?? '', {
+            nonNullable: true,
+            validators: [Validators.maxLength(groundtruth_maxLength)]
+          })
         })
       );
     });
@@ -120,8 +126,11 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   private _appendEmptyQuestion(): void {
     this.questions.push(
       new FormGroup<QuestionForm>({
-        question: new FormControl('', [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
-        groundTruth: new FormControl('', [Validators.maxLength(groundtruth_maxLength)])
+        question: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]
+        }),
+        groundTruth: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(groundtruth_maxLength)] })
       })
     );
   }
@@ -145,11 +154,48 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       }));
   }
 
+  get invalidQuestionCount(): number {
+    return this.questions.controls.filter((g, i) => !this.isLastEntry(i) && (g.controls.question.invalid || g.controls.groundTruth.invalid))
+      .length;
+  }
+
+  private _scrollToFirstInvalidField(): void {
+    setTimeout(() => {
+      if (this.form.controls.name.invalid) {
+        const nameInput = document.querySelector('[formControlName="name"]') as HTMLElement;
+        nameInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        nameInput?.focus();
+        return;
+      }
+
+      if (this.form.controls.description.invalid) {
+        const descInput = document.querySelector('[formControlName="description"]') as HTMLElement;
+        descInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        descInput?.focus();
+        return;
+      }
+
+      const invalidIndex = this.questions.controls.findIndex(
+        (g, i) => !this.isLastEntry(i) && (g.controls.question.invalid || g.controls.groundTruth.invalid)
+      );
+
+      if (invalidIndex !== -1) {
+        const inputs = this.questionInputs.toArray();
+        const el = inputs[invalidIndex]?.nativeElement;
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus();
+      }
+    }, 50);
+  }
+
   submit(): void {
     this.isSubmitted = true;
     this.questions.updateValueAndValidity();
 
-    if (!this.form.valid) return;
+    if (!this.form.valid) {
+      this._scrollToFirstInvalidField();
+      return;
+    }
 
     this.isLoading = true;
 

@@ -1,16 +1,33 @@
 <nb-card class="mb-2">
-  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-    <div class="pt-1">{{ isEditMode ? 'Edit dataset' : 'New dataset' }}</div>
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start gap-1">
+      <div class="pt-1">{{ isEditMode ? 'Edit dataset' : 'New dataset' }}</div>
 
-    <button
-      type="button"
-      nbButton
-      shape="round"
-      nbTooltip="Close"
-      (click)="dialogRef.close()"
+      <button
+        type="button"
+        nbButton
+        shape="round"
+        nbTooltip="Close"
+        (click)="dialogRef.close()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </div>
+
+    <nb-alert
+      *ngIf="isSubmitted && !form.valid"
+      status="danger"
+      class="mb-3"
     >
-      <nb-icon icon="x-lg"></nb-icon>
-    </button>
+      <ul class="mb-0 ps-3 font-color-white">
+        <li *ngIf="form.controls.name.invalid">The dataset name is invalid.</li>
+        <li *ngIf="form.controls.description.invalid">The dataset description is invalid.</li>
+        <li *ngIf="questions.invalid">
+          {{ invalidQuestionCount }} question{{ invalidQuestionCount > 1 ? 's are' : ' is' }} invalid. Please ensure all questions are
+          filled out and do not exceed the character limit.
+        </li>
+      </ul>
+    </nb-alert>
   </nb-card-header>
 
   <nb-card-body>
@@ -110,7 +127,15 @@
                   placeholder="Ground truth (optional)"
                   rows="2"
                   class="mt-1 scrollbar-narrow"
+                  [status]="isSubmitted && questionGroup.controls.groundTruth.invalid ? 'danger' : 'basic'"
                 ></textarea>
+
+                <small
+                  *ngIf="isSubmitted && questionGroup.controls.groundTruth.errors?.maxlength"
+                  class="text-danger"
+                >
+                  Ground truth exceeds the {{ questionGroup.controls.groundTruth.errors.maxlength.requiredLength }} character limit.
+                </small>
               </div>
             </div>
           </tock-form-control>
@@ -132,6 +157,10 @@
       [disabled]="isLoading"
       (click)="exportDataset()"
     >
+      <nb-icon
+        icon="download"
+        class="mr-2"
+      ></nb-icon>
       EXPORT DATASET
     </button>
 
