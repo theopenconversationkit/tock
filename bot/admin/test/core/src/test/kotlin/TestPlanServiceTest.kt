@@ -120,7 +120,10 @@ internal class TestPlanServiceTest {
     @Test
     fun `should not be deepEquals if footnotes differ`() {
         assertEquals(
-            "Footnotes differs : \"[ClientFootnote(identifier=1, title=Source, url=https://example.com, content=content, score=0.8, metadata={doc=a})]\" / expected \"[ClientFootnote(identifier=2, title=Other source, url=https://example.com/2, content=other content, score=0.5, metadata={doc=b})]\"",
+            "Footnotes differs : " +
+                "\"[ClientFootnote(identifier=1, title=Source, url=https://example.com, content=content, score=0.8, metadata={doc=a})]\" " +
+                "/ expected " +
+                "\"[ClientFootnote(identifier=2, title=Other source, url=https://example.com/2, content=other content, score=0.5, metadata={doc=b})]\"",
             ClientSentenceWithFootnotes(
                 "Hello",
                 listOf(ClientFootnote("1", "Source", "https://example.com", "content", 0.8f, mapOf("doc" to "a"))),
