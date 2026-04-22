@@ -45,6 +45,7 @@ class GoogleChatConnector(
     private val chatService: HangoutsChat,
     private val authorisationHandler: GoogleChatAuthorisationHandler,
     private val useCondensedFootnotes: Boolean,
+    private val displaySourcesWithoutUrl: Boolean,
     private val introMessage: String? = null,
     private val useThread: Boolean = false,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
@@ -118,7 +119,7 @@ class GoogleChatConnector(
         if (event !is Action) return
 
         val message =
-            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes)
+            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, displaySourcesWithoutUrl)
                 ?: return
 
         callback as GoogleChatConnectorCallback

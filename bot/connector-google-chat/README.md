@@ -53,6 +53,7 @@ Authentication Audience → Project Number
 | **Service account credential json content** | `{"type": "service_account", ...}` |
 | **Service account to impersonate** (optional) | `bot-sa@project.iam.gserviceaccount.com` |
 | **Use condensed footnotes** | `1` = condensed, `0` = detailed |
+| **Display sources without URL** | `1` = displayed, `0` = hidden |
 
 ---
 

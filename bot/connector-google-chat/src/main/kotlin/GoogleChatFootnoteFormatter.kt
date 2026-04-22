@@ -30,9 +30,17 @@ object GoogleChatFootnoteFormatter {
         text: CharSequence,
         footnotes: List<Footnote>,
         condensed: Boolean = false,
+        displaySourcesWithoutUrl: Boolean = true,
     ): String {
-        if (footnotes.isEmpty()) return text.toString()
-        return if (condensed) formatCondensed(text, footnotes) else formatDetailed(text, footnotes)
+        val filteredFootnotes =
+            if (displaySourcesWithoutUrl) {
+                footnotes
+            } else {
+                footnotes.filter { !it.url.isNullOrBlank() }
+            }
+
+        if (filteredFootnotes.isEmpty()) return text.toString()
+        return if (condensed) formatCondensed(text, filteredFootnotes) else formatDetailed(text, filteredFootnotes)
     }
 
     private fun formatDetailed(
