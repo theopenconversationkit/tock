@@ -25,6 +25,7 @@ import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
+import ai.tock.bot.connector.rest.client.model.ClientSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
@@ -221,8 +222,7 @@ object TestPlanService {
                         // go over the bot answer to remove emoticons
                         botMessages = body
                             ?.messages
-                            ?.map { it as ClientSentence }
-                            ?.map { it.copy(text = it.text?.cleanSurrogateChars()) }
+                            ?.map { it.cleanSurrogateChars() }
                             ?.toMutableList() ?: mutableListOf()
                         logger.debug { "ANSWER without surrogate -- : $botMessages" }
                     } else {
@@ -255,6 +255,7 @@ object TestPlanService {
                             dialogReportId = dialog.id,
                             error = true,
                             errorActionId = testStepMessages.id,
+                            returnedMessage = botMessage.toMessage(),
                             errorMessage = "Error : $errorMessage - during steps comparison : $givenAnswer / expected : $expectedAnswer",
                             indexOfStepError = testStepIndex,
                         )
@@ -308,18 +309,34 @@ object TestPlanService {
      * @return true if messages are the same, false otherwise.
      */
     fun ClientMessage.checkEquality(expectedMessage: ClientMessage): String? {
-        if (expectedMessage !is ClientSentence || this !is ClientSentence) {
+        if (!isSentenceMessage() || !expectedMessage.isSentenceMessage()) {
             return if (expectedMessage == this) null else "Messages differs : \"$this\" / expected \"$expectedMessage\""
         }
 
-        if (text?.cleanSurrogateChars()?.trim() != expectedMessage.text?.cleanSurrogateChars()?.trim()) {
-            return "Text differs : \"${this.text}\" / expected \"${expectedMessage.text}\""
+        if (text()?.cleanSurrogateChars()?.trim() != expectedMessage.text()?.cleanSurrogateChars()?.trim()) {
+            return "Text differs : \"${this.text()}\" / expected \"${expectedMessage.text()}\""
         }
 
-        return messages
-            .zip(expectedMessage.messages)
-            .mapNotNull { (subMessage, expectedSubMessage) -> subMessage.partiallyEquals(expectedSubMessage) }
-            .firstOrNull()
+        if (javaClass != expectedMessage.javaClass) {
+            return "Message type differs : \"${javaClass.simpleName}\" / expected \"${expectedMessage.javaClass.simpleName}\""
+        }
+
+        if (this is ClientSentence && expectedMessage is ClientSentence) {
+            return messages
+                .zip(expectedMessage.messages)
+                .mapNotNull { (subMessage, expectedSubMessage) -> subMessage.partiallyEquals(expectedSubMessage) }
+                .firstOrNull()
+        }
+
+        if (this is ClientSentenceWithFootnotes && expectedMessage is ClientSentenceWithFootnotes) {
+            return if (footnotes == expectedMessage.footnotes) {
+                null
+            } else {
+                "Footnotes differs : \"$footnotes\" / expected \"${expectedMessage.footnotes}\""
+            }
+        }
+
+        return null
     }
 }
 
@@ -364,5 +381,21 @@ private fun ClientChoice.partiallyEquals(expected: ClientChoice): String? {
 }
 
 private fun Map<String, String>.cleanTexts() = mapValues { (_, v) -> v.cleanSurrogateChars().replace(Regex("<[^>]*>"), "") }
+
+private fun ClientMessage.cleanSurrogateChars(): ClientMessage =
+    when (this) {
+        is ClientSentence -> copy(text = text?.cleanSurrogateChars())
+        is ClientSentenceWithFootnotes -> copy(text = text.cleanSurrogateChars())
+        else -> this
+    }
+
+private fun ClientMessage.isSentenceMessage(): Boolean = this is ClientSentence || this is ClientSentenceWithFootnotes
+
+private fun ClientMessage.text(): String? =
+    when (this) {
+        is ClientSentence -> text
+        is ClientSentenceWithFootnotes -> text
+        else -> null
+    }
 
 private fun String.cleanSurrogateChars(): String = filterNot { it.isSurrogate() }

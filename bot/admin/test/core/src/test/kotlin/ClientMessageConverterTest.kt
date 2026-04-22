@@ -18,8 +18,12 @@ package ai.tock.bot.admin.test
 
 import ai.tock.bot.connector.rest.client.model.ClientAttachment
 import ai.tock.bot.connector.rest.client.model.ClientAttachmentType
+import ai.tock.bot.connector.rest.client.model.ClientFootnote
+import ai.tock.bot.connector.rest.client.model.ClientSentenceWithFootnotes
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
+import ai.tock.bot.engine.message.SentenceWithFootnotes
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -35,5 +39,23 @@ class ClientMessageConverterTest {
             ClientAttachment("a", ClientAttachmentType.file),
             a.toClientMessage(),
         )
+    }
+
+    @Test
+    fun sentenceWithFootnotes_mustBeConvertedBothWays() {
+        val message =
+            SentenceWithFootnotes(
+                "Hello",
+                listOf(Footnote("1", "Source", "https://example.com", "content", 0.8f, mapOf("doc" to "a"))),
+            )
+
+        val clientMessage =
+            ClientSentenceWithFootnotes(
+                "Hello",
+                listOf(ClientFootnote("1", "Source", "https://example.com", "content", 0.8f, mapOf("doc" to "a"))),
+            )
+
+        assertEquals(clientMessage, message.toClientMessage())
+        assertEquals(message, clientMessage.toMessage())
     }
 }

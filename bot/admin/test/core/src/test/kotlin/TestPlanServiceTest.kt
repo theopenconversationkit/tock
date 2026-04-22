@@ -17,11 +17,14 @@
 import ai.tock.bot.admin.test.TestPlanService.checkEquality
 import ai.tock.bot.connector.rest.client.model.ClientChoice
 import ai.tock.bot.connector.rest.client.model.ClientConnectorType
+import ai.tock.bot.connector.rest.client.model.ClientFootnote
 import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
 import ai.tock.bot.connector.rest.client.model.ClientSentence
+import ai.tock.bot.connector.rest.client.model.ClientSentenceWithFootnotes
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import kotlin.test.assertEquals
 import kotlin.test.expect
 
 internal class TestPlanServiceTest {
@@ -102,5 +105,47 @@ internal class TestPlanServiceTest {
                 ),
             )
         }
+    }
+
+    @Test
+    fun `should be deepEquals for sentence with footnotes`() {
+        val footnotes = listOf(ClientFootnote("1", "Source", "https://example.com", "content", 0.8f, mapOf("doc" to "a")))
+
+        expect(null) {
+            ClientSentenceWithFootnotes("Hello", footnotes)
+                .checkEquality(ClientSentenceWithFootnotes("Hello", footnotes))
+        }
+    }
+
+    @Test
+    fun `should not be deepEquals if footnotes differ`() {
+        assertEquals(
+            "Footnotes differs : " +
+                "\"[ClientFootnote(identifier=1, title=Source, url=https://example.com, content=content, score=0.8, metadata={doc=a})]\" " +
+                "/ expected " +
+                "\"[ClientFootnote(identifier=2, title=Other source, url=https://example.com/2, content=other content, score=0.5, metadata={doc=b})]\"",
+            ClientSentenceWithFootnotes(
+                "Hello",
+                listOf(ClientFootnote("1", "Source", "https://example.com", "content", 0.8f, mapOf("doc" to "a"))),
+            ).checkEquality(
+                ClientSentenceWithFootnotes(
+                    "Hello",
+                    listOf(ClientFootnote("2", "Other source", "https://example.com/2", "other content", 0.5f, mapOf("doc" to "b"))),
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun `should not be deepEquals if expected message contains footnotes but answer does not`() {
+        assertEquals(
+            "Message type differs : \"ClientSentence\" / expected \"ClientSentenceWithFootnotes\"",
+            ClientSentence("Hello").checkEquality(
+                ClientSentenceWithFootnotes(
+                    "Hello",
+                    listOf(ClientFootnote("1", "Source", "https://example.com", "content", 0.8f)),
+                ),
+            ),
+        )
     }
 }

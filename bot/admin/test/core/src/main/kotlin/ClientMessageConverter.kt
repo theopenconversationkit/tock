@@ -21,13 +21,16 @@ import ai.tock.bot.connector.rest.client.model.ClientAttachment
 import ai.tock.bot.connector.rest.client.model.ClientAttachmentType
 import ai.tock.bot.connector.rest.client.model.ClientChoice
 import ai.tock.bot.connector.rest.client.model.ClientConnectorType
+import ai.tock.bot.connector.rest.client.model.ClientFootnote
 import ai.tock.bot.connector.rest.client.model.ClientGenericElement
 import ai.tock.bot.connector.rest.client.model.ClientGenericMessage
 import ai.tock.bot.connector.rest.client.model.ClientLocation
 import ai.tock.bot.connector.rest.client.model.ClientMessage
 import ai.tock.bot.connector.rest.client.model.ClientSentence
+import ai.tock.bot.connector.rest.client.model.ClientSentenceWithFootnotes
 import ai.tock.bot.connector.rest.client.model.ClientUserInterfaceType
 import ai.tock.bot.connector.rest.client.model.ClientUserLocation
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Choice
@@ -36,6 +39,7 @@ import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.Sentence
+import ai.tock.bot.engine.message.SentenceWithFootnotes
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.translator.UserInterfaceType
 
@@ -55,9 +59,14 @@ fun UserInterfaceType.toClientUserInterfaceType(): ClientUserInterfaceType = Cli
 
 fun ClientUserInterfaceType.toUserInterfaceType(): UserInterfaceType = UserInterfaceType.valueOf(name)
 
+fun Footnote.toClientFootnote(): ClientFootnote = ClientFootnote(identifier.toString(), title.toString(), url, content, score, metadata)
+
+fun ClientFootnote.toFootnote(): Footnote = Footnote(identifier, title, url, content, score, metadata)
+
 fun Message.toClientMessage(): ClientMessage =
     when (this) {
         is Sentence -> ClientSentence(text, messages.map { it.toClientSentenceElement() }.toMutableList())
+        is SentenceWithFootnotes -> ClientSentenceWithFootnotes(text, footnotes.map { it.toClientFootnote() })
         is Choice -> ClientChoice(intentName, parameters)
         is Attachment -> ClientAttachment(url, type.toClientAttachmentType())
         is Location -> toClientLocation()
@@ -67,6 +76,7 @@ fun Message.toClientMessage(): ClientMessage =
 fun ClientMessage.toMessage(): Message =
     when (this) {
         is ClientSentence -> Sentence(text, messages.map { it.toSentenceElement() }.toMutableList())
+        is ClientSentenceWithFootnotes -> SentenceWithFootnotes(text, footnotes.map { it.toFootnote() })
         is ClientChoice -> Choice(intentName, parameters)
         is ClientAttachment -> Attachment(url, type.toAttachmentType())
         is ClientLocation -> toLocation()
