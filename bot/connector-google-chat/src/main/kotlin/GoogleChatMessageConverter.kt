@@ -26,6 +26,7 @@ internal object GoogleChatMessageConverter {
     fun toMessageOut(
         action: Action,
         condensedFootnotes: Boolean = false,
+        displaySourcesWithoutUrl: Boolean = true,
     ): GoogleChatConnectorMessage? =
         when (action) {
             is SendSentence -> {
@@ -33,7 +34,7 @@ internal object GoogleChatMessageConverter {
             }
 
             is SendSentenceWithFootnotes -> {
-                sendSentenceWithFootnotes(action, condensedFootnotes)
+                sendSentenceWithFootnotes(action, condensedFootnotes, displaySourcesWithoutUrl)
             }
 
             else -> {
@@ -48,19 +49,21 @@ internal object GoogleChatMessageConverter {
         } else {
             action.stringText
                 ?.takeUnless { it.isBlank() }
-                ?.let { GoogleChatMarkdown.toGoogleChat(it.toString()) }
+                ?.let(GoogleChatMarkdown::toGoogleChat)
                 ?.let(::GoogleChatConnectorTextMessageOut)
         }
 
     private fun sendSentenceWithFootnotes(
         action: SendSentenceWithFootnotes,
         condensedFootnotes: Boolean,
+        displaySourcesWithoutUrl: Boolean,
     ): GoogleChatConnectorMessage {
         val formatted =
             GoogleChatFootnoteFormatter.format(
                 action.text,
                 action.footnotes,
                 condensed = condensedFootnotes,
+                displaySourcesWithoutUrl = displaySourcesWithoutUrl,
             )
         val parsed = GoogleChatMarkdown.toGoogleChat(formatted)
         return GoogleChatConnectorTextMessageOut(parsed)

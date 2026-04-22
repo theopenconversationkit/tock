@@ -43,6 +43,7 @@ private const val SERVICE_CREDENTIAL_PATH_PARAMETER = "serviceCredentialPath"
 private const val SERVICE_CREDENTIAL_CONTENT_PARAMETER = "serviceCredentialContent"
 private const val AUTH_AUDIENCE_PARAMETER = "authenticationAudience"
 private const val CONDENSED_FOOTNOTES_PARAMETER = "useCondensedFootnotes"
+private const val DISPLAY_SOURCES_WITHOUT_URL_PARAMETER = "displaySourcesWithoutUrl"
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 private const val USE_THREAD_PARAMETER = "useThread"
@@ -83,6 +84,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
             val useCondensedFootnotes =
                 connectorConfiguration.parameters[CONDENSED_FOOTNOTES_PARAMETER] == "1"
+            val displaySourcesWithoutUrl =
+                connectorConfiguration.parameters[DISPLAY_SOURCES_WITHOUT_URL_PARAMETER] != "0"
 
             val chatService =
                 HangoutsChat
@@ -111,6 +114,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 chatService,
                 authorisationHandler,
                 useCondensedFootnotes,
+                displaySourcesWithoutUrl,
                 introMessage,
                 useThread,
             )
@@ -197,6 +201,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Use condensed footnotes (true = 1, false = 0)",
                     CONDENSED_FOOTNOTES_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Display sources without URL (true = 1, false = 0)",
+                    DISPLAY_SOURCES_WITHOUT_URL_PARAMETER,
                     false,
                 ),
                 ConnectorTypeConfigurationField(

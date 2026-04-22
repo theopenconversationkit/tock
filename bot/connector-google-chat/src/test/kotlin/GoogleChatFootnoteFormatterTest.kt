@@ -55,6 +55,71 @@ class GoogleChatFootnoteFormatterTest {
         assertEquals(expectedResult, result)
     }
 
+    @Test
+    fun `format hides sources without url when option is disabled in detailed mode`() {
+        val result =
+            GoogleChatFootnoteFormatter.format(
+                text = "Here's some info",
+                footnotes =
+                    listOf(
+                        Footnote("id1", "Google", "https://google.com", null, null),
+                        Footnote("id2", "Just text", null, null, null),
+                    ),
+                condensed = false,
+                displaySourcesWithoutUrl = false,
+            )
+
+        assertEquals(
+            """
+            Here's some info
+
+            *Source :*
+            <https://google.com|Google>
+            """.trimIndent(),
+            result,
+        )
+    }
+
+    @Test
+    fun `format hides sources without url when option is disabled in condensed mode`() {
+        val result =
+            GoogleChatFootnoteFormatter.format(
+                text = "Sources below",
+                footnotes =
+                    listOf(
+                        Footnote("id1", "Tock", "https://tock.ai", null, null),
+                        Footnote("id2", "Offline doc", null, null, null),
+                    ),
+                condensed = true,
+                displaySourcesWithoutUrl = false,
+            )
+
+        assertEquals(
+            """
+            Sources below
+
+            *Source:* [[1]](https://tock.ai)
+            """.trimIndent(),
+            result,
+        )
+    }
+
+    @Test
+    fun `format returns original text when all sources are without url and option is disabled`() {
+        val result =
+            GoogleChatFootnoteFormatter.format(
+                text = "Sources below",
+                footnotes =
+                    listOf(
+                        Footnote("id1", "Offline doc", null, null, null),
+                    ),
+                condensed = true,
+                displaySourcesWithoutUrl = false,
+            )
+
+        assertEquals("Sources below", result)
+    }
+
     companion object {
         @JvmStatic
         fun detailedFormatTestCases(): Stream<Arguments> =
