@@ -264,6 +264,7 @@ object DatasetService {
                 state = resolvedAction.state,
                 action = resolvedAction.action,
                 retryCount = questionResult.retryCount,
+                error = resolvedAction.error,
             )
         }
     }
@@ -302,7 +303,11 @@ object DatasetService {
     ): ResolvedRunAction =
         when (questionResult.state) {
             DatasetRunQuestionResultState.COMPLETED -> resolveCompletedRunAction(run, questionResult, cachedDialog)
-            else -> ResolvedRunAction(DatasetRunActionState.FAILED, null)
+            else -> ResolvedRunAction(
+                DatasetRunActionState.FAILED,
+                null,
+                questionResult.error ?: "Dataset question execution failed before producing an answer.",
+            )
         }
 
     private fun resolveCompletedRunAction(
@@ -321,7 +326,11 @@ object DatasetService {
                 return ResolvedRunAction(DatasetRunActionState.COMPLETED, null)
             }
 
-            return ResolvedRunAction(DatasetRunActionState.FAILED, null)
+            return ResolvedRunAction(
+                DatasetRunActionState.FAILED,
+                null,
+                unresolvedActionMessage(questionResult, dialog.id.toString()),
+            )
         }
 
         val searchedDialog =
@@ -334,9 +343,19 @@ object DatasetService {
         return if (searchedAction != null) {
             ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction)
         } else {
-            ResolvedRunAction(DatasetRunActionState.FAILED, null)
+            ResolvedRunAction(
+                DatasetRunActionState.FAILED,
+                null,
+                unresolvedActionMessage(questionResult, searchedDialog.id.toString()),
+            )
         }
     }
+
+    private fun unresolvedActionMessage(
+        questionResult: DatasetRunQuestionResult,
+        dialogId: String,
+    ): String =
+        "Unable to resolve a bot answer for userActionId ${questionResult.userActionId} in dialog $dialogId."
 
     private fun resolveActionFromDialog(
         dialog: DialogReport,
@@ -536,6 +555,7 @@ object DatasetService {
 private data class ResolvedRunAction(
     val state: DatasetRunActionState,
     val action: ActionReport?,
+    val error: String? = null,
 )
 
 sealed class DatasetError(message: String) : RuntimeException(message) {

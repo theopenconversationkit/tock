@@ -107,6 +107,7 @@ import org.litote.kmongo.bson
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.aggregate
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.combine
 import org.litote.kmongo.descending
 import org.litote.kmongo.div
 import org.litote.kmongo.eq
@@ -123,6 +124,7 @@ import org.litote.kmongo.match
 import org.litote.kmongo.not
 import org.litote.kmongo.orderBy
 import org.litote.kmongo.pull
+import org.litote.kmongo.push
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceUpsert
 import org.litote.kmongo.setValue
@@ -925,16 +927,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private suspend fun addSnapshot(dialog: Dialog): SnapshotCol {
         val snapshot = Snapshot(dialog)
-        val existingSnapshot = snapshotCol.findOneById(dialog.id)
-        return if (existingSnapshot == null) {
-            SnapshotCol(dialog.id, listOf(snapshot))
-                .also { snapshotCol.insertOne(it) }
-        } else {
-            existingSnapshot.copy(
-                snapshots = existingSnapshot.snapshots + snapshot,
-                lastUpdateDate = now(),
-            ).also { snapshotCol.save(it) }
-        }
+        snapshotCol.updateOneById(
+            dialog.id,
+            combine(
+                push(SnapshotCol::snapshots, snapshot),
+                setValue(SnapshotCol::lastUpdateDate, now()),
+            ),
+            upsert(),
+        )
+        return snapshotCol.findOneById(dialog.id) ?: SnapshotCol(dialog.id, listOf(snapshot))
     }
 
     private suspend fun addArchivedValues(dialog: Dialog) {

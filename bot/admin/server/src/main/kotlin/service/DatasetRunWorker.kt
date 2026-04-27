@@ -25,6 +25,7 @@ import ai.tock.bot.admin.dataset.DatasetRunQuestionResultState
 import ai.tock.bot.admin.dataset.DatasetRunState
 import ai.tock.bot.admin.test.TestTalkService
 import ai.tock.bot.admin.test.model.BotDialogResponse
+import ai.tock.bot.connector.rest.client.model.ClientDebug
 import ai.tock.bot.engine.message.Sentence
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
@@ -41,6 +42,8 @@ private const val DATASET_RUN_WORKER_POLL_INTERVAL_PROPERTY = "tock_dataset_run_
 private const val DATASET_RUN_WORKER_MAX_RETRIES_PROPERTY = "tock_dataset_run_worker_max_retries"
 private const val DEFAULT_DATASET_RUN_WORKER_POLL_INTERVAL_MS = 2000L
 private const val DEFAULT_DATASET_RUN_WORKER_MAX_RETRIES = 0
+private const val RAG_DEBUG_MESSAGE_TEXT = "RAG"
+private const val RAG_TECHNICAL_ERROR_STATUS = "technical_error"
 private val MIN_TIMER_DELAY: Duration = Duration.ofMillis(1)
 
 fun interface DatasetQuestionExecutor {
@@ -144,10 +147,11 @@ class DatasetRunProcessor(
             val outcome =
                 runCatching {
                     questionExecutor.execute(run, currentResult, question)
-                }
+            }
 
             val response = outcome.getOrNull()
-            if (response?.userActionId != null) {
+            val retryableFailureMessage = response?.toRetryableFailureMessage()
+            if (response?.userActionId != null && retryableFailureMessage == null) {
                 return datasetRunDAO.saveQuestionResult(
                     currentResult.copy(
                         state = DatasetRunQuestionResultState.COMPLETED,
@@ -158,12 +162,13 @@ class DatasetRunProcessor(
                 )
             }
 
-            val errorMessage = outcome.exceptionOrNull()?.message ?: response.toFailureMessage()
+            val errorMessage = outcome.exceptionOrNull()?.message ?: retryableFailureMessage ?: response.toFailureMessage()
             if (currentResult.retryCount >= maxRetries) {
                 return datasetRunDAO.saveQuestionResult(
                     currentResult.copy(
                         state = DatasetRunQuestionResultState.FAILED,
                         endedAt = now(),
+                        userActionId = response?.userActionId ?: currentResult.userActionId,
                         error = errorMessage,
                     ),
                 )
@@ -173,6 +178,7 @@ class DatasetRunProcessor(
                 datasetRunDAO.saveQuestionResult(
                     currentResult.copy(
                         retryCount = currentResult.retryCount + 1,
+                        userActionId = response?.userActionId ?: currentResult.userActionId,
                         error = errorMessage,
                     ),
                 )
@@ -187,6 +193,35 @@ class DatasetRunProcessor(
     private fun BotDialogResponse?.toFailureMessage(): String =
         this?.messages?.takeIf { it.isNotEmpty() }?.joinToString(separator = " | ") { it.toString() }
             ?: "Talk execution did not return a userActionId"
+
+    private fun BotDialogResponse.toRetryableFailureMessage(): String? =
+        messages
+            .asSequence()
+            .filterIsInstance<ClientDebug>()
+            .mapNotNull { it.toRAGTechnicalFailure() }
+            .firstOrNull()
+
+    private fun ClientDebug.toRAGTechnicalFailure(): String? {
+        if (text != RAG_DEBUG_MESSAGE_TEXT) {
+            return null
+        }
+
+        val dataMap = data.asMap() ?: return null
+        val answerMap = dataMap["answer"].asMap()
+        val status = answerMap?.stringValue("status")
+        val errorMessage = dataMap["error"].asMap()?.stringValue("errorMessage")
+
+        if (status != RAG_TECHNICAL_ERROR_STATUS && errorMessage == null) {
+            return null
+        }
+
+        val answerMessage = answerMap?.stringValue("answer")
+        return "RAG execution failed: ${errorMessage ?: answerMessage ?: status ?: "unknown error"}"
+    }
+
+    private fun Any?.asMap(): Map<*, *>? = this as? Map<*, *>
+
+    private fun Map<*, *>.stringValue(key: String): String? = this[key] as? String
 
     private fun now(): Instant = Instant.now(clock)
 }

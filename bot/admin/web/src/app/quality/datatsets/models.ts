@@ -19,6 +19,7 @@ export interface DatasetRunAction {
   state: DatasetRunActionState;
   action: any | null; // ActionReport | null
   retryCount: number;
+  error?: string | null;
 }
 
 export interface DatasetRunStats {
