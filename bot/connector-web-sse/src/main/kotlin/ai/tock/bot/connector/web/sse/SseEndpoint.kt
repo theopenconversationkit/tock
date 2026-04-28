@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.web.sse
 
 import ai.tock.bot.connector.web.WebConnectorResponseContract
+import ai.tock.bot.connector.web.sse.channel.SseChannel
 import ai.tock.bot.connector.web.sse.channel.SseChannels
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -32,6 +33,7 @@ import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
+import java.util.concurrent.CompletableFuture
 
 class SseEndpoint internal constructor(
     private val responseSerializer: ObjectMapper,
@@ -87,12 +89,18 @@ class SseEndpoint internal constructor(
         userId: String,
     ) {
         initListeners()
+        val channelFuture = CompletableFuture<SseChannel>()
+        response.setupSSE { channelFuture.thenAccept(this::unregister) }
         val channel =
             register(appId = connectorId, userId) { msg ->
                 logger.debug { "send response from channel: $msg" }
-                response.sendSseMessage(responseSerializer.writeValueAsString(msg))
+                Future.fromCompletionStage(
+                    channelFuture.thenRun {
+                        response.sendSseMessage(responseSerializer.writeValueAsString(msg))
+                    },
+                )
             }
-        response.setupSSE { unregister(channel) }
         sendMissedEvents(channel)
+        channelFuture.complete(channel)
     }
 }

@@ -112,7 +112,7 @@ class WebConnector internal constructor(
     }
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
+        controller.coRegisterServices(path) { router ->
             logger.debug("deploy web connector services for root path $path ")
 
             val corsHandler =
@@ -141,7 +141,7 @@ class WebConnector internal constructor(
 
             if (directSseEnabled) {
                 router.route("$path/sse/direct")
-                    .handler { context ->
+                    .coHandler { context ->
                         try {
                             val body =
                                 context.request().getHeader("message")
@@ -158,7 +158,7 @@ class WebConnector internal constructor(
             // Main connector endpoint
             router.post(path)
                 .handler(webSecurityHandler)
-                .handler { context ->
+                .coHandler { context ->
                     // Override the user on the request body
                     val tockUserId: String? = context.get<String>(TOCK_USER_ID)
                     val body =
@@ -180,7 +180,7 @@ class WebConnector internal constructor(
             proxyHandler = this::handleProxy,
         )
 
-    private fun handleRequest(
+    private suspend fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
         body: String,
@@ -213,7 +213,7 @@ class WebConnector internal constructor(
         }
     }
 
-    private fun handleEvent(
+    private suspend fun handleEvent(
         applicationId: String,
         locale: Locale,
         event: Event,
@@ -235,7 +235,7 @@ class WebConnector internal constructor(
             // Uniquely identify each response, so they can be reconciled between SSE and POST
             callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
         }
-        controller.handle(
+        controller.handleIncomingEvent(
             event,
             ConnectorData(
                 callback = callback,
@@ -244,7 +244,7 @@ class WebConnector internal constructor(
         )
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,

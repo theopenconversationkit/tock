@@ -618,7 +618,7 @@ class MessengerConnector internal constructor(
         }
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,

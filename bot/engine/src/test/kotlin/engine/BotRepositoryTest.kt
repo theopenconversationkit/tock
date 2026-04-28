@@ -29,12 +29,14 @@ import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.mockedVertx
 import io.mockk.CapturingSlot
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.vertx.core.Future
+import io.vertx.core.internal.ContextInternal
 import io.vertx.ext.web.Router
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -223,6 +225,7 @@ internal class BotRepositoryTest : BotEngineTest() {
 
         val verticleSlot: CapturingSlot<BotVerticle> = slot()
         every { mockedVertx.deployVerticle(capture(verticleSlot)) } answers {
+            verticleSlot.captured.init(mockedVertx, mockk<ContextInternal>(relaxed = true))
             Future.succeededFuture()
         }
 
@@ -320,14 +323,14 @@ internal class BotRepositoryTest : BotEngineTest() {
         fun `GIVEN stateModifier THEN notify calls connector notify method`() {
             BotRepository.notify("test", recipientId, intent, stateModifier = KEEP_CURRENT_STATE)
 
-            verify { connector.notify(any(), recipientId, intent, null, any(), any(), any()) }
+            coVerify { connector.notify(any(), recipientId, intent, null, any(), any(), any()) }
         }
 
         @Test
         fun `GIVEN no notificationType passed THEN notify pass null NotificationType to connector`() {
             BotRepository.notify("test", recipientId, intent)
 
-            verify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
+            coVerify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
         }
     }
 }

@@ -37,7 +37,6 @@ import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
-import ai.tock.shared.coroutines.launchCoroutine
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
@@ -46,7 +45,9 @@ import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.net.URL
@@ -103,7 +104,7 @@ internal class TockConnectorController(
     /**
      * Handles an event sent by the connector.
      *
-     * If [event] is an [Action], the processing is done asynchronously using the shared [Executor],
+     * The actual processing is done asynchronously on the vertx event loop,
      * with this method returning immediately.
      *
      * @param event the event to handle
@@ -111,6 +112,16 @@ internal class TockConnectorController(
      */
     @OptIn(ExperimentalTockCoroutines::class)
     override fun handle(
+        event: Event,
+        data: ConnectorData,
+    ) {
+        verticle.launch {
+            handleIncomingEvent(event, data)
+        }
+    }
+
+    @OptIn(ExperimentalTockCoroutines::class)
+    override suspend fun handleIncomingEvent(
         event: Event,
         data: ConnectorData,
     ) {
@@ -125,10 +136,8 @@ internal class TockConnectorController(
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
                 when (event) {
-                    is Action ->
-                        executor.launchCoroutine {
-                            handleAction(event, 0, data)
-                        }
+                    is Action -> handleAction(event, 0, data)
+
                     else -> callback.eventSkipped(event)
                 }
             } else {
@@ -247,6 +256,15 @@ internal class TockConnectorController(
     override fun registerServices(
         serviceIdentifier: String,
         installer: (Router) -> Unit,
+    ) {
+        coRegisterServices(serviceIdentifier) {
+            installer(it)
+        }
+    }
+
+    override fun coRegisterServices(
+        serviceIdentifier: String,
+        installer: CoroutineRouterSupport.(Router) -> Unit,
     ) {
         verticle.registerServices(serviceIdentifier) { router ->
             // healthcheck
