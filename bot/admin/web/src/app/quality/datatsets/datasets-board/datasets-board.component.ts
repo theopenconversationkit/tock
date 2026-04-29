@@ -12,6 +12,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileValidators } from '../../../shared/validators';
 import { readFileAsText } from '../../../shared/utils';
 
+export type DatasetSortField = 'name' | 'questions' | 'runs' | 'lastRun';
+export type SortDirection = 'asc' | 'desc';
+
 @Component({
   selector: 'tock-datasets-board',
   templateUrl: './datasets-board.component.html',
@@ -23,6 +26,9 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
 
   configurations: BotApplicationConfiguration[];
   datasets: Dataset[];
+
+  sortField: DatasetSortField = 'lastRun';
+  sortDirection: SortDirection = 'desc';
 
   @ViewChild('importModal') importModal: TemplateRef<any>;
 
@@ -52,6 +58,43 @@ export class DatasetsBoardComponent implements OnInit, OnDestroy {
       .getDatasets()
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => (this.loading = false));
+  }
+
+  get sortedDatasets(): Dataset[] {
+    if (!this.datasets?.length) return [];
+
+    return [...this.datasets].sort((a, b) => {
+      let cmp = 0;
+
+      switch (this.sortField) {
+        case 'name':
+          cmp = a.name.localeCompare(b.name);
+          break;
+        case 'questions':
+          cmp = a.questions.length - b.questions.length;
+          break;
+        case 'runs':
+          cmp = a.runs.length - b.runs.length;
+          break;
+        case 'lastRun': {
+          const aTime = a.runs.length ? Math.max(...a.runs.map((r) => new Date(r.startTime).getTime())) : 0;
+          const bTime = b.runs.length ? Math.max(...b.runs.map((r) => new Date(r.startTime).getTime())) : 0;
+          cmp = aTime - bTime;
+          break;
+        }
+      }
+
+      return this.sortDirection === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  setSort(field: DatasetSortField): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = field === 'name' ? 'asc' : 'desc';
+    }
   }
 
   trackById(_index: number, dataset: Dataset): string {

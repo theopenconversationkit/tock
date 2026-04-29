@@ -5,6 +5,7 @@ import { Dataset, DatasetQuestion, DatasetRun, DatasetRunAction, DatasetRunState
 import { deepCopy } from '../../../shared/utils';
 import { StateService } from '../../../core-nlp/state.service';
 import { RestService } from '../../../core-nlp/rest/rest.service';
+import { EvaluationSampleDefinition } from '../../samples/models';
 
 @Injectable({ providedIn: 'root' })
 export class DatasetsService {
@@ -131,6 +132,46 @@ export class DatasetsService {
           this.updateRunState(datasetId, runId, { state: cancelled.state, endTime: cancelled.endTime, stats: cancelled.stats })
         )
       );
+  }
+
+  // ---------------------------------------------------------------------------
+  // DELETE /bots/:botId/datasets/:datasetId/runs/:runId
+  // ---------------------------------------------------------------------------
+  deleteRun(datasetId: string, runId: string): Observable<boolean | void> {
+    return this.rest.delete<void>(`${this.apiBase()}/${datasetId}/runs/${runId}`).pipe(
+      tap(() => {
+        const dataset = this.datasets.find((d) => d.id === datasetId);
+        if (dataset) {
+          this._updateDatasetRuns(
+            datasetId,
+            dataset.runs.filter((r) => r.id !== runId)
+          );
+        }
+      })
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // POST /bots/:botId/evaluation-samples
+  // ---------------------------------------------------------------------------
+  createEvaluationSampleFromRun(
+    runId: string,
+    payload: { name: string; description?: string | null }
+  ): Observable<EvaluationSampleDefinition> {
+    const body = {
+      name: payload.name,
+      description: payload.description,
+      dialogInfo: null,
+      datasetRunInfo: {
+        runIds: [runId]
+      }
+    };
+
+    return this.rest.post<typeof body, EvaluationSampleDefinition>(
+      `/bots/${this.stateService.currentApplication.name}/evaluation-samples`,
+      body,
+      (res) => res as EvaluationSampleDefinition
+    );
   }
 
   // ---------------------------------------------------------------------------

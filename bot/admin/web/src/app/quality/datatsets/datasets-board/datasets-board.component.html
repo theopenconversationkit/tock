@@ -66,18 +66,66 @@
 
 <div
   *ngIf="!loading && datasets?.length"
-  class="list-grid list-header text-muted ellipsis"
+  class="list-grid list-header text-muted"
 >
-  <div class="ellipsis">Dataset</div>
-  <div class="ellipsis pl-1">Questions</div>
-  <div class="ellipsis pl-1">Runs</div>
-  <div class="ellipsis">Last run state</div>
+  <div
+    class="ellipsis sortable-col"
+    [class.sort-active]="sortField === 'name'"
+    (click)="setSort('name')"
+  >
+    Dataset
+    <nb-icon
+      class="sort-icon"
+      [icon]="sortField === 'name' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+      [class.sort-icon--visible]="sortField === 'name'"
+    ></nb-icon>
+  </div>
+
+  <div
+    class="ellipsis pl-1 sortable-col"
+    [class.sort-active]="sortField === 'questions'"
+    (click)="setSort('questions')"
+  >
+    Questions
+    <nb-icon
+      class="sort-icon"
+      [icon]="sortField === 'questions' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+      [class.sort-icon--visible]="sortField === 'questions'"
+    ></nb-icon>
+  </div>
+
+  <div
+    class="ellipsis pl-1 sortable-col"
+    [class.sort-active]="sortField === 'runs'"
+    (click)="setSort('runs')"
+  >
+    Runs
+    <nb-icon
+      class="sort-icon"
+      [icon]="sortField === 'runs' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+      [class.sort-icon--visible]="sortField === 'runs'"
+    ></nb-icon>
+  </div>
+
+  <div
+    class="ellipsis sortable-col"
+    [class.sort-active]="sortField === 'lastRun'"
+    (click)="setSort('lastRun')"
+  >
+    Last run state
+    <nb-icon
+      class="sort-icon"
+      [icon]="sortField === 'lastRun' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+      [class.sort-icon--visible]="sortField === 'lastRun'"
+    ></nb-icon>
+  </div>
+
   <div class="ellipsis">Duration</div>
   <div class="ellipsis"></div>
 </div>
 
 <div
-  *ngFor="let dataset of datasets; trackBy: trackById"
+  *ngFor="let dataset of sortedDatasets; trackBy: trackById"
   [nbSpinner]="loading"
 >
   <tock-datasets-board-entry [dataset]="dataset"></tock-datasets-board-entry>

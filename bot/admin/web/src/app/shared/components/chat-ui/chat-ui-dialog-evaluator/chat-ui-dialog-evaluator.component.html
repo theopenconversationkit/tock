@@ -77,7 +77,8 @@
       }}"
       class="m-n1 py-1 px-2 d-flex align-items-center pointer"
       [ngClass]="{
-        'bg-primary': isDialogEvaluated(),
+        'bg-warning': isDialogEvaluated() && nbNegativelyEvaluatedBotAnswers() > 0,
+        'bg-success': isDialogEvaluated() && nbNegativelyEvaluatedBotAnswers() === 0,
         'text-white': isDialogEvaluated(),
         'background-basic-color-3': !isDialogEvaluated()
       }"

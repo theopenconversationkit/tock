@@ -130,6 +130,12 @@ export class ChatUiDialogEvaluatorComponent implements OnInit, OnDestroy {
     ).length;
   }
 
+  nbNegativelyEvaluatedBotAnswers(): number {
+    return this.dialog.actions.filter(
+      (action) => action.isBotAnswerWithContent() && action._evaluation && action._evaluation.status === EvaluationStatus.DOWN
+    ).length;
+  }
+
   isDialogEvaluated(): boolean {
     const nbAssessableBotAnswers = this.nbAssessableBotAnswers();
     return nbAssessableBotAnswers > 0 && nbAssessableBotAnswers === this.nbEvaluatedBotAnswers();

@@ -1,7 +1,8 @@
 .list-grid {
   display: grid;
   grid-template-columns:
-    minmax(8rem, 1fr)
+    2rem
+    minmax(8rem, 3fr)
     minmax(2.5rem, 6.875rem)
     minmax(2.5rem, 6.25rem)
     minmax(2rem, 5rem)

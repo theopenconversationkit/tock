@@ -32,6 +32,7 @@ import ai.tock.bot.admin.evaluation.EvaluationSampleStatus
 import ai.tock.bot.admin.evaluation.EvaluationStatus
 import ai.tock.bot.admin.evaluation.GroupedEvaluations
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
+import ai.tock.bot.admin.model.evaluation.DialogInfo
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendAttachment
@@ -125,6 +126,27 @@ class EvaluationServiceTest : AbstractTest() {
             userInterface = UserInterfaceType.textChat,
         )
     }
+
+    private fun createDialogSampleRequest(
+        name: String = "Test Sample",
+        description: String? = null,
+        dialogActivityFrom: Instant = Instant.now().minusSeconds(86400),
+        dialogActivityTo: Instant = Instant.now(),
+        requestedDialogCount: Int = 10,
+        allowTestDialogs: Boolean = false,
+    ): CreateEvaluationSampleRequest =
+        CreateEvaluationSampleRequest(
+            name = name,
+            description = description,
+            dialogInfo =
+                DialogInfo(
+                    dialogActivityFrom = dialogActivityFrom,
+                    dialogActivityTo = dialogActivityTo,
+                    requestedDialogCount = requestedDialogCount,
+                    allowTestDialogs = allowTestDialogs,
+                ),
+            datasetRunInfo = null,
+        )
 
     @Test
     fun `findSampleById returns DTO when sample exists`() {
@@ -224,15 +246,7 @@ class EvaluationServiceTest : AbstractTest() {
                 dialogs = emptyList(),
             )
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test Sample",
-                description = null,
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest()
 
         assertThrows<UnprocessableEntityException> {
             EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
@@ -257,15 +271,7 @@ class EvaluationServiceTest : AbstractTest() {
                 dialogs = listOf(dialogWithEmptyActions),
             )
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test",
-                description = null,
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest(name = "Test")
 
         assertThrows<UnprocessableEntityException> {
             EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
@@ -287,15 +293,7 @@ class EvaluationServiceTest : AbstractTest() {
         every { evaluationSampleDAO.save(any()) } answers { firstArg() }
         every { evaluationDAO.createAll(any()) } returns Unit
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test Sample",
-                description = null,
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest()
 
         EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
 
@@ -319,15 +317,7 @@ class EvaluationServiceTest : AbstractTest() {
         val evaluationsSlot = slot<List<Evaluation>>()
         every { evaluationDAO.createAll(capture(evaluationsSlot)) } returns Unit
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test Sample",
-                description = "Test description",
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest(description = "Test description")
 
         val result = EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
 
@@ -378,15 +368,7 @@ class EvaluationServiceTest : AbstractTest() {
         every { evaluationSampleDAO.save(any()) } answers { firstArg() }
         every { evaluationDAO.createAll(any()) } returns Unit
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test",
-                description = null,
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest(name = "Test")
 
         val result = EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
 
@@ -425,15 +407,7 @@ class EvaluationServiceTest : AbstractTest() {
         every { evaluationSampleDAO.save(any()) } answers { firstArg() }
         every { evaluationDAO.createAll(any()) } returns Unit
 
-        val request =
-            CreateEvaluationSampleRequest(
-                name = "Test",
-                description = null,
-                dialogActivityFrom = Instant.now().minusSeconds(86400),
-                dialogActivityTo = Instant.now(),
-                requestedDialogCount = 10,
-                allowTestDialogs = false,
-            )
+        val request = createDialogSampleRequest(name = "Test")
 
         val result = EvaluationService.createEvaluationSample(NAMESPACE, BOT_ID, request, USER)
 

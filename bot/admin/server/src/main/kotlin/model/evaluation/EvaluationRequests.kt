@@ -24,6 +24,7 @@ import ai.tock.bot.admin.evaluation.EvaluationSample
 import ai.tock.bot.admin.evaluation.EvaluationSampleStatus
 import ai.tock.bot.admin.evaluation.EvaluationStatus
 import ai.tock.bot.admin.evaluation.EvaluationsResult
+import ai.tock.bot.admin.model.ToValidate
 import java.time.Instant
 
 /**
@@ -32,10 +33,30 @@ import java.time.Instant
 data class CreateEvaluationSampleRequest(
     val name: String?,
     val description: String?,
+    val dialogInfo: DialogInfo?,
+    val datasetRunInfo: DatasetRunInfo?,
+) : ToValidate {
+    override fun validate(): List<String> =
+        when {
+            dialogInfo == null && datasetRunInfo == null ->
+                listOf("Either dialogInfo or datasetRunInfo is required")
+            dialogInfo != null && datasetRunInfo != null ->
+                listOf("Only one of dialogInfo or datasetRunInfo can be set")
+            datasetRunInfo != null && datasetRunInfo.runIds.isEmpty() ->
+                listOf("At least one dataset run is required")
+            else -> emptyList()
+        }
+}
+
+data class DialogInfo(
     val dialogActivityFrom: Instant,
     val dialogActivityTo: Instant,
     val requestedDialogCount: Int,
     val allowTestDialogs: Boolean = false,
+)
+
+data class DatasetRunInfo(
+    val runIds: List<String>,
 )
 
 /**
@@ -135,6 +156,7 @@ data class EvaluationSampleDTO(
     val statusChangeDate: Instant,
     val statusComment: String?,
     val lastUpdateDate: Instant,
+    val createdFromRun: String?,
     val evaluationsResult: EvaluationsResult,
 ) {
     companion object {
@@ -162,6 +184,7 @@ data class EvaluationSampleDTO(
                 statusChangeDate = sample.statusChangeDate,
                 statusComment = sample.statusComment,
                 lastUpdateDate = sample.lastUpdateDate,
+                createdFromRun = sample.createdFromRun?.toString(),
                 evaluationsResult = evaluationsResult,
             )
         }

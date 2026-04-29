@@ -98,6 +98,18 @@
     >
       <table class="table mb-0">
         <tbody>
+          <tr *ngIf="!sample.createdFromRun">
+            <td>Type</td>
+            <td>Randomly sampled evaluation</td>
+          </tr>
+
+          <tr *ngIf="sample.createdFromRun">
+            <td>Type</td>
+            <td>
+              Generated from dataset run <span class="font-size-small">(Run {{ sample.createdFromRun }})</span>
+            </td>
+          </tr>
+
           <tr>
             <td style="width: 35%">Created by</td>
             <td>
@@ -111,33 +123,34 @@
               {{ sample?.statusChangeDate | date: 'y/MM/dd HH:mm' }}
             </td>
           </tr>
-          <tr>
+
+          <tr *ngIf="!sample.createdFromRun">
             <td>May include test dialogues</td>
             <td>
               {{ sample?.allowTestDialogs ? 'Yes' : 'No' }}
             </td>
           </tr>
 
-          <tr>
+          <tr *ngIf="!sample.createdFromRun">
             <td>Number of requested dialogues</td>
             <td>
               {{ sample?.requestedDialogCount }}
             </td>
           </tr>
-          <tr>
+          <tr *ngIf="!sample.createdFromRun">
             <td>Number of actual dialogues</td>
             <td>
               {{ sample?.dialogsCount }}
             </td>
           </tr>
 
-          <tr>
+          <tr *ngIf="!sample.createdFromRun">
             <td>Total number of dialogues recorded for this bot during the period covered</td>
             <td>
               {{ sample?.totalDialogCount }}
             </td>
           </tr>
-          <tr>
+          <tr *ngIf="!sample.createdFromRun">
             <td>Sample coverage rate</td>
             <td>{{ getCoverage() }}%</td>
           </tr>
