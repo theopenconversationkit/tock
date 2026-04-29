@@ -31,6 +31,7 @@ import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
+import ai.tock.bot.admin.evaluation.ActionRef
 import ai.tock.bot.admin.model.RAGAnswerStatus
 import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetDTO
@@ -60,6 +61,10 @@ import java.time.Instant
 import java.util.Locale
 
 object DatasetService {
+    data class RunEvaluationData(
+        val run: DatasetRun,
+        val actionRefs: List<ActionRef>,
+    )
     private val ragAnswerStatuses = RAGAnswerStatus.entries.map { it.name }
     private val datasetDAO: DatasetDAO get() = injector.provide()
     private val datasetRunDAO: DatasetRunDAO get() = injector.provide()
@@ -202,6 +207,39 @@ object DatasetService {
         datasetDAO.delete(dataset._id)
     }
 
+    fun deleteRun(
+        namespace: String,
+        botId: String,
+        datasetId: String,
+        runId: String,
+    ) {
+        val dataset = getDatasetEntity(namespace, botId, datasetId)
+        val run = getRunEntity(namespace, botId, dataset._id.toString(), runId)
+
+        if (run.state == DatasetRunState.QUEUED || run.state == DatasetRunState.RUNNING) {
+            throw DatasetError.RunNotFinished(runId, run.state)
+        }
+
+        datasetRunDAO.deleteRun(run._id)
+    }
+
+    fun getRunEvaluationData(
+        namespace: String,
+        botId: String,
+        runId: String,
+    ): RunEvaluationData {
+        val run = getRunEntity(namespace, botId, runId)
+
+        if (run.state != DatasetRunState.COMPLETED) {
+            throw DatasetError.RunNotFinished(runId, run.state)
+        }
+
+        return RunEvaluationData(
+            run = run,
+            actionRefs = getRunActionRefs(run),
+        )
+    }
+
     fun getRun(
         namespace: String,
         botId: String,
@@ -271,6 +309,25 @@ object DatasetService {
         }
     }
 
+    private fun getRunActionRefs(run: DatasetRun): List<ActionRef> {
+        val questionResults = datasetRunDAO.getQuestionResultsByRunId(run._id)
+        val dialogsById =
+            dialogReportDAO.findByDialogByIds(questionResults.mapNotNull { it.dialogId }.toSet())
+                .associateBy { it.id }
+
+        return questionResults.mapNotNull { questionResult ->
+            val resolvedAction = resolveRunAction(run, questionResult, dialogsById[questionResult.dialogId])
+            val dialogId = resolvedAction.dialogId
+            val action = resolvedAction.action
+
+            if (dialogId != null && action != null) {
+                ActionRef(dialogId, action.id)
+            } else {
+                null
+            }
+        }
+    }
+
     private fun getDatasetEntity(
         namespace: String,
         botId: String,
@@ -293,6 +350,19 @@ object DatasetService {
         val id = runId.toId<DatasetRun>()
         val run = datasetRunDAO.getRunById(id) ?: throw DatasetError.RunNotFound(runId)
         if (run.namespace != namespace || run.botId != botId || run.datasetId.toString() != datasetId) {
+            throw DatasetError.RunNotFound(runId)
+        }
+        return run
+    }
+
+    private fun getRunEntity(
+        namespace: String,
+        botId: String,
+        runId: String,
+    ): DatasetRun {
+        val id = runId.toId<DatasetRun>()
+        val run = datasetRunDAO.getRunById(id) ?: throw DatasetError.RunNotFound(runId)
+        if (run.namespace != namespace || run.botId != botId) {
             throw DatasetError.RunNotFound(runId)
         }
         return run
@@ -322,11 +392,11 @@ object DatasetService {
             val cachedAction = resolveActionFromDialog(dialog, questionResult)
             if (cachedAction != null) {
                 cacheActionReferences(questionResult, dialog.id, cachedAction.id)
-                return ResolvedRunAction(DatasetRunActionState.COMPLETED, cachedAction)
+                return ResolvedRunAction(DatasetRunActionState.COMPLETED, cachedAction, dialog.id)
             }
 
             if (questionResult.answerActionId != null) {
-                return ResolvedRunAction(DatasetRunActionState.COMPLETED, null)
+                return ResolvedRunAction(DatasetRunActionState.COMPLETED, null, questionResult.dialogId)
             }
 
             return ResolvedRunAction(
@@ -344,7 +414,7 @@ object DatasetService {
         cacheActionReferences(questionResult, searchedDialog.id, searchedAction?.id)
 
         return if (searchedAction != null) {
-            ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction)
+            ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction, searchedDialog.id)
         } else {
             ResolvedRunAction(
                 DatasetRunActionState.FAILED,
@@ -606,6 +676,7 @@ object DatasetService {
 private data class ResolvedRunAction(
     val state: DatasetRunActionState,
     val action: ActionReport?,
+    val dialogId: Id<Dialog>? = null,
     val error: String? = null,
 )
 

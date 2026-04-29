@@ -40,6 +40,7 @@
 
 <ng-container *ngIf="!loading && samples?.length">
   <div class="list-grid list-header text-muted ellipsis">
+    <div class="ellipsis">Type</div>
     <div class="ellipsis">Sample</div>
     <div class="ellipsis">State</div>
     <div class="ellipsis">Positive Score</div>
@@ -55,12 +56,27 @@
     *ngFor="let sample of samples"
   >
     <nb-card-body class="list-grid">
+      <div class="d-flex flex-column justify-content-center">
+        <nb-icon
+          icon="shuffle"
+          *ngIf="!sample.createdFromRun"
+          nbTooltip="Randomly sampled evaluation"
+        ></nb-icon>
+        <nb-icon
+          icon="palette2"
+          *ngIf="sample.createdFromRun"
+          nbTooltip="Generated from dataset run"
+        ></nb-icon>
+      </div>
+
       <div
         class="d-flex flex-column justify-content-center pointer"
         routerLink="/quality/samples/detail/{{ sample._id }}"
         nbTooltip="{{ sample.name }}"
       >
-        <div class="list-entry-name font-weight-bold">{{ sample.name }}</div>
+        <div class="list-entry-name font-weight-bold">
+          {{ sample.name }}
+        </div>
         <div
           class="list-entry-desc text-muted"
           *ngIf="sample.description"

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.dataset.DatasetRun
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.evaluation.ActionRef
@@ -30,6 +31,8 @@ import ai.tock.bot.admin.evaluation.EvaluationsResult
 import ai.tock.bot.admin.evaluation.Evaluator
 import ai.tock.bot.admin.model.evaluation.ActionRefWithEvaluation
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
+import ai.tock.bot.admin.model.evaluation.DatasetRunInfo
+import ai.tock.bot.admin.model.evaluation.DialogInfo
 import ai.tock.bot.admin.model.evaluation.DialogEntry
 import ai.tock.bot.admin.model.evaluation.EvaluationDialogsResponse
 import ai.tock.bot.admin.model.evaluation.EvaluationSampleDTO
@@ -38,6 +41,7 @@ import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.ZoneOffset
@@ -74,6 +78,21 @@ object EvaluationService {
         botId: String,
         request: CreateEvaluationSampleRequest,
         createdBy: String,
+    ): EvaluationSampleDTO =
+        when {
+            request.dialogInfo != null && request.datasetRunInfo == null ->
+                createEvaluationSampleFromDialogs(namespace, botId, request, request.dialogInfo, createdBy)
+            request.datasetRunInfo != null && request.dialogInfo == null ->
+                createEvaluationSampleFromRuns(namespace, botId, request, request.datasetRunInfo, createdBy)
+            else -> throw BadRequestException("Exactly one of dialogInfo or datasetRunInfo is required")
+        }
+
+    private fun createEvaluationSampleFromDialogs(
+        namespace: String,
+        botId: String,
+        request: CreateEvaluationSampleRequest,
+        dialogInfo: DialogInfo,
+        createdBy: String,
     ): EvaluationSampleDTO {
         logger.info { "Creating evaluation sample for bot $botId in namespace $namespace" }
 
@@ -81,12 +100,12 @@ object EvaluationService {
             DialogReportQuery(
                 namespace = namespace,
                 nlpModel = botId,
-                dialogActivityFrom = request.dialogActivityFrom.atZone(ZoneOffset.UTC),
-                dialogActivityTo = request.dialogActivityTo.atZone(ZoneOffset.UTC),
-                displayTests = request.allowTestDialogs,
+                dialogActivityFrom = dialogInfo.dialogActivityFrom.atZone(ZoneOffset.UTC),
+                dialogActivityTo = dialogInfo.dialogActivityTo.atZone(ZoneOffset.UTC),
+                displayTests = dialogInfo.allowTestDialogs,
                 withAnnotations = false,
                 start = 0L,
-                size = request.requestedDialogCount,
+                size = dialogInfo.requestedDialogCount,
                 random = true,
                 evaluableActionsOnly = true,
             )
@@ -112,20 +131,99 @@ object EvaluationService {
         }
 
         val selectedDialogs = actionRefs.map { it.dialogId }.distinct()
+        return saveEvaluationSample(
+            namespace = namespace,
+            botId = botId,
+            name = request.name,
+            description = request.description,
+            dialogActivityFrom = dialogInfo.dialogActivityFrom,
+            dialogActivityTo = dialogInfo.dialogActivityTo,
+            requestedDialogCount = dialogInfo.requestedDialogCount,
+            dialogsCount = selectedDialogs.size,
+            totalDialogCount = totalDialogCount,
+            allowTestDialogs = dialogInfo.allowTestDialogs,
+            actionRefs = actionRefs,
+            createdBy = createdBy,
+        )
+    }
+
+    private fun createEvaluationSampleFromRuns(
+        namespace: String,
+        botId: String,
+        request: CreateEvaluationSampleRequest,
+        datasetRunInfo: DatasetRunInfo,
+        createdBy: String,
+    ): EvaluationSampleDTO {
+        if (datasetRunInfo.runIds.isEmpty()) {
+            throw BadRequestException("At least one dataset run is required")
+        }
+
+        val runData =
+            datasetRunInfo.runIds.map { runId ->
+                DatasetService.getRunEvaluationData(namespace, botId, runId)
+            }
+        val actionRefs = runData.flatMap { it.actionRefs }.distinctBy { it.dialogId to it.actionId }
+
+        if (actionRefs.isEmpty()) {
+            throw UnprocessableEntityException(
+                errorCode = 4221,
+                message = "No valid dialog in run ${datasetRunInfo.runIds.joinToString()}",
+            )
+        }
+
+        val selectedDialogsCount = actionRefs.map { it.dialogId }.distinct().size
+        val dialogActivityTo =
+            runData.map { data ->
+                data.run.endTime ?: throw BadRequestException("Run ${data.run._id} has no endTime")
+            }.maxOrNull()
+                ?: throw BadRequestException("At least one dataset run is required")
+
+        return saveEvaluationSample(
+            namespace = namespace,
+            botId = botId,
+            name = request.name?.trim(),
+            description = request.description?.trim()?.takeIf(String::isNotEmpty),
+            dialogActivityFrom = runData.minOf { it.run.startTime },
+            dialogActivityTo = dialogActivityTo,
+            requestedDialogCount = selectedDialogsCount,
+            dialogsCount = selectedDialogsCount,
+            totalDialogCount = selectedDialogsCount,
+            allowTestDialogs = true,
+            actionRefs = actionRefs,
+            createdBy = createdBy,
+            createdFromRun = runData.singleOrNull()?.run?._id,
+        )
+    }
+
+    private fun saveEvaluationSample(
+        namespace: String,
+        botId: String,
+        name: String?,
+        description: String?,
+        dialogActivityFrom: Instant,
+        dialogActivityTo: Instant,
+        requestedDialogCount: Int,
+        dialogsCount: Int,
+        totalDialogCount: Int,
+        allowTestDialogs: Boolean,
+        actionRefs: List<ActionRef>,
+        createdBy: String,
+        createdFromRun: Id<DatasetRun>? = null,
+    ): EvaluationSampleDTO {
         val now = Instant.now()
         val sample =
             EvaluationSample(
                 botId = botId,
                 namespace = namespace,
-                name = request.name,
-                description = request.description,
-                dialogActivityFrom = request.dialogActivityFrom,
-                dialogActivityTo = request.dialogActivityTo,
-                requestedDialogCount = request.requestedDialogCount,
-                dialogsCount = selectedDialogs.size,
+                name = name,
+                description = description,
+                dialogActivityFrom = dialogActivityFrom,
+                dialogActivityTo = dialogActivityTo,
+                requestedDialogCount = requestedDialogCount,
+                dialogsCount = dialogsCount,
                 totalDialogCount = totalDialogCount,
                 botActionCount = actionRefs.size,
-                allowTestDialogs = request.allowTestDialogs,
+                allowTestDialogs = allowTestDialogs,
                 actionRefs = actionRefs,
                 status = EvaluationSampleStatus.IN_PROGRESS,
                 createdBy = createdBy,
@@ -133,6 +231,7 @@ object EvaluationService {
                 statusChangedBy = createdBy,
                 statusChangeDate = now,
                 lastUpdateDate = now,
+                createdFromRun = createdFromRun,
             )
 
         val savedSample = evaluationSampleDAO.save(sample)
@@ -150,7 +249,7 @@ object EvaluationService {
             }
         evaluationDAO.createAll(evaluations)
 
-        logger.info { "Created evaluation sample ${savedSample._id} with ${actionRefs.size} bot actions from ${selectedDialogs.size} dialogs" }
+        logger.info { "Created evaluation sample ${savedSample._id} with ${actionRefs.size} bot actions from $dialogsCount dialogs" }
 
         val evaluationsResult =
             EvaluationsResult(
@@ -160,7 +259,6 @@ object EvaluationService {
                 positiveCount = 0,
                 negativeCount = 0,
             )
-
         return EvaluationSampleDTO.from(savedSample, evaluationsResult)
     }
 

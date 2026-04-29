@@ -105,7 +105,17 @@ export class SampleCreateComponent implements OnInit, OnDestroy {
     if (this.validateForm() && this.canSave) {
       const url = getEvaluationBaseUrl(this.stateService.currentApplication.name);
 
-      const payload = this.form.value;
+      const payload = {
+        name: this.form.value.name,
+        description: this.form.value.description,
+        dialogInfo: {
+          dialogActivityFrom: this.form.value.dialogActivityFrom,
+          dialogActivityTo: this.form.value.dialogActivityTo,
+          requestedDialogCount: this.form.value.requestedDialogCount,
+          allowTestDialogs: this.form.value.allowTestDialogs
+        },
+        datasetRunInfo: null
+      };
 
       this.rest.post(url, payload, null, null, true).subscribe({
         next: (evaluation: any) => {
