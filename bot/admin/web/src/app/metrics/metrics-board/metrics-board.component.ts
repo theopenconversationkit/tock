@@ -19,8 +19,6 @@ import { NbCalendarRange, NbDateService, NbDialogService, NbToastrService } from
 import type { EChartsOption } from 'echarts';
 import { forkJoin, Observable, Subject, take, takeUntil } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AnalyticsService } from '../../analytics/analytics.service';
-import { DialogFlowRequest } from '../../analytics/flow/flow';
 import { UserAnalyticsQueryResult } from '../../analytics/users/users';
 import { AnswerConfigurationType } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -40,7 +38,7 @@ import {
 } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
-import { RagAnswerStatusLabels, roundMinutesToNextTen, snakeCaseToDisplayLabel, toISOStringWithoutOffset } from '../../shared/utils';
+import { RagAnswerStatusLabels, roundMinutesToNextTen, snakeCaseToDisplayLabel } from '../../shared/utils';
 import { DialogStats as DialogStats, DialogStatsQueryResult, DialogStatsGroupResult, DialogCounts } from 'src/app/shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { MetricsIndicatorDetailsComponent } from './metrics-indicator-details/metrics-indicator-details.component';
@@ -98,7 +96,6 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   constructor(
     private stateService: StateService,
     private dateService: NbDateService<Date>,
-    private analyticsService: AnalyticsService,
     private botConfiguration: BotConfigurationService,
     private rest: RestService,
     private nbDialogService: NbDialogService,
@@ -371,19 +368,16 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   }
 
   private getMessagesSearchQuery(): Observable<UserAnalyticsQueryResult> {
-    return this.analyticsService.messagesAnalytics(
-      new DialogFlowRequest(
-        this.stateService.currentApplication.namespace,
-        this.stateService.currentApplication.name,
-        this.stateService.currentLocale,
-        this.stateService.currentApplication.name,
-        undefined,
-        undefined,
-        toISOStringWithoutOffset(this.range().start),
-        toISOStringWithoutOffset(this.range().end),
-        !environment.production // In dev, we ask for test messages to dispose of some usable content
-      )
-    );
+    const url = `/dialogs/stats/messages-by-date`;
+    const payload = {
+      namespace: this.stateService.currentApplication.namespace,
+      applicationName: this.stateService.currentApplication.name,
+      from: this.range().start,
+      to: this.range().end,
+      includeTestConfigurations: !environment.production && !!this.displayTests
+    };
+
+    return this.rest.post(url, payload, UserAnalyticsQueryResult.fromJSON);
   }
 
   private getStoriesHitsQuery(): Observable<MetricGroupResult> {

@@ -36,13 +36,14 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 
 import { TestSharedModule } from '../../shared/test-shared.module';
-import { IndicatorDefinition, MetricResult, StorySummary } from '../models';
+import { IndicatorDefinition, IndicatorType, MetricResult, StorySummary } from '../models';
 import { MetricsBoardComponent, StoriesFilter } from './metrics-board.component';
 
 const indicator1: IndicatorDefinition = {
   name: 'test',
   label: 'test label',
   description: 'test desc',
+  type: IndicatorType.CUSTOM,
   dimensions: ['test'],
   values: [{ name: 'oui', label: 'oui label' }]
 };
@@ -50,6 +51,7 @@ const indicator2: IndicatorDefinition = {
   name: 'otherTest',
   label: 'Other Test',
   description: 'Other Test desc',
+  type: IndicatorType.CUSTOM,
   dimensions: ['test', 'Other test dim'],
   values: []
 };
@@ -136,6 +138,22 @@ const dimensionMetrics: MetricResult[] = [
   }
 ];
 
+const emptyDialogStats = {
+  allUserActions: [],
+  allUserActionsExceptRag: [],
+  allUserRagActions: [],
+  knownIntentUserActions: [],
+  unknownIntentUserActions: [],
+  unknownIntentUserActionsExceptRag: [],
+  allFeedbackUp: [],
+  allFeedbackDown: []
+};
+
+const dialogStats = {
+  test: emptyDialogStats,
+  prod: emptyDialogStats
+};
+
 describe('MetricsBoardComponent', () => {
   let component: MetricsBoardComponent;
   let fixture: ComponentFixture<MetricsBoardComponent>;
@@ -180,6 +198,12 @@ describe('MetricsBoardComponent', () => {
           useValue: {
             get: () => of([indicator1, indicator2]),
             post: (url, payload) => {
+              if (url === '/dialogs/stats/messages-by-date') {
+                return of(messagesStats);
+              }
+              if (url === '/dialogs/stats') {
+                return of(dialogStats);
+              }
               if (url === '/bot/story/search/summary') {
                 return of(storiesSummaries);
               }
@@ -280,6 +304,7 @@ describe('MetricsBoardComponent', () => {
       name: 'test',
       label: 'test label',
       description: 'test desc',
+      type: IndicatorType.CUSTOM,
       dimensions: ['test'],
       values: [
         {
@@ -299,6 +324,7 @@ describe('MetricsBoardComponent', () => {
         name: 'otherTest',
         label: 'Other Test',
         description: 'Other Test desc',
+        type: IndicatorType.CUSTOM,
         dimensions: ['test', 'Other test dim'],
         values: []
       }
