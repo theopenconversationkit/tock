@@ -200,6 +200,22 @@ object DatasetService {
         datasetDAO.delete(dataset._id)
     }
 
+    fun deleteRun(
+        namespace: String,
+        botId: String,
+        datasetId: String,
+        runId: String,
+    ) {
+        val dataset = getDatasetEntity(namespace, botId, datasetId)
+        val run = getRunEntity(namespace, botId, dataset._id.toString(), runId)
+
+        if (run.state == DatasetRunState.QUEUED || run.state == DatasetRunState.RUNNING) {
+            throw DatasetError.RunNotFinished(runId, run.state)
+        }
+
+        datasetRunDAO.deleteRun(run._id)
+    }
+
     fun getRun(
         namespace: String,
         botId: String,

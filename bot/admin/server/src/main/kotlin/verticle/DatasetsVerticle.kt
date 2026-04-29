@@ -168,6 +168,19 @@ class DatasetsVerticle {
                 }
             }
 
+            blockingDeleteEmptyResponse(PATH_RUN, authorizedRoles) { context ->
+                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                    tryExecuteDataset(context) {
+                        DatasetService.deleteRun(
+                            namespace = app.namespace,
+                            botId = app.name,
+                            datasetId = context.pathParam(PATH_PARAM_DATASET_ID),
+                            runId = context.pathParam(PATH_PARAM_RUN_ID),
+                        )
+                    }
+                }
+            }
+
             blockingDeleteEmptyResponse(PATH_DATASET, authorizedRoles) { context ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     tryExecuteDataset(context) {

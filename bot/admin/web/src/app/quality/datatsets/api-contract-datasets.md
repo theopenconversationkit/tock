@@ -233,6 +233,21 @@ DatasetRun; // state: CANCELLED, endTime renseigné, settingsSnapshot absent
 
 ---
 
+### `DELETE /bots/:botId/datasets/:datasetId/runs/:runId`
+
+Supprime un run terminé ou annulé, ainsi que ses résultats de questions associés.
+Les dialogues générés pendant le run ne sont pas supprimés.
+
+Uniquement possible si le run est en état `COMPLETED` ou `CANCELLED`.
+
+**Response `204`** — No content
+
+**Response `404`** — run inconnu
+
+**Response `409`** — le run est encore `QUEUED` ou `RUNNING`
+
+---
+
 ### `GET /bots/:botId/datasets/:datasetId/runs/:runId`
 
 Récupère l'état courant d'un run. Utilisé en polling tant que `state` est `QUEUED` ou `RUNNING`.

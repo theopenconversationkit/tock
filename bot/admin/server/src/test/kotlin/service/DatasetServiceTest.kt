@@ -303,6 +303,72 @@ class DatasetServiceTest : AbstractTest() {
     }
 
     @Test
+    fun `deleteRun deletes completed run`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.deleteRun(run._id) } returns Unit
+
+        DatasetService.deleteRun(
+            namespace = NAMESPACE,
+            botId = BOT_ID,
+            datasetId = dataset._id.toString(),
+            runId = run._id.toString(),
+        )
+
+        verify(exactly = 1) { datasetRunDAO.deleteRun(run._id) }
+    }
+
+    @Test
+    fun `deleteRun deletes cancelled run`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.CANCELLED)
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.deleteRun(run._id) } returns Unit
+
+        DatasetService.deleteRun(
+            namespace = NAMESPACE,
+            botId = BOT_ID,
+            datasetId = dataset._id.toString(),
+            runId = run._id.toString(),
+        )
+
+        verify(exactly = 1) { datasetRunDAO.deleteRun(run._id) }
+    }
+
+    @Test
+    fun `deleteRun rejects active run`() {
+        val dataset = newDataset()
+        val run =
+            DatasetRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                state = DatasetRunState.RUNNING,
+                startTime = Instant.now(),
+                startedBy = USER,
+            )
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+
+        assertThrows<DatasetError.RunNotFinished> {
+            DatasetService.deleteRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+            )
+        }
+
+        verify(exactly = 0) { datasetRunDAO.deleteRun(any()) }
+    }
+
+    @Test
     fun `dataset create request rejects blank name`() {
         val exception =
             assertThrows<ValidationError> {
