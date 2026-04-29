@@ -93,6 +93,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
+import ai.tock.bot.admin.user.UserAnalyticsQueryResult
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -138,6 +139,8 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.Locale
 
 object BotAdminService {
@@ -647,6 +650,36 @@ object BotAdminService {
             test = buildResult(APP_CONFIG_TEST_TYPE),
             prod = buildResult(APP_CONFIG_PROD_TYPE),
         )
+    }
+
+    fun getDialogUserMessagesByDate(query: DialogStatsQuery): UserAnalyticsQueryResult {
+        val from = query.from ?: query.to ?: ZonedDateTime.now()
+        val to = query.to ?: from
+        val countsByDate =
+            dialogReportDAO
+                .countUserActionsByDate(query)
+                .groupBy { it.date }
+                .mapValues { (_, counts) -> counts.sumOf { it.total }.toInt() }
+        val dates = getDatesBetween(from.toLocalDate(), to.toLocalDate())
+
+        return UserAnalyticsQueryResult(
+            dates = dates,
+            usersData = dates.map { listOf(countsByDate[it] ?: 0) },
+            connectorsType = listOf("Messages"),
+        )
+    }
+
+    private fun getDatesBetween(
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): List<String> {
+        val dates = mutableListOf<String>()
+        var date = startDate
+        while (!date.isAfter(endDate)) {
+            dates += date.toString()
+            date = date.plusDays(1)
+        }
+        return dates
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {

@@ -26,6 +26,7 @@ data class DialogStatsQuery(
     val applicationName: String,
     val from: ZonedDateTime? = null,
     val to: ZonedDateTime? = null,
+    val includeTestConfigurations: Boolean = false,
 )
 
 /**

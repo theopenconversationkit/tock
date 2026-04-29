@@ -20,6 +20,7 @@ import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.annotation.BotAnnotationEvent
 import ai.tock.bot.admin.annotation.BotAnnotationEventType
 import ai.tock.bot.admin.annotation.BotAnnotationState
+import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogRating
 import ai.tock.bot.admin.dialog.DialogReport
@@ -76,6 +77,7 @@ import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.fireAndForget
 import ai.tock.shared.coroutines.waitForIO
 import ai.tock.shared.defaultCountOptions
+import ai.tock.shared.defaultZoneId
 import ai.tock.shared.error
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.AnyValueWrapper
@@ -1163,6 +1165,25 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         return runBlocking { buildAndExecuteCountPipeline(namespace, applicationIds, filters) }
     }
 
+    override fun countUserActionsByDate(query: DialogStatsQuery): List<CountByDateResult> {
+        val applicationIds =
+            getConfigurationsByNamespaceAndNlpModel(
+                namespace = query.namespace,
+                nlpModel = query.applicationName,
+            )
+                .filter { query.includeTestConfigurations || !it.applicationId.startsWith("test-") }
+                .map { it.applicationId }
+                .toSet()
+
+        val filters =
+            mutableListOf<Bson>(
+                eq("stories.actions.playerId.type", "user"),
+            )
+        applyDateFilters(filters, query.from, query.to)
+
+        return runBlocking { buildAndExecuteCountByDatePipeline(query.namespace, applicationIds, filters) }
+    }
+
     /**
      * Counts a user RAG actions within dialogs for a given namespace and set of applications.
      *
@@ -1219,6 +1240,51 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 result.find { it.applicationId == appId } ?: CountResult(appId, 0)
             }
         return resultByAppId
+    }
+
+    private fun buildCountByDatePipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>,
+    ): List<Bson> =
+        buildCountPipeline(namespace, applicationIds, filters).dropLast(1) +
+            listOf(
+                """
+                {
+                  "${'$'}group": {
+                    "_id": {
+                      "applicationId": "${'$'}stories.actions.applicationId",
+                      "date": {
+                        "${'$'}dateToString": {
+                          "format": "%Y-%m-%d",
+                          "date": "${'$'}stories.actions.date",
+                          "timezone": "${defaultZoneId.id}"
+                        }
+                      }
+                    },
+                    "total": { "${'$'}sum": 1 }
+                  }
+                }
+                """.bson,
+                """
+                {
+                  "${'$'}project": {
+                    "_id": 0,
+                    "applicationId": "${'$'}_id.applicationId",
+                    "date": "${'$'}_id.date",
+                    "total": 1
+                  }
+                }
+                """.bson,
+            )
+
+    private suspend fun buildAndExecuteCountByDatePipeline(
+        namespace: String,
+        applicationIds: Set<String>,
+        filters: List<Bson>,
+    ): List<CountByDateResult> {
+        val pipeline = buildCountByDatePipeline(namespace, applicationIds, filters)
+        return dialogCol.aggregate<CountByDateResult>(pipeline).toList()
     }
 
     private fun applyDateFilters(
