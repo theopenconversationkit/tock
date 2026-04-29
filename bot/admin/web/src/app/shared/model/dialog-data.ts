@@ -471,6 +471,7 @@ export interface DialogStatsGroupResult {
 
 export interface DialogStatsQueryResult {
   allUserActions: CountResult[];
+  allUserActionsByDate: CountByDateResult[];
   allUserActionsExceptRag: CountResult[];
   allUserRagActions: CountResult[];
   knownIntentUserActions: CountResult[];
@@ -482,6 +483,12 @@ export interface DialogStatsQueryResult {
 
 export interface CountResult {
   _id: string; // applicationName
+  total: number;
+}
+
+export interface CountByDateResult {
+  applicationId: string;
+  date: string;
   total: number;
 }
 

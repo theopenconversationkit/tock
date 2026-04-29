@@ -47,6 +47,7 @@ import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurati
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dataset.DatasetDAO
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
+import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -619,10 +620,20 @@ object BotAdminService {
         return grouped
     }
 
+    private fun groupCountByDateByAppConfigType(results: List<CountByDateResult>): Map<String, List<CountByDateResult>> {
+        val grouped: Map<String, List<CountByDateResult>> =
+            results.groupBy { stat ->
+                // At the moment, we rely on the `test-` prefix to distinguish test configurations
+                if (stat.applicationId.startsWith("test-")) APP_CONFIG_TEST_TYPE else APP_CONFIG_PROD_TYPE
+            }
+        return grouped
+    }
+
     fun getDialogStats(query: DialogStatsQuery): DialogStatsGroupResponse {
         val stats = dialogReportDAO.calculateDialogStats(query)
 
         val allUserActionsGroup = groupByAppConfigType(stats.allUserActions)
+        val allUserActionsByDateGroup = groupCountByDateByAppConfigType(stats.allUserActionsByDate)
         val allUserActionsExceptRagGroup = groupByAppConfigType(stats.allUserActionsExceptRag)
         val allUserRagActionsGroup = groupByAppConfigType(stats.allUserRagActions)
         val knownIntentUserActionsGroup = groupByAppConfigType(stats.knownIntentUserActions)
@@ -634,6 +645,7 @@ object BotAdminService {
         fun buildResult(env: String) =
             DialogStatsQueryResult(
                 allUserActions = allUserActionsGroup[env] ?: emptyList(),
+                allUserActionsByDate = allUserActionsByDateGroup[env] ?: emptyList(),
                 allUserActionsExceptRag = allUserActionsExceptRagGroup[env] ?: emptyList(),
                 allUserRagActions = allUserRagActionsGroup[env] ?: emptyList(),
                 knownIntentUserActions = knownIntentUserActionsGroup[env] ?: emptyList(),
