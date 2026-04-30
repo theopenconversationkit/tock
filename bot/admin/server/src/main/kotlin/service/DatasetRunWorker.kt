@@ -147,7 +147,7 @@ class DatasetRunProcessor(
             val outcome =
                 runCatching {
                     questionExecutor.execute(run, currentResult, question)
-            }
+                }
 
             val response = outcome.getOrNull()
             val retryableFailureMessage = response?.toRetryableFailureMessage()

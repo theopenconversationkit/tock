@@ -303,11 +303,12 @@ object DatasetService {
     ): ResolvedRunAction =
         when (questionResult.state) {
             DatasetRunQuestionResultState.COMPLETED -> resolveCompletedRunAction(run, questionResult, cachedDialog)
-            else -> ResolvedRunAction(
-                DatasetRunActionState.FAILED,
-                null,
-                questionResult.error ?: "Dataset question execution failed before producing an answer.",
-            )
+            else ->
+                ResolvedRunAction(
+                    DatasetRunActionState.FAILED,
+                    null,
+                    questionResult.error ?: "Dataset question execution failed before producing an answer.",
+                )
         }
 
     private fun resolveCompletedRunAction(
@@ -354,8 +355,7 @@ object DatasetService {
     private fun unresolvedActionMessage(
         questionResult: DatasetRunQuestionResult,
         dialogId: String,
-    ): String =
-        "Unable to resolve a bot answer for userActionId ${questionResult.userActionId} in dialog $dialogId."
+    ): String = "Unable to resolve a bot answer for userActionId ${questionResult.userActionId} in dialog $dialogId."
 
     private fun resolveActionFromDialog(
         dialog: DialogReport,
