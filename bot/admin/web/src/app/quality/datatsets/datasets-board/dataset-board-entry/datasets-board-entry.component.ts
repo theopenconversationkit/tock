@@ -119,6 +119,24 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       });
   }
 
+  confirmCancelRun(run: DatasetRun): void {
+    const action = 'cancel';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: 'Cancel a dataset run',
+        subtitle: `Are you sure you want to cancel the execution of this run?`,
+        modalStatus: 'warning',
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'warning' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === action) this.cancelRun(run);
+    });
+  }
+
   cancelRun(run: DatasetRun): void {
     this.datasetsService
       .cancelRun(this.dataset.id, run.id)
@@ -159,6 +177,35 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
     this.dialogService.openDialog(DatasetCreateComponent, {
       context: { dataset: this.dataset }
     });
+  }
+
+  confirmDeleteRun(run: DatasetRun): void {
+    const action = 'permanently delete';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: 'Delete a dataset run',
+        subtitle: `Are you sure you want to delete this run from "${this.dataset.name}" dataset?`,
+        modalStatus: 'danger',
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === action) {
+        this.deleteRun(run);
+      }
+    });
+  }
+
+  deleteRun(run: DatasetRun): void {
+    this.datasetsService
+      .deleteRun(this.dataset.id, run.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: (err) => console.error('Failed to delete run', err)
+      });
   }
 
   getStateColor(state: DatasetRunState): string {

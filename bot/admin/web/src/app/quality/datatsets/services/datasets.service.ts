@@ -134,6 +134,23 @@ export class DatasetsService {
   }
 
   // ---------------------------------------------------------------------------
+  // DELETE /bots/:botId/datasets/:datasetId/runs/:runId
+  // ---------------------------------------------------------------------------
+  deleteRun(datasetId: string, runId: string): Observable<boolean | void> {
+    return this.rest.delete<void>(`${this.apiBase()}/${datasetId}/runs/${runId}`).pipe(
+      tap(() => {
+        const dataset = this.datasets.find((d) => d.id === datasetId);
+        if (dataset) {
+          this._updateDatasetRuns(
+            datasetId,
+            dataset.runs.filter((r) => r.id !== runId)
+          );
+        }
+      })
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // PATCH run state
   // ---------------------------------------------------------------------------
   updateRunState(datasetId: string, runId: string, patch: Partial<Pick<DatasetRun, 'state' | 'endTime' | 'stats'>>): void {

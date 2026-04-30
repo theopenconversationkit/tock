@@ -44,7 +44,7 @@
   display: grid;
   grid-template-columns:
     minmax(4rem, 8rem) minmax(4rem, 8rem) minmax(4rem, 1fr) minmax(2rem, 4rem) minmax(2rem, 3rem) minmax(2rem, 4rem) minmax(3rem, 5rem)
-    1.5rem;
+    1.5rem 1.5rem;
   gap: 0.5rem;
 }
 
