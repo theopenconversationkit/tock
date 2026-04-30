@@ -49,6 +49,7 @@ import { DatasetDetailComponent } from './datatsets/dataset-detail/dataset-detai
 import { DatasetDetailSettingsDiffComponent } from './datatsets/dataset-detail/settings-diff/settings-diff.component';
 import { DatasetDetailEntryComponent } from './datatsets/dataset-detail/dataset-detail-entry/dataset-detail-entry.component';
 import { DatasetsBoardEntryComponent } from './datatsets/datasets-board/dataset-board-entry/datasets-board-entry.component';
+import { SampleCreateFromRunComponent } from './datatsets/sample-create-from-run/sample-create-from-run.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { DatasetsBoardEntryComponent } from './datatsets/datasets-board/dataset-
     SamplesBoardComponent,
     SampleCreateComponent,
     SampleDetailComponent,
+    SampleCreateFromRunComponent,
     DatasetsBoardComponent,
     DatasetsBoardEntryComponent,
     DatasetCreateComponent,

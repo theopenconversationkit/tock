@@ -7,6 +7,7 @@ import { DialogService } from '../../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { DatasetCreateComponent } from '../../dataset-create/dataset-create.component';
 import { StateService } from '../../../../core-nlp/state.service';
+import { SampleCreateFromRunComponent } from '../../sample-create-from-run/sample-create-from-run.component';
 
 @Component({
   selector: 'tock-datasets-board-entry',
@@ -206,6 +207,12 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       .subscribe({
         error: (err) => console.error('Failed to delete run', err)
       });
+  }
+
+  createSample(run: DatasetRun) {
+    this.dialogService.openDialog(SampleCreateFromRunComponent, {
+      context: { dataset: this.dataset, run }
+    });
   }
 
   getStateColor(state: DatasetRunState): string {

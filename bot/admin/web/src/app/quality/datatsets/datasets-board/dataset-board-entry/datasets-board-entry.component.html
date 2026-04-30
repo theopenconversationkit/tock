@@ -170,6 +170,7 @@
         <div class="ellipsis">Run State</div>
         <div class="ellipsis"></div>
         <div class="ellipsis"></div>
+        <div class="ellipsis"></div>
       </div>
 
       <div class="details-wrapper scrollbar-narrow">
@@ -219,6 +220,20 @@
               [queryParams]="{ compareRunId: run.id }"
             >
               <nb-icon icon="plus-slash-minus"></nb-icon>
+            </button>
+          </div>
+          <div>
+            <button
+              *ngIf="run.state === datasetRunState.COMPLETED"
+              nbButton
+              size="tiny"
+              shape="round"
+              status="primary"
+              nbTooltip="Create an evaluation sample based on the results of this run"
+              (click)="createSample(run)"
+              [disabled]="run.stats.completedQuestions < 1"
+            >
+              <nb-icon icon="eyedropper"></nb-icon>
             </button>
           </div>
           <div>
