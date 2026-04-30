@@ -25,6 +25,7 @@ import ai.tock.bot.admin.dataset.DatasetRunQuestionResult
 import ai.tock.bot.admin.dataset.DatasetRunQuestionResultState
 import ai.tock.bot.admin.dataset.DatasetRunState
 import ai.tock.bot.admin.test.model.BotDialogResponse
+import ai.tock.bot.connector.rest.client.model.ClientDebug
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -87,6 +88,57 @@ class DatasetRunProcessorTest {
         assertEquals(2, completedResults.size)
         assertEquals("user-action-${firstQuestion.id}", completedResults[firstQuestion.id]?.userActionId)
         assertEquals("user-action-${secondQuestion.id}", completedResults[secondQuestion.id]?.userActionId)
+    }
+
+    @Test
+    fun `processNextQueuedRun retries RAG technical errors even when a user action id is returned`() {
+        val dataset = newDataset(questionCount = 1)
+        val run = newRun(dataset)
+        val question = dataset.questions.first()
+        val questionResult = newQuestionResult(run, dataset, question.id)
+        val savedQuestionResults = mutableListOf<DatasetRunQuestionResult>()
+        val savedRuns = mutableListOf<DatasetRun>()
+
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(questionResult)
+        every { datasetRunDAO.getRunById(any()) } returns run.copy(state = DatasetRunState.RUNNING)
+        every { datasetRunDAO.saveQuestionResult(any()) } answers {
+            firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
+        }
+        every { datasetRunDAO.saveRun(any()) } answers {
+            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        }
+
+        val processor =
+            DatasetRunProcessor(
+                datasetDAO = datasetDAO,
+                datasetRunDAO = datasetRunDAO,
+                questionExecutor =
+                    DatasetQuestionExecutor { _, result, _ ->
+                        if (result.retryCount == 0) {
+                            BotDialogResponse(
+                                listOf(ragTechnicalError("timeout")),
+                                userActionId = "failed-user-action",
+                            )
+                        } else {
+                            BotDialogResponse(emptyList(), userActionId = "successful-user-action")
+                        }
+                    },
+                maxRetries = 1,
+                clock = fixedClock,
+            )
+
+        val processed = processor.processNextQueuedRun()
+
+        assertTrue(processed)
+        assertEquals(DatasetRunState.COMPLETED, savedRuns.last().state)
+
+        val completedResult = savedQuestionResults.last()
+        assertEquals(DatasetRunQuestionResultState.COMPLETED, completedResult.state)
+        assertEquals(1, completedResult.retryCount)
+        assertEquals("successful-user-action", completedResult.userActionId)
+        assertEquals(null, completedResult.error)
     }
 
     @Test
@@ -195,5 +247,19 @@ class DatasetRunProcessorTest {
             runId = run._id,
             questionId = questionId,
             userIdModifier = "dataset_${run._id}_$questionId",
+        )
+
+    private fun ragTechnicalError(errorMessage: String): ClientDebug =
+        ClientDebug(
+            text = "RAG",
+            data =
+                mapOf(
+                    "error" to mapOf("errorMessage" to errorMessage),
+                    "answer" to
+                        mapOf(
+                            "status" to "technical_error",
+                            "answer" to "Technical error :( sorry!",
+                        ),
+                ),
         )
 }

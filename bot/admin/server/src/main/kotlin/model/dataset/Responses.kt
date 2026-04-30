@@ -69,4 +69,6 @@ data class DatasetRunActionDTO(
     @JsonInclude(JsonInclude.Include.ALWAYS)
     val action: ActionReport?,
     val retryCount: Int,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val error: String? = null,
 )
