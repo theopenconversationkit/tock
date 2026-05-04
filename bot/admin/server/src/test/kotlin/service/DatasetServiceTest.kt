@@ -32,11 +32,16 @@ import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.evaluation.Evaluation
+import ai.tock.bot.admin.evaluation.EvaluationDAO
+import ai.tock.bot.admin.evaluation.EvaluationSample
+import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.ValidationError
 import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunActionState
 import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
+import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleFromRunRequest
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.dialog.Dialog
@@ -45,6 +50,7 @@ import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.message.SentenceWithFootnotes
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
+import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.UserInterfaceType
 import com.github.salomonbrys.kodein.Kodein
@@ -79,6 +85,8 @@ class DatasetServiceTest : AbstractTest() {
         private val datasetRunDAO: DatasetRunDAO = mockk(relaxed = false)
         private val ragConfigurationDAO: BotRAGConfigurationDAO = mockk(relaxed = true)
         private val dialogReportDAO: DialogReportDAO = mockk(relaxed = false)
+        private val evaluationSampleDAO: EvaluationSampleDAO = mockk(relaxed = false)
+        private val evaluationDAO: EvaluationDAO = mockk(relaxed = false)
 
         init {
             tockInternalInjector = KodeinInjector()
@@ -88,6 +96,8 @@ class DatasetServiceTest : AbstractTest() {
                     bind<DatasetRunDAO>() with singleton { datasetRunDAO }
                     bind<BotRAGConfigurationDAO>() with singleton { ragConfigurationDAO }
                     bind<DialogReportDAO>() with singleton { dialogReportDAO }
+                    bind<EvaluationSampleDAO>() with singleton { evaluationSampleDAO }
+                    bind<EvaluationDAO>() with singleton { evaluationDAO }
                 }
             tockInternalInjector.inject(
                 Kodein {
@@ -100,7 +110,15 @@ class DatasetServiceTest : AbstractTest() {
 
     @AfterEach
     fun tearDown() {
-        clearMocks(datasetDAO, datasetRunDAO, ragConfigurationDAO, dialogReportDAO, AbstractTest.applicationConfigurationDAO)
+        clearMocks(
+            datasetDAO,
+            datasetRunDAO,
+            ragConfigurationDAO,
+            dialogReportDAO,
+            evaluationSampleDAO,
+            evaluationDAO,
+            AbstractTest.applicationConfigurationDAO,
+        )
     }
 
     @Test
@@ -366,6 +384,137 @@ class DatasetServiceTest : AbstractTest() {
         }
 
         verify(exactly = 0) { datasetRunDAO.deleteRun(any()) }
+    }
+
+    @Test
+    fun `createEvaluationSampleFromRun creates sample from valid run actions`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        val answerAction = botSentenceWithFootnotesAction("answer-action-id")
+        val dialog =
+            DialogReport(
+                actions = listOf(answerAction),
+                userInterface = UserInterfaceType.textChat,
+                id = newId<Dialog>(),
+            )
+        val questionResult =
+            DatasetRunQuestionResult(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                runId = run._id,
+                questionId = dataset.questions.first().id,
+                state = DatasetRunQuestionResultState.COMPLETED,
+                userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
+                dialogId = dialog.id,
+                answerActionId = answerAction.id,
+            )
+        val sampleSlot = slot<EvaluationSample>()
+        val evaluationsSlot = slot<List<Evaluation>>()
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(questionResult)
+        every { dialogReportDAO.findByDialogByIds(setOf(dialog.id)) } returns setOf(dialog)
+        every { evaluationSampleDAO.save(capture(sampleSlot)) } answers { sampleSlot.captured }
+        every { evaluationDAO.createAll(capture(evaluationsSlot)) } returns Unit
+
+        val result =
+            DatasetService.createEvaluationSampleFromRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+                request = CreateEvaluationSampleFromRunRequest(name = " Evaluation from run ", description = " description "),
+                userLogin = USER,
+            )
+
+        assertEquals("Evaluation from run", result.name)
+        assertEquals("description", result.description)
+        assertEquals(run._id.toString(), result.createdFromRun)
+        assertEquals(run.startTime, result.dialogActivityFrom)
+        assertEquals(run.endTime, result.dialogActivityTo)
+        assertEquals(1, result.requestedDialogCount)
+        assertEquals(1, result.dialogsCount)
+        assertEquals(1, result.totalDialogCount)
+        assertEquals(1, result.botActionCount)
+        assertTrue(result.allowTestDialogs)
+
+        val savedSample = sampleSlot.captured
+        assertEquals(run._id, savedSample.createdFromRun)
+        assertEquals(listOf(dialog.id), savedSample.actionRefs.map { it.dialogId })
+        assertEquals(listOf(answerAction.id), savedSample.actionRefs.map { it.actionId })
+
+        val createdEvaluations = evaluationsSlot.captured
+        assertEquals(1, createdEvaluations.size)
+        assertEquals(dialog.id, createdEvaluations.first().dialogId)
+        assertEquals(answerAction.id, createdEvaluations.first().actionId)
+    }
+
+    @Test
+    fun `createEvaluationSampleFromRun rejects active run`() {
+        val dataset = newDataset()
+        val run =
+            DatasetRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                state = DatasetRunState.RUNNING,
+                startTime = Instant.now(),
+                startedBy = USER,
+            )
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+
+        assertThrows<DatasetError.RunNotFinished> {
+            DatasetService.createEvaluationSampleFromRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+                request = CreateEvaluationSampleFromRunRequest(name = "Evaluation"),
+                userLogin = USER,
+            )
+        }
+
+        verify(exactly = 0) { evaluationSampleDAO.save(any()) }
+        verify(exactly = 0) { evaluationDAO.createAll(any()) }
+    }
+
+    @Test
+    fun `createEvaluationSampleFromRun rejects run without valid dialog`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        val questionResult =
+            DatasetRunQuestionResult(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id,
+                runId = run._id,
+                questionId = dataset.questions.first().id,
+                state = DatasetRunQuestionResultState.FAILED,
+                userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
+            )
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns listOf(questionResult)
+        every { dialogReportDAO.findByDialogByIds(emptySet()) } returns emptySet()
+
+        assertThrows<UnprocessableEntityException> {
+            DatasetService.createEvaluationSampleFromRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+                request = CreateEvaluationSampleFromRunRequest(name = "Evaluation"),
+                userLogin = USER,
+            )
+        }
+
+        verify(exactly = 0) { evaluationSampleDAO.save(any()) }
+        verify(exactly = 0) { evaluationDAO.createAll(any()) }
     }
 
     @Test

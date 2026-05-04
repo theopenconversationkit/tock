@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.dataset.DatasetRun
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.evaluation.ActionRef
@@ -29,6 +30,7 @@ import ai.tock.bot.admin.evaluation.EvaluationStatus
 import ai.tock.bot.admin.evaluation.EvaluationsResult
 import ai.tock.bot.admin.evaluation.Evaluator
 import ai.tock.bot.admin.model.evaluation.ActionRefWithEvaluation
+import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleFromRunRequest
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
 import ai.tock.bot.admin.model.evaluation.DialogEntry
 import ai.tock.bot.admin.model.evaluation.EvaluationDialogsResponse
@@ -151,6 +153,75 @@ object EvaluationService {
         evaluationDAO.createAll(evaluations)
 
         logger.info { "Created evaluation sample ${savedSample._id} with ${actionRefs.size} bot actions from ${selectedDialogs.size} dialogs" }
+
+        val evaluationsResult =
+            EvaluationsResult(
+                total = actionRefs.size,
+                evaluated = 0,
+                remaining = actionRefs.size,
+                positiveCount = 0,
+                negativeCount = 0,
+            )
+
+        return EvaluationSampleDTO.from(savedSample, evaluationsResult)
+    }
+
+    fun createEvaluationSampleFromRun(
+        namespace: String,
+        botId: String,
+        request: CreateEvaluationSampleFromRunRequest,
+        run: DatasetRun,
+        actionRefs: List<ActionRef>,
+        createdBy: String,
+    ): EvaluationSampleDTO {
+        if (actionRefs.isEmpty()) {
+            throw UnprocessableEntityException(
+                errorCode = 4221,
+                message = "No valid dialog in run ${run._id}",
+            )
+        }
+
+        val selectedDialogsCount = actionRefs.map { it.dialogId }.distinct().size
+        val now = Instant.now()
+        val sample =
+            EvaluationSample(
+                botId = botId,
+                namespace = namespace,
+                name = request.name.trim(),
+                description = request.description?.trim()?.takeIf(String::isNotEmpty),
+                dialogActivityFrom = run.startTime,
+                dialogActivityTo = run.endTime ?: throw BadRequestException("Run ${run._id} has no endTime"),
+                requestedDialogCount = selectedDialogsCount,
+                dialogsCount = selectedDialogsCount,
+                totalDialogCount = selectedDialogsCount,
+                botActionCount = actionRefs.size,
+                allowTestDialogs = true,
+                actionRefs = actionRefs,
+                status = EvaluationSampleStatus.IN_PROGRESS,
+                createdBy = createdBy,
+                creationDate = now,
+                statusChangedBy = createdBy,
+                statusChangeDate = now,
+                lastUpdateDate = now,
+                createdFromRun = run._id,
+            )
+
+        val savedSample = evaluationSampleDAO.save(sample)
+
+        val evaluations =
+            actionRefs.map { ref ->
+                Evaluation(
+                    evaluationSampleId = savedSample._id,
+                    dialogId = ref.dialogId,
+                    actionId = ref.actionId,
+                    status = EvaluationStatus.UNSET,
+                    creationDate = now,
+                    lastUpdateDate = now,
+                )
+            }
+        evaluationDAO.createAll(evaluations)
+
+        logger.info { "Created evaluation sample ${savedSample._id} with ${actionRefs.size} bot actions from $selectedDialogsCount dialogs" }
 
         val evaluationsResult =
             EvaluationsResult(

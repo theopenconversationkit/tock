@@ -22,11 +22,13 @@ import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunCancelRequest
 import ai.tock.bot.admin.model.dataset.DatasetRunCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetUpdateRequest
+import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleFromRunRequest
 import ai.tock.bot.admin.service.DatasetError
 import ai.tock.bot.admin.service.DatasetService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.exception.rest.NotFoundException
+import ai.tock.shared.exception.rest.UnprocessableEntityException
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -45,6 +47,7 @@ class DatasetsVerticle {
         private const val PATH_RUN = "$PATH_RUNS/:$PATH_PARAM_RUN_ID"
         private const val PATH_RUN_ACTIONS = "$PATH_RUN/actions"
         private const val PATH_RUN_CANCEL = "$PATH_RUN/cancel"
+        private const val PATH_RUN_EVALUATION_SAMPLES = "$PATH_RUN/evaluation-samples"
     }
 
     private val front = FrontClient
@@ -168,6 +171,25 @@ class DatasetsVerticle {
                 }
             }
 
+            blockingJsonPost(
+                PATH_RUN_EVALUATION_SAMPLES,
+                authorizedRoles,
+            ) { context, request: CreateEvaluationSampleFromRunRequest ->
+                checkNamespaceAndExecute(context, currentContextApp) { app ->
+                    tryExecuteDataset(context, created = true) {
+                        Valid(request)
+                        DatasetService.createEvaluationSampleFromRun(
+                            namespace = app.namespace,
+                            botId = app.name,
+                            datasetId = context.pathParam(PATH_PARAM_DATASET_ID),
+                            runId = context.pathParam(PATH_PARAM_RUN_ID),
+                            request = request,
+                            userLogin = context.userLogin,
+                        )
+                    }
+                }
+            }
+
             blockingDeleteEmptyResponse(PATH_RUN, authorizedRoles) { context ->
                 checkNamespaceAndExecute(context, currentContextApp) { app ->
                     tryExecuteDataset(context) {
@@ -218,6 +240,7 @@ private fun <T> tryExecuteDataset(
                 is DatasetError.RunStateConflict -> 409
                 is DatasetError.RunNotFinished -> 409
                 is NotFoundException -> 404
+                is UnprocessableEntityException -> 422
                 else -> 500
             }
 

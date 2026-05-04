@@ -1,9 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { NbDialogRef } from '@nebular/theme';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { Dataset, DatasetRun } from '../models';
 import { DatePipe } from '@angular/common';
+import { DatasetsService } from '../services/datasets.service';
+import { takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface SampleCreateFromRunForm {
   name: FormControl<string>;
@@ -36,7 +39,13 @@ export class SampleCreateFromRunComponent implements OnInit, OnDestroy {
     })
   });
 
-  constructor(public dialogRef: NbDialogRef<SampleCreateFromRunComponent>, private datePipe: DatePipe) {}
+  constructor(
+    public dialogRef: NbDialogRef<SampleCreateFromRunComponent>,
+    private datePipe: DatePipe,
+    private datasetsService: DatasetsService,
+    private router: Router,
+    private toastrService: NbToastrService
+  ) {}
 
   ngOnInit(): void {
     this.form.patchValue({
@@ -68,18 +77,27 @@ export class SampleCreateFromRunComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
 
-    // TODO: wire up to the backend endpoint when available
     const payload = {
       name: this.form.controls.name.value.trim(),
-      description: this.form.controls.description.value.trim(),
-      datasetId: this.dataset.id,
-      runId: this.run.id
+      description: this.form.controls.description.value.trim() || null
     };
 
-    console.log('Create sample from run payload (TODO: connect to endpoint)', payload);
-
-    // Temporary: close immediately until the endpoint is ready
-    this.dialogRef.close(payload);
+    this.datasetsService
+      .createEvaluationSampleFromRun(this.dataset.id, this.run.id, payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (sample) => {
+          this.router.navigate(['/quality/samples/detail', sample._id]);
+          this.dialogRef.close(sample);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.toastrService.danger(err?.error?.message || 'An error occured', 'Error', {
+            duration: 5000,
+            status: 'danger'
+          });
+        }
+      });
   }
 
   ngOnDestroy(): void {
