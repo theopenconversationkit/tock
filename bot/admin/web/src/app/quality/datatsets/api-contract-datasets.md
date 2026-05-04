@@ -233,6 +233,63 @@ DatasetRun; // state: CANCELLED, endTime renseigné, settingsSnapshot absent
 
 ---
 
+### `DELETE /bots/:botId/datasets/:datasetId/runs/:runId`
+
+Supprime un run terminé ou annulé, ainsi que ses résultats de questions associés.
+Les dialogues générés pendant le run ne sont pas supprimés.
+
+Uniquement possible si le run est en état `COMPLETED` ou `CANCELLED`.
+
+**Response `204`** — No content
+
+**Response `404`** — run inconnu
+
+**Response `409`** — le run est encore `QUEUED` ou `RUNNING`
+
+---
+
+### `POST /bots/:botId/datasets/:datasetId/runs/:runId/evaluation-samples`
+
+Crée une évaluation à partir des dialogues et actions bot valides d'un run terminé ou annulé.
+Les dialogues du run ne sont pas modifiés.
+
+Uniquement possible si le run est en état `COMPLETED` ou `CANCELLED`.
+Les résultats de questions en échec, annulés, ou dont le dialogue/action bot n'est plus retrouvable, ne sont pas inclus.
+
+**Request body**
+
+```typescript
+{
+  name: string;
+  description?: string | null;
+}
+```
+
+**Response `201`**
+
+```typescript
+EvaluationSample; // allowTestDialogs: true, createdFromRun: runId
+```
+
+La réponse contient aussi :
+
+- `dialogActivityFrom = run.startTime`
+- `dialogActivityTo = run.endTime`
+- `requestedDialogCount = dialogsCount = nombre de dialogues inclus`
+- `botActionCount = nombre d'actions bot incluses`
+- `createdBy = utilisateur courant`
+- `createdFromRun = runId`
+
+**Response `400`** — nom manquant ou run terminé sans `endTime`
+
+**Response `404`** — run inconnu
+
+**Response `409`** — le run est encore `QUEUED` ou `RUNNING`
+
+**Response `422`** — aucun dialogue/action valide à inclure dans l'évaluation
+
+---
+
 ### `GET /bots/:botId/datasets/:datasetId/runs/:runId`
 
 Récupère l'état courant d'un run. Utilisé en polling tant que `state` est `QUEUED` ou `RUNNING`.

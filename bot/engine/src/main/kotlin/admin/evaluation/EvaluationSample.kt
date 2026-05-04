@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.evaluation
 
+import ai.tock.bot.admin.dataset.DatasetRun
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -44,4 +45,5 @@ data class EvaluationSample(
     val statusChangeDate: Instant = Instant.now(),
     val statusComment: String? = null,
     val lastUpdateDate: Instant = Instant.now(),
+    val createdFromRun: Id<DatasetRun>? = null,
 )

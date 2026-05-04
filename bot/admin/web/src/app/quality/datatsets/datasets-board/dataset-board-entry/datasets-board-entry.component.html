@@ -87,7 +87,7 @@
           status="warning"
           nbTooltip="Cancel active run"
           class="mb-2"
-          (click)="cancelRun(getLatestRun())"
+          (click)="confirmCancelRun(getLatestRun())"
         >
           <nb-icon icon="stop-circle"></nb-icon>
         </button>
@@ -169,6 +169,8 @@
         <div class="ellipsis">Completed</div>
         <div class="ellipsis">Run State</div>
         <div class="ellipsis"></div>
+        <div class="ellipsis"></div>
+        <div class="ellipsis"></div>
       </div>
 
       <div class="details-wrapper scrollbar-narrow">
@@ -218,6 +220,33 @@
               [queryParams]="{ compareRunId: run.id }"
             >
               <nb-icon icon="plus-slash-minus"></nb-icon>
+            </button>
+          </div>
+          <div>
+            <button
+              *ngIf="run.state === datasetRunState.COMPLETED"
+              nbButton
+              size="tiny"
+              shape="round"
+              status="primary"
+              nbTooltip="Create an evaluation sample based on the results of this run"
+              (click)="createSample(run)"
+              [disabled]="run.stats.completedQuestions < 1"
+            >
+              <nb-icon icon="eyedropper"></nb-icon>
+            </button>
+          </div>
+          <div>
+            <button
+              *ngIf="[datasetRunState.COMPLETED, datasetRunState.CANCELLED].includes(run.state)"
+              nbButton
+              size="tiny"
+              shape="round"
+              status="danger"
+              nbTooltip="Delete this run"
+              (click)="confirmDeleteRun(run)"
+            >
+              <nb-icon icon="trash"></nb-icon>
             </button>
           </div>
         </div>

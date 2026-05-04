@@ -1,0 +1,101 @@
+<nb-card class="mb-2">
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start gap-1">
+      <div class="pt-1">New evaluation sample</div>
+
+      <button
+        type="button"
+        nbButton
+        shape="round"
+        nbTooltip="Close"
+        (click)="dialogRef.close()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </div>
+
+    <nb-alert
+      *ngIf="isSubmitted && !form.valid"
+      status="danger"
+      class="mb-3"
+    >
+      <ul class="mb-0 ps-3 font-color-white">
+        <li *ngIf="form.controls.name.invalid">The sample name is invalid.</li>
+        <li *ngIf="form.controls.description.invalid">The sample description is invalid.</li>
+      </ul>
+    </nb-alert>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="col-12">
+          <tock-form-control
+            name="name"
+            label="Sample name"
+            [controls]="getFormControl('name')"
+            [showError]="isSubmitted"
+          >
+            <nb-form-field>
+              <input
+                nbInput
+                fullWidth
+                placeholder="Name of the evaluation sample"
+                formControlName="name"
+              />
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+
+        <div class="col-12">
+          <tock-form-control
+            name="description"
+            label="Description"
+            [controls]="getFormControl('description')"
+            [showError]="isSubmitted"
+          >
+            <nb-form-field>
+              <textarea
+                nbInput
+                fullWidth
+                rows="3"
+                placeholder="Description of the evaluation sample"
+                formControlName="description"
+              ></textarea>
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer class="card-footer-actions">
+    <div class="d-flex gap-1">
+      <button
+        nbButton
+        ghost="true"
+        [disabled]="isLoading"
+        tabindex="-1"
+        (click)="dialogRef.close()"
+      >
+        CANCEL
+      </button>
+
+      <button
+        nbButton
+        status="primary"
+        nbTooltip="Create evaluation sample"
+        class="d-flex align-items-center"
+        [nbSpinner]="isLoading"
+        [disabled]="isLoading"
+        (click)="submit()"
+      >
+        <nb-icon
+          icon="plus-lg"
+          class="mr-2"
+        ></nb-icon>
+        CREATE
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

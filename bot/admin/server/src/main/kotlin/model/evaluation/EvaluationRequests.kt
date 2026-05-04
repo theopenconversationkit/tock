@@ -24,6 +24,7 @@ import ai.tock.bot.admin.evaluation.EvaluationSample
 import ai.tock.bot.admin.evaluation.EvaluationSampleStatus
 import ai.tock.bot.admin.evaluation.EvaluationStatus
 import ai.tock.bot.admin.evaluation.EvaluationsResult
+import ai.tock.bot.admin.model.ToValidate
 import java.time.Instant
 
 /**
@@ -37,6 +38,18 @@ data class CreateEvaluationSampleRequest(
     val requestedDialogCount: Int,
     val allowTestDialogs: Boolean = false,
 )
+
+data class CreateEvaluationSampleFromRunRequest(
+    val name: String,
+    val description: String? = null,
+) : ToValidate {
+    override fun validate(): List<String> =
+        if (name.isBlank()) {
+            listOf("Evaluation name is required")
+        } else {
+            emptyList()
+        }
+}
 
 /**
  * Query for paginated evaluation dialogs.
@@ -135,6 +148,7 @@ data class EvaluationSampleDTO(
     val statusChangeDate: Instant,
     val statusComment: String?,
     val lastUpdateDate: Instant,
+    val createdFromRun: String?,
     val evaluationsResult: EvaluationsResult,
 ) {
     companion object {
@@ -162,6 +176,7 @@ data class EvaluationSampleDTO(
                 statusChangeDate = sample.statusChangeDate,
                 statusComment = sample.statusComment,
                 lastUpdateDate = sample.lastUpdateDate,
+                createdFromRun = sample.createdFromRun?.toString(),
                 evaluationsResult = evaluationsResult,
             )
         }
