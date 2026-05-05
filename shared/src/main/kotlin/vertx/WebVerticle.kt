@@ -104,11 +104,12 @@ abstract class WebVerticle : AbstractVerticle() {
 
         private val fileUploadDirectory = property("tock_file_upload_directory", "file-uploads")
 
-        private val vertxSessionExpiration = longProperty(
-            name = "tock_vertx_session_expiration_timeout",
-            // 6h
-            defaultValue = 6 * 60 * 60 * 1000,
-        )
+        // 6h
+        private val vertxSessionExpiration =
+            longProperty(
+                name = "tock_vertx_session_expiration_timeout",
+                defaultValue = 6 * 60 * 60 * 1000,
+            )
     }
 
     open val logger: KLogger = KotlinLogging.logger {}
