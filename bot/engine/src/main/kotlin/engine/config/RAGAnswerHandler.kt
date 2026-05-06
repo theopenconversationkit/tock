@@ -71,12 +71,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Call RAG Api - Gen AI Orchestrator
             val (answer, footnotes, debug, redirectStory, observabilityInfo) = rag(this)
 
-            // Add debug data if available and if debugging is enabled
-            if (debug != null) {
-                logger.info { "Send RAG debug data." }
-                sendDebugData("RAG", debug)
-            }
-
             val modifiedObservabilityInfo = observabilityInfo?.let { updateObservabilityInfo(this, it) }
 
             // Footnotes building
@@ -110,6 +104,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 isGenAiRagAnswer = true,
                                 observabilityInfo = modifiedObservabilityInfo,
                             ),
+                        ragDebug = debug,
                     ),
             )
 

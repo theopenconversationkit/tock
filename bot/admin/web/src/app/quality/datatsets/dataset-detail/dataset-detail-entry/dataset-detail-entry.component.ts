@@ -50,6 +50,14 @@ export class DatasetDetailEntryComponent implements OnChanges {
   currentFootnotesOrdered: SourceInfos[] = [];
   comparisonFootnotesOrdered: SourceInfos[] = [];
 
+  /**
+   * True when both runs are RAG answers and the question text that was actually
+   * sent to the engine differs between the two runs (i.e. the dataset question
+   * was edited between run A and run B).
+   * Null when the comparison is impossible (missing ragDebug data, non-RAG, …).
+   */
+  questionDiverges: boolean | null = null;
+
   @ViewChild('hideableContainer') hideableContainer!: ElementRef;
 
   private readonly diffService = inject(MarkdownDiffService);
@@ -75,6 +83,7 @@ export class DatasetDetailEntryComponent implements OnChanges {
     this.comparisonFootnotesOrdered = comparisonOrdered;
 
     this.actionTypeTransition = this._computeActionTypeTransition();
+    this.questionDiverges = this._computeQuestionDiverges();
 
     this._generateAnswerDiff();
   }
@@ -134,6 +143,28 @@ export class DatasetDetailEntryComponent implements OnChanges {
   }
 
   // ── Private ───────────────────────────────────────────────────────────────
+
+  /**
+   * Returns true when both runs are RAG answers and the question texts stored in
+   * ragDebug.user_question differ — meaning the dataset question was modified
+   * between the two runs, which may explain response divergences.
+   * Returns null when the comparison cannot be performed (non-RAG, missing data).
+   */
+  private _computeQuestionDiverges(): boolean | null {
+    const qA = this.currentAction?.action?.ragDebug?.user_question;
+    const qB = this.comparisonAction?.action?.ragDebug?.user_question;
+
+    if (
+      !this.currentAction?.action?.metadata?.isGenAiRagAnswer ||
+      !this.comparisonAction?.action?.metadata?.isGenAiRagAnswer ||
+      qA == null ||
+      qB == null
+    ) {
+      return null;
+    }
+
+    return qA.trim() !== qB.trim();
+  }
 
   private async _generateAnswerDiff(): Promise<void> {
     try {
@@ -241,12 +272,13 @@ export class DatasetDetailEntryComponent implements OnChanges {
 
     if (labelA === labelB || labelA === '-' || labelB === '-') return null;
 
-    return `${labelA} < ${labelB}`; // ex: "INTENT > RAG" ou "RAG > INTENT"
+    return `${labelA} < ${labelB}`;
   }
 
   private _computeDisplayState(action: DatasetRunAction | null): DatasetRunActionDisplayState | null {
     if (!action) return null;
     if (action.state === DatasetRunActionState.FAILED) return DatasetRunActionDisplayState.FAILED;
+
     if (action.state === DatasetRunActionState.COMPLETED && !action.action) return DatasetRunActionDisplayState.PURGED;
     return DatasetRunActionDisplayState.SUCCESS;
   }

@@ -161,13 +161,66 @@
 
     <ng-container *ngIf="dataset.runs?.length">
       <div class="runs-grid runs-grid-header px-2 mb-2 mr-2">
-        <div class="ellipsis">Start</div>
-        <div class="ellipsis">End</div>
-        <div class="ellipsis">Duration</div>
-        <div class="ellipsis">Questions</div>
-        <div class="ellipsis">Failed</div>
-        <div class="ellipsis">Completed</div>
-        <div class="ellipsis">Run State</div>
+        <div
+          class="ellipsis"
+          nbTooltip="Run started at"
+        >
+          Start
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Run ended at"
+        >
+          End
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Run duration"
+        >
+          Duration
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of questions in the dataset at the time the run is executed"
+        >
+          Questions
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of failed questions"
+        >
+          Failed
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of successful questions"
+        >
+          Completed
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of questions processed by intent detection"
+        >
+          Intent
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of questions processed by RAG chain with relevant documentation retrieved"
+        >
+          Found in context
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of questions processed by RAG chain with no relevant documentation retrieved"
+        >
+          Not found in context
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Current run status"
+        >
+          Run State
+        </div>
         <div class="ellipsis"></div>
       </div>
 
@@ -199,6 +252,10 @@
           <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
           <div class="runs-grid-entry text-muted">{{ run.stats.failedQuestions }}</div>
           <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>
+
+          <div class="runs-grid-entry text-muted">{{ run.stats.nonRagAnswers }}</div>
+          <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.found_in_context }}</div>
+          <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.not_found_in_context }}</div>
 
           <div
             class="runs-grid-entry"

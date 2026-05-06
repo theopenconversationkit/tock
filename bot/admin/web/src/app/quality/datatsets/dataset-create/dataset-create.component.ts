@@ -40,6 +40,15 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
   isSubmitted: boolean = false;
   isLoading: boolean = false;
 
+  /** Displayed once when the user modifies a pre-existing question in edit mode. */
+  showQuestionEditWarning: boolean = false;
+
+  /**
+   * Snapshot of the original question text for each pre-existing question,
+   * keyed by its index in the FormArray (before the trailing empty row is appended).
+   */
+  private _initialQuestionValues: Map<number, string> = new Map();
+
   // Injected by the dialog caller when editing an existing dataset
   dataset?: Dataset;
 
@@ -77,7 +86,7 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       description: dataset.description
     });
 
-    dataset.questions.forEach((q) => {
+    dataset.questions.forEach((q, i) => {
       this.questions.push(
         new FormGroup<QuestionForm>({
           question: new FormControl(q.question, {
@@ -90,6 +99,9 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
           })
         })
       );
+
+      // Snapshot the original text so we can detect meaningful edits later.
+      this._initialQuestionValues.set(i, q.question.trim());
     });
 
     // Append the empty trailing row for adding new questions
@@ -120,6 +132,16 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     if (this.isLastEntry(index) && this.questions.at(index).controls.question.value.trim()) {
       this._appendEmptyQuestion();
     }
+
+    // Show the one-time warning when a pre-existing question is modified in edit mode.
+    if (this.isEditMode && !this.showQuestionEditWarning && this._initialQuestionValues.has(index)) {
+      const current = this.questions.at(index).controls.question.value.trim();
+      const initial = this._initialQuestionValues.get(index)!;
+      if (current !== initial) {
+        this.showQuestionEditWarning = true;
+      }
+    }
+
     this.questions.updateValueAndValidity();
   }
 
@@ -265,35 +287,24 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
     const plainText = event.clipboardData?.getData('text');
     if (!plainText) return;
 
-    // Check for spreadsheet origin by inspecting the HTML clipboard format.
-    // When copying from Excel / Google Sheets / LibreOffice Calc, the clipboard
-    // always contains a text/html payload structured as an HTML table.
     const html = event.clipboardData?.getData('text/html') ?? '';
     const isFromSpreadsheet = /<table[\s>]/i.test(html);
 
-    // Split on all line break variants (Windows \r\n, Unix \n, legacy Mac \r)
     const lines = plainText
       .split(/\r\n|\r|\n/)
       .map((l) => l.trim())
       .filter((l) => l.length > 0);
 
-    // Fall back to native paste if:
-    // - only one line, OR
-    // - multiple lines but content does NOT come from a spreadsheet
-    //   (likely a multi-line question typed or pasted from a text editor)
     if (lines.length <= 1 || !isFromSpreadsheet) return;
 
-    // Prevent native paste since we handle distribution ourselves
     event.preventDefault();
 
     lines.forEach((line, i) => {
       const targetIndex = index + i;
 
       if (targetIndex < this.questions.length) {
-        // Reuse an existing form group (including the current trailing empty row)
         this.questions.at(targetIndex).controls.question.setValue(line);
       } else {
-        // No existing row at this position: create a new form group
         this.questions.push(
           new FormGroup<QuestionForm>({
             question: new FormControl(line, [Validators.minLength(question_minLength), Validators.maxLength(question_maxLength)]),
@@ -303,7 +314,6 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Ensure there is always one trailing empty row for adding new questions
     const last = this.questions.at(this.questions.length - 1);
     if (last.controls.question.value.trim()) {
       this._appendEmptyQuestion();
@@ -311,7 +321,6 @@ export class DatasetCreateComponent implements OnInit, OnDestroy {
 
     this.questions.updateValueAndValidity();
 
-    // Move focus to the trailing empty row after paste
     setTimeout(() => {
       const inputs = this.questionInputs.toArray();
       inputs[index + lines.length]?.nativeElement.focus();

@@ -37,6 +37,7 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
@@ -130,18 +131,22 @@ internal data class DialogCol(
                 .map { it.toAction(_id) }
                 .toList()
                 .run {
+                    val connectorMessageColIds =
+                        mapNotNull {
+                            (it as? SendSentenceNotYetLoaded)?.let {
+                                ConnectorMessageColId(
+                                    it.toActionId(),
+                                    it.dialogId,
+                                )
+                            }
+                        }
                     val customMessagesMap =
-                        runBlocking {
-                            UserTimelineMongoDAO.loadConnectorMessages(
-                                mapNotNull {
-                                    (it as? SendSentenceNotYetLoaded)?.let {
-                                        ConnectorMessageColId(
-                                            it.toActionId(),
-                                            it.dialogId,
-                                        )
-                                    }
-                                },
-                            )
+                        if (connectorMessageColIds.isEmpty()) {
+                            emptyMap()
+                        } else {
+                            runBlocking {
+                                UserTimelineMongoDAO.loadConnectorMessages(connectorMessageColIds)
+                            }
                         }
 
                     map { a ->
@@ -164,10 +169,11 @@ internal data class DialogCol(
                             a.applicationId,
                             a.metadata,
                             a.annotation,
+                            (a as? SendSentenceWithFootnotes)?.ragDebug,
                         )
                     }
                 }
-                .toList()
+                .withLegacyRagDebug()
         return DialogReport(
             actions,
             stories
@@ -180,6 +186,20 @@ internal data class DialogCol(
             review = review,
         )
     }
+
+    private fun List<ActionReport>.withLegacyRagDebug(): List<ActionReport> =
+        mapIndexed { index, action ->
+            if (action.ragDebug != null || !action.metadata.isGenAiRagAnswer) {
+                action
+            } else {
+                val previousMessage = getOrNull(index - 1)?.message as? DebugMessage
+                if (previousMessage?.text == "RAG") {
+                    action.copy(ragDebug = previousMessage.data)
+                } else {
+                    action
+                }
+            }
+        }
 
     data class DialogStateMongoWrapper(
         var currentIntent: Intent?,
@@ -357,11 +377,13 @@ internal data class DialogCol(
     data class SendSentenceWithFootnotesMongoWrapper(
         val text: String,
         val footnotes: MutableList<Footnote>,
+        val ragDebug: Any? = null,
     ) : ActionMongoWrapper() {
         constructor(sentence: SendSentenceWithFootnotes) :
             this(
                 sentence.text.toString(),
                 sentence.footnotes,
+                transformData(sentence.ragDebug),
             ) {
             assignFrom(sentence)
         }
@@ -378,6 +400,7 @@ internal data class DialogCol(
                 state,
                 botMetadata,
                 annotation,
+                transformData(ragDebug),
             )
         }
     }

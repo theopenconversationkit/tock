@@ -73,6 +73,8 @@ export class ActionReport {
     public applicationId?: string
   ) {}
 
+  ragDebug?: any;
+
   metadata?: ActionReportMetadata;
 
   annotation?: Annotation;
@@ -134,6 +136,7 @@ export abstract class BotMessage {
   }
 
   isDebug(): boolean {
+    // Deprecated but should be retained for backward compatibility. From now on, RAG debug information is carried directly in response actions via the “ragDebug” attribute, rather than being handled by a dedicated action.
     return this.eventTypeEnum === EventType.debug;
   }
 
@@ -156,12 +159,13 @@ export abstract class BotMessage {
         return Attachment.fromJSON(json);
       case EventType.location:
         return Location.fromJSON(json);
-      case EventType.debug:
-        return Debug.fromJSON(json);
       case EventType.sentenceWithFootnotes:
         return SentenceWithFootnotes.fromJSON(json);
+      // Deprecated case but should be retained for backward compatibility.
+      case EventType.debug:
+        return Debug.fromJSON(json);
       default:
-        throw 'unknown type : ' + json.type;
+        throw 'BotMessage.fromJSON > unknown type : ' + json.type;
     }
   }
 
@@ -309,6 +313,7 @@ export class SentenceWithFootnotes extends BotMessage {
   }
 }
 
+// Deprecated BotMessage type but should be retained for backward compatibility.
 export class Debug extends BotMessage {
   constructor(public override delay: number, public data: any, public text?: string, public userInterface?: UserInterfaceType) {
     super(EventType.debug, delay);

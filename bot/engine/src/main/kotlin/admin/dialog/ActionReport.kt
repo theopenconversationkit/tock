@@ -43,4 +43,5 @@ data class ActionReport(
     val applicationId: String?,
     val metadata: ActionMetadata,
     val annotation: BotAnnotation? = null,
+    val ragDebug: Any? = null,
 )

@@ -238,6 +238,77 @@ class DatasetServiceTest : AbstractTest() {
     }
 
     @Test
+    fun `getRun returns rag status and non rag answer stats for completed run`() {
+        val dataset = newDataset()
+        val run = newFinishedRun(dataset, DatasetRunState.COMPLETED)
+        val dialogId = newId<Dialog>()
+        val ragAnswer =
+            botSentenceWithFootnotesAction(
+                id = "rag-answer-action-id",
+                ragDebug = mapOf("answer" to mapOf("status" to "found_in_context")),
+            )
+        val nonRagAnswer = botSentenceAction("non-rag-answer-action-id")
+        val questionResults =
+            listOf(
+                DatasetRunQuestionResult(
+                    namespace = NAMESPACE,
+                    botId = BOT_ID,
+                    datasetId = dataset._id,
+                    runId = run._id,
+                    questionId = dataset.questions.first().id,
+                    state = DatasetRunQuestionResultState.COMPLETED,
+                    userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
+                    userActionId = "user-action-id-1",
+                    dialogId = dialogId,
+                    answerActionId = ragAnswer.id,
+                ),
+                DatasetRunQuestionResult(
+                    namespace = NAMESPACE,
+                    botId = BOT_ID,
+                    datasetId = dataset._id,
+                    runId = run._id,
+                    questionId = dataset.questions.last().id,
+                    state = DatasetRunQuestionResultState.COMPLETED,
+                    userIdModifier = "dataset_${run._id}_${dataset.questions.last().id}",
+                    userActionId = "user-action-id-2",
+                    dialogId = dialogId,
+                    answerActionId = nonRagAnswer.id,
+                ),
+            )
+        val dialog =
+            DialogReport(
+                actions =
+                    listOf(
+                        userSentenceAction("user-action-id-1"),
+                        ragAnswer,
+                        userSentenceAction("user-action-id-2"),
+                        nonRagAnswer,
+                    ),
+                userInterface = UserInterfaceType.textChat,
+                id = dialogId,
+            )
+
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getRunById(any()) } returns run
+        every { datasetRunDAO.getQuestionResultsByRunId(run._id) } returns questionResults
+        every { dialogReportDAO.findByDialogByIds(setOf(dialogId)) } returns setOf(dialog)
+
+        val result =
+            DatasetService.getRun(
+                namespace = NAMESPACE,
+                botId = BOT_ID,
+                datasetId = dataset._id.toString(),
+                runId = run._id.toString(),
+            )
+
+        assertEquals(2, result.stats.totalQuestions)
+        assertEquals(2, result.stats.completedQuestions)
+        assertEquals(1, result.stats.ragAnswerStatusCounts["found_in_context"])
+        assertEquals(0, result.stats.ragAnswerStatusCounts["technical_error"])
+        assertEquals(1, result.stats.nonRagAnswers)
+    }
+
+    @Test
     fun `cancelRun cancels active run and updates pending question results`() {
         val dataset = newDataset()
         val run =
@@ -524,7 +595,24 @@ class DatasetServiceTest : AbstractTest() {
             metadata = ActionMetadata(),
         )
 
-    private fun botSentenceWithFootnotesAction(id: String): ActionReport =
+    private fun botSentenceAction(id: String): ActionReport =
+        ActionReport(
+            playerId = PlayerId(BOT_ID, PlayerType.bot),
+            recipientId = PlayerId("user", PlayerType.user),
+            date = Instant.now(),
+            message = Sentence("answer"),
+            connectorType = null,
+            userInterfaceType = UserInterfaceType.textChat,
+            id = id.toId(),
+            intent = null,
+            applicationId = null,
+            metadata = ActionMetadata(),
+        )
+
+    private fun botSentenceWithFootnotesAction(
+        id: String,
+        ragDebug: Any? = null,
+    ): ActionReport =
         ActionReport(
             playerId = PlayerId(BOT_ID, PlayerType.bot),
             recipientId = PlayerId("user", PlayerType.user),
@@ -536,5 +624,6 @@ class DatasetServiceTest : AbstractTest() {
             intent = null,
             applicationId = null,
             metadata = ActionMetadata(isGenAiRagAnswer = true),
+            ragDebug = ragDebug,
         )
 }

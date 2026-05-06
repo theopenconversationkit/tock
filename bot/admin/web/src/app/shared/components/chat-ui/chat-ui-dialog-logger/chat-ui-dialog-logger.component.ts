@@ -15,7 +15,7 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { ActionReport, Debug, DialogReport, Sentence, SentenceWithFootnotes } from '../../../model/dialog-data';
+import { ActionReport, DialogReport, Sentence, SentenceWithFootnotes } from '../../../model/dialog-data';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 import { NbDialogService } from '@nebular/theme';
 import { TestDialogService } from '../../test-dialog/test-dialog.service';
@@ -23,7 +23,6 @@ import { Router } from '@angular/router';
 import { StateService } from '../../../../core-nlp/state.service';
 import { Subject, take } from 'rxjs';
 import { NlpStatsDisplayComponent } from '../../../../test/dialog/nlp-stats-display/nlp-stats-display.component';
-import { DebugViewerDialogComponent } from '../../debug-viewer-dialog/debug-viewer-dialog.component';
 import { BotApplicationConfiguration } from '../../../../core/model/configuration';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
 import { RagAnswerToFaqAnswerInfos } from '../../../../faq/faq-management/faq-management.component';
@@ -132,32 +131,42 @@ export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
   }
 
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
-    const actionIndex = actionsStack.findIndex((act) => act === action);
-    if (actionIndex > 0) {
-      let question;
-      const questionAction = actionsStack[actionIndex - 1];
+    let question;
+    if (action.ragDebug) {
+      // Rag debugging is enabled on this bot; we have ragDebug
+      question = action.ragDebug.condensed_question || action.ragDebug.user_question;
+    } else {
+      // Rag debugging isn't enabled on this bot; we need to find the question in the previous message.
+      let actionIndex = actionsStack.findIndex((act) => act === action);
 
-      if (questionAction.message.isDebug()) {
-        const actionDebug = questionAction.message as unknown as Debug;
-        question = actionDebug.data.condensed_question || actionDebug.data.user_question;
-      } else if (!questionAction.isBot()) {
-        const questionSentence = questionAction.message as unknown as Sentence;
-        question = questionSentence.text;
+      if (actionIndex > 0) {
+        actionIndex--;
+        let questionAction = actionsStack[actionIndex];
+
+        while (!question && questionAction) {
+          if (questionAction.message.isDebug()) {
+            actionIndex--;
+            questionAction = actionsStack[actionIndex];
+          } else if (!questionAction.isBot()) {
+            const questionSentence = questionAction.message as unknown as Sentence;
+            question = questionSentence.text;
+          }
+        }
       }
+    }
 
-      const answerSentence = action.message as unknown as SentenceWithFootnotes;
-      const answer: RagAnswerToFaqAnswerInfos = {
-        text: answerSentence.text,
-        applicationId: action.applicationId
-      };
+    const answerSentence = action.message as unknown as SentenceWithFootnotes;
+    const answer: RagAnswerToFaqAnswerInfos = {
+      text: answerSentence.text,
+      applicationId: action.applicationId
+    };
 
-      if (answerSentence.footnotes) {
-        answer.footnotes = answerSentence.footnotes;
-      }
+    if (answerSentence.footnotes) {
+      answer.footnotes = answerSentence.footnotes;
+    }
 
-      if (question && answer) {
-        this.router.navigate(['faq/management'], { state: { question, answer } });
-      }
+    if (question && answer) {
+      this.router.navigate(['faq/management'], { state: { question, answer } });
     }
   }
 
@@ -203,20 +212,12 @@ export class ChatUiDialogLoggerComponent implements OnInit, OnDestroy {
     });
   }
 
-  showDebug(action: ActionReport) {
-    this.nbDialogService.open(DebugViewerDialogComponent, {
-      context: {
-        debug: (action.message as Debug).data
-      }
-    });
-  }
-
   isAdmin(): boolean {
     return this.state.hasRole(UserRole.admin);
   }
 
   goToPlayground(action: ActionReport) {
-    const debugData = (action.message as Debug).data;
+    const debugData = action.ragDebug;
     if (debugData.question_answering_prompt) {
       this.router.navigate(['playground'], { state: { question_answering_prompt: debugData.question_answering_prompt } });
     }

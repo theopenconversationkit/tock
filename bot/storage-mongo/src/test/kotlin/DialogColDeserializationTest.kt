@@ -17,11 +17,17 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.NextUserActionState
+import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserLocation
@@ -40,6 +46,7 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.MapObfuscator
 import ai.tock.shared.security.TockObfuscatorService
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
@@ -131,6 +138,52 @@ class DialogColDeserializationTest : AbstractTest(false) {
     }
 
     @Test
+    fun `toDialogReport exposes rag debug from sentence with footnotes action`() {
+        val ragDebug = mapOf("answer" to "debug")
+        val dialog =
+            dialogWithActions(
+                SendSentenceWithFootnotes(
+                    PlayerId("bot", PlayerType.bot),
+                    "app",
+                    PlayerId("user", PlayerType.user),
+                    "answer",
+                    metadata = ActionMetadata(isGenAiRagAnswer = true),
+                    ragDebug = ragDebug,
+                ),
+            )
+
+        val report = dialog.toDialogReport()
+
+        assertEquals(ragDebug, report.actions.single().ragDebug)
+    }
+
+    @Test
+    fun `toDialogReport exposes legacy rag debug from previous debug action`() {
+        val ragDebug = mapOf("answer" to "debug")
+        val dialog =
+            dialogWithActions(
+                SendDebug(
+                    PlayerId("bot", PlayerType.bot),
+                    "app",
+                    PlayerId("user", PlayerType.user),
+                    "RAG",
+                    ragDebug,
+                ),
+                SendSentenceWithFootnotes(
+                    PlayerId("bot", PlayerType.bot),
+                    "app",
+                    PlayerId("user", PlayerType.user),
+                    "answer",
+                    metadata = ActionMetadata(isGenAiRagAnswer = true),
+                ),
+            )
+
+        val report = dialog.toDialogReport()
+
+        assertEquals(ragDebug, report.actions.last().ragDebug)
+    }
+
+    @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerMapObfuscator(testParameterObfuscator)
@@ -160,6 +213,35 @@ class DialogColDeserializationTest : AbstractTest(false) {
         val json = mapper.writeValueAsString(stateWrapper)
         val stateWrapper2: ActionMongoWrapper = mapper.readValue(json)
         assertEquals(stateWrapper.toAction("id".toId()).toString(), stateWrapper2.toAction("id".toId()).toString())
+    }
+
+    private fun dialogWithActions(vararg actions: Action): DialogCol {
+        val storyDefinition =
+            mockk<StoryDefinition> {
+                every { id } returns "story"
+                every { steps } returns emptySet()
+            }
+        val dialog =
+            Dialog(
+                setOf(PlayerId("bot", PlayerType.bot), PlayerId("user", PlayerType.user)),
+                stories =
+                    mutableListOf(
+                        Story(
+                            storyDefinition,
+                            Intent("story"),
+                            actions = actions.toMutableList(),
+                        ),
+                    ),
+            )
+        return DialogCol(
+            dialog,
+            UserTimelineCol(
+                "id",
+                "namespace",
+                UserTimeline(PlayerId("user", PlayerType.user)),
+                null,
+            ),
+        )
     }
 
     @Test
