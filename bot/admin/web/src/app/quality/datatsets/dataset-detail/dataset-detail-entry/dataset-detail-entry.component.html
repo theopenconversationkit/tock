@@ -191,7 +191,7 @@
               *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
               class="text-danger text-center"
             >
-              This action failed during run and produced no output.
+              {{ currentAction?.error || 'This action failed during run and produced no output.' }}
             </div>
             <div
               *ngSwitchCase="DatasetRunActionDisplayState.PURGED"
@@ -225,7 +225,7 @@
               *ngSwitchCase="DatasetRunActionDisplayState.FAILED"
               class="text-danger text-center"
             >
-              This action failed during run and produced no output.
+              {{ comparisonAction?.error || 'This action failed during run and produced no output.' }}
             </div>
             <div
               *ngSwitchCase="DatasetRunActionDisplayState.PURGED"

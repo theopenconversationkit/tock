@@ -114,6 +114,85 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
         }
 
     @Test
+    fun `save appends dialog snapshots without overwriting previous snapshots`() =
+        runBlocking {
+            val namespace = "test_dialog_snapshot_append"
+            val applicationId = "test_app_dialog_snapshot_append"
+            val userId = PlayerId("user_dialog_snapshot_append", PlayerType.user)
+            val botPlayerId = PlayerId("bot_dialog_snapshot_append", PlayerType.bot)
+            val storyDef =
+                StoryDefinitionBase(
+                    "test_story_dialog_snapshot_append",
+                    object : SimpleStoryHandlerBase() {
+                        override fun action(bus: BotBus) {}
+                    },
+                )
+
+            val firstAction =
+                SendSentence(
+                    botPlayerId,
+                    applicationId,
+                    userId,
+                    "first",
+                    mutableListOf(),
+                    newId(),
+                    ZonedDateTime.parse("2025-12-01T10:00:00Z").toInstant(),
+                    EventState(),
+                    ActionMetadata(),
+                )
+            val secondAction =
+                SendSentence(
+                    botPlayerId,
+                    applicationId,
+                    userId,
+                    "second",
+                    mutableListOf(),
+                    newId(),
+                    ZonedDateTime.parse("2025-12-01T10:00:01Z").toInstant(),
+                    EventState(),
+                    ActionMetadata(),
+                )
+
+            val dialogId = newId<Dialog>()
+            val fullDialog =
+                Dialog(
+                    playerIds = setOf(userId, botPlayerId),
+                    id = dialogId,
+                    stories =
+                        mutableListOf(
+                            Story(
+                                storyDef,
+                                Intent("test"),
+                                actions = mutableListOf(firstAction, secondAction),
+                            ),
+                        ),
+                )
+            val staleDialog =
+                Dialog(
+                    playerIds = setOf(userId, botPlayerId),
+                    id = dialogId,
+                    stories =
+                        mutableListOf(
+                            Story(
+                                storyDef,
+                                Intent("test"),
+                                actions = mutableListOf(firstAction),
+                            ),
+                        ),
+                )
+
+            UserTimelineMongoDAO.save(UserTimeline(userId, dialogs = mutableListOf(fullDialog)), namespace)
+            delay(200)
+            UserTimelineMongoDAO.save(UserTimeline(userId, dialogs = mutableListOf(staleDialog)), namespace)
+            delay(200)
+
+            val snapshots = UserTimelineMongoDAO.getSnapshots(dialogId)
+
+            assertEquals(2, snapshots.size)
+            assertTrue(snapshots.all { it.storyDefinitionId == storyDef.id })
+        }
+
+    @Test
     fun `dialogActivity filters should handle all null and non-null date combinations`() =
         runBlocking {
             val namespace = "test_activity_filter_all_cases"

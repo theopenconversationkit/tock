@@ -421,6 +421,7 @@ class DatasetServiceTest : AbstractTest() {
                 state = DatasetRunQuestionResultState.FAILED,
                 userIdModifier = "dataset_${run._id}_${dataset.questions.first().id}",
                 retryCount = 2,
+                error = "RAG execution failed: timeout",
             )
         val cancelledQuestionResult =
             DatasetRunQuestionResult(
@@ -449,6 +450,7 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(2, result.size)
         assertTrue(result.all { it.state == DatasetRunActionState.FAILED && it.action == null })
         assertEquals(2, result.first().retryCount)
+        assertEquals("RAG execution failed: timeout", result.first().error)
         verify(exactly = 0) { dialogReportDAO.search(any()) }
     }
 

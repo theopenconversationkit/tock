@@ -67,6 +67,7 @@ interface DatasetRunAction {
   //   - state = COMPLETED → le dialogue associé a été purgé de la base, afficher un avertissement
   action: ActionReport | null;
   retryCount: number;
+  error?: string | null;
 }
 ```
 
