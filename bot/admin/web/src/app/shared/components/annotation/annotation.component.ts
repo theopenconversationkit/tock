@@ -15,7 +15,7 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { ActionReport, Debug, DialogReport, Sentence } from '../../model/dialog-data';
+import { ActionReport, DialogReport, Sentence } from '../../model/dialog-data';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { Annotation, AnnotationEvent, AnnotationEventType, AnnotationEventTypes, AnnotationState, AnnotationStates } from './annotations';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -74,36 +74,37 @@ export class AnnotationComponent implements OnInit {
 
   setExchangeInfos() {
     this.answer = (this.actionReport.message as unknown as Sentence).text;
+    if (this.actionReport.ragDebug) {
+      // The response is of the Rag type, and Rag debugging is enabled on this bot; we have ragDebug
 
-    const actionsStack = this.dialogReport.actions;
-    let actionIndex = actionsStack.findIndex((act) => act === this.actionReport);
+      if (this.actionReport.ragDebug.condensed_question) {
+        this.condensedQuestion = this.actionReport.ragDebug.condensed_question;
+      }
+      if (this.actionReport.ragDebug.user_question) {
+        this.question = this.actionReport.ragDebug.user_question;
+      }
+    } else {
+      // The response isn't a Rag response, or Rag debugging isn't enabled on this bot; we need to find the question in the previous message.
 
-    if (actionIndex > 0) {
-      actionIndex--;
-      let questionAction = actionsStack[actionIndex];
+      const actionsStack = this.dialogReport.actions;
+      let actionIndex = actionsStack.findIndex((act) => act === this.actionReport);
 
-      let question;
-      let condensedQuestion;
+      if (actionIndex > 0) {
+        actionIndex--;
+        let questionAction = actionsStack[actionIndex];
+        let question;
 
-      while (!question && questionAction) {
-        if (questionAction.message.isDebug()) {
-          const actionDebug = questionAction.message as unknown as Debug;
-          if (actionDebug.data.condensed_question) {
-            condensedQuestion = actionDebug.data.condensed_question;
+        while (!question && questionAction) {
+          if (questionAction.message.isDebug()) {
+            actionIndex--;
+            questionAction = actionsStack[actionIndex];
+          } else if (!questionAction.isBot()) {
+            const questionSentence = questionAction.message as unknown as Sentence;
+            question = questionSentence.text;
           }
-          actionIndex--;
-          questionAction = actionsStack[actionIndex];
-        } else if (!questionAction.isBot()) {
-          const questionSentence = questionAction.message as unknown as Sentence;
-          question = questionSentence.text;
         }
-      }
 
-      if (condensedQuestion) {
-        this.condensedQuestion = condensedQuestion;
-      }
-      if (question) {
-        this.question = question;
+        if (question) this.question = question;
       }
     }
   }

@@ -91,6 +91,7 @@
     >
       <div class="flex-grow-1 align-self-center">
         <tock-chat-ui-message
+          [action]="action"
           [message]="action.message"
           [date]="action.date"
           [reply]="action.isBot()"
@@ -167,37 +168,6 @@
 
         <div
           class="pl-1"
-          *ngIf="action.message?.isDebug()"
-        >
-          <div class="button-horizontal-separator mb-1"></div>
-
-          <button
-            nbButton
-            ghost
-            size="small"
-            nbTooltip="Show debug infos"
-            (click)="showDebug(action)"
-            class="mb-1"
-            *ngIf="$any(action).message?.data?.errorDetail"
-          >
-            <nb-icon icon="bug"></nb-icon>
-          </button>
-
-          <button
-            nbButton
-            ghost
-            size="small"
-            nbTooltip="Open query in playground"
-            (click)="goToPlayground(action)"
-            class="mb-1"
-            *ngIf="$any(action).message?.data?.question_answering_prompt && isAdmin()"
-          >
-            <nb-icon icon="joystick"></nb-icon>
-          </button>
-        </div>
-
-        <div
-          class="pl-1"
           *ngIf="action.isBotAnswerWithContent()"
         >
           <div class="button-horizontal-separator mb-1"></div>
@@ -238,6 +208,18 @@
               <nb-icon icon="exclamation-triangle"></nb-icon>
             </button>
           </ng-template>
+
+          <button
+            *ngIf="isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.question_answering_prompt"
+            nbButton
+            ghost
+            size="small"
+            nbTooltip="Open query in playground"
+            (click)="goToPlayground(action)"
+            class="mb-1"
+          >
+            <nb-icon icon="joystick"></nb-icon>
+          </button>
 
           <button
             *ngIf="action.metadata?.isGenAiRagAnswer"

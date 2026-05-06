@@ -4,7 +4,7 @@ import { forkJoin, of, Subject, takeUntil } from 'rxjs';
 import { filter, skip, switchMap, take } from 'rxjs/operators';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 
-import { Dataset, DatasetRun, DatasetRunAction, DatasetRunState } from '../models';
+import { Dataset, DatasetQuestion, DatasetRun, DatasetRunAction, DatasetRunState } from '../models';
 
 import { SettingsService } from '../../../core-nlp/settings.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -12,6 +12,19 @@ import { DatasetDetailSettingsDiffComponent, SettingsDiffCurrentTabs } from './s
 import { hasDiffExcluding } from '../../../shared/utils';
 import { DatasetsService } from '../services/datasets.service';
 import { DatePipe } from '@angular/common';
+
+interface RunDiffFlags {
+  statusDiff: boolean;
+  sourceDiff: boolean;
+  typeDiff: boolean;
+  questionDiff: boolean;
+}
+interface ActiveFilters {
+  statusDiff: boolean;
+  sourceDiff: boolean;
+  typeDiff: boolean;
+  questionDiff: boolean;
+}
 
 @Component({
   selector: 'tock-dataset-detail',
@@ -43,6 +56,13 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
   settingsDiffCurrentTabs = SettingsDiffCurrentTabs;
 
+  filters: ActiveFilters = {
+    statusDiff: false,
+    sourceDiff: false,
+    typeDiff: false,
+    questionDiff: false
+  };
+
   @ViewChildren('runsScrollA, runsScrollB') runsScrollContainers: QueryList<ElementRef<HTMLDivElement>>;
 
   // Scroll state per side — updated on scroll events and after view init
@@ -66,6 +86,38 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     // Initialize scroll state once containers are in the DOM
     this.runsScrollContainers.changes.subscribe(() => this._refreshScrollState());
     this._refreshScrollState();
+  }
+
+  /** Pre-computed diff flags per question id — rebuilt after each fetchRunEntries(). */
+  private _diffFlagsByQuestionId = new Map<string, RunDiffFlags>();
+
+  get anyFilterActive(): boolean {
+    return Object.values(this.filters).some(Boolean);
+  }
+
+  get allFiltersActive(): boolean {
+    return Object.values(this.filters).every(Boolean);
+  }
+
+  toggleAllFilters(): void {
+    const next = !this.allFiltersActive;
+    this.filters = { statusDiff: next, sourceDiff: next, typeDiff: next, questionDiff: next };
+  }
+
+  get filteredQuestions(): DatasetQuestion[] {
+    if (!this.dataset?.questions) return [];
+    if (!this.anyFilterActive || !this.showComparison) return this.dataset.questions;
+
+    return this.dataset.questions.filter((q) => {
+      const flags = this._diffFlagsByQuestionId.get(q.id);
+      if (!flags) return false;
+      return (
+        (this.filters.statusDiff && flags.statusDiff) ||
+        (this.filters.sourceDiff && flags.sourceDiff) ||
+        (this.filters.typeDiff && flags.typeDiff) ||
+        (this.filters.questionDiff && flags.questionDiff)
+      );
+    });
   }
 
   // ── Scroll arrow helpers ──────────────────────────────────────────────────
@@ -213,6 +265,7 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
       .subscribe(({ current, comparison }) => {
         this.currentRunActions = current as DatasetRunAction[];
         this.comparisonRunActions = comparison as DatasetRunAction[];
+        this._diffFlagsByQuestionId = this._buildDiffFlags(this.currentRunActions, this.comparisonRunActions);
       });
   }
 
@@ -250,6 +303,81 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     return this.datasetsService.formatDuration(durationMs);
   }
 
+  // ── Diff flag computation ─────────────────────────────────────────────────
+
+  /**
+   * Pre-computes diff flags for every question that appears in either run.
+   * Called once after fetchRunEntries() resolves — never recomputed during
+   * change detection cycles.
+   */
+  private _buildDiffFlags(currentActions: DatasetRunAction[], comparisonActions: DatasetRunAction[]): Map<string, RunDiffFlags> {
+    const map = new Map<string, RunDiffFlags>();
+    if (!currentActions?.length || !comparisonActions?.length) return map;
+
+    const byId = (actions: DatasetRunAction[]) => new Map(actions.map((a) => [a.questionId, a]));
+    const currentById = byId(currentActions);
+    const comparisonById = byId(comparisonActions);
+
+    const allIds = new Set([...currentById.keys(), ...comparisonById.keys()]);
+
+    for (const qId of allIds) {
+      const a = currentById.get(qId) ?? null;
+      const b = comparisonById.get(qId) ?? null;
+
+      map.set(qId, {
+        statusDiff: this._hasStatusDiff(a, b),
+        sourceDiff: this._hasSourceDiff(a, b),
+        typeDiff: this._hasTypeDiff(a, b),
+        questionDiff: this._hasQuestionDiff(a, b)
+      });
+    }
+
+    return map;
+  }
+
+  /** Compares the RAG answer status (found_in_context, out_of_scope, …) between runs. */
+  private _hasStatusDiff(a: DatasetRunAction | null, b: DatasetRunAction | null): boolean {
+    if (!a?.action?.ragDebug?.answer?.status || !b?.action?.ragDebug?.answer?.status) return false;
+
+    const statusA = a.action.ragDebug.answer.status ?? null;
+    const statusB = b.action.ragDebug.answer.status ?? null;
+    if (statusA == null && statusB == null) return false;
+    return statusA !== statusB;
+  }
+
+  /** True when the source sets differ between two RAG runs (by url+title identity). */
+  private _hasSourceDiff(a: DatasetRunAction | null, b: DatasetRunAction | null): boolean {
+    if (!a?.action?.metadata?.isGenAiRagAnswer || !b?.action?.metadata?.isGenAiRagAnswer) return false;
+
+    const footnotesA = a.action.message?.footnotes ?? [];
+    const footnotesB = b.action.message?.footnotes ?? [];
+
+    if (!footnotesA.length && !footnotesB.length) return false;
+    if (footnotesA.length !== footnotesB.length) return true;
+
+    const keyOf = (s: { url?: string; title?: string }) => `${s.url ?? ''}::${s.title ?? ''}`;
+    const setA = new Set(footnotesA.map(keyOf));
+
+    for (const s of footnotesB) {
+      if (!setA.has(keyOf(s))) return true;
+    }
+    return false;
+  }
+
+  /** True when the answer type (RAG vs non-RAG) changed between the two runs. */
+  private _hasTypeDiff(a: DatasetRunAction | null, b: DatasetRunAction | null): boolean {
+    if (!a?.action || !b?.action) return false;
+    return !!a.action.metadata?.isGenAiRagAnswer !== !!b.action.metadata?.isGenAiRagAnswer;
+  }
+
+  /** True when ragDebug.user_question differs between two RAG runs. */
+  private _hasQuestionDiff(a: DatasetRunAction | null, b: DatasetRunAction | null): boolean {
+    if (!a?.action?.metadata?.isGenAiRagAnswer || !b?.action?.metadata?.isGenAiRagAnswer) return false;
+    const qA = a.action.ragDebug?.user_question;
+    const qB = b.action.ragDebug?.user_question;
+    if (qA == null || qB == null) return false;
+    return qA.trim() !== qB.trim();
+  }
   // ── Private helpers ───────────────────────────────────────────────────────
 
   private _buildComparableRuns(dataset: Dataset): DatasetRun[] {
@@ -274,9 +402,9 @@ export class DatasetDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this.comparisonRun) return false;
     return (
       this.currentRun.settingsSnapshot.questionAnsweringPrompt.template !==
-      this.comparisonRun.settingsSnapshot.questionAnsweringPrompt.template ||
+        this.comparisonRun.settingsSnapshot.questionAnsweringPrompt.template ||
       this.currentRun.settingsSnapshot.questionCondensingPrompt.template !==
-      this.comparisonRun.settingsSnapshot.questionCondensingPrompt.template
+        this.comparisonRun.settingsSnapshot.questionCondensingPrompt.template
     );
   }
 

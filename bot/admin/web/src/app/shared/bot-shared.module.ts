@@ -198,6 +198,7 @@ import { ResilientDatePipe } from './pipes/resilient-date.pipe';
     ChatUiDialogLoggerComponent,
     ChatUiDialogEvaluatorComponent,
     ChatUiDisplayMarkupComponent,
+    ChatUiMessageDebugComponent,
     ChoiceDialogComponent,
     FileUploadComponent,
     SliderComponent,

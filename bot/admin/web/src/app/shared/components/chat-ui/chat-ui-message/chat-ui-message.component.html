@@ -14,8 +14,13 @@
   ~ limitations under the License.
   -->
 
+<tock-chat-ui-message-debug
+  *ngIf="showDebug && action?.ragDebug"
+  [action]="action"
+></tock-chat-ui-message-debug>
+
 <div
-  *ngIf="!message.isDebug() && !isMessageEmpty()"
+  *ngIf="message && !message?.isDebug() && !isMessageEmpty()"
   class="wrapper"
 >
   <div class="avatar-wrapper">
@@ -151,8 +156,3 @@
     </div>
   </div>
 </div>
-
-<tock-chat-ui-message-debug
-  *ngIf="showDebug && message.isDebug()"
-  [message]="$any(message)"
-></tock-chat-ui-message-debug>

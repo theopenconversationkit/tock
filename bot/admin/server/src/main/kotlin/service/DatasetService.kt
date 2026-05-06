@@ -31,6 +31,7 @@ import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQuery
+import ai.tock.bot.admin.model.RAGAnswerStatus
 import ai.tock.bot.admin.model.dataset.DatasetCreateRequest
 import ai.tock.bot.admin.model.dataset.DatasetDTO
 import ai.tock.bot.admin.model.dataset.DatasetQuestionDTO
@@ -59,6 +60,7 @@ import java.time.Instant
 import java.util.Locale
 
 object DatasetService {
+    private val ragAnswerStatuses = RAGAnswerStatus.entries.map { it.name }
     private val datasetDAO: DatasetDAO get() = injector.provide()
     private val datasetRunDAO: DatasetRunDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
@@ -161,7 +163,7 @@ object DatasetService {
         val questionResults = datasetRunDAO.getQuestionResultsByRunId(savedRun._id)
         return savedRun.toDTO(
             includeSettingsSnapshot = false,
-            stats = questionResults.toStats(),
+            stats = questionResults.toStats(savedRun),
         )
     }
 
@@ -211,7 +213,7 @@ object DatasetService {
         val questionResults = datasetRunDAO.getQuestionResultsByRunId(run._id)
         return run.toDTO(
             includeSettingsSnapshot = false,
-            stats = questionResults.toStats(),
+            stats = questionResults.toStats(run),
         )
     }
 
@@ -233,7 +235,7 @@ object DatasetService {
 
         return cancelledRun.toDTO(
             includeSettingsSnapshot = false,
-            stats = updatedQuestionResults.toStats(),
+            stats = updatedQuestionResults.toStats(cancelledRun),
         )
     }
 
@@ -514,7 +516,7 @@ object DatasetService {
                 runs.map { run ->
                     run.toDTO(
                         includeSettingsSnapshot = includeSettingsSnapshot,
-                        stats = datasetRunDAO.getQuestionResultsByRunId(run._id).toStats(),
+                        stats = datasetRunDAO.getQuestionResultsByRunId(run._id).toStats(run),
                     )
                 },
             createdAt = createdAt,
@@ -544,18 +546,72 @@ object DatasetService {
             stats = stats,
         )
 
-    private fun List<DatasetRunQuestionResult>.toStats(): DatasetRunStatsDTO =
-        DatasetRunStatsDTO(
+    private fun List<DatasetRunQuestionResult>.toStats(run: DatasetRun): DatasetRunStatsDTO {
+        val answerStats =
+            if (run.state == DatasetRunState.COMPLETED) {
+                toAnswerStats(run)
+            } else {
+                DatasetRunAnswerStats(ragAnswerStatuses.associateWith { 0 })
+            }
+
+        return DatasetRunStatsDTO(
             totalQuestions = size,
             completedQuestions = count { it.state == DatasetRunQuestionResultState.COMPLETED },
             failedQuestions = count { it.state == DatasetRunQuestionResultState.FAILED },
+            ragAnswerStatusCounts = answerStats.ragAnswerStatusCounts,
+            nonRagAnswers = answerStats.nonRagAnswers,
         )
+    }
+
+    private fun List<DatasetRunQuestionResult>.toAnswerStats(run: DatasetRun): DatasetRunAnswerStats {
+        val statusCounts = ragAnswerStatuses.associateWith { 0 }.toMutableMap()
+        var nonRagAnswers = 0
+        val dialogsById =
+            dialogReportDAO.findByDialogByIds(mapNotNull { it.dialogId }.toSet())
+                .associateBy { it.id }
+
+        forEach { questionResult ->
+            val action =
+                resolveRunAction(run, questionResult, dialogsById[questionResult.dialogId])
+                    .action
+                    ?: return@forEach
+
+            if (action.metadata.isGenAiRagAnswer) {
+                action.ragAnswerStatus()?.let { status ->
+                    if (status in statusCounts) {
+                        statusCounts[status] = statusCounts.getValue(status) + 1
+                    }
+                }
+            } else {
+                nonRagAnswers++
+            }
+        }
+
+        return DatasetRunAnswerStats(statusCounts, nonRagAnswers)
+    }
+
+    private fun ActionReport.ragAnswerStatus(): String? =
+        ragDebug.extractRagAnswerStatus()
+            ?.lowercase()
+
+    private fun Any?.extractRagAnswerStatus(): String? {
+        val map = this as? Map<*, *> ?: return null
+        return map.value("status") as? String
+            ?: map.value("answer").extractRagAnswerStatus()
+    }
+
+    private fun Map<*, *>.value(key: String): Any? = entries.firstOrNull { it.key?.toString() == key }?.value
 }
 
 private data class ResolvedRunAction(
     val state: DatasetRunActionState,
     val action: ActionReport?,
     val error: String? = null,
+)
+
+private data class DatasetRunAnswerStats(
+    val ragAnswerStatusCounts: Map<String, Int> = emptyMap(),
+    val nonRagAnswers: Int = 0,
 )
 
 sealed class DatasetError(message: String) : RuntimeException(message) {

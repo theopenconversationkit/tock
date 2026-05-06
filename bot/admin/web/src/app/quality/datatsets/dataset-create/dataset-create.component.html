@@ -17,7 +17,7 @@
     <nb-alert
       *ngIf="isSubmitted && !form.valid"
       status="danger"
-      class="mb-3"
+      class="mt-2 mb-0"
     >
       <ul class="mb-0 ps-3 font-color-white">
         <li *ngIf="form.controls.name.invalid">The dataset name is invalid.</li>
@@ -27,6 +27,28 @@
           filled out and do not exceed the character limit.
         </li>
       </ul>
+    </nb-alert>
+
+    <nb-alert
+      *ngIf="showQuestionEditWarning"
+      status="warning"
+      class="mt-2 mb-0"
+    >
+      <div class="d-flex align-items-start gap-1">
+        <nb-icon
+          icon="exclamation-triangle"
+          class="flex-shrink-0 mt-1"
+        ></nb-icon>
+        <div>
+          <strong>Be careful when editing existing questions.</strong>
+          <br />
+          Run results are matched by question ID, so rephrasing a question slightly is fine, but changing its meaning will cause results
+          from different runs to be compared incorrectly.
+          <br />
+          If the intent of the question has changed significantly, consider
+          <strong>adding a new question</strong> and deleting this one instead.
+        </div>
+      </div>
     </nb-alert>
   </nb-card-header>
 
