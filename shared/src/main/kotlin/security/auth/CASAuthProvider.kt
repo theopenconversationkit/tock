@@ -191,7 +191,6 @@ abstract class CASAuthProvider(
 
         val excluded = excludedPaths(verticle)
         verticle.router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
-        verticle.router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
 
         verticle.router.route("/*").handler(
             WithExcludedPathHandler(excluded) { rc ->
