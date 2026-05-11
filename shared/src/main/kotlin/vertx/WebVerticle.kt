@@ -309,27 +309,27 @@ abstract class WebVerticle : CoroutineVerticle() {
             }
     }
 
-    private fun verticleProperty(propertyName: String) = "${verticleName.lowercase()}_$propertyName"
+    protected open fun verticlePropertyName(propertyName: String) = "${verticleName.lowercase()}_$propertyName"
 
     protected fun verticleIntProperty(
         propertyName: String,
         defaultValue: Int,
-    ): Int = intProperty(verticleProperty(propertyName), defaultValue)
+    ): Int = intProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleLongProperty(
         propertyName: String,
         defaultValue: Long,
-    ): Long = longProperty(verticleProperty(propertyName), defaultValue)
+    ): Long = longProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleBooleanProperty(
         propertyName: String,
         defaultValue: Boolean,
-    ): Boolean = booleanProperty(verticleProperty(propertyName), defaultValue)
+    ): Boolean = booleanProperty(verticlePropertyName(propertyName), defaultValue)
 
     protected fun verticleProperty(
         propertyName: String,
         defaultValue: String,
-    ): String = property(verticleProperty(propertyName), defaultValue)
+    ): String = property(verticlePropertyName(propertyName), defaultValue)
 
     protected fun register(
         method: HttpMethod,

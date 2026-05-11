@@ -94,11 +94,9 @@ class SseEndpoint internal constructor(
         val channel =
             register(appId = connectorId, userId) { msg ->
                 logger.debug { "send response from channel: $msg" }
-                Future.fromCompletionStage(
-                    channelFuture.thenRun {
-                        response.sendSseMessage(responseSerializer.writeValueAsString(msg))
-                    },
-                )
+                Future.fromCompletionStage(channelFuture).compose {
+                    response.sendSseMessage(responseSerializer.writeValueAsString(msg))
+                }
             }
         sendMissedEvents(channel)
         channelFuture.complete(channel)

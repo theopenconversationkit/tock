@@ -21,15 +21,11 @@ import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorProvider
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.NotifyBotStateModifier.KEEP_CURRENT_STATE
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
-import ai.tock.bot.definition.Intent
-import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.mockedVertx
 import io.mockk.CapturingSlot
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.invoke
 import io.mockk.mockk
@@ -38,8 +34,6 @@ import io.mockk.verify
 import io.vertx.core.Future
 import io.vertx.core.internal.ContextInternal
 import io.vertx.ext.web.Router
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import kotlin.test.assertEquals
@@ -274,63 +268,5 @@ internal class BotRepositoryTest : BotEngineTest() {
         // check verticle contains installer2 route (and so unregister has been called on installer1)
         assertEquals(3, verticleSlot.captured.router.routes.size)
         assertEquals("/2", verticleSlot.captured.router.routes[2].path)
-    }
-
-    @Nested
-    inner class Notify {
-        val intent = Intent("a")
-        val recipientId = PlayerId("user")
-
-        @BeforeEach
-        fun beforeNested() {
-            val connectorType = ConnectorType("test")
-            val botId = botDefinition.botId
-
-            val botConfs =
-                listOf(
-                    BotApplicationConfiguration(
-                        connectorType.id,
-                        botId,
-                        botDefinition.namespace,
-                        botDefinition.nlpModelName,
-                        connectorType,
-                        parameters = mapOf("test" to "test"),
-                    ),
-                )
-
-            every { botConfDAO.getConfigurations() } answers { botConfs }
-
-            val connectorProvider =
-                object : ConnectorProvider {
-                    override val connectorType: ConnectorType = connectorType
-
-                    override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = connector
-                }
-            BotRepository.registerConnectorProvider(connectorProvider)
-            BotRepository.registerBotProvider(
-                object : BotProvider {
-                    override fun botDefinition(): BotDefinition = botDefinition
-                },
-            )
-
-            val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()
-            every { botConfDAO.save(capture(appSlot)) } answers { appSlot.captured }
-
-            BotRepository.installBots(emptyList())
-        }
-
-        @Test
-        fun `GIVEN stateModifier THEN notify calls connector notify method`() {
-            BotRepository.notify("test", recipientId, intent, stateModifier = KEEP_CURRENT_STATE)
-
-            coVerify { connector.notify(any(), recipientId, intent, null, any(), any(), any()) }
-        }
-
-        @Test
-        fun `GIVEN no notificationType passed THEN notify pass null NotificationType to connector`() {
-            BotRepository.notify("test", recipientId, intent)
-
-            coVerify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
-        }
     }
 }

@@ -264,7 +264,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {
-        controller.handle(
+        controller.handleUserEvent(
             SendChoice(
                 recipientId,
                 connectorId,

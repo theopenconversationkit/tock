@@ -258,13 +258,16 @@ object BotRepository {
             userTimelineDAO.save(userTimeline, botDefinition)
         }
 
-        notify(recipientId, intent, step, parameters, notificationType, errorListener)
+        try {
+            notify(recipientId, intent, step, parameters, notificationType, errorListener)
+        } finally {
+            if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
+                val userTimelineAfterNotification =
+                    userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
+                userTimelineAfterNotification.userState.botDisabled = currentState
+                userTimelineDAO.save(userTimelineAfterNotification, botDefinition)
+            }
 
-        if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
-            val userTimelineAfterNotification =
-                userTimelineDAO.loadWithoutDialogs(botDefinition.namespace, recipientId)
-            userTimelineAfterNotification.userState.botDisabled = currentState
-            userTimelineDAO.save(userTimelineAfterNotification, botDefinition)
         }
     }
 

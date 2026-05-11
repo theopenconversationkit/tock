@@ -204,7 +204,7 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos))
+            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), errorListener = null)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -220,10 +220,12 @@ class WebConnector internal constructor(
         controller: ConnectorController,
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
+        errorListener: ((Throwable) -> Unit)?,
     ) {
         val callback =
             WebConnectorCallback(
                 applicationId = applicationId,
+                errorListener = errorListener,
                 locale = locale,
                 context = context,
                 webMapper = webMapper,
@@ -235,7 +237,7 @@ class WebConnector internal constructor(
             // Uniquely identify each response, so they can be reconciled between SSE and POST
             callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
         }
-        controller.handleIncomingEvent(
+        controller.handleUserEvent(
             event,
             ConnectorData(
                 callback = callback,
@@ -271,6 +273,7 @@ class WebConnector internal constructor(
             controller = controller,
             context = null,
             headersMetadata = emptyMap(),
+            errorListener = errorListener,
         )
     }
 

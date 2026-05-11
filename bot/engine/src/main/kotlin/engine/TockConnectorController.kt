@@ -34,7 +34,6 @@ import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
-import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.coroutines.ExperimentalTockCoroutines
 import ai.tock.shared.error
@@ -46,12 +45,15 @@ import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
+import io.vertx.kotlin.coroutines.awaitBlocking
+import java.net.URI
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.net.URL
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.time.Duration.Companion.milliseconds
 
 private val synchronousMode = booleanProperty("tock_timeline_persistence_synchronous_mode", true)
 private val asynchronousMode = booleanProperty("tock_timeline_persistence_asynchronous_mode", false)
@@ -70,8 +72,6 @@ internal class TockConnectorController(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
-        private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
         private val parseAudioFileEnabled = booleanProperty("tock_bot_audio_nlp_enabled", true)
         private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
 
@@ -93,7 +93,9 @@ internal class TockConnectorController(
         }
     }
 
-    private val executor: Executor by injector.instance()
+    private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
+    private val lockedAttemptsWait = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L).milliseconds
+
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
@@ -116,12 +118,12 @@ internal class TockConnectorController(
         data: ConnectorData,
     ) {
         verticle.launch {
-            handleIncomingEvent(event, data)
+            handleUserEvent(event, data)
         }
     }
 
     @OptIn(ExperimentalTockCoroutines::class)
-    override suspend fun handleIncomingEvent(
+    override suspend fun handleUserEvent(
         event: Event,
         data: ConnectorData,
     ) {
@@ -153,14 +155,14 @@ internal class TockConnectorController(
         userTimeline: UserTimeline,
     ): Action {
         if (parseAudioFileEnabled && action is SendAttachment && action.type == audio) {
-            val bytes = URL(action.url).readBytes()
+            val bytes = URI(action.url).toURL().readBytes()
             if (bytes.size < audioNlpFileLimit) {
                 val stt: STT = injector.provide()
                 val text = stt.parse(bytes, userTimeline.userPreferences.locale)
                 if (text != null) {
                     return SendSentence(
                         action.playerId,
-                        action.applicationId,
+                        action.connectorId,
                         action.recipientId,
                         text,
                     )
@@ -198,7 +200,9 @@ internal class TockConnectorController(
                     // Notify callback that timeline has been loaded
                     callback.initialUserTimelineLoaded(userTimeline)
 
-                    val transformedAction = tryToParseVoiceAudio(action, userTimeline)
+                    val transformedAction = awaitBlocking {
+                        tryToParseVoiceAudio(action, userTimeline)
+                    }
 
                     bot.handleAction(transformedAction, userTimeline, this, data)
 
@@ -216,7 +220,7 @@ internal class TockConnectorController(
                 }
             } else if (nbAttempts < maxLockedAttempts) {
                 logger.debug { "$playerId locked - wait" }
-                delay(lockedAttemptsWaitInMs)
+                delay(lockedAttemptsWait)
                 handleAction(action, nbAttempts + 1, data)
             } else {
                 logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }

@@ -54,7 +54,7 @@ interface ConnectorController {
     val botConfiguration: BotApplicationConfiguration
 
     /**
-     * Sends a notification to the connector.
+     * Sends a notification (_push messages_) through the connector.
      * A [BotBus] is created and the corresponding story is called.
      *
      * @param recipientId the recipient identifier
@@ -94,7 +94,7 @@ interface ConnectorController {
      * @param event the event to handle
      * @param data the optional additional data from the connector
      */
-    suspend fun handleIncomingEvent(
+    suspend fun handleUserEvent(
         event: Event,
         data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.connectorId, connector.connectorType)),
     ) = handle(event, data)
