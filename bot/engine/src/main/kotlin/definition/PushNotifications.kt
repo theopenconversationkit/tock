@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference
  * @param applicationId the configuration connector id
  * @param namespace the configuration namespace
  * @param botId the configuration botId
- * @param applicationId the configuration connector id
  * @param recipientId the recipient identifier
  * @param intent the notification intent
  * @param step the optional step target

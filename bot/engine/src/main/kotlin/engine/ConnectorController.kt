@@ -76,7 +76,7 @@ interface ConnectorController {
     }
 
     /**
-     * Handles an event sent by the connector. the primary goal of this controller.
+     * Handles an event sent by the connector (the primary goal of this controller)
      *
      * This method may return before the event is actually processed.
      *
@@ -89,7 +89,7 @@ interface ConnectorController {
     )
 
     /**
-     * Handles an event received by the connector. the primary goal of this controller.
+     * Handles an event received by the connector (the primary goal of this controller)
      *
      * @param event the event to handle
      * @param data the optional additional data from the connector

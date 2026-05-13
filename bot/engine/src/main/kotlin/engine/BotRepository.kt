@@ -267,7 +267,6 @@ object BotRepository {
                 userTimelineAfterNotification.userState.botDisabled = currentState
                 userTimelineDAO.save(userTimelineAfterNotification, botDefinition)
             }
-
         }
     }
 

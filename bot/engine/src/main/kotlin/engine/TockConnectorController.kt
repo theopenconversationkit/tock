@@ -46,12 +46,11 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
 import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import io.vertx.kotlin.coroutines.awaitBlocking
-import java.net.URI
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import java.net.URL
+import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -200,9 +199,10 @@ internal class TockConnectorController(
                     // Notify callback that timeline has been loaded
                     callback.initialUserTimelineLoaded(userTimeline)
 
-                    val transformedAction = awaitBlocking {
-                        tryToParseVoiceAudio(action, userTimeline)
-                    }
+                    val transformedAction =
+                        awaitBlocking {
+                            tryToParseVoiceAudio(action, userTimeline)
+                        }
 
                     bot.handleAction(transformedAction, userTimeline, this, data)
 
