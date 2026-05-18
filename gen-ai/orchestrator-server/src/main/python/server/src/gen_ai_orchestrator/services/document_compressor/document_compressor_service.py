@@ -37,5 +37,9 @@ def check_document_compressor_setting(setting: DocumentCompressorSetting) -> boo
          True for a valid Document Compressor setting. Raise exception otherwise.
     """
 
-    logger.info('Get the Callback handler Factory, then check the Document Compressor setting.')
-    return get_compressor_factory(setting = setting, is_fault_tolerant = False).check_document_compressor_setting()
+    logger.info(
+        "Get the Callback handler Factory, then check the Document Compressor setting."
+    )
+    return get_compressor_factory(
+        setting=setting, is_fault_tolerant=False
+    ).check_document_compressor_setting()

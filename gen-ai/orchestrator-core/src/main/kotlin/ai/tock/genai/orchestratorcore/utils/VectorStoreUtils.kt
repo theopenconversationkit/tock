@@ -17,6 +17,7 @@
 package ai.tock.genai.orchestratorcore.utils
 
 import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParamsBase
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
 import ai.tock.genai.orchestratorcore.models.vectorstore.OpenSearchParams
 import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorParams
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
@@ -37,10 +38,11 @@ object VectorStoreUtils {
         botId: String,
         indexSessionId: String,
         kNeighborsDocuments: Int,
+        documentSearchType: DocumentSearchType,
         vectorStoreSetting: VectorStoreSetting?,
     ): Pair<DocumentSearchParamsBase, DocumentIndexName> {
         vectorStoreSetting?.let {
-            val searchParams = it.getDocumentSearchParams(kNeighborsDocuments)
+            val searchParams = it.getDocumentSearchParams(kNeighborsDocuments, documentSearchType)
             val indexName = it.normalizeDocumentIndexName(namespace, botId, indexSessionId)
             return Pair(searchParams, indexName)
         }
@@ -48,11 +50,11 @@ object VectorStoreUtils {
         val (documentSearchParams, indexName) =
             when (vectorStore) {
                 VectorStoreProvider.OpenSearch.name -> {
-                    OpenSearchParams(k = kNeighborsDocuments) to
+                    OpenSearchParams(k = kNeighborsDocuments, searchType = DocumentSearchType.SIMILARITY_SEARCH) to
                         OpenSearchUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
                 }
                 VectorStoreProvider.PGVector.name -> {
-                    PGVectorParams(k = kNeighborsDocuments) to
+                    PGVectorParams(k = kNeighborsDocuments, searchType = documentSearchType) to
                         PGVectorUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
                 }
                 else -> throw IllegalArgumentException("Unsupported Vector Store Provider [$vectorStore]")

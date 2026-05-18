@@ -21,7 +21,12 @@ import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { EnginesConfigurations, QuestionCondensing_prompt, QuestionAnswering_prompt } from './models/engines-configurations';
+import {
+  EnginesConfigurations,
+  QuestionCondensing_prompt,
+  QuestionAnswering_prompt,
+  DocumentSearchTypes
+} from './models/engines-configurations';
 import { RagSettings } from './models';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -46,9 +51,11 @@ interface RagSettingsForm {
   enabled: FormControl<boolean>;
 
   debugEnabled: FormControl<boolean>;
+  explainabilityEnabled: FormControl<boolean>;
 
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
+  documentSearchType: FormControl<string>;
 
   maxDocumentsRetrieved: FormControl<number>;
 
@@ -79,6 +86,8 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   enginesConfigurations = EnginesConfigurations;
 
   engineSettingKeyName = AiEngineSettingKeyName;
+
+  documentSearchTypes = DocumentSearchTypes;
 
   questionCondensing_prompt = QuestionCondensing_prompt;
 
@@ -197,9 +206,11 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
     debugEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
+    explainabilityEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
+    documentSearchType: new FormControl(undefined),
 
     maxDocumentsRetrieved: new FormControl(undefined),
 
@@ -223,6 +234,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   get debugEnabled(): FormControl {
     return this.form.get('debugEnabled') as FormControl;
+  }
+
+  get explainabilityEnabled(): FormControl {
+    return this.form.get('explainabilityEnabled') as FormControl;
   }
 
   get questionCondensingLlmProvider(): FormControl {
@@ -251,6 +266,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   get indexName(): FormControl {
     return this.form.get('indexName') as FormControl;
+  }
+
+  get documentSearchType(): FormControl {
+    return this.form.get('documentSearchType') as FormControl;
   }
 
   get canSave(): boolean {
@@ -364,6 +383,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   setFormDefaultValues(): void {
     this.form.patchValue({
       debugEnabled: false,
+      explainabilityEnabled: true,
       maxMessagesFromHistory: 5,
       maxDocumentsRetrieved: 4
     });
@@ -402,9 +422,11 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     if (this.canRagBeActivated()) {
       this.enabled.enable();
       this.debugEnabled.enable();
+      this.explainabilityEnabled.enable();
     } else {
       this.enabled.disable();
       this.debugEnabled.disable();
+      this.explainabilityEnabled.disable();
     }
   }
 

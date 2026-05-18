@@ -56,13 +56,13 @@ from gen_ai_orchestrator.services.observability.observabilty_service import (
 logger = logging.getLogger(__name__)
 
 observability_providers_router = APIRouter(
-    prefix='/observability-providers',
-    tags=['Observability Providers'],
-    responses={404: {'description': 'Not found'}},
+    prefix="/observability-providers",
+    tags=["Observability Providers"],
+    responses={404: {"description": "Not found"}},
 )
 
 
-@observability_providers_router.get('')
+@observability_providers_router.get("")
 async def get_all_observability_providers() -> list[ObservabilityProvider]:
     """
     Returns:
@@ -71,7 +71,7 @@ async def get_all_observability_providers() -> list[ObservabilityProvider]:
     return [provider.value for provider in ObservabilityProvider]
 
 
-@observability_providers_router.get('/{provider_id}')
+@observability_providers_router.get("/{provider_id}")
 async def get_observability_provider_by_id(
     http_request: Request, provider_id: str
 ) -> ObservabilityProviderResponse:
@@ -94,7 +94,7 @@ async def get_observability_provider_by_id(
     return ObservabilityProviderResponse(provider=ObservabilityProvider(provider_id))
 
 
-@observability_providers_router.get('/{provider_id}/setting/example')
+@observability_providers_router.get("/{provider_id}/setting/example")
 async def get_observability_provider_setting_by_id(
     http_request: Request, provider_id: ObservabilityProvider
 ) -> ObservabilitySetting:
@@ -117,9 +117,9 @@ async def get_observability_provider_setting_by_id(
     if provider_id == ObservabilityProvider.LANGFUSE:
         return ObservabilitySetting(
             provider=ObservabilityProvider.LANGFUSE,
-            secret_key=RawSecretKey(secret='sk-********************be8f'),
-            public_key='pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
-            url='https://cloud.langfuse.com',
+            secret_key=RawSecretKey(secret="sk-********************be8f"),
+            public_key="pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c",
+            url="https://cloud.langfuse.com",
         )
     else:
         raise GenAIUnknownProviderException(
@@ -131,7 +131,7 @@ async def get_observability_provider_setting_by_id(
         )
 
 
-@observability_providers_router.post('/{provider_id}/setting/status')
+@observability_providers_router.post("/{provider_id}/setting/status")
 async def check_observability_provider_setting(
     http_request: Request,
     provider_id: str,
@@ -151,7 +151,7 @@ async def check_observability_provider_setting(
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.info('Start Observability setting check for provider %s', provider_id)
+    logger.info("Start Observability setting check for provider %s", provider_id)
     # Request validation
     validate_query(http_request, provider_id, request.setting)
 
@@ -159,10 +159,10 @@ async def check_observability_provider_setting(
         # Observability setting check
         check_observability_setting(request.setting)
 
-        logger.info('The Observability setting is valid')
+        logger.info("The Observability setting is valid")
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:
-        logger.info('The Observability setting is invalid!')
+        logger.info("The Observability setting is invalid!")
         logger.error(exc)
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
@@ -181,7 +181,7 @@ def validate_query(
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug('Observability setting - Request validation')
+    logger.debug("Observability setting - Request validation")
     validate_observability_provider(http_request, provider_id)
     if provider_id != setting.provider:
         raise AIProviderBadRequestException(

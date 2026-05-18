@@ -44,11 +44,11 @@ class LangChainEMFactory(ABC, BaseModel):
         check the Embedding model setting validity
         :return: True if the setting is valid.
         """
-        logger.info('Invoke EM provider to check setting')
-        text = 'Hi, are you there?'
+        logger.info("Invoke EM provider to check setting")
+        text = "Hi, are you there?"
         response = await self.embed_query(text)
-        logger.info('Embedding successful')
-        logger.debug('[text: %s], [response: %s]', text, response)
+        logger.info("Embedding successful")
+        logger.debug("[text: %s], [response: %s]", text, response)
         return True
 
     async def embed_query(self, text: str) -> List[float]:

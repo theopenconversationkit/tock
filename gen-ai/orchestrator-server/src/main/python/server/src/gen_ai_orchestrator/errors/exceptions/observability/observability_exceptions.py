@@ -12,10 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-""""
+""" "
 Observability Exception Module
 List of all Observability exceptions managed by Gen AI Orchestrator
 """
+
 from typing import Optional
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -46,4 +47,3 @@ class GenAIObservabilityErrorException(GenAIOrchestratorException):
 
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.OBSERVABILITY_API_ERROR, info)
-

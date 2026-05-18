@@ -25,7 +25,7 @@ from gen_ai_orchestrator.models.observability.observability_provider import (
 
 client = TestClient(app)
 
-urls_prefix = '/observability-providers'
+urls_prefix = "/observability-providers"
 
 
 def test_get_all_observability_providers():
@@ -40,7 +40,7 @@ def test_get_observability_provider_by_id():
     provider_id = list(ObservabilityProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}")
     assert response.status_code == 200
-    assert response.json()['provider'] == provider_id
+    assert response.json()["provider"] == provider_id
 
 
 def test_get_observability_provider_by_id_wrong_id():
@@ -48,7 +48,7 @@ def test_get_observability_provider_by_id_wrong_id():
     response = client.get(f"{urls_prefix}/wrong_id")
     assert response.status_code == 400
     assert (
-        response.json()['message']
+        response.json()["message"]
         == ErrorMessages().get_message(ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER).message
     )
 
@@ -58,14 +58,14 @@ def test_get_observability_provider_setting_by_id():
     provider_id = list(ObservabilityProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
     assert response.status_code == 200
-    assert response.json()['provider'] == provider_id
+    assert response.json()["provider"] == provider_id
 
 
 def test_check_observability_provider_setting():
     """Test checking a provider setting (use example for checking)."""
     provider_id = list(ObservabilityProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
-    data = {'setting': response.json()}
+    data = {"setting": response.json()}
     response = client.post(f"{urls_prefix}/{provider_id}/setting/status", json=data)
     assert response.status_code == 200
-    assert response.json()['valid'] == False
+    assert not response.json()["valid"]

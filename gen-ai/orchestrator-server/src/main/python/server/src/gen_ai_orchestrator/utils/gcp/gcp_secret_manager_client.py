@@ -28,7 +28,7 @@ from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import (
 )
 
 logger = logging.getLogger(__name__)
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class GCPSecretManagerClient(SecretManagerClient):
@@ -50,12 +50,14 @@ class GCPSecretManagerClient(SecretManagerClient):
         try:
             # Access the secret version.
             response = self.client.access_secret_version(name=secret_name)
-            payload = response.payload.data.decode('UTF-8')
-            logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
+            payload = response.payload.data.decode("UTF-8")
+            logging.info(
+                f"The requested secret {secret_name} has been successfully retrieved."
+            )
             return payload
-        except NotFound as e:
-            logger.error(f'The requested secret {secret_name} was not found.')
+        except NotFound:
+            logger.error(f"The requested secret {secret_name} was not found.")
             raise
         except Exception as e:
-            logger.error(f'An unknown error occurred: {str(e)}.')
+            logger.error(f"An unknown error occurred: {str(e)}.")
             raise

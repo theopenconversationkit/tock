@@ -18,15 +18,6 @@ from typing import Annotated, Union
 
 from fastapi import Body
 
-from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
-from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import (
-    OllamaEMSetting,
-)
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
-    OpenAIEMSetting,
-)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
@@ -42,5 +33,5 @@ from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
 
 LLMSetting = Annotated[
     Union[OpenAILLMSetting, AzureOpenAILLMSetting, FakeLLMSetting, OllamaLLMSetting],
-    Body(discriminator='provider'),
+    Body(discriminator="provider"),
 ]

@@ -21,10 +21,10 @@ from enum import Enum, unique
 class LLMProvider(str, Enum):
     """Enumeration to list Large Language Provider type"""
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    FAKE_LLM = 'FakeLLM'
-    OLLAMA = 'Ollama'
+    OPEN_AI = "OpenAI"
+    AZURE_OPEN_AI_SERVICE = "AzureOpenAIService"
+    FAKE_LLM = "FakeLLM"
+    OLLAMA = "Ollama"
 
     @classmethod
     def has_value(cls, value):

@@ -44,11 +44,12 @@ from gen_ai_orchestrator.services.completion.completion_service import (
 logger = logging.getLogger(__name__)
 
 completion_router = APIRouter(
-    prefix='/completion',
-    tags=['Prompt completion'],
+    prefix="/completion",
+    tags=["Prompt completion"],
 )
 
-@completion_router.post('/')
+
+@completion_router.post("/")
 async def completion(request: CompletionRequest) -> PlaygroundResponse:
     """
     Playground API
@@ -63,12 +64,14 @@ async def completion(request: CompletionRequest) -> PlaygroundResponse:
         GenAIPromptTemplateException: if the prompt template is incorrect
     """
 
-    logger.info('Completion')
+    logger.info("Completion")
     return await generate(request)
 
 
-@completion_router.post('/sentences')
-async def completion_sentences(request: CompletionRequest) -> SentenceGenerationResponse:
+@completion_router.post("/sentences")
+async def completion_sentences(
+    request: CompletionRequest,
+) -> SentenceGenerationResponse:
     """
     Sentence Generation API
 
@@ -82,6 +85,5 @@ async def completion_sentences(request: CompletionRequest) -> SentenceGeneration
         GenAIPromptTemplateException: if the prompt template is incorrect
     """
 
-    logger.info('Generate sentences from %s', request.prompt.inputs)
+    logger.info("Generate sentences from %s", request.prompt.inputs)
     return await generate_sentences(request)
-

@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-""""
+""" "
 OpenSearch Exception Module
 List of all OpenSearch exceptions managed by Gen AI Orchestrator
 """

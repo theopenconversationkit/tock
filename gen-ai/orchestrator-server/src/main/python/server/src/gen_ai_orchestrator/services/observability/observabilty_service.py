@@ -17,7 +17,6 @@
 import logging
 from typing import Optional
 
-from langfuse import get_client
 from langfuse.langchain import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.models.observability.observability_type import (
@@ -43,17 +42,19 @@ def check_observability_setting(setting: ObservabilitySetting) -> bool:
     """
 
     logger.info(
-        'Get the Callback handler Factory, then check the Observability setting.'
+        "Get the Callback handler Factory, then check the Observability setting."
     )
     return get_callback_handler_factory(setting).check_observability_setting()
 
 
-def get_observability_info(observability_handler, trace_name: Optional[str] = None) -> Optional[ObservabilityInfo]:
+def get_observability_info(
+    observability_handler, trace_name: Optional[str] = None
+) -> Optional[ObservabilityInfo]:
     """Get the observability Information"""
     if not isinstance(observability_handler, LangfuseCallbackHandler):
         return None
 
-    trace_id = getattr(observability_handler, 'last_trace_id', None)
+    trace_id = getattr(observability_handler, "last_trace_id", None)
     if trace_id is None:
         return None
 

@@ -20,12 +20,7 @@ from pydantic import BaseModel, Field
 class Credentials(BaseModel):
     """The basic credentials"""
 
-    username: str = Field(
-        description='The username.',
-        examples=['nt123']
-    )
+    username: str = Field(description="The username.", examples=["nt123"])
     password: str = Field(
-        description='The password.',
-        examples=['a12G-3@p!'],
-        min_length=4
+        description="The password.", examples=["a12G-3@p!"], min_length=4
     )

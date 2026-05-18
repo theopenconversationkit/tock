@@ -37,14 +37,14 @@ class BloomzEmbeddings(BaseModel, Embeddings):
 
     @property
     def _api_url(self) -> str:
-        return urljoin(self.api_base, '/embed')
+        return urljoin(self.api_base, "/embed")
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """Get the embeddings for a list of texts."""
         response = requests.post(
             self._api_url,
             json=InferenceRequest(text=texts, pooling=self.pooling).model_dump(
-                mode='json'
+                mode="json"
             ),
             verify=False,
         )
@@ -52,7 +52,7 @@ class BloomzEmbeddings(BaseModel, Embeddings):
             logger.exception(
                 f"Embedding request didn't return expected status code {response.content}"
             )
-        return response.json()['embedding']
+        return response.json()["embedding"]
 
     def embed_query(self, text: str) -> List[float]:
         """Compute query embeddings using a HuggingFace transformer model."""

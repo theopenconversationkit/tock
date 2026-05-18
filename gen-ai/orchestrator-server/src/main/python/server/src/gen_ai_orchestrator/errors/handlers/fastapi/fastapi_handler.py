@@ -72,16 +72,16 @@ def create_error_info_not_found(
 
     return ErrorInfo(
         provider=provider,
-        error='NotFoundError',
-        cause=f'Accepted values are : {accepted_values}',
-        request=f'[{http_request.method}] {http_request.url}',
+        error="NotFoundError",
+        cause=f"Accepted values are : {accepted_values}",
+        request=f"[{http_request.method}] {http_request.url}",
     )
 
 
 def create_error_info_bad_request(
     http_request: Request,
     provider: str,
-    cause: str = 'The AI provider ID given for setting is not correct.',
+    cause: str = "The AI provider ID given for setting is not correct.",
 ) -> ErrorInfo:
     """
     Create ErrorInfo for a bad request error
@@ -96,9 +96,9 @@ def create_error_info_bad_request(
 
     return ErrorInfo(
         provider=provider,
-        error='BadRequestError',
+        error="BadRequestError",
         cause=cause,
-        request=f'[{http_request.method}] {http_request.url}',
+        request=f"[{http_request.method}] {http_request.url}",
     )
 
 

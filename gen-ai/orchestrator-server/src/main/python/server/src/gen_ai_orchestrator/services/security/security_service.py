@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Module for the Security Service"""
+
 import logging
 from typing import Optional
 
@@ -48,12 +49,16 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
         secret_value = secret_key.secret
     elif isinstance(secret_key, AwsSecretKey):
         # Get secret from AWS Secrets Manager
-        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_key.secret_name)
+        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(
+            secret_key.secret_name
+        )
         if aws_secret is not None:
             secret_value = aws_secret.secret
     elif isinstance(secret_key, GcpSecretKey):
         # Get secret from GCP Secret Manager
-        gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(secret_key.secret_name)
+        gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(
+            secret_key.secret_name
+        )
         if gcp_secret is not None:
             secret_value = gcp_secret.secret
 

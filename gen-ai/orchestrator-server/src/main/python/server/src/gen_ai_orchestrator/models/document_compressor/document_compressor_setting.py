@@ -25,18 +25,18 @@ class BaseDocumentCompressorSetting(BaseModel):
     """A base class for Document Compressor Model Setting."""
 
     provider: DocumentCompressorProvider = Field(
-        description='The document compressor provider.',
+        description="The document compressor provider.",
         examples=[DocumentCompressorProvider.BLOOMZ],
     )
     min_score: Optional[float] = Field(
-        description='Minimum retailment score.',
+        description="Minimum retailment score.",
         default=0.5,
     )
     max_documents: Optional[int] = Field(
-        description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
+        description="Maximum number of documents to return to avoid exceeding max tokens for text generation.",
         default=50,
     )
     fill_to_max_documents: Optional[bool] = Field(
-        description='If True, complete with the best remaining documents up to max_documents.',
+        description="If True, complete with the best remaining documents up to max_documents.",
         default=True,
     )

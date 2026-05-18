@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating AzureOpenAIEMFactory"""
+
 from typing import List
 
 from langchain.embeddings.base import Embeddings
@@ -47,10 +48,10 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
             # the model is not Nullable, it has a default value
-            model=self.setting.model or OpenAIEmbeddings.__fields__['model'].default,
+            model=self.setting.model or OpenAIEmbeddings.__fields__["model"].default,
             timeout=application_settings.em_provider_timeout,
         )
 
-    @openai_exception_handler(provider='AzureOpenAIService')
+    @openai_exception_handler(provider="AzureOpenAIService")
     async def embed_query(self, text: str) -> List[float]:
         return await super().embed_query(text)

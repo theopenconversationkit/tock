@@ -29,11 +29,11 @@ class RAGCallbackHandler(BaseCallbackHandler):
 
     def __init__(self):
         self.records: Dict[str, Any] = {
-            'chat_prompt': None,
-            'chat_chain_output': None,
-            'rag_prompt': None,
-            'rag_chain_output': None,
-            'documents': None,
+            "chat_prompt": None,
+            "rag_question_condensation_chain_output": None,
+            "rag_prompt": None,
+            "rag_chain_output": None,
+            "documents": None,
         }
 
     def on_chain_start(
@@ -41,20 +41,22 @@ class RAGCallbackHandler(BaseCallbackHandler):
     ) -> None:
         """Print out that we are entering a chain."""
 
-        if kwargs['name'] == 'chat_chain_output' and isinstance(inputs, AIMessage):
-            self.records['chat_chain_output'] = inputs.content
+        if kwargs["name"] == "rag_question_condensation_chain_output" and isinstance(
+            inputs, AIMessage
+        ):
+            self.records["rag_question_condensation_chain_output"] = inputs.content
 
-        if kwargs['name'] == 'rag_chain_output' and isinstance(inputs, AIMessage):
-            self.records['rag_chain_output'] = inputs.content
+        if kwargs["name"] == "rag_chain_output" and isinstance(inputs, AIMessage):
+            self.records["rag_chain_output"] = inputs.content
 
-        if kwargs['name'] == 'RunnableAssign<answer>' and 'documents' in inputs:
-            self.records['documents'] = inputs['documents']
+        if kwargs["name"] == "RunnableAssign<answer>" and "documents" in inputs:
+            self.records["documents"] = inputs["documents"]
 
     def on_chain_end(self, outputs: Dict[str, Any], **kwargs: Any) -> None:
         """Print out that we finished a chain."""  # if outputs is instance of StringPromptValue
 
         if isinstance(outputs, ChatPromptValue):
-            self.records['chat_prompt'] = next(
+            self.records["chat_prompt"] = next(
                 (
                     msg.content
                     for msg in outputs.messages
@@ -64,4 +66,4 @@ class RAGCallbackHandler(BaseCallbackHandler):
             )
 
         if isinstance(outputs, StringPromptValue):
-            self.records['rag_prompt'] = outputs.text
+            self.records["rag_prompt"] = outputs.text

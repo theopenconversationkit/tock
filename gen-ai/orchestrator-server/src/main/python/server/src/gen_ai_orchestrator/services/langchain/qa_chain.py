@@ -30,7 +30,7 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
     opensearch_exception_handler,
 )
 from gen_ai_orchestrator.models.rag.rag_models import Source
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import QARequest
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 @opensearch_exception_handler
-@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+@openai_exception_handler(provider="OpenAI or AzureOpenAIService")
 async def execute_qa_chain(request: QARequest) -> QAResponse:
     """
     Execute the QA chain using the specified embedding settings in the request.
@@ -56,22 +56,22 @@ async def execute_qa_chain(request: QARequest) -> QAResponse:
         QAResponse: The QA response with the document sources.
 
     """
-    logger.info('QA chain - Start of execution...')
+    logger.info("QA chain - Start of execution...")
     start_time = time.time()
 
     conversational_qa_chain = create_qa_chain(request)
 
     response = await conversational_qa_chain.ainvoke(request.user_query)
 
-    qa_duration = '{:.2f}'.format(time.time() - start_time)
-    logger.info('QA chain - End of execution. (Duration : %s seconds)', qa_duration)
+    qa_duration = "{:.2f}".format(time.time() - start_time)
+    logger.info("QA chain - End of execution. (Duration : %s seconds)", qa_duration)
 
     return QAResponse(
         documents=set(
             map(
                 lambda doc: Source(
-                    title=doc.metadata['title'],
-                    url=doc.metadata['source'],
+                    title=doc.metadata["title"],
+                    url=doc.metadata["source"],
                     content=doc.page_content,
                 ),
                 response,
@@ -112,6 +112,6 @@ def create_qa_chain(request: QARequest) -> Runnable:
         search_kwargs=request.document_search_params.to_dict()
     )
 
-    logger.debug('QA chain - Create a QA chain')
+    logger.debug("QA chain - Create a QA chain")
 
     return build_chain(retriever)

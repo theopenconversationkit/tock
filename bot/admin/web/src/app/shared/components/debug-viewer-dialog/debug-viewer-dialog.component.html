@@ -1,19 +1,3 @@
-<!--
-  ~ Copyright (C) 2017/2025 SNCF Connect & Tech
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~ http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <nb-card class="main-wrapper">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     {{ title }}
@@ -29,6 +13,131 @@
   </nb-card-header>
 
   <nb-card-body>
+    <section
+      class="documents-summary"
+      *ngIf="hasDocuments"
+    >
+      <header class="documents-summary__header">
+        <span class="documents-summary__title">Documents ({{ allDocuments.length }})</span>
+        <span
+          class="documents-summary__counts"
+          *ngIf="hasContextUsage"
+        >
+          <span class="badge badge--used">{{ usedDocuments.length }} used</span>
+          <span class="badge badge--unused">{{ unusedDocuments.length }} unused</span>
+        </span>
+      </header>
+
+      <ng-container *ngIf="hasContextUsage; else flatList">
+        <ng-container *ngIf="usedDocuments.length">
+          <p class="documents-summary__group-label documents-summary__group-label--used">Used</p>
+          <ng-container *ngFor="let doc of usedDocuments">
+            <ng-container *ngTemplateOutlet="docRow; context: { $implicit: doc }"></ng-container>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="unusedDocuments.length">
+          <p class="documents-summary__group-label documents-summary__group-label--unused">Unused</p>
+          <ng-container *ngFor="let doc of unusedDocuments">
+            <ng-container *ngTemplateOutlet="docRow; context: { $implicit: doc }"></ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #flatList>
+        <ng-container *ngFor="let doc of allDocuments">
+          <ng-container *ngTemplateOutlet="docRow; context: { $implicit: doc }"></ng-container>
+        </ng-container>
+      </ng-template>
+    </section>
+
+    <!-- Reusable document row -->
+    <ng-template
+      #docRow
+      let-doc
+    >
+      <div
+        class="doc-item"
+        [class.doc-item--used]="hasContextUsage && doc.used"
+        [class.doc-item--unused]="hasContextUsage && !doc.used"
+        [class.doc-item--expanded]="doc.expanded"
+      >
+        <button
+          type="button"
+          class="doc-item__row"
+          (click)="toggle(doc)"
+        >
+          <nb-icon
+            class="doc-item__caret"
+            [icon]="doc.expanded ? 'chevron-down' : 'chevron-right'"
+            pack="nebular-essentials"
+          ></nb-icon>
+          <span
+            class="doc-item__dot"
+            *ngIf="hasContextUsage"
+            [class.doc-item__dot--used]="doc.used"
+          ></span>
+          <span class="doc-item__title">{{ doc.title }}</span>
+          <span
+            class="doc-item__reason-preview"
+            *ngIf="!doc.expanded && doc.reason"
+            >{{ doc.reason }}</span
+          >
+        </button>
+
+        <div
+          class="doc-item__detail"
+          *ngIf="doc.expanded"
+        >
+          <p
+            class="doc-item__reason"
+            *ngIf="doc.reason"
+          >
+            <span class="doc-item__label">Reason:</span> {{ doc.reason }}
+          </p>
+
+          <div
+            class="doc-item__block"
+            *ngIf="doc.sentences?.length"
+          >
+            <span class="doc-item__label">Sentences ({{ doc.sentences.length }})</span>
+            <ul class="doc-item__sentences">
+              <li *ngFor="let s of doc.sentences">{{ s }}</li>
+            </ul>
+          </div>
+
+          <div
+            class="doc-item__block"
+            *ngIf="doc.content"
+          >
+            <span class="doc-item__label">Content</span>
+            <pre class="doc-item__content">{{ doc.content }}</pre>
+          </div>
+
+          <div
+            class="doc-item__block"
+            *ngIf="doc.metadataEntries?.length"
+          >
+            <span class="doc-item__label">Metadata</span>
+            <dl class="doc-item__meta">
+              <ng-container *ngFor="let m of doc.metadataEntries">
+                <dt>{{ m.key }}</dt>
+                <dd>{{ m.value }}</dd>
+              </ng-container>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Separator: everything below is the full received JSON -->
+    <div
+      class="json-separator"
+      *ngIf="hasDocuments"
+    >
+      <span class="json-separator__label">Full debug JSON</span>
+    </div>
+
     <tock-json-iterator
       [data]="debug"
       [customOrder]="['user_question', 'condensed_question', 'error', 'answer', 'question_answering_prompt', 'documents']"

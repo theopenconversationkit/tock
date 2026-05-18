@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating PGVectorFactory"""
+
 import logging
 from typing import Optional
 
@@ -22,16 +23,21 @@ from langchain_postgres import PGVector
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
+from gen_ai_orchestrator.models.vector_stores.pgvector.database_pool_registry import (
+    DatabasePool,
+)
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
     PGVectorStoreSetting,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.full_text_search_retriever import (
+    FullTextSearchRetriever,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.postgresql_text_retriever import (
+    PostgreSQLTextRetriever,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
 )
-from gen_ai_orchestrator.services.security.security_service import (
-    fetch_secret_key_value,
-)
-from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)
 
@@ -42,27 +48,38 @@ class PGVectorFactory(LangChainVectorStoreFactory):
     https://api.python.langchain.com/en/latest/vectorstores/langchain_postgres.vectorstores.PGVector.html
     """
 
+    """
+    Pool injected from the registry — no connection created here.
+    """
+    pool: DatabasePool
+
     setting: PGVectorStoreSetting
 
     def get_vector_store(self, async_mode: Optional[bool] = True) -> PGVector:
-        password = fetch_secret_key_value(self.setting.password)
-        logger.info(
-            'PostgreSQL user credentials: %s:%s',
-            self.setting.username,
-            obfuscate(password),
-        )
-
+        engine = self.pool.async_engine if async_mode else self.pool.sync_engine
         return PGVector(
             embeddings=self.embedding_function,
             collection_name=self.index_name,
-            connection=f'postgresql+psycopg://{self.setting.username}:{password}@{self.setting.host}:{self.setting.port}/{self.setting.database}',
+            connection=engine,
             use_jsonb=True,
-            async_mode=async_mode
+            async_mode=async_mode,
         )
 
-    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
+    def get_vector_store_retriever(
+        self, search_kwargs: dict, async_mode: Optional[bool] = True
+    ) -> VectorStoreRetriever:
         return self.get_vector_store(async_mode).as_retriever(
             search_kwargs=search_kwargs
+        )
+
+    def get_text_store_retriever(
+        self, search_kwargs: dict, async_mode: bool = True
+    ) -> FullTextSearchRetriever:
+        engine = self.pool.async_engine if async_mode else self.pool.sync_engine
+        return PostgreSQLTextRetriever(
+            engine=engine,
+            table_name=self.index_name,
+            k=search_kwargs.get("k", 10),
         )
 
     async def check_vector_store_connection(self) -> bool:
@@ -72,5 +89,7 @@ class PGVectorFactory(LangChainVectorStoreFactory):
         VectorStore to check the connection independently.
         """
         await self.get_vector_store().asimilarity_search(
-            query=application_settings.vector_store_test_query, k=application_settings.vector_store_test_max_docs_retrieved)
+            query=application_settings.vector_store_test_query,
+            k=application_settings.vector_store_test_max_docs_retrieved,
+        )
         return True
