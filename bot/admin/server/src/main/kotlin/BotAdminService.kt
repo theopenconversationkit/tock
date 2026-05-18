@@ -39,6 +39,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
@@ -146,6 +147,7 @@ object BotAdminService {
     private val userReportDAO: UserReportDAO get() = injector.provide()
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val businessRulesConfigurationDAO: BotBusinessRulesConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
     private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
     private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
@@ -1621,6 +1623,11 @@ object BotAdminService {
             app.name,
         ).forEach { story ->
             storyDefinitionDAO.delete(story)
+        }
+
+        // delete the Business Rules configuration
+        businessRulesConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let { config ->
+            businessRulesConfigurationDAO.delete(config._id)
         }
 
         // delete the RAG configuration

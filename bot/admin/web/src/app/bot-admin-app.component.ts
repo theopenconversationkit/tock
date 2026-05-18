@@ -214,6 +214,11 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
+            link: '/rag/prompt-context',
+            title: 'Rag prompt context',
+            icon: 'journal-text'
+          },
+          {
             link: '/rag/exclusions',
             title: 'Sentences Rag exclusions',
             icon: 'lightbulb-off'
