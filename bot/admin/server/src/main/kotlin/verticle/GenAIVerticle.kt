@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.indicators.metric.MetricFilter
+import ai.tock.bot.admin.model.genai.BotBusinessRulesConfigurationDTO
 import ai.tock.bot.admin.model.genai.BotDocumentCompressorConfigurationDTO
 import ai.tock.bot.admin.model.genai.BotObservabilityConfigurationDTO
 import ai.tock.bot.admin.model.genai.BotRAGConfigurationDTO
@@ -25,6 +26,7 @@ import ai.tock.bot.admin.model.genai.BotSentenceGenerationInfoDTO
 import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
 import ai.tock.bot.admin.model.genai.PlaygroundRequest
 import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.bot.admin.service.BusinessRulesService
 import ai.tock.bot.admin.service.CompletionService
 import ai.tock.bot.admin.service.DocumentCompressorService
 import ai.tock.bot.admin.service.ObservabilityService
@@ -49,6 +51,7 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
         private const val PATH_CONFIG_VECTOR_STORE = "/gen-ai/bots/:botId/configuration/vector-store"
         private const val PATH_CONFIG_VECTOR_OBSERVABILITY = "/gen-ai/bots/:botId/configuration/observability"
         private const val PATH_CONFIG_DOCUMENT_COMPRESSOR = "/gen-ai/bots/:botId/configuration/document-compressor"
+        private const val PATH_CONFIG_BUSINESS_RULES = "/gen-ai/bots/:botId/configuration/business-rules"
 
         // Completion
         private const val PATH_COMPLETION_SENTENCE_GENERATION = "/gen-ai/bots/:botId/completion/sentence-generation"
@@ -87,6 +90,30 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'RAG' configuration..." }
                     RAGService.deleteConfig(app.namespace, app.name)
+                }
+            }
+
+            // ----------------------------------- Config - Business Rules --------------------------------
+            blockingJsonPost(
+                PATH_CONFIG_BUSINESS_RULES,
+                admin,
+            ) { context: RoutingContext, request: BotBusinessRulesConfigurationDTO ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                    logger.info { "Saving 'Business Rules' configuration..." }
+                    BotBusinessRulesConfigurationDTO(
+                        BusinessRulesService.saveBusinessRules(request),
+                    )
+                }
+            }
+
+            blockingJsonGet(
+                PATH_CONFIG_BUSINESS_RULES,
+                admin,
+            ) { context: RoutingContext ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    logger.info { "Retrieving 'Business Rules' configuration..." }
+                    BusinessRulesService.getBusinessRulesConfiguration(app.namespace, app.name)
+                        ?.let { BotBusinessRulesConfigurationDTO(it) }
                 }
             }
 
