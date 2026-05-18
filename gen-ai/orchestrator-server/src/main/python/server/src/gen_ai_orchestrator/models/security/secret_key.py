@@ -14,7 +14,7 @@
 #
 """Model for creating BaseSecretKey."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from gen_ai_orchestrator.models.security.secret_key_type import SecretKeyType
 
@@ -22,6 +22,8 @@ from gen_ai_orchestrator.models.security.secret_key_type import SecretKeyType
 class BaseSecretKey(BaseModel):
     """A base class for Secret Key."""
 
+    model_config = ConfigDict(frozen=True)
+
     type: SecretKeyType = Field(
-        description='The Secret Key type.', examples=[SecretKeyType.AWS_SECRETS_MANAGER]
+        description="The Secret Key type.", examples=[SecretKeyType.AWS_SECRETS_MANAGER]
     )

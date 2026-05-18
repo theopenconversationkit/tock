@@ -26,6 +26,7 @@ import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
 import ai.tock.genai.orchestratorcore.models.em.toDTO
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.toDTO
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchType
 import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -35,8 +36,8 @@ data class BotRAGConfigurationDTO(
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val questionCondensingLlmSetting: LLMSettingDTO? = null,
-    val questionCondensingPrompt: PromptTemplate? = null,
+    val questionCondensingLlmSetting: LLMSettingDTO,
+    val questionCondensingPrompt: PromptTemplate,
     val questionAnsweringLlmSetting: LLMSettingDTO,
     val questionAnsweringPrompt: PromptTemplate,
     val emSetting: EMSettingDTO,
@@ -46,18 +47,17 @@ data class BotRAGConfigurationDTO(
     val debugEnabled: Boolean,
     val maxDocumentsRetrieved: Int,
     val maxMessagesFromHistory: Int,
+    val documentSearchType: DocumentSearchType = DocumentSearchType.HYBRID_SEARCH,
 ) {
     constructor(configuration: BotRAGConfiguration) : this(
         id = configuration._id.toString(),
         namespace = configuration.namespace,
         botId = configuration.botId,
         enabled = configuration.enabled,
-        questionCondensingLlmSetting = configuration.questionCondensingLlmSetting?.toDTO(),
+        questionCondensingLlmSetting = configuration.questionCondensingLlmSetting.toDTO(),
         questionCondensingPrompt = configuration.questionCondensingPrompt,
-        questionAnsweringLlmSetting = configuration.getQuestionAnsweringLLMSetting().toDTO(),
-        questionAnsweringPrompt =
-            configuration.questionAnsweringPrompt
-                ?: configuration.initQuestionAnsweringPrompt(),
+        questionAnsweringLlmSetting = configuration.questionAnsweringLlmSetting.toDTO(),
+        questionAnsweringPrompt = configuration.questionAnsweringPrompt,
         emSetting = configuration.emSetting.toDTO(),
         indexSessionId = configuration.indexSessionId,
         indexName = configuration.generateIndexName(),
@@ -65,6 +65,7 @@ data class BotRAGConfigurationDTO(
         debugEnabled = configuration.debugEnabled,
         maxDocumentsRetrieved = configuration.maxDocumentsRetrieved,
         maxMessagesFromHistory = configuration.maxMessagesFromHistory,
+        documentSearchType = configuration.documentSearchType,
     )
 
     fun toBotRAGConfiguration(): BotRAGConfiguration =
@@ -78,7 +79,7 @@ data class BotRAGConfigurationDTO(
                     namespace = namespace,
                     botId = botId,
                     feature = Constants.GEN_AI_RAG_QUESTION_CONDENSING,
-                    dto = questionCondensingLlmSetting!!,
+                    dto = questionCondensingLlmSetting,
                 ),
             questionCondensingPrompt = questionCondensingPrompt,
             questionAnsweringLlmSetting =
@@ -101,6 +102,7 @@ data class BotRAGConfigurationDTO(
             debugEnabled = debugEnabled,
             maxDocumentsRetrieved = maxDocumentsRetrieved,
             maxMessagesFromHistory = maxMessagesFromHistory,
+            documentSearchType = documentSearchType,
         )
 }
 
@@ -109,10 +111,12 @@ private fun BotRAGConfiguration.generateIndexName(): String? {
         VectorStoreUtils.getVectorStoreElements(
             namespace,
             botId,
-            it,
-            maxDocumentsRetrieved,
-            VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
-                ?.setting,
+            indexSessionId = it,
+            kNeighborsDocuments = maxDocumentsRetrieved,
+            documentSearchType = documentSearchType,
+            vectorStoreSetting =
+                VectorStoreService.getVectorStoreConfiguration(namespace, botId, enabled = true)
+                    ?.setting,
         ).second
     }
 }

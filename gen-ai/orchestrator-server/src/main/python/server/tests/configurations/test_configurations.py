@@ -19,7 +19,7 @@ from unittest.mock import patch
 from gen_ai_orchestrator.configurations.environment.settings import _Settings
 from gen_ai_orchestrator.configurations.logging.logger import setup_logging
 from gen_ai_orchestrator.models.security.credentials import Credentials
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (
@@ -43,12 +43,12 @@ class TestSecretManagerService(unittest.TestCase):
         """Test logger is instantiated successfully."""
         setup_logging()
 
-    @patch('boto3.client')
+    @patch("boto3.client")
     @patch(
-        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials'
+        "gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials"
     )
     @patch(
-        'gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+        "gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings",
         _Settings(
             vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
             vector_store_host=None,
@@ -57,14 +57,14 @@ class TestSecretManagerService(unittest.TestCase):
             vector_store_pwd=None,
             vector_store_database=None,
             vector_store_secret_manager_provider=SecretManagerProvider.AWS,
-            vector_store_credentials_secret_name='my_secret_key',
+            vector_store_credentials_secret_name="my_secret_key",
         ),
     )
     def test_fetch_aws_secret_credentials(
         self, mock_get_credentials, mock_boto3_client
     ):
         # Test data
-        my_credentials = Credentials(username='user', password='pwd123456')
+        my_credentials = Credentials(username="user", password="pwd123456")
 
         # Configure the mocks to return specific values
         mock_boto3_client.return_value = None
@@ -74,17 +74,17 @@ class TestSecretManagerService(unittest.TestCase):
         credentials = fetch_default_vector_store_credentials()
 
         # Check test results
-        mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-        mock_get_credentials.assert_called_once_with('my_secret_key')
+        mock_boto3_client.assert_called_once_with(service_name="secretsmanager")
+        mock_get_credentials.assert_called_once_with("my_secret_key")
         self.assertEqual(credentials.username, my_credentials.username)
         self.assertEqual(credentials.password, my_credentials.password)
 
-    @patch('google.cloud.secretmanager.SecretManagerServiceClient')
+    @patch("google.cloud.secretmanager.SecretManagerServiceClient")
     @patch(
-        'gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client.GCPSecretManagerClient.get_credentials'
+        "gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client.GCPSecretManagerClient.get_credentials"
     )
     @patch(
-        'gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+        "gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings",
         _Settings(
             vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
             vector_store_host=None,
@@ -93,14 +93,14 @@ class TestSecretManagerService(unittest.TestCase):
             vector_store_pwd=None,
             vector_store_database=None,
             vector_store_secret_manager_provider=SecretManagerProvider.GCP,
-            vector_store_credentials_secret_name='my_secret_key',
+            vector_store_credentials_secret_name="my_secret_key",
         ),
     )
     def test_fetch_gcp_secret_credentials(
         self, mock_get_credentials, mock_gcp_secretmanager_client
     ):
         # Test data
-        my_credentials = Credentials(username='user', password='pwd123456')
+        my_credentials = Credentials(username="user", password="pwd123456")
 
         # Configure the mocks to return specific values
         mock_gcp_secretmanager_client.return_value = None
@@ -111,22 +111,22 @@ class TestSecretManagerService(unittest.TestCase):
 
         # Check test results
         mock_gcp_secretmanager_client.assert_called_once()
-        mock_get_credentials.assert_called_once_with('my_secret_key')
+        mock_get_credentials.assert_called_once_with("my_secret_key")
         self.assertEqual(credentials.username, my_credentials.username)
         self.assertEqual(credentials.password, my_credentials.password)
 
-    @patch('boto3.client')
+    @patch("boto3.client")
     @patch(
-        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials'
+        "gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials"
     )
     @patch(
-        'gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+        "gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings",
         _Settings(
             vector_store_provider=None,
             vector_store_host=None,
             vector_store_port=None,
-            vector_store_user='default_user',
-            vector_store_pwd='default_pwd',
+            vector_store_user="default_user",
+            vector_store_pwd="default_pwd",
             vector_store_database=None,
             vector_store_secret_manager_provider=None,
             vector_store_credentials_secret_name=None,
@@ -139,15 +139,15 @@ class TestSecretManagerService(unittest.TestCase):
         # Check test results
         self.assertFalse(mock_boto3_client.called)
         self.assertFalse(mock_get_credentials.called)
-        self.assertEqual(credentials.username, 'default_user')
-        self.assertEqual(credentials.password, 'default_pwd')
+        self.assertEqual(credentials.username, "default_user")
+        self.assertEqual(credentials.password, "default_pwd")
 
-    @patch('boto3.client')
+    @patch("boto3.client")
     @patch(
-        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials'
+        "gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials"
     )
     @patch(
-        'gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings',
+        "gen_ai_orchestrator.utils.secret_manager.secret_manager_service.application_settings",
         _Settings(
             vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
             vector_store_host=None,
@@ -156,7 +156,7 @@ class TestSecretManagerService(unittest.TestCase):
             vector_store_pwd=None,
             vector_store_database=None,
             vector_store_secret_manager_provider=SecretManagerProvider.AWS,
-            vector_store_credentials_secret_name='my_secret_key',
+            vector_store_credentials_secret_name="my_secret_key",
         ),
     )
     def test_fetch_bad_credentials(self, mock_get_credentials, mock_boto3_client):
@@ -171,10 +171,10 @@ class TestSecretManagerService(unittest.TestCase):
         credentials = fetch_default_vector_store_credentials()
 
         # Check test results
-        mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-        mock_get_credentials.assert_called_once_with('my_secret_key')
+        mock_boto3_client.assert_called_once_with(service_name="secretsmanager")
+        mock_get_credentials.assert_called_once_with("my_secret_key")
         self.assertIsNone(credentials)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -24,5 +24,4 @@ from gen_ai_orchestrator.models.observability.observability_provider import (
 class BaseObservabilitySetting(BaseModel):
     """A base class for Langfuse Observability Setting."""
 
-    provider: ObservabilityProvider = Field(description='The Observability Provider.')
-
+    provider: ObservabilityProvider = Field(description="The Observability Provider.")

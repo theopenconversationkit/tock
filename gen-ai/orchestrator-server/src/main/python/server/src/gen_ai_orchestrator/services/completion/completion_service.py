@@ -47,7 +47,8 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 
 logger = logging.getLogger(__name__)
 
-@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+
+@openai_exception_handler(provider="OpenAI or AzureOpenAIService")
 async def generate(
     request: CompletionRequest,
 ) -> PlaygroundResponse:
@@ -57,11 +58,11 @@ async def generate(
     :param request: A PlaygroundRequest object containing the llm setting.
     :return: A PlaygroundResponse object containing the answer and observability info.
     """
-    logger.info('Prompt completion (Playground) - Start of execution...')
+    logger.info("Prompt completion (Playground) - Start of execution...")
     start_time = time.time()
 
-    logger.info('Prompt completion (Playground) - template validation')
-    validate_prompt_template(request.prompt, 'Playground prompt')
+    logger.info("Prompt completion (Playground) - template validation")
+    validate_prompt_template(request.prompt, "Playground prompt")
 
     parser = StrOutputParser()
     prompt = LangChainPromptTemplate.from_template(
@@ -84,14 +85,14 @@ async def generate(
             user_id=None,
             tags=None,
         )
-        config = {'callbacks': [observability_handler]}
+        config = {"callbacks": [observability_handler]}
 
     parsedLlmAnswer = await chain.ainvoke(request.prompt.inputs, config=config)
 
     logger.info(
-        'Prompt completion (Playground) - End of execution. (Duration : %.2f seconds)',
+        "Prompt completion (Playground) - End of execution. (Duration : %.2f seconds)",
         time.time() - start_time,
-        )
+    )
 
     return PlaygroundResponse(
         answer=parsedLlmAnswer,
@@ -102,7 +103,7 @@ async def generate(
     )
 
 
-@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+@openai_exception_handler(provider="OpenAI or AzureOpenAIService")
 async def generate_sentences(
     request: CompletionRequest,
 ) -> SentenceGenerationResponse:
@@ -113,17 +114,17 @@ async def generate_sentences(
     :param request: A PlaygroundRequest object containing the llm setting.
     :return: A GenerateSentencesResponse object containing the list of sentences.
     """
-    logger.info('Prompt completion (Sentence Generation) - Start of execution...')
+    logger.info("Prompt completion (Sentence Generation) - Start of execution...")
     start_time = time.time()
 
-    logger.info('Prompt completion (Sentence Generation) - template validation')
-    validate_prompt_template(request.prompt, 'Sentence generation prompt')
+    logger.info("Prompt completion (Sentence Generation) - template validation")
+    validate_prompt_template(request.prompt, "Sentence generation prompt")
 
     parser = NumberedListOutputParser()
     prompt = LangChainPromptTemplate.from_template(
         template=request.prompt.template,
         template_format=request.prompt.formatter.value,
-        partial_variables={'format_instructions': parser.get_format_instructions()},
+        partial_variables={"format_instructions": parser.get_format_instructions()},
     )
     model = get_llm_factory(request.llm_setting).get_language_model()
 
@@ -132,17 +133,20 @@ async def generate_sentences(
     config = None
     # Create a RunnableConfig containing the observability callback handler
     if request.observability_setting is not None:
-        config = {'callbacks': [
-            create_observability_callback_handler(
-                observability_setting=request.observability_setting,
-                trace_name=ObservabilityTrace.SENTENCE_GENERATION.value
-            )]}
+        config = {
+            "callbacks": [
+                create_observability_callback_handler(
+                    observability_setting=request.observability_setting,
+                    trace_name=ObservabilityTrace.SENTENCE_GENERATION.value,
+                )
+            ]
+        }
 
     sentences = await chain.ainvoke(request.prompt.inputs, config=config)
 
     logger.info(
-        'Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)',
+        "Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)",
         time.time() - start_time,
-        )
+    )
 
     return SentenceGenerationResponse(sentences=sentences)

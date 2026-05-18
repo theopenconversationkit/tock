@@ -27,9 +27,10 @@ class FakeLLMSetting(BaseLLMSetting):
     A class for Fake Large Language Model Setting.
     Usage docs: https://js.langchain.com/docs/integrations/llms/fake
     """
+
     provider: Literal[LLMProvider.FAKE_LLM] = Field(
-        description='The Large Language Model provider.'
+        description="The Large Language Model provider."
     )
     responses: List[str] = Field(
-        description='The responses given when the Fake LLM is called'
+        description="The responses given when the Fake LLM is called"
     )

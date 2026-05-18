@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating OllamaEMFactory"""
+
 from typing import List
 
 from langchain.embeddings.base import Embeddings
@@ -40,6 +41,6 @@ class OllamaEMFactory(LangChainEMFactory):
             model=self.setting.model,
         )
 
-    @ollama_exception_handler(provider='Ollama')
+    @ollama_exception_handler(provider="Ollama")
     async def embed_query(self, text: str) -> List[float]:
         return await super().embed_query(text)

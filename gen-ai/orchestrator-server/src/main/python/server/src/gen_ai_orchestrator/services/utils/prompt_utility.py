@@ -25,6 +25,7 @@ from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 
 logger = logging.getLogger(__name__)
 
+
 def validate_prompt_template(prompt: PromptTemplate, name: str):
     """
     Prompt template validation
@@ -41,8 +42,9 @@ def validate_prompt_template(prompt: PromptTemplate, name: str):
     if PromptFormatter.JINJA2 == prompt.formatter:
         try:
             Template(prompt.template).render(prompt.inputs)
+            logger.info(f"The prompt template validation was successful! ({name})")
         except TemplateError as exc:
-            logger.error(f'Validation of the prompt Template has failed! ({name})')
+            logger.error(f"The prompt template validation failed! ({name})")
             logger.error(exc)
             raise GenAIPromptTemplateException(
                 ErrorInfo(
@@ -50,3 +52,5 @@ def validate_prompt_template(prompt: PromptTemplate, name: str):
                     cause=str(exc),
                 )
             )
+    else:
+        logger.warning(f"The prompt template validation was ignored! ({name})")

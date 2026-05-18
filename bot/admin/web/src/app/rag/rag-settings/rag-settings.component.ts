@@ -49,6 +49,7 @@ interface RagSettingsForm {
 
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
+  documentSearchType: FormControl<string>;
 
   maxDocumentsRetrieved: FormControl<number>;
 
@@ -200,6 +201,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
+    documentSearchType: new FormControl(undefined),
 
     maxDocumentsRetrieved: new FormControl(undefined),
 
@@ -251,6 +253,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   get indexName(): FormControl {
     return this.form.get('indexName') as FormControl;
+  }
+
+  get documentSearchType(): FormControl {
+    return this.form.get('documentSearchType') as FormControl;
   }
 
   get canSave(): boolean {

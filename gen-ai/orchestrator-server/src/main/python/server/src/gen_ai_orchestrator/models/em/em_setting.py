@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating BaseEMSetting."""
+
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -28,10 +29,10 @@ class BaseEMSetting(BaseModel):
     """A base class for Embedding Model Setting."""
 
     provider: EMProvider = Field(
-        description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
+        description="The Embedding Model Provider.", examples=[EMProvider.OPEN_AI]
     )
     api_key: Optional[SecretKey] = Field(
-        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
+        description="The secret that stores the API key used to authenticate requests to the AI Provider API.",
+        examples=[RawSecretKey(secret="ab7-************-A1IV4B")],
         default=None,
     )

@@ -46,38 +46,38 @@ class BloomzGuardrailOutputParser(BaseCumulativeTransformOutputParser[dict]):
     @classmethod
     def get_lc_namespace(cls) -> List[str]:
         """Get the namespace of the langchain object."""
-        return ['langchain', 'schema', 'output_parser']
+        return ["langchain", "schema", "output_parser"]
 
     @property
     def _type(self) -> str:
         """Return the output parser type for serialization."""
-        return 'default'
+        return "default"
 
     def _diff(self, prev: Optional[dict], next: dict) -> dict:
         output = next.copy()
         if prev:
-            output['content'] = next['content'][len(prev['content']) :]
+            output["content"] = next["content"][len(prev["content"]) :]
         return output
 
     def parse(self, text: str) -> dict:
         response = requests.post(
-            urljoin(self.endpoint, '/guardrail'), json={'text': [text]}
+            urljoin(self.endpoint, "/guardrail"), json={"text": [text]}
         )
         if response.status_code != 200:
             raise HTTPError(
                 f"Error {response.status_code}. Bloomz guardrail didn't respond as expected."
             )
 
-        results = response.json()['response'][0]
+        results = response.json()["response"][0]
 
         detected_toxicities = list(
-            filter(lambda mode: mode['score'] > self.max_score, results)
+            filter(lambda mode: mode["score"] > self.max_score, results)
         )
 
         return GuardrailOutput(
             content=text,
             output_toxicity=bool(detected_toxicities),
             output_toxicity_reason=list(
-                map(lambda mode: mode['label'], detected_toxicities)
+                map(lambda mode: mode["label"], detected_toxicities)
             ),
         ).model_dump()

@@ -13,12 +13,13 @@
 #   limitations under the License.
 #
 """Model for creating OllamaLLMFactory"""
+
 from typing import Optional
 
-from langchain_community.chat_models import ChatOllama
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
+from langchain_ollama import ChatOllama
 
 from gen_ai_orchestrator.errors.handlers.ollama.ollama_exception_handler import (
     ollama_exception_handler,
@@ -43,7 +44,7 @@ class OllamaLLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
         )
 
-    @ollama_exception_handler(provider='Ollama')
+    @ollama_exception_handler(provider="Ollama")
     async def invoke(
         self, _input: Input, config: Optional[RunnableConfig] = None
     ) -> Output:

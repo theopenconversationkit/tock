@@ -33,17 +33,17 @@ class OpenAILLMSetting(BaseLLMSetting):
     """
 
     provider: Literal[LLMProvider.OPEN_AI] = Field(
-        description='The Large Language Model Provider.', examples=[LLMProvider.OPEN_AI]
+        description="The Large Language Model Provider.", examples=[LLMProvider.OPEN_AI]
     )
     api_key: SecretKey = Field(
-        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
+        description="The secret that stores the API key used to authenticate requests to the AI Provider API.",
+        examples=[RawSecretKey(secret="ab7-************-A1IV4B")],
     )
     model: str = Field(
-        description='The model id', examples=['gpt-3.5-turbo'], min_length=1
+        description="The model id", examples=["gpt-3.5-turbo"], min_length=1
     )
     base_url: str = Field(
-        description='The OpenAI endpoint base URL',
-        examples=['https://api.openai.com/v1'],
-        default='https://api.openai.com/v1'
+        description="The OpenAI endpoint base URL",
+        examples=["https://api.openai.com/v1"],
+        default="https://api.openai.com/v1",
     )

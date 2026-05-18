@@ -20,10 +20,10 @@ from gen_ai_orchestrator.routers.requests.requests import QARequest
 from gen_ai_orchestrator.routers.responses.responses import QAResponse
 from gen_ai_orchestrator.services.qa.qa_service import qa
 
-qa_router = APIRouter(prefix='/qa', tags=['Question Answering'])
+qa_router = APIRouter(prefix="/qa", tags=["Question Answering"])
 
 
-@qa_router.post('')
+@qa_router.post("")
 async def ask_qa(request: QARequest) -> QAResponse:
     """
     ## Ask a QA System

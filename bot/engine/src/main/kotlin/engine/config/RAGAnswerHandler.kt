@@ -178,17 +178,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             val (documentSearchParams, indexName) =
                 VectorStoreUtils.getVectorStoreElements(
-                    ragConfiguration.namespace,
-                    ragConfiguration.botId,
+                    namespace = ragConfiguration.namespace,
+                    botId = ragConfiguration.botId,
                     // The indexSessionId is mandatory to enable RAG Story
-                    ragConfiguration.indexSessionId!!,
-                    ragConfiguration.maxDocumentsRetrieved,
-                    vectorStoreSetting,
+                    indexSessionId = ragConfiguration.indexSessionId!!,
+                    kNeighborsDocuments = ragConfiguration.maxDocumentsRetrieved,
+                    documentSearchType = ragConfiguration.documentSearchType,
+                    vectorStoreSetting = vectorStoreSetting,
                 )
-
-            val questionAnsweringPrompt =
-                ragConfiguration.questionAnsweringPrompt
-                    ?: ragConfiguration.initQuestionAnsweringPrompt()
 
             var debug: Any? = null
             try {
@@ -208,9 +205,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                     ),
                                 questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
                                 questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
-                                questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
+                                questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
                                 questionAnsweringPrompt =
-                                    questionAnsweringPrompt.copy(
+                                    ragConfiguration.questionAnsweringPrompt.copy(
                                         inputs =
                                             mapOf(
                                                 "question" to action.toString(),

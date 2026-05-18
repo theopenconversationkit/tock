@@ -22,7 +22,7 @@ class OpenSearchTermParams(BaseModel):
     https://opensearch.org/docs/latest/query-dsl/compound/bool/"""
 
     term: dict = Field(
-        description='A key-value object',
-        examples=[{'metadata.id': 'abc-123'}],
+        description="A key-value object",
+        examples=[{"metadata.id": "abc-123"}],
         default={},
     )

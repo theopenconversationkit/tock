@@ -387,7 +387,26 @@
               </tock-form-control>
             </div>
 
-            <div class="col-6 px-3">
+            <div class="col-12 col-lg-6 px-3">
+              <tock-form-control
+                label="Search type"
+                name="documentSearchType"
+                [controls]="documentSearchType"
+                [required]="false"
+                [boldLabel]="false"
+                information="Search method used to retrieve documents. Available types depend on the selected vector database. Only PGVector supports all types."
+              >
+                <tock-autocomplete-input
+                  fieldSize="small"
+                  placeholder=""
+                  [formControl]="documentSearchType"
+                  [options]="['SIMILARITY_SEARCH', 'FULL_TEXT_SEARCH', 'HYBRID_SEARCH']"
+                ></tock-autocomplete-input>
+
+              </tock-form-control>
+            </div>
+
+            <div class="col-12 col-lg-6 px-3">
               <tock-form-control
                 label="Max documents retrieved"
                 name="maxDocumentsRetrieved"
@@ -408,6 +427,7 @@
                 />
               </tock-form-control>
             </div>
+
           </div>
         </nb-card-body>
       </nb-card>
