@@ -15,6 +15,7 @@
   -->
 
 <h1>New sentence</h1>
+<p>Test how the NLP model interprets a sentence. Intents detected and entities extracted will appear below</p>
 
 <nb-card>
   <nb-card-body>
@@ -23,7 +24,7 @@
         nbInput
         fieldSize="large"
         fullWidth
-        placeholder="Write some text"
+        placeholder="e.g. Cancel my subscription"
         #newSentenceInput
         (keyup.enter)="onTry(newSentenceInput.value)"
       />
@@ -33,7 +34,7 @@
         (click)="onTry(newSentenceInput.value)"
         [disabled]="!newSentenceInput.value"
       >
-        GO
+        Analyze ↵
       </button>
     </div>
 
@@ -57,6 +58,13 @@
         </nb-accordion-item-body>
       </nb-accordion-item>
     </nb-accordion>
+  </nb-card-body>
+</nb-card>
+
+<nb-card *ngIf="!sentence" class="mt-2">
+  <nb-card-body class="d-flex flex-column align-items-center justify-content-center text-center py-5 ">
+    <nb-icon icon="clock" pack="bootstrap-icons" style="font-size: 2rem; color: #c5cee0;" class="mb-2"></nb-icon>
+    <p style="color: #8f9bb3;">Results will appear here once you analyze a sentence.</p>
   </nb-card-body>
 </nb-card>
 
