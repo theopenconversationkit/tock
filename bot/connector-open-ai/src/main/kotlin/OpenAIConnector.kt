@@ -77,7 +77,7 @@ class OpenAIConnector internal constructor(
     }
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path) { router ->
+        controller.coRegisterServices(path) { router ->
             logger.debug("deploy Open API connector services for root path $path ")
 
             val corsHandler =
@@ -122,7 +122,7 @@ class OpenAIConnector internal constructor(
                     .end(writeJson(defaultModel))
             }
 
-            router.post("$path/chat/completions").handler { context ->
+            router.post("$path/chat/completions").coHandler { context ->
                 val body = context.body()?.asString()
                 if (body == null) {
                     logger.warn { "null body for chat completion" }
@@ -134,7 +134,7 @@ class OpenAIConnector internal constructor(
         }
     }
 
-    private fun handleRequest(
+    private suspend fun handleRequest(
         controller: ConnectorController,
         context: RoutingContext,
         body: String,
@@ -168,7 +168,7 @@ class OpenAIConnector internal constructor(
         }
     }
 
-    private fun handleEvent(
+    private suspend fun handleEvent(
         applicationId: String,
         locale: Locale,
         event: Event,
@@ -184,7 +184,7 @@ class OpenAIConnector internal constructor(
                 eventId = event.id.toString(),
                 streamedResponse = (event as? Action)?.metadata?.streamedResponse == true,
             )
-        controller.handle(
+        controller.handleUserEvent(
             event,
             ConnectorData(
                 callback = callback,
@@ -193,7 +193,7 @@ class OpenAIConnector internal constructor(
         )
     }
 
-    override fun notify(
+    override suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,

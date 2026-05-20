@@ -57,6 +57,10 @@
             <groupId>org.litote.kmongo</groupId>
             <artifactId>kmongo-async</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-kotlin-coroutines</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ai.tock</groupId>

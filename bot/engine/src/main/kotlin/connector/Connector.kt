@@ -121,7 +121,7 @@ interface Connector {
      * @param notificationType notification type if any
      * @param errorListener called when a message has not been delivered
      */
-    fun notify(
+    suspend fun notify(
         controller: ConnectorController,
         recipientId: PlayerId,
         intent: IntentAware,

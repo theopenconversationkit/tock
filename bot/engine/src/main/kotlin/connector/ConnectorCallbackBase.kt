@@ -18,6 +18,7 @@ package ai.tock.bot.connector
 
 import ai.tock.bot.engine.BotRepository.requestTimer
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.SkippedEventException
 import ai.tock.bot.engine.monitoring.RequestTimer
 import ai.tock.bot.engine.monitoring.RequestTimerData
 import mu.KotlinLogging
@@ -28,6 +29,7 @@ import mu.KotlinLogging
 open class ConnectorCallbackBase(
     override val applicationId: String,
     val connectorType: ConnectorType,
+    protected open val errorListener: ((Throwable) -> Unit)? = null,
 ) : ConnectorCallback {
     private val requestTimerData = requestTimer.start("${connectorType.id}_response")
     private var lockTimerData: RequestTimerData? = null
@@ -49,6 +51,7 @@ open class ConnectorCallbackBase(
         logger.warn { "event skipped: $event" }
         requestTimer.error("event skipped: $event", requestTimerData)
         requestTimer.end(requestTimerData)
+        errorListener?.invoke(SkippedEventException("event skipped: $event"))
     }
 
     override fun eventAnswered(event: Event) {
@@ -60,8 +63,9 @@ open class ConnectorCallbackBase(
         event: Event,
         throwable: Throwable,
     ) {
-        logger.error("error thown for $event", throwable)
+        logger.error("error thrown for $event", throwable)
         requestTimer.throwable(throwable, requestTimerData)
         requestTimer.end(requestTimerData)
+        errorListener?.invoke(throwable)
     }
 }

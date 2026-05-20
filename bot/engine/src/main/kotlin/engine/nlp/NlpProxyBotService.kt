@@ -27,6 +27,7 @@ import io.vertx.core.http.HttpMethod.POST
 import io.vertx.core.http.RequestOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import mu.KLogger
 import mu.KotlinLogging
 import java.net.URL
@@ -60,7 +61,7 @@ internal object NlpProxyBotService {
         tockNlpServiceSsl = (System.getenv("tock_nlp_service_SSL") ?: tockNlpServiceUrl.protocol) == "https"
     }
 
-    fun configure(vertx: Vertx): (Router) -> Unit {
+    fun configure(vertx: Vertx): CoroutineRouterSupport.(Router) -> Unit {
         return { router ->
             router.post("$tockNlpProxyOnBotPath*").handler { context ->
                 httpProxyToNlp(context, vertx, POST)

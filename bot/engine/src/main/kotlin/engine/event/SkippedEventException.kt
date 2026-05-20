@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.messenger
-
-import ai.tock.bot.connector.ConnectorCallbackBase
-import ai.tock.bot.engine.action.ActionNotificationType
+package ai.tock.bot.engine.event
 
 /**
- * The messenger [ConnectorCallback].
+ * Thrown when an [Event]'s processing is skipped by the engine
  */
-internal class MessengerConnectorCallback(
-    applicationId: String,
-    val notificationType: ActionNotificationType? = null,
-    errorListener: (Throwable) -> Unit = {},
-) : ConnectorCallbackBase(applicationId, messengerConnectorType, errorListener) {
-    public override val errorListener: ((Throwable) -> Unit)?
-        get() = super.errorListener
-}
+class SkippedEventException(message: String) : RuntimeException(message)

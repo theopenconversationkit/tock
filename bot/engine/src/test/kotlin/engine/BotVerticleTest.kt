@@ -18,6 +18,7 @@ package ai.tock.bot.engine
 
 import ai.tock.shared.mockedVertx
 import io.mockk.mockk
+import io.vertx.core.internal.ContextInternal
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 
@@ -28,6 +29,7 @@ internal class BotVerticleTest : BotEngineTest() {
     @Test
     fun `unregisterRouter activates secondary router if one exists`() {
         val verticle = BotVerticle(false, false)
+        verticle.init(mockedVertx, mockk<ContextInternal>())
 
         var service1Installed = false
         var service2Installed = false
@@ -55,6 +57,8 @@ internal class BotVerticleTest : BotEngineTest() {
     @Test
     fun `GIVEN default BOT configuration WHEN configure BOT Verticle THEN nlp api is not exposed`() {
         val verticle = BotVerticle(false, false)
+        verticle.init(mockedVertx, mockk<ContextInternal>())
+
         // NLP Api not exposed
         verticle.configure()
 

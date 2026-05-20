@@ -33,6 +33,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.Router
+import io.vertx.kotlin.coroutines.CoroutineRouterSupport
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -55,8 +56,19 @@ fun registerAndInstallBot(
     additionalModules: List<Kodein.Module> = emptyList(),
     vararg routerHandlers: (Router) -> Unit,
 ) {
+    registerAndInstallBot(botDefinition, additionalModules, routerHandlers.map { handler -> { handler(it) } })
+}
+
+/**
+ * Register and install a new bot.
+ */
+fun registerAndInstallBot(
+    botDefinition: BotDefinition,
+    additionalModules: List<Kodein.Module> = emptyList(),
+    routerHandlers: List<CoroutineRouterSupport.(Router) -> Unit>,
+) {
     registerBot(botDefinition)
-    installBots(routerHandlers.toList(), additionalModules)
+    installBots(routerHandlers, additionalModules)
 }
 
 /**
@@ -67,19 +79,30 @@ fun registerAndInstallBot(
     additionalModules: List<Kodein.Module> = emptyList(),
     vararg routerHandlers: (Router) -> Unit,
 ) {
+    registerAndInstallBot(botProvider, additionalModules, routerHandlers.map { handler -> { handler(it) } })
+}
+
+/**
+ * Register and install a new bot.
+ */
+fun registerAndInstallBot(
+    botProvider: BotProvider,
+    additionalModules: List<Kodein.Module> = emptyList(),
+    routerHandlers: List<CoroutineRouterSupport.(Router) -> Unit>,
+) {
     registerBot(botProvider)
-    installBots(routerHandlers.toList(), additionalModules)
+    installBots(routerHandlers, additionalModules)
 }
 
 /**
  * Install the bot(s) with the specified additional router handlers and additional Tock Modules
  */
 private fun installBots(
-    routerHandlers: List<(Router) -> Unit>,
+    routerHandlers: List<CoroutineRouterSupport.(Router) -> Unit>,
     additionalModules: List<Kodein.Module> = emptyList(),
 ) {
     BotIoc.setup(additionalModules)
-    BotRepository.installBots(routerHandlers.toList())
+    BotRepository.installBots(routerHandlers)
 }
 
 /**
