@@ -22,7 +22,12 @@ data class BotBusinessRulesConfiguration(
     val _id: Id<BotBusinessRulesConfiguration>,
     val namespace: String,
     val botId: String,
-    val businessLexicon: String = "",
     val coveredTopics: List<String> = emptyList(),
     val excludedTopics: List<String> = emptyList(),
+    val lexiconGroups: List<BotBusinessRulesLexiconGroup> = emptyList(),
+)
+
+data class BotBusinessRulesLexiconGroup(
+    val id: Int,
+    val terms: List<String> = emptyList(),
 )

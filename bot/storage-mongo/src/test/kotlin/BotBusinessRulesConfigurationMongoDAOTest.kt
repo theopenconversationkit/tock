@@ -17,6 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesLexiconGroup
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
@@ -36,9 +37,15 @@ internal class BotBusinessRulesConfigurationMongoDAOTest : AbstractTest() {
                 newId(),
                 "namespace1",
                 "botId1",
-                businessLexicon = "Term: definition",
                 coveredTopics = listOf("payments", "subscriptions"),
                 excludedTopics = listOf("legal advice"),
+                lexiconGroups =
+                    listOf(
+                        BotBusinessRulesLexiconGroup(
+                            id = 1,
+                            terms = listOf("Checking account", "Current account"),
+                        ),
+                    ),
             )
 
         BotBusinessRulesConfigurationMongoDAO.save(config)
@@ -54,15 +61,31 @@ internal class BotBusinessRulesConfigurationMongoDAOTest : AbstractTest() {
                 newId(),
                 "namespace1",
                 "botId1",
-                businessLexicon = "Term: definition",
                 coveredTopics = listOf("payments"),
                 excludedTopics = listOf("legal advice"),
+                lexiconGroups =
+                    listOf(
+                        BotBusinessRulesLexiconGroup(
+                            id = 1,
+                            terms = listOf("Checking account", "Current account"),
+                        ),
+                    ),
             )
 
         val updatedConfig =
             config.copy(
-                businessLexicon = "Updated term: updated definition",
                 coveredTopics = listOf("payments", "subscriptions"),
+                lexiconGroups =
+                    listOf(
+                        BotBusinessRulesLexiconGroup(
+                            id = 1,
+                            terms = listOf("Checking account", "Current account", "Deposit account"),
+                        ),
+                        BotBusinessRulesLexiconGroup(
+                            id = 2,
+                            terms = listOf("LDDS", "Sustainable development savings account"),
+                        ),
+                    ),
             )
 
         BotBusinessRulesConfigurationMongoDAO.save(config)
@@ -80,9 +103,15 @@ internal class BotBusinessRulesConfigurationMongoDAOTest : AbstractTest() {
                 newId(),
                 "namespace1",
                 "botId1",
-                businessLexicon = "Term: definition",
                 coveredTopics = listOf("payments"),
                 excludedTopics = listOf("legal advice"),
+                lexiconGroups =
+                    listOf(
+                        BotBusinessRulesLexiconGroup(
+                            id = 1,
+                            terms = listOf("Checking account", "Current account"),
+                        ),
+                    ),
             )
 
         BotBusinessRulesConfigurationMongoDAO.save(config)

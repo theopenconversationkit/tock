@@ -17,34 +17,51 @@
 package ai.tock.bot.admin.model.genai
 
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesLexiconGroup
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
 data class BotBusinessRulesConfigurationDTO(
     val id: String? = null,
-    val namespace: String,
-    val botId: String,
-    val businessLexicon: String = "",
     val coveredTopics: List<String> = emptyList(),
     val excludedTopics: List<String> = emptyList(),
+    val lexiconGroups: List<BotBusinessRulesLexiconGroupDTO> = emptyList(),
 ) {
     constructor(configuration: BotBusinessRulesConfiguration) : this(
         id = configuration._id.toString(),
-        namespace = configuration.namespace,
-        botId = configuration.botId,
-        businessLexicon = configuration.businessLexicon,
         coveredTopics = configuration.coveredTopics,
         excludedTopics = configuration.excludedTopics,
+        lexiconGroups = configuration.lexiconGroups.map { BotBusinessRulesLexiconGroupDTO(it) },
     )
 
-    fun toBotBusinessRulesConfiguration(existingId: Id<BotBusinessRulesConfiguration>? = null): BotBusinessRulesConfiguration =
+    fun toBotBusinessRulesConfiguration(
+        namespace: String,
+        botId: String,
+        existingId: Id<BotBusinessRulesConfiguration>? = null,
+    ): BotBusinessRulesConfiguration =
         BotBusinessRulesConfiguration(
             _id = existingId ?: id?.toId() ?: newId(),
             namespace = namespace,
             botId = botId,
-            businessLexicon = businessLexicon,
             coveredTopics = coveredTopics,
             excludedTopics = excludedTopics,
+            lexiconGroups = lexiconGroups.map { it.toBotBusinessRulesLexiconGroup() },
+        )
+}
+
+data class BotBusinessRulesLexiconGroupDTO(
+    val id: Int? = null,
+    val terms: List<String> = emptyList(),
+) {
+    constructor(group: BotBusinessRulesLexiconGroup) : this(
+        id = group.id,
+        terms = group.terms,
+    )
+
+    fun toBotBusinessRulesLexiconGroup(): BotBusinessRulesLexiconGroup =
+        BotBusinessRulesLexiconGroup(
+            id = requireNotNull(id) { "Lexicon group id must be assigned before conversion" },
+            terms = terms,
         )
 }

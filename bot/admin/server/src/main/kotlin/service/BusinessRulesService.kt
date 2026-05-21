@@ -19,6 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesLexiconGroup
 import ai.tock.bot.admin.model.genai.BotBusinessRulesConfigurationDTO
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
@@ -49,26 +50,44 @@ object BusinessRulesService {
 
     /**
      * Save Business Rules configuration.
-     * @param businessRulesConfig : the business rules configuration to create or update
+     * @param namespace the namespace
+     * @param botId the bot ID
+     * @param businessRulesConfig the business rules configuration to create or update
      * @return [BotBusinessRulesConfiguration]
      */
-    fun saveBusinessRules(businessRulesConfig: BotBusinessRulesConfigurationDTO): BotBusinessRulesConfiguration {
-        BotAdminService.getBotConfigurationsByNamespaceAndBotId(businessRulesConfig.namespace, businessRulesConfig.botId).firstOrNull()
-            ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${businessRulesConfig.namespace}, botId = ${businessRulesConfig.botId}]")
+    fun saveBusinessRules(
+        namespace: String,
+        botId: String,
+        businessRulesConfig: BotBusinessRulesConfigurationDTO,
+    ): BotBusinessRulesConfiguration {
+        BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, botId).firstOrNull()
+            ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: $namespace, botId = $botId]")
 
         logger.info {
-            "Saving the Business Rules Configuration [namespace: ${businessRulesConfig.namespace}, botId: ${businessRulesConfig.botId}]"
+            "Saving the Business Rules Configuration [namespace: $namespace, botId: $botId]"
         }
-        return saveBusinessRulesConfiguration(businessRulesConfig)
+        return saveBusinessRulesConfiguration(namespace, botId, businessRulesConfig)
     }
 
-    private fun saveBusinessRulesConfiguration(businessRulesConfiguration: BotBusinessRulesConfigurationDTO): BotBusinessRulesConfiguration {
+    private fun saveBusinessRulesConfiguration(
+        namespace: String,
+        botId: String,
+        businessRulesConfiguration: BotBusinessRulesConfigurationDTO,
+    ): BotBusinessRulesConfiguration {
         val existingConfiguration =
             businessRulesConfigurationDAO.findByNamespaceAndBotId(
-                businessRulesConfiguration.namespace,
-                businessRulesConfiguration.botId,
+                namespace,
+                botId,
             )
-        val businessRulesConfig = businessRulesConfiguration.toBotBusinessRulesConfiguration(existingConfiguration?._id)
+        val businessRulesConfigurationWithLexiconGroupIds =
+            businessRulesConfiguration.withAssignedLexiconGroupIds(existingConfiguration?.lexiconGroups.orEmpty())
+
+        val businessRulesConfig =
+            businessRulesConfigurationWithLexiconGroupIds.toBotBusinessRulesConfiguration(
+                namespace = namespace,
+                botId = botId,
+                existingId = existingConfiguration?._id,
+            )
 
         return try {
             businessRulesConfigurationDAO.save(businessRulesConfig)
@@ -77,5 +96,31 @@ object BusinessRulesService {
         } catch (e: Exception) {
             throw BadRequestException(e.message ?: "Business Rules Configuration: registration failed ")
         }
+    }
+
+    private fun BotBusinessRulesConfigurationDTO.withAssignedLexiconGroupIds(existingLexiconGroups: List<BotBusinessRulesLexiconGroup>): BotBusinessRulesConfigurationDTO {
+        val providedIds = lexiconGroups.mapNotNull { it.id }
+        val duplicatedIds =
+            providedIds.groupingBy { it }
+                .eachCount()
+                .filterValues { it > 1 }
+                .keys
+
+        if (duplicatedIds.isNotEmpty()) {
+            throw BadRequestException("Duplicate lexicon group id(s): ${duplicatedIds.joinToString()}")
+        }
+
+        if (providedIds.any { it <= 0 }) {
+            throw BadRequestException("Lexicon group ids must be positive")
+        }
+
+        var nextId = (existingLexiconGroups.map { it.id } + providedIds).maxOrNull()?.plus(1) ?: 1
+
+        return copy(
+            lexiconGroups =
+                lexiconGroups.map { group ->
+                    group.copy(id = group.id ?: nextId++)
+                },
+        )
     }
 }

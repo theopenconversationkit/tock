@@ -98,10 +98,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 PATH_CONFIG_BUSINESS_RULES,
                 admin,
             ) { context: RoutingContext, request: BotBusinessRulesConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'Business Rules' configuration..." }
                     BotBusinessRulesConfigurationDTO(
-                        BusinessRulesService.saveBusinessRules(request),
+                        BusinessRulesService.saveBusinessRules(app.namespace, app.name, request),
                     )
                 }
             }
