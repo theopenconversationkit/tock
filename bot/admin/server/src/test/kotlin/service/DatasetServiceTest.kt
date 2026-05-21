@@ -500,7 +500,7 @@ class DatasetServiceTest : AbstractTest() {
                         name = " Evaluation from run ",
                         description = " description ",
                         dialogInfo = null,
-                        datasetRunInfo = DatasetRunInfo(runIds = listOf(run._id.toString())),
+                        datasetRunInfo = DatasetRunInfo(runId = run._id.toString()),
                     ),
                 createdBy = USER,
             )
@@ -552,7 +552,7 @@ class DatasetServiceTest : AbstractTest() {
                         name = "Evaluation",
                         description = null,
                         dialogInfo = null,
-                        datasetRunInfo = DatasetRunInfo(runIds = listOf(run._id.toString())),
+                        datasetRunInfo = DatasetRunInfo(runId = run._id.toString()),
                     ),
                 createdBy = USER,
             )
@@ -578,7 +578,7 @@ class DatasetServiceTest : AbstractTest() {
                         name = "Evaluation",
                         description = null,
                         dialogInfo = null,
-                        datasetRunInfo = DatasetRunInfo(runIds = listOf(run._id.toString())),
+                        datasetRunInfo = DatasetRunInfo(runId = run._id.toString()),
                     ),
                 createdBy = USER,
             )
@@ -617,7 +617,7 @@ class DatasetServiceTest : AbstractTest() {
                         name = "Evaluation",
                         description = null,
                         dialogInfo = null,
-                        datasetRunInfo = DatasetRunInfo(runIds = listOf(run._id.toString())),
+                        datasetRunInfo = DatasetRunInfo(runId = run._id.toString()),
                     ),
                 createdBy = USER,
             )

@@ -42,8 +42,8 @@ data class CreateEvaluationSampleRequest(
                 listOf("Either dialogInfo or datasetRunInfo is required")
             dialogInfo != null && datasetRunInfo != null ->
                 listOf("Only one of dialogInfo or datasetRunInfo can be set")
-            datasetRunInfo != null && datasetRunInfo.runIds.isEmpty() ->
-                listOf("At least one dataset run is required")
+            datasetRunInfo != null && datasetRunInfo.runId.isBlank() ->
+                listOf("A dataset run is required")
             else -> emptyList()
         }
 }
@@ -56,7 +56,7 @@ data class DialogInfo(
 )
 
 data class DatasetRunInfo(
-    val runIds: List<String>,
+    val runId: String,
 )
 
 /**

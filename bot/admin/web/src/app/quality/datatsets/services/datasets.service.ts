@@ -163,7 +163,7 @@ export class DatasetsService {
       description: payload.description,
       dialogInfo: null,
       datasetRunInfo: {
-        runIds: [runId]
+        runId: runId
       }
     };
 
