@@ -32,8 +32,8 @@ import ai.tock.bot.admin.evaluation.Evaluator
 import ai.tock.bot.admin.model.evaluation.ActionRefWithEvaluation
 import ai.tock.bot.admin.model.evaluation.CreateEvaluationSampleRequest
 import ai.tock.bot.admin.model.evaluation.DatasetRunInfo
-import ai.tock.bot.admin.model.evaluation.DialogInfo
 import ai.tock.bot.admin.model.evaluation.DialogEntry
+import ai.tock.bot.admin.model.evaluation.DialogInfo
 import ai.tock.bot.admin.model.evaluation.EvaluationDialogsResponse
 import ai.tock.bot.admin.model.evaluation.EvaluationSampleDTO
 import ai.tock.shared.exception.rest.BadRequestException

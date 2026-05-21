@@ -65,6 +65,7 @@ object DatasetService {
         val run: DatasetRun,
         val actionRefs: List<ActionRef>,
     )
+
     private val ragAnswerStatuses = RAGAnswerStatus.entries.map { it.name }
     private val datasetDAO: DatasetDAO get() = injector.provide()
     private val datasetRunDAO: DatasetRunDAO get() = injector.provide()
@@ -377,9 +378,9 @@ object DatasetService {
             DatasetRunQuestionResultState.COMPLETED -> resolveCompletedRunAction(run, questionResult, cachedDialog)
             else ->
                 ResolvedRunAction(
-                    DatasetRunActionState.FAILED,
-                    null,
-                    questionResult.error ?: "Dataset question execution failed before producing an answer.",
+                    state = DatasetRunActionState.FAILED,
+                    action = null,
+                    error = questionResult.error ?: "Dataset question execution failed before producing an answer.",
                 )
         }
 
@@ -400,9 +401,9 @@ object DatasetService {
             }
 
             return ResolvedRunAction(
-                DatasetRunActionState.FAILED,
-                null,
-                unresolvedActionMessage(questionResult, dialog.id.toString()),
+                state = DatasetRunActionState.FAILED,
+                action = null,
+                error = unresolvedActionMessage(questionResult, dialog.id.toString()),
             )
         }
 
@@ -417,9 +418,9 @@ object DatasetService {
             ResolvedRunAction(DatasetRunActionState.COMPLETED, searchedAction, searchedDialog.id)
         } else {
             ResolvedRunAction(
-                DatasetRunActionState.FAILED,
-                null,
-                unresolvedActionMessage(questionResult, searchedDialog.id.toString()),
+                state = DatasetRunActionState.FAILED,
+                action = null,
+                error = unresolvedActionMessage(questionResult, searchedDialog.id.toString()),
             )
         }
     }
@@ -543,6 +544,7 @@ object DatasetService {
                 value.entries
                     .filter { it.key != "apiKey" }
                     .associate { (key, nestedValue) -> key.toString() to sanitizeSnapshot(nestedValue) }
+
             is Iterable<*> -> value.map { sanitizeSnapshot(it) }
             else -> value
         }
