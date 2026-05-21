@@ -82,8 +82,10 @@ object EvaluationService {
         when {
             request.dialogInfo != null && request.datasetRunInfo == null ->
                 createEvaluationSampleFromDialogs(namespace, botId, request, request.dialogInfo, createdBy)
+
             request.datasetRunInfo != null && request.dialogInfo == null ->
                 createEvaluationSampleFromRuns(namespace, botId, request, request.datasetRunInfo, createdBy)
+
             else -> throw BadRequestException("Exactly one of dialogInfo or datasetRunInfo is required")
         }
 
@@ -154,36 +156,29 @@ object EvaluationService {
         datasetRunInfo: DatasetRunInfo,
         createdBy: String,
     ): EvaluationSampleDTO {
-        if (datasetRunInfo.runIds.isEmpty()) {
-            throw BadRequestException("At least one dataset run is required")
+        if (datasetRunInfo.runId.isBlank()) {
+            throw BadRequestException("A dataset run is required")
         }
 
-        val runData =
-            datasetRunInfo.runIds.map { runId ->
-                DatasetService.getRunEvaluationData(namespace, botId, runId)
-            }
-        val actionRefs = runData.flatMap { it.actionRefs }.distinctBy { it.dialogId to it.actionId }
+        val runData = DatasetService.getRunEvaluationData(namespace, botId, datasetRunInfo.runId)
+        val actionRefs = runData.actionRefs.distinctBy { it.dialogId to it.actionId }
 
         if (actionRefs.isEmpty()) {
             throw UnprocessableEntityException(
                 errorCode = 4221,
-                message = "No valid dialog in run ${datasetRunInfo.runIds.joinToString()}",
+                message = "No valid dialog in run ${datasetRunInfo.runId}",
             )
         }
 
         val selectedDialogsCount = actionRefs.map { it.dialogId }.distinct().size
-        val dialogActivityTo =
-            runData.map { data ->
-                data.run.endTime ?: throw BadRequestException("Run ${data.run._id} has no endTime")
-            }.maxOrNull()
-                ?: throw BadRequestException("At least one dataset run is required")
+        val dialogActivityTo = runData.run.endTime ?: throw BadRequestException("Run ${runData.run._id} has no endTime")
 
         return saveEvaluationSample(
             namespace = namespace,
             botId = botId,
             name = request.name?.trim(),
             description = request.description?.trim()?.takeIf(String::isNotEmpty),
-            dialogActivityFrom = runData.minOf { it.run.startTime },
+            dialogActivityFrom = runData.run.startTime,
             dialogActivityTo = dialogActivityTo,
             requestedDialogCount = selectedDialogsCount,
             dialogsCount = selectedDialogsCount,
@@ -191,7 +186,7 @@ object EvaluationService {
             allowTestDialogs = true,
             actionRefs = actionRefs,
             createdBy = createdBy,
-            createdFromRun = runData.singleOrNull()?.run?._id,
+            createdFromRun = runData.run._id,
         )
     }
 
