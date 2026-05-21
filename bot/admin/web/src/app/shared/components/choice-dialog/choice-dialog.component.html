@@ -50,7 +50,7 @@
       size="small"
       [ghost]="actionDef.ghost"
       [status]="actionDef.buttonStatus"
-      (click)="dialogRef.close(actionDef.actionName.toLowerCase())"
+      (click)="handleCloseAction(actionDef)"
     >
       {{ actionDef.actionName }}
     </button>

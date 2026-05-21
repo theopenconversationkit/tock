@@ -1,0 +1,448 @@
+<tock-sticky-menu [offset]="50">
+  <div class="d-flex flex-wrap align-items-center">
+    <h1 class="flex-grow-1 mb-0">Rag prompt context</h1>
+
+    <section class="grid-actions">
+      <button
+        [disabled]="!hasExportableData"
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Export prompt context settings dump"
+        (click)="exportSettings()"
+      >
+        <nb-icon icon="download"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Import prompt context settings dump"
+        (click)="importSettings()"
+      >
+        <nb-icon icon="upload"></nb-icon>
+      </button>
+
+      <ng-container *ngIf="isDirty">
+        <button
+          nbButton
+          ghost
+          status="basic"
+          nbTooltip="Discard changes and revert to last saved state"
+          [disabled]="isSaving"
+          (click)="cancel()"
+        >
+          <nb-icon icon="x-circle"></nb-icon>
+          CANCEL
+        </button>
+
+        <button
+          nbButton
+          status="primary"
+          [nbTooltip]="isValid ? 'Save settings' : 'Some lexicon groups have fewer than 2 terms'"
+          [nbSpinner]="isSaving"
+          [disabled]="isSaving || !isValid"
+          (click)="save()"
+        >
+          <nb-icon icon="floppy"></nb-icon>
+          SAVE CHANGES
+        </button>
+      </ng-container>
+    </section>
+  </div>
+
+  <small class="sticky-menu-scrolled-hidden"
+    >These elements are injected dynamically into the RAG chain prompt. Changes take effect on new queries after saving.</small
+  >
+</tock-sticky-menu>
+
+<div class="mt-3">
+  <!-- TOPICS COVERED -->
+  <nb-card
+    class="pcs-section shadow-sm mb-3"
+    [nbSpinner]="loading || isSaving"
+  >
+    <nb-card-header
+      class="d-flex gap-1 align-items-center pointer"
+      (click)="toggleSection('covered')"
+    >
+      <div class="text-success">
+        <nb-icon icon="check-circle"></nb-icon>
+      </div>
+
+      <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
+        <span class="font-weight-bold">Topics covered</span>
+        <span class="font-size-small">Topics used to categorize conversations </span>
+      </div>
+      <nb-badge
+        [text]="coveredTopics.length.toString()"
+        status="success"
+        position="top right"
+        class="position-relative"
+      ></nb-badge>
+      <nb-icon
+        [icon]="sections.covered ? 'chevron-up-outline' : 'chevron-down-outline'"
+        pack="nebular-essentials"
+      ></nb-icon>
+    </nb-card-header>
+
+    <nb-card-body *ngIf="sections.covered">
+      <p class="font-size-small text-muted">
+        See RAG Topics classification in the <a routerLink="/business-metrics/board">Custom Metrics</a> view. <br />
+        Note that questions not covered by these topics will still be processed, unless they match an excluded topic below or are
+        specifically handled at the prompt level.
+      </p>
+      <div>
+        <nb-tag-list
+          (tagRemove)="removeTag('covered', $event)"
+          class="mb-3"
+          *ngIf="coveredTopics.length"
+        >
+          <nb-tag
+            *ngFor="let topic of coveredTopics"
+            [text]="topic"
+            status="success"
+            [removable]="isTopicRemovable(topic)"
+          ></nb-tag>
+        </nb-tag-list>
+
+        <div
+          class="d-flex gap-1"
+          *ngIf="coveredTopics.length < 50"
+        >
+          <input
+            nbInput
+            type="text"
+            maxlength="50"
+            placeholder="Add a covered topic…"
+            #coveredInput
+            fullWidth
+            (keyup.enter)="addTag('covered', coveredInput)"
+          />
+          <button
+            nbButton
+            outline
+            status="primary"
+            nbTooltip="Add the topic"
+            [disabled]="!coveredInput.value"
+            (click)="addTag('covered', coveredInput)"
+          >
+            <nb-icon icon="plus"></nb-icon> Add
+          </button>
+        </div>
+
+        <div
+          *ngIf="_coveredWarning"
+          class="text-warning"
+        >
+          {{ _coveredWarning }}
+        </div>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
+  <!-- TOPICS EXCLUDED -->
+  <nb-card
+    class="pcs-section shadow-sm mb-3"
+    [nbSpinner]="loading || isSaving"
+  >
+    <nb-card-header
+      class="d-flex gap-1 align-items-center pointer"
+      (click)="toggleSection('excluded')"
+    >
+      <div class="text-danger">
+        <nb-icon icon="x-circle"></nb-icon>
+      </div>
+
+      <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
+        <span class="font-weight-bold">Excluded topics</span>
+        <span class="font-size-small">Subjects outside the bot's scope of competence</span>
+      </div>
+
+      <nb-badge
+        [text]="excludedTopics.length.toString()"
+        status="danger"
+        position="top right"
+        class="position-relative"
+      ></nb-badge>
+      <nb-icon
+        [icon]="sections.excluded ? 'chevron-up-outline' : 'chevron-down-outline'"
+        pack="nebular-essentials"
+      ></nb-icon>
+    </nb-card-header>
+
+    <nb-card-body *ngIf="sections.excluded">
+      <p class="font-size-small text-muted">
+        Topics listed here are explicitly mentioned in the prompt as out of scope. The bot will decline questions on these subjects.
+      </p>
+      <div>
+        <nb-tag-list
+          (tagRemove)="removeTag('excluded', $event)"
+          class="mb-3"
+          *ngIf="excludedTopics.length"
+        >
+          <nb-tag
+            *ngFor="let topic of excludedTopics"
+            [text]="topic"
+            status="danger"
+            removable
+          ></nb-tag>
+        </nb-tag-list>
+
+        <div class="d-flex gap-1">
+          <input
+            nbInput
+            type="text"
+            placeholder="Add an excluded topic…"
+            #excludedInput
+            fullWidth
+            (keyup.enter)="addTag('excluded', excludedInput)"
+          />
+          <button
+            nbButton
+            outline
+            status="primary"
+            nbTooltip="Add the excluded topic"
+            [disabled]="!excludedInput.value"
+            (click)="addTag('excluded', excludedInput)"
+          >
+            <nb-icon icon="plus"></nb-icon> Add
+          </button>
+        </div>
+
+        <div
+          *ngIf="_excludedWarning"
+          class="text-warning"
+        >
+          {{ _excludedWarning }}
+        </div>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
+  <!-- BUSINESS LEXICON -->
+  <nb-card
+    class="pcs-section shadow-sm mb-3"
+    [nbSpinner]="loading || isSaving"
+  >
+    <nb-card-header
+      class="d-flex gap-1 align-items-center pointer"
+      (click)="toggleSection('lexicon')"
+    >
+      <div class="text-primary">
+        <nb-icon icon="book"></nb-icon>
+      </div>
+
+      <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
+        <span class="font-weight-bold">Business lexicon</span>
+        <span class="font-size-small">Synonym groups and acronym expansions to standardize user queries before search</span>
+      </div>
+
+      <nb-badge
+        [text]="lexiconGroups.length.toString()"
+        status="primary"
+        position="top right"
+        class="position-relative"
+      ></nb-badge>
+      <nb-icon
+        [icon]="sections.lexicon ? 'chevron-up-outline' : 'chevron-down-outline'"
+        pack="nebular-essentials"
+      ></nb-icon>
+    </nb-card-header>
+
+    <nb-card-body *ngIf="sections.lexicon">
+      <p class="font-size-small text-muted">
+        When a user asks a question, the bot expands it behind the scenes using these groups — replacing or enriching terms with their
+        synonyms and acronym equivalents before searching. This helps surface relevant documents even when the user's wording doesn't
+        exactly match what's written in the knowledge base.
+      </p>
+
+      <div
+        class="d-flex gap-1 align-items-center mb-3"
+        *ngIf="lexiconGroups.length"
+      >
+        <nb-form-field class="flex-grow-1">
+          <nb-icon
+            nbPrefix
+            icon="search"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            fieldSize="small"
+            placeholder="Search term…"
+            [(ngModel)]="lexiconSearch"
+          />
+        </nb-form-field>
+        <span class="font-size-small text-nowrap text-muted">
+          {{ filteredLexiconGroups.length }}
+          <ng-container *ngIf="lexiconSearch">/ {{ lexiconGroups.length }}</ng-container>
+          group{{ lexiconGroups.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+      <tock-no-data-found
+        *ngIf="lexiconSearch && !filteredLexiconGroups.length"
+        title="No matching groups"
+        message="Try a different search term."
+      ></tock-no-data-found>
+
+      <div class="pcs-lex-list">
+        <nb-card
+          *ngFor="let group of filteredLexiconGroups; trackBy: trackById"
+          class="mb-2"
+        >
+          <nb-card-header class="d-flex gap-05 align-items-center p-2">
+            <nb-icon
+              icon="hash"
+              class="font-size-small text-muted"
+            ></nb-icon>
+            <span
+              *ngIf="getLexLabel(group) as label"
+              class="flex-grow-1 font-size-small text-muted"
+              [nbTooltip]="label"
+              >{{ label }}</span
+            >
+            <span
+              *ngIf="!getLexLabel(group)"
+              class="flex-grow-1 font-size-small text-muted font-italic"
+              >Add terms to name this group…</span
+            >
+            <button
+              nbButton
+              ghost
+              shape="round"
+              status="danger"
+              size="tiny"
+              nbTooltip="Delete this group"
+              (click)="deleteLexGroup(group.id)"
+            >
+              <nb-icon icon="trash"></nb-icon>
+            </button>
+          </nb-card-header>
+
+          <nb-card-body class="p-2">
+            <nb-tag-list
+              (tagRemove)="removeTerm(group.id, $event)"
+              *ngIf="group.terms?.length"
+            >
+              <nb-tag
+                *ngFor="let term of group.terms"
+                [text]="term"
+                status="primary"
+                appearance="outline"
+                removable
+              ></nb-tag>
+            </nb-tag-list>
+
+            <div
+              *ngIf="group.terms.length < 2"
+              class="d-flex gap-05 align-items-center font-size-small text-danger mt-1"
+            >
+              <nb-icon icon="exclamation-triangle"></nb-icon>
+              A synonym group must contain at least 2 terms.
+            </div>
+
+            <div class="d-flex align-items-center gap-1 mt-3">
+              <input
+                nbInput
+                type="text"
+                fieldSize="small"
+                placeholder="Add an acronym or synonym…"
+                #addTermInput
+                fullWidth
+                (keyup.enter)="addTerm(group.id, addTermInput)"
+              />
+              <button
+                nbButton
+                outline
+                status="primary"
+                size="small"
+                nbTooltip="Add the term"
+                [disabled]="!addTermInput.value"
+                (click)="addTerm(group.id, addTermInput)"
+              >
+                <nb-icon icon="plus"></nb-icon> Add
+              </button>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+
+      <button
+        nbButton
+        ghost
+        fullWidth
+        status="primary"
+        (click)="addLexGroup()"
+      >
+        <nb-icon
+          icon="plus"
+          class="mr-2"
+        ></nb-icon>
+        New synonym group
+      </button>
+    </nb-card-body>
+  </nb-card>
+</div>
+
+<ng-template #importModal>
+  <nb-card>
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Import prompt context settings dump
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeImportModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <form
+        [formGroup]="importForm"
+        (submit)="submitImportSettings()"
+      >
+        <tock-form-control
+          label="Rag prompt context settings dump file"
+          name="importFile"
+          [required]="true"
+          [controls]="fileSource"
+          [showError]="isImportSubmitted"
+        >
+          <tock-file-upload
+            id="importFile"
+            formControlName="fileSource"
+            [autofocus]="true"
+            [fullWidth]="true"
+            [multiple]="false"
+            [fileTypeAccepted]="['json']"
+          ></tock-file-upload>
+        </tock-form-control>
+      </form>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeImportModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submitImportSettings()"
+      >
+        Import
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

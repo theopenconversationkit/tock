@@ -21,6 +21,8 @@ import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
 import { RagSettingsComponent } from './rag-settings/rag-settings.component';
 import { RagTabsComponent } from './rag-tabs.component';
+import { PromptContextSettingsComponent } from './prompt-context/prompt-context-settings.component';
+import { PromptContextSettingsGuard } from './prompt-context/prompt-context-settings.guard';
 
 const routes: Routes = [
   {
@@ -38,6 +40,11 @@ const routes: Routes = [
       {
         path: 'settings',
         component: RagSettingsComponent
+      },
+      {
+        path: 'prompt-context',
+        component: PromptContextSettingsComponent,
+        canDeactivate: [PromptContextSettingsGuard]
       }
     ]
   }

@@ -21,6 +21,7 @@ import {
   NbAccordionModule,
   NbAlertModule,
   NbAutocompleteModule,
+  NbBadgeModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
@@ -31,6 +32,7 @@ import {
   NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule,
+  NbTagModule,
   NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
@@ -39,6 +41,7 @@ import { BotSharedModule } from '../shared/bot-shared.module';
 import { RagRoutingModule } from './rag-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
+import { PromptContextSettingsComponent } from './prompt-context/prompt-context-settings.component';
 
 @NgModule({
   imports: [
@@ -61,9 +64,11 @@ import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
     NbCheckboxModule,
     NbAlertModule,
     NbAutocompleteModule,
-    NbFormFieldModule
+    NbFormFieldModule,
+    NbBadgeModule,
+    NbTagModule
   ],
-  declarations: [RagTabsComponent, RagSettingsComponent, RagExcludedComponent],
+  declarations: [RagTabsComponent, RagSettingsComponent, RagExcludedComponent, PromptContextSettingsComponent],
   providers: []
 })
 export class RagModule {}
