@@ -10,6 +10,7 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { CanComponentDeactivate } from './prompt-context-settings.guard';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { DirtyStateGuard, DirtyStateService } from '../../core/dirty-state.service';
 
 interface LexiconGroup {
   id: number;
@@ -27,7 +28,7 @@ interface PromptContext {
   templateUrl: './prompt-context-settings.component.html',
   styleUrls: ['./prompt-context-settings.component.scss']
 })
-export class PromptContextSettingsComponent implements OnInit, CanComponentDeactivate, OnDestroy {
+export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
   loading: boolean = false;
   isSaving = false;
@@ -56,13 +57,14 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
     private state: StateService,
     private rest: RestService,
     private toastrService: NbToastrService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private dirtyState: DirtyStateService
   ) {}
 
   ngOnInit(): void {
-    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
-      this.loadSettings();
-    });
+    this.dirtyState.register(this);
+
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe(() => this.loadSettings());
   }
 
   loadSettings() {
@@ -370,6 +372,7 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
   }
 
   ngOnDestroy(): void {
+    this.dirtyState.unregister();
     this.destroy$.next(true);
     this.destroy$.complete();
   }
