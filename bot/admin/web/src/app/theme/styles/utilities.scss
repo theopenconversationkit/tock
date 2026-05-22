@@ -436,6 +436,88 @@ nb-menu {
   }
 }
 
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  font-size: 0.85rem;
+
+  border: 1px solid;
+  line-height: 1;
+
+  &.tag-small {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    border-radius: 3px;
+  }
+
+  &.tag-rounded {
+    border-radius: 9999px;
+  }
+
+  &.tag-basic {
+    background-color: var(--tag-filled-basic-background-color);
+    border-color: var(--tag-filled-basic-border-color);
+    color: var(--tag-filled-basic-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-basic-hover-background-color);
+      border-color: var(--tag-filled-basic-hover-border-color);
+    }
+  }
+
+  &.tag-primary {
+    background-color: var(--tag-filled-primary-background-color);
+    border-color: var(--tag-filled-primary-border-color) #3366ff;
+    color: var(--tag-filled-primary-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-primary-hover-background-color);
+      border-color: var(--tag-filled-primary-hover-border-color);
+    }
+  }
+
+  &.tag-success {
+    background-color: var(--tag-filled-success-background-color);
+    border-color: var(--tag-filled-success-border-color);
+    color: var(--tag-filled-success-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-success-hover-background-color);
+      border-color: var(--tag-filled-success-hover-border-color);
+    }
+  }
+
+  &.tag-info {
+    background-color: var(--tag-filled-info-background-color);
+    border-color: var(--tag-filled-info-border-color);
+    color: var(--tag-filled-info-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-info-hover-background-color);
+      border-color: var(--tag-filled-info-hover-border-color);
+    }
+  }
+
+  &.tag-warning {
+    background-color: var(--tag-filled-warning-background-color);
+    border-color: var(--tag-filled-warning-border-color);
+    color: var(--tag-filled-warning-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-warning-hover-background-color);
+      border-color: var(--tag-filled-warning-hover-border-color);
+    }
+  }
+
+  &.tag-danger {
+    background-color: var(--tag-filled-danger-background-color);
+    border-color: var(--tag-filled-danger-border-color);
+    color: var(--tag-filled-danger-text-color);
+    &.tag-hover:hover {
+      background-color: var(--tag-filled-danger-hover-background-color);
+      border-color: var(--tag-filled-danger-hover-border-color);
+    }
+  }
+}
+
 .scrollbar-narrow::-webkit-scrollbar {
   width: 0.5rem;
   height: 0.5rem;

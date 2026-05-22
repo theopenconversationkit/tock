@@ -71,7 +71,7 @@
       </div>
 
       <div class="d-flex flex-column flex-grow-1 font-size-medium text-muted">
-        <span class="font-weight-bold">Topics covered</span>
+        <span class="font-weight-bold">Covered Topics</span>
         <span class="font-size-small">Topics used to categorize conversations </span>
       </div>
       <nb-badge
@@ -101,24 +101,27 @@
           <nb-tag
             *ngFor="let topic of coveredTopics"
             [text]="topic"
-            status="success"
+            [status]="isTopicRemovable(topic) ? 'success' : 'primary'"
             [removable]="isTopicRemovable(topic)"
+            nbTooltip="This topic is mandatory"
+            [nbTooltipDisabled]="isTopicRemovable(topic)"
           ></nb-tag>
         </nb-tag-list>
 
         <div
           class="d-flex gap-1"
-          *ngIf="coveredTopics.length < 50"
+          *ngIf="coveredTopics.length < maxCoverTopics"
         >
           <input
             nbInput
             type="text"
-            maxlength="50"
+            [maxLength]="coveredTopicMaxLength"
             placeholder="Add a covered topic…"
             #coveredInput
             fullWidth
             (keyup.enter)="addTag('covered', coveredInput)"
           />
+
           <button
             nbButton
             outline
@@ -139,6 +142,51 @@
         </div>
       </div>
     </nb-card-body>
+
+    <nb-card-footer
+      class="background-basic-color-2"
+      *ngIf="sections.covered && suggestedTopics.length"
+    >
+      <div
+        class="d-flex align-items-center gap-1 pointer pb-1"
+        (click)="showSuggestedTopics = !showSuggestedTopics"
+      >
+        <div class="flex-grow-1">
+          <div class="font-weight-bold text-muted">
+            There {{ suggestedTopics.length === 1 ? 'is' : 'are' }} {{ suggestedTopics.length }} suggested topic{{
+              suggestedTopics.length !== 1 ? 's' : ''
+            }}
+          </div>
+        </div>
+        <nb-icon
+          [icon]="showSuggestedTopics ? 'chevron-up-outline' : 'chevron-down-outline'"
+          pack="nebular-essentials"
+        ></nb-icon>
+      </div>
+
+      <p
+        *ngIf="showSuggestedTopics"
+        class="font-size-small text-muted lineHeight-1 m-0"
+      >
+        The following topic{{ suggestedTopics.length !== 1 ? 's' : '' }} {{ suggestedTopics.length === 1 ? 'was' : 'were' }} suggested by
+        the RAG chain when it couldn't categorize a conversation based on the covered topics list at the moment of execution. Review and add
+        {{ suggestedTopics.length === 1 ? 'it' : 'them' }} to your Covered Topics if relevant to improve future categorization.
+      </p>
+
+      <div
+        *ngIf="showSuggestedTopics"
+        class="d-flex gap-05 row-gap-1 flex-wrap align-items-center mt-2"
+      >
+        <div
+          class="tag tag-small tag-rounded tag-warning tag-hover pointer"
+          *ngFor="let topic of suggestedTopics"
+          nbTooltip="Click to add this suggested topic to the list of covered topics"
+          (click)="addSuggestedTag(topic); $event.stopPropagation()"
+        >
+          {{ topic }}
+        </div>
+      </div>
+    </nb-card-footer>
   </nb-card>
 
   <!-- TOPICS EXCLUDED -->

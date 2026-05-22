@@ -1,16 +1,17 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { RagAnswerStatusLabels, getExportFileName, readFileAsText } from '../../shared/utils';
+import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { RagAnswerStatusLabels, getExportFileName, normalizeString, readFileAsText } from '../../shared/utils';
 import { StateService } from '../../core-nlp/state.service';
 import { NbDialogRef, NbDialogService, NbToastrService } from '@nebular/theme';
 import { saveAs } from 'file-saver-es';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FileValidators } from '../../shared/validators';
-import { Observable, Subject, from, of, takeUntil } from 'rxjs';
+import { Observable, Subject, filter, from, takeUntil } from 'rxjs';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { CanComponentDeactivate } from './prompt-context-settings.guard';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { DirtyStateGuard, DirtyStateService } from '../../core/dirty-state.service';
+import { IndicatorDefinition } from '../../metrics/models';
+import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';
 
 interface LexiconGroup {
   id: number;
@@ -28,7 +29,7 @@ interface PromptContext {
   templateUrl: './prompt-context-settings.component.html',
   styleUrls: ['./prompt-context-settings.component.scss']
 })
-export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, OnDestroy {
+export class PromptContextSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
   loading: boolean = false;
   isSaving = false;
@@ -45,11 +46,19 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
   lexiconSearch = '';
 
   private _lexIdSeq = 10;
+
+  showSuggestedTopics: boolean = false;
+  private _indicators: IndicatorDefinition[] | null = null;
+
   private _snapshot: PromptContext | null = null;
 
   _coveredWarning: string | undefined;
   _excludedWarning: string | undefined;
 
+  maxCoverTopics = 50;
+  coveredTopicMaxLength = 50;
+
+  @ViewChild('coveredInput') coveredInput: ElementRef;
   @ViewChild('importModal') importModal: TemplateRef<any>;
 
   constructor(
@@ -64,7 +73,14 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
   ngOnInit(): void {
     this.dirtyState.register(this);
 
-    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe(() => this.loadSettings());
+    this.botConfiguration.configurations
+      .pipe(
+        filter((configs) => configs.length > 0),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadSettings();
+      });
   }
 
   loadSettings() {
@@ -82,12 +98,39 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
         this._takeSnapshot();
       }
       this.loading = false;
+
+      this.loadIndicators();
     });
   }
 
   private settingsLoader(): Observable<PromptContext> {
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/configuration/business-rules`;
     return this.rest.get<PromptContext>(url, (settings: PromptContext) => settings);
+  }
+
+  loadIndicators() {
+    this.showSuggestedTopics = false;
+    this._indicators = [];
+    this.indicatorsLoader().subscribe((res) => {
+      this._indicators = res;
+    });
+  }
+
+  private indicatorsLoader(): Observable<IndicatorDefinition[]> {
+    const url = `/bot/${this.state.currentApplication.name}/indicators`;
+    return this.rest.get(url, (indicators) => indicators);
+  }
+
+  get suggestedTopics(): string[] {
+    const ragSuggestedTopicsIndicatorName = 'rag_suggested_topics';
+    const indicatorValues = this._indicators?.find((item) => item.name === ragSuggestedTopicsIndicatorName)?.values ?? [];
+
+    return indicatorValues
+      .filter((item) => {
+        const normalizedLabel = normalizeString(item.label).toLowerCase();
+        return !this.coveredTopics.some((topic) => normalizeString(topic).toLowerCase() === normalizedLabel);
+      })
+      .map((e) => e.label);
   }
 
   // ─── Validation ──────────────────────────────────────────────────────────────
@@ -151,9 +194,9 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
 
     const list = key === 'covered' ? this.coveredTopics : this.excludedTopics;
     const otherList = key === 'covered' ? this.excludedTopics : this.coveredTopics;
-    const normalizedValue = value.toLowerCase().replace(/\s+/g, '');
+    const normalizedValue = normalizeString(value).toLowerCase();
 
-    const isInList = (lst: string[]) => lst.some((item) => item.toLowerCase().replace(/\s+/g, '') === normalizedValue);
+    const isInList = (lst: string[]) => lst.some((item) => normalizeString(item).toLowerCase() === normalizedValue);
 
     if (!isInList(list) && !isInList(otherList)) {
       list.push(value);
@@ -183,6 +226,10 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
     const list = key === 'covered' ? this.coveredTopics : this.excludedTopics;
     const idx = list.indexOf(tag.text);
     if (idx !== -1) list.splice(idx, 1);
+  }
+
+  addSuggestedTag(topic: string) {
+    this.coveredInput.nativeElement.value = topic.substring(0, this.coveredTopicMaxLength);
   }
 
   // ─── Lexicon groups ───────────────────────────────────────────────────────────
@@ -357,6 +404,7 @@ export class PromptContextSettingsComponent implements OnInit, DirtyStateGuard, 
     if (!this.isDirty) return true;
 
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
+      closeOnBackdropClick: false,
       context: {
         title: 'Unsaved changes',
         subtitle: 'You have unsaved changes. What would you like to do?',
