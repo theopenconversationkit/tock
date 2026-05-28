@@ -185,6 +185,55 @@ class DatasetRunProcessorTest {
     }
 
     @Test
+    fun `processNextQueuedRun marks missing question results as failed instead of skipping them`() {
+        val dataset = newDataset()
+        val run = newRun(dataset)
+        val firstQuestion = dataset.questions.first()
+        val secondQuestion = dataset.questions.last()
+        val firstResult = newQuestionResult(run, dataset, firstQuestion.id)
+        val savedQuestionResults = mutableListOf<DatasetRunQuestionResult>()
+        val savedRuns = mutableListOf<DatasetRun>()
+
+        every { datasetRunDAO.claimNextQueuedRun() } returns run
+        every { datasetDAO.getDatasetById(any()) } returns dataset
+        every { datasetRunDAO.getQuestionResultsByRunId(any()) } returns listOf(firstResult)
+        every { datasetRunDAO.getRunById(any()) } returns run.copy(state = DatasetRunState.RUNNING)
+        every { datasetRunDAO.saveQuestionResult(any()) } answers {
+            firstArg<DatasetRunQuestionResult>().also { savedQuestionResults.add(it) }
+        }
+        every { datasetRunDAO.saveRun(any()) } answers {
+            firstArg<DatasetRun>().also { savedRuns.add(it) }
+        }
+
+        val processor =
+            DatasetRunProcessor(
+                datasetDAO = datasetDAO,
+                datasetRunDAO = datasetRunDAO,
+                questionExecutor =
+                    DatasetQuestionExecutor { _, questionResult, _ ->
+                        BotDialogResponse(emptyList(), userActionId = "user-action-${questionResult.questionId}")
+                    },
+                clock = fixedClock,
+            )
+
+        val processed = processor.processNextQueuedRun()
+
+        assertTrue(processed)
+        assertEquals(DatasetRunState.COMPLETED, savedRuns.last().state)
+
+        val failedMissingResult = savedQuestionResults.first { it.questionId == secondQuestion.id }
+        assertEquals(DatasetRunQuestionResultState.FAILED, failedMissingResult.state)
+        assertEquals(
+            "Dataset question result was missing before execution; the question was not sent to the bot.",
+            failedMissingResult.error,
+        )
+
+        val completedResult = savedQuestionResults.last { it.questionId == firstQuestion.id }
+        assertEquals(DatasetRunQuestionResultState.COMPLETED, completedResult.state)
+        assertEquals("user-action-${firstQuestion.id}", completedResult.userActionId)
+    }
+
+    @Test
     fun `processNextQueuedRun stops immediately when the claimed run is already cancelled`() {
         val dataset = newDataset(questionCount = 1)
         val run = newRun(dataset)
