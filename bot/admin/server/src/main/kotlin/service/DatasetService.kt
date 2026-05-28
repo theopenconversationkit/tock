@@ -138,19 +138,17 @@ object DatasetService {
         val now = Instant.now()
         val languageTag = request.language.trim()
 
-        val savedRun =
-            datasetRunDAO.saveRun(
-                DatasetRun(
-                    namespace = namespace,
-                    botId = botId,
-                    datasetId = dataset._id,
-                    state = DatasetRunState.QUEUED,
-                    startTime = now,
-                    startedBy = userLogin,
-                    language = Locale.forLanguageTag(languageTag),
-                    botApplicationConfigurationId = testConfiguration._id,
-                    settingsSnapshot = buildSettingsSnapshot(namespace, botId),
-                ),
+        val run =
+            DatasetRun(
+                namespace = namespace,
+                botId = botId,
+                datasetId = dataset._id,
+                state = DatasetRunState.QUEUED,
+                startTime = now,
+                startedBy = userLogin,
+                language = Locale.forLanguageTag(languageTag),
+                botApplicationConfigurationId = testConfiguration._id,
+                settingsSnapshot = buildSettingsSnapshot(namespace, botId),
             )
 
         datasetRunDAO.saveQuestionResults(
@@ -159,13 +157,14 @@ object DatasetService {
                     namespace = namespace,
                     botId = botId,
                     datasetId = dataset._id,
-                    runId = savedRun._id,
+                    runId = run._id,
                     questionId = question.id,
-                    userIdModifier = "dataset_${savedRun._id}_${question.id}",
+                    userIdModifier = "dataset_${run._id}_${question.id}",
                 )
             },
         )
 
+        val savedRun = datasetRunDAO.saveRun(run)
         val questionResults = datasetRunDAO.getQuestionResultsByRunId(savedRun._id)
         return savedRun.toDTO(
             includeSettingsSnapshot = false,
