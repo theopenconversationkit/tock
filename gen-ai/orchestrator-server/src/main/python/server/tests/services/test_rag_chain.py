@@ -41,7 +41,140 @@ from gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rer
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     check_guardrail_output,
     execute_rag_chain,
+    format_rag_context_documents,
+    get_chunk_identifier,
+    get_web_source_url,
 )
+
+
+def _rag_request() -> RAGRequest:
+    return RAGRequest(
+        **{
+            'dialog': {'history': [], 'tags': []},
+            'question_answering_llm_setting': {
+                'provider': 'OpenAI',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'temperature': 1.2,
+                'model': 'gpt-3.5-turbo',
+            },
+            'question_answering_prompt': {
+                'formatter': 'f-string',
+                'template': 'Context: {context}\nQuestion: {question}',
+                'inputs': {
+                    'question': 'How to find a page?',
+                },
+            },
+            'embedding_question_em_setting': {
+                'provider': 'OpenAI',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'model': 'text-embedding-ada-002',
+            },
+            'document_index_name': 'my-index-name',
+            'document_search_params': {
+                'provider': 'OpenSearch',
+                'filter': [],
+                'k': 4,
+            },
+            'vector_store_setting': {
+                'provider': 'OpenSearch',
+                'host': 'localhost',
+                'port': 9200,
+                'username': 'admin',
+                'password': {
+                    'type': 'Raw',
+                    'secret': 'admin',
+                },
+            },
+        }
+    )
+
+
+def test_format_rag_context_documents_adds_source_metadata_and_composite_chunk_id():
+    web_doc = Document(
+        page_content='Web page content',
+        metadata={
+            'id': 'doc-1',
+            'chunk': '2/5',
+            'title': 'A web page',
+            'source': 'https://intranet.example.com/page',
+        },
+    )
+    file_doc = Document(
+        page_content='File content',
+        metadata={
+            'id': 'doc-2',
+            'chunk': '1/1',
+            'title': 'A file',
+            'source': 'document.pdf',
+        },
+    )
+
+    assert get_chunk_identifier(web_doc) == 'doc-1:2/5'
+    assert get_web_source_url(web_doc) == 'https://intranet.example.com/page'
+    assert get_web_source_url(file_doc) is None
+    assert format_rag_context_documents([web_doc, file_doc]) == [
+        {
+            'chunk_id': 'doc-1:2/5',
+            'title': 'A web page',
+            'source_url': 'https://intranet.example.com/page',
+            'chunk_text': 'Web page content',
+        },
+        {
+            'chunk_id': 'doc-2:1/1',
+            'title': 'A file',
+            'source_url': None,
+            'chunk_text': 'File content',
+        },
+    ]
+
+
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain')
+@pytest.mark.asyncio
+async def test_execute_rag_chain_matches_footnotes_with_composite_chunk_id(
+    mocked_create_rag_chain,
+):
+    doc = Document(
+        page_content='A web page\n\nThe useful source content.',
+        metadata={
+            'id': 'doc-1',
+            'chunk': '2/5',
+            'title': 'A web page',
+            'source': 'https://intranet.example.com/page',
+        },
+    )
+    mocked_chain = mocked_create_rag_chain.return_value
+    mocked_chain.ainvoke = AsyncMock(
+        return_value={
+            'answer': {
+                'status': 'found_in_context',
+                'answer': 'Use the intranet page.',
+                'display_answer': True,
+                'context_usage': [
+                    {
+                        'chunk': 'doc-1:2/5',
+                        'sentences': ['The useful source content.'],
+                        'used_in_response': True,
+                    }
+                ],
+            },
+            'documents': [doc],
+        }
+    )
+
+    response = await execute_rag_chain(_rag_request(), debug=False)
+
+    assert len(response.footnotes) == 1
+    footnote = next(iter(response.footnotes))
+    assert footnote.identifier == 'doc-1'
+    assert footnote.title == 'A web page'
+    assert str(footnote.url) == 'https://intranet.example.com/page'
+    assert footnote.content == 'The useful source content.'
 
 
 @patch(
