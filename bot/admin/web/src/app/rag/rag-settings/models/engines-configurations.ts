@@ -347,7 +347,7 @@ Must list ALL retrieved chunks.
 
 For each chunk:
 
-- chunk: identifier
+- chunk: exact chunk_id value from the context
 - sentences: exact sentences extracted from context, used to answer the question.
 - used_in_response: true or false
 - reason: required if the chunk is not used in response.

@@ -23,6 +23,7 @@ import time
 from functools import partial
 from operator import itemgetter
 from typing import List, Optional
+from urllib.parse import urlparse
 
 from langchain_classic.retrievers import ContextualCompressionRetriever
 from langchain_community.chat_message_histories import ChatMessageHistory
@@ -226,7 +227,7 @@ async def execute_rag_chain(
                 metadata=doc.metadata.copy(),
             )
             for doc in response['documents']
-            if doc.metadata['id'] in contexts_by_chunk
+            if get_chunk_identifier(doc) in contexts_by_chunk
         },
         observability_info=get_observability_info(
             observability_handler,
@@ -236,6 +237,45 @@ async def execute_rag_chain(
         if debug
         else None,
     )
+
+
+def get_chunk_identifier(doc: Document) -> str:
+    """Build the chunk identifier exposed to the LLM."""
+    document_id = doc.metadata.get('id')
+    chunk = doc.metadata.get('chunk')
+    if document_id and chunk:
+        return f'{document_id}:{chunk}'
+    if document_id:
+        return str(document_id)
+    return str(chunk or '')
+
+
+def get_web_source_url(doc: Document) -> Optional[str]:
+    """Return the document source only when it is an HTTP(S) URL."""
+    source = doc.metadata.get('source') or doc.metadata.get('reference')
+    if not source:
+        return None
+
+    source_url = str(source).strip()
+    parsed_url = urlparse(source_url)
+    if parsed_url.scheme in {'http', 'https'} and parsed_url.netloc:
+        return source_url
+    return None
+
+
+def format_rag_context_documents(
+    documents: List[Document],
+) -> List[dict[str, Optional[str]]]:
+    """Format retrieved documents as the JSON context injected in the RAG prompt."""
+    return [
+        {
+            'chunk_id': get_chunk_identifier(doc),
+            'title': doc.metadata.get('title'),
+            'source_url': get_web_source_url(doc),
+            'chunk_text': doc.page_content,
+        }
+        for doc in documents
+    ]
 
 
 def get_source_content(doc: Document) -> str:
@@ -353,13 +393,7 @@ def create_rag_chain(
         answer=(
             {
                 'context': lambda x: json.dumps(
-                    [
-                        {
-                            'chunk_id': doc.metadata['id'],
-                            'chunk_text': doc.page_content,
-                        }
-                        for doc in x['documents']
-                    ],
+                    format_rag_context_documents(x['documents']),
                     ensure_ascii=False,
                     indent=2,
                 ),
