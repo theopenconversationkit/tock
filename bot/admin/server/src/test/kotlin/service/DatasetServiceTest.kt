@@ -63,6 +63,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -152,6 +153,10 @@ class DatasetServiceTest : AbstractTest() {
         assertEquals(2, result.stats.totalQuestions)
         assertEquals(0, result.stats.completedQuestions)
         assertEquals(0, result.stats.failedQuestions)
+        verifyOrder {
+            datasetRunDAO.saveQuestionResults(any())
+            datasetRunDAO.saveRun(any())
+        }
 
         val savedRun = runSlot.captured
         assertEquals(dataset._id, savedRun.datasetId)
