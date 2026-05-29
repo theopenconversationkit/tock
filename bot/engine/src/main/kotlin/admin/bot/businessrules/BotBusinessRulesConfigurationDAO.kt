@@ -19,6 +19,8 @@ package ai.tock.bot.admin.bot.businessrules
 import org.litote.kmongo.Id
 
 interface BotBusinessRulesConfigurationDAO {
+    fun listenChanges(listener: () -> Unit)
+
     fun save(conf: BotBusinessRulesConfiguration): BotBusinessRulesConfiguration
 
     fun findByNamespaceAndBotId(

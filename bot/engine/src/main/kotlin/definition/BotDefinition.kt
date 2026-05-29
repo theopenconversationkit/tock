@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
 import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfiguration
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
@@ -151,6 +152,11 @@ interface BotDefinition : I18nKeyProvider {
      * Document Compressor configuration
      */
     var documentCompressorConfiguration: BotDocumentCompressorConfiguration?
+
+    /**
+     * Business rules configuration
+     */
+    var businessRulesConfiguration: BotBusinessRulesConfiguration?
 
     /**
      * The list of each story.

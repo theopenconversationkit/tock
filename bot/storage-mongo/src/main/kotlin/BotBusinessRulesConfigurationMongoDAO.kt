@@ -18,21 +18,29 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfiguration
 import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO
+import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.watch
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 
 internal object BotBusinessRulesConfigurationMongoDAO : BotBusinessRulesConfigurationDAO {
     private const val COLLECTION_NAME = "bot_business_rules_configuration"
     internal val col = database.getCollection<BotBusinessRulesConfiguration>(COLLECTION_NAME)
+    private val asyncCol = asyncDatabase.getCollectionOfName<BotBusinessRulesConfiguration>(COLLECTION_NAME)
 
     init {
         col.ensureUniqueIndex(BotBusinessRulesConfiguration::namespace, BotBusinessRulesConfiguration::botId)
+    }
+
+    override fun listenChanges(listener: () -> Unit) {
+        asyncCol.watch { listener() }
     }
 
     override fun findByNamespaceAndBotId(
