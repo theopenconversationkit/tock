@@ -206,9 +206,10 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
                                 questionCondensingPrompt =
                                     ragConfiguration.questionCondensingPrompt.copy(
-                                        inputs = mapOf(
-                                            "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty(),
-                                        )
+                                        inputs =
+                                            mapOf(
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty(),
+                                            ),
                                     ),
                                 questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
                                 questionAnsweringPrompt =
