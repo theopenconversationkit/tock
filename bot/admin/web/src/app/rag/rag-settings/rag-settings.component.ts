@@ -16,7 +16,7 @@
 
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, Observable, Subject, takeUntil, pairwise } from 'rxjs';
+import { debounceTime, forkJoin, Observable, Subject, takeUntil, pairwise, from } from 'rxjs';
 import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -38,6 +38,8 @@ import {
 import { ChoiceDialogComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
+import { CanComponentDeactivate } from '../../shared/guards/can-deactivate.guard';
+import { DirtyStateGuard, DirtyStateService } from '../../core/dirty-state.service';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -69,7 +71,7 @@ interface RagSettingsForm {
   templateUrl: './rag-settings.component.html',
   styleUrls: ['./rag-settings.component.scss']
 })
-export class RagSettingsComponent implements OnInit, OnDestroy {
+export class RagSettingsComponent implements OnInit, CanComponentDeactivate, DirtyStateGuard, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
 
   configurations: BotApplicationConfiguration[];
@@ -97,10 +99,13 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private botConfiguration: BotConfigurationService,
     private nbWindowService: NbWindowService,
-    private nbDialogService: NbDialogService
+    private nbDialogService: NbDialogService,
+    private dirtyState: DirtyStateService
   ) {}
 
   ngOnInit(): void {
+    this.dirtyState.register(this);
+
     this.form.valueChanges.pipe(takeUntil(this.destroy$), debounceTime(200)).subscribe(() => {
       this.setActivationDisabledState();
     });
@@ -146,6 +151,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
       // Reset form on configuration change
       this.form.reset();
+      this.form.markAsPristine();
 
       this.setFormDefaultValues();
 
@@ -662,7 +668,29 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ─── Deactivation guard ─────────────────────────────────────────────────────────────────
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (!this.form.dirty) return true;
+
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
+      closeOnBackdropClick: false,
+      context: {
+        title: 'Unsaved changes',
+        subtitle: 'You have unsaved changes. What would you like to do?',
+        actions: [
+          { actionName: 'Stay on page', buttonStatus: 'basic', ghost: true, returnValue: false },
+          { actionName: 'Leave without saving', buttonStatus: 'danger', returnValue: true }
+        ],
+        modalStatus: 'danger'
+      }
+    });
+
+    return from(dialogRef.onClose) as Observable<boolean>;
+  }
+
   ngOnDestroy(): void {
+    this.dirtyState.unregister();
     this.destroy$.next(true);
     this.destroy$.complete();
   }

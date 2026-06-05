@@ -14,64 +14,62 @@
   ~ limitations under the License.
   -->
 
-<tock-sticky-menu [offset]="50">
-  <div class="d-flex">
-    <h1 class="flex-grow-1 mb-0">Application vector database settings</h1>
+<div class="d-flex">
+  <h1 class="flex-grow-1 mb-0">Application vector database settings</h1>
 
-    <section class="grid-actions">
-      <button
-        [disabled]="!hasExportableData"
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Export Vector DB settings dump"
-        (click)="exportSettings()"
-      >
-        <nb-icon icon="download"></nb-icon>
-      </button>
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Import Vector DB settings dump"
-        (click)="importSettings()"
-      >
-        <nb-icon icon="upload"></nb-icon>
-      </button>
+  <section class="grid-actions">
+    <button
+      [disabled]="!hasExportableData"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Export Vector DB settings dump"
+      (click)="exportSettings()"
+    >
+      <nb-icon icon="download"></nb-icon>
+    </button>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Import Vector DB settings dump"
+      (click)="importSettings()"
+    >
+      <nb-icon icon="upload"></nb-icon>
+    </button>
 
-      <button
-        *ngIf="settingsBackup && form.dirty"
-        nbButton
-        ghost
-        status="primary"
-        nbTooltip="Cancel modifications"
-        (click)="cancel()"
-      >
-        <nb-icon icon="x-circle"></nb-icon>
-        CANCEL
-      </button>
-      <button
-        *ngIf="form.dirty"
-        nbButton
-        status="primary"
-        nbTooltip="Save settings"
-        (click)="submit()"
-      >
-        <nb-icon icon="floppy"></nb-icon>
-        SAVE
-      </button>
-    </section>
-  </div>
+    <button
+      *ngIf="settingsBackup && form.dirty"
+      nbButton
+      ghost
+      status="primary"
+      nbTooltip="Cancel modifications"
+      (click)="cancel()"
+    >
+      <nb-icon icon="x-circle"></nb-icon>
+      CANCEL
+    </button>
+    <button
+      *ngIf="form.dirty"
+      nbButton
+      status="primary"
+      nbTooltip="Save settings"
+      (click)="submit()"
+    >
+      <nb-icon icon="floppy"></nb-icon>
+      SAVE
+    </button>
+  </section>
+</div>
 
-  <small>
-    Optional vector database provider. By default, the vector database used to index the Rag documents is defined in environment variables,
-    but if you need a specific vector database for this application, you can provide its configuration here. This configuration will
-    override the environment configuration for the application
-    <b
-      ><i>{{ state.currentApplication.name }}</i></b
-    >.
-  </small>
-</tock-sticky-menu>
+<small>
+  Optional vector database provider. By default, the vector database used to index the Rag documents is defined in environment variables,
+  but if you need a specific vector database for this application, you can provide its configuration here. This configuration will override
+  the environment configuration for the application
+  <b
+    ><i>{{ state.currentApplication.name }}</i></b
+  >.
+</small>
 
 <tock-no-data-found
   *ngIf="configurations?.length === 0"

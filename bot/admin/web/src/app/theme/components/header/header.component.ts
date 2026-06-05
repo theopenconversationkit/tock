@@ -27,6 +27,7 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { CoreConfig } from '../../../core-nlp/core.config';
 import { Router } from '@angular/router';
 import { TestDialogService } from '../../../shared/components/test-dialog/test-dialog.service';
+import { DirtyStateService } from '../../../core/dirty-state.service';
 
 @Component({
   selector: 'tock-header',
@@ -55,7 +56,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private config: CoreConfig,
     private router: Router,
-    private testDialogService: TestDialogService
+    private testDialogService: TestDialogService,
+    private dirtyState: DirtyStateService
   ) {}
 
   ngOnInit() {
@@ -86,24 +88,52 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   changeNamespace(namespace: string) {
-    this.applicationService
-      .selectNamespace(namespace)
-      .pipe(take(1))
-      .subscribe((_) =>
-        this.auth.loadUser().subscribe((_) => {
-          // Looks like this call to resetConfiguration is superfluous as applicationService already calls it via resetConfigurationUnsuscriber. We comment it out to avoid double calls on components rerender when changing namespace. We will see if it causes any issue.
-          // this.applicationService.resetConfiguration();
+    const initialNS = this.state.currentApplication?.namespace;
 
-          this.applicationService
-            .getApplications()
-            .pipe(take(1))
-            .subscribe((applications) => {
-              if (!applications.length) {
-                this.router.navigateByUrl(this.config.configurationUrl);
-              }
-            });
-        })
-      );
+    this.dirtyState.confirm().subscribe((canProceed) => {
+      if (!canProceed) {
+        this.currentNamespaceName = null;
+        setTimeout(() => {
+          this.currentNamespaceName = initialNS;
+        });
+        return;
+      }
+
+      this.applicationService
+        .selectNamespace(namespace)
+        .pipe(take(1))
+        .subscribe(() =>
+          this.auth.loadUser().subscribe(() => {
+            this.applicationService
+              .getApplications()
+              .pipe(take(1))
+              .subscribe((applications) => {
+                if (!applications.length) {
+                  this.router.navigateByUrl(this.config.configurationUrl);
+                }
+              });
+          })
+        );
+    });
+  }
+
+  changeApplication(app: string) {
+    const initialBot = this.state.currentApplication?.name;
+
+    this.dirtyState.confirm().subscribe((canProceed) => {
+      if (!canProceed) {
+        this.currentApplicationName = null;
+        setTimeout(() => {
+          this.currentApplicationName = initialBot;
+        });
+        return;
+      }
+
+      setTimeout(() => {
+        this.state.changeApplicationWithName(app);
+        this.settings.onApplicationChange(app);
+      });
+    });
   }
 
   changeTheme(themeName: string) {
@@ -136,13 +166,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goToDialogs() {
     this.router.navigateByUrl('/analytics/dialogs');
-  }
-
-  changeApplication(app) {
-    setTimeout((_) => {
-      this.state.changeApplicationWithName(app);
-      this.settings.onApplicationChange(app);
-    });
   }
 
   changeLocale(locale) {

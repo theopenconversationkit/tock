@@ -173,6 +173,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Gen AI Orchestrator environment variable vector settings
             val ragConfiguration = botDefinition.ragConfiguration!!
             val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
+            val businessRulesConfiguration = botDefinition.businessRulesConfiguration
             val vectorStoreSetting = vectorStoreConfiguration?.takeIf { it.enabled }?.setting
 
             val (documentSearchParams, indexName) =
@@ -214,6 +215,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                             mapOf(
                                                 "question" to action.toString(),
                                                 "locale" to userPreferences.locale.displayLanguage,
+                                                "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
+                                                "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,
