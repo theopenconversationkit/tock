@@ -57,7 +57,7 @@ internal object BotBusinessRulesConfigurationMonitor {
         bot.botDefinition.businessRulesConfiguration =
             businessRulesConfigurationDAO.findByNamespaceAndBotId(
                 bot.botDefinition.namespace,
-                bot.botDefinition.botId
+                bot.botDefinition.botId,
             )
     }
 }
