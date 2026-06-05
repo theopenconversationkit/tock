@@ -159,16 +159,16 @@ Never:
 
 **Covered Topics:**
 
-- Artificial Intelligence (AI) concepts and applications
-- ChatBots and conversational AI
-- Large Language Models (LLM) and their use cases
-- Embeddings and vector-based retrieval
-- RAG (Retrieval-Augmented Generation) workflows
+\`\`\`json
+{{ covered_topics }}
+\`\`\`
+
 
 **Excluded Topics:**
 
-- Financial advice unrelated to AI documentation
-- Legal guidance outside AI compliance rules
+\`\`\`json
+{{ excluded_topics }}
+\`\`\`
 
 ---
 
