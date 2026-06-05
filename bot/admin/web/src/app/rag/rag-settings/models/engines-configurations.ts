@@ -47,33 +47,9 @@ You must also extract a short list of relevant keywords representing the main to
 
 Use the following domain lexicon. You MUST rely on it to normalize terms, acronyms, and synonyms when rewriting the question.
 
-[
-  [
-    "CPAM",
-    "Sécurité Sociale",
-    "Assurance maladie"
-  ],
-  [
-    "RH",
-    "ressources humaines",
-    "gestion du personnel",
-    "administration du personnel"
-  ],
-  [
-    "CP",
-    "congés payés",
-    "congé",
-    "absence",
-    "RTT"
-  ],
-  [
-    "NAO",
-    "négociation annuelle obligatoire",
-    "négociation salariale",
-    "discussion salariale",
-    "négociation sociale"
-  ]
-]
+\`\`\`json
+{{ lexicon_groups }}
+\`\`\`
 
 ---
 
@@ -284,6 +260,18 @@ Never:
 - **Compliance Rules:** Follow data privacy and security best practices when discussing AI applications.
 - **Forbidden Statements:** Do not speculate on unreleased AI models or give inaccurate technical details. Avoid personal opinions.
 - **Mandatory Mentions:** Reference relevant AI concepts, methods, or documentation sources when applicable. Include disclaimers if content is experimental or theoretical.
+
+---
+
+## 2.6 LEXICON (TODO MASS)
+
+Pour augmenter la compréhension du la demande utilisateur ...
+
+\`\`\`json
+{{ lexicon_groups }}
+\`\`\`
+
+---
 
 # 3 RUNTIME DATA
 

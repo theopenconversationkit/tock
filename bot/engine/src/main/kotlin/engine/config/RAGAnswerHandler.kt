@@ -204,7 +204,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                             ),
                                     ),
                                 questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
-                                questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
+                                questionCondensingPrompt =
+                                    ragConfiguration.questionCondensingPrompt.copy(
+                                        inputs = mapOf(
+                                            "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty(),
+                                        )
+                                    ),
                                 questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
                                 questionAnsweringPrompt =
                                     ragConfiguration.questionAnsweringPrompt.copy(
@@ -214,6 +219,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                                 "locale" to userPreferences.locale.displayLanguage,
                                                 "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
                                                 "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty(),
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,
