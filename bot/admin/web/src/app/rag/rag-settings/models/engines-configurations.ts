@@ -55,19 +55,11 @@ Use the following domain lexicon. You MUST rely on it to normalize terms, acrony
 
 ## LEXICON RULES
 
-- If the user uses any term or synonym from the lexicon:
-  - Replace it with the canonical term
-  - Add the canonical meaning in parentheses the first time it appears in the rewritten question
+- If the user uses any term or synonym from the lexicon, including with minor spelling or typing errors:
+  - Use the correctly spelled form of the matched term
+  - Enrich the rewritten question by adding the most relevant equivalent terms from the same group, in parentheses, the first time the term appears
+  - This ensures the condensed question covers the semantic breadth of the group without losing the user's original intent
 
----
-
-## PUBLIC DOMAIN TERMS (NO LEXICON REQUIRED)
-
-Some widely known acronyms may not be in the lexicon (e.g., CPAM, CAF, EDF, TVA, etc.).
-
-- You may expand them if you are confident
-- Format: "ACRONYM (full form)"
-- Otherwise, keep them unchanged
 
 ---
 
@@ -76,6 +68,7 @@ Some widely known acronyms may not be in the lexicon (e.g., CPAM, CAF, EDF, TVA,
 - Use conversation history only to resolve ambiguity and missing references
 - Do NOT answer the question
 - Do NOT introduce external knowledge beyond lexicon expansion and common public acronyms
+- If the user uses a general or vague term that plausibly refers to a more specific concept  within the bot's domain, rewrite it using the more specific and retrievable form. Preserve the user's original intent and do not over-interpret.
 
 ---
 
@@ -84,7 +77,8 @@ Some widely known acronyms may not be in the lexicon (e.g., CPAM, CAF, EDF, TVA,
 
 - 1 to 3 keywords (inclusive)
 - lowercase
-- use only specific terms from the user input
+- use only specific terms from the condensed and enriched question, not from the raw user input
+- prefer expanded forms over acronyms when both are available
 - do not use generic category labels (e.g. rh, legal, finance, it) unless explicitly mentioned
 - no filler words
 - no punctuation
@@ -263,19 +257,29 @@ Never:
 
 ---
 
-## 2.6 LEXICON (TODO MASS)
+# 3 RUNTIME DATA
 
-Pour augmenter la compréhension du la demande utilisateur ...
+## 3.1 LEXICON
+
+The following lexicon defines domain-specific equivalence groups.
+Each group contains terms, acronyms, and synonyms that refer to the same concept.
 
 \`\`\`json
 {{ lexicon_groups }}
 \`\`\`
 
+### Usage rules
+
+- Each group represents a semantic equivalence cluster: all elements refer to the same concept.
+- When the user's question contains any term from a group, interpret it as equivalent to all other terms in the same group.
+- When terms from the retrieved chunks belong to the same group as terms in the user's question, treat them as referring to the same concept, even if the surface forms differ.
+- When formulating your answer, use whichever term from the group best fits the context and the user's vocabulary.
+- Do not treat terms from different groups as equivalent, even if they appear related.
+- If a term from the user's question matches no group, process it as-is.
+
 ---
 
-# 3 RUNTIME DATA
-
-## 3.1 CONTEXT
+## 3.2 CONTEXT
 
 The context provided consists of available documents (chunks):
 
@@ -285,7 +289,7 @@ The context provided consists of available documents (chunks):
 
 ---
 
-## 3.2 CONVERSATION HISTORY
+## 3.3 CONVERSATION HISTORY
 
 Use conversation history **only to clarify intent**, and to understand **relevant details or clarifications provided earlier**:
 
@@ -295,13 +299,15 @@ Use conversation history **only to clarify intent**, and to understand **relevan
 
 ---
 
-## 3.3 USER'S FINAL QUESTION
+## 3.4 USER'S FINAL QUESTION
 
 The final user input requiring an answer:
 
 \`\`\`
 {{ question }}
 \`\`\`
+
+---
 
 # 4 OUTPUT SPECIFICATION
 
@@ -578,3 +584,14 @@ export const EnginesConfigurations: {
   questionAnsweringLlmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };
+
+export interface DocumentSearchTypeOption {
+  key: string;
+  label: string;
+}
+
+export const DocumentSearchTypes: DocumentSearchTypeOption[] = [
+  { key: 'SIMILARITY_SEARCH', label: 'Similarity search' },
+  { key: 'FULL_TEXT_SEARCH', label: 'Full text search' },
+  { key: 'HYBRID_SEARCH', label: 'Hybrid search' }
+];

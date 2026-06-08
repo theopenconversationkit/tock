@@ -21,7 +21,12 @@ import { NbDialogRef, NbDialogService, NbToastrService, NbWindowService } from '
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { EnginesConfigurations, QuestionCondensing_prompt, QuestionAnswering_prompt } from './models/engines-configurations';
+import {
+  EnginesConfigurations,
+  QuestionCondensing_prompt,
+  QuestionAnswering_prompt,
+  DocumentSearchTypes
+} from './models/engines-configurations';
 import { RagSettings } from './models';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -80,6 +85,8 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   enginesConfigurations = EnginesConfigurations;
 
   engineSettingKeyName = AiEngineSettingKeyName;
+
+  documentSearchTypes = DocumentSearchTypes;
 
   questionCondensing_prompt = QuestionCondensing_prompt;
 

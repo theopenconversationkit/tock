@@ -387,33 +387,39 @@
               </tock-form-control>
             </div>
 
-            <div class="col-12 col-lg-6 px-3">
+            <div class="col-12 px-3">
               <tock-form-control
                 label="Search type"
                 name="documentSearchType"
                 [controls]="documentSearchType"
                 [required]="false"
                 [boldLabel]="false"
-                information="Search method used to retrieve documents. Available types depend on the selected vector database. Only PGVector supports all types."
+                information="Search method used to retrieve documents from the vector store. Similarity search retrieves chunks by vector proximity (embedding-based). Full text search retrieves chunks by keyword matching within chunk content. Hybrid search combines both. Current support is limited to PGVector."
               >
-                <tock-autocomplete-input
-                  fieldSize="small"
-                  placeholder=""
-                  [formControl]="documentSearchType"
-                  [options]="['SIMILARITY_SEARCH', 'FULL_TEXT_SEARCH', 'HYBRID_SEARCH']"
-                ></tock-autocomplete-input>
-
+                <nb-radio-group
+                  formControlName="documentSearchType"
+                  name="documentSearchType"
+                  class="d-flex"
+                >
+                  <nb-radio
+                    *ngFor="let option of documentSearchTypes"
+                    [value]="option.key"
+                    class="lineHeight-0"
+                  >
+                    {{ option.label }}
+                  </nb-radio>
+                </nb-radio-group>
               </tock-form-control>
             </div>
 
-            <div class="col-12 col-lg-6 px-3">
+            <div class="col-12 px-3">
               <tock-form-control
                 label="Max documents retrieved"
                 name="maxDocumentsRetrieved"
                 [controls]="maxDocumentsRetrieved"
                 [required]="false"
                 [boldLabel]="false"
-                information="Maximum number of documents to return in vector queries."
+                information="Maximum number of documents retrieved and passed to the LLM as context. This limit applies to each search type, whether used individually or combined in hybrid mode."
               >
                 <input
                   type="number"
@@ -427,7 +433,6 @@
                 />
               </tock-form-control>
             </div>
-
           </div>
         </nb-card-body>
       </nb-card>

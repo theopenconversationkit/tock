@@ -35,7 +35,7 @@ export interface RagSettings {
 
   indexSessionId: string;
   indexName: string;
-  documentSearchType: string;
 
+  documentSearchType: string;
   maxDocumentsRetrieved: number;
 }

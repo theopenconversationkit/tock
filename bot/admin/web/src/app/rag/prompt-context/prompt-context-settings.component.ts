@@ -90,6 +90,8 @@ export class PromptContextSettingsComponent implements OnInit, CanComponentDeact
         this.coveredTopics = res.coveredTopics;
         this.excludedTopics = res.excludedTopics;
         this.lexiconGroups = res.lexiconGroups;
+        // Recalculate sequence to avoid id collisions with loaded groups
+        this._lexIdSeq = res.lexiconGroups.length ? Math.max(...res.lexiconGroups.map((g) => g.id)) + 1 : 0;
         this._takeSnapshot();
       } else {
         this.coveredTopics = [RagAnswerStatusLabels.small_talk];
