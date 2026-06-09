@@ -21,12 +21,14 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface LoginMicrosoftOnline {
     @Headers("Host:login.microsoftonline.com", "Content-Type:application/x-www-form-urlencoded")
-    @POST("/botframework.com/oauth2/v2.0/token")
+    @POST("{tenantId}/oauth2/v2.0/token")
     @FormUrlEncoded
     fun login(
+        @Path("tenantId") tenantId: String,
         @Field("grant_type") grantType: String = "client_credentials",
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String,

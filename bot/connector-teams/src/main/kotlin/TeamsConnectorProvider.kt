@@ -36,6 +36,7 @@ import kotlin.reflect.KClass
 internal object TeamsConnectorProvider : ConnectorProvider {
     private const val APP_ID = "appId"
     private const val PASSWORD = "password"
+    private const val TENANT_ID = "tenantId"
 
     override val connectorType: ConnectorType get() = teamsConnectorType
 
@@ -46,6 +47,7 @@ internal object TeamsConnectorProvider : ConnectorProvider {
                 path = path,
                 appId = parameters.getValue(APP_ID),
                 appPassword = parameters.getValue(PASSWORD),
+                tenantId = parameters[TENANT_ID]?.takeIf { it.isNotBlank() } ?: "botframework.com",
             )
         }
     }
@@ -63,6 +65,11 @@ internal object TeamsConnectorProvider : ConnectorProvider {
                     "password",
                     PASSWORD,
                     true,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Tenant ID (optional, for Single Tenant bots)",
+                    TENANT_ID,
+                    false,
                 ),
             ),
             resourceAsString("/teams.svg"),
