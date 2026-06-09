@@ -231,27 +231,37 @@
           [mayScroll]="false"
           [queryInProgress]="testQueryInProgress"
         >
-          <tock-chat-ui-message
-            *ngFor="let message of messages"
-            [message]="message.message.message"
-            [reply]="message.message.bot"
-            [avatar]="getUserAvatar(message.message.bot)"
-            switchFormattingPos="afterAvatar"
-          >
-            <ng-container *ngIf="message.observabilityInfo">
-              <br />
-              <button
-                nbButton
-                ghost
-                size="small"
-                nbTooltip="View observability details"
-                class="mb-2"
-                (click)="openObservabilityTrace(message)"
-              >
-                <nb-icon icon="display"></nb-icon>
-              </button>
+          <ng-container *ngFor="let message of messages">
+            <ng-container *ngIf="message.responseTime !== undefined">
+              <span class="response-timer ml-2 pl-1">
+                <nb-icon icon="clock"></nb-icon>
+                {{ message.responseTime / 1000 | number: '1.2-2' }}s
+              </span>
             </ng-container>
-          </tock-chat-ui-message>
+
+            <tock-chat-ui-message
+              [message]="message.message.message"
+              [reply]="message.message.bot"
+              [avatar]="getUserAvatar(message.message.bot)"
+              switchFormattingPos="afterAvatar"
+              [showDebug]="true"
+              [action]="message.debug"
+            >
+              <ng-container *ngIf="message.observabilityInfo">
+                <br />
+                <button
+                  nbButton
+                  ghost
+                  size="small"
+                  nbTooltip="View observability details"
+                  class="mb-2"
+                  (click)="openObservabilityTrace(message)"
+                >
+                  <nb-icon icon="display"></nb-icon>
+                </button>
+              </ng-container>
+            </tock-chat-ui-message>
+          </ng-container>
         </tock-chat-ui>
       </div>
     </nb-card-footer>

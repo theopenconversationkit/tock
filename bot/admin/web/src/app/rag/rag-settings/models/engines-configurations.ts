@@ -440,6 +440,10 @@ For each chunk:
 
 ## 4.4 CONSISTENCY RULES
 
+Never use "Oui" or "Non" in a way that contradicts the factual content of the response.
+  Incorrect: "Oui, ce dispositif n'existe pas."
+  Correct: "Non, ce dispositif n'existe pas." or "Ce dispositif n'existe pas."
+
 You MUST ensure logical consistency (Invalid combinations are forbidden) :
 
 | Case                             | Consistency                                                                   |

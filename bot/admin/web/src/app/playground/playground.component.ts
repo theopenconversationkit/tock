@@ -29,7 +29,7 @@ import { RagSettings } from '../rag/rag-settings/models';
 import { StateService } from '../core-nlp/state.service';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { TestMessage } from '../test/model/test';
-import { Sentence } from '../shared/model/dialog-data';
+import { ActionReport, PlayerId, PlayerType, Sentence } from '../shared/model/dialog-data';
 
 interface PlaygroundForm {
   questionAnsweringLlmProvider: FormControl<AiEngineProvider>;
@@ -65,9 +65,9 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
 
   testQueryInProgress: boolean = false;
 
-  messages: { message: TestMessage; observabilityInfo?: any }[] = [];
+  messages: { message: TestMessage; debug: any; observabilityInfo?: any; responseTime?: number }[] = [];
 
-  messagesHistory: { prompt: string; message: TestMessage; observabilityInfo?: any }[] = [];
+  messagesHistory: { prompt: string; message: TestMessage; debug: any; observabilityInfo?: any; responseTime?: number }[] = [];
 
   messagesHistoryCursor: number = 0;
 
@@ -241,18 +241,41 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
       }
     };
 
+    const startTime = Date.now();
     const url = `/gen-ai/bots/${this.state.currentApplication.name}/completion/playground`;
     return this.rest.post(url, payload).subscribe({
       next: (res: { answer: string; observabilityInfo?: any }) => {
+        const responseTime = Date.now() - startTime;
+        let stringAnswer;
+        let actionreport;
+        try {
+          const parsedAnswer = JSON.parse(res.answer);
+          if (typeof parsedAnswer !== 'object' || parsedAnswer === null || Array.isArray(parsedAnswer)) {
+            stringAnswer = res.answer;
+          } else {
+            stringAnswer = parsedAnswer.answer;
+            const botFakePlayer = new PlayerId('fake-player', PlayerType.bot);
+            const botMessage = new Sentence(0, null, parsedAnswer.answer);
+            actionreport = new ActionReport(botFakePlayer, new Date(), botMessage, '1234', true);
+            actionreport.ragDebug = { answer: parsedAnswer };
+          }
+        } catch (e) {
+          stringAnswer = res.answer;
+        }
+
         this.messages.push({
-          message: new TestMessage(true, new Sentence(0, [], res.answer)),
-          observabilityInfo: res.observabilityInfo
+          message: new TestMessage(true, new Sentence(0, [], stringAnswer)),
+          debug: actionreport ?? undefined,
+          observabilityInfo: res.observabilityInfo,
+          responseTime
         });
 
         this.messagesHistory.push({
           prompt: message,
-          message: new TestMessage(true, new Sentence(0, [], res.answer)),
-          observabilityInfo: res.observabilityInfo
+          message: new TestMessage(true, new Sentence(0, [], stringAnswer)),
+          debug: actionreport ?? undefined,
+          observabilityInfo: res.observabilityInfo,
+          responseTime
         });
 
         this.messagesHistoryCursor = this.messagesHistory.length - 1;
@@ -290,7 +313,9 @@ export class PlaygroundComponent implements OnInit, OnDestroy {
       this.messages = [
         {
           message: hEntry.message,
-          observabilityInfo: hEntry.observabilityInfo
+          debug: hEntry.debug,
+          observabilityInfo: hEntry.observabilityInfo,
+          responseTime: hEntry.responseTime
         }
       ];
 
