@@ -161,11 +161,11 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
         key: DialogContextKey<T>,
         value: T?,
     ) {
-        syncBus.setBusContextValue(key.name, value)
+        syncBus.setBusContextValue(key, value)
     }
 
     override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
-        return syncBus.getBusContextValue<Any?>(key.name)?.let(key.type::safeCast)
+        return syncBus.getBusContextValue(key)
     }
 
     override suspend fun isFeatureEnabled(

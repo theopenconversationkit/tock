@@ -92,21 +92,39 @@ internal class PushNotificationsTest : BotEngineTest() {
     fun `GIVEN stateModifier THEN notify calls connector notify method`() {
         notify(CONNECTOR_ID, botDefinition.namespace, botDefinition.botId, recipientId, intent, stateModifier = KEEP_CURRENT_STATE)
 
-        coVerify { connector.notify(any(), recipientId, intent, null, any(), any(), any()) }
+        coVerify {
+            connector.notify(
+                any(),
+                recipientId,
+                intent,
+                parameters = any(),
+                notificationType = any(),
+                errorListener = any(),
+            )
+        }
     }
 
     @Test
     fun `GIVEN no notificationType passed THEN notify pass null NotificationType to connector`() {
         notify(CONNECTOR_ID, botDefinition.namespace, botDefinition.botId, recipientId, intent, stateModifier = KEEP_CURRENT_STATE)
 
-        coVerify { connector.notify(any(), recipientId, intent, null, any(), null, any()) }
+        coVerify {
+            connector.notify(
+                any(),
+                recipientId,
+                intent,
+                parameters = any(),
+                notificationType = null,
+                errorListener = any(),
+            )
+        }
     }
 
     @OptIn(ExperimentalTockCoroutines::class)
     @Test
     suspend fun `GIVEN locked user session WHEN pushNotification is called THEN throw SkippedEventException`() {
         coEvery { userLock.tryLock(recipientId.id) } returns false
-        coEvery { connector.notify(any(), any(), any(), null, emptyMap(), any(), any()) } coAnswers {
+        coEvery { connector.notify(any(), any(), any(), notificationType = any(), errorListener = any()) } coAnswers {
             firstArg<ConnectorController>().handleUserEvent(
                 SendChoice(
                     PlayerId(botDefinition.botId, PlayerType.bot),
@@ -117,7 +135,7 @@ internal class PushNotificationsTest : BotEngineTest() {
                     emptyMap(),
                 ),
                 ConnectorData(
-                    ConnectorCallbackBase(CONNECTOR_ID, ConnectorType(CONNECTOR_ID), arg(6)),
+                    ConnectorCallbackBase(CONNECTOR_ID, ConnectorType(CONNECTOR_ID), arg<(Throwable) -> Unit>(7)),
                 ),
             )
         }

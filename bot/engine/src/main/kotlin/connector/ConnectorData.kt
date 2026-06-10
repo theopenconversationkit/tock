@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector
 
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.engine.user.PlayerId
 
 /**
@@ -45,9 +46,10 @@ open class ConnectorData(
      */
     val referer: String? = null,
     /**
-     * optional metadata metadata from connector
+     * optional metadata from connector
      */
     val metadata: Map<String, String> = emptyMap(),
+    val transientContext: DialogContext = DialogContext.EMPTY,
 ) {
     /**
      * Set to true if the bot does not make any answer to a user sentence.
