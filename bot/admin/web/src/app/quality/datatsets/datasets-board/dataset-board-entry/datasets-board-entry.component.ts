@@ -129,7 +129,9 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       });
   }
 
-  confirmCancelRun(run: DatasetRun): void {
+  confirmCancelRun(run: DatasetRun | null): void {
+    if (!run) return;
+
     const action = 'cancel';
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
@@ -258,6 +260,11 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   copyString(str: string) {
     copyToClipboard(str);
     this.toastrService.success(`String copied to clipboard`, 'Clipboard');
+  }
+
+  getPercentageNotFound(run: DatasetRun): number {
+    const { totalQuestions, ragAnswerStatusCounts } = run.stats;
+    return totalQuestions > 0 ? (ragAnswerStatusCounts.not_found_in_context / totalQuestions) * 100 : 0;
   }
 
   ngOnDestroy(): void {
