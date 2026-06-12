@@ -18,6 +18,8 @@ package ai.tock.bot.test
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.definition.DialogContextMap
+import ai.tock.bot.definition.MutableDialogContext
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionQuote
@@ -30,7 +32,7 @@ import ai.tock.bot.engine.action.ActionVisibility
 internal data class BusMockData(
     var currentDelay: Long = 0,
     val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
-    val contextMap: MutableMap<String, Any> = mutableMapOf(),
+    val contextMap: MutableDialogContext = DialogContextMap(),
     var priority: ActionPriority = ActionPriority.normal,
     var notificationType: ActionNotificationType? = null,
     var visibility: ActionVisibility = ActionVisibility.UNKNOWN,

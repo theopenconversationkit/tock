@@ -16,6 +16,8 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.definition.DialogContextKey
+import ai.tock.bot.definition.DialogContextMap
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
@@ -113,10 +115,11 @@ class DialogColDeserializationTest : AbstractTest(false) {
 
     @Test
     fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
+        val dialogContextKey = DialogContextKey<LocalDateTime>("a")
         val dialog =
             Dialog(
                 emptySet(),
-                state = ai.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now())),
+                state = ai.tock.bot.engine.dialog.DialogState(context = DialogContextMap(dialogContextKey to LocalDateTime.now())),
             )
         val playerId = PlayerId("a", PlayerType.user)
         val s =

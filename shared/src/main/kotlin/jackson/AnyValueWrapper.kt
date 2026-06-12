@@ -35,7 +35,7 @@ import kotlin.reflect.KClass
  */
 @JsonDeserialize(using = AnyValueDeserializer::class)
 @JsonSerialize(using = AnyValueSerializer::class)
-data class AnyValueWrapper(val klass: String, val value: Any?) {
+data class AnyValueWrapper(val klass: KClass<*>, val value: Any?) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -48,7 +48,7 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
         ) {
             gen.writeStartObject()
             gen.writeFieldName(AnyValueWrapper::klass.name)
-            gen.writeString(value.klass)
+            gen.writeString(value.klass.java.name)
             serializers.defaultSerializeField(AnyValueWrapper::value.name, value.value, gen)
             gen.writeEndObject()
         }
@@ -63,8 +63,7 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             if (fieldName != null) {
                 val classValue: Class<*>? =
                     try {
-                        // TODO remove replace in 20.3
-                        Class.forName(jp.text.replace("fr.vsct.tock", "ai.tock"))
+                        Class.forName(jp.text)
                     } catch (e: Exception) {
                         logger.warn("deserialization error for class ${e.message}")
                         null
@@ -81,18 +80,16 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
                     } else {
                         val value = jp.readValueAs(classValue)
                         jp.checkEndToken()
-                        return AnyValueWrapper(classValue.name, value)
+                        return AnyValueWrapper(classValue.kotlin, value)
                     }
                 } else {
                     jp.checkEndToken()
-                    return if (classValue == null) null else AnyValueWrapper(classValue.name, null)
+                    return if (classValue == null) null else AnyValueWrapper(classValue.kotlin, null)
                 }
             }
             return null
         }
     }
-
-    constructor(klass: KClass<*>, value: Any?) : this(klass.java.name, value)
 
     constructor(value: Any) : this(value::class, value)
 }

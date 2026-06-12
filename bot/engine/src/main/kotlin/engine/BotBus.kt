@@ -25,6 +25,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.AsyncStoryDefinition
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.DialogContextKey
 import ai.tock.bot.definition.I18nStoryHandler
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
@@ -348,7 +349,14 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     fun <T : Any> contextValue(name: String): T? {
         @Suppress("UNCHECKED_CAST")
-        return dialog.state.context[name] as? T?
+        return contextValue(DialogContextKey(name, Any::class)) as T?
+    }
+
+    /**
+     * Returns the persistent current context value.
+     */
+    fun <T : Any> contextValue(key: DialogContextKey<T>): T? {
+        return dialog.state.context[key]
     }
 
     /**
@@ -369,6 +377,17 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
 
     /**
      * Updates persistent context value.
+     * Do not store Collection or Map in the context, only plain objects or typed arrays.
+     */
+    fun <T : Any> changeContextValue(
+        name: DialogContextKey<T>,
+        value: T?,
+    ) {
+        dialog.state.setContextValue(name, value)
+    }
+
+    /**
+     * Updates persistent context value.
      */
     fun changeContextValue(
         key: ParameterKey,
@@ -376,30 +395,52 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     ) = changeContextValue(key.key, value)
 
     /**
-     * Returns the non persistent current context value.
+     * Returns the non-persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun <T> getBusContextValue(name: String): T?
+    fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T?
 
     /**
-     * Returns the non persistent current context value.
+     * Returns the non-persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
+    @Deprecated("This overload performs unchecked casting", ReplaceWith("getBusContextValue(DialogContextKey(key))"))
+    fun <T> getBusContextValue(name: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return getBusContextValue(DialogContextKey(name, Any::class)) as T
+    }
+
+    /**
+     * Returns the non-persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
+     */
+    @Deprecated("This overload performs unchecked casting", ReplaceWith("getBusContextValue(DialogContextKey(key.key))"))
     fun <T> getBusContextValue(key: ParameterKey): T? = getBusContextValue(key.key)
 
     /**
-     * Updates the non persistent current context value.
+     * Updates the non-persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
+    fun <T : Any> setBusContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
+    )
+
+    /**
+     * Updates the non-persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
+     */
+    @Deprecated("This overload makes unsafe assumptions about the type of value", ReplaceWith("setBusContextValue(DialogContextKey(key), value)"))
     fun setBusContextValue(
         key: String,
         value: Any?,
     )
 
     /**
-     * Updates the non persistent current context value.
+     * Updates the non-persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
+    @Deprecated("This overload makes unsafe assumptions about the type of value", ReplaceWith("setBusContextValue(DialogContextKey(key.key), value)"))
     fun setBusContextValue(
         key: ParameterKey,
         value: Any?,

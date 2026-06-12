@@ -17,7 +17,9 @@
 package ai.tock.bot.engine.dialog
 
 import ai.tock.bot.definition.DialogContextKey
+import ai.tock.bot.definition.DialogContextMap
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.MutableDialogContext
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
@@ -38,7 +40,7 @@ data class DialogState(
     /**
      * The context of the dialog, a versatile map.
      */
-    val context: MutableMap<String, Any> = mutableMapOf(),
+    val context: MutableDialogContext = DialogContextMap(),
     /**
      * The current [UserLocation] if any.
      */
@@ -50,9 +52,9 @@ data class DialogState(
     var nextActionState: NextUserActionState? = null,
 ) {
     companion object {
-        private const val SWITCH_STORY_BUS_KEY = "_tock_switch"
-        private const val ASK_AGAIN_STORY_BUS_KEY = "_tock_ask_again"
-        private const val ASK_AGAIN_STORY_ROUND_BUS_KEY = "_tock_ask_again_round"
+        private val SWITCH_STORY_BUS_KEY = DialogContextKey<Boolean>("_tock_switch")
+        private val ASK_AGAIN_STORY_BUS_KEY = DialogContextKey<Boolean>("_tock_ask_again")
+        private val ASK_AGAIN_STORY_ROUND_BUS_KEY = DialogContextKey<Int>("_tock_ask_again_round")
 
         /**
          * Init a new state from the specified state.
@@ -86,7 +88,7 @@ data class DialogState(
     internal var askAgainRound: Int = askAgainRoundDefault
         get() {
             // retrieve default value
-            val value = context[ASK_AGAIN_STORY_ROUND_BUS_KEY] as? Int
+            val value = context[ASK_AGAIN_STORY_ROUND_BUS_KEY]
             return if (value == null) {
                 context[ASK_AGAIN_STORY_ROUND_BUS_KEY] = field
                 field
@@ -109,12 +111,12 @@ data class DialogState(
         value: Any?,
     ) {
         if (value == null) {
-            context.remove(name)
+            context.remove(DialogContextKey(name, Any::class))
         } else {
             if (value is Collection<*> || value is Map<*, *>) {
                 error("Storing collection or map is dialog context is unsupported, use plain objects or typed arrays")
             }
-            context[name] = value
+            context[DialogContextKey(name, value.javaClass.kotlin)] = value
         }
     }
 
@@ -124,16 +126,16 @@ data class DialogState(
      */
     fun <T : Any> setContextValue(
         key: DialogContextKey<T>,
-        value: Any?,
+        value: T?,
     ) {
-        require(key.type.typeParameters.isEmpty()) {
-            "Generic type parameters cannot be safely preserved in a dialog context"
-        }
-
         if (value == null) {
-            context.remove(key.name)
+            context.remove(key)
         } else {
-            context[key.name] = value
+            require(key.type.typeParameters.isEmpty()) {
+                "Generic type parameters cannot be safely preserved in a dialog context"
+            }
+
+            context[key] = value
         }
     }
 

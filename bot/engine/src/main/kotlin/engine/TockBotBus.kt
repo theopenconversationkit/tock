@@ -21,6 +21,8 @@ import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.DialogContextKey
+import ai.tock.bot.definition.DialogContextMap
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
@@ -93,7 +95,7 @@ internal class TockBotBus(
 
     override val underlyingConnector: Connector = connector.connector
 
-    private val context: BusContext = BusContext()
+    private val context: BusContext = BusContext(contextMap = DialogContextMap(connectorData.transientContext))
 
     override val entities: Map<String, EntityStateValue> = currentDialog.state.entityValues
     override val intent: Intent? = currentDialog.state.currentIntent
@@ -124,25 +126,33 @@ internal class TockBotBus(
         userLocale = findSupportedLocale(locale)
     }
 
-    /**
-     * Returns the non persistent current context value.
-     */
-    override fun <T> getBusContextValue(name: String): T? {
-        @Suppress("UNCHECKED_CAST")
-        return context.contextMap[name] as T
+    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
+        return context.contextMap[key]
     }
 
-    /**
-     * Updates the non persistent current context value.
-     */
-    override fun setBusContextValue(
-        key: String,
-        value: Any?,
+    override fun <T : Any> setBusContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
     ) {
         if (value == null) {
             context.contextMap.remove(key)
         } else {
             context.contextMap[key] = value
+        }
+    }
+
+    /**
+     * Updates the non persistent current context value.
+     */
+    @Deprecated("This overload makes unsafe assumptions about the type of value", replaceWith = ReplaceWith("setBusContextValue(DialogContextKey(key), value)"))
+    override fun setBusContextValue(
+        key: String,
+        value: Any?,
+    ) {
+        if (value == null) {
+            context.contextMap.remove(DialogContextKey(key, Any::class))
+        } else {
+            setBusContextValue(DialogContextKey(key, value.javaClass.kotlin), value)
         }
     }
 

@@ -19,6 +19,8 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.annotation.BotAnnotation
 import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.admin.dialog.DialogReport
+import ai.tock.bot.definition.DialogContextKey
+import ai.tock.bot.definition.DialogContextMap
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
@@ -59,6 +61,8 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.Instant.now
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 
 /**
  *
@@ -213,7 +217,7 @@ internal data class DialogCol(
         constructor(state: DialogState) : this(
             state.currentIntent,
             state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
-            state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap(),
+            state.context.asMap().map { e -> e.key.id to AnyValueWrapper(e.key.type, e.value) }.toMap(),
             state.userLocation,
             state.nextActionState,
         )
@@ -222,11 +226,28 @@ internal data class DialogCol(
             return DialogState(
                 currentIntent,
                 entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                context.filter { it.value != null && it.value!!.value != null }.mapValues { it.value!!.value!! }
-                    .toMutableMap(),
+                convertContext(),
                 userLocation,
                 nextActionState,
             )
+        }
+
+        private fun convertContext(): DialogContextMap =
+            DialogContextMap().apply {
+                context.forEach { (keyId, wrapper) ->
+                    val value = wrapper?.value
+                    if (value != null) {
+                        trySet(keyId, wrapper.klass, value)
+                    }
+                }
+            }
+
+        private fun <T : Any> DialogContextMap.trySet(
+            keyId: String,
+            klass: KClass<T>,
+            value: Any,
+        ) {
+            klass.safeCast(value)?.let { set(DialogContextKey(keyId, klass), it) }
         }
     }
 
