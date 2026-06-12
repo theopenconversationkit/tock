@@ -160,7 +160,7 @@ class OpenAIConnector internal constructor(
                 context.request().getHeader("Accept-Language")
                     ?.let { Locale.forLanguageTag(it) } ?: defaultLocale
             val event = request.toEvent(connectorId, chatId)
-            handleEvent(connectorId, locale, event, controller, context, emptyMap())
+            handleEvent(connectorId, locale, event, controller, context, emptyMap(), DialogContext.EMPTY)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -176,6 +176,7 @@ class OpenAIConnector internal constructor(
         controller: ConnectorController,
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
+        transientDialogContext: DialogContext,
     ) {
         val callback =
             OpenAIConnectorCallback(
@@ -190,6 +191,7 @@ class OpenAIConnector internal constructor(
             ConnectorData(
                 callback = callback,
                 metadata = headersMetadata,
+                transientContext = transientDialogContext,
             ),
         )
     }
@@ -222,6 +224,7 @@ class OpenAIConnector internal constructor(
             controller = controller,
             context = null,
             headersMetadata = emptyMap(),
+            transientDialogContext = transientContext,
         )
     }
 

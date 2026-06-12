@@ -74,7 +74,7 @@ interface ConnectorController {
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ) {
-        connector.notify(this, recipientId, intent, step, parameters, notificationType = notificationType, errorListener = errorListener)
+        connector.notify(this, recipientId, intent, step, parameters, transientContext = transientContext, notificationType = notificationType, errorListener = errorListener)
     }
 
     /**
