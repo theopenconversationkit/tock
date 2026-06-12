@@ -23,5 +23,5 @@ from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import
 )
 
 GuardrailSetting = Annotated[
-    Union[BloomzGuardrailSetting], Body(discriminator='provider')
+    Union[BloomzGuardrailSetting], Body(discriminator="provider")
 ]

@@ -25,7 +25,7 @@ from gen_ai_orchestrator.models.security.security_types import SecretKey
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import (
     BaseVectorStoreSetting,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 
@@ -37,30 +37,26 @@ class PGVectorStoreSetting(BaseVectorStoreSetting):
     """
 
     provider: Literal[VectorStoreProvider.PGVECTOR] = Field(
-        description='The Vector Store Provider.',
+        description="The Vector Store Provider.",
         examples=[VectorStoreProvider.PGVECTOR],
-        default=VectorStoreProvider.PGVECTOR
+        default=VectorStoreProvider.PGVECTOR,
     )
     host: str = Field(
-        description='The hostname of postgres server', examples=['localhost'],
-        default='localhost'
+        description="The hostname of postgres server",
+        examples=["localhost"],
+        default="localhost",
     )
     port: int = Field(
-        description='The postgres server port', examples=['5432'],
-        default='5432'
+        description="The postgres server port", examples=["5432"], default="5432"
     )
     username: str = Field(
-        description='The vector store connection username.',
-        examples=['postgres'],
+        description="The vector store connection username.",
+        examples=["postgres"],
     )
     password: SecretKey = Field(
-        description='The vector store connection password.',
-        examples=[RawSecretKey(secret='postgres')],
+        description="The vector store connection password.",
+        examples=[RawSecretKey(secret="postgres")],
     )
     database: str = Field(
-        description='The postgres name', examples=['postgres'],
-        default='postgres'
+        description="The postgres name", examples=["postgres"], default="postgres"
     )
-
-
-

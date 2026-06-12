@@ -18,11 +18,9 @@ package ai.tock.genai.orchestratorcore.models.llm
 
 data class OllamaLLMSetting<T>(
     override val temperature: String,
-    @Deprecated("use PromptTemplate#prompt")
-    override val prompt: String? = null,
     val model: String,
     val baseUrl: String,
-) : LLMSettingBase<T>(provider = LLMProvider.Ollama, temperature = temperature, prompt = prompt) {
+) : LLMSettingBase<T>(provider = LLMProvider.Ollama, temperature = temperature) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature = temperature)
     }

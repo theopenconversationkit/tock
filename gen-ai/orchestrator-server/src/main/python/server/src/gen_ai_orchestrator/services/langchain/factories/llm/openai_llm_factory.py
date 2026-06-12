@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating OpenAILLMFactory"""
+
 from typing import Optional
 
 from langchain_core.language_models import BaseLanguageModel
@@ -55,7 +56,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             reasoning_effort=self.setting.reasoning_effort,
         )
 
-    @openai_exception_handler(provider='OpenAI')
+    @openai_exception_handler(provider="OpenAI")
     async def invoke(
         self, _input: Input, config: Optional[RunnableConfig] = None
     ) -> Output:

@@ -23,6 +23,6 @@ def obfuscate(sentence: str):
     """
 
     if len(sentence) < 4:
-        return '*****'
+        return "*****"
     else:
-        return sentence[:2] + ('*' * (len(sentence) - 3)) + sentence[-1:]
+        return sentence[:2] + ("*" * (len(sentence) - 3)) + sentence[-1:]

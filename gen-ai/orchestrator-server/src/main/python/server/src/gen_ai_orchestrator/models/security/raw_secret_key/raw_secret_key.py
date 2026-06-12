@@ -29,10 +29,10 @@ class RawSecretKey(BaseSecretKey):
     """
 
     type: Literal[SecretKeyType.RAW] = Field(
-        description='The Secret Key type.',
+        description="The Secret Key type.",
         examples=[SecretKeyType.RAW],
         default=SecretKeyType.RAW,
     )
     secret: str = Field(
-        description='The secret value.', examples=['145d-**********-e4f'], min_length=1
+        description="The secret value.", examples=["145d-**********-e4f"], min_length=1
     )

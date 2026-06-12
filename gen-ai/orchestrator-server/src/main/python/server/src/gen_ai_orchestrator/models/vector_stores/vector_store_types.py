@@ -32,9 +32,10 @@ from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
 )
 
 DocumentSearchParams = Annotated[
-    Union[OpenSearchParams, PGVectorParams], Body(discriminator='provider')
+    Union[OpenSearchParams, PGVectorParams], Body(discriminator="provider")
 ]
 
 VectorStoreSetting = Annotated[
-    Union[OpenSearchVectorStoreSetting, PGVectorStoreSetting], Body(discriminator='provider')
+    Union[OpenSearchVectorStoreSetting, PGVectorStoreSetting],
+    Body(discriminator="provider"),
 ]

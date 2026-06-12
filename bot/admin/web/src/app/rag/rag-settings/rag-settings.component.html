@@ -112,6 +112,23 @@
               <span *ngIf="!debugEnabled.value">Dialogs debug deactivated</span>
             </nb-toggle>
           </tock-form-control>
+
+          <tock-form-control
+            name="explainabilityEnabled"
+            [controls]="explainabilityEnabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
+          >
+            <nb-toggle
+              formControlName="explainabilityEnabled"
+              class="nb-toggle-small mt-2"
+              status="basic"
+              nbTooltip="Include RAG explainability instructions in the answering prompt"
+            >
+              <span *ngIf="explainabilityEnabled.value">Explainability activated</span>
+              <span *ngIf="!explainabilityEnabled.value">Explainability deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
         </nb-card-body>
       </nb-card>
 
@@ -387,14 +404,39 @@
               </tock-form-control>
             </div>
 
-            <div class="col-6 px-3">
+            <div class="col-12 px-3">
+              <tock-form-control
+                label="Search type"
+                name="documentSearchType"
+                [controls]="documentSearchType"
+                [required]="false"
+                [boldLabel]="false"
+                information="Search method used to retrieve documents from the vector store. Similarity search retrieves chunks by vector proximity (embedding-based). Full text search retrieves chunks by keyword matching within chunk content. Hybrid search combines both. Current support is limited to PGVector."
+              >
+                <nb-radio-group
+                  formControlName="documentSearchType"
+                  name="documentSearchType"
+                  class="d-flex"
+                >
+                  <nb-radio
+                    *ngFor="let option of documentSearchTypes"
+                    [value]="option.key"
+                    class="lineHeight-0"
+                  >
+                    {{ option.label }}
+                  </nb-radio>
+                </nb-radio-group>
+              </tock-form-control>
+            </div>
+
+            <div class="col-12 px-3">
               <tock-form-control
                 label="Max documents retrieved"
                 name="maxDocumentsRetrieved"
                 [controls]="maxDocumentsRetrieved"
                 [required]="false"
                 [boldLabel]="false"
-                information="Maximum number of documents to return in vector queries."
+                information="Maximum number of documents retrieved and passed to the LLM as context. This limit applies to each search type, whether used individually or combined in hybrid mode."
               >
                 <input
                   type="number"

@@ -16,10 +16,7 @@
 
 import logging
 
-from langchain_core.messages import AIMessage
-from langchain_core.output_parsers import BaseOutputParser
 
-from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
 )
@@ -29,9 +26,6 @@ from gen_ai_orchestrator.routers.requests.requests import (
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_callback_handler_factory,
     get_llm_factory,
-)
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,11 +42,13 @@ async def check_llm_setting(request: LLMProviderSettingStatusRequest) -> bool:
          True for a valid LLM setting. Raise exception otherwise.
     """
 
-    logger.info('Get the LLM Factory, then check the LLM setting.')
+    logger.info("Get the LLM Factory, then check the LLM setting.")
     langfuse_callback_handler = None
     if request.observability_setting is not None:
         langfuse_callback_handler = get_callback_handler_factory(
-            setting=request.observability_setting).get_callback_handler(
-            trace_name=ObservabilityTrace.CHECK_LLM_SETTINGS.value)
+            setting=request.observability_setting
+        ).get_callback_handler(trace_name=ObservabilityTrace.CHECK_LLM_SETTINGS.value)
 
-    return await get_llm_factory(request.setting).check_llm_setting(langfuse_callback_handler)
+    return await get_llm_factory(request.setting).check_llm_setting(
+        langfuse_callback_handler
+    )

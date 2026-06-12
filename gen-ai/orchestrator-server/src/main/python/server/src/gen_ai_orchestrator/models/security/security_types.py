@@ -30,5 +30,5 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
 
 SecretKey = Annotated[
     Union[RawSecretKey, AwsSecretKey, GcpSecretKey],
-    Body(discriminator='type'),
+    Body(discriminator="type"),
 ]

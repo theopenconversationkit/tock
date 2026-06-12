@@ -14,9 +14,9 @@
 #
 """Model for creating BaseVectorStoreSetting."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 
@@ -24,5 +24,5 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
 class BaseVectorStoreSetting(BaseModel):
     """A base class for Vector Store Setting."""
 
-    provider: VectorStoreProvider = Field(description='The Vector Store Provider.')
-
+    model_config = ConfigDict(frozen=True)
+    provider: VectorStoreProvider = Field(description="The Vector Store Provider.")

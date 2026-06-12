@@ -34,11 +34,11 @@ class BloomzRerank(BaseDocumentCompressor):
 
     min_score: float = 0.5
     """Minimum score to use for reranking."""
-    endpoint: str = 'http://localhost:8082'
+    endpoint: str = "http://localhost:8082"
     """Model to use for reranking."""
     max_documents: int = 50
     """Maximum number of documents to return to avoid exceeding max tokens for text generation."""
-    label: str = 'entailment'
+    label: str = "entailment"
     """Label to use for reranking."""
     fill_to_max_documents: bool = False
     """If True, complete with the best remaining documents up to max_documents."""
@@ -51,7 +51,7 @@ class BloomzRerank(BaseDocumentCompressor):
         self,
         documents: Sequence[Document],
         query: str,
-        callbacks: Callbacks | None = None
+        callbacks: Callbacks | None = None,
     ) -> Sequence[Document]:
         """
         Compress documents.
@@ -67,13 +67,13 @@ class BloomzRerank(BaseDocumentCompressor):
         if len(documents) == 0:  # to avoid empty api call
             return []
 
-        url = urljoin(self.endpoint, '/score')
+        url = urljoin(self.endpoint, "/score")
         try:
             response = requests.post(
                 url=url,
                 json={
-                    'contexts': [
-                        {'query': query, 'context': document.page_content}
+                    "contexts": [
+                        {"query": query, "context": document.page_content}
                         for document in documents
                     ]
                 },
@@ -82,8 +82,8 @@ class BloomzRerank(BaseDocumentCompressor):
 
             if response.status_code != 200:
                 logger.error(
-                    f'[Compressor] Bad response {response.status_code} '
-                    f'{response.reason} - {response.text}'
+                    f"[Compressor] Bad response {response.status_code} "
+                    f"{response.reason} - {response.text}"
                 )
 
                 if not self.is_fault_tolerant:
@@ -95,13 +95,13 @@ class BloomzRerank(BaseDocumentCompressor):
                         )
                     )
 
-                logger.warning('[Compressor] Fallback to original documents')
+                logger.warning("[Compressor] Fallback to original documents")
                 return documents
 
-            results = response.json().get('response', [])
+            results = response.json().get("response", [])
 
         except Exception as exc:
-            logger.error(f'[Compressor] Exception during rerank call: {exc}')
+            logger.error(f"[Compressor] Exception during rerank call: {exc}")
 
             if not self.is_fault_tolerant:
                 raise GenAIDocumentCompressorErrorException(
@@ -112,7 +112,7 @@ class BloomzRerank(BaseDocumentCompressor):
                     )
                 )
 
-            logger.warning('[Compressor] Fallback to original documents')
+            logger.warning("[Compressor] Fallback to original documents")
             return documents
 
         scored_docs = []
@@ -120,11 +120,11 @@ class BloomzRerank(BaseDocumentCompressor):
         for i, doc_results in enumerate(results):
             try:
                 doc_entailment = next(
-                    d for d in doc_results if d.get('label') == self.label
+                    d for d in doc_results if d.get("label") == self.label
                 )
 
-                score = doc_entailment.get('score', 0.0)
-                documents[i].metadata['retriever_score'] = score
+                score = doc_entailment.get("score", 0.0)
+                documents[i].metadata["retriever_score"] = score
                 scored_docs.append(documents[i])
 
             except StopIteration:
@@ -141,23 +141,25 @@ class BloomzRerank(BaseDocumentCompressor):
                 continue
 
             except Exception as exc:
-                logger.error(f'[Compressor] Error processing result: {exc}')
+                logger.error(f"[Compressor] Error processing result: {exc}")
                 continue
 
         scored_docs = sorted(
             scored_docs,
-            key=lambda d: d.metadata.get('retriever_score', 0),
+            key=lambda d: d.metadata.get("retriever_score", 0),
             reverse=True,
         )
 
         above_threshold = [
-            d for d in scored_docs
-            if d.metadata.get('retriever_score', 0) >= self.min_score
+            d
+            for d in scored_docs
+            if d.metadata.get("retriever_score", 0) >= self.min_score
         ]
 
         below_threshold = [
-            d for d in scored_docs
-            if d.metadata.get('retriever_score', 0) < self.min_score
+            d
+            for d in scored_docs
+            if d.metadata.get("retriever_score", 0) < self.min_score
         ]
 
         # base result

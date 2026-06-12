@@ -1,4 +1,4 @@
-#   Copyright (C) 2024-2026 Credit Mutuel Arkea
+#   Copyright (C) 2023-2026 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,14 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Annotated, Union
+"""VectorStoreProvider Enumeration."""
 
-from fastapi import Body
+from enum import Enum, unique
 
-from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
-    BloomzCompressorSetting,
-)
 
-DocumentCompressorSetting = Annotated[
-    Union[BloomzCompressorSetting], Body(discriminator="provider")
-]
+@unique
+class VectorStoreProvider(str, Enum):
+    """Enumeration to list Vector Store Provider types"""
+
+    OPEN_SEARCH = "OpenSearch"
+    PGVECTOR = "PGVector"
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

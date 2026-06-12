@@ -12,17 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""VectorStoreProvider Enumeration."""
+"""DocumentSearchType Enumeration."""
 
 from enum import Enum, unique
 
 
 @unique
-class VectorStoreProvider(str, Enum):
-    """Enumeration to list Vector Store Provider types"""
+class DocumentSearchType(str, Enum):
+    """Enumeration to list Document Search Types"""
 
-    OPEN_SEARCH = 'OpenSearch'
-    PGVECTOR = 'PGVector'
+    SIMILARITY_SEARCH = "SIMILARITY_SEARCH"
+    FULL_TEXT_SEARCH = "FULL_TEXT_SEARCH"
+    HYBRID_SEARCH = "HYBRID_SEARCH"
 
     @classmethod
     def has_value(cls, value):

@@ -53,9 +53,6 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
-    LangfuseObservabilitySetting,
-)
 from gen_ai_orchestrator.models.observability.observability_provider import (
     ObservabilityProvider,
 )
@@ -67,9 +64,6 @@ from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting im
 )
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
     PGVectorStoreSetting,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
@@ -117,20 +111,20 @@ from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_fac
 
 def test_get_unknown_llm_factory():
     with pytest.raises(GenAIUnknownProviderSettingException):
-        get_llm_factory(setting='settings with incorrect type')
+        get_llm_factory(setting="settings with incorrect type")
 
 
 def test_get_open_ai_llm_factory():
     open_ai = get_llm_factory(
         setting=OpenAILLMSetting(
             **{
-                'provider': 'OpenAI',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "OpenAI",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'model': 'model',
-                'temperature': '0',
+                "model": "model",
+                "temperature": "0",
             }
         )
     )
@@ -143,19 +137,19 @@ def test_get_open_ai_llm_factory_with_reasoning_effort():
     open_ai = get_llm_factory(
         setting=OpenAILLMSetting(
             **{
-                'provider': 'OpenAI',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "OpenAI",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'model': 'model',
-                'temperature': '0',
-                'reasoning_effort': 'high',
+                "model": "model",
+                "temperature": "0",
+                "reasoning_effort": "high",
             }
         )
     )
     assert open_ai.setting.provider == LLMProvider.OPEN_AI
-    assert open_ai.setting.reasoning_effort == 'high'
+    assert open_ai.setting.reasoning_effort == "high"
     assert isinstance(open_ai, OpenAILLMFactory)
 
 
@@ -163,16 +157,16 @@ def test_get_azure_open_ai_llm_factory():
     azure_open_ai = get_llm_factory(
         setting=AzureOpenAILLMSetting(
             **{
-                'provider': 'AzureOpenAIService',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "AzureOpenAIService",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'deployment_name': 'deployment_name',
-                'model': 'gpt-4o',
-                'api_base': 'https://doc.tock.ai/tock',
-                'api_version': 'version',
-                'temperature': '0',
+                "deployment_name": "deployment_name",
+                "model": "gpt-4o",
+                "api_base": "https://doc.tock.ai/tock",
+                "api_version": "version",
+                "temperature": "0",
             }
         )
     )
@@ -185,22 +179,22 @@ def test_get_azure_open_ai_llm_factory_with_reasoning_effort():
     azure_open_ai = get_llm_factory(
         setting=AzureOpenAILLMSetting(
             **{
-                'provider': 'AzureOpenAIService',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "AzureOpenAIService",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'deployment_name': 'deployment_name',
-                'model': 'gpt-4o',
-                'api_base': 'https://doc.tock.ai/tock',
-                'api_version': 'version',
-                'temperature': '0',
-                'reasoning_effort': 'medium',
+                "deployment_name": "deployment_name",
+                "model": "gpt-4o",
+                "api_base": "https://doc.tock.ai/tock",
+                "api_version": "version",
+                "temperature": "0",
+                "reasoning_effort": "medium",
             }
         )
     )
     assert azure_open_ai.setting.provider == LLMProvider.AZURE_OPEN_AI_SERVICE
-    assert azure_open_ai.setting.reasoning_effort == 'medium'
+    assert azure_open_ai.setting.reasoning_effort == "medium"
     assert isinstance(azure_open_ai, AzureOpenAILLMFactory)
 
 
@@ -208,13 +202,13 @@ def test_get_fake_llm_factory():
     fake_llm = get_llm_factory(
         setting=FakeLLMSetting(
             **{
-                'provider': 'FakeLLM',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "FakeLLM",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'temperature': '0',
-                'responses': ['1. vanilla\n2. chocolate\n3. strawberry'],
+                "temperature": "0",
+                "responses": ["1. vanilla\n2. chocolate\n3. strawberry"],
             }
         )
     )
@@ -224,19 +218,19 @@ def test_get_fake_llm_factory():
 
 def test_get_unknown_em_factory():
     with pytest.raises(GenAIUnknownProviderSettingException):
-        get_em_factory(setting='settings with incorrect type')
+        get_em_factory(setting="settings with incorrect type")
 
 
 def test_get_open_ai_em_factory():
     open_ai = get_em_factory(
         setting=OpenAIEMSetting(
             **{
-                'provider': 'OpenAI',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "OpenAI",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'model': 'model',
+                "model": "model",
             }
         )
     )
@@ -248,15 +242,15 @@ def test_get_azure_open_ai_em_factory():
     azure_open_ai = get_em_factory(
         setting=AzureOpenAIEMSetting(
             **{
-                'provider': 'AzureOpenAIService',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "AzureOpenAIService",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'deployment_name': 'deployment_name',
-                'model': 'text-embedding-ada-002',
-                'api_base': 'https://doc.tock.ai/tock',
-                'api_version': 'version',
+                "deployment_name": "deployment_name",
+                "model": "text-embedding-ada-002",
+                "api_base": "https://doc.tock.ai/tock",
+                "api_version": "version",
             }
         )
     )
@@ -268,9 +262,9 @@ def test_get_bloomz_em_factory():
     bloomz = get_em_factory(
         setting=BloomzEMSetting(
             **{
-                'provider': 'Bloomz',
-                'api_base': 'https://exemple.apibase',
-                'pooling': 'last',
+                "provider": "Bloomz",
+                "api_base": "https://exemple.apibase",
+                "pooling": "last",
             }
         )
     )
@@ -282,46 +276,46 @@ def test_get_open_search_vector_store_factory():
     em_factory = get_em_factory(
         setting=OpenAIEMSetting(
             **{
-                'provider': 'OpenAI',
-                'api_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "OpenAI",
+                "api_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'model': 'model',
+                "model": "model",
             }
         )
     )
     open_search = get_vector_store_factory(
         setting=OpenSearchVectorStoreSetting(
             **{
-                'provider': 'OpenSearch',
-                'host': 'localhost',
-                'port': 9200,
-                'password': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "OpenSearch",
+                "host": "localhost",
+                "port": 9200,
+                "password": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'username': 'admin',
+                "username": "admin",
             }
         ),
-        index_name='my-index-name',
+        index_name="my-index-name",
         embedding_function=em_factory.get_embedding_model(),
     )
     pgvector = get_vector_store_factory(
         setting=PGVectorStoreSetting(
             **{
-                'provider': 'PGVector',
-                'host': 'localhost',
-                'port': 5432,
-                'password': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "PGVector",
+                "host": "localhost",
+                "port": 5432,
+                "password": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'username': 'postgres',
-                'database': 'postgres',
+                "username": "postgres",
+                "database": "postgres",
             }
         ),
-        index_name='my-index-name',
+        index_name="my-index-name",
         embedding_function=em_factory.get_embedding_model(),
     )
     assert isinstance(open_search, OpenSearchFactory)
@@ -331,7 +325,7 @@ def test_get_open_search_vector_store_factory():
 def test_get_unknown_vector_store_factory():
     with pytest.raises(GenAIUnknownVectorStoreProviderSettingException):
         get_vector_store_factory(
-            setting='an incorrect vector store provider',
+            setting="an incorrect vector store provider",
             index_name=None,
             embedding_function=None,
         )
@@ -339,20 +333,20 @@ def test_get_unknown_vector_store_factory():
 
 def test_get_unknown_observability_factory():
     with pytest.raises(GenAIUnknownObservabilityProviderSettingException):
-        get_callback_handler_factory(setting='settings with incorrect type')
+        get_callback_handler_factory(setting="settings with incorrect type")
 
 
 def test_get_langfuse_observability_factory():
     langfuse_factory = get_callback_handler_factory(
         setting=ObservabilitySetting(
             **{
-                'provider': 'Langfuse',
-                'secret_key': {
-                    'type': 'Raw',
-                    'secret': 'ab7***************************A1IV4B',
+                "provider": "Langfuse",
+                "secret_key": {
+                    "type": "Raw",
+                    "secret": "ab7***************************A1IV4B",
                 },
-                'public_key': 'df41*********f',
-                'url': 'https://myServer:3000',
+                "public_key": "df41*********f",
+                "url": "https://myServer:3000",
             }
         )
     )
@@ -363,7 +357,7 @@ def test_get_langfuse_observability_factory():
 def test_get_bloomz_guardrail_factory():
     guardrail = get_guardrail_factory(
         setting=BloomzGuardrailSetting(
-            provider='BloomzGuardrail', api_base='http://guardrail.com', max_score=0.6
+            provider="BloomzGuardrail", api_base="http://guardrail.com", max_score=0.6
         )
     )
 
@@ -374,11 +368,11 @@ def test_get_bloomz_guardrail_factory():
 def test_get_bloomz_compressor_factory():
     compressor = get_compressor_factory(
         setting=BloomzCompressorSetting(
-            provider='BloomzRerank',
+            provider="BloomzRerank",
             min_score=0.5,
-            endpoint='http://localhost:8082',
+            endpoint="http://localhost:8082",
             max_documents=25,
-            label='label',
+            label="label",
         )
     )
 

@@ -21,7 +21,7 @@ from pydantic import Field
 from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
     BaseVectorStoreSearchParams,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 
@@ -33,18 +33,18 @@ class PGVectorParams(BaseVectorStoreSearchParams):
     """
 
     provider: Literal[VectorStoreProvider.PGVECTOR] = Field(
-        description='The Vector Store Provider.',
+        description="The Vector Store Provider.",
         examples=[VectorStoreProvider.PGVECTOR],
         default=VectorStoreProvider.PGVECTOR,
     )
     filter: Optional[dict] = Field(
-        description='Filter by metadata.',
-        examples=[{'tag1': 'vector stores'}],
+        description="Filter by metadata.",
+        examples=[{"tag1": "vector stores"}],
         default=None,
     )
 
     def to_dict(self):
         return {
-            'k': self.k,
-            'filter': self.filter,
+            "k": self.k,
+            "filter": self.filter,
         }

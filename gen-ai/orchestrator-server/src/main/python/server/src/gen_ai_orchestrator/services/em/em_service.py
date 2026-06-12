@@ -35,5 +35,5 @@ async def check_em_setting(setting: EMSetting) -> bool:
          True for a valid EM setting. Raise exception otherwise.
     """
 
-    logger.info('Get the EM Factory, then check the EM setting.')
+    logger.info("Get the EM Factory, then check the EM setting.")
     return await get_em_factory(setting).check_embedding_model_setting()

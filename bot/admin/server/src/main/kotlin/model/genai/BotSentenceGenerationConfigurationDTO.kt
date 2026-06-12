@@ -41,7 +41,7 @@ data class BotSentenceGenerationConfigurationDTO(
         enabled = configuration.enabled,
         nbSentences = configuration.nbSentences,
         llmSetting = configuration.llmSetting.toDTO(),
-        prompt = configuration.prompt ?: configuration.initPrompt(),
+        prompt = configuration.prompt,
     )
 
     fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =

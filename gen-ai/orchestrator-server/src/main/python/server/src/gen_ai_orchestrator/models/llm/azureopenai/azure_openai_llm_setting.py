@@ -33,25 +33,25 @@ class AzureOpenAILLMSetting(BaseLLMSetting):
     """
 
     provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE] = Field(
-        description='The Large Language Model Provider.',
+        description="The Large Language Model Provider.",
         examples=[LLMProvider.AZURE_OPEN_AI_SERVICE],
     )
     api_key: SecretKey = Field(
-        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
+        description="The secret that stores the API key used to authenticate requests to the AI Provider API.",
+        examples=[RawSecretKey(secret="ab7-************-A1IV4B")],
     )
     deployment_name: str = Field(
-        description='The deployment name you chose when you deployed the model.',
-        examples=['my-deployment-name'],
+        description="The deployment name you chose when you deployed the model.",
+        examples=["my-deployment-name"],
     )
     model: Optional[str] = Field(
-        description='The model id', examples=['gpt-3.5-turbo'], default=None
+        description="The model id", examples=["gpt-3.5-turbo"], default=None
     )
     api_base: HttpUrl = Field(
-        description='The API base url / Azure endpoint',
-        examples=['https://doc.tock.ai/tock'],
+        description="The API base url / Azure endpoint",
+        examples=["https://doc.tock.ai/tock"],
     )
     api_version: str = Field(
-        description='The API version to use for this operation.',
-        examples=['2023-05-15'],
+        description="The API version to use for this operation.",
+        examples=["2023-05-15"],
     )

@@ -26,7 +26,7 @@ from path import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (
@@ -40,20 +40,20 @@ logger = logging.getLogger(__name__)
 class _Environment(str, Enum):
     """Enumeration to list environment type"""
 
-    DEV = 'DEV'
-    PROD = 'PROD'
+    DEV = "DEV"
+    PROD = "PROD"
 
 
 class _Settings(BaseSettings):
     """Application class for settings, allowing values to be overridden by environment variables."""
 
     model_config = SettingsConfigDict(
-        env_prefix='tock_gen_ai_orchestrator_', case_sensitive=True
+        env_prefix="tock_gen_ai_orchestrator_", case_sensitive=True
     )
 
     application_environment: _Environment = _Environment.DEV
     application_logging_config_ini: str = (
-        Path(__file__).dirname() + '/../logging/config.ini'
+        Path(__file__).dirname() + "/../logging/config.ini"
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30
@@ -63,13 +63,13 @@ class _Settings(BaseSettings):
     em_provider_timeout: int = 4
     compressor_provider_timeout: int = 7
 
-    vector_store_provider: Optional[
-        VectorStoreProvider
-    ] = VectorStoreProvider.OPEN_SEARCH
-    vector_store_host: Optional[str] = 'localhost'
-    vector_store_port: Optional[str] = '9200'
-    vector_store_user: Optional[str] = 'admin'
-    vector_store_pwd: Optional[str] = 'admin'
+    vector_store_provider: Optional[VectorStoreProvider] = (
+        VectorStoreProvider.OPEN_SEARCH
+    )
+    vector_store_host: Optional[str] = "localhost"
+    vector_store_port: Optional[str] = "9200"
+    vector_store_user: Optional[str] = "admin"
+    vector_store_pwd: Optional[str] = "admin"
     vector_store_database: Optional[str] = None  # Only if necessary. Example: PGVector
     vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
     vector_store_credentials_secret_name: Optional[str] = None
@@ -77,7 +77,13 @@ class _Settings(BaseSettings):
     vector_store_timeout: int = 4
     """Maximum number of documents to be retrieved from the Vector Store"""
     vector_store_test_max_docs_retrieved: int = 4
-    vector_store_test_query: str = 'Any definition'
+    vector_store_test_query: str = "Any definition"
+
+    db_pool_size: int = 10
+    db_max_overflow: int = 5
+    db_pool_timeout: int = 30
+    db_pool_recycle: int = 3600
+    """Any connection lasting longer than 3600 seconds will be closed and reestablished."""
 
     """Observability Setting"""
     observability_provider_max_retries: int = 0
@@ -86,7 +92,7 @@ class _Settings(BaseSettings):
 
     """GCP"""
     # GCP project ID used for GCP Secrets
-    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None)
+    gcp_project_id: Optional[str] = Field(alias="tock_gcp_project_id", default=None)
 
 
 application_settings = _Settings()

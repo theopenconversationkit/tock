@@ -178,17 +178,14 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
             val (documentSearchParams, indexName) =
                 VectorStoreUtils.getVectorStoreElements(
-                    ragConfiguration.namespace,
-                    ragConfiguration.botId,
+                    namespace = ragConfiguration.namespace,
+                    botId = ragConfiguration.botId,
                     // The indexSessionId is mandatory to enable RAG Story
-                    ragConfiguration.indexSessionId!!,
-                    ragConfiguration.maxDocumentsRetrieved,
-                    vectorStoreSetting,
+                    indexSessionId = ragConfiguration.indexSessionId!!,
+                    kNeighborsDocuments = ragConfiguration.maxDocumentsRetrieved,
+                    documentSearchType = ragConfiguration.documentSearchType,
+                    vectorStoreSetting = vectorStoreSetting,
                 )
-
-            val questionAnsweringPrompt =
-                ragConfiguration.questionAnsweringPrompt
-                    ?: ragConfiguration.initQuestionAnsweringPrompt()
 
             var debug: Any? = null
             try {
@@ -207,16 +204,24 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                             ),
                                     ),
                                 questionCondensingLlmSetting = ragConfiguration.questionCondensingLlmSetting,
-                                questionCondensingPrompt = ragConfiguration.questionCondensingPrompt,
-                                questionAnsweringLlmSetting = ragConfiguration.getQuestionAnsweringLLMSetting(),
+                                questionCondensingPrompt =
+                                    ragConfiguration.questionCondensingPrompt.copy(
+                                        inputs =
+                                            mapOf(
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                                            ),
+                                    ),
+                                questionAnsweringLlmSetting = ragConfiguration.questionAnsweringLlmSetting,
                                 questionAnsweringPrompt =
-                                    questionAnsweringPrompt.copy(
+                                    ragConfiguration.questionAnsweringPrompt.copy(
                                         inputs =
                                             mapOf(
                                                 "question" to action.toString(),
                                                 "locale" to userPreferences.locale.displayLanguage,
                                                 "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
                                                 "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
+                                                "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                                                "explainability" to ragConfiguration.explainabilityEnabled,
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,
