@@ -112,6 +112,23 @@
               <span *ngIf="!debugEnabled.value">Dialogs debug deactivated</span>
             </nb-toggle>
           </tock-form-control>
+
+          <tock-form-control
+            name="explainabilityEnabled"
+            [controls]="explainabilityEnabled"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
+          >
+            <nb-toggle
+              formControlName="explainabilityEnabled"
+              class="nb-toggle-small mt-2"
+              status="basic"
+              nbTooltip="Include RAG explainability instructions in the answering prompt"
+            >
+              <span *ngIf="explainabilityEnabled.value">Explainability activated</span>
+              <span *ngIf="!explainabilityEnabled.value">Explainability deactivated</span>
+            </nb-toggle>
+          </tock-form-control>
         </nb-card-body>
       </nb-card>
 

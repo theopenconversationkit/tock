@@ -51,6 +51,7 @@ interface RagSettingsForm {
   enabled: FormControl<boolean>;
 
   debugEnabled: FormControl<boolean>;
+  explainabilityEnabled: FormControl<boolean>;
 
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
@@ -205,6 +206,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
     debugEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
+    explainabilityEnabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
 
     indexSessionId: new FormControl(undefined),
     indexName: new FormControl(undefined),
@@ -232,6 +234,10 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
 
   get debugEnabled(): FormControl {
     return this.form.get('debugEnabled') as FormControl;
+  }
+
+  get explainabilityEnabled(): FormControl {
+    return this.form.get('explainabilityEnabled') as FormControl;
   }
 
   get questionCondensingLlmProvider(): FormControl {
@@ -377,6 +383,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
   setFormDefaultValues(): void {
     this.form.patchValue({
       debugEnabled: false,
+      explainabilityEnabled: true,
       maxMessagesFromHistory: 5,
       maxDocumentsRetrieved: 4
     });
@@ -415,9 +422,11 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     if (this.canRagBeActivated()) {
       this.enabled.enable();
       this.debugEnabled.enable();
+      this.explainabilityEnabled.enable();
     } else {
       this.enabled.disable();
       this.debugEnabled.disable();
+      this.explainabilityEnabled.disable();
     }
   }
 

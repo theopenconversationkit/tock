@@ -35,6 +35,7 @@ data class BotRAGConfiguration(
     val indexSessionId: String? = null,
     val documentsRequired: Boolean = true,
     val debugEnabled: Boolean = false,
+    val explainabilityEnabled: Boolean = true,
     val maxDocumentsRetrieved: Int = 4,
     val maxMessagesFromHistory: Int = 5,
     val documentSearchType: DocumentSearchType = DocumentSearchType.HYBRID_SEARCH,

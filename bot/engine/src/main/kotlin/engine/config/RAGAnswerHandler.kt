@@ -221,6 +221,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                                 "covered_topics" to businessRulesConfiguration?.coveredTopics.orEmpty(),
                                                 "excluded_topics" to businessRulesConfiguration?.excludedTopics.orEmpty(),
                                                 "lexicon_groups" to businessRulesConfiguration?.lexiconGroups.orEmpty().map { it.terms },
+                                                "explainability" to ragConfiguration.explainabilityEnabled,
                                             ),
                                     ),
                                 embeddingQuestionEmSetting = ragConfiguration.emSetting,

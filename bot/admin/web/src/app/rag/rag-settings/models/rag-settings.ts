@@ -23,6 +23,7 @@ export interface RagSettings {
   enabled: boolean;
 
   debugEnabled: boolean;
+  explainabilityEnabled: boolean;
 
   questionCondensingLlmSetting: llmSetting;
   questionCondensingPrompt: PromptDefinition;
