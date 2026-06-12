@@ -349,7 +349,14 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
      */
     fun <T : Any> contextValue(name: String): T? {
         @Suppress("UNCHECKED_CAST")
-        return dialog.state.context[name] as? T?
+        return contextValue(DialogContextKey(name, Any::class)) as T?
+    }
+
+    /**
+     * Returns the persistent current context value.
+     */
+    fun <T : Any> contextValue(key: DialogContextKey<T>): T? {
+        return dialog.state.context[key]
     }
 
     /**
@@ -364,6 +371,17 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     fun changeContextValue(
         name: String,
         value: Any?,
+    ) {
+        dialog.state.setContextValue(name, value)
+    }
+
+    /**
+     * Updates persistent context value.
+     * Do not store Collection or Map in the context, only plain objects or typed arrays.
+     */
+    fun <T : Any> changeContextValue(
+        name: DialogContextKey<T>,
+        value: T?,
     ) {
         dialog.state.setContextValue(name, value)
     }
@@ -389,7 +407,7 @@ interface BotBus : Bus<BotBus>, DialogEntityAccess {
     @Deprecated("This overload performs unchecked casting", ReplaceWith("getBusContextValue(DialogContextKey(key))"))
     fun <T> getBusContextValue(name: String): T? {
         @Suppress("UNCHECKED_CAST")
-        return getBusContextValue(DialogContextKey(Any::class, name)) as T
+        return getBusContextValue(DialogContextKey(name, Any::class)) as T
     }
 
     /**

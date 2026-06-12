@@ -49,7 +49,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.safeCast
 
 @ExperimentalTockCoroutines
 open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
@@ -147,7 +146,7 @@ open class AsyncBotBus(val syncBus: BotBus) : AsyncBus {
     }
 
     override fun <T : Any> getContextValue(key: DialogContextKey<T>): T? {
-        return syncBus.dialog.state.context[key.name]?.let(key.type::safeCast)
+        return syncBus.dialog.state.context[key]
     }
 
     override fun <T : Any> setContextValue(

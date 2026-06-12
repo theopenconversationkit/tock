@@ -23,50 +23,39 @@ import kotlin.reflect.safeCast
 /**
  * An arbitrary data store for dialogs, intended for use by bot stories
  *
+ * In contexts where the data is persisted, the key's type is used for (de)serialization
+ *
+ * @see ai.tock.bot.engine.BotBus.contextValue
+ * @see ai.tock.bot.engine.BotBus.changeContextValue
  * @see ai.tock.bot.engine.BotBus.getBusContextValue
  * @see ai.tock.bot.engine.BotBus.setBusContextValue
  */
 interface DialogContext {
     companion object {
+        /**
+         * The empty immutable [DialogContext]
+         */
         val EMPTY: DialogContext = DialogContextMap.EMPTY
 
-        fun <T : Any> of(entry: Pair<DialogContextKey<T>, T>): DialogContext =
-            DialogContextMap().apply {
-                add(entry)
-            }
+        fun <T : Any> of(entry: Pair<DialogContextKey<T>, T>): DialogContext = DialogContextMap(entry)
 
         fun <T1 : Any, T2 : Any> of(
             entry1: Pair<DialogContextKey<T1>, T1>,
             entry2: Pair<DialogContextKey<T2>, T2>,
-        ): DialogContext =
-            DialogContextMap().apply {
-                add(entry1)
-                add(entry2)
-            }
+        ): DialogContext = DialogContextMap(entry1, entry2)
 
         fun <T1 : Any, T2 : Any, T3 : Any> of(
             entry1: Pair<DialogContextKey<T1>, T1>,
             entry2: Pair<DialogContextKey<T2>, T2>,
             entry3: Pair<DialogContextKey<T3>, T3>,
-        ): DialogContext =
-            DialogContextMap().apply {
-                add(entry1)
-                add(entry2)
-                add(entry3)
-            }
+        ): DialogContext = DialogContextMap(entry1, entry2, entry3)
 
         fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> of(
             entry1: Pair<DialogContextKey<T1>, T1>,
             entry2: Pair<DialogContextKey<T2>, T2>,
             entry3: Pair<DialogContextKey<T3>, T3>,
             entry4: Pair<DialogContextKey<T4>, T4>,
-        ): DialogContext =
-            DialogContextMap().apply {
-                add(entry1)
-                add(entry2)
-                add(entry3)
-                add(entry4)
-            }
+        ): DialogContext = DialogContextMap(entry1, entry2, entry3, entry4)
     }
 
     /**
@@ -95,13 +84,56 @@ interface MutableDialogContext : DialogContext {
     )
 
     fun remove(key: DialogContextKey<*>)
+
+    fun clear()
 }
 
 class DialogContextMap private constructor(
     @JsonValue private val entries: MutableMap<DialogContextKey<*>, Any>,
 ) : MutableDialogContext {
     companion object {
+        /**
+         * The empty context map (immutable)
+         */
         val EMPTY = DialogContextMap(Collections.emptyMap())
+
+        operator fun <T : Any> invoke(entry: Pair<DialogContextKey<T>, T>): DialogContextMap =
+            DialogContextMap().apply {
+                add(entry)
+            }
+
+        operator fun <T1 : Any, T2 : Any> invoke(
+            entry1: Pair<DialogContextKey<T1>, T1>,
+            entry2: Pair<DialogContextKey<T2>, T2>,
+        ): DialogContextMap =
+            DialogContextMap().apply {
+                add(entry1)
+                add(entry2)
+            }
+
+        operator fun <T1 : Any, T2 : Any, T3 : Any> invoke(
+            entry1: Pair<DialogContextKey<T1>, T1>,
+            entry2: Pair<DialogContextKey<T2>, T2>,
+            entry3: Pair<DialogContextKey<T3>, T3>,
+        ): DialogContextMap =
+            DialogContextMap().apply {
+                add(entry1)
+                add(entry2)
+                add(entry3)
+            }
+
+        operator fun <T1 : Any, T2 : Any, T3 : Any, T4 : Any> invoke(
+            entry1: Pair<DialogContextKey<T1>, T1>,
+            entry2: Pair<DialogContextKey<T2>, T2>,
+            entry3: Pair<DialogContextKey<T3>, T3>,
+            entry4: Pair<DialogContextKey<T4>, T4>,
+        ): DialogContextMap =
+            DialogContextMap().apply {
+                add(entry1)
+                add(entry2)
+                add(entry3)
+                add(entry4)
+            }
     }
 
     constructor() : this(mutableMapOf())
@@ -121,11 +153,11 @@ class DialogContextMap private constructor(
     }
 
     override operator fun <T : Any> plusAssign(entry: Pair<DialogContextKey<T>, T>) {
-        put(entry.first, entry.second)
+        set(entry.first, entry.second)
     }
 
     override fun <T : Any> add(entry: Pair<DialogContextKey<T>, T>) {
-        put(entry.first, entry.second)
+        set(entry.first, entry.second)
     }
 
     override fun <T : Any> put(
@@ -137,6 +169,10 @@ class DialogContextMap private constructor(
 
     override fun remove(key: DialogContextKey<*>) {
         entries.remove(key)
+    }
+
+    override fun clear() {
+        entries.clear()
     }
 
     override fun toString(): String {

@@ -150,9 +150,9 @@ internal class TockBotBus(
         value: Any?,
     ) {
         if (value == null) {
-            context.contextMap.asMap().keys.removeIf { it.name == key }
+            context.contextMap.remove(DialogContextKey(key, Any::class))
         } else {
-            setBusContextValue(DialogContextKey(value.javaClass.kotlin, key), value)
+            setBusContextValue(DialogContextKey(key, value.javaClass.kotlin), value)
         }
     }
 

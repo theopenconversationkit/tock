@@ -405,9 +405,9 @@ open class BotBusMock(
         value: Any?,
     ) {
         if (value == null) {
-            mockData.contextMap.asMap().keys.removeIf { it.name == key }
+            mockData.contextMap.remove(DialogContextKey(key, Any::class))
         } else {
-            setBusContextValue(DialogContextKey(value.javaClass.kotlin, key), value)
+            setBusContextValue(DialogContextKey(key, value.javaClass.kotlin), value)
         }
     }
 
