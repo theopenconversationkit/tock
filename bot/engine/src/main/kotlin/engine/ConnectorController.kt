@@ -22,6 +22,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryStepDef
@@ -69,10 +70,11 @@ interface ConnectorController {
         intent: IntentAware,
         step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
+        transientContext: DialogContext = DialogContext.EMPTY,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ) {
-        connector.notify(this, recipientId, intent, step, parameters, notificationType, errorListener)
+        connector.notify(this, recipientId, intent, step, parameters, transientContext = transientContext, notificationType = notificationType, errorListener = errorListener)
     }
 
     /**

@@ -34,6 +34,7 @@ import ai.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import ai.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import ai.tock.bot.connector.twitter.model.outcoming.Tweet
 import ai.tock.bot.connector.twitter.model.toMediaCategory
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -260,6 +261,7 @@ internal class TwitterConnector internal constructor(
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {

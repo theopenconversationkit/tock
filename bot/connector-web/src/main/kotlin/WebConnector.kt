@@ -32,6 +32,7 @@ import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.connector.web.sse.SseEndpoint
 import ai.tock.bot.connector.web.sse.SseEndpoint.Companion.webMapper
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -148,7 +149,7 @@ class WebConnector internal constructor(
                                     ?: context.body().asString() ?: error("message is mandatory and is missing")
                             context.response().setupSSE()
 
-                            handleRequest(controller, context, body)
+                            handleRequest(controller, context, body, transientContext = DialogContext.EMPTY)
                         } catch (t: Throwable) {
                             context.fail(t)
                         }
@@ -161,6 +162,7 @@ class WebConnector internal constructor(
                 .coHandler { context ->
                     // Override the user on the request body
                     val tockUserId: String? = context.get<String>(TOCK_USER_ID)
+                    val transientContext: DialogContext = context.get(WebSecurityHandler.TRANSIENT_DIALOG_CONTEXT_KEY) ?: DialogContext.EMPTY
                     val body =
                         tockUserId?.let {
                             val jsonBody = context.body().asJsonObject() ?: JsonObject()
@@ -169,7 +171,7 @@ class WebConnector internal constructor(
                         } ?: context.body().asString()
 
                     // Handle the request
-                    handleRequest(controller, context, body)
+                    handleRequest(controller, context, body, transientContext)
                 }
         }
     }
@@ -184,6 +186,7 @@ class WebConnector internal constructor(
         controller: ConnectorController,
         context: RoutingContext,
         body: String,
+        transientContext: DialogContext,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook")
         try {
@@ -204,7 +207,7 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), errorListener = null)
+            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
@@ -221,6 +224,7 @@ class WebConnector internal constructor(
         context: RoutingContext?,
         headersMetadata: Map<String, String>,
         errorListener: ((Throwable) -> Unit)?,
+        transientDialogContext: DialogContext,
     ) {
         val callback =
             WebConnectorCallback(
@@ -242,6 +246,7 @@ class WebConnector internal constructor(
             ConnectorData(
                 callback = callback,
                 metadata = headersMetadata,
+                transientContext = transientDialogContext,
             ),
         )
     }
@@ -252,6 +257,7 @@ class WebConnector internal constructor(
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
     ) {
@@ -274,6 +280,7 @@ class WebConnector internal constructor(
             context = null,
             headersMetadata = emptyMap(),
             errorListener = errorListener,
+            transientDialogContext = transientContext,
         )
     }
 

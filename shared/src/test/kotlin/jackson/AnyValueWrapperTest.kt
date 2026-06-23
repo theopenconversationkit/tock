@@ -65,8 +65,8 @@ class AnyValueWrapperTest {
 
     @Test
     fun deserializeUnknownClass_shouldNotFailAndReturnsNull() {
-        val value = AnyValueWrapper("unknown", null)
-        val s = mapper.writeValueAsString(value)
+        val value = AnyValueWrapper(Nothing::class, null)
+        val s = mapper.writeValueAsString(value).replace("java.lang.Void", "unknown")
         val newValue = mapper.readValue<AnyValueWrapper?>(s, object : TypeReference<AnyValueWrapper?>() {})
         assertNull(newValue)
     }

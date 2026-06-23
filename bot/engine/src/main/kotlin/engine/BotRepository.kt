@@ -36,6 +36,7 @@ import ai.tock.bot.definition.BotAnswerInterceptor
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
 import ai.tock.bot.definition.BotProviderId
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
@@ -211,7 +212,7 @@ object BotRepository {
         errorListener: (Throwable) -> Unit = {},
     ) {
         runBlocking {
-            notifyAsync(namespace, botId, applicationId, recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
+            notifyAsync(namespace, botId, applicationId, recipientId, intent, step, parameters, transientContext = DialogContext.EMPTY, stateModifier, notificationType, errorListener)
         }
     }
 
@@ -223,6 +224,7 @@ object BotRepository {
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         stateModifier: NotifyBotStateModifier,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit,
@@ -236,7 +238,7 @@ object BotRepository {
             }
         val conf = key?.let { getConfigurationByApplicationId(it) } ?: error("unknown application $applicationId")
         connectorControllerMap.getValue(conf)
-            .notifyAndCheckState(recipientId, intent, step, parameters, stateModifier, notificationType, errorListener)
+            .notifyAndCheckState(recipientId, intent, step, parameters, transientContext, stateModifier, notificationType, errorListener)
     }
 
     private suspend fun ConnectorController.notifyAndCheckState(
@@ -244,6 +246,7 @@ object BotRepository {
         intent: IntentAware,
         step: StoryStepDef?,
         parameters: Map<String, String>,
+        transientContext: DialogContext,
         stateModifier: NotifyBotStateModifier,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
@@ -260,7 +263,7 @@ object BotRepository {
         }
 
         try {
-            notify(recipientId, intent, step, parameters, notificationType, errorListener)
+            notify(recipientId, intent, step, parameters, transientContext, notificationType, errorListener)
         } finally {
             if (stateModifier == NotifyBotStateModifier.ACTIVATE_ONLY_FOR_THIS_NOTIFICATION) {
                 val userTimelineAfterNotification =

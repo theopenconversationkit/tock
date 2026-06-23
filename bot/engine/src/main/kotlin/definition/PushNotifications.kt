@@ -18,6 +18,7 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.connector.ConnectorException
 import ai.tock.bot.connector.NotifyBotStateModifier
+import ai.tock.bot.engine.AsyncBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.action.ActionNotificationType
@@ -63,6 +64,7 @@ fun notify(
             intent = intent,
             step = step,
             parameters = parameters.toMap(),
+            transientContext = DialogContext.EMPTY,
             stateModifier = stateModifier,
             notificationType = notificationType,
             errorListener = errorListener,
@@ -79,6 +81,7 @@ fun notify(
  * @param intent the notification intent
  * @param step the optional step target
  * @param parameters the optional parameters
+ * @param transientContext transient parameters accessible from [AsyncBus.getBusContextValue]
  * @param stateModifier allow the notification to bypass current user state
  * @param notificationType the notification type if any
  * @throws SkippedEventException if a concurrent request prevents processing of the pushed event
@@ -91,6 +94,7 @@ suspend fun BotDefinition.pushNotification(
     intent: IntentAware,
     step: StoryStepDef? = null,
     parameters: Parameters = Parameters.EMPTY,
+    transientContext: DialogContext = DialogContext.EMPTY,
     stateModifier: NotifyBotStateModifier = NotifyBotStateModifier.KEEP_CURRENT_STATE,
     notificationType: ActionNotificationType? = null,
 ) {
@@ -101,6 +105,7 @@ suspend fun BotDefinition.pushNotification(
         intent = intent,
         step = step,
         parameters = parameters.toMap(),
+        transientContext = transientContext,
         stateModifier = stateModifier,
         notificationType = notificationType,
         namespace = namespace,

@@ -17,6 +17,7 @@
 package ai.tock.bot.connector
 
 import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.definition.DialogContext
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryStepDef
 import ai.tock.bot.engine.BotBus
@@ -127,6 +128,7 @@ interface Connector {
         intent: IntentAware,
         step: StoryStepDef? = null,
         parameters: Map<String, String> = emptyMap(),
+        transientContext: DialogContext = DialogContext.EMPTY,
         notificationType: ActionNotificationType?,
         errorListener: (Throwable) -> Unit = {},
     ): Unit = throw UnsupportedOperationException("Connector $connectorType does not support notification")

@@ -208,7 +208,7 @@ class BotDefinitionTest {
                     DialogState(
                         currentIntent = intent,
                         entityValues = mutableMapOf(),
-                        context = mutableMapOf(),
+                        context = DialogContextMap(),
                     ),
                 stories =
                     mutableListOf(
@@ -256,7 +256,7 @@ class BotDefinitionTest {
                     DialogState(
                         currentIntent = intent,
                         entityValues = mutableMapOf(),
-                        context = mutableMapOf(),
+                        context = DialogContextMap(),
                     ),
                 stories =
                     mutableListOf(

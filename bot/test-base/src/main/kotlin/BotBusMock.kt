@@ -23,6 +23,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorMessageProvider
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.DialogContextKey
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
@@ -380,25 +381,33 @@ open class BotBusMock(
         userPreferences.locale = locale
     }
 
-    /**
-     * Returns the non persistent current value.
-     */
-    override fun <T> getBusContextValue(name: String): T? {
-        @Suppress("UNCHECKED_CAST")
-        return mockData.contextMap[name] as T
+    override fun <T : Any> getBusContextValue(key: DialogContextKey<T>): T? {
+        return mockData.contextMap[key]
     }
 
-    /**
-     * Update the non persistent current value.
-     */
-    override fun setBusContextValue(
-        key: String,
-        value: Any?,
+    override fun <T : Any> setBusContextValue(
+        key: DialogContextKey<T>,
+        value: T?,
     ) {
         if (value == null) {
             mockData.contextMap.remove(key)
         } else {
             mockData.contextMap[key] = value
+        }
+    }
+
+    /**
+     * Update the non persistent current value.
+     */
+    @Deprecated("This overload makes unsafe assumptions about the type of value", replaceWith = ReplaceWith("setBusContextValue(DialogContextKey(key), value)"))
+    override fun setBusContextValue(
+        key: String,
+        value: Any?,
+    ) {
+        if (value == null) {
+            mockData.contextMap.remove(DialogContextKey(key, Any::class))
+        } else {
+            setBusContextValue(DialogContextKey(key, value.javaClass.kotlin), value)
         }
     }
 
