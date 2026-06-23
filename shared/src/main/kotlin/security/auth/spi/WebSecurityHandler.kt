@@ -27,4 +27,11 @@ const val TOCK_USER_ID = "tock_user_id"
  *
  * Custom implementations should store the final user id in the [RoutingContext] using `routingContext.put(TOCK_USER_ID, userId)`.
  */
-interface WebSecurityHandler : Handler<RoutingContext>
+interface WebSecurityHandler : Handler<RoutingContext> {
+    companion object {
+        /**
+         * Can be used as a [RoutingContext] key to store an optional [ai.tock.bot.definition.DialogContext]
+         */
+        const val TRANSIENT_DIALOG_CONTEXT_KEY = "tock_transient_dialog_context"
+    }
+}

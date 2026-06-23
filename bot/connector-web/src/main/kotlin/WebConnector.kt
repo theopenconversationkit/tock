@@ -149,7 +149,7 @@ class WebConnector internal constructor(
                                     ?: context.body().asString() ?: error("message is mandatory and is missing")
                             context.response().setupSSE()
 
-                            handleRequest(controller, context, body)
+                            handleRequest(controller, context, body, transientContext = DialogContext.EMPTY)
                         } catch (t: Throwable) {
                             context.fail(t)
                         }
@@ -162,6 +162,7 @@ class WebConnector internal constructor(
                 .coHandler { context ->
                     // Override the user on the request body
                     val tockUserId: String? = context.get<String>(TOCK_USER_ID)
+                    val transientContext: DialogContext = context.get(WebSecurityHandler.TRANSIENT_DIALOG_CONTEXT_KEY) ?: DialogContext.EMPTY
                     val body =
                         tockUserId?.let {
                             val jsonBody = context.body().asJsonObject() ?: JsonObject()
@@ -170,7 +171,7 @@ class WebConnector internal constructor(
                         } ?: context.body().asString()
 
                     // Handle the request
-                    handleRequest(controller, context, body)
+                    handleRequest(controller, context, body, transientContext)
                 }
         }
     }
@@ -185,6 +186,7 @@ class WebConnector internal constructor(
         controller: ConnectorController,
         context: RoutingContext,
         body: String,
+        transientContext: DialogContext,
     ) {
         val timerData = BotRepository.requestTimer.start("web_webhook")
         try {
@@ -205,7 +207,7 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = DialogContext.EMPTY, errorListener = null)
+            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos), transientDialogContext = transientContext, errorListener = null)
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
