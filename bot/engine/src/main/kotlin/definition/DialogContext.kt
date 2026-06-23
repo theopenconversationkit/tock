@@ -64,13 +64,6 @@ interface DialogContext {
     fun asMap(): Map<DialogContextKey<*>, Any>
 
     operator fun <T : Any> get(key: DialogContextKey<T>): T?
-
-    operator fun <T : Any> set(
-        key: DialogContextKey<T>,
-        value: T,
-    )
-
-    fun <T : Any> add(entry: Pair<DialogContextKey<T>, T>)
 }
 
 interface MutableDialogContext : DialogContext {
@@ -82,6 +75,13 @@ interface MutableDialogContext : DialogContext {
         key: DialogContextKey<T>,
         value: T,
     )
+
+    operator fun <T : Any> set(
+        key: DialogContextKey<T>,
+        value: T,
+    )
+
+    fun <T : Any> add(entry: Pair<DialogContextKey<T>, T>)
 
     fun remove(key: DialogContextKey<*>)
 
