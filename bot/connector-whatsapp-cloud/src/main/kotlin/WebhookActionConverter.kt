@@ -74,7 +74,7 @@ internal object WebhookActionConverter {
 
             is WhatsAppCloudButtonMessage -> {
                 val messageCopy = getMessageButtonCopy(message)
-                messageCopy.button.payload.let { payload ->
+                messageCopy.button.payload?.let { payload ->
                     SendChoice.decodeChoice(
                         payload,
                         PlayerId(senderId),
@@ -92,7 +92,7 @@ internal object WebhookActionConverter {
                 val payloadListReply = messageCopy.interactive.listReply?.id
 
                 val payload = payloadButtonReply ?: payloadListReply
-                return payload?.let {
+                payload?.let {
                     SendChoice.decodeChoice(
                         it,
                         PlayerId(senderId),
@@ -138,7 +138,7 @@ internal object WebhookActionConverter {
     }
 
     private fun getMessageButtonCopy(message: WhatsAppCloudButtonMessage): WhatsAppCloudButtonMessage {
-        val payload = payloadWhatsApp.getPayloadById(message.button.payload)
+        val payload = message.button.payload?.let(payloadWhatsApp::getPayloadById)
         return if (payload != null) {
             val copyButton =
                 message.button.copy(

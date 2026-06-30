@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Value(
     @JsonProperty("messaging_product") val messagingProduct: String,
-    @JsonProperty("metadata") val metadata: Metadata,
+    @JsonProperty("metadata") val metadata: Metadata?,
     @JsonProperty("contacts") val contacts: List<Contact> = emptyList(),
     @JsonProperty("messages") val messages: List<WhatsAppCloudMessage> = emptyList(),
     @JsonProperty("statuses") val statuses: List<Status> = emptyList(),
@@ -29,15 +29,15 @@ data class Value(
 )
 
 data class Metadata(
-    @JsonProperty("display_phone_number") val displayPhoneNumber: String,
-    @JsonProperty("phone_number_id") val phoneNumberId: String,
+    @JsonProperty("display_phone_number") val displayPhoneNumber: String?,
+    @JsonProperty("phone_number_id") val phoneNumberId: String?,
 )
 
 data class Contact(
-    @JsonProperty("profile") val profile: Profile,
+    @JsonProperty("profile") val profile: Profile?,
     @JsonProperty("wa_id") val waId: String,
 )
 
 data class Profile(
-    @JsonProperty("name") val name: String,
+    @JsonProperty("name") val name: String?,
 )

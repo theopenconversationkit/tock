@@ -208,7 +208,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         requestBody.entry.forEach { entry: Entry ->
             entry.changes
                 .filter {
-                    it.value.metadata.phoneNumberId == phoneNumberId
+                    it.value.metadata?.phoneNumberId == phoneNumberId
                 }.forEach { change: Change ->
                     change.value.messages
                         .filter {
