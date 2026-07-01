@@ -20,14 +20,14 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 
 def test_validate_prompt_template():
     json = {
-        "formatter": "f-string",
-        "template": "Options:\n{% if options.spelling_mistakes %}- include sentences with spelling mistakes{% endif %}{% if options.sms_language %}- include sentences with sms language{% endif %}\nQuestion: \nTakes into account the previous options and generates in {{ local }} language, {{ nb_sentences }} sentences derived from the sentences in the following list:\n{% for sentence in sentences %}- {{ sentence }}\n{% endfor %}",
-        "inputs": {
-            "options": {"spelling_mistakes": True, "sms_language": True},
-            "local": "French",
-            "nb_sentences": 5,
-            "sentences": ["j'ai faim.", "J'ai envie de manger"],
+        'formatter': 'f-string',
+        'template': 'Options:\n{% if options.spelling_mistakes %}- include sentences with spelling mistakes{% endif %}{% if options.sms_language %}- include sentences with sms language{% endif %}\nQuestion: \nTakes into account the previous options and generates in {{ local }} language, {{ nb_sentences }} sentences derived from the sentences in the following list:\n{% for sentence in sentences %}- {{ sentence }}\n{% endfor %}',
+        'inputs': {
+            'options': {'spelling_mistakes': True, 'sms_language': True},
+            'local': 'French',
+            'nb_sentences': 5,
+            'sentences': ["j'ai faim.", "J'ai envie de manger"],
         },
     }
     template = PromptTemplate(**json)
-    validate_prompt_template(template, "prompt_name")
+    validate_prompt_template(template, 'prompt_name')

@@ -85,22 +85,22 @@ class LangfuseCallbackHandlerFactory(LangChainCallbackHandlerFactory):
         while tracing a sample phrase"""
         try:
             client = self._get_langfuse_client()
-            logger.debug("Langfuse client initialized.")
+            logger.debug('Langfuse client initialized.')
 
             if not client.auth_check():
                 raise GenAIObservabilityErrorException(
                     ErrorInfo(
-                        error="Langfuse authentication check failed",
-                        cause="API Keys",
+                        error='Langfuse authentication check failed',
+                        cause='API Keys',
                     )
                 )
 
             with client.start_as_current_observation(
-                as_type="span",
+                as_type='span',
                 name=ObservabilityTrace.CHECK_OBSERVABILITY_SETTINGS.value,
-                input={"message": "Check observability setting"},
+                input={'message': 'Check observability setting'},
             ) as span:
-                span.update(output="Check observability setting trace")
+                span.update(output='Check observability setting trace')
 
             client.flush()
 

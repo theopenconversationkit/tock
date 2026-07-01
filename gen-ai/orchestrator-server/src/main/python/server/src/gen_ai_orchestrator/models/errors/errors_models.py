@@ -76,11 +76,11 @@ class ErrorCode(Enum):
         Document error codes using the names in the enum so that they are more comprehensible in the openAPI spec.
         """
         return {
-            "enum": [item.value for item in cls],
-            "description": "\n".join(
+            'enum': [item.value for item in cls],
+            'description': '\n'.join(
                 [f"* `{item.value}`: {item.name}" for item in cls]
             ),
-            "type": "string",
+            'type': 'string',
         }
 
 
@@ -88,13 +88,13 @@ class ErrorMessage(BaseModel):
     """Model for Error message and its detail"""
 
     message: str = Field(
-        description="The Gen AI orchestrator error message",
-        examples=["Authentication error to the AI Provider API."],
+        description='The Gen AI orchestrator error message',
+        examples=['Authentication error to the AI Provider API.'],
     )
     detail: Optional[str] = Field(
-        description="The AI orchestrator error detail. It provides help or a solution",
+        description='The AI orchestrator error detail. It provides help or a solution',
         examples=[
-            "Check your API key or token and make sure it is correct and active."
+            'Check your API key or token and make sure it is correct and active.'
         ],
         default=None,
     )
@@ -104,22 +104,22 @@ class ErrorInfo(BaseModel):
     """Error info model"""
 
     provider: str = Field(
-        description="The AI Provider ID",
+        description='The AI Provider ID',
         examples=[LLMProvider.AZURE_OPEN_AI_SERVICE],
-        default="",
+        default='',
     )
     error: str = Field(
-        description="The error", examples=["BadRequestError"], default=""
+        description='The error', examples=['BadRequestError'], default=''
     )
     cause: str = Field(
-        description="The error cause",
-        examples=["Invalid value for query parameter"],
-        default="",
+        description='The error cause',
+        examples=['Invalid value for query parameter'],
+        default='',
     )
     request: str = Field(
-        description="The AI Provider API or the AI Orchestrator API",
-        default="",
-        examples=["[POST] https://api.openai.com/v1/chat/completions"],
+        description='The AI Provider API or the AI Orchestrator API',
+        default='',
+        examples=['[POST] https://api.openai.com/v1/chat/completions'],
     )
 
 
@@ -128,104 +128,104 @@ class ErrorMessages:
 
     ERROR_MESSAGES = {
         # Gen AI Orchestrator Errors
-        ErrorCode.GEN_AI_UNKNOWN_ERROR: ErrorMessage(message="Unknown error."),
+        ErrorCode.GEN_AI_UNKNOWN_ERROR: ErrorMessage(message='Unknown error.'),
         ErrorCode.GEN_AI_CONNECTION_ERROR: ErrorMessage(
-            message="Connection error.",
-            detail="Check the requested URL, your network settings, proxy configuration, "
-            "SSL certificates, or firewall rules.",
+            message='Connection error.',
+            detail='Check the requested URL, your network settings, proxy configuration, '
+            'SSL certificates, or firewall rules.',
         ),
         ErrorCode.GEN_AI_AUTHENTICATION_ERROR: ErrorMessage(
-            message="Authentication error.",
-            detail="Check the API key or token, and make sure it is correct.",
+            message='Authentication error.',
+            detail='Check the API key or token, and make sure it is correct.',
         ),
         ErrorCode.GEN_AI_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message="Unknown AI provider setting."
+            message='Unknown AI provider setting.'
         ),
         ErrorCode.GEN_AI_GUARD_CHECK_ERROR: ErrorMessage(
-            message="Guard check failed.",
+            message='Guard check failed.',
         ),
         ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR: ErrorMessage(
-            message="Prompt Template Error.",
-            detail="Check the template syntax.",
+            message='Prompt Template Error.',
+            detail='Check the template syntax.',
         ),
         # AI Provider Errors
-        ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message="Unknown AI Provider."),
+        ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),
         ErrorCode.AI_PROVIDER_BAD_REQUEST: ErrorMessage(
-            message="Bad request.", detail="The request seems to be invalid."
+            message='Bad request.', detail='The request seems to be invalid.'
         ),
-        ErrorCode.AI_PROVIDER_API_ERROR: ErrorMessage(message="AI Provider API error."),
+        ErrorCode.AI_PROVIDER_API_ERROR: ErrorMessage(message='AI Provider API error.'),
         ErrorCode.AI_PROVIDER_API_RESOURCE_NOT_FOUND: ErrorMessage(
-            message="An AI Provider resource was not found.",
-            detail="The request URL base is correct, but the path or a query parameter is not.",
+            message='An AI Provider resource was not found.',
+            detail='The request URL base is correct, but the path or a query parameter is not.',
         ),
         ErrorCode.AI_PROVIDER_API_MODEL_NOT_FOUND: ErrorMessage(
-            message="Unknown AI Provider model.",
-            detail="Consult the official documentation for accepted values.",
+            message='Unknown AI Provider model.',
+            detail='Consult the official documentation for accepted values.',
         ),
         ErrorCode.AI_PROVIDER_API_DEPLOYMENT_NOT_FOUND: ErrorMessage(
-            message="Unknown AI Provider deployment.",
-            detail="Consult the official documentation for accepted values.",
+            message='Unknown AI Provider deployment.',
+            detail='Consult the official documentation for accepted values.',
         ),
         ErrorCode.AI_PROVIDER_API_BAD_REQUEST: ErrorMessage(
-            message="AI Provider API error.", detail="Bad request."
+            message='AI Provider API error.', detail='Bad request.'
         ),
         ErrorCode.AI_PROVIDER_API_CONTEXT_LENGTH_EXCEEDED_BAD_REQUEST: ErrorMessage(
             message="The model's context length has been exceeded.",
-            detail="Reduce the length of the prompt message.",
+            detail='Reduce the length of the prompt message.',
         ),
         # Vector Store Errors
         ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(
-            message="Unknown vector store provider."
+            message='Unknown vector store provider.'
         ),
         ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message="Unknown vector store setting."
+            message='Unknown vector store setting.'
         ),
         ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED: ErrorMessage(
-            message="No documents were retrieved from the vector store."
+            message='No documents were retrieved from the vector store.'
         ),
         # OpenSearch Errors
         ErrorCode.OPEN_SEARCH_SETTINGS_ERROR: ErrorMessage(
-            message="The OpenSearch is improperly configured.",
-            detail="The config passed to the client is inconsistent or invalid.",
+            message='The OpenSearch is improperly configured.',
+            detail='The config passed to the client is inconsistent or invalid.',
         ),
         ErrorCode.OPEN_SEARCH_TRANSPORT_ERROR: ErrorMessage(
-            message="The OpenSearch returns 4xx http error, or connection error.",
+            message='The OpenSearch returns 4xx http error, or connection error.',
         ),
         ErrorCode.OPEN_SEARCH_RESOURCE_NOT_FOUND: ErrorMessage(
-            message="The OpenSearch resource was not found.",
+            message='The OpenSearch resource was not found.',
         ),
         ErrorCode.OPEN_SEARCH_INDEX_NOT_FOUND: ErrorMessage(
-            message="The OpenSearch index was not found.",
-            detail="Ensure that the index exists and create it if it does not.",
+            message='The OpenSearch index was not found.',
+            detail='Ensure that the index exists and create it if it does not.',
         ),
         # Observability Errors
         ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER: ErrorMessage(
-            message="Unknown Observability Provider."
+            message='Unknown Observability Provider.'
         ),
         ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message="Unknown Observability Provider Settings."
+            message='Unknown Observability Provider Settings.'
         ),
         ErrorCode.OBSERVABILITY_API_ERROR: ErrorMessage(
-            message="Observability API error.",
+            message='Observability API error.',
         ),
         # Document Compressor Errors
         ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER: ErrorMessage(
-            message="Unknown Document Compressor Provider."
+            message='Unknown Document Compressor Provider.'
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message="Unknown Document Compressor Provider Settings."
+            message='Unknown Document Compressor Provider Settings.'
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR: ErrorMessage(
-            message="Unknown Document Compressor label.",
-            detail="Check the Document Compressor label you sent.",
+            message='Unknown Document Compressor label.',
+            detail='Check the Document Compressor label you sent.',
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_API_ERROR: ErrorMessage(
-            message="Document Compressor API error.",
+            message='Document Compressor API error.',
         ),
     }
 
     def get_message(self, code: ErrorCode) -> ErrorMessage:
-        return self.ERROR_MESSAGES.get(code, ErrorMessage(message="Unknown error"))
+        return self.ERROR_MESSAGES.get(code, ErrorMessage(message='Unknown error'))
 
 
 error_messages = ErrorMessages()

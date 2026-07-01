@@ -29,12 +29,12 @@ class AwsSecretKey(BaseSecretKey):
     """
 
     type: Literal[SecretKeyType.AWS_SECRETS_MANAGER] = Field(
-        description="The Secret Key type.",
+        description='The Secret Key type.',
         examples=[SecretKeyType.AWS_SECRETS_MANAGER],
         default=SecretKeyType.AWS_SECRETS_MANAGER,
     )
     secret_name: str = Field(
-        description="The secret name managed in AWS Secrets Manager.",
-        examples=["PROD/App/openaiapi_key"],
+        description='The secret name managed in AWS Secrets Manager.',
+        examples=['PROD/App/openaiapi_key'],
         min_length=1,
     )

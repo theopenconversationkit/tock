@@ -16,7 +16,6 @@
 
 import logging
 
-
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
 )
@@ -42,7 +41,7 @@ async def check_llm_setting(request: LLMProviderSettingStatusRequest) -> bool:
          True for a valid LLM setting. Raise exception otherwise.
     """
 
-    logger.info("Get the LLM Factory, then check the LLM setting.")
+    logger.info('Get the LLM Factory, then check the LLM setting.')
     langfuse_callback_handler = None
     if request.observability_setting is not None:
         langfuse_callback_handler = get_callback_handler_factory(

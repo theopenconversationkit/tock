@@ -23,7 +23,7 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 
 client = TestClient(app)
 
-urls_prefix = "/llm-providers"
+urls_prefix = '/llm-providers'
 
 
 def test_get_all_llm_providers():
@@ -38,7 +38,7 @@ def test_get_llm_provider_by_id():
     provider_id = list(LLMProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}")
     assert response.status_code == 200
-    assert response.json()["provider"] == provider_id
+    assert response.json()['provider'] == provider_id
 
 
 def test_get_llm_provider_by_id_wrong_id():
@@ -46,7 +46,7 @@ def test_get_llm_provider_by_id_wrong_id():
     response = client.get(f"{urls_prefix}/wrong_id")
     assert response.status_code == 400
     assert (
-        response.json()["message"]
+        response.json()['message']
         == ErrorMessages().get_message(ErrorCode.AI_PROVIDER_UNKNOWN).message
     )
 
@@ -56,14 +56,14 @@ def test_get_llm_provider_setting_by_id():
     provider_id = list(LLMProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
     assert response.status_code == 200
-    assert response.json()["provider"] == provider_id
+    assert response.json()['provider'] == provider_id
 
 
 def test_check_llm_provider_setting():
     """Test checking a provider setting (use example for checking)."""
     provider_id = list(LLMProvider)[0].value
     response = client.get(f"{urls_prefix}/{provider_id}/setting/example")
-    data = {"setting": response.json()}
+    data = {'setting': response.json()}
     response = client.post(f"{urls_prefix}/{provider_id}/setting/status", json=data)
     assert response.status_code == 200
-    assert not response.json()["valid"]
+    assert not response.json()['valid']

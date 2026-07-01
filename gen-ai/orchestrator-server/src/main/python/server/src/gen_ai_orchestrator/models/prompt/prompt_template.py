@@ -23,12 +23,12 @@ class PromptTemplate(BaseModel):
     """A prompt template model, used to specify a formatter"""
 
     formatter: PromptFormatter = Field(
-        description="The formatter of this prompt.",
+        description='The formatter of this prompt.',
         examples=[PromptFormatter.JINJA2],
     )
     template: str = Field(
-        description="The Jinja2 Template for create a prompt.",
+        description='The Jinja2 Template for create a prompt.',
     )
     inputs: dict = Field(
-        description="inputs for generation of prompt with the template",
+        description='inputs for generation of prompt with the template',
     )

@@ -44,22 +44,22 @@ class ErrorResponse(BaseModel):
     """The error response model"""
 
     code: ErrorCode = Field(
-        description="The AI orchestrator error code.",
+        description='The AI orchestrator error code.',
         examples=[ErrorCode.GEN_AI_AUTHENTICATION_ERROR],
     )
     message: str = Field(
-        description="The AI orchestrator error message.",
-        examples=["Authentication error to the AI Provider API."],
+        description='The AI orchestrator error message.',
+        examples=['Authentication error to the AI Provider API.'],
     )
     detail: Optional[str] = Field(
-        description="The AI orchestrator error detail. It provides help or a solution.",
+        description='The AI orchestrator error detail. It provides help or a solution.',
         examples=[
-            "Check your API key or token and make sure it is correct and active."
+            'Check your API key or token and make sure it is correct and active.'
         ],
         default=None,
     )
     info: ErrorInfo = Field(
-        description="The AI orchestrator error info. It exposes the raised error cause."
+        description='The AI orchestrator error info. It exposes the raised error cause.'
     )
 
 
@@ -67,18 +67,18 @@ class ProviderSettingStatusResponse(BaseModel):
     """The response model of the provider setting status"""
 
     valid: bool = Field(
-        description="It indicates the setting validity.",
+        description='It indicates the setting validity.',
         examples=[True],
         default=False,
     )
-    errors: list[ErrorResponse] = Field(description="The list of errors.", default=[])
+    errors: list[ErrorResponse] = Field(description='The list of errors.', default=[])
 
 
 class LLMProviderResponse(BaseModel):
     """The response model of the LLM provider"""
 
     provider: LLMProvider = Field(
-        description="The LLM Provider ID", default=[LLMProvider.OPEN_AI]
+        description='The LLM Provider ID', default=[LLMProvider.OPEN_AI]
     )
 
 
@@ -86,7 +86,7 @@ class VectorStoreProviderResponse(BaseModel):
     """The response model of the Vector Store provider"""
 
     provider: VectorStoreProvider = Field(
-        description="The Vector Store Provider ID",
+        description='The Vector Store Provider ID',
         default=[VectorStoreProvider.OPEN_SEARCH],
     )
 
@@ -95,7 +95,7 @@ class ObservabilityProviderResponse(BaseModel):
     """The response model of the Observability provider"""
 
     provider: ObservabilityProvider = Field(
-        description="The Observability Provider ID",
+        description='The Observability Provider ID',
         default=[ObservabilityProvider.LANGFUSE],
     )
 
@@ -104,7 +104,7 @@ class DocumentCompressorProviderResponse(BaseModel):
     """The response model of the Document Compressor provider"""
 
     provider: DocumentCompressorProvider = Field(
-        description="The Document Compressor Provider ID",
+        description='The Document Compressor Provider ID',
         default=[DocumentCompressorProvider.BLOOMZ],
     )
 
@@ -113,7 +113,7 @@ class EMProviderResponse(BaseModel):
     """The response model of the EM provider"""
 
     provider: EMProvider = Field(
-        description="The Embedding Model Provider ID",
+        description='The Embedding Model Provider ID',
         default=[EMProvider.AZURE_OPEN_AI_SERVICE],
     )
 
@@ -121,23 +121,23 @@ class EMProviderResponse(BaseModel):
 class ObservabilityInfo(BaseModel):
     """The Observability Info model"""
 
-    trace_id: str = Field(description="The observability trace id.")
-    trace_name: str = Field(description="The observability trace name.")
-    trace_url: str = Field(description="The observability trace url.")
+    trace_id: str = Field(description='The observability trace id.')
+    trace_name: str = Field(description='The observability trace name.')
+    trace_url: str = Field(description='The observability trace url.')
 
 
 class RAGResponse(BaseModel):
     """The RAG response model"""
 
-    answer: Optional[LLMAnswer] = Field(description="The RAG answer")
-    footnotes: list[Footnote] = Field(description="List of footnotes")
+    answer: Optional[LLMAnswer] = Field(description='The RAG answer')
+    footnotes: list[Footnote] = Field(description='List of footnotes')
     debug: Optional[Any] = Field(
-        description="Debug data",
-        examples=[{"action": "retrieve", "result": "OK", "errors": []}],
+        description='Debug data',
+        examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
         default=None,
     )
     observability_info: Optional[ObservabilityInfo] = Field(
-        description="The observability info.", default=None
+        description='The observability info.', default=None
     )
 
 
@@ -145,7 +145,7 @@ class QAResponse(BaseModel):
     """The QA response model"""
 
     documents: set[Source] = Field(
-        description="The sources corresponding to the QA request."
+        description='The sources corresponding to the QA request.'
     )
 
 
@@ -153,14 +153,14 @@ class SentenceGenerationResponse(BaseModel):
     """The sentence generation response model"""
 
     sentences: list[str] = Field(
-        description="The list of generated sentences.", default=[]
+        description='The list of generated sentences.', default=[]
     )
 
 
 class PlaygroundResponse(BaseModel):
     """The playground response model"""
 
-    answer: str = Field(description="The playground answer.")
+    answer: str = Field(description='The playground answer.')
     observability_info: Optional[ObservabilityInfo] = Field(
-        description="The observability info.", default=None
+        description='The observability info.', default=None
     )

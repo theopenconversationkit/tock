@@ -33,15 +33,15 @@ class OpenAIEMSetting(BaseEMSetting):
     """
 
     provider: Literal[EMProvider.OPEN_AI] = Field(
-        description="The Embedding Model Provider.", examples=[EMProvider.OPEN_AI]
+        description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )
     api_key: SecretKey = Field(
-        description="The secret that stores the API key used to authenticate requests to the AI Provider API.",
-        examples=[RawSecretKey(secret="ab7-************-A1IV4B")],
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
     )
-    model: str = Field(description="The model id", examples=["text-embedding-ada-002"])
+    model: str = Field(description='The model id', examples=['text-embedding-ada-002'])
     base_url: str = Field(
-        description="The OpenAI endpoint base URL",
-        examples=["https://api.openai.com/v1"],
-        default="https://api.openai.com/v1",
+        description='The OpenAI endpoint base URL',
+        examples=['https://api.openai.com/v1'],
+        default='https://api.openai.com/v1',
     )

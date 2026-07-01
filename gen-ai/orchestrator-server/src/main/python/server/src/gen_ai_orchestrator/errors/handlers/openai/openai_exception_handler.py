@@ -120,9 +120,9 @@ def _manage_not_found_error(exc: NotFoundError, provider: str):
         Raise a specific Gen AI Orchestrator exception according to the OpenAI error code
     """
 
-    if "model_not_found" == exc.code:
+    if 'model_not_found' == exc.code:
         raise AIProviderAPIModelException(create_error_info_openai(exc, provider))
-    elif "DeploymentNotFound" == exc.code:
+    elif 'DeploymentNotFound' == exc.code:
         raise AIProviderAPIDeploymentNotFoundException(
             create_error_info_openai(exc, provider)
         )
@@ -143,7 +143,7 @@ def _manage_bad_request_error(exc: BadRequestError, provider: str):
         Raise a specific Gen AI Orchestrator exception according to the OpenAI error code
     """
 
-    if "context_length_exceeded" == exc.code:
+    if 'context_length_exceeded' == exc.code:
         raise AIProviderAPIContextLengthExceededException(
             create_error_info_openai(exc, provider)
         )

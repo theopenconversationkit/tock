@@ -21,8 +21,8 @@ from enum import Enum, unique
 class VectorStoreProvider(str, Enum):
     """Enumeration to list Vector Store Provider types"""
 
-    OPEN_SEARCH = "OpenSearch"
-    PGVECTOR = "PGVector"
+    OPEN_SEARCH = 'OpenSearch'
+    PGVECTOR = 'PGVector'
 
     @classmethod
     def has_value(cls, value):

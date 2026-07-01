@@ -49,6 +49,6 @@ class OpenAIEMFactory(LangChainEMFactory):
             timeout=application_settings.em_provider_timeout,
         )
 
-    @openai_exception_handler(provider="OpenAI")
+    @openai_exception_handler(provider='OpenAI')
     async def embed_query(self, text: str) -> List[float]:
         return await super().embed_query(text)

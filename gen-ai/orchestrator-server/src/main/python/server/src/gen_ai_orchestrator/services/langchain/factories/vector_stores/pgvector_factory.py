@@ -79,7 +79,7 @@ class PGVectorFactory(LangChainVectorStoreFactory):
         return PostgreSQLTextRetriever(
             engine=engine,
             table_name=self.index_name,
-            k=search_kwargs.get("k", 10),
+            k=search_kwargs.get('k', 10),
         )
 
     async def check_vector_store_connection(self) -> bool:

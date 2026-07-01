@@ -37,10 +37,10 @@ from gen_ai_orchestrator.services.rag.rag_service import rag
 
 logger = logging.getLogger(__name__)
 
-rag_router = APIRouter(prefix="/rag", tags=["Retrieval Augmented Generation"])
+rag_router = APIRouter(prefix='/rag', tags=['Retrieval Augmented Generation'])
 
 
-@rag_router.post("")
+@rag_router.post('')
 async def ask_rag(
     http_request: Request, request: RAGRequest, debug: bool = False
 ) -> RAGResponse:
@@ -73,7 +73,7 @@ def validate_vector_store_rag_query(
         AIProviderBadRequestException: if the search parameters are not compatible with the vector store
     """
 
-    logger.debug("RAG - Request validation")
+    logger.debug('RAG - Request validation')
 
     vector_store_provider = application_settings.vector_store_provider
     if vector_store_setting is not None:
@@ -81,7 +81,7 @@ def validate_vector_store_rag_query(
 
     if vector_store_provider != vector_store_search_params.provider:
         logger.error(
-            "Inconsistency between vector store provider and document search parameters (%s Vs %s)",
+            'Inconsistency between vector store provider and document search parameters (%s Vs %s)',
             vector_store_provider.value,
             vector_store_search_params.provider.value,
         )
@@ -89,6 +89,6 @@ def validate_vector_store_rag_query(
             create_error_info_bad_request(
                 http_request=http_request,
                 provider=vector_store_search_params.provider,
-                cause="Inconsistency between vector store provider and document search parameters",
+                cause='Inconsistency between vector store provider and document search parameters',
             )
         )

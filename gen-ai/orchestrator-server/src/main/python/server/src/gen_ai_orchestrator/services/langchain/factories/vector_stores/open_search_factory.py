@@ -59,7 +59,7 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
     ) -> OpenSearchVectorSearch:
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
-            "OpenSearch user credentials: %s:%s",
+            'OpenSearch user credentials: %s:%s',
             self.setting.username,
             obfuscate(password),
         )

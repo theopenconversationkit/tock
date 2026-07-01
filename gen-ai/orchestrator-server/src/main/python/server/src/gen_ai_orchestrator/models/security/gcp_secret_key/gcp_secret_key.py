@@ -29,12 +29,12 @@ class GcpSecretKey(BaseSecretKey):
     """
 
     type: Literal[SecretKeyType.GCP_SECRET_MANAGER] = Field(
-        description="The Secret Key type.",
+        description='The Secret Key type.',
         examples=[SecretKeyType.GCP_SECRET_MANAGER],
         default=SecretKeyType.GCP_SECRET_MANAGER,
     )
     secret_name: str = Field(
-        description="The secret name managed in GCP Secret Manager.",
-        examples=["PROD/App/openaiapi_key"],
+        description='The secret name managed in GCP Secret Manager.',
+        examples=['PROD/App/openaiapi_key'],
         min_length=1,
     )

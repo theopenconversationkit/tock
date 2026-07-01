@@ -21,9 +21,9 @@ from enum import Enum, unique
 class DocumentSearchType(str, Enum):
     """Enumeration to list Document Search Types"""
 
-    SIMILARITY_SEARCH = "SIMILARITY_SEARCH"
-    FULL_TEXT_SEARCH = "FULL_TEXT_SEARCH"
-    HYBRID_SEARCH = "HYBRID_SEARCH"
+    SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
+    FULL_TEXT_SEARCH = 'FULL_TEXT_SEARCH'
+    HYBRID_SEARCH = 'HYBRID_SEARCH'
 
     @classmethod
     def has_value(cls, value):

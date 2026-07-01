@@ -44,7 +44,7 @@ class OllamaLLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
         )
 
-    @ollama_exception_handler(provider="Ollama")
+    @ollama_exception_handler(provider='Ollama')
     async def invoke(
         self, _input: Input, config: Optional[RunnableConfig] = None
     ) -> Output:

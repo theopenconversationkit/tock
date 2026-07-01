@@ -21,7 +21,7 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-application_check_router = APIRouter(tags=["Application Monitors"])
+application_check_router = APIRouter(tags=['Application Monitors'])
 
 
 class AppCheckResponse(BaseModel):
@@ -30,13 +30,13 @@ class AppCheckResponse(BaseModel):
     Use cases: health check API and liveness     check API
     """
 
-    status: str = "Ok"
+    status: str = 'Ok'
 
 
 @application_check_router.get(
-    "/health-check",
-    summary="Perform a health check",
-    response_description="Return HTTP status code 200 (OK)",
+    '/health-check',
+    summary='Perform a health check',
+    response_description='Return HTTP status code 200 (OK)',
     status_code=status.HTTP_200_OK,
 )
 def get_health() -> AppCheckResponse:
@@ -49,15 +49,15 @@ def get_health() -> AppCheckResponse:
     Returns:
         HealthCheck: Returns a JSON response with the health status
     """
-    logger.debug("Health check -> OK")
-    return AppCheckResponse(status="OK")
+    logger.debug('Health check -> OK')
+    return AppCheckResponse(status='OK')
     # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-operations.html
 
 
 @application_check_router.get(
-    "/liveness-check",
-    summary="Perform a liveness check",
-    response_description="Return HTTP status code 200 (OK)",
+    '/liveness-check',
+    summary='Perform a liveness check',
+    response_description='Return HTTP status code 200 (OK)',
     status_code=status.HTTP_200_OK,
 )
 def get_liveness() -> AppCheckResponse:
@@ -70,5 +70,5 @@ def get_liveness() -> AppCheckResponse:
     Returns:
         LivenessCheck: Returns a JSON response with the liveness status
     """
-    logger.debug("Liveness check -> OK")
-    return AppCheckResponse(status="OK")
+    logger.debug('Liveness check -> OK')
+    return AppCheckResponse(status='OK')

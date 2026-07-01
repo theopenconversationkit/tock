@@ -56,7 +56,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             reasoning_effort=self.setting.reasoning_effort,
         )
 
-    @openai_exception_handler(provider="OpenAI")
+    @openai_exception_handler(provider='OpenAI')
     async def invoke(
         self, _input: Input, config: Optional[RunnableConfig] = None
     ) -> Output:

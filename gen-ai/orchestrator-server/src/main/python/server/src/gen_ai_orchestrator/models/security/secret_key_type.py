@@ -21,6 +21,6 @@ from enum import Enum, unique
 class SecretKeyType(str, Enum):
     """Enumeration to list Secret Key types"""
 
-    RAW = "Raw"
-    AWS_SECRETS_MANAGER = "AwsSecretsManager"
-    GCP_SECRET_MANAGER = "GcpSecretManager"
+    RAW = 'Raw'
+    AWS_SECRETS_MANAGER = 'AwsSecretsManager'
+    GCP_SECRET_MANAGER = 'GcpSecretManager'

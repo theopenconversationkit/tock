@@ -26,13 +26,13 @@ class BloomzEMSetting(BaseEMSetting):
     """A class for Bloomz Embedding Model Setting."""
 
     provider: Literal[EMProvider.BLOOMZ] = Field(
-        description="The Embedding Model provider.", examples=[EMProvider.BLOOMZ]
+        description='The Embedding Model provider.', examples=[EMProvider.BLOOMZ]
     )
     api_base: str = Field(
-        description="The base url of the provider API.", examples=["http://doc.tock.ai"]
+        description='The base url of the provider API.', examples=['http://doc.tock.ai']
     )
     pooling: Optional[str] = Field(
-        description="Pooling method.",
-        default="last",
-        examples=["mean", "last"],
+        description='Pooling method.',
+        default='last',
+        examples=['mean', 'last'],
     )

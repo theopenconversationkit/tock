@@ -49,13 +49,13 @@ async def check_vector_store_setting(
     """
 
     logger.info(
-        "Get the Callback handler Factory, then check the Vector Store setting."
+        'Get the Callback handler Factory, then check the Vector Store setting.'
     )
 
     if em_setting is None or index_name is None:
         return await get_vector_store_factory(
             setting=vector_store_setting,
-            index_name="fake_index_name",
+            index_name='fake_index_name',
             embedding_function=FakeEmbeddings(size=1536),
         ).check_vector_store_connection()
     else:

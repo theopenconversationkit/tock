@@ -17,7 +17,7 @@ from gen_ai_orchestrator.utils.strings import obfuscate
 
 
 def test_obfuscate():
-    obfuscated_str = obfuscate("stg")
-    assert obfuscated_str == "*****"
-    obfuscated_str = obfuscate("something")
-    assert obfuscated_str == "so******g"
+    obfuscated_str = obfuscate('stg')
+    assert obfuscated_str == '*****'
+    obfuscated_str = obfuscate('something')
+    assert obfuscated_str == 'so******g'

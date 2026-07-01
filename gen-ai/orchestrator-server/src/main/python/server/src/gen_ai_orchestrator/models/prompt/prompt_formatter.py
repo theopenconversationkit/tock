@@ -21,5 +21,5 @@ from enum import Enum, unique
 class PromptFormatter(str, Enum):
     """Enumeration to list prompt formatter type"""
 
-    F_STRING = "f-string"
-    JINJA2 = "jinja2"
+    F_STRING = 'f-string'
+    JINJA2 = 'jinja2'

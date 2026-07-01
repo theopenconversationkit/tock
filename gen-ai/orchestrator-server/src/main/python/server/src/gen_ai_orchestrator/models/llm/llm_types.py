@@ -33,5 +33,5 @@ from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
 
 LLMSetting = Annotated[
     Union[OpenAILLMSetting, AzureOpenAILLMSetting, FakeLLMSetting, OllamaLLMSetting],
-    Body(discriminator="provider"),
+    Body(discriminator='provider'),
 ]

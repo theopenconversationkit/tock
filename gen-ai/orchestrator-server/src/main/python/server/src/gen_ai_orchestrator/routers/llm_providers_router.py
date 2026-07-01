@@ -54,13 +54,13 @@ from gen_ai_orchestrator.services.llm.llm_service import check_llm_setting
 logger = logging.getLogger(__name__)
 
 llm_providers_router = APIRouter(
-    prefix="/llm-providers",
-    tags=["Large Language Model Providers"],
-    responses={404: {"description": "Not found"}},
+    prefix='/llm-providers',
+    tags=['Large Language Model Providers'],
+    responses={404: {'description': 'Not found'}},
 )
 
 
-@llm_providers_router.get("")
+@llm_providers_router.get('')
 async def get_all_llm_providers() -> list[LLMProvider]:
     """
     Returns:
@@ -69,7 +69,7 @@ async def get_all_llm_providers() -> list[LLMProvider]:
     return [provider.value for provider in LLMProvider]
 
 
-@llm_providers_router.get("/{provider_id}")
+@llm_providers_router.get('/{provider_id}')
 async def get_llm_provider_by_id(
     http_request: Request, provider_id: str
 ) -> LLMProviderResponse:
@@ -92,7 +92,7 @@ async def get_llm_provider_by_id(
     return LLMProviderResponse(provider=LLMProvider(provider_id))
 
 
-@llm_providers_router.get("/{provider_id}/setting/example")
+@llm_providers_router.get('/{provider_id}/setting/example')
 async def get_llm_provider_setting_by_id(
     http_request: Request, provider_id: LLMProvider
 ) -> LLMSetting:
@@ -115,18 +115,18 @@ async def get_llm_provider_setting_by_id(
     if provider_id == LLMProvider.OPEN_AI:
         return OpenAILLMSetting(
             provider=LLMProvider.OPEN_AI,
-            api_key=RawSecretKey(secret="ab7***************************A1IV4B"),
-            model="gpt-3.5-turbo",
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
+            model='gpt-3.5-turbo',
             temperature=1.3,
         )
     elif provider_id == LLMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAILLMSetting(
             provider=LLMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key=RawSecretKey(secret="ab7***************************A1IV4B"),
-            deployment_name="my-deployment-name",
-            model="gpt-4o",
-            api_base=HttpUrl("https://doc.tock.ai/tock"),
-            api_version="2023-05-15",
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
+            deployment_name='my-deployment-name',
+            model='gpt-4o',
+            api_base=HttpUrl('https://doc.tock.ai/tock'),
+            api_version='2023-05-15',
             temperature=0.7,
         )
     else:
@@ -137,7 +137,7 @@ async def get_llm_provider_setting_by_id(
         )
 
 
-@llm_providers_router.post("/{provider_id}/setting/status")
+@llm_providers_router.post('/{provider_id}/setting/status')
 async def check_llm_provider_setting(
     http_request: Request, provider_id: str, request: LLMProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:
@@ -155,7 +155,7 @@ async def check_llm_provider_setting(
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.info("Start LLM setting check for provider %s", provider_id)
+    logger.info('Start LLM setting check for provider %s', provider_id)
     # Request validation
     validate_query(http_request, provider_id, request.setting)
 
@@ -163,10 +163,10 @@ async def check_llm_provider_setting(
         # LLM setting check
         await check_llm_setting(request)
 
-        logger.info("The LLM setting is valid")
+        logger.info('The LLM setting is valid')
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:
-        logger.info("The LLM setting is invalid!")
+        logger.info('The LLM setting is invalid!')
         logger.error(exc)
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
@@ -183,7 +183,7 @@ def validate_query(http_request: Request, provider_id: str, setting: LLMSetting)
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug("LLM setting - Request validation")
+    logger.debug('LLM setting - Request validation')
     validate_llm_provider(http_request, provider_id)
     if provider_id != setting.provider:
         raise AIProviderBadRequestException(

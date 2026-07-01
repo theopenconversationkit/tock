@@ -60,7 +60,7 @@ def opensearch_exception_handler(func):
             raise GenAIAuthenticationException(create_error_info_opensearch(exc))
         except OpenSearchNotFoundError as exc:
             logger.error(exc)
-            if "index_not_found_exception" == exc.error:
+            if 'index_not_found_exception' == exc.error:
                 raise GenAIOpenSearchIndexNotFoundException(
                     create_error_info_opensearch(exc)
                 )
@@ -79,7 +79,7 @@ def create_error_info_opensearch(
     exc: Union[
         OpenSearchImproperlyConfigured, OpenSearchException, OpenSearchDslException
     ],
-    provider: str = "OpenSearch",
+    provider: str = 'OpenSearch',
 ) -> ErrorInfo:
     """
     Create ErrorInfo for a OpenSearch error

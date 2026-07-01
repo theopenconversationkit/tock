@@ -102,11 +102,11 @@ from gen_ai_orchestrator.models.vector_stores.pgvector.database_pool_registry im
 from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
     PGVectorStoreSetting,
 )
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
-    VectorStoreSetting,
-)
 from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
+    VectorStoreSetting,
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
     LangChainCallbackHandlerFactory,
@@ -182,18 +182,18 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
         The LangChain LLM Factory, or raise an exception otherwise
     """
 
-    logger.info("Get LLM Factory for the given setting")
+    logger.info('Get LLM Factory for the given setting')
     if isinstance(setting, OpenAILLMSetting):
-        logger.debug("LLM Factory - OpenAILLMFactory")
+        logger.debug('LLM Factory - OpenAILLMFactory')
         return OpenAILLMFactory(setting=setting)
     elif isinstance(setting, AzureOpenAILLMSetting):
-        logger.debug("LLM Factory - AzureOpenAILLMFactory")
+        logger.debug('LLM Factory - AzureOpenAILLMFactory')
         return AzureOpenAILLMFactory(setting=setting)
     elif isinstance(setting, FakeLLMSetting):
-        logger.debug("LLM Factory - FakeLLMFactory")
+        logger.debug('LLM Factory - FakeLLMFactory')
         return FakeLLMFactory(setting=setting)
     elif isinstance(setting, OllamaLLMSetting):
-        logger.debug("LLM Factory - OllamaLLMFactory")
+        logger.debug('LLM Factory - OllamaLLMFactory')
         return OllamaLLMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
@@ -209,18 +209,18 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
         The LangChain EM Factory, or raise an exception otherwise
     """
 
-    logger.info("Get Embedding Model Factory for the given setting")
+    logger.info('Get Embedding Model Factory for the given setting')
     if isinstance(setting, OpenAIEMSetting):
-        logger.debug("EM Factory - OpenAIEMFactory")
+        logger.debug('EM Factory - OpenAIEMFactory')
         return OpenAIEMFactory(setting=setting)
     elif isinstance(setting, AzureOpenAIEMSetting):
-        logger.debug("EM Factory - AzureOpenAIEMFactory")
+        logger.debug('EM Factory - AzureOpenAIEMFactory')
         return AzureOpenAIEMFactory(setting=setting)
     elif isinstance(setting, OllamaEMSetting):
-        logger.debug("LLM Factory - OllamaEMFactory")
+        logger.debug('LLM Factory - OllamaEMFactory')
         return OllamaEMFactory(setting=setting)
     elif isinstance(setting, BloomzEMSetting):
-        logger.debug("EM Factory - BloomzEMFactory")
+        logger.debug('EM Factory - BloomzEMFactory')
         return BloomzEMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
@@ -241,7 +241,7 @@ def get_vector_store_factory(
     Returns:
         The LangChain Vector Store Factory, or raise an exception otherwise
     """
-    logger.info("Get Vector Store Factory for the given setting")
+    logger.info('Get Vector Store Factory for the given setting')
     vector_store_credentials = fetch_default_vector_store_credentials()
 
     # Helper function to create OpenSearchFactory
@@ -284,14 +284,14 @@ def get_vector_store_factory(
 
     # If no setting is provided, use defaults from environment variables
     if setting is None:
-        logger.info("No Vector Store setting was given.")
+        logger.info('No Vector Store setting was given.')
 
         # Validate required default settings
         if (
             application_settings.vector_store_provider is None
             or vector_store_credentials is None
         ):
-            logger.error("No default Vector Store defined!")
+            logger.error('No default Vector Store defined!')
             raise GenAIUnknownVectorStoreProviderSettingException()
 
         # Dictionary dispatch for factory creation based on provider type
@@ -306,22 +306,22 @@ def get_vector_store_factory(
             logger.debug(f"Creating Vector Store Factory from environment - {provider}")
             return factory_dispatch[provider](None)
 
-        logger.error("Unknown Vector Store provider in environment!")
+        logger.error('Unknown Vector Store provider in environment!')
         raise GenAIUnknownVectorStoreProviderSettingException()
 
     # Use the provided setting to determine the factory type
     if isinstance(setting, OpenSearchVectorStoreSetting):
         logger.debug(
-            "Creating Vector Store Factory based on RAG request - OpenSearchFactory"
+            'Creating Vector Store Factory based on RAG request - OpenSearchFactory'
         )
         return create_opensearch_factory(setting)
     elif isinstance(setting, PGVectorStoreSetting):
         logger.debug(
-            "Creating Vector Store Factory based on RAG request - PGVectorFactory"
+            'Creating Vector Store Factory based on RAG request - PGVectorFactory'
         )
         return create_pgvector_factory(setting)
 
-    logger.error("Unknown Vector Store provider setting in RAG request!")
+    logger.error('Unknown Vector Store provider setting in RAG request!')
     raise GenAIUnknownVectorStoreProviderSettingException()
 
 
@@ -337,9 +337,9 @@ def get_callback_handler_factory(
         The Observability Factory, or raise an exception otherwise
     """
 
-    logger.info("Get Observability Factory for the given setting")
+    logger.info('Get Observability Factory for the given setting')
     if isinstance(setting, LangfuseObservabilitySetting):
-        logger.debug("Observability Factory - LangfuseCallbackHandlerFactory")
+        logger.debug('Observability Factory - LangfuseCallbackHandlerFactory')
         return LangfuseCallbackHandlerFactory(setting=setting)
     else:
         raise GenAIUnknownObservabilityProviderSettingException()
@@ -373,9 +373,9 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
     Returns:
         The Guardrail Factory, or raise an exception otherwise
     """
-    logger.info("Get Guardrail Factory for the given setting")
+    logger.info('Get Guardrail Factory for the given setting')
     if isinstance(setting, BloomzGuardrailSetting):
-        logger.debug("Guardrail Factory - BloomzGuardrailFactory")
+        logger.debug('Guardrail Factory - BloomzGuardrailFactory')
         return BloomzGuardrailFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
@@ -392,9 +392,9 @@ def get_compressor_factory(
     Returns:
         The  Compressor Factory, or raise an exception otherwise
     """
-    logger.info("Get Document Compressor Factory for the given setting")
+    logger.info('Get Document Compressor Factory for the given setting')
     if isinstance(setting, BloomzCompressorSetting):
-        logger.debug("Document Compressor Factory - BloomzCompressorFactory")
+        logger.debug('Document Compressor Factory - BloomzCompressorFactory')
         return BloomzCompressorFactory(
             setting=setting, is_fault_tolerant=is_fault_tolerant
         )

@@ -40,9 +40,9 @@ from gen_ai_orchestrator.models.vector_stores.vector_store_types import (
 class LLMProviderSettingStatusRequest(BaseModel):
     """The request for the LLM Provider Setting Status"""
 
-    setting: LLMSetting = Field(description="The LLM Provider setting to be checked.")
+    setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description="The observability settings", default=None
+        description='The observability settings', default=None
     )
 
 
@@ -50,7 +50,7 @@ class EMProviderSettingStatusRequest(BaseModel):
     """The request for the EM Provider Setting Status"""
 
     setting: EMSetting = Field(
-        description="The Embedding Model Provider setting to be checked."
+        description='The Embedding Model Provider setting to be checked.'
     )
 
 
@@ -58,7 +58,7 @@ class ObservabilityProviderSettingStatusRequest(BaseModel):
     """The request for the Observability Provider Setting Status"""
 
     setting: ObservabilitySetting = Field(
-        description="The Observability Provider setting to be checked."
+        description='The Observability Provider setting to be checked.'
     )
 
 
@@ -66,7 +66,7 @@ class DocumentCompressorProviderSettingStatusRequest(BaseModel):
     """The request for the Document Compressor Provider Setting Status"""
 
     setting: DocumentCompressorSetting = Field(
-        description="The Document Compressor Provider setting to be checked."
+        description='The Document Compressor Provider setting to be checked.'
     )
 
 
@@ -77,19 +77,19 @@ class BaseRequest(BaseModel):
         description="Embedding model setting, used to calculate the user's question vector."
     )
     document_index_name: str = Field(
-        description="Index name corresponding to a document collection in the vector database.",
+        description='Index name corresponding to a document collection in the vector database.',
     )
     document_search_params: DocumentSearchParams = Field(
-        description="The document search parameters. Ex: number of documents, metadata filter",
+        description='The document search parameters. Ex: number of documents, metadata filter',
     )
     vector_store_setting: Optional[VectorStoreSetting] = Field(
-        description="The vector store settings.", default=None
+        description='The vector store settings.', default=None
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description="The observability settings.", default=None
+        description='The observability settings.', default=None
     )
     compressor_setting: Optional[DocumentCompressorSetting] = Field(
-        description="Compressor settings, to rerank relevant documents returned by retriever.",
+        description='Compressor settings, to rerank relevant documents returned by retriever.',
         default=None,
     )
 
@@ -100,29 +100,29 @@ class QARequest(BaseRequest):
     )
 
     model_config = {
-        "json_schema_extra": {
-            "examples": [
+        'json_schema_extra': {
+            'examples': [
                 {
-                    "embedding_question_em_setting": {
-                        "provider": "OpenAI",
-                        "api_key": {
-                            "type": "Raw",
-                            "secret": "ab7***************************A1IV4B",
+                    'embedding_question_em_setting': {
+                        'provider': 'OpenAI',
+                        'api_key': {
+                            'type': 'Raw',
+                            'secret': 'ab7***************************A1IV4B',
                         },
-                        "model": "text-embedding-ada-002",
+                        'model': 'text-embedding-ada-002',
                     },
-                    "user_query": "How to get started playing guitar ?",
-                    "document_index_name": "my-index-name",
-                    "document_search_params": {
-                        "provider": "OpenSearch",
-                        "filter": [
+                    'user_query': 'How to get started playing guitar ?',
+                    'document_index_name': 'my-index-name',
+                    'document_search_params': {
+                        'provider': 'OpenSearch',
+                        'filter': [
                             {
-                                "term": {
-                                    "metadata.index_session_id.keyword": "352d2466-17c5-4250-ab20-d7c823daf035"
+                                'term': {
+                                    'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
                                 }
                             }
                         ],
-                        "k": 4,
+                        'k': 4,
                     },
                 }
             ]
@@ -134,14 +134,14 @@ class VectorStoreProviderSettingStatusRequest(BaseModel):
     """The request for the Vector Store Provider Setting Status"""
 
     vector_store_setting: Optional[VectorStoreSetting] = Field(
-        description="The Vector Store Provider setting to be checked.", default=None
+        description='The Vector Store Provider setting to be checked.', default=None
     )
     em_setting: Optional[EMSetting] = Field(
         description="Embedding model setting, used to calculate the user's question vector.",
         default=None,
     )
     document_index_name: Optional[str] = Field(
-        description="Index name corresponding to a document collection in the vector database.",
+        description='Index name corresponding to a document collection in the vector database.',
         default=None,
     )
 
@@ -150,70 +150,70 @@ class DialogDetails(BaseModel):
     """The dialog details model"""
 
     dialog_id: Optional[str] = Field(
-        description="The dialog/session ID, attached to the observability traces if "
-        "the observability provider support it.",
+        description='The dialog/session ID, attached to the observability traces if '
+        'the observability provider support it.',
         default=None,
-        examples=["uuid-0123"],
+        examples=['uuid-0123'],
     )
     user_id: Optional[str] = Field(
-        description="The user ID, attached to the observability traces if the observability provider support it",
+        description='The user ID, attached to the observability traces if the observability provider support it',
         default=None,
-        examples=["address@mail.com"],
+        examples=['address@mail.com'],
     )
     history: list[ChatMessage] = Field(
         description="Conversation history, used to reformulate the user's question."
     )
     tags: list[str] = Field(
-        description="List of tags, attached to the observability trace, if the observability provider support it.",
-        examples=[["my-Tag"]],
+        description='List of tags, attached to the observability trace, if the observability provider support it.',
+        examples=[['my-Tag']],
     )
 
 
 class RAGRequest(BaseRequest):
     """The RAG request model"""
 
-    dialog: Optional[DialogDetails] = Field(description="The user dialog details.")
+    dialog: Optional[DialogDetails] = Field(description='The user dialog details.')
     question_condensing_llm_setting: LLMSetting = Field(
         description="LLM setting, used to condense the user's question."
     )
     question_condensing_prompt: PromptTemplate = Field(
-        description="Prompt template, used to create a prompt with inputs for jinja and fstring format"
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
     question_answering_llm_setting: LLMSetting = Field(
-        description="LLM setting, used to perform a QA Prompt."
+        description='LLM setting, used to perform a QA Prompt.'
     )
     question_answering_prompt: PromptTemplate = Field(
-        description="Prompt template, used to create a prompt with inputs for jinja and fstring format"
+        description='Prompt template, used to create a prompt with inputs for jinja and fstring format'
     )
     guardrail_setting: Optional[GuardrailSetting] = Field(
-        description="Guardrail settings, to classify LLM output toxicity.", default=None
+        description='Guardrail settings, to classify LLM output toxicity.', default=None
     )
 
     model_config = {
-        "json_schema_extra": {
-            "examples": [
+        'json_schema_extra': {
+            'examples': [
                 {
-                    "dialog": {
-                        "history": [
-                            {"text": "Hello, how can I do this?", "type": "HUMAN"},
+                    'dialog': {
+                        'history': [
+                            {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
                             {
-                                "text": "you can do this with the following method ....",
-                                "type": "AI",
+                                'text': 'you can do this with the following method ....',
+                                'type': 'AI',
                             },
                         ]
                     },
-                    "question_answering_llm_setting": {
-                        "provider": "OpenAI",
-                        "api_key": {
-                            "type": "Raw",
-                            "secret": "ab7***************************A1IV4B",
+                    'question_answering_llm_setting': {
+                        'provider': 'OpenAI',
+                        'api_key': {
+                            'type': 'Raw',
+                            'secret': 'ab7***************************A1IV4B',
                         },
-                        "temperature": 1.2,
-                        "model": "gpt-3.5-turbo",
+                        'temperature': 1.2,
+                        'model': 'gpt-3.5-turbo',
                     },
-                    "question_answering_prompt": {
-                        "formatter": "f-string",
-                        "template": """Use the following context to answer the question at the end.
+                    'question_answering_prompt': {
+                        'formatter': 'f-string',
+                        'template': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
 
 Context:
@@ -223,44 +223,44 @@ Question:
 {question}
 
 Answer in {locale}:""",
-                        "inputs": {
-                            "question": "How to get started playing guitar ?",
-                            "no_answer": "Sorry, I don t know.",
-                            "locale": "French",
+                        'inputs': {
+                            'question': 'How to get started playing guitar ?',
+                            'no_answer': 'Sorry, I don t know.',
+                            'locale': 'French',
                         },
                     },
-                    "embedding_question_em_setting": {
-                        "provider": "OpenAI",
-                        "api_key": {
-                            "type": "Raw",
-                            "secret": "ab7***************************A1IV4B",
+                    'embedding_question_em_setting': {
+                        'provider': 'OpenAI',
+                        'api_key': {
+                            'type': 'Raw',
+                            'secret': 'ab7***************************A1IV4B',
                         },
-                        "model": "text-embedding-ada-002",
+                        'model': 'text-embedding-ada-002',
                     },
-                    "document_index_name": "my-index-name",
-                    "document_search_params": {
-                        "provider": "OpenSearch",
-                        "filter": [
+                    'document_index_name': 'my-index-name',
+                    'document_search_params': {
+                        'provider': 'OpenSearch',
+                        'filter': [
                             {
-                                "term": {
-                                    "metadata.index_session_id.keyword": "352d2466-17c5-4250-ab20-d7c823daf035"
+                                'term': {
+                                    'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
                                 }
                             }
                         ],
-                        "k": 4,
+                        'k': 4,
                     },
-                    "observability_setting": None,
-                    "guardrail_setting": {
-                        "provider": "BloomzGuardrail",
-                        "api_base": "https://*********",
-                        "max_score": 0.3,
+                    'observability_setting': None,
+                    'guardrail_setting': {
+                        'provider': 'BloomzGuardrail',
+                        'api_base': 'https://*********',
+                        'max_score': 0.3,
                     },
-                    "compressor_setting": {
-                        "provider": "BloomzRerank",
-                        "min_score": 0.7,
-                        "max_documents": 10,
-                        "label": "entailment",
-                        "endpoint": "https://*********",
+                    'compressor_setting': {
+                        'provider': 'BloomzRerank',
+                        'min_score': 0.7,
+                        'max_documents': 10,
+                        'label': 'entailment',
+                        'endpoint': 'https://*********',
                     },
                 }
             ]
@@ -272,11 +272,11 @@ class CompletionRequest(BaseModel):
     """The completion request model"""
 
     llm_setting: LLMSetting = Field(
-        description="LLM setting, used to perform a sentences generation."
+        description='LLM setting, used to perform a sentences generation.'
     )
     prompt: PromptTemplate = Field(
-        description="Prompt, used to create prompt with inputs and jinja template "
+        description='Prompt, used to create prompt with inputs and jinja template '
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description="The observability settings.", default=None
+        description='The observability settings.', default=None
     )

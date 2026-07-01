@@ -19,14 +19,13 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Optional, Type, TypeVar
 
-
 from gen_ai_orchestrator.models.security.ai_provider_secret import (
     AIProviderSecret,
 )
 from gen_ai_orchestrator.models.security.credentials import Credentials
 
 logger = logging.getLogger(__name__)
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class SecretManagerClient(ABC):

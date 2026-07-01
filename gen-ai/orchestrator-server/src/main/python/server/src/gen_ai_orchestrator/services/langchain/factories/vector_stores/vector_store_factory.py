@@ -91,14 +91,14 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         Raises:
             BusinessException: For incorrect setting
         """
-        logger.info("Invoke vector store provider to check setting")
+        logger.info('Invoke vector store provider to check setting')
         documents: List[Document] = await self.get_vector_store().asimilarity_search(
             query=application_settings.vector_store_test_query,
             k=application_settings.vector_store_test_max_docs_retrieved,
         )
-        logger.debug("Invocation successful")
+        logger.debug('Invocation successful')
         logger.debug(
-            "[index: %s], [query: %s], [document count: %s]",
+            '[index: %s], [query: %s], [document count: %s]',
             self.index_name,
             application_settings.vector_store_test_query,
             len(documents),
@@ -106,12 +106,12 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         if len(documents) > 0:
             return True
         else:
-            logger.warning("No documents retrieved from the Vector Store")
+            logger.warning('No documents retrieved from the Vector Store')
             raise GenAIVectorStoreNoDocumentRetrievedException(
                 ErrorInfo(
                     provider=self.setting.provider.value,
-                    error="No documents retrieved",
-                    cause="Index not found or data not ingested",
+                    error='No documents retrieved',
+                    cause='Index not found or data not ingested',
                 )
             )
 

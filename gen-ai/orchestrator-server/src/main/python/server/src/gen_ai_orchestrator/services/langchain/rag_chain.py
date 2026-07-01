@@ -1,3 +1,17 @@
+#   Copyright (C) 2026 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 RAG Service
 -----------
@@ -20,7 +34,9 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.runnables.config import RunnableConfig
 
-from gen_ai_orchestrator.errors.exceptions.exceptions import GenAIGuardCheckException
+from gen_ai_orchestrator.errors.exceptions.exceptions import (
+    GenAIGuardCheckException,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -28,7 +44,10 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
     opensearch_exception_handler,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.rag.rag_models import ChatMessageType, LLMAnswer
+from gen_ai_orchestrator.models.rag.rag_models import (
+    ChatMessageType,
+    LLMAnswer,
+)
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import RAGResponse
 from gen_ai_orchestrator.services.langchain.callbacks.rag_callback_handler import (
@@ -38,8 +57,9 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     create_observability_callback_handler,
     get_guardrail_factory,
 )
-
-from gen_ai_orchestrator.services.langchain.rag_chain_builder import create_rag_chain
+from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
+    create_rag_chain,
+)
 from gen_ai_orchestrator.services.langchain.rag_response_builder import (
     build_rag_response,
 )
@@ -120,11 +140,11 @@ def build_runnable_metadata(
     """Build the metadata dict forwarded to LangChain's RunnableConfig."""
     metadata = {}
     if user_id:
-        metadata["langfuse_user_id"] = user_id
+        metadata['langfuse_user_id'] = user_id
     if session_id:
-        metadata["langfuse_session_id"] = session_id
+        metadata['langfuse_session_id'] = session_id
     if tags:
-        metadata["langfuse_tags"] = tags
+        metadata['langfuse_tags'] = tags
     return metadata
 
 
@@ -134,7 +154,7 @@ def build_runnable_metadata(
 
 
 @opensearch_exception_handler
-@openai_exception_handler(provider="OpenAI or AzureOpenAIService")
+@openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def execute_rag_chain(
     request: RAGRequest,
     debug: bool,
@@ -152,7 +172,7 @@ async def execute_rag_chain(
     5. Run the guardrail check.
     6. Assemble and return the response.
     """
-    logger.info("RAG chain - Start of execution...")
+    logger.info('RAG chain - Start of execution...')
     start_time = time.time()
 
     chain = create_rag_chain(request=request)
@@ -171,7 +191,7 @@ async def execute_rag_chain(
     chain_output = await chain.ainvoke(
         input={
             **request.question_answering_prompt.inputs,
-            "chat_history": message_history.messages,
+            'chat_history': message_history.messages,
         },
         config=RunnableConfig(
             callbacks=callback_handlers,
@@ -179,7 +199,7 @@ async def execute_rag_chain(
         ),
     )
 
-    llm_answer = LLMAnswer(**chain_output["answer"])
+    llm_answer = LLMAnswer(**chain_output['answer'])
 
     # Guardrail
     if request.guardrail_setting:
@@ -189,8 +209,8 @@ async def execute_rag_chain(
         guardrail_output = guardrail.parse(llm_answer.answer)
         check_guardrail_output(guardrail_output)
 
-    rag_duration = "{:.3f}".format(time.time() - start_time)
-    logger.info("RAG chain - End of execution. (Duration: %s seconds)", rag_duration)
+    rag_duration = '{:.3f}'.format(time.time() - start_time)
+    logger.info('RAG chain - End of execution. (Duration: %s seconds)', rag_duration)
 
     return build_rag_response(
         chain_output=chain_output,
@@ -210,7 +230,7 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
     Returns:
         Returns True if nothing is detected, raises an exception otherwise.
     """
-    if guardrail_output["output_toxicity"]:
+    if guardrail_output['output_toxicity']:
         message = f"Toxicity detected in LLM output ({','.join(guardrail_output['output_toxicity_reason'])})"
         raise GenAIGuardCheckException(ErrorInfo(cause=message))
     return True

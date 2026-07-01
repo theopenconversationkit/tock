@@ -21,5 +21,5 @@ def test_errors_are_documented():
     schema = ErrorCode.__get_pydantic_json_schema__(core_schema=None, handler=None)
     assert (
         f"* `{first_error_code.value}`: {first_error_code.name}"
-        in schema["description"]
+        in schema['description']
     )

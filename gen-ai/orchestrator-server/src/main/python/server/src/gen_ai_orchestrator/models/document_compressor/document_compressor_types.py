@@ -21,5 +21,5 @@ from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_set
 )
 
 DocumentCompressorSetting = Annotated[
-    Union[BloomzCompressorSetting], Body(discriminator="provider")
+    Union[BloomzCompressorSetting], Body(discriminator='provider')
 ]

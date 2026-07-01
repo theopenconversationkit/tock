@@ -21,7 +21,7 @@ from enum import Enum, unique
 class ObservabilityProvider(str, Enum):
     """Enumeration to list Observability Provider type"""
 
-    LANGFUSE = "Langfuse"
+    LANGFUSE = 'Langfuse'
 
     @classmethod
     def has_value(cls, value):

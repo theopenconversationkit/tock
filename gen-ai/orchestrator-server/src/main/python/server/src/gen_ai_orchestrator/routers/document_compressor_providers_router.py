@@ -55,13 +55,13 @@ from gen_ai_orchestrator.services.document_compressor.document_compressor_servic
 logger = logging.getLogger(__name__)
 
 document_compressor_providers_router = APIRouter(
-    prefix="/document-compressor-providers",
-    tags=["Document Compressor Providers"],
-    responses={404: {"description": "Not found"}},
+    prefix='/document-compressor-providers',
+    tags=['Document Compressor Providers'],
+    responses={404: {'description': 'Not found'}},
 )
 
 
-@document_compressor_providers_router.get("")
+@document_compressor_providers_router.get('')
 async def get_all_document_compressor_providers() -> list[DocumentCompressorProvider]:
     """
     Returns:
@@ -70,7 +70,7 @@ async def get_all_document_compressor_providers() -> list[DocumentCompressorProv
     return [provider.value for provider in DocumentCompressorProvider]
 
 
-@document_compressor_providers_router.get("/{provider_id}")
+@document_compressor_providers_router.get('/{provider_id}')
 async def get_document_compressor_provider_by_id(
     http_request: Request, provider_id: str
 ) -> DocumentCompressorProviderResponse:
@@ -95,7 +95,7 @@ async def get_document_compressor_provider_by_id(
     )
 
 
-@document_compressor_providers_router.get("/{provider_id}/setting/example")
+@document_compressor_providers_router.get('/{provider_id}/setting/example')
 async def get_document_compressor_provider_setting_by_id(
     http_request: Request, provider_id: DocumentCompressorProvider
 ) -> DocumentCompressorSetting:
@@ -120,12 +120,12 @@ async def get_document_compressor_provider_setting_by_id(
             provider=DocumentCompressorProvider.BLOOMZ,
             max_documents=3,
             min_score=0.91002147,
-            endpoint="http://localhost:8082",
-            label="LABEL_1",
+            endpoint='http://localhost:8082',
+            label='LABEL_1',
         )
 
 
-@document_compressor_providers_router.post("/{provider_id}/setting/status")
+@document_compressor_providers_router.post('/{provider_id}/setting/status')
 async def check_document_compressor_provider_setting(
     http_request: Request,
     provider_id: str,
@@ -145,7 +145,7 @@ async def check_document_compressor_provider_setting(
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.info("Start Document Compressor setting check for provider %s", provider_id)
+    logger.info('Start Document Compressor setting check for provider %s', provider_id)
     # Request validation
     validate_query(http_request, provider_id, request.setting)
 
@@ -153,10 +153,10 @@ async def check_document_compressor_provider_setting(
         # Document Compressor setting check
         check_document_compressor_setting(request.setting)
 
-        logger.info("The Document Compressor setting is valid")
+        logger.info('The Document Compressor setting is valid')
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:
-        logger.info("The Document Compressor setting is invalid!")
+        logger.info('The Document Compressor setting is invalid!')
         logger.error(exc)
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
@@ -175,7 +175,7 @@ def validate_query(
         AIProviderBadRequestException: if the provider ID is not consistent with the request body
     """
 
-    logger.debug("Document Compressor setting - Request validation")
+    logger.debug('Document Compressor setting - Request validation')
     validate_document_compressor_provider(http_request, provider_id)
     if provider_id != setting.provider:
         raise AIProviderBadRequestException(

@@ -32,11 +32,11 @@ from gen_ai_orchestrator.services.langchain.qa_chain import execute_qa_chain
 # @patch("llm_orchestrator.services.langchain.factories.langchain_factory.get_llm_factory")
 # --> But where it is used (in the execute_qa_chain method of the llm_orchestrator.services.langchain.rag_chain
 # module that imports get_llm_factory):
-@patch("gen_ai_orchestrator.services.langchain.qa_chain.get_em_factory")
-@patch("gen_ai_orchestrator.services.langchain.qa_chain.get_vector_store_factory")
-@patch("gen_ai_orchestrator.services.langchain.qa_chain.QAResponse")
-@patch("gen_ai_orchestrator.services.langchain.qa_chain.build_chain")
-@patch("gen_ai_orchestrator.services.langchain.qa_chain.Source")
+@patch('gen_ai_orchestrator.services.langchain.qa_chain.get_em_factory')
+@patch('gen_ai_orchestrator.services.langchain.qa_chain.get_vector_store_factory')
+@patch('gen_ai_orchestrator.services.langchain.qa_chain.QAResponse')
+@patch('gen_ai_orchestrator.services.langchain.qa_chain.build_chain')
+@patch('gen_ai_orchestrator.services.langchain.qa_chain.Source')
 @pytest.mark.asyncio
 async def test_qa_chain(
     mocked_source,
@@ -48,26 +48,26 @@ async def test_qa_chain(
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RAGRequest
     query_dict = {
-        "user_query": "How to get started playing guitar ?",
-        "embedding_question_em_setting": {
-            "provider": "OpenAI",
-            "api_key": {
-                "type": "Raw",
-                "secret": "ab7***************************A1IV4B",
+        'user_query': 'How to get started playing guitar ?',
+        'embedding_question_em_setting': {
+            'provider': 'OpenAI',
+            'api_key': {
+                'type': 'Raw',
+                'secret': 'ab7***************************A1IV4B',
             },
-            "model": "text-embedding-ada-002",
+            'model': 'text-embedding-ada-002',
         },
-        "document_index_name": "my-index-name",
-        "document_search_params": {
-            "provider": "OpenSearch",
-            "filter": [
+        'document_index_name': 'my-index-name',
+        'document_search_params': {
+            'provider': 'OpenSearch',
+            'filter': [
                 {
-                    "term": {
-                        "metadata.index_session_id.keyword": "352d2466-17c5-4250-ab20-d7c823daf035"
+                    'term': {
+                        'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
                     }
                 }
             ],
-            "k": 4,
+            'k': 4,
         },
     }
     request = QARequest(**query_dict)
@@ -79,8 +79,8 @@ async def test_qa_chain(
     mocked_chain.ainvoke = AsyncMock(
         return_value=[
             Document(
-                page_content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut placerat dolor.",
-                metadata={"title": "Title", "source": "URL"},
+                page_content='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut placerat dolor.',
+                metadata={'title': 'Title', 'source': 'URL'},
             )
         ]
     )
@@ -114,8 +114,8 @@ async def test_qa_chain(
         documents=set(
             [
                 mocked_source(
-                    title=source.metadata["title"],
-                    url=source.metadata["source"],
+                    title=source.metadata['title'],
+                    url=source.metadata['source'],
                     content=source.page_content,
                 )
                 for source in mocked_qa_answer

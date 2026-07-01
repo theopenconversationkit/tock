@@ -26,42 +26,42 @@ def test_rag_callback_handler_qa_documents():
     handler = RAGCallbackHandler()
     docs = [
         Document(
-            page_content="some page content",
-            metadata={"some meta": "some meta value"},
+            page_content='some page content',
+            metadata={'some meta': 'some meta value'},
         )
     ]
     handler.on_chain_start(
-        serialized={}, inputs={"documents": docs}, **{"name": "RunnableAssign<answer>"}
+        serialized={}, inputs={'documents': docs}, **{'name': 'RunnableAssign<answer>'}
     )
-    assert handler.records["documents"] == docs
+    assert handler.records['documents'] == docs
 
 
 def test_rag_callback_handler_qa_prompt_output():
     """Check records are added (in the correct entries)"""
     handler = RAGCallbackHandler()
-    llm_output = "llm result !"
+    llm_output = 'llm result !'
     handler.on_chain_start(
         serialized={},
         inputs=AIMessage(content=llm_output),
-        **{"name": "rag_chain_output"},
+        **{'name': 'rag_chain_output'},
     )
-    assert handler.records["rag_chain_output"] == llm_output
+    assert handler.records['rag_chain_output'] == llm_output
 
 
 def test_rag_callback_handler_chat_prompt():
     """Check records are added (in the correct entries)"""
     handler = RAGCallbackHandler()
-    prompt = "A custom prompt !"
+    prompt = 'A custom prompt !'
     outputs = ChatPromptValue(
-        messages=[SystemMessage(content=prompt), HumanMessage(content="hi !")]
+        messages=[SystemMessage(content=prompt), HumanMessage(content='hi !')]
     )
     handler.on_chain_end(serialized={}, outputs=outputs)
-    assert handler.records["chat_prompt"] == prompt
+    assert handler.records['chat_prompt'] == prompt
 
 
 def test_rag_callback_handler_qa_prompt():
     """Check records are added (in the correct entries)"""
     handler = RAGCallbackHandler()
-    prompt = "A custom prompt !"
+    prompt = 'A custom prompt !'
     handler.on_chain_end(serialized={}, outputs=StringPromptValue(text=prompt))
-    assert handler.records["rag_prompt"] == prompt
+    assert handler.records['rag_prompt'] == prompt

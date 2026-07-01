@@ -58,8 +58,8 @@ class LangChainLLMFactory(ABC, BaseModel):
         Raises:
             BusinessException: For incorrect setting
         """
-        logger.info("Invoke LLM provider to check setting")
-        text = "Hi, are you there?"
+        logger.info('Invoke LLM provider to check setting')
+        text = 'Hi, are you there?'
         response = await self.invoke(
             text,
             config=RunnableConfig(
@@ -68,8 +68,8 @@ class LangChainLLMFactory(ABC, BaseModel):
                 else None
             ),
         )
-        logger.info("Invocation successful")
-        logger.debug("[text: %s], [response: %s]", text, response)
+        logger.info('Invocation successful')
+        logger.debug('[text: %s], [response: %s]', text, response)
         return True
 
     async def invoke(

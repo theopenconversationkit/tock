@@ -29,33 +29,33 @@ from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import (
 )
 
 
-@patch("boto3.client")
+@patch('boto3.client')
 def test_aws_secrets_manager_get_secret_no_secret(mocked_boto3_client):
-    _error_response = {"Error": {"Code": "ResourceNotFoundException"}}
+    _error_response = {'Error': {'Code': 'ResourceNotFoundException'}}
     _error = ClientError(
-        error_response=_error_response, operation_name="operation name"
+        error_response=_error_response, operation_name='operation name'
     )
     mocked_boto3_client.return_value.get_secret_value = MagicMock(side_effect=_error)
 
     with pytest.raises(Exception):
-        AWSSecretsManagerClient().get_secret("secret name")
+        AWSSecretsManagerClient().get_secret('secret name')
 
 
-@patch("boto3.client")
+@patch('boto3.client')
 def test_aws_secrets_manager_get_secret_fails(mocked_boto3_client):
     mocked_boto3_client.return_value.get_secret_value = MagicMock(
         side_effect=Exception()
     )
 
     with pytest.raises(Exception):
-        AWSSecretsManagerClient().get_secret("secret name")
+        AWSSecretsManagerClient().get_secret('secret name')
 
 
 def test_parse_to_credentials():
     json_str = '{"username": "bob","password": "alice123!"}'
     credentials = parse_secret_data(json_str, Credentials)
-    assert credentials.username == "bob"
-    assert credentials.password == "alice123!"
+    assert credentials.username == 'bob'
+    assert credentials.password == 'alice123!'
 
 
 def test_parse_to_credentials_fails():
@@ -67,4 +67,4 @@ def test_parse_to_credentials_fails():
 def test_parse_to_ai_provider_secret():
     json_str = '{"secret": "my_ai_secret"}'
     ai_provider_secret = parse_secret_data(json_str, AIProviderSecret)
-    assert ai_provider_secret.secret == "my_ai_secret"
+    assert ai_provider_secret.secret == 'my_ai_secret'

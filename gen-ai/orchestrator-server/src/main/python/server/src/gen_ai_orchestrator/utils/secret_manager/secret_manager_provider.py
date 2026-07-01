@@ -21,8 +21,8 @@ from enum import Enum, unique
 class SecretManagerProvider(str, Enum):
     """Enumeration to list Secret Manager Provider types"""
 
-    AWS = "AWS_SECRETS_MANAGER"
-    GCP = "GCP_SECRET_MANAGER"
+    AWS = 'AWS_SECRETS_MANAGER'
+    GCP = 'GCP_SECRET_MANAGER'
 
     @classmethod
     def has_value(cls, value):

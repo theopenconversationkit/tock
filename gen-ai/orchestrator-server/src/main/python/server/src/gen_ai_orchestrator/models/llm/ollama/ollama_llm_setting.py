@@ -29,13 +29,13 @@ class OllamaLLMSetting(BaseLLMSetting):
     """
 
     provider: Literal[LLMProvider.OLLAMA] = Field(
-        description="The Large Language Model Provider.", examples=[LLMProvider.OLLAMA]
+        description='The Large Language Model Provider.', examples=[LLMProvider.OLLAMA]
     )
     model: str = Field(
-        description="The model id", examples=["llama2", "llama2:7b"], min_length=1
+        description='The model id', examples=['llama2', 'llama2:7b'], min_length=1
     )
     base_url: str = Field(
-        description="Your ollama endpoint base URL",
-        examples=["http://localhost:11434"],
-        default="http://localhost:11434",
+        description='Your ollama endpoint base URL',
+        examples=['http://localhost:11434'],
+        default='http://localhost:11434',
     )

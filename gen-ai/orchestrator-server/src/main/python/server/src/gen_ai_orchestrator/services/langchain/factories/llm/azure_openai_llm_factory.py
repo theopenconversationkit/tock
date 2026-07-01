@@ -58,6 +58,6 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             reasoning_effort=self.setting.reasoning_effort,
         )
 
-    @openai_exception_handler(provider="AzureOpenAIService")
+    @openai_exception_handler(provider='AzureOpenAIService')
     async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None):
         return await super().invoke(_input, config)

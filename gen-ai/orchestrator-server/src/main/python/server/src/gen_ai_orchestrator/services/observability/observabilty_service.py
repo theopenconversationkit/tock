@@ -42,7 +42,7 @@ def check_observability_setting(setting: ObservabilitySetting) -> bool:
     """
 
     logger.info(
-        "Get the Callback handler Factory, then check the Observability setting."
+        'Get the Callback handler Factory, then check the Observability setting.'
     )
     return get_callback_handler_factory(setting).check_observability_setting()
 
@@ -54,7 +54,7 @@ def get_observability_info(
     if not isinstance(observability_handler, LangfuseCallbackHandler):
         return None
 
-    trace_id = getattr(observability_handler, "last_trace_id", None)
+    trace_id = getattr(observability_handler, 'last_trace_id', None)
     if trace_id is None:
         return None
 

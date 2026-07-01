@@ -45,7 +45,7 @@ class BloomzCompressorFactory(DocumentCompressorFactory):
 
     def check_document_compressor_setting(self) -> bool:
         self.get_compressor().compress_documents(
-            documents=[Document(page_content="Hello, world!")], query="Hi!"
+            documents=[Document(page_content='Hello, world!')], query='Hi!'
         )
 
         return True

@@ -21,11 +21,11 @@ from enum import Enum, unique
 class ObservabilityTrace(str, Enum):
     """Enumeration to list Observability Trace type"""
 
-    RAG = "RAG"
-    CHECK_LLM_SETTINGS = "Check LLM Settings"
-    SENTENCE_GENERATION = "Sentence Generation"
-    PLAYGROUND = "Playground"
-    CHECK_OBSERVABILITY_SETTINGS = "Check Observability Settings"
+    RAG = 'RAG'
+    CHECK_LLM_SETTINGS = 'Check LLM Settings'
+    SENTENCE_GENERATION = 'Sentence Generation'
+    PLAYGROUND = 'Playground'
+    CHECK_OBSERVABILITY_SETTINGS = 'Check Observability Settings'
 
     @classmethod
     def has_value(cls, value):

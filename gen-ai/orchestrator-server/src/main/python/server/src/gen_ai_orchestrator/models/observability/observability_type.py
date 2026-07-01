@@ -24,5 +24,5 @@ from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
 
 ObservabilitySetting = Annotated[
     Union[LangfuseObservabilitySetting],
-    Body(discriminator="provider"),
+    Body(discriminator='provider'),
 ]

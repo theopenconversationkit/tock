@@ -56,13 +56,13 @@ from gen_ai_orchestrator.services.em.em_service import check_em_setting
 logger = logging.getLogger(__name__)
 
 em_providers_router = APIRouter(
-    prefix="/em-providers",
-    tags=["Embedding Model Providers"],
-    responses={404: {"description": "Not found"}},
+    prefix='/em-providers',
+    tags=['Embedding Model Providers'],
+    responses={404: {'description': 'Not found'}},
 )
 
 
-@em_providers_router.get("")
+@em_providers_router.get('')
 async def get_all_em_providers() -> list[EMProvider]:
     """
     Returns:
@@ -71,7 +71,7 @@ async def get_all_em_providers() -> list[EMProvider]:
     return [provider.value for provider in EMProvider]
 
 
-@em_providers_router.get("/{provider_id}")
+@em_providers_router.get('/{provider_id}')
 async def get_em_provider_by_id(
     http_request: Request, provider_id: str
 ) -> EMProviderResponse:
@@ -94,7 +94,7 @@ async def get_em_provider_by_id(
     return EMProviderResponse(provider=EMProvider(provider_id))
 
 
-@em_providers_router.get("/{provider_id}/setting/example")
+@em_providers_router.get('/{provider_id}/setting/example')
 async def get_em_provider_setting_by_id(
     http_request: Request, provider_id: EMProvider
 ) -> EMSetting:
@@ -117,27 +117,27 @@ async def get_em_provider_setting_by_id(
     if provider_id == EMProvider.OPEN_AI:
         return OpenAIEMSetting(
             provider=EMProvider.OPEN_AI,
-            api_key=RawSecretKey(secret="ab7***************************A1IV4B"),
-            model="gpt-3.5-turbo",
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
+            model='gpt-3.5-turbo',
         )
     elif provider_id == EMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAIEMSetting(
             provider=EMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key=RawSecretKey(secret="ab7***************************A1IV4B"),
-            deployment_name="my-deployment-name",
-            model="text-embedding-ada-002",
-            api_base="https://doc.tock.ai/tock",
-            api_version="2023-05-15",
+            api_key=RawSecretKey(secret='ab7***************************A1IV4B'),
+            deployment_name='my-deployment-name',
+            model='text-embedding-ada-002',
+            api_base='https://doc.tock.ai/tock',
+            api_version='2023-05-15',
         )
     elif provider_id == EMProvider.BLOOMZ:
         return BloomzEMSetting(
             provider=EMProvider.BLOOMZ,
-            api_base="https://doc.tock.ai/tock",
-            pooling="last",
+            api_base='https://doc.tock.ai/tock',
+            pooling='last',
         )
 
 
-@em_providers_router.post("/{provider_id}/setting/status")
+@em_providers_router.post('/{provider_id}/setting/status')
 async def check_em_provider_setting(
     http_request: Request, provider_id: str, request: EMProviderSettingStatusRequest
 ) -> ProviderSettingStatusResponse:

@@ -21,10 +21,10 @@ from enum import Enum, unique
 class EMProvider(str, Enum):
     """Enumeration to list Embedding Provider type"""
 
-    OPEN_AI = "OpenAI"
-    AZURE_OPEN_AI_SERVICE = "AzureOpenAIService"
-    OLLAMA = "Ollama"
-    BLOOMZ = "Bloomz"
+    OPEN_AI = 'OpenAI'
+    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
+    OLLAMA = 'Ollama'
+    BLOOMZ = 'Bloomz'
 
     @classmethod
     def has_value(cls, value) -> bool:

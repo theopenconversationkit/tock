@@ -1,3 +1,17 @@
+#   Copyright (C) 2026 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 RAG Chain Builder
 -----------------
@@ -12,15 +26,9 @@ import asyncio
 import json
 import logging
 from operator import itemgetter
-from typing import Any, Optional, List
+from typing import Any, List, Optional
 from urllib.parse import urlparse
 
-from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
-    VectorStoreProvider,
-)
-from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
-    DocumentSearchType,
-)
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import JsonOutputParser
@@ -35,14 +43,25 @@ from langchain_core.runnables import (
 
 from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
-from gen_ai_orchestrator.models.rag.rag_models import LLMAnswer, LLMCondensedQuestion
+from gen_ai_orchestrator.models.rag.rag_models import (
+    LLMAnswer,
+    LLMCondensedQuestion,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_search_type import (
+    DocumentSearchType,
+)
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_llm_factory,
     get_vector_store_factory,
 )
-from gen_ai_orchestrator.services.utils.prompt_utility import validate_prompt_template
+from gen_ai_orchestrator.services.utils.prompt_utility import (
+    validate_prompt_template,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -55,34 +74,34 @@ logger = logging.getLogger(__name__)
 def format_chat_history(x: dict) -> str:
     """Serialize the chat history to a JSON string for prompt injection."""
     messages = []
-    for msg in x["chat_history"]:
+    for msg in x['chat_history']:
         if isinstance(msg, HumanMessage):
-            messages.append({"user": msg.content})
+            messages.append({'user': msg.content})
         elif isinstance(msg, AIMessage):
-            messages.append({"assistant": msg.content})
+            messages.append({'assistant': msg.content})
     return json.dumps(messages, ensure_ascii=False, indent=2)
 
 
 def get_chunk_identifier(doc: Document) -> str:
     """Build the chunk identifier exposed to the LLM."""
-    document_id = doc.metadata.get("id")
-    chunk = doc.metadata.get("chunk")
+    document_id = doc.metadata.get('id')
+    chunk = doc.metadata.get('chunk')
     if document_id and chunk:
         return f"{document_id}:{chunk}"
     if document_id:
         return str(document_id)
-    return str(chunk or "")
+    return str(chunk or '')
 
 
 def get_web_source_url(doc: Document) -> Optional[str]:
     """Return the document source only when it is an HTTP(S) URL."""
-    source = doc.metadata.get("source") or doc.metadata.get("reference")
+    source = doc.metadata.get('source') or doc.metadata.get('reference')
     if not source:
         return None
 
     source_url = str(source).strip()
     parsed_url = urlparse(source_url)
-    if parsed_url.scheme in {"http", "https"} and parsed_url.netloc:
+    if parsed_url.scheme in {'http', 'https'} and parsed_url.netloc:
         return source_url
     return None
 
@@ -129,7 +148,7 @@ def apply_rrf_ranking(
     """
 
     def doc_key(doc: Document) -> tuple:
-        return doc.metadata.get("id"), doc.metadata.get("chunk")
+        return doc.metadata.get('id'), doc.metadata.get('chunk')
 
     # Accumulate RRF scores
     scores: dict[tuple, float] = {}
@@ -163,7 +182,7 @@ def apply_rrf_ranking(
         reverse=True,
     )
     for rank, doc in enumerate(ranked_docs, start=1):
-        doc.metadata["rank"]["rrf"] = f"{rank}/{len(ranked_docs)}"
+        doc.metadata['rank']['rrf'] = f"{rank}/{len(ranked_docs)}"
 
     return ranked_docs[:top_n]
 
@@ -188,14 +207,14 @@ class HybridRetriever:
         self.rrf_top_n = rrf_top_n
 
     async def retrieve(self, inputs: dict) -> list[Document]:
-        condensed_question = inputs["chat_chain_result"]["condensed_question"]
-        key_words = inputs["chat_chain_result"]["key_words"]
+        condensed_question = inputs['chat_chain_result']['condensed_question']
+        key_words = inputs['chat_chain_result']['key_words']
 
         # If no keywords are provided, do not run the FTS search
         # and do not perform RRF merging.
         if not key_words:
             logger.debug(
-                "No keywords provided, skipping FTS retrieval and RRF ranking."
+                'No keywords provided, skipping FTS retrieval and RRF ranking.'
             )
 
             docs_vector = await self.vector_retriever.ainvoke(
@@ -203,7 +222,7 @@ class HybridRetriever:
             )
 
             # Preserve similarity rank metadata even when FTS and RRF are skipped.
-            add_rank_metadata(docs=docs_vector, metadata_key="similarity")
+            add_rank_metadata(docs=docs_vector, metadata_key='similarity')
 
             return docs_vector
 
@@ -214,8 +233,8 @@ class HybridRetriever:
             ),
         )
 
-        add_rank_metadata(docs=docs_vector, metadata_key="similarity")
-        add_rank_metadata(docs=docs_fts, metadata_key="fts")
+        add_rank_metadata(docs=docs_vector, metadata_key='similarity')
+        add_rank_metadata(docs=docs_fts, metadata_key='fts')
 
         result = apply_rrf_ranking(
             [docs_vector, docs_fts],
@@ -236,12 +255,12 @@ class SimilarityRetriever:
         self.vector_retriever = vector_retriever
 
     async def retrieve(self, inputs: dict) -> list[Document]:
-        condensed_question = inputs["chat_chain_result"]["condensed_question"]
+        condensed_question = inputs['chat_chain_result']['condensed_question']
         ranked_docs = await self.vector_retriever.ainvoke(input=condensed_question)
 
         return add_rank_metadata(
             docs=ranked_docs,
-            metadata_key="similarity",
+            metadata_key='similarity',
         )
 
 
@@ -258,7 +277,7 @@ class FTSRetriever:
         self.fts_retriever = fts_retriever
 
     async def retrieve(self, inputs: dict) -> list[Document]:
-        key_words = inputs["chat_chain_result"]["key_words"]
+        key_words = inputs['chat_chain_result']['key_words']
 
         ranked_docs = await self.fts_retriever.ainvoke(
             input=self.fts_retriever.prepare_query(key_words)
@@ -266,7 +285,7 @@ class FTSRetriever:
 
         return add_rank_metadata(
             docs=ranked_docs,
-            metadata_key="fts",
+            metadata_key='fts',
         )
 
 
@@ -277,9 +296,9 @@ def add_rank_metadata(
     total = len(docs)
 
     for rank, doc in enumerate(docs, start=1):
-        if "rank" not in doc.metadata:
-            doc.metadata["rank"] = {}
-        doc.metadata["rank"][metadata_key] = f"{rank}/{total}"
+        if 'rank' not in doc.metadata:
+            doc.metadata['rank'] = {}
+        doc.metadata['rank'][metadata_key] = f"{rank}/{total}"
 
     return docs
 
@@ -295,21 +314,21 @@ def build_question_condensation_chain(llm, prompt: PromptTemplate):
     taking the conversation history into account.
     """
     human_placeholder = (
-        "{{ question }}" if prompt.formatter == PromptFormatter.JINJA2 else "{question}"
+        '{{ question }}' if prompt.formatter == PromptFormatter.JINJA2 else '{question}'
     )
     return (
         ChatPromptTemplate.from_messages(
             [
-                ("system", prompt.template),
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("human", human_placeholder),
+                ('system', prompt.template),
+                MessagesPlaceholder(variable_name='chat_history'),
+                ('human', human_placeholder),
             ],
             template_format=prompt.formatter.value,  # type: ignore[arg-type]
         ).partial(**prompt.inputs)
         | llm
         | JsonOutputParser(
             pydantic_object=LLMCondensedQuestion,
-            name="rag_question_condensation_chain_output",
+            name='rag_question_condensation_chain_output',
         )
     )
 
@@ -325,10 +344,10 @@ def create_rag_chain(
 ) -> RunnableSerializable[Any, dict[str, Any]]:
     # -- Validate prompts --------------------------------------------------
     validate_prompt_template(
-        request.question_condensing_prompt, "Question condensing prompt"
+        request.question_condensing_prompt, 'Question condensing prompt'
     )
     validate_prompt_template(
-        request.question_answering_prompt, "Question answering prompt"
+        request.question_answering_prompt, 'Question answering prompt'
     )
 
     # -- Build components --------------------------------------------------
@@ -365,7 +384,7 @@ def create_rag_chain(
         )
 
         retriever = RunnableLambda(
-            name="similarity_retriever_retrieve", func=similarity_retriever.retrieve
+            name='similarity_retriever_retrieve', func=similarity_retriever.retrieve
         )
 
     elif DocumentSearchType.HYBRID_SEARCH == request.document_search_params.search_type:
@@ -385,7 +404,7 @@ def create_rag_chain(
         )
 
         retriever = RunnableLambda(
-            name="hybrid_retrieve", func=hybrid_retriever.retrieve
+            name='hybrid_retrieve', func=hybrid_retriever.retrieve
         )
 
     else:
@@ -397,7 +416,7 @@ def create_rag_chain(
             )
         )
 
-        retriever = RunnableLambda(name="fts_retrieve", func=fts_as_retriever.retrieve)
+        retriever = RunnableLambda(name='fts_retrieve', func=fts_as_retriever.retrieve)
 
     condensation_chain = build_question_condensation_chain(
         question_condensing_llm, request.question_condensing_prompt
@@ -412,29 +431,29 @@ def create_rag_chain(
     # -- Assemble pipeline -------------------------------------------------
     with_condensed_question = RunnableParallel(
         {
-            "chat_chain_result": condensation_chain,
-            "question": itemgetter("question"),
-            "chat_history": itemgetter("chat_history"),
+            'chat_chain_result': condensation_chain,
+            'question': itemgetter('question'),
+            'chat_history': itemgetter('chat_history'),
         }
     )
 
     rag_inputs = with_condensed_question | RunnableParallel(
         {
-            "question": lambda x: x["chat_chain_result"]["condensed_question"],
-            "key_words": lambda x: x["chat_chain_result"]["key_words"],
-            "chat_history": itemgetter("chat_history"),
-            "documents": retriever,
+            'question': lambda x: x['chat_chain_result']['condensed_question'],
+            'key_words': lambda x: x['chat_chain_result']['key_words'],
+            'chat_history': itemgetter('chat_history'),
+            'documents': retriever,
         }
     )
 
     answer_chain = (
         {
-            "context": lambda x: format_documents_as_context(x["documents"]),
-            "chat_history": format_chat_history,
+            'context': lambda x: format_documents_as_context(x['documents']),
+            'chat_history': format_chat_history,
         }
         | rag_prompt
         | question_answering_llm
-        | JsonOutputParser(pydantic_object=LLMAnswer, name="rag_chain_output")
+        | JsonOutputParser(pydantic_object=LLMAnswer, name='rag_chain_output')
     )
 
     return rag_inputs | RunnablePassthrough.assign(answer=answer_chain)

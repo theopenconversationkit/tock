@@ -33,5 +33,5 @@ from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
 
 EMSetting = Annotated[
     Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting, BloomzEMSetting],
-    Body(discriminator="provider"),
+    Body(discriminator='provider'),
 ]

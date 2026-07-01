@@ -25,14 +25,14 @@ from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import (
 )
 
 logger = logging.getLogger(__name__)
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class AWSSecretsManagerClient(SecretManagerClient):
     """AWS Secrets Manager Client."""
 
     def __init__(self):
-        self.client = boto3.client(service_name="secretsmanager")
+        self.client = boto3.client(service_name='secretsmanager')
 
     def get_secret(self, secret_name: str):
         """
@@ -47,9 +47,9 @@ class AWSSecretsManagerClient(SecretManagerClient):
             logging.info(
                 f"The requested secret {secret_name} has been successfully retrieved."
             )
-            return get_secret_value_response["SecretString"]
+            return get_secret_value_response['SecretString']
         except ClientError as e:
-            if e.response["Error"]["Code"] == "ResourceNotFoundException":
+            if e.response['Error']['Code'] == 'ResourceNotFoundException':
                 logger.error(f"The requested secret {secret_name} was not found.")
                 raise
             else:

@@ -21,11 +21,11 @@ from pydantic import Field
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_term_params import (
     OpenSearchTermParams,
 )
-from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
-    BaseVectorStoreSearchParams,
-)
 from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
+)
+from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
+    BaseVectorStoreSearchParams,
 )
 
 
@@ -34,21 +34,21 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
     https://opensearch.org/docs/latest/query-dsl/compound/bool/"""
 
     provider: Literal[VectorStoreProvider.OPEN_SEARCH] = Field(
-        description="The Vector Store Provider.",
+        description='The Vector Store Provider.',
         examples=[VectorStoreProvider.OPEN_SEARCH],
         default=VectorStoreProvider.OPEN_SEARCH,
     )
     filter: Optional[List[OpenSearchTermParams]] = Field(
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
-        "see : https://opensearch.org/docs/latest/query-dsl/compound/bool/",
-        examples=[[{"term": {"key_1": "value_1"}}, {"term": {"key_2": "value_2"}}]],
+        'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
+        examples=[[{'term': {'key_1': 'value_1'}}, {'term': {'key_2': 'value_2'}}]],
         default=None,
     )
 
     def to_dict(self):
-        result = {"k": self.k}
+        result = {'k': self.k}
 
         if self.filter:
-            result["filter"] = [{"term": term_param.term} for term_param in self.filter]
+            result['filter'] = [{'term': term_param.term} for term_param in self.filter]
 
         return result

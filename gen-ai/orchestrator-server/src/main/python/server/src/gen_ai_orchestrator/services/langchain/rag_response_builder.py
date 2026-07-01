@@ -1,3 +1,17 @@
+#   Copyright (C) 2026 Credit Mutuel Arkea
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
 """
 RAG Response Builder
 --------------------
@@ -11,13 +25,16 @@ from typing import List
 
 from langchain_core.documents import Document
 
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
 from gen_ai_orchestrator.models.rag.rag_models import (
     Footnote,
     LLMAnswer,
+    LLMCondensedQuestion,
     RAGDebugData,
     RAGDocument,
     RAGDocumentMetadata,
-    LLMCondensedQuestion,
 )
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
 from gen_ai_orchestrator.routers.responses.responses import RAGResponse
@@ -29,9 +46,6 @@ from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
 )
 from gen_ai_orchestrator.services.observability.observabilty_service import (
     get_observability_info,
-)
-from gen_ai_orchestrator.models.observability.observability_trace import (
-    ObservabilityTrace,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,20 +72,20 @@ def extract_rank(value: str | None) -> int:
     if not value:
         return 999999
 
-    return int(value.split("/")[0])
+    return int(value.split('/')[0])
 
 
 def footnote_sort_key(doc: Document) -> tuple[int, int]:
-    rank_metadata = doc.metadata.get("rank", {})
+    rank_metadata = doc.metadata.get('rank', {})
 
-    if "rrf" in rank_metadata:
-        return 0, extract_rank(rank_metadata["rrf"])
+    if 'rrf' in rank_metadata:
+        return 0, extract_rank(rank_metadata['rrf'])
 
-    if "similarity" in rank_metadata:
-        return 1, extract_rank(rank_metadata["similarity"])
+    if 'similarity' in rank_metadata:
+        return 1, extract_rank(rank_metadata['similarity'])
 
-    if "fts" in rank_metadata:
-        return 2, extract_rank(rank_metadata["fts"])
+    if 'fts' in rank_metadata:
+        return 2, extract_rank(rank_metadata['fts'])
 
     return 3, 999999
 
@@ -99,9 +113,9 @@ def build_footnotes(
 
     return [
         Footnote(
-            identifier=doc.metadata["id"],
-            title=doc.metadata["title"],
-            url=doc.metadata["source"],
+            identifier=doc.metadata['id'],
+            title=doc.metadata['title'],
+            url=doc.metadata['source'],
             content=get_source_content(doc),
             metadata=doc.metadata.copy(),
         )
@@ -116,15 +130,15 @@ def build_footnotes(
 
 def get_rag_documents(handler: RAGCallbackHandler) -> List[RAGDocument]:
     """Convert raw LangChain documents captured by the callback into RAGDocument objects."""
-    if handler.records.get("documents") is None:
+    if handler.records.get('documents') is None:
         return []
 
     return [
         RAGDocument(
-            content=doc.page_content[: len(doc.metadata["title"]) + 100] + "...",
+            content=doc.page_content[: len(doc.metadata['title']) + 100] + '...',
             metadata=RAGDocumentMetadata(**doc.metadata),
         )
-        for doc in handler.records["documents"]
+        for doc in handler.records['documents']
     ]
 
 
@@ -133,7 +147,7 @@ def get_llm_answer_from_raw(output: str | None) -> LLMAnswer:
     if output is None:
         return LLMAnswer()
 
-    cleaned = output.strip().removeprefix("```json").removesuffix("```").strip()
+    cleaned = output.strip().removeprefix('```json').removesuffix('```').strip()
     return LLMAnswer(**json.loads(cleaned))
 
 
@@ -142,7 +156,7 @@ def get_condensing_llm_answer_from_raw(output: str | None) -> LLMCondensedQuesti
     if output is None:
         return LLMCondensedQuestion()
 
-    cleaned = output.strip().removeprefix("```json").removesuffix("```").strip()
+    cleaned = output.strip().removeprefix('```json').removesuffix('```').strip()
     return LLMCondensedQuestion(**json.loads(cleaned))
 
 
@@ -154,20 +168,20 @@ def build_rag_debug_data(
     history = request.dialog.history if request.dialog else []
 
     return RAGDebugData(
-        user_question=request.question_answering_prompt.inputs["question"],
-        question_condensing_prompt=records_callback_handler.records.get("chat_prompt"),
+        user_question=request.question_answering_prompt.inputs['question'],
+        question_condensing_prompt=records_callback_handler.records.get('chat_prompt'),
         question_condensing_history=history,
         condensing_llm_answer=get_condensing_llm_answer_from_raw(
             records_callback_handler.records.get(
-                "rag_question_condensation_chain_output"
+                'rag_question_condensation_chain_output'
             )
         ),
-        question_answering_prompt=records_callback_handler.records.get("rag_prompt"),
+        question_answering_prompt=records_callback_handler.records.get('rag_prompt'),
         documents=get_rag_documents(records_callback_handler),
         document_index_name=request.document_index_name,
         document_search_params=request.document_search_params,
         answer=get_llm_answer_from_raw(
-            records_callback_handler.records.get("rag_chain_output")
+            records_callback_handler.records.get('rag_chain_output')
         ),
         duration=rag_duration,
     )
@@ -190,7 +204,7 @@ def build_rag_response(
     """Assemble the final RAGResponse from all intermediate results."""
     return RAGResponse(
         answer=llm_answer,
-        footnotes=build_footnotes(chain_output["documents"], llm_answer),
+        footnotes=build_footnotes(chain_output['documents'], llm_answer),
         observability_info=get_observability_info(
             observability_handler,
             ObservabilityTrace.RAG.value,
