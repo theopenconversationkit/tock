@@ -1,20 +1,216 @@
-/*!
- * Copyright (C) 2017/2025 SNCF Connect & Tech
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 .main-wrapper {
   min-width: 90vw;
   max-width: 90vw;
+}
+
+.documents-summary {
+  margin-bottom: 1.25rem;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    font-weight: 600;
+  }
+  &__counts {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  &__group-label {
+    margin: 0.5rem 0 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &--used {
+      color: var(--color-success-600, #1a9c5b);
+    }
+    &--unused {
+      color: var(--text-hint-color, #8f9bb3);
+    }
+  }
+}
+
+.doc-item {
+  border-left: 3px solid transparent;
+  border-radius: 0.3rem;
+
+  & + & {
+    margin-top: 1px;
+  }
+
+  &--used {
+    border-left-color: var(--color-success-500, #2bb673);
+  }
+  &--unused {
+    border-left-color: var(--border-basic-color-4, #c5cee0);
+  }
+  &--expanded {
+    background: var(--background-basic-color-2, #f7f9fc);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    line-height: 1.3;
+    overflow: hidden; // pour contraindre l'aperçu de reason
+
+    &:hover {
+      background: var(--background-basic-color-2, #f7f9fc);
+    }
+  }
+
+  &__title {
+    flex: 0 1 auto;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__reason-preview {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-hint-color, #8f9bb3);
+  }
+
+  &__caret {
+    flex: 0 0 auto;
+    font-size: 0.9rem;
+    color: var(--text-hint-color, #8f9bb3);
+  }
+
+  &__dot {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border-basic-color-4, #c5cee0);
+
+    &--used {
+      background: var(--color-success-500, #2bb673);
+    }
+  }
+
+  &__detail {
+    padding: 0.25rem 0.5rem 0.6rem 1.7rem;
+    font-size: 0.8rem;
+  }
+
+  &__label {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-hint-color, #8f9bb3);
+    margin-bottom: 0.15rem;
+  }
+
+  &__reason {
+    margin: 0 0 0.5rem;
+    font-style: italic;
+  }
+
+  &__block {
+    margin-bottom: 0.5rem;
+  }
+
+  &__sentences {
+    margin: 0;
+    padding-left: 1rem;
+    li {
+      margin-bottom: 0.2rem;
+    }
+  }
+
+  &__content {
+    margin: 0;
+    padding: 0.4rem 0.5rem;
+    max-height: 220px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.72rem;
+    background: var(--background-basic-color-3, #edf1f7);
+    border-radius: 0.3rem;
+  }
+
+  &__meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.1rem 0.6rem;
+    margin: 0;
+
+    dt {
+      font-weight: 600;
+      color: var(--text-hint-color, #8f9bb3);
+    }
+    dd {
+      margin: 0;
+      word-break: break-word;
+    }
+  }
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 1rem;
+  font-weight: 600;
+
+  &--used {
+    color: var(--color-success-700, #0e7a44);
+    background: var(--color-success-100, #e4f7ed);
+  }
+  &--unused {
+    color: var(--text-hint-color, #8f9bb3);
+    background: var(--background-basic-color-3, #edf1f7);
+  }
+}
+
+.json-separator {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0;
+  color: var(--text-hint-color, #8f9bb3);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--border-basic-color-3, #e4e9f2);
+  }
+
+  &__label {
+    flex: 0 0 auto;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
 }

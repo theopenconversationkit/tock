@@ -47,6 +47,7 @@ from gen_ai_orchestrator.services.utils.prompt_utility import (
 
 logger = logging.getLogger(__name__)
 
+
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def generate(
     request: CompletionRequest,
@@ -91,7 +92,7 @@ async def generate(
     logger.info(
         'Prompt completion (Playground) - End of execution. (Duration : %.2f seconds)',
         time.time() - start_time,
-        )
+    )
 
     return PlaygroundResponse(
         answer=parsedLlmAnswer,
@@ -132,17 +133,20 @@ async def generate_sentences(
     config = None
     # Create a RunnableConfig containing the observability callback handler
     if request.observability_setting is not None:
-        config = {'callbacks': [
-            create_observability_callback_handler(
-                observability_setting=request.observability_setting,
-                trace_name=ObservabilityTrace.SENTENCE_GENERATION.value
-            )]}
+        config = {
+            'callbacks': [
+                create_observability_callback_handler(
+                    observability_setting=request.observability_setting,
+                    trace_name=ObservabilityTrace.SENTENCE_GENERATION.value,
+                )
+            ]
+        }
 
     sentences = await chain.ainvoke(request.prompt.inputs, config=config)
 
     logger.info(
         'Prompt completion (Sentence Generation) - End of execution. (Duration : %.2f seconds)',
         time.time() - start_time,
-        )
+    )
 
     return SentenceGenerationResponse(sentences=sentences)

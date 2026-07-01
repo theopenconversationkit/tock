@@ -31,7 +31,6 @@ from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import
 )
 from gen_ai_orchestrator.models.rag.rag_models import LLMAnswer
 from gen_ai_orchestrator.routers.requests.requests import RAGRequest
-from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_guardrail_factory,
 )
@@ -41,6 +40,8 @@ from gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rer
 from gen_ai_orchestrator.services.langchain.rag_chain import (
     check_guardrail_output,
     execute_rag_chain,
+)
+from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
     format_rag_context_documents,
     get_chunk_identifier,
     get_web_source_url,
@@ -51,6 +52,22 @@ def _rag_request() -> RAGRequest:
     return RAGRequest(
         **{
             'dialog': {'history': [], 'tags': []},
+            'question_condensing_llm_setting': {
+                'provider': 'OpenAI',
+                'api_key': {
+                    'type': 'Raw',
+                    'secret': 'ab7***************************A1IV4B',
+                },
+                'temperature': 1.2,
+                'model': 'gpt-3.5-turbo',
+            },
+            'question_condensing_prompt': {
+                'formatter': 'f-string',
+                'template': 'formulate question',
+                'inputs': {
+                    'history': [],
+                },
+            },
             'question_answering_llm_setting': {
                 'provider': 'OpenAI',
                 'api_key': {
@@ -188,12 +205,18 @@ async def test_execute_rag_chain_matches_footnotes_with_composite_chunk_id(
 )
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.create_rag_chain')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGCallbackHandler')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGResponse')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.RAGDebugData')
-@patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_answer')
+@patch('gen_ai_orchestrator.services.langchain.rag_response_builder.RAGResponse')
+@patch('gen_ai_orchestrator.services.langchain.rag_response_builder.RAGDebugData')
+@patch(
+    'gen_ai_orchestrator.services.langchain.rag_response_builder.get_llm_answer_from_raw'
+)
+@patch(
+    'gen_ai_orchestrator.services.langchain.rag_response_builder.get_condensing_llm_answer_from_raw'
+)
 @pytest.mark.asyncio
 async def test_rag_chain(
-    mocked_get_llm_answer,
+    mocked_get_condensing_llm_answer_from_raw,
+    mocked_get_llm_answer_from_raw,
     mocked_rag_debug_data,
     mocked_rag_response,
     mocked_callback_init,
@@ -236,6 +259,24 @@ Question:
 {question}
 
 Answer in {locale}:""",
+            'inputs': {
+                'question': 'How to get started playing guitar ?',
+                'no_answer': 'Sorry, I don t know.',
+                'locale': 'French',
+            },
+        },
+        'question_condensing_llm_setting': {
+            'provider': 'OpenAI',
+            'api_key': {
+                'type': 'Raw',
+                'secret': 'ab7***************************A1IV4B',
+            },
+            'temperature': 1.2,
+            'model': 'gpt-3.5-turbo',
+        },
+        'question_condensing_prompt': {
+            'formatter': 'f-string',
+            'template': 'Use the following history to reformulate the user question',
             'inputs': {
                 'question': 'How to get started playing guitar ?',
                 'no_answer': 'Sorry, I don t know.',
@@ -350,7 +391,7 @@ Answer in {locale}:""",
     # Assert the response is build using the expected settings
     mocked_rag_response.assert_called_once_with(
         answer=llm_answer,
-        footnotes=set(),
+        footnotes=list(),
         debug=mocked_rag_debug_data(request, mocked_rag_answer, mocked_callback, 1),
         observability_info=None,
     )
@@ -528,7 +569,9 @@ def test_compress_documents_should_succeed(mocked_rerank):
     'gen_ai_orchestrator.services.langchain.impls.document_compressor.bloomz_rerank.requests.post'
 )
 def test_compress_documents_with_unknown_label(mocked_rerank):
-    bloomz_reranker = BloomzRerank(label='unknown_label', endpoint='http://example.com', is_fault_tolerant=False)
+    bloomz_reranker = BloomzRerank(
+        label='unknown_label', endpoint='http://example.com', is_fault_tolerant=False
+    )
     documents = [
         Document(
             page_content='Page content 1',

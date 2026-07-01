@@ -30,7 +30,7 @@ class RAGCallbackHandler(BaseCallbackHandler):
     def __init__(self):
         self.records: Dict[str, Any] = {
             'chat_prompt': None,
-            'chat_chain_output': None,
+            'rag_question_condensation_chain_output': None,
             'rag_prompt': None,
             'rag_chain_output': None,
             'documents': None,
@@ -41,8 +41,10 @@ class RAGCallbackHandler(BaseCallbackHandler):
     ) -> None:
         """Print out that we are entering a chain."""
 
-        if kwargs['name'] == 'chat_chain_output' and isinstance(inputs, AIMessage):
-            self.records['chat_chain_output'] = inputs.content
+        if kwargs['name'] == 'rag_question_condensation_chain_output' and isinstance(
+            inputs, AIMessage
+        ):
+            self.records['rag_question_condensation_chain_output'] = inputs.content
 
         if kwargs['name'] == 'rag_chain_output' and isinstance(inputs, AIMessage):
             self.records['rag_chain_output'] = inputs.content

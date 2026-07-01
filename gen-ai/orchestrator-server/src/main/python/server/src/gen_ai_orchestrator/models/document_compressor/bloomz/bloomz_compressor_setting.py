@@ -36,10 +36,10 @@ class BloomzCompressorSetting(BaseDocumentCompressorSetting):
         default=DocumentCompressorProvider.BLOOMZ.value,
     )
     endpoint: str = Field(
-        description='Bloomz scoring endpoint.',
-        default='http://localhost:8082'
+        description='Bloomz scoring endpoint.', default='http://localhost:8082'
     )
     label: Optional[str] = Field(
         description='Label to use for reranking. The output label is usually documented on the huggingface model card '
-                    'or in the model\'s config.json file (id2label..).', default='entailment'
+        "or in the model's config.json file (id2label..).",
+        default='entailment',
     )

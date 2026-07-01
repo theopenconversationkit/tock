@@ -51,7 +51,7 @@ class BloomzRerank(BaseDocumentCompressor):
         self,
         documents: Sequence[Document],
         query: str,
-        callbacks: Callbacks | None = None
+        callbacks: Callbacks | None = None,
     ) -> Sequence[Document]:
         """
         Compress documents.
@@ -82,8 +82,8 @@ class BloomzRerank(BaseDocumentCompressor):
 
             if response.status_code != 200:
                 logger.error(
-                    f'[Compressor] Bad response {response.status_code} '
-                    f'{response.reason} - {response.text}'
+                    f"[Compressor] Bad response {response.status_code} "
+                    f"{response.reason} - {response.text}"
                 )
 
                 if not self.is_fault_tolerant:
@@ -101,7 +101,7 @@ class BloomzRerank(BaseDocumentCompressor):
             results = response.json().get('response', [])
 
         except Exception as exc:
-            logger.error(f'[Compressor] Exception during rerank call: {exc}')
+            logger.error(f"[Compressor] Exception during rerank call: {exc}")
 
             if not self.is_fault_tolerant:
                 raise GenAIDocumentCompressorErrorException(
@@ -141,7 +141,7 @@ class BloomzRerank(BaseDocumentCompressor):
                 continue
 
             except Exception as exc:
-                logger.error(f'[Compressor] Error processing result: {exc}')
+                logger.error(f"[Compressor] Error processing result: {exc}")
                 continue
 
         scored_docs = sorted(
@@ -151,12 +151,14 @@ class BloomzRerank(BaseDocumentCompressor):
         )
 
         above_threshold = [
-            d for d in scored_docs
+            d
+            for d in scored_docs
             if d.metadata.get('retriever_score', 0) >= self.min_score
         ]
 
         below_threshold = [
-            d for d in scored_docs
+            d
+            for d in scored_docs
             if d.metadata.get('retriever_score', 0) < self.min_score
         ]
 

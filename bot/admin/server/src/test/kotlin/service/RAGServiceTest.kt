@@ -207,9 +207,9 @@ class RAGServiceTest : AbstractTest() {
             Assertions.assertEquals(BOT_ID, captured.botId)
             Assertions.assertEquals(true, captured.enabled)
             Assertions.assertEquals(NAMESPACE, captured.namespace)
-            Assertions.assertEquals(PROVIDER, captured.questionAnsweringLlmSetting!!.provider.name)
-            Assertions.assertEquals(TEMPERATURE, captured.questionAnsweringLlmSetting!!.temperature)
-            Assertions.assertEquals(PROMPT, captured.questionAnsweringPrompt!!.template)
+            Assertions.assertEquals(PROVIDER, captured.questionAnsweringLlmSetting.provider.name)
+            Assertions.assertEquals(TEMPERATURE, captured.questionAnsweringLlmSetting.temperature)
+            Assertions.assertEquals(PROMPT, captured.questionAnsweringPrompt.template)
         }
 
         TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet").given(

@@ -140,10 +140,32 @@
   >
     <div class="details-wrapper scrollbar-narrow">
       <div
-        class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small text-muted"
+        class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small text-muted d-flex justify-content-between align-items-center"
         *ngFor="let question of dataset.questions"
       >
         {{ question.question }}
+
+        <div class="d-flex">
+          <button
+            nbButton
+            ghost
+            size="tiny"
+            nbTooltip="Copy question"
+            (click)="copyString(question.question)"
+          >
+            <nb-icon icon="copy"></nb-icon>
+          </button>
+
+          <button
+            nbButton
+            ghost
+            size="tiny"
+            nbTooltip="Test this question in a dialog"
+            (click)="testSentence(question.question)"
+          >
+            <nb-icon icon="terminal-plus"></nb-icon>
+          </button>
+        </div>
       </div>
     </div>
   </nb-card-body>
@@ -187,12 +209,6 @@
         </div>
         <div
           class="ellipsis"
-          nbTooltip="Number of failed questions"
-        >
-          Failed
-        </div>
-        <div
-          class="ellipsis"
           nbTooltip="Number of successful questions"
         >
           Completed
@@ -202,6 +218,12 @@
           nbTooltip="Number of questions processed by intent detection"
         >
           Intent
+        </div>
+        <div
+          class="ellipsis"
+          nbTooltip="Number of failed questions (Execution failures | Technical errors)"
+        >
+          Failed
         </div>
         <div
           class="ellipsis"
@@ -231,10 +253,16 @@
           class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small runs-grid"
           *ngFor="let run of dataset.runs"
         >
-          <div class="runs-grid-entry text-muted">
+          <div
+            class="runs-grid-entry text-muted"
+            nbTooltip="{{ run.startTime | date: 'y/MM/dd - HH:mm' }}"
+          >
             {{ run.startTime | date: 'y/MM/dd - HH:mm' }}
           </div>
-          <div class="runs-grid-entry text-muted">
+          <div
+            class="runs-grid-entry text-muted"
+            nbTooltip="{{ run.endTime | date: 'y/MM/dd - HH:mm' }}"
+          >
             <ng-container *ngIf="run.endTime; else noEndTime">
               {{ run.endTime | date: 'y/MM/dd - HH:mm' }}
             </ng-container>
@@ -252,12 +280,22 @@
           </div>
 
           <div class="runs-grid-entry text-muted">{{ run.stats.totalQuestions }}</div>
-          <div class="runs-grid-entry text-muted">{{ run.stats.failedQuestions }}</div>
           <div class="runs-grid-entry text-muted">{{ run.stats.completedQuestions }}</div>
 
           <div class="runs-grid-entry text-muted">{{ run.stats.nonRagAnswers }}</div>
+          <div class="runs-grid-entry text-muted">
+            {{ run.stats.failedQuestions }} | {{ run.stats.ragAnswerStatusCounts.technical_error }}
+          </div>
           <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.found_in_context }}</div>
-          <div class="runs-grid-entry text-muted">{{ run.stats.ragAnswerStatusCounts.not_found_in_context }}</div>
+          <div class="runs-grid-entry text-muted">
+            {{ run.stats.ragAnswerStatusCounts.not_found_in_context }}
+            <small
+              class="font-small text-warning"
+              *ngIf="!run.stats.failedQuestions && !run.stats.ragAnswerStatusCounts.technical_error"
+            >
+              ({{ getPercentageNotFound(run) | number: '1.0' }}%)
+            </small>
+          </div>
 
           <div
             class="runs-grid-entry"

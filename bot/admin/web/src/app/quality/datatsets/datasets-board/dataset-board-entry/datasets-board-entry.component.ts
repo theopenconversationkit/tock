@@ -8,6 +8,9 @@ import { ChoiceDialogComponent } from '../../../../shared/components';
 import { DatasetCreateComponent } from '../../dataset-create/dataset-create.component';
 import { StateService } from '../../../../core-nlp/state.service';
 import { SampleCreateFromRunComponent } from '../../sample-create-from-run/sample-create-from-run.component';
+import { TestDialogService } from '../../../../shared/components/test-dialog/test-dialog.service';
+import { copyToClipboard } from '../../../../shared/utils';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-datasets-board-entry',
@@ -51,7 +54,13 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   }
   private _dataset: Dataset;
 
-  constructor(private datasetsService: DatasetsService, private dialogService: DialogService, private stateService: StateService) {}
+  constructor(
+    private datasetsService: DatasetsService,
+    private dialogService: DialogService,
+    private stateService: StateService,
+    private toastrService: NbToastrService,
+    private testDialogService: TestDialogService
+  ) {}
 
   getLatestRun(): DatasetRun | null {
     return this.datasetsService.getLatestRun(this.dataset);
@@ -120,7 +129,9 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
       });
   }
 
-  confirmCancelRun(run: DatasetRun): void {
+  confirmCancelRun(run: DatasetRun | null): void {
+    if (!run) return;
+
     const action = 'cancel';
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
@@ -238,6 +249,22 @@ export class DatasetsBoardEntryComponent implements OnDestroy {
   switchRunsDetail(): void {
     this.displayRunsDetail = !this.displayRunsDetail;
     if (this.displayRunsDetail) this.displayQuestionsDetail = false;
+  }
+
+  testSentence(question: string) {
+    this.testDialogService.testSentenceDialog({
+      sentenceText: question
+    });
+  }
+
+  copyString(str: string) {
+    copyToClipboard(str);
+    this.toastrService.success(`String copied to clipboard`, 'Clipboard');
+  }
+
+  getPercentageNotFound(run: DatasetRun): number {
+    const { totalQuestions, ragAnswerStatusCounts } = run.stats;
+    return totalQuestions > 0 ? (ragAnswerStatusCounts.not_found_in_context / totalQuestions) * 100 : 0;
   }
 
   ngOnDestroy(): void {

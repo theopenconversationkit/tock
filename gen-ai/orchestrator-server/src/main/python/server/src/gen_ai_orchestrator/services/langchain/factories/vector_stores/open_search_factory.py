@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating OpenSearchFactory"""
+
 import logging
 from typing import Optional
 
@@ -30,6 +31,9 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
 )
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import (
     OpenSearchVectorStoreSetting,
+)
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.full_text_search_retriever import (
+    FullTextSearchRetriever,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
@@ -50,7 +54,9 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
 
     setting: OpenSearchVectorStoreSetting
 
-    def get_vector_store(self, async_mode: Optional[bool] = True) -> OpenSearchVectorSearch:
+    def get_vector_store(
+        self, async_mode: Optional[bool] = True
+    ) -> OpenSearchVectorSearch:
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
             'OpenSearch user credentials: %s:%s',
@@ -58,7 +64,7 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
             obfuscate(password),
         )
         return OpenSearchVectorSearch(
-            opensearch_url=f'https://{self.setting.host}:{self.setting.port}',
+            opensearch_url=f"https://{self.setting.host}:{self.setting.port}",
             http_auth=(
                 self.setting.username,
                 fetch_secret_key_value(self.setting.password),
@@ -74,10 +80,17 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
             timeout=application_settings.vector_store_timeout,
         )
 
-    def get_vector_store_retriever(self, search_kwargs: dict, async_mode: Optional[bool] = True) -> VectorStoreRetriever:
+    def get_vector_store_retriever(
+        self, search_kwargs: dict, async_mode: Optional[bool] = True
+    ) -> VectorStoreRetriever:
         return self.get_vector_store(async_mode).as_retriever(
             search_kwargs=search_kwargs
         )
+
+    def get_text_store_retriever(
+        self, search_kwargs: dict, async_mode: bool = True
+    ) -> FullTextSearchRetriever:
+        raise NotImplementedError
 
     @opensearch_exception_handler
     async def check_vector_store_connection(self) -> bool:

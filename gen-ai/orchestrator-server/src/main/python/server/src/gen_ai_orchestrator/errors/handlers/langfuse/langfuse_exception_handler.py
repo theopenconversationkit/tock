@@ -26,9 +26,7 @@ from gen_ai_orchestrator.models.observability.observability_provider import (
 logger = logging.getLogger(__name__)
 
 
-def create_error_info_langfuse(
-    exc: ApiError
-) -> ErrorInfo:
+def create_error_info_langfuse(exc: ApiError) -> ErrorInfo:
     """
     Create ErrorInfo for a Langfuse error
 

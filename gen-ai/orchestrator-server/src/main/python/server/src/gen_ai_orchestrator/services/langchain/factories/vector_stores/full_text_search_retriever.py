@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2026 Credit Mutuel Arkea
+#   Copyright (C) 2026 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,15 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating Credentials."""
+import logging
+from abc import ABC, abstractmethod
 
-from pydantic import BaseModel, Field
+from langchain_core.retrievers import BaseRetriever
+from pydantic import ConfigDict
+
+logger = logging.getLogger(__name__)
 
 
-class Credentials(BaseModel):
-    """The basic credentials"""
+class FullTextSearchRetriever(BaseRetriever, ABC):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    username: str = Field(description='The username.', examples=['nt123'])
-    password: str = Field(
-        description='The password.', examples=['a12G-3@p!'], min_length=4
-    )
+    @abstractmethod
+    def prepare_query(self, keywords: list[str]) -> str:
+        pass

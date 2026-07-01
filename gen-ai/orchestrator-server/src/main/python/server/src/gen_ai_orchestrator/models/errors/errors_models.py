@@ -78,7 +78,7 @@ class ErrorCode(Enum):
         return {
             'enum': [item.value for item in cls],
             'description': '\n'.join(
-                [f'* `{item.value}`: {item.name}' for item in cls]
+                [f"* `{item.value}`: {item.name}" for item in cls]
             ),
             'type': 'string',
         }
@@ -216,7 +216,8 @@ class ErrorMessages:
             message='Unknown Document Compressor Provider Settings.'
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR: ErrorMessage(
-            message='Unknown Document Compressor label.', detail='Check the Document Compressor label you sent.'
+            message='Unknown Document Compressor label.',
+            detail='Check the Document Compressor label you sent.',
         ),
         ErrorCode.DOCUMENT_COMPRESSOR_API_ERROR: ErrorMessage(
             message='Document Compressor API error.',

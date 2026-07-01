@@ -45,5 +45,5 @@ class OpenAILLMSetting(BaseLLMSetting):
     base_url: str = Field(
         description='The OpenAI endpoint base URL',
         examples=['https://api.openai.com/v1'],
-        default='https://api.openai.com/v1'
+        default='https://api.openai.com/v1',
     )

@@ -71,10 +71,9 @@ object RAGService {
         ragConfigurationDAO.delete(ragConfig._id)
 
         logger.info { "Deleting the question condensing LLM secret ..." }
-        ragConfig.questionCondensingLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        ragConfig.questionCondensingLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
         logger.info { "Deleting the question answering LLM secret ..." }
-        ragConfig.questionAnsweringLlmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
-        ragConfig.llmSetting?.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        ragConfig.questionAnsweringLlmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
         logger.info { "Deleting the Embedding secret ..." }
         ragConfig.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
     }

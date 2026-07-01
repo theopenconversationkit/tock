@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating BaseLLMSetting."""
+
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -31,7 +32,7 @@ class BaseLLMSetting(BaseModel):
     api_key: Optional[SecretKey] = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
         examples=[RawSecretKey(secret='ab7-************-A1IV4B')],
-        default=None
+        default=None,
     )
     temperature: float = Field(
         description='The temperature that controls the randomness of the text generated.',

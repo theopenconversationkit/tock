@@ -34,7 +34,6 @@ class AWSSecretsManagerClient(SecretManagerClient):
     def __init__(self):
         self.client = boto3.client(service_name='secretsmanager')
 
-
     def get_secret(self, secret_name: str):
         """
         Retrieve individual secret by name, using the get_secret_value API.
@@ -45,15 +44,17 @@ class AWSSecretsManagerClient(SecretManagerClient):
             get_secret_value_response = self.client.get_secret_value(
                 SecretId=secret_name
             )
-            logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
+            logging.info(
+                f"The requested secret {secret_name} has been successfully retrieved."
+            )
             return get_secret_value_response['SecretString']
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceNotFoundException':
-                logger.error(f'The requested secret {secret_name} was not found.')
+                logger.error(f"The requested secret {secret_name} was not found.")
                 raise
             else:
-                logger.error(f'Error retrieving {secret_name} secret.')
+                logger.error(f"Error retrieving {secret_name} secret.")
                 raise
         except Exception as e:
-            logger.error(f'An unknown error occurred: {str(e)}.')
+            logger.error(f"An unknown error occurred: {str(e)}.")
             raise

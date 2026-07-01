@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating OpenAILLMFactory"""
+
 from typing import Optional
 
 from langchain_core.language_models import BaseLanguageModel

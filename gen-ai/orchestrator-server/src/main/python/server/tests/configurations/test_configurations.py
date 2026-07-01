@@ -19,7 +19,7 @@ from unittest.mock import patch
 from gen_ai_orchestrator.configurations.environment.settings import _Settings
 from gen_ai_orchestrator.configurations.logging.logger import setup_logging
 from gen_ai_orchestrator.models.security.credentials import Credentials
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import (

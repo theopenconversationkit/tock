@@ -12,15 +12,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating Credentials."""
+"""DocumentSearchType Enumeration."""
 
-from pydantic import BaseModel, Field
+from enum import Enum, unique
 
 
-class Credentials(BaseModel):
-    """The basic credentials"""
+@unique
+class DocumentSearchType(str, Enum):
+    """Enumeration to list Document Search Types"""
 
-    username: str = Field(description='The username.', examples=['nt123'])
-    password: str = Field(
-        description='The password.', examples=['a12G-3@p!'], min_length=4
-    )
+    SIMILARITY_SEARCH = 'SIMILARITY_SEARCH'
+    FULL_TEXT_SEARCH = 'FULL_TEXT_SEARCH'
+    HYBRID_SEARCH = 'HYBRID_SEARCH'
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

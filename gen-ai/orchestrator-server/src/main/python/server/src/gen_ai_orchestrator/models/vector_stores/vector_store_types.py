@@ -36,5 +36,6 @@ DocumentSearchParams = Annotated[
 ]
 
 VectorStoreSetting = Annotated[
-    Union[OpenSearchVectorStoreSetting, PGVectorStoreSetting], Body(discriminator='provider')
+    Union[OpenSearchVectorStoreSetting, PGVectorStoreSetting],
+    Body(discriminator='provider'),
 ]

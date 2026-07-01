@@ -98,7 +98,7 @@ object CompletionService {
         val llmSetting = sentenceGenerationConfig.llmSetting.copyWithTemperature(request.llmTemperature)
 
         // Get prompt
-        val prompt = sentenceGenerationConfig.prompt ?: sentenceGenerationConfig.initPrompt()
+        val prompt = sentenceGenerationConfig.prompt
 
         // Create the inputs map
         val inputs =

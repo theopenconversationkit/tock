@@ -51,7 +51,6 @@ def get_health() -> AppCheckResponse:
     """
     logger.debug('Health check -> OK')
     return AppCheckResponse(status='OK')
-    # TODO : Add a check for OpenSearch
     # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-operations.html
 
 
@@ -61,7 +60,7 @@ def get_health() -> AppCheckResponse:
     response_description='Return HTTP status code 200 (OK)',
     status_code=status.HTTP_200_OK,
 )
-def get_health() -> AppCheckResponse:
+def get_liveness() -> AppCheckResponse:
     """
     ## Perform a Liveness Check
     Endpoint to perform a liveness check on. This endpoint can primarily be used Docker

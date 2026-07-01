@@ -35,7 +35,7 @@ from gen_ai_orchestrator.models.rag.rag_models import (
     LLMAnswer,
     Source,
 )
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
     VectorStoreProvider,
 )
 
@@ -130,7 +130,7 @@ class RAGResponse(BaseModel):
     """The RAG response model"""
 
     answer: Optional[LLMAnswer] = Field(description='The RAG answer')
-    footnotes: set[Footnote] = Field(description='Set of footnotes')
+    footnotes: list[Footnote] = Field(description='List of footnotes')
     debug: Optional[Any] = Field(
         description='Debug data',
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],

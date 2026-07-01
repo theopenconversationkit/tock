@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.bot.sentencegeneration
 
-import ai.tock.genai.orchestratorclient.requests.Formatter
 import ai.tock.genai.orchestratorclient.requests.PromptTemplate
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import org.litote.kmongo.Id
@@ -28,15 +27,5 @@ data class BotSentenceGenerationConfiguration(
     val enabled: Boolean = false,
     val nbSentences: Int,
     val llmSetting: LLMSetting,
-    val prompt: PromptTemplate? = null,
-) {
-    @Deprecated("use BotSentenceGenerationConfiguration#prompt")
-    fun initPrompt(): PromptTemplate {
-        // Temporary stopgap until the next version of Tock,
-        // which will remove the prompt at LLMSetting level and use the promptTemplate
-        return PromptTemplate(
-            formatter = Formatter.JINJA2.id,
-            template = llmSetting.prompt!!,
-        )
-    }
-}
+    val prompt: PromptTemplate,
+)

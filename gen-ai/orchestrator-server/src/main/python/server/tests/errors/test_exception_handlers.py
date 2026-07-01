@@ -56,6 +56,7 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
 _request = httpx.Request('GET', 'https://www.dock.tock.ai')
 _response = httpx.Response(request=_request, status_code=400)
 
+
 @pytest.mark.asyncio
 async def test_openai_exception_handler_api_connection_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -64,6 +65,7 @@ async def test_openai_exception_handler_api_connection_error():
 
     with pytest.raises(GenAIConnectionErrorException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_openai_exception_handler_authentication_error():
@@ -86,6 +88,7 @@ async def test_openai_exception_handler_model_not_found_error():
     with pytest.raises(AIProviderAPIModelException):
         await decorated_function()
 
+
 @pytest.mark.asyncio
 async def test_openai_exception_handler_resource_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -94,6 +97,7 @@ async def test_openai_exception_handler_resource_not_found_error():
 
     with pytest.raises(AIProviderAPIResourceNotFoundException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_openai_exception_handler_deployment_not_found_error():
@@ -105,6 +109,7 @@ async def test_openai_exception_handler_deployment_not_found_error():
 
     with pytest.raises(AIProviderAPIDeploymentNotFoundException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_openai_exception_handler_bad_request_context_len_error():
@@ -119,6 +124,7 @@ async def test_openai_exception_handler_bad_request_context_len_error():
     with pytest.raises(AIProviderAPIContextLengthExceededException):
         await decorated_function()
 
+
 @pytest.mark.asyncio
 async def test_openai_exception_handler_bad_request_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
@@ -127,6 +133,7 @@ async def test_openai_exception_handler_bad_request_error():
 
     with pytest.raises(AIProviderAPIBadRequestException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_openai_exception_handler_api_error():
@@ -137,6 +144,7 @@ async def test_openai_exception_handler_api_error():
     with pytest.raises(AIProviderAPIErrorException):
         await decorated_function()
 
+
 @pytest.mark.asyncio
 async def test_opensearch_exception_handler_improperly_configured():
     @opensearch_exception_handler
@@ -145,6 +153,7 @@ async def test_opensearch_exception_handler_improperly_configured():
 
     with pytest.raises(GenAIOpenSearchSettingException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_opensearch_exception_handler_connexion_error():
@@ -157,6 +166,7 @@ async def test_opensearch_exception_handler_connexion_error():
     with pytest.raises(GenAIAuthenticationException):
         await decorated_function()
 
+
 @pytest.mark.asyncio
 async def test_opensearch_exception_handler_resource_not_found_error():
     @opensearch_exception_handler
@@ -166,6 +176,7 @@ async def test_opensearch_exception_handler_resource_not_found_error():
     with pytest.raises(GenAIOpenSearchResourceNotFoundException):
         await decorated_function()
 
+
 @pytest.mark.asyncio
 async def test_opensearch_exception_handler_index_not_found_error():
     @opensearch_exception_handler
@@ -174,6 +185,7 @@ async def test_opensearch_exception_handler_index_not_found_error():
 
     with pytest.raises(GenAIOpenSearchIndexNotFoundException):
         await decorated_function()
+
 
 @pytest.mark.asyncio
 async def test_opensearch_exception_handler_transport_error():
