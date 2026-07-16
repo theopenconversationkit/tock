@@ -47,6 +47,7 @@ private const val DISPLAY_SOURCES_WITHOUT_URL_PARAMETER = "displaySourcesWithout
 private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 private const val USE_THREAD_PARAMETER = "useThread"
+private const val SOURCES_LABEL_PARAMETER = "sourcesLabel"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -108,6 +109,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             val useThread =
                 connectorConfiguration.parameters[USE_THREAD_PARAMETER] == "1"
 
+            val sourcesLabel =
+                connectorConfiguration.parameters[SOURCES_LABEL_PARAMETER]
+                    ?.takeIf { it.isNotBlank() }
+                    ?: "Sources"
+
             return GoogleChatConnector(
                 connectorId,
                 path,
@@ -117,6 +123,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 displaySourcesWithoutUrl,
                 introMessage,
                 useThread,
+                sourcesLabel,
             )
         }
     }
@@ -216,6 +223,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Use thread (true = 1, false = 0)",
                     USE_THREAD_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Sources label",
+                    SOURCES_LABEL_PARAMETER,
                     false,
                 ),
             ),

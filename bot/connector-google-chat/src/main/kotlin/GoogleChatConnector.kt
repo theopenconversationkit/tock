@@ -48,6 +48,7 @@ class GoogleChatConnector(
     private val displaySourcesWithoutUrl: Boolean,
     private val introMessage: String? = null,
     private val useThread: Boolean = false,
+    private val sourcesLabel: String,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
@@ -119,7 +120,7 @@ class GoogleChatConnector(
         if (event !is Action) return
 
         val message =
-            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, displaySourcesWithoutUrl)
+            GoogleChatMessageConverter.toMessageOut(event, useCondensedFootnotes, displaySourcesWithoutUrl, sourcesLabel)
                 ?: return
 
         callback as GoogleChatConnectorCallback
