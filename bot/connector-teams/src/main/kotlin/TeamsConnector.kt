@@ -69,12 +69,13 @@ internal class TeamsConnector(
     private val path: String,
     val appId: String,
     val appPassword: String,
+    val tenantId: String = "botframework.com",
 ) : ConnectorBase(teamsConnectorType, setOf(CAROUSEL)) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private var tokenHandler = TokenHandler(appId, appPassword)
+    private var tokenHandler = TokenHandler(appId, appPassword, tenantId)
     private val client = TeamsClient(tokenHandler)
     private val jwkHandler = JWKHandler()
     private val executor: Executor by injector.instance()
