@@ -412,20 +412,6 @@ export class Sentence extends EntityContainer {
     return 'unknown';
   }
 
-  statusColor(): string {
-    switch (this.status) {
-      case SentenceStatus.deleted:
-        return 'red';
-      case SentenceStatus.inbox:
-        return 'lightblue';
-      case SentenceStatus.model:
-        return '#00d68f';
-      case SentenceStatus.validated:
-        return 'mediumspringgreen ';
-    }
-    return 'orange';
-  }
-
   clone(): Sentence {
     return new Sentence(
       this.text,
