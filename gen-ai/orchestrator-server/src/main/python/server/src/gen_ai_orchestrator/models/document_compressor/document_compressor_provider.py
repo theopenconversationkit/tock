@@ -18,6 +18,7 @@ from enum import Enum, unique
 @unique
 class DocumentCompressorProvider(str, Enum):
     BLOOMZ = 'BloomzRerank'
+    AWS_BEDROCK = 'AwsBedrockRerank'
 
     @classmethod
     def has_value(cls, value) -> bool:

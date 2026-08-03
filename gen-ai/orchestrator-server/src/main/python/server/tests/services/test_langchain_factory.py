@@ -32,6 +32,9 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
     GenAIUnknownVectorStoreProviderSettingException,
 )
+from gen_ai_orchestrator.models.document_compressor.awsbedrock.aws_bedrock_compressor_setting import (
+    AwsBedrockCompressorSetting,
+)
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
@@ -81,6 +84,9 @@ from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import (
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.document_compressor.aws_bedrock_compressor_factory import (
+    AwsBedrockCompressorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.document_compressor.bloomz_compressor_factory import (
     BloomzCompressorFactory,
@@ -664,3 +670,17 @@ def test_get_bloomz_compressor_factory():
 
     assert compressor.setting.provider == DocumentCompressorProvider.BLOOMZ
     assert isinstance(compressor, BloomzCompressorFactory)
+
+
+def test_get_aws_bedrock_compressor_factory():
+    compressor = get_compressor_factory(
+        setting=AwsBedrockCompressorSetting(
+            provider='AwsBedrockRerank',
+            min_score=0.5,
+            max_documents=25,
+            model_arn='arn:aws:bedrock:us-west-2::foundation-model/amazon.rerank-v1:0',
+        )
+    )
+
+    assert compressor.setting.provider == DocumentCompressorProvider.AWS_BEDROCK
+    assert isinstance(compressor, AwsBedrockCompressorFactory)

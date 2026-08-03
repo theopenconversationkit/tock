@@ -32,6 +32,9 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
+from gen_ai_orchestrator.models.document_compressor.awsbedrock.aws_bedrock_compressor_setting import (
+    AwsBedrockCompressorSetting,
+)
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
@@ -122,6 +125,13 @@ async def get_document_compressor_provider_setting_by_id(
             min_score=0.91002147,
             endpoint='http://localhost:8082',
             label='LABEL_1',
+        )
+    elif provider_id == DocumentCompressorProvider.AWS_BEDROCK:
+        return AwsBedrockCompressorSetting(
+            provider=DocumentCompressorProvider.AWS_BEDROCK,
+            max_documents=3,
+            min_score=0.5,
+            model_arn='arn:aws:bedrock:us-west-2::foundation-model/amazon.rerank-v1:0',
         )
 
 
