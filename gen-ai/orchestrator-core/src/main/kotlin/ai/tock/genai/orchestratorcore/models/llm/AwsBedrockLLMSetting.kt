@@ -19,6 +19,9 @@ package ai.tock.genai.orchestratorcore.models.llm
 data class AwsBedrockLLMSetting<T>(
     override val temperature: String,
     val model: String,
+    val guardrailId: String? = null,
+    val guardrailVersion: String? = null,
+    val guardrailTrace: Boolean = false,
 ) : LLMSettingBase<T>(provider = LLMProvider.AwsBedrock, temperature = temperature) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature = temperature)

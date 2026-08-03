@@ -137,6 +137,9 @@ async def get_llm_provider_setting_by_id(
             provider=LLMProvider.AWS_BEDROCK,
             model='anthropic.claude-3-5-sonnet-20240620-v1:0',
             temperature=0.7,
+            guardrail_id=None,
+            guardrail_version=None,
+            guardrail_trace=False,
         )
     else:
         raise GenAIUnknownProviderException(

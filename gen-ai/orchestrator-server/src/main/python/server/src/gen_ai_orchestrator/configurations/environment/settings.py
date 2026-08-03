@@ -105,6 +105,5 @@ class _Settings(BaseSettings):
     aws_bedrock_credentials_allow_default_profile: bool = False
 
 
-
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment

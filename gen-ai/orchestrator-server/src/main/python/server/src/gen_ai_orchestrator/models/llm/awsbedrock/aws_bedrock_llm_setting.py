@@ -51,3 +51,17 @@ class AwsBedrockLLMSetting(BaseLLMSetting):
         examples=['anthropic.claude-3-5-sonnet-20240620-v1:0'],
         min_length=1,
     )
+    guardrail_id: str | None = Field(
+        default=None,
+        description='The Bedrock Guardrail resource ID or ARN (e.g., the pre-created guardrail policy for content filtering, PII redaction, denied topics, etc.). If set, must also set guardrail_version.',
+        examples=['arn:aws:bedrock:us-west-2:123456789012:guardrail/my-guardrail'],
+    )
+    guardrail_version: str | None = Field(
+        default=None,
+        description='The Bedrock Guardrail version (e.g., "DRAFT" or a published version number). If set, must also set guardrail_id.',
+        examples=['DRAFT', '1'],
+    )
+    guardrail_trace: bool = Field(
+        default=False,
+        description='If True, enables detailed guardrail assessment trace (useful for logging/debugging interventions). Only has effect if guardrail_id and guardrail_version are both set.',
+    )

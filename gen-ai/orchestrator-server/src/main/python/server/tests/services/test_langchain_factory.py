@@ -16,12 +16,14 @@
 from unittest.mock import patch
 
 import pytest
+from langchain_core.messages import AIMessage
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIAuthenticationException,
+    GenAIGuardCheckException,
     GenAIUnknownProviderSettingException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
@@ -112,6 +114,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_facto
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory import (
     AwsBedrockLLMFactory,
+    _check_guardrail_intervention,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,
@@ -290,6 +293,7 @@ def test_get_aws_bedrock_language_model_succeeds_when_credentials_profile_name_i
             model='anthropic.claude-3-5-sonnet-20240620-v1:0',
             credentials_profile_name='my-aws-profile',
             temperature=0.0,
+            guardrails=None,
         )
 
 
@@ -319,7 +323,101 @@ def test_get_aws_bedrock_language_model_succeeds_when_default_profile_is_allowed
             model='anthropic.claude-3-5-sonnet-20240620-v1:0',
             credentials_profile_name=None,
             temperature=0.0,
+            guardrails=None,
         )
+
+
+def test_get_aws_bedrock_language_model_applies_guardrail_config_when_configured(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+                'guardrail_id': 'gr-12345',
+                'guardrail_version': 'DRAFT',
+                'guardrail_trace': True,
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name='my-aws-profile',
+            temperature=0.0,
+            guardrails={
+                'guardrailIdentifier': 'gr-12345',
+                'guardrailVersion': 'DRAFT',
+                'trace': 'enabled',
+            },
+        )
+
+
+def test_get_aws_bedrock_language_model_omits_guardrail_config_when_not_configured(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        application_settings, 'aws_bedrock_credentials_profile_name', 'my-aws-profile'
+    )
+    aws_bedrock = get_llm_factory(
+        setting=AwsBedrockLLMSetting(
+            **{
+                'provider': 'AwsBedrock',
+                'model': 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                'temperature': '0',
+            }
+        )
+    )
+    with patch(
+        'gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory.ChatBedrockConverse'
+    ) as mock_chat_bedrock_converse:
+        aws_bedrock.get_language_model()
+        mock_chat_bedrock_converse.assert_called_once_with(
+            model='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            credentials_profile_name='my-aws-profile',
+            temperature=0.0,
+            guardrails=None,
+        )
+
+
+def test_check_guardrail_intervention_raises_when_guardrail_intervened():
+    message = AIMessage(
+        content='',
+        response_metadata={
+            'stopReason': 'guardrail_intervened',
+            'trace': {
+                'guardrail': {'actionReason': 'Blocked topic detected'},
+            },
+        },
+    )
+    with pytest.raises(GenAIGuardCheckException):
+        _check_guardrail_intervention(message)
+
+
+def test_check_guardrail_intervention_raises_with_generic_cause_when_no_trace():
+    message = AIMessage(
+        content='',
+        response_metadata={'stopReason': 'guardrail_intervened'},
+    )
+    with pytest.raises(GenAIGuardCheckException):
+        _check_guardrail_intervention(message)
+
+
+def test_check_guardrail_intervention_passes_through_when_no_intervention():
+    message = AIMessage(
+        content='Hello!',
+        response_metadata={'stopReason': 'end_turn'},
+    )
+    result = _check_guardrail_intervention(message)
+    assert result is message
 
 
 def test_get_unknown_em_factory():

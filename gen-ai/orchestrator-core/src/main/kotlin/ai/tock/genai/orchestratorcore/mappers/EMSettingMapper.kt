@@ -16,8 +16,8 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
 import ai.tock.genai.orchestratorcore.models.em.AwsBedrockEMSetting
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
 import ai.tock.genai.orchestratorcore.models.em.OllamaEMSetting

@@ -16,8 +16,8 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.AwsBedrockLLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.OllamaLLMSetting
@@ -67,6 +67,9 @@ object LLMSettingMapper {
                     AwsBedrockLLMSetting(
                         temperature = temperature,
                         model = model,
+                        guardrailId = guardrailId,
+                        guardrailVersion = guardrailVersion,
+                        guardrailTrace = guardrailTrace,
                     )
 
                 else ->
@@ -123,6 +126,9 @@ object LLMSettingMapper {
                     AwsBedrockLLMSetting(
                         temperature = temperature,
                         model = model,
+                        guardrailId = guardrailId,
+                        guardrailVersion = guardrailVersion,
+                        guardrailTrace = guardrailTrace,
                     )
 
                 else ->
