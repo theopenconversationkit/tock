@@ -33,6 +33,9 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
+from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
+    AwsBedrockEMSetting,
+)
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
 )
@@ -134,6 +137,11 @@ async def get_em_provider_setting_by_id(
             provider=EMProvider.BLOOMZ,
             api_base='https://doc.tock.ai/tock',
             pooling='last',
+        )
+    elif provider_id == EMProvider.AWS_BEDROCK:
+        return AwsBedrockEMSetting(
+            provider=EMProvider.AWS_BEDROCK,
+            model='amazon.titan-embed-text-v2:0',
         )
 
 

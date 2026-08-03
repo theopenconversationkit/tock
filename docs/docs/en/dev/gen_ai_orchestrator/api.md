@@ -179,6 +179,7 @@ class SentenceGenerationResponse(BaseModel):
 class LLMProvider(str, Enum):
     OPEN_AI = 'OpenAI'
     AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
+    AWS_BEDROCK = 'AwsBedrock'
 
 class BaseLLMSetting(BaseModel):
     provider: LLMProvider
@@ -200,8 +201,12 @@ class AzureOpenAILLMSetting(BaseLLMSetting):
     api_base: str
     api_version: str
 
+class AwsBedrockLLMSetting(BaseLLMSetting):
+    provider: Literal[LLMProvider.AWS_BEDROCK]
+    model: str
+
 LLMSetting = Annotated[
-    Union[OpenAILLMSetting, AzureOpenAILLMSetting],
+    Union[OpenAILLMSetting, AzureOpenAILLMSetting, AwsBedrockLLMSetting],
     Body(discriminator='provider')
 ]
 
@@ -216,8 +221,12 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     api_base: str
     api_version: str
 
+class AwsBedrockEMSetting(BaseEMSetting):
+    provider: Literal[LLMProvider.AWS_BEDROCK]
+    model: str
+
 EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting],
+    Union[OpenAIEMSetting, AzureOpenAIEMSetting, AwsBedrockEMSetting],
     Body(discriminator='provider')
 ]
 

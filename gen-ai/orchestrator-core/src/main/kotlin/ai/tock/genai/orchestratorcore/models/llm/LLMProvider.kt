@@ -20,6 +20,7 @@ enum class LLMProvider {
     OpenAI,
     AzureOpenAIService,
     Ollama,
+    AwsBedrock,
     ;
 
     companion object {

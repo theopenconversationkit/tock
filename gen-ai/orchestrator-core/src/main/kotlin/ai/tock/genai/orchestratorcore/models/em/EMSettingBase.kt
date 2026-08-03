@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = OpenAIEMSetting::class, name = Constants.OPEN_AI),
     JsonSubTypes.Type(value = OllamaEMSetting::class, name = Constants.OLLAMA),
     JsonSubTypes.Type(value = AzureOpenAIEMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE),
+    JsonSubTypes.Type(value = AwsBedrockEMSetting::class, name = Constants.AWS_BEDROCK),
 )
 abstract class EMSettingBase<T>(
     val provider: EMProvider,

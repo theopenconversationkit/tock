@@ -52,6 +52,9 @@ from gen_ai_orchestrator.models.document_compressor.document_compressor_setting 
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
+from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
+    AwsBedrockEMSetting,
+)
 from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
     BloomzEMSetting,
 )
@@ -70,6 +73,9 @@ from gen_ai_orchestrator.models.guardrail.guardrail_setting import (
 )
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
+)
+from gen_ai_orchestrator.models.llm.awsbedrock.aws_bedrock_llm_setting import (
+    AwsBedrockLLMSetting,
 )
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
@@ -123,6 +129,9 @@ from gen_ai_orchestrator.services.langchain.factories.document_compressor.docume
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.em.aws_bedrock_em_factory import (
+    AwsBedrockEMFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
     BloomzEMFactory,
 )
@@ -143,6 +152,9 @@ from gen_ai_orchestrator.services.langchain.factories.guardrail.guardrail_factor
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.aws_bedrock_llm_factory import (
+    AwsBedrockLLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,
@@ -195,6 +207,9 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, OllamaLLMSetting):
         logger.debug('LLM Factory - OllamaLLMFactory')
         return OllamaLLMFactory(setting=setting)
+    elif isinstance(setting, AwsBedrockLLMSetting):
+        logger.debug('LLM Factory - AwsBedrockLLMFactory')
+        return AwsBedrockLLMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 
@@ -222,6 +237,9 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
     elif isinstance(setting, BloomzEMSetting):
         logger.debug('EM Factory - BloomzEMFactory')
         return BloomzEMFactory(setting=setting)
+    elif isinstance(setting, AwsBedrockEMSetting):
+        logger.debug('EM Factory - AwsBedrockEMFactory')
+        return AwsBedrockEMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 

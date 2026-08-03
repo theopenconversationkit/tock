@@ -165,4 +165,19 @@ class LLMSettingReasoningEffortTest {
         assertNull(setting.reasoningEffort)
         assertEquals(LLMProvider.Ollama, setting.provider)
     }
+
+    // ---------------------------------------------------------------
+    // AwsBedrockLLMSetting — no reasoningEffort (not supported by Bedrock)
+    // ---------------------------------------------------------------
+
+    @Test
+    fun `AwsBedrock setting should not have reasoningEffort`() {
+        val setting =
+            AwsBedrockLLMSetting<String>(
+                temperature = "0.8",
+                model = "anthropic.claude-3-5-sonnet-20240620-v1:0",
+            )
+        assertNull(setting.reasoningEffort)
+        assertEquals(LLMProvider.AwsBedrock, setting.provider)
+    }
 }

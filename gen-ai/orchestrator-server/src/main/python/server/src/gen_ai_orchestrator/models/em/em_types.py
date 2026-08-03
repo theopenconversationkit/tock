@@ -18,6 +18,9 @@ from typing import Annotated, Union
 
 from fastapi import Body
 
+from gen_ai_orchestrator.models.em.awsbedrock.aws_bedrock_em_setting import (
+    AwsBedrockEMSetting,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -32,6 +35,12 @@ from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
 )
 
 EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting, BloomzEMSetting],
+    Union[
+        OpenAIEMSetting,
+        AzureOpenAIEMSetting,
+        OllamaEMSetting,
+        BloomzEMSetting,
+        AwsBedrockEMSetting,
+    ],
     Body(discriminator='provider'),
 ]
