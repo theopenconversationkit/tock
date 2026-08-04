@@ -175,115 +175,141 @@ class SentenceGenerationResponse(BaseModel):
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Schemas
-```python
-class LLMProvider(str, Enum):
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    AWS_BEDROCK = 'AwsBedrock'
+```mermaid
+classDiagram
+    class LLMProvider {
+        <<enumeration>>
+        OPEN_AI
+        AZURE_OPEN_AI_SERVICE
+        AWS_BEDROCK
+    }
 
-class BaseLLMSetting(BaseModel):
-    provider: LLMProvider
-    api_key: str
-    temperature: str
+    class BaseLLMSetting {
+        <<abstract>>
+        +LLMProvider provider
+        +str api_key
+        +str temperature
+    }
+    class BaseEMSetting {
+        <<abstract>>
+        +LLMProvider provider
+        +str api_key
+    }
 
-class BaseEMSetting(BaseModel):
-    provider: LLMProvider
-    api_key: str
+    class OpenAILLMSetting {
+        +str model
+    }
+    class AzureOpenAILLMSetting {
+        +str deployment_name
+        +Optional~str~ model
+        +str api_base
+        +str api_version
+    }
+    class AwsBedrockLLMSetting {
+        +str model
+    }
+    BaseLLMSetting <|-- OpenAILLMSetting
+    BaseLLMSetting <|-- AzureOpenAILLMSetting
+    BaseLLMSetting <|-- AwsBedrockLLMSetting
 
-class OpenAILLMSetting(BaseLLMSetting):
-    provider: Literal[LLMProvider.OPEN_AI]
-    model: str
+    class LLMSetting {
+        <<union>>
+    }
+    LLMSetting ..> OpenAILLMSetting
+    LLMSetting ..> AzureOpenAILLMSetting
+    LLMSetting ..> AwsBedrockLLMSetting
 
-class AzureOpenAILLMSetting(BaseLLMSetting):
-    provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE]
-    deployment_name: str
-    model: Optional[str]
-    api_base: str
-    api_version: str
+    class OpenAIEMSetting {
+        +str model
+    }
+    class AzureOpenAIEMSetting {
+        +str deployment_name
+        +Optional~str~ model
+        +str api_base
+        +str api_version
+    }
+    class AwsBedrockEMSetting {
+        +str model
+    }
+    BaseEMSetting <|-- OpenAIEMSetting
+    BaseEMSetting <|-- AzureOpenAIEMSetting
+    BaseEMSetting <|-- AwsBedrockEMSetting
 
-class AwsBedrockLLMSetting(BaseLLMSetting):
-    provider: Literal[LLMProvider.AWS_BEDROCK]
-    model: str
+    class EMSetting {
+        <<union>>
+    }
+    EMSetting ..> OpenAIEMSetting
+    EMSetting ..> AzureOpenAIEMSetting
+    EMSetting ..> AwsBedrockEMSetting
 
-LLMSetting = Annotated[
-    Union[OpenAILLMSetting, AzureOpenAILLMSetting, AwsBedrockLLMSetting],
-    Body(discriminator='provider')
-]
+    class VectorStoreProvider {
+        <<enumeration>>
+        OPEN_SEARCH
+    }
+    class BaseVectorStoreSearchParams {
+        <<abstract>>
+        +VectorStoreProvider provider
+    }
+    class OpenSearchParams {
+        +int k
+        +List~OpenSearchTermParams~ filter
+    }
+    class OpenSearchTermParams {
+        +dict term
+    }
+    BaseVectorStoreSearchParams <|-- OpenSearchParams
+    OpenSearchParams --> OpenSearchTermParams : filter
 
-class OpenAIEMSetting(BaseEMSetting):
-    provider: Literal[LLMProvider.OPEN_AI]
-    model: str
+    class DocumentSearchParams {
+        <<union>>
+    }
+    DocumentSearchParams ..> OpenSearchParams
 
-class AzureOpenAIEMSetting(BaseEMSetting):
-    provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE]
-    deployment_name: str
-    model: Optional[str]
-    api_base: str
-    api_version: str
+    class Footnote {
+        +str identifier
+        +str title
+        +Optional~str~ url
+    }
+    class TextWithFootnotes {
+        +str text
+        +List~Footnote~ footnotes
+    }
+    TextWithFootnotes --> Footnote : footnotes
 
-class AwsBedrockEMSetting(BaseEMSetting):
-    provider: Literal[LLMProvider.AWS_BEDROCK]
-    model: str
+    class DialogDetails {
+        +Optional~str~ dialog_id
+        +Optional~str~ user_id
+        +List~ChatMessage~ history
+        +List~str~ tags
+    }
+    class ChatMessageType {
+        <<enumeration>>
+        USER
+        AI
+    }
+    class ChatMessage {
+        +str text
+        +ChatMessageType type
+    }
+    DialogDetails --> ChatMessage : history
+    ChatMessage --> ChatMessageType : type
 
-EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting, AwsBedrockEMSetting],
-    Body(discriminator='provider')
-]
+    class PromptTemplate {
+        +PromptFormatter formatter
+        +str template
+        +dict inputs
+    }
+    class PromptFormatter {
+        <<enumeration>>
+        F_STRING
+        JINJA2
+    }
+    PromptTemplate --> PromptFormatter : formatter
 
-class VectorStoreProvider(str, Enum):
-    OPEN_SEARCH = 'OpenSearch'
-
-class BaseVectorStoreSearchParams(ABC, BaseModel):
-    provider: VectorStoreProvider
-
-
-class OpenSearchParams(BaseVectorStoreSearchParams):
-    provider: Literal[VectorStoreProvider.OPEN_SEARCH]
-    k: int
-    filter: List[OpenSearchTermParams]
-
-class OpenSearchTermParams(BaseModel):
-    term: dict
-
-DocumentSearchParams = Annotated[
-    Union[OpenSearchParams], Body(discriminator='provider')
-]
-
-class Footnote(BaseModel):
-    identifier: str
-    title: str
-    url: Optional[str] = None
-
-class TextWithFootnotes(BaseModel):
-    text: str
-    footnotes: list[Footnote]
-
-class DialogDetails(BaseModel):
-    dialog_id: Optional[str]
-    user_id: Optional[str]
-    history: list[ChatMessage]
-    tags: list[str]
-
-class ChatMessageType(str, Enum):
-    USER = 'HUMAN'
-    AI = 'AI'
-
-class ChatMessage(BaseModel):
-    text: str
-    type: ChatMessageType
-
-class PromptTemplate(BaseModel):
-    formatter: PromptFormatter
-    template: str
-    inputs: dict
-
-class PromptFormatter(str, Enum):
-    F_STRING = 'f-string'
-    JINJA2 = 'jinja2'
-
-class Error(BaseModel):
-    code: str
-    message: str
+    class Error {
+        +str code
+        +str message
+    }
 ```
 
 ---
