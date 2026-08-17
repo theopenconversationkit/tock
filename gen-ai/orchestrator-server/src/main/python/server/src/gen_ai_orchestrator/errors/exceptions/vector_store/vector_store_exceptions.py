@@ -47,3 +47,9 @@ class GenAIVectorStoreNoDocumentRetrievedException(GenAIOrchestratorException):
 
     def __init__(self, info: Optional[ErrorInfo] = None):
         super().__init__(ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED, info)
+
+class GenAIVectorStoreDataException(GenAIOrchestratorException):
+    """DataException"""
+
+    def __init__(self, info: Optional[ErrorInfo] = None):
+        super().__init__(ErrorCode.VECTOR_STORE_DATA_EXCEPTION, info)

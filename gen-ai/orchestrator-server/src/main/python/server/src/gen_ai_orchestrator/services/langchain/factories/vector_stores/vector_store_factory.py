@@ -21,13 +21,15 @@ from typing import List, Optional
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
+from psycopg.errors import DataException
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy.exc import DataError
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
-    GenAIVectorStoreNoDocumentRetrievedException,
+    GenAIVectorStoreNoDocumentRetrievedException, GenAIVectorStoreDataException,
 )
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
@@ -91,11 +93,24 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         Raises:
             BusinessException: For incorrect setting
         """
-        logger.info('Invoke vector store provider to check setting')
-        documents: List[Document] = await self.get_vector_store().asimilarity_search(
-            query=application_settings.vector_store_test_query,
-            k=application_settings.vector_store_test_max_docs_retrieved,
-        )
+        try:
+            logger.info('Invoke vector store provider to check setting')
+            documents: List[Document] = await self.get_vector_store().asimilarity_search(
+                query=application_settings.vector_store_test_query,
+                k=application_settings.vector_store_test_max_docs_retrieved,
+            )
+        except DataError as exc:
+            if isinstance(exc.orig, DataException):
+                raise GenAIVectorStoreDataException(
+                    ErrorInfo(
+                        provider=self.setting.provider.value,
+                        error=exc.__class__.__name__,
+                        cause=str(exc),
+                    )
+                ) from exc
+
+            raise
+
         logger.debug('Invocation successful')
         logger.debug(
             '[index: %s], [query: %s], [document count: %s]',

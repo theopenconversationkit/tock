@@ -50,6 +50,7 @@ class ErrorCode(Enum):
     VECTOR_STORE_UNKNOWN_PROVIDER = 3000
     VECTOR_STORE_UNKNOWN_PROVIDER_SETTING = 3001
     VECTOR_STORE_NO_DOCUMENT_RETRIEVED = 3002
+    VECTOR_STORE_DATA_EXCEPTION = 3003
 
     # OpenSearch Errors
     OPEN_SEARCH_SETTINGS_ERROR = 4000
@@ -182,6 +183,13 @@ class ErrorMessages:
         ),
         ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED: ErrorMessage(
             message='No documents were retrieved from the vector store.'
+        ),
+        ErrorCode.VECTOR_STORE_DATA_EXCEPTION: ErrorMessage(
+            message='Data exception.',
+            detail=(
+                'Check that the dimension of the configured embedding model'
+                'is compatible with the vector store index dimension.'
+            )
         ),
         # OpenSearch Errors
         ErrorCode.OPEN_SEARCH_SETTINGS_ERROR: ErrorMessage(
