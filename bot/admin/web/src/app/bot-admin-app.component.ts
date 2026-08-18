@@ -138,7 +138,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           },
           {
             link: '/language-understanding/search',
-            title: 'Search sentences',
+            title: 'All sentences',
             icon: 'search'
           },
           {

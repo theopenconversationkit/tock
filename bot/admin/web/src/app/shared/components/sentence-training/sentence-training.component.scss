@@ -39,6 +39,11 @@
   }
 }
 
+::ng-deep .grid-columns-header nb-checkbox .text {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
 @include media-breakpoint-up(lg) {
   .grid {
     grid-template-columns: 6fr 4fr;

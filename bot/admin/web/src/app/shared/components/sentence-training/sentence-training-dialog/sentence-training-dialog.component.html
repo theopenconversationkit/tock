@@ -65,10 +65,12 @@
       No dialog with this phrase were found.
     </div>
 
+
     <tock-chat-ui
       *ngIf="displayedDialog?.actions"
       height="calc(100vh - 330px)"
     >
+
       <tock-chat-ui-dialog-logger
         [dialog]="displayedDialog"
         [userMessageIsClickable]="true"

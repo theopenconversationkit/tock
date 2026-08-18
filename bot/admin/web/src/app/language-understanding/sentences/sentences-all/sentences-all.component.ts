@@ -20,10 +20,10 @@ import { SentenceTrainingComponent } from '../../../shared/components';
 
 @Component({
   selector: 'tock-sentences-search',
-  templateUrl: './sentences-search.component.html',
-  styleUrls: ['./sentences-search.component.scss']
+  templateUrl: './sentences-all.component.html',
+  styleUrls: ['./sentences-all.component.scss']
 })
-export class SentencesSearchComponent {
+export class SentencesAllComponent {
   mode = SentenceTrainingMode.SEARCH;
   @ViewChild(SentenceTrainingComponent) sentencesTraining;
 

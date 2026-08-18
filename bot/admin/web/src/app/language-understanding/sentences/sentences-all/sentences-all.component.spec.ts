@@ -16,19 +16,19 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SentencesSearchComponent } from './sentences-search.component';
+import { SentencesAllComponent } from './sentences-all.component';
 
 describe('SentencesSearchComponent', () => {
-  let component: SentencesSearchComponent;
-  let fixture: ComponentFixture<SentencesSearchComponent>;
+  let component: SentencesAllComponent;
+  let fixture: ComponentFixture<SentencesAllComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SentencesSearchComponent ]
+      declarations: [ SentencesAllComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SentencesSearchComponent);
+    fixture = TestBed.createComponent(SentencesAllComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

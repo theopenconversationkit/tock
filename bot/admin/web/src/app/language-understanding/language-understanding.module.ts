@@ -35,7 +35,7 @@ import {
 } from '@nebular/theme';
 import { LanguageUndestandingRoutingModule } from './language-understanding-routing.module';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
-import { SentencesSearchComponent } from './sentences/sentences-search/sentences-search.component';
+import { SentencesAllComponent } from './sentences/sentences-all/sentences-all.component';
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
@@ -85,7 +85,7 @@ import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
   declarations: [
     LanguageUnderstandingTabsComponent,
     SentencesInboxComponent,
-    SentencesSearchComponent,
+    SentencesAllComponent,
     SentencesUnknownComponent,
     SentenceNewComponent,
     IntentsLogsComponent,

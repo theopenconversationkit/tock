@@ -60,23 +60,96 @@
 
 .stats-details {
   border: 1px solid var(--input-basic-border-color);
-  padding: 0.5em;
-}
-
-.lineFirstButtonRetract {
-  margin-left: -8px;
-}
-.lineFirstLargeButtonRetract {
-  margin-left: -11px;
-}
-.lineFirstSmallButtonRetract {
-  margin-left: -5px;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: var(--background-basic-color-1);
 }
 
 .review {
   white-space: pre-wrap;
 }
 
-.action-button-active {
-  padding: 0.6em 0.5em !important;
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(8, auto);
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+
+  button {
+    width: 38px;
+    height: 38px;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &.action-button-active {
+      transform: scale(1.15);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+.sentence-header-zone {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+
+tock-sentence-training-sentence {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.quick-actions-right {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-items: center;
+
+  button {
+    height: 38px !important;
+    padding: 0 0.75rem !important;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+    nb-icon {
+      font-size: 1.25rem !important;
+      color: var(--text-hint-color) !important;
+      transition: color 0.15s ease;
+    }
+
+    .btn-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-hint-color);
+      transition: color 0.15s ease;
+      text-transform: none;
+    }
+
+    &:hover {
+      background: rgba(143, 155, 179, 0.12) !important;
+
+      nb-icon, .btn-text {
+        color: var(--text-basic-color) !important;
+      }
+    }
+
+    &:active {
+      background: rgba(143, 155, 179, 0.22) !important;
+    }
+  }
 }
