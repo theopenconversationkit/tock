@@ -71,7 +71,7 @@ data class GoogleChatConnectorCallback(
         val message = introMessage ?: return
         logger.info {
             "Sending Google Chat intro message: space=$spaceName" +
-                    if (useThread) ", thread=$threadName" else ""
+                if (useThread) ", thread=$threadName" else ""
         }
         val gMessage = GoogleChatConnectorTextMessageOut(message)
 
@@ -96,7 +96,7 @@ data class GoogleChatConnectorCallback(
 
             logger.info {
                 "Sending Google Chat message: space=$spaceName" +
-                        if (useThread) ", thread=$threadName" else ""
+                    if (useThread) ", thread=$threadName" else ""
             }
 
             val request =
@@ -116,8 +116,8 @@ data class GoogleChatConnectorCallback(
         } catch (e: Exception) {
             logger.error(e) {
                 "Failed to send Google Chat message: " +
-                        "space=$spaceName" +
-                        if (useThread) ", thread=$threadName" else ""
+                    "space=$spaceName" +
+                    if (useThread) ", thread=$threadName" else ""
             }
         }
         return messageName

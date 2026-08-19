@@ -179,8 +179,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
             ?: error(
                 "Service credential missing: either " +
-                        "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
-                        "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
+                    "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
+                    "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
 
     private fun loadCredentials(inputStream: InputStream): GoogleCredentials =

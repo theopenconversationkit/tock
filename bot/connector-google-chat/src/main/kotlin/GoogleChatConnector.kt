@@ -77,11 +77,11 @@ class GoogleChatConnector(
                         if (!chatEvent.has("messagePayload")) {
                             logger.debug {
                                 "Only messagePayload is handled. Skipped events: " +
-                                        "AddedToSpacePayload, " +
-                                        "RemovedFromSpacePayload, " +
-                                        "ButtonClickedPayload, " +
-                                        "WidgetUpdatedPayload, " +
-                                        "AppCommandPayload."
+                                    "AddedToSpacePayload, " +
+                                    "RemovedFromSpacePayload, " +
+                                    "ButtonClickedPayload, " +
+                                    "WidgetUpdatedPayload, " +
+                                    "AppCommandPayload."
                             }
                         } else {
                             val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
