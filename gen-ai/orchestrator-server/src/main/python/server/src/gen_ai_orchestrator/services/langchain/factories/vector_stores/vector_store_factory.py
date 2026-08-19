@@ -29,7 +29,8 @@ from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import (
-    GenAIVectorStoreNoDocumentRetrievedException, GenAIVectorStoreDataException,
+    GenAIVectorStoreDataException,
+    GenAIVectorStoreNoDocumentRetrievedException,
 )
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
