@@ -49,6 +49,7 @@ class GoogleChatConnector(
     private val introMessage: String? = null,
     private val useThread: Boolean = false,
     private val sourcesLabel: String,
+    private val waitingMessage: String,
 ) : ConnectorBase(GoogleChatConnectorProvider.connectorType) {
     private val logger = KotlinLogging.logger {}
     private val executor: Executor by injector.instance()
@@ -76,11 +77,11 @@ class GoogleChatConnector(
                         if (!chatEvent.has("messagePayload")) {
                             logger.debug {
                                 "Only messagePayload is handled. Skipped events: " +
-                                    "AddedToSpacePayload, " +
-                                    "RemovedFromSpacePayload, " +
-                                    "ButtonClickedPayload, " +
-                                    "WidgetUpdatedPayload, " +
-                                    "AppCommandPayload."
+                                        "AddedToSpacePayload, " +
+                                        "RemovedFromSpacePayload, " +
+                                        "ButtonClickedPayload, " +
+                                        "WidgetUpdatedPayload, " +
+                                        "AppCommandPayload."
                             }
                         } else {
                             val message = chatEvent.getAsJsonObject("messagePayload").getAsJsonObject("message")
@@ -89,18 +90,22 @@ class GoogleChatConnector(
 
                             val event = GoogleChatRequestConverter.toEvent(chatEvent, connectorId)
                             executor.executeBlocking {
+                                val callback =
+                                    GoogleChatConnectorCallback(
+                                        connectorId,
+                                        spaceName,
+                                        threadName,
+                                        chatService,
+                                        introMessage,
+                                        useThread,
+                                        waitingMessage,
+                                    )
+
+                                callback.initializeProcessingMessage()
+
                                 controller.handle(
                                     event,
-                                    ConnectorData(
-                                        GoogleChatConnectorCallback(
-                                            connectorId,
-                                            spaceName,
-                                            threadName,
-                                            chatService,
-                                            introMessage,
-                                            useThread,
-                                        ),
-                                    ),
+                                    ConnectorData(callback),
                                 )
                             }
                         }
@@ -126,9 +131,14 @@ class GoogleChatConnector(
         callback as GoogleChatConnectorCallback
 
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
-            callback.sendGoogleMessage(
-                message,
-            )
+            val processingMessageName = callback.processingMessageName
+
+            if (processingMessageName != null) {
+                callback.patchGoogleMessage(processingMessageName, message)
+                callback.processingMessageName = null
+            } else {
+                callback.sendGoogleMessageAndGetName(message)
+            }
         }
     }
 

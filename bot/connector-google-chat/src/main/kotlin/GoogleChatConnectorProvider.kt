@@ -48,6 +48,7 @@ private const val GSA_TO_IMPERSONATE_PARAMETER = "gsaToImpersonate"
 private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 private const val USE_THREAD_PARAMETER = "useThread"
 private const val SOURCES_LABEL_PARAMETER = "sourcesLabel"
+private const val WAITING_MESSAGE_PARAMETER = "waitingMessage"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -114,6 +115,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     ?.takeIf { it.isNotBlank() }
                     ?: "Sources"
 
+            val waitingMessage =
+                connectorConfiguration.parameters[WAITING_MESSAGE_PARAMETER]
+                    ?.takeIf { it.isNotBlank() }
+                    ?: "\uD83D\uDCAD Thinking..."
+
             return GoogleChatConnector(
                 connectorId,
                 path,
@@ -124,6 +130,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 introMessage,
                 useThread,
                 sourcesLabel,
+                waitingMessage,
             )
         }
     }
@@ -172,8 +179,8 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ?.let { ByteArrayInputStream(it.toByteArray()) }
             ?: error(
                 "Service credential missing: either " +
-                    "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
-                    "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
+                        "$SERVICE_CREDENTIAL_PATH_PARAMETER or " +
+                        "$SERVICE_CREDENTIAL_CONTENT_PARAMETER must be provided",
             )
 
     private fun loadCredentials(inputStream: InputStream): GoogleCredentials =
@@ -228,6 +235,11 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Sources label",
                     SOURCES_LABEL_PARAMETER,
+                    false,
+                ),
+                ConnectorTypeConfigurationField(
+                    "Waiting message",
+                    WAITING_MESSAGE_PARAMETER,
                     false,
                 ),
             ),
