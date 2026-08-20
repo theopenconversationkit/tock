@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
+import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
@@ -140,6 +141,96 @@ object FaqAdminService {
             intentName = intent.name,
             footnotes = query.footnotes,
         )
+    }
+
+    /**
+     * Import FAQ definitions into the target application.
+     *
+     * Source database identifiers and application data are never reused. Existing FAQ definitions are matched by
+     * intent name and updated with their target identifiers; missing ones are created with a new target i18n label.
+     */
+    fun importFAQs(
+        queries: List<FaqDefinitionRequest>,
+        userLogin: UserLogin,
+        application: ApplicationDefinition,
+    ): Int {
+        if (queries.isEmpty()) {
+            badRequest("The FAQ import is empty")
+        }
+
+        val duplicatedIntentNames =
+            queries.groupingBy { it.intentName }.eachCount().filterValues { it > 1 }.keys
+        if (duplicatedIntentNames.isNotEmpty()) {
+            badRequest("Duplicated FAQ intent names in import: ${duplicatedIntentNames.joinToString()}")
+        }
+
+        val queriesWithExistingFaq =
+            queries.map { query ->
+                validateImportedFAQ(query, application)
+
+                val existingIntent = intentDAO.getIntentByNamespaceAndName(application.namespace, query.intentName)
+                val existingFaq =
+                    existingIntent?.let {
+                        faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(
+                            it._id,
+                            application.name,
+                            application.namespace,
+                        )
+                    }
+
+                query to existingFaq
+            }
+
+        queriesWithExistingFaq.forEach { (query, existingFaq) ->
+            val targetAnswerVersion = existingFaq?.let { i18nDao.getLabelById(it.i18nId)?.version } ?: 0
+            val targetAnswer =
+                query.answer.copy(
+                    _id =
+                        existingFaq?.i18nId
+                            ?: BotAdminService.createI18nRequest(
+                                application.namespace,
+                                CreateI18nLabelRequest(
+                                    label = query.answer.defaultLabel?.takeUnless { it.isBlank() } ?: query.answer.i18n.first().label,
+                                    locale = query.answer.defaultLocale,
+                                    category = FAQ_CATEGORY,
+                                ),
+                            )._id,
+                    namespace = application.namespace,
+                    category = FAQ_CATEGORY,
+                    version = targetAnswerVersion,
+                )
+
+            i18nDao.save(targetAnswer)
+
+            saveFAQ(
+                query.copy(
+                    id = existingFaq?._id?.toString(),
+                    intentId = existingFaq?.intentId?.toString(),
+                    applicationName = application.name,
+                    creationDate = null,
+                    updateDate = null,
+                    answer = targetAnswer,
+                ),
+                userLogin,
+                application,
+            )
+        }
+
+        return queriesWithExistingFaq.size
+    }
+
+    private fun validateImportedFAQ(
+        query: FaqDefinitionRequest,
+        application: ApplicationDefinition,
+    ) {
+        when {
+            query.title.isBlank() -> badRequest("FAQ title is missing")
+            query.intentName.isBlank() -> badRequest("FAQ intent name is missing")
+            query.utterances.isEmpty() -> badRequest("FAQ '${query.intentName}' has no utterance")
+            query.answer.i18n.isEmpty() -> badRequest("FAQ '${query.intentName}' has no answer")
+            query.language !in application.supportedLocales ->
+                badRequest("FAQ '${query.intentName}' uses unsupported locale '${query.language}'")
+        }
     }
 
     /**

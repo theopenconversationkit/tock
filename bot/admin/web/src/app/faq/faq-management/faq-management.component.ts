@@ -13,6 +13,7 @@ import { PaginatedQuery } from '../../model/commons';
 import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '../models';
 import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
+import { FaqManagementImportComponent } from './faq-management-import/faq-management-import.component';
 import { Pagination } from '../../shared/components';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { I18nLabel } from '../../bot/model/i18n';
@@ -431,6 +432,42 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     } else {
       this.isSidePanelOpen.export = true;
     }
+  }
+
+  openImport(): void {
+    if (this.faqSettingsComponent) {
+      this.faqSettingsComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel') {
+            this.showImportDialog();
+          }
+        });
+    } else if (this.faqEditComponent) {
+      this.faqEditComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel') {
+            this.showImportDialog();
+          }
+        });
+    } else {
+      this.showImportDialog();
+    }
+  }
+
+  private showImportDialog(): void {
+    this.dialogService
+      .openDialog(FaqManagementImportComponent)
+      .onClose.pipe(take(1))
+      .subscribe((count) => {
+        if (typeof count === 'number') {
+          this.stateService.resetConfiguration();
+          this.search();
+        }
+      });
   }
 
   get exportDefaultColumns(): string[] {

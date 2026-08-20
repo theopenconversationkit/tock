@@ -1,6 +1,7 @@
 {
   "faq-management": {
     "title": "FAQs stories",
+    "importFaqsTooltip": "Import FAQs",
     "exportAllFaqsTooltip": "Export all faqs",
     "faqParametersTooltip": "FAQ Parameters",
     "disableAllFaqsTooltip": "Disable all currently active FAQs",
@@ -15,6 +16,12 @@
     "faqsDisabledSuccess": "{{ count }} FAQs successfully disabled",
     "allFaqsAlreadyDisabled": "All FAQs are already disabled",
     "faqSavedSuccess": "Faq successfully {{ action }}"
+  },
+  "faq-management-import": {
+    "title": "Import FAQs",
+    "fileLabel": "FAQs JSON export",
+    "invalidFileMessage": "The file does not match a valid FAQs JSON export.",
+    "successMessage": "{{ count }} FAQ(s) successfully imported"
   },
   "faq-management-edit": {
     "newFaqTitle": "New faq",
