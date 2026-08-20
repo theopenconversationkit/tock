@@ -178,6 +178,18 @@ object FaqAdminService {
                         )
                     }
 
+                if (existingFaq == null && existingIntent != null) {
+                    val existingStory =
+                        storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                            application.namespace,
+                            application.name,
+                            query.intentName,
+                        )
+                    if (existingStory != null && existingStory.category != FAQ_CATEGORY) {
+                        badRequest("A story already exists for intent '${query.intentName}'")
+                    }
+                }
+
                 query to existingFaq
             }
 

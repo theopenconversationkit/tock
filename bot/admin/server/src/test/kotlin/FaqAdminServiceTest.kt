@@ -1130,6 +1130,35 @@ class FaqAdminServiceTest : AbstractTest() {
         }
 
         @Test
+        fun `GIVEN a classic story using the target intent WHEN importing THEN reject before writing`() {
+            val importedFaq = faqDefinitionRequest.copy(intentName = existingIntent.name)
+            val existingClassicStory =
+                existingStory.copy(
+                    botId = botId,
+                    namespace = namespace,
+                    intent = IntentWithoutNamespace(existingIntent.name),
+                    category = "default",
+                )
+
+            every { intentDAO.getIntentByNamespaceAndName(namespace, existingIntent.name) } returns existingIntent
+            every {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId, botId, namespace)
+            } returns null
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    namespace,
+                    botId,
+                    existingIntent.name,
+                )
+            } returns existingClassicStory
+
+            assertThrows<BadRequestException> {
+                FaqAdminService.importFAQs(listOf(importedFaq), userLogin, applicationDefinition)
+            }
+            verify(exactly = 0) { i18nDAO.save(any<I18nLabel>()) }
+        }
+
+        @Test
         fun `GIVEN an invalid FAQ in the batch WHEN importing THEN reject before writing`() {
             val validFaq = faqDefinitionRequest.copy(intentName = "valid-intent")
             every { intentDAO.getIntentByNamespaceAndName(namespace, validFaq.intentName) } returns null
