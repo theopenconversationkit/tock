@@ -1,0 +1,170 @@
+{
+  "title": "Dashboard",
+  "no-bot-title": "No bot configured",
+  "no-bot-message": "Create a bot configuration to start reporting on its activity.",
+  "no-access-title": "Nothing to show for your role",
+  "no-access-message": "This dashboard reports on bot usage and knowledge. Your account has language understanding access only.",
+  "common": {
+    "period": "{{days}} days",
+    "vs-previous-period": "vs previous {{days}} days",
+    "days-ago": "{{days}} days ago",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "rag-disabled-title": "RAG is not enabled",
+    "open-rag-settings": "Open RAG settings",
+    "rag-settings": "RAG settings",
+    "display-tests": "Include tests",
+    "display-tests-tooltip": "Include exchanges started from the studio, in addition to those coming from a connector.",
+    "period-selector": "Reporting period"
+  },
+  "questions-answered": {
+    "title": "Messages handled",
+    "unit": "messages handled",
+    "daily-volume": "daily volume",
+    "chart-label": "Daily messages handled over the period",
+    "empty-title": "No activity in this period",
+    "empty-message": "No message was handled over the selected range. Try a wider period, or include tests.",
+    "series-current": "Current period",
+    "series-previous": "Previous period"
+  },
+  "user-feedback": {
+    "title": "User feedback",
+    "positive": "positive",
+    "coverage": "{{ratings}} ratings on {{answers}} answers ({{rate}} response rate)",
+    "empty-title": "No feedback collected",
+    "empty-message": "No answer was rated over this period. Rating buttons may not be enabled on the channel."
+  },
+  "answer-outcome": {
+    "title": "Answer outcome",
+    "found": "Found in context",
+    "not-found": "Not found in context",
+    "answers": "{{count}} answers",
+    "denominator": "Share of knowledge questions grounded in retrieved documents.",
+    "review-unanswered": "Review unanswered questions",
+    "review-hint": "Opens dialogs filtered on not_found_in_context",
+    "all-outcomes": "All outcomes ({{count}} answers)",
+    "empty-title": "No answer metrics for this bot",
+    "empty-message": "This bot does not report answer outcomes. It may run a version that predates the RAG Status indicator.",
+    "unavailable-message": "Answer outcomes are only recorded for knowledge answers."
+  },
+  "topics": {
+    "title": "Topics answered",
+    "footer-prefix": "Full breakdown, including topics the bot could not cover, on the",
+    "footer-link": "metrics board",
+    "empty-title": "No topics reported",
+    "empty-message": "No answer carried a topic over this period.",
+    "unavailable-message": "Topics are extracted from knowledge answers."
+  },
+  "knowledge-index": {
+    "title": "Knowledge index",
+    "last-ingestion": "Last ingestion",
+    "no-date": "Date not reported by the pipeline",
+    "documents": "Documents",
+    "chunks": "Chunks",
+    "session": "Session",
+    "explore": "Explore index",
+    "diagnose": "Diagnose a question",
+    "check-settings": "Check RAG settings",
+    "stale-title": "This index was built {{days}} days ago.",
+    "stale-message": "Answers may rely on outdated content. Check with the ingestion contact.",
+    "missing-title": "The configured index does not exist in the vector store.",
+    "missing-message": "Session {{session}} is set in the RAG settings but no matching collection was found. Retrieval returns nothing for every question.",
+    "unavailable-title": "No index configured",
+    "unavailable-message": "RAG is off for this bot, so no knowledge index is attached.",
+    "notes-title": "Ingestion notes",
+    "notes-meta": "Edited {{date}} by {{author}}",
+    "notes-empty-title": "No notes on this ingestion",
+    "notes-empty-message": "Record what went into this index — sources, pipeline options, deliberate exclusions.",
+    "notes-add": "Add notes",
+    "notes-loading": "Loading notes…"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "add": "Add a contact",
+    "link": "Link",
+    "empty-title": "No contacts yet",
+    "empty-message": "List the teams responsible for this bot so anyone landing here knows who to reach."
+  },
+  "contact-edit": {
+    "title-add": "Add a contact",
+    "title-edit": "Edit contact",
+    "intro": "Who to reach about this bot. Prefer a team mailbox over a person so the entry survives staff changes.",
+    "role": "Role",
+    "role-help": "Pick a suggestion or type your own.",
+    "role-placeholder": "Business owner",
+    "name": "Team or person",
+    "name-placeholder": "Digital Insurance squad",
+    "email": "Email",
+    "email-placeholder": "squad@example.com",
+    "link": "Link",
+    "link-help": "Team page, chat channel or ticket queue.",
+    "note": "When to reach them",
+    "note-placeholder": "Content questions and wording changes. Office hours only.",
+    "comment": "Comments",
+    "comment-help": "Free text. Handover notes, standing arrangements, dates.",
+    "comment-placeholder": "Anything else worth knowing about this contact.",
+    "add": "Add contact",
+    "save": "Save changes",
+    "remove": "Remove",
+    "remove-confirm": "Remove this contact?"
+  },
+  "evaluation": {
+    "title": "Last validated evaluation",
+    "breakdown": "{{positive}} positive · {{negative}} negative of {{evaluated}}",
+    "all": "All evaluations",
+    "empty-title": "No validated evaluation",
+    "empty-message": "Nothing has been signed off for this bot yet. Samples in progress are not reported here.",
+    "stale-badge": "Outdated"
+  },
+  "genai-configuration": {
+    "title": "Gen AI configuration",
+    "refresh": "Re-run checks",
+    "last-checked": "Last checked {{date}}",
+    "unavailable-message": "This bot answers from stories only. Enable RAG to attach a knowledge index."
+  },
+  "ingestion-notes": {
+    "title": "Ingestion notes",
+    "intro": "Notes are attached to session {{session}}. They stay with this ingestion — a new index starts with an empty set.",
+    "label": "Notes",
+    "help": "Plain text. Line breaks are kept.",
+    "placeholder": "Sources included and excluded, pipeline options, anything you will want to remember in six months.",
+    "meta": "Last edited {{date}} by {{author}}",
+    "save": "Save notes"
+  },
+  "identity": {
+    "title": "About this bot",
+    "display-name": "Business name",
+    "display-name-unset": "Not set",
+    "technical-name": "Technical id",
+    "meta": "Updated {{date}} by {{author}}",
+    "notes-empty": "No notes yet. Record what this bot is for, who it serves, and what is out of scope.",
+    "edit": "Edit"
+  },
+  "identity-edit": {
+    "title": "About this bot",
+    "display-name": "Business name",
+    "display-name-help": "The name the assistant introduces itself with, as written in the prompt.",
+    "display-name-placeholder": "Léa",
+    "technical-name": "Technical id: {{name}}. Set when the application was created and not editable here.",
+    "notes": "Notes",
+    "notes-help": "Plain text. Line breaks are kept.",
+    "notes-placeholder": "Purpose, audience, what is deliberately out of scope, decisions worth remembering.",
+    "save": "Save"
+  },
+  "history": {
+    "title": "History",
+    "count": "{{visible}} of {{total}} events",
+    "empty-title": "No history yet",
+    "empty-message": "Nothing has been recorded for this bot.",
+    "type": {
+      "created": "Creation",
+      "ingestion": "Ingestions",
+      "rag-settings": "RAG settings",
+      "vector-store-settings": "Vector store",
+      "prompt-change": "Prompts",
+      "connector": "Connectors",
+      "evaluation": "Evaluations"
+    }
+  }
+}

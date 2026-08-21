@@ -1,0 +1,62 @@
+<tock-dashboard-widget
+  [title]="'dashboard.contacts.title' | transloco"
+  icon="people"
+  [state]="state"
+  [emptyTitle]="'dashboard.contacts.empty-title' | transloco"
+  [emptyMessage]="'dashboard.contacts.empty-message' | transloco"
+>
+  <ng-template #widgetFooter>
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="onAdd.emit()"
+    >
+      <i class="bi bi-plus-lg"></i>
+      {{ 'dashboard.contacts.add' | transloco }}
+    </button>
+  </ng-template>
+
+  <ng-template #widgetBody>
+    @for (contact of contacts; track contact.id) {
+    <div class="contact-row">
+      <div class="contact-main">
+        <div class="contact-role">{{ contact.role }}</div>
+        <div class="contact-name">{{ contact.name }}</div>
+        <div class="contact-meta">
+          @if (contact.email) {
+          <a [href]="'mailto:' + contact.email">{{ contact.email }}</a>
+          } @if (contact.link) {
+          <a
+            [href]="contact.link"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="bi bi-box-arrow-up-right"></i>
+            {{ 'dashboard.contacts.link' | transloco }}
+          </a>
+          }
+        </div>
+        @if (contact.note) {
+        <div class="metric-label">{{ contact.note }}</div>
+        } @if (contact.comment) {
+        <div class="metric-label contact-comment">{{ contact.comment }}</div>
+        }
+      </div>
+
+      @if (canEdit) {
+      <button
+        nbButton
+        ghost
+        size="tiny"
+        (click)="onEdit.emit(contact)"
+        [attr.aria-label]="'Edit ' + contact.name"
+      >
+        <i class="bi bi-pencil"></i>
+        {{ 'dashboard.common.edit' | transloco }}
+      </button>
+      }
+    </div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

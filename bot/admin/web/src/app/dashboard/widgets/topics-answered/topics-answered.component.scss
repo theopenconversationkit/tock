@@ -1,0 +1,31 @@
+.topic-row {
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+}
+
+.topic-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topic-count {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-bar {
+  height: 0.25rem;
+  margin-top: 0.25rem;
+  border-radius: 1rem;
+  background: var(--background-basic-color-3);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 1rem;
+    background: var(--color-primary-default);
+  }
+}

@@ -1,0 +1,50 @@
+<nb-card class="shadow-sm mb-3 h-100">
+  <nb-card-header class="widget-header">
+    <i class="bi bi-{{ icon }}"></i>
+    <span class="flex-grow-1">{{ title }}</span>
+    <ng-content select="[widget-actions]"></ng-content>
+  </nb-card-header>
+
+  <nb-card-body>
+    @switch (state) { @case (WidgetState.loading) {
+    <div
+      class="widget-skeleton"
+      aria-busy="true"
+    >
+      @for (row of skeletonRows; track row) {
+      <div class="widget-skeleton-line"></div>
+      }
+    </div>
+    } @case (WidgetState.empty) {
+    <tock-no-data-found
+      [title]="emptyTitle"
+      [message]="emptyMessage"
+    ></tock-no-data-found>
+    } @case (WidgetState.unavailable) {
+    <div class="widget-state">
+      <i class="bi bi-{{ unavailableIcon }}"></i>
+      <strong>{{ unavailableTitle }}</strong>
+      <p>{{ unavailableMessage }}</p>
+      @if (unavailableLink) {
+      <a [routerLink]="unavailableLink">
+        {{ unavailableLinkLabel }}
+        <i class="bi bi-arrow-right-short"></i>
+      </a>
+      }
+    </div>
+    } @case (WidgetState.error) {
+    <div class="widget-state widget-state-error">
+      <i class="bi bi-exclamation-triangle"></i>
+      <p>{{ errorMessage }}</p>
+    </div>
+    } @default {
+    <ng-container [ngTemplateOutlet]="bodyTemplate"></ng-container>
+    } }
+  </nb-card-body>
+
+  @if (footerTemplate && state === WidgetState.ready) {
+  <nb-card-footer>
+    <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
+  </nb-card-footer>
+  }
+</nb-card>

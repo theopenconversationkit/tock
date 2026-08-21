@@ -1,0 +1,16 @@
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-hint-color);
+
+  &.delta-up {
+    color: var(--color-success-hover);
+  }
+
+  &.delta-down {
+    color: var(--color-danger-hover);
+  }
+}

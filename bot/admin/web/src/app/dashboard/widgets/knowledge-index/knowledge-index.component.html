@@ -1,0 +1,135 @@
+<tock-dashboard-widget
+  [title]="'dashboard.knowledge-index.title' | transloco"
+  icon="database"
+  [state]="state"
+  [skeletonLines]="3"
+  [unavailableIcon]="'database'"
+  [unavailableTitle]="'dashboard.knowledge-index.unavailable-title' | transloco"
+  [unavailableMessage]="'dashboard.knowledge-index.unavailable-message' | transloco"
+  [unavailableLinkLabel]="'dashboard.common.open-rag-settings' | transloco"
+  unavailableLink="/rag/settings"
+>
+  <ng-template #widgetBody>
+    @if (!index.existsInStore) {
+    <nb-alert
+      status="danger"
+      class="mb-3"
+    >
+      <strong>{{ 'dashboard.knowledge-index.missing-title' | transloco }}</strong>
+      <div>
+        {{ 'dashboard.knowledge-index.missing-message' | transloco: { session: index.indexSessionId } }}
+      </div>
+    </nb-alert>
+    <a [routerLink]="['/rag/settings']">
+      {{ 'dashboard.knowledge-index.check-settings' | transloco }}
+      <i class="bi bi-arrow-right-short"></i>
+    </a>
+    } @else { @if (isStale) {
+    <nb-alert
+      status="warning"
+      class="mb-3"
+    >
+      <strong>{{ 'dashboard.knowledge-index.stale-title' | transloco: { days: ageInDays } }}</strong>
+      <div>{{ 'dashboard.knowledge-index.stale-message' | transloco }}</div>
+    </nb-alert>
+    }
+
+    <div class="index-facts">
+      <div class="index-fact index-fact-date">
+        <div class="metric-label">{{ 'dashboard.knowledge-index.last-ingestion' | transloco }}</div>
+        @if (index.indexDatetime) {
+        <div class="d-flex align-items-baseline gap-05">
+          <span class="metric-value-sm">{{ index.indexDatetime | date: 'dd MMM yyyy' }}</span>
+          <span
+            class="status-badge"
+            [class.status-badge-warning]="isStale"
+            [class.status-badge-success]="!isStale"
+          >
+            {{ 'dashboard.common.days-ago' | transloco: { days: ageInDays } }}
+          </span>
+        </div>
+        } @else {
+        <div class="metric-label">{{ 'dashboard.knowledge-index.no-date' | transloco }}</div>
+        }
+      </div>
+
+      <div class="index-fact">
+        <div class="metric-label">{{ 'dashboard.knowledge-index.documents' | transloco }}</div>
+        <div class="metric-value-sm">{{ index.documentCount | number }}</div>
+      </div>
+
+      <div class="index-fact">
+        <div class="metric-label">{{ 'dashboard.knowledge-index.chunks' | transloco }}</div>
+        <div class="metric-value-sm">{{ index.chunkCount | number }}</div>
+      </div>
+
+      <div class="index-fact index-fact-session">
+        <div class="metric-label">{{ 'dashboard.knowledge-index.session' | transloco }}</div>
+        <div
+          class="session-id"
+          [nbTooltip]="index.indexSessionId"
+        >
+          {{ index.indexSessionId }}
+        </div>
+        <div class="metric-label">{{ index.provider }} &middot; {{ index.embeddingLabel }}</div>
+      </div>
+
+      <div class="index-fact index-fact-links">
+        <a [routerLink]="['/vector-store-inspection/exploration']">
+          {{ 'dashboard.knowledge-index.explore' | transloco }}
+          <i class="bi bi-arrow-right-short"></i>
+        </a>
+        <a [routerLink]="['/vector-store-inspection/diagnostic']">
+          {{ 'dashboard.knowledge-index.diagnose' | transloco }}
+          <i class="bi bi-arrow-right-short"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="index-notes">
+      @if (!notesLoaded) {
+      <div class="metric-label">{{ 'dashboard.knowledge-index.notes-loading' | transloco }}</div>
+      } @else if (hasNotes) {
+      <div class="index-notes-head">
+        <i class="bi bi-journal-text"></i>
+        <span class="flex-grow-1">{{ 'dashboard.knowledge-index.notes-title' | transloco }}</span>
+        <span class="metric-label">
+          {{ 'dashboard.knowledge-index.notes-meta' | transloco: { date: notes.updatedAt | date: 'dd MMM yyyy', author: notes.updatedBy } }}
+        </span>
+        @if (canEdit) {
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          (click)="editNotes()"
+        >
+          <i class="bi bi-pencil"></i>
+          {{ 'dashboard.common.edit' | transloco }}
+        </button>
+        }
+      </div>
+      <pre class="index-notes-text">{{ notes.text }}</pre>
+      } @else {
+      <div class="index-notes-empty">
+        <i class="bi bi-journal-text"></i>
+        <div class="flex-grow-1">
+          <strong>{{ 'dashboard.knowledge-index.notes-empty-title' | transloco }}</strong>
+          <div class="metric-label">{{ 'dashboard.knowledge-index.notes-empty-message' | transloco }}</div>
+        </div>
+        @if (canEdit) {
+        <button
+          nbButton
+          ghost
+          size="small"
+          (click)="editNotes()"
+        >
+          <i class="bi bi-plus-lg"></i>
+          {{ 'dashboard.knowledge-index.notes-add' | transloco }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+    }
+  </ng-template>
+</tock-dashboard-widget>

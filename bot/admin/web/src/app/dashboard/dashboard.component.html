@@ -1,0 +1,132 @@
+<div class="d-flex align-items-center mb-2">
+  <h1 class="flex-grow-1 m-0">{{ 'dashboard.title' | transloco }}</h1>
+
+  <section class="grid-actions d-flex align-items-center gap-1">
+    <nb-checkbox
+      class="text-nowrap"
+      [checked]="displayTests"
+      (checkedChange)="toggleDisplayTests()"
+      [nbTooltip]="'dashboard.common.display-tests-tooltip' | transloco"
+    >
+      {{ 'dashboard.common.display-tests' | transloco }}
+    </nb-checkbox>
+
+    <div
+      class="period-selector"
+      role="group"
+      [attr.aria-label]="'dashboard.common.period-selector' | transloco"
+    >
+      @for (option of periods; track option) {
+      <button
+        nbButton
+        size="small"
+        [status]="option === period ? 'primary' : 'basic'"
+        [appearance]="option === period ? 'filled' : 'ghost'"
+        [attr.aria-pressed]="option === period"
+        (click)="setPeriod(option)"
+      >
+        {{ 'dashboard.common.period' | transloco: { days: option } }}
+      </button>
+      }
+    </div>
+  </section>
+</div>
+
+@if (!configurations.length) {
+<tock-no-data-found
+  [title]="'dashboard.no-bot-title' | transloco"
+  [message]="'dashboard.no-bot-message' | transloco"
+></tock-no-data-found>
+} @else if (!state.hasRole(UserRole.botUser) && !state.hasRole(UserRole.admin)) {
+<nb-card class="shadow-sm">
+  <nb-card-body>
+    <tock-no-data-found
+      [title]="'dashboard.no-access-title' | transloco"
+      [message]="'dashboard.no-access-message' | transloco"
+    ></tock-no-data-found>
+  </nb-card-body>
+</nb-card>
+} @else {
+<div class="dashboard-grid">
+  @if (state.hasRole(UserRole.botUser)) {
+  <div class="grid-span-8">
+    <tock-questions-answered
+      [usage]="usage"
+      [state]="usageState"
+      [period]="period"
+    ></tock-questions-answered>
+  </div>
+  }
+
+  <div class="grid-span-4">
+    <tock-bot-identity
+      [identity]="identity"
+      [state]="identityState"
+      (onEdit)="editIdentity()"
+    ></tock-bot-identity>
+  </div>
+
+  @if (state.hasRole(UserRole.botUser)) {
+  <div class="grid-span-4">
+    <tock-user-feedback
+      [usage]="usage"
+      [state]="usageState"
+    ></tock-user-feedback>
+  </div>
+
+  <div class="grid-span-8">
+    <tock-answer-outcome
+      [outcome]="outcome"
+      [state]="outcomeState"
+    ></tock-answer-outcome>
+  </div>
+  } @if (state.hasRole(UserRole.admin)) {
+  <div class="grid-span-8">
+    <tock-knowledge-index
+      [index]="knowledgeIndex"
+      [notes]="ingestionNotes"
+      [state]="knowledgeIndexState"
+      (onEditNotes)="editIngestionNotes()"
+    ></tock-knowledge-index>
+  </div>
+  } @if (state.hasRole(UserRole.botUser)) {
+  <div class="grid-span-4">
+    <tock-topics-answered
+      [topics]="topics"
+      [state]="topicsState"
+    ></tock-topics-answered>
+  </div>
+  } @if (state.hasRole(UserRole.admin)) {
+  <div class="grid-span-5">
+    <tock-genai-configuration
+      [configuration]="genAiConfiguration"
+      [state]="genAiConfigurationState"
+      (onRefresh)="loadGenAiConfiguration()"
+    ></tock-genai-configuration>
+  </div>
+  } @if (state.hasRole(UserRole.botUser)) {
+  <div class="grid-span-7">
+    <tock-last-evaluation
+      [evaluations]="evaluations"
+      [state]="evaluationState"
+    ></tock-last-evaluation>
+  </div>
+  }
+
+  <div class="grid-span-8">
+    <tock-bot-history
+      [events]="history"
+      [state]="historyState"
+    ></tock-bot-history>
+  </div>
+
+  <div class="grid-span-4">
+    <tock-bot-contacts
+      [contacts]="contacts"
+      [state]="contactsState"
+      (onAdd)="addContact()"
+      (onEdit)="editContact($event)"
+    ></tock-bot-contacts>
+  </div>
+</div>
+}

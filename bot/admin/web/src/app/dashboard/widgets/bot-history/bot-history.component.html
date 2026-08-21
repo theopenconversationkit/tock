@@ -1,0 +1,63 @@
+<tock-dashboard-widget
+  [title]="'dashboard.history.title' | transloco"
+  icon="clock-history"
+  [state]="state"
+  [skeletonLines]="6"
+  [emptyTitle]="'dashboard.history.empty-title' | transloco"
+  [emptyMessage]="'dashboard.history.empty-message' | transloco"
+>
+  <ng-template #widgetBody>
+    <div
+      class="history-scroller"
+      tabindex="0"
+      [attr.aria-label]="'dashboard.history.title' | transloco"
+    >
+      @for (group of groups; track group.year) {
+      <div class="history-year">{{ group.year }}</div>
+
+      @for (event of group.events; track event.id) {
+      <div class="history-event">
+        <div class="history-event-marker">
+          <span class="history-event-dot history-event-{{ event.type }}">
+            <i class="bi bi-{{ iconOf(event.type) }}"></i>
+          </span>
+        </div>
+
+        <div class="history-event-body">
+          <div class="history-event-head">
+            <span class="history-event-label">{{ event.label }}</span>
+            <span class="history-event-date">{{ event.date | date: 'dd MMM' }}</span>
+          </div>
+          @if (event.detail) {
+          <div class="metric-label">{{ event.detail }}</div>
+          } @if (event.author) {
+          <div class="metric-label history-event-author">{{ event.author }}</div>
+          }
+        </div>
+      </div>
+      } }
+    </div>
+
+    <div class="history-filters">
+      @for (filter of filters; track filter.type) {
+      <button
+        type="button"
+        class="history-filter"
+        [class.history-filter-off]="!filter.selected"
+        [attr.aria-pressed]="filter.selected"
+        (click)="toggleFilter(filter)"
+      >
+        <i class="bi bi-{{ filter.icon }}"></i>
+        {{ 'dashboard.history.type.' + filter.type | transloco }}
+        <span class="history-filter-count">{{ filter.count }}</span>
+      </button>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #widgetFooter>
+    <span class="metric-label">
+      {{ 'dashboard.history.count' | transloco: { visible: visibleCount, total: events.length } }}
+    </span>
+  </ng-template>
+</tock-dashboard-widget>

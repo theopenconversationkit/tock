@@ -175,6 +175,11 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
 
     return [
       {
+        title: t('menu.dashboard'),
+        link: '/dashboard',
+        icon: 'speedometer2'
+      },
+      {
         title: t('menu.language-understanding'),
         icon: 'chat-dots',
         hidden: !this.state.hasRole(UserRole.nlpUser),

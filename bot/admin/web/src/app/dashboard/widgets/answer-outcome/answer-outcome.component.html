@@ -1,0 +1,95 @@
+<tock-dashboard-widget
+  [title]="'dashboard.answer-outcome.title' | transloco"
+  icon="check2-circle"
+  [state]="state"
+  [skeletonLines]="5"
+  [emptyTitle]="'dashboard.answer-outcome.empty-title' | transloco"
+  [emptyMessage]="'dashboard.answer-outcome.empty-message' | transloco"
+  [unavailableIcon]="'check2-circle'"
+  [unavailableTitle]="'dashboard.common.rag-disabled-title' | transloco"
+  [unavailableMessage]="'dashboard.answer-outcome.unavailable-message' | transloco"
+  [unavailableLinkLabel]="'dashboard.common.open-rag-settings' | transloco"
+  unavailableLink="/rag/settings"
+>
+  <ng-template #widgetBody>
+    <div class="d-flex flex-wrap gap-2 align-items-start">
+      <div>
+        <div class="metric-label">
+          <span class="status-dot status-dot-success"></span>
+          {{ 'dashboard.answer-outcome.found' | transloco }}
+        </div>
+        <div class="d-flex align-items-baseline gap-05">
+          <span class="metric-value">{{ groundedRate | percent: '1.0-0' }}</span>
+          <tock-dashboard-delta [value]="delta"></tock-dashboard-delta>
+        </div>
+        <div class="metric-label">{{ 'dashboard.answer-outcome.answers' | transloco: { count: found | number } }}</div>
+      </div>
+
+      <div>
+        <div class="metric-label">
+          <span class="status-dot status-dot-danger"></span>
+          {{ 'dashboard.answer-outcome.not-found' | transloco }}
+        </div>
+        <div class="metric-value">{{ 1 - groundedRate | percent: '1.0-0' }}</div>
+        <div class="metric-label">{{ 'dashboard.answer-outcome.answers' | transloco: { count: notFound | number } }}</div>
+      </div>
+
+      <div class="flex-grow-1 align-self-center outcome-cta">
+        <a
+          [routerLink]="['/analytics/dialogs']"
+          [queryParams]="{ ragAnswerStatus: RagAnswerStatus.NOT_FOUND_IN_CONTEXT }"
+        >
+          <i class="bi bi-chat-square-text"></i>
+          {{ 'dashboard.answer-outcome.review-unanswered' | transloco }}
+        </a>
+        <div class="metric-label">{{ 'dashboard.answer-outcome.review-hint' | transloco }}</div>
+      </div>
+    </div>
+
+    <div class="stacked-bar mt-3">
+      <span
+        class="stacked-bar-success"
+        [style.width.%]="groundedRate * 100"
+      ></span>
+      <span
+        class="stacked-bar-danger"
+        [style.width.%]="(1 - groundedRate) * 100"
+      ></span>
+    </div>
+    <div class="metric-label mt-1">{{ 'dashboard.answer-outcome.denominator' | transloco }}</div>
+
+    <div class="outcome-detail mt-3">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="toggleDetail()"
+      >
+        <i
+          class="bi"
+          [class.bi-chevron-down]="!expanded"
+          [class.bi-chevron-up]="expanded"
+        ></i>
+        {{ 'dashboard.answer-outcome.all-outcomes' | transloco: { count: total | number } }}
+      </button>
+
+      @if (expanded) {
+      <div class="mt-1">
+        @for (row of rows; track row.status) {
+        <a
+          class="outcome-row"
+          [routerLink]="['/analytics/dialogs']"
+          [queryParams]="{ ragAnswerStatus: row.status }"
+        >
+          <i class="bi bi-{{ row.icon }}"></i>
+          <span class="outcome-row-name">{{ row.label }}</span>
+          <span class="outcome-row-count">{{ row.count | number }}</span>
+          <span class="outcome-row-share">{{ row.share | percent: '1.1-1' }}</span>
+          <i class="bi bi-chevron-right outcome-row-chevron"></i>
+        </a>
+        }
+      </div>
+      }
+    </div>
+  </ng-template>
+</tock-dashboard-widget>

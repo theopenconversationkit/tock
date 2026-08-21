@@ -1,0 +1,170 @@
+{
+  "title": "Tableau de bord",
+  "no-bot-title": "Aucun bot configuré",
+  "no-bot-message": "Créez une configuration de bot pour suivre son activité.",
+  "no-access-title": "Rien à afficher pour votre rôle",
+  "no-access-message": "Ce tableau de bord porte sur l'usage et la base de connaissances du bot. Votre compte n'a accès qu'à la compréhension du langage.",
+  "common": {
+    "period": "{{days}} jours",
+    "vs-previous-period": "vs {{days}} jours précédents",
+    "days-ago": "il y a {{days}} jours",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "rag-disabled-title": "RAG non activé",
+    "open-rag-settings": "Ouvrir la configuration RAG",
+    "rag-settings": "Configuration RAG",
+    "display-tests": "Inclure les tests",
+    "display-tests-tooltip": "Inclut les échanges initiés depuis le studio, en plus de ceux provenant d'un connecteur.",
+    "period-selector": "Période de rapport"
+  },
+  "questions-answered": {
+    "title": "Messages traités",
+    "unit": "messages traités",
+    "daily-volume": "volume quotidien",
+    "chart-label": "Messages traités par jour sur la période",
+    "empty-title": "Aucune activité sur la période",
+    "empty-message": "Aucun message n'a été traité sur la plage sélectionnée. Élargissez la période, ou incluez les tests.",
+    "series-current": "Période courante",
+    "series-previous": "Période précédente"
+  },
+  "user-feedback": {
+    "title": "Retours utilisateurs",
+    "positive": "positifs",
+    "coverage": "{{ratings}} avis sur {{answers}} réponses ({{rate}} de taux de retour)",
+    "empty-title": "Aucun retour collecté",
+    "empty-message": "Aucune réponse n'a été notée sur la période. Les boutons d'avis ne sont peut-être pas activés sur le canal."
+  },
+  "answer-outcome": {
+    "title": "Issue des réponses",
+    "found": "Trouvé dans le contexte",
+    "not-found": "Absent du contexte",
+    "answers": "{{count}} réponses",
+    "denominator": "Part des questions de connaissance appuyées sur des documents retrouvés.",
+    "review-unanswered": "Examiner les questions sans réponse",
+    "review-hint": "Ouvre les dialogues filtrés sur not_found_in_context",
+    "all-outcomes": "Toutes les issues ({{count}} réponses)",
+    "empty-title": "Aucune métrique de réponse pour ce bot",
+    "empty-message": "Ce bot ne remonte pas d'issue de réponse. Il tourne peut-être dans une version antérieure à l'indicateur RAG Status.",
+    "unavailable-message": "L'issue des réponses n'est enregistrée que pour les réponses de connaissance."
+  },
+  "topics": {
+    "title": "Sujets traités",
+    "footer-prefix": "Détail complet, y compris les sujets non couverts, sur le",
+    "footer-link": "tableau des métriques",
+    "empty-title": "Aucun sujet remonté",
+    "empty-message": "Aucune réponse ne portait de sujet sur la période.",
+    "unavailable-message": "Les sujets sont extraits des réponses de connaissance."
+  },
+  "knowledge-index": {
+    "title": "Index de connaissances",
+    "last-ingestion": "Dernière ingestion",
+    "no-date": "Date non remontée par le pipeline",
+    "documents": "Documents",
+    "chunks": "Chunks",
+    "session": "Session",
+    "explore": "Explorer l'index",
+    "diagnose": "Diagnostiquer une question",
+    "check-settings": "Vérifier la configuration RAG",
+    "stale-title": "Cet index a été construit il y a {{days}} jours.",
+    "stale-message": "Les réponses reposent peut-être sur du contenu périmé. Rapprochez-vous du contact ingestion.",
+    "missing-title": "L'index configuré n'existe pas dans le vector store.",
+    "missing-message": "La session {{session}} est renseignée dans la configuration RAG mais aucune collection correspondante n'a été trouvée. La recherche ne retourne rien pour toutes les questions.",
+    "unavailable-title": "Aucun index configuré",
+    "unavailable-message": "Le RAG est désactivé sur ce bot, aucun index n'y est rattaché.",
+    "notes-title": "Notes d'ingestion",
+    "notes-meta": "Modifié le {{date}} par {{author}}",
+    "notes-empty-title": "Aucune note sur cette ingestion",
+    "notes-empty-message": "Consignez ce qui est entré dans cet index — sources, options du pipeline, exclusions délibérées.",
+    "notes-add": "Ajouter des notes",
+    "notes-loading": "Chargement des notes…"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "add": "Ajouter un contact",
+    "link": "Lien",
+    "empty-title": "Aucun contact",
+    "empty-message": "Listez les équipes responsables de ce bot pour que chacun sache à qui s'adresser."
+  },
+  "contact-edit": {
+    "title-add": "Ajouter un contact",
+    "title-edit": "Modifier le contact",
+    "intro": "À qui s'adresser au sujet de ce bot. Privilégiez une boîte d'équipe plutôt qu'une personne, l'entrée survivra aux mouvements d'effectifs.",
+    "role": "Rôle",
+    "role-help": "Choisissez une suggestion ou saisissez le vôtre.",
+    "role-placeholder": "Responsable métier",
+    "name": "Équipe ou personne",
+    "name-placeholder": "Squad Assurance",
+    "email": "Email",
+    "email-placeholder": "squad@example.com",
+    "link": "Lien",
+    "link-help": "Page d'équipe, canal de discussion ou file de tickets.",
+    "note": "Quand les solliciter",
+    "note-placeholder": "Questions de contenu et reformulations. Heures ouvrées uniquement.",
+    "comment": "Commentaires",
+    "comment-help": "Texte libre. Notes de passation, arrangements permanents, dates.",
+    "comment-placeholder": "Tout ce qu'il est utile de savoir sur ce contact.",
+    "add": "Ajouter le contact",
+    "save": "Enregistrer",
+    "remove": "Supprimer",
+    "remove-confirm": "Supprimer ce contact ?"
+  },
+  "evaluation": {
+    "title": "Dernière évaluation validée",
+    "breakdown": "{{positive}} positives · {{negative}} négatives sur {{evaluated}}",
+    "all": "Toutes les évaluations",
+    "empty-title": "Aucune évaluation validée",
+    "empty-message": "Rien n'a encore été validé sur ce bot. Les échantillons en cours ne sont pas remontés ici.",
+    "stale-badge": "À rafraîchir"
+  },
+  "genai-configuration": {
+    "title": "Configuration Gen AI",
+    "refresh": "Relancer les vérifications",
+    "last-checked": "Dernière vérification {{date}}",
+    "unavailable-message": "Ce bot répond uniquement à partir des stories. Activez le RAG pour rattacher un index."
+  },
+  "ingestion-notes": {
+    "title": "Notes d'ingestion",
+    "intro": "Les notes sont rattachées à la session {{session}}. Elles restent liées à cette ingestion — un nouvel index repart d'une note vide.",
+    "label": "Notes",
+    "help": "Texte brut. Les sauts de ligne sont conservés.",
+    "placeholder": "Sources incluses et exclues, options du pipeline, tout ce dont vous voudrez vous souvenir dans six mois.",
+    "meta": "Modifié le {{date}} par {{author}}",
+    "save": "Enregistrer les notes"
+  },
+  "identity": {
+    "title": "À propos de ce bot",
+    "display-name": "Nom métier",
+    "display-name-unset": "Non renseigné",
+    "technical-name": "Identifiant technique",
+    "meta": "Modifié le {{date}} par {{author}}",
+    "notes-empty": "Aucune note. Consignez à quoi sert ce bot, à qui il s'adresse et ce qui est hors périmètre.",
+    "edit": "Modifier"
+  },
+  "identity-edit": {
+    "title": "À propos de ce bot",
+    "display-name": "Nom métier",
+    "display-name-help": "Le nom sous lequel l'assistant se présente, tel qu'il figure dans le prompt.",
+    "display-name-placeholder": "Léa",
+    "technical-name": "Identifiant technique : {{name}}. Défini à la création de l'application, non modifiable ici.",
+    "notes": "Notes",
+    "notes-help": "Texte brut. Les sauts de ligne sont conservés.",
+    "notes-placeholder": "Objet, public visé, ce qui est volontairement hors périmètre, décisions à retenir.",
+    "save": "Enregistrer"
+  },
+  "history": {
+    "title": "Historique",
+    "count": "{{visible}} événements sur {{total}}",
+    "empty-title": "Aucun historique",
+    "empty-message": "Rien n'a encore été enregistré pour ce bot.",
+    "type": {
+      "created": "Création",
+      "ingestion": "Ingestions",
+      "rag-settings": "Paramètres RAG",
+      "vector-store-settings": "Vector store",
+      "prompt-change": "Prompts",
+      "connector": "Connecteurs",
+      "evaluation": "Évaluations"
+    }
+  }
+}
