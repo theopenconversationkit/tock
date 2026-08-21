@@ -30,10 +30,10 @@ export class BotCoreConfig implements CoreConfig {
   answerToSentenceUrl: string = '/build/story-create';
   /** url map for each default rights */
   roleMap: Map<UserRole, string[]> = new Map([
-    [UserRole.nlpUser, ['/nlp', '/configuration']],
-    [UserRole.botUser, ['/build', '/configuration']],
-    [UserRole.admin, ['/configuration']],
-    [UserRole.technicalAdmin, ['/configuration']]
+    [UserRole.nlpUser, ['/dashboard', '/nlp', '/configuration']],
+    [UserRole.botUser, ['/dashboard', '/build', '/configuration']],
+    [UserRole.admin, ['/dashboard', '/configuration']],
+    [UserRole.technicalAdmin, ['/dashboard', '/configuration']]
   ]);
 }
 
