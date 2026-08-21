@@ -109,10 +109,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // configurations is a BehaviorSubject and replays its last value on subscription,
     // which is what reloads the widgets both on a bot change and on re-entering the route.
+    //
+    // Note that it holds connector configurations, not bots: a perfectly valid bot may
+    // have none. The dashboard therefore keys off the current application and uses this
+    // stream only as the change signal.
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((configurations) => {
       this.configurations = configurations;
 
-      if (!configurations.length || !this.state.currentApplication) {
+      if (!this.state.currentApplication) {
         return;
       }
 
@@ -129,6 +133,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.displayTests = displayTests;
         this.loadPeriodDependentWidgets();
       });
+  }
+
+  /** Connector configurations are optional; only the application is required. */
+  get hasApplication(): boolean {
+    return !!this.state.currentApplication;
+  }
+
+  /** No connector declared: usage figures will stay at zero, the rest still applies. */
+  get hasNoConnector(): boolean {
+    return this.hasApplication && !this.configurations.length;
   }
 
   get namespace(): string {

@@ -1,7 +1,7 @@
 {
   "title": "Tableau de bord",
-  "no-bot-title": "Aucun bot configuré",
-  "no-bot-message": "Créez une configuration de bot pour suivre son activité.",
+  "no-bot-title": "Aucune application sélectionnée",
+  "no-bot-message": "Choisissez une application dans la barre du haut pour afficher son tableau de bord.",
   "no-access-title": "Rien à afficher pour votre rôle",
   "no-access-message": "Ce tableau de bord porte sur l'usage et la base de connaissances du bot. Votre compte n'a accès qu'à la compréhension du langage.",
   "common": {
@@ -166,5 +166,6 @@
       "connector": "Connecteurs",
       "evaluation": "Évaluations"
     }
-  }
+  },
+  "no-connector": "Aucun connecteur n'est déclaré pour ce bot. Les chiffres d'usage resteront vides tant qu'il n'y en aura pas."
 }

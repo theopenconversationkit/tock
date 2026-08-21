@@ -32,7 +32,7 @@
   </section>
 </div>
 
-@if (!configurations.length) {
+@if (!hasApplication) {
 <tock-no-data-found
   [title]="'dashboard.no-bot-title' | transloco"
   [message]="'dashboard.no-bot-message' | transloco"
@@ -46,7 +46,15 @@
     ></tock-no-data-found>
   </nb-card-body>
 </nb-card>
-} @else {
+} @else { @if (hasNoConnector) {
+<nb-alert
+  status="info"
+  class="mb-3"
+>
+  {{ 'dashboard.no-connector' | transloco }}
+</nb-alert>
+}
+
 <div class="dashboard-grid">
   @if (state.hasRole(UserRole.botUser)) {
   <div class="grid-span-8">
