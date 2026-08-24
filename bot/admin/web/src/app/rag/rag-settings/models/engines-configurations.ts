@@ -19,6 +19,8 @@ import {
   AiEngineSettingKeyName,
   EnginesConfiguration,
   AiEngineProvider,
+  AwsBedrockEmModelsList,
+  AwsBedrockLlmModelsList,
   OllamaEmModelsList,
   OllamaLlmModelsList,
   OpenAIEmbeddingModel,
@@ -550,6 +552,17 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05, defaultValue: 0.7 }
     ]
+  },
+  {
+    label: 'AWS Bedrock',
+    key: AiEngineProvider.AwsBedrock,
+    params: [
+      { key: 'model', label: 'Model id', type: 'openlist', source: AwsBedrockLlmModelsList, defaultValue: 'amazon.nova-lite-v1:0' },
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', min: 0, max: 1, step: 0.05, defaultValue: 0.7 },
+      { key: 'guardrailId', label: 'Guardrail ID', type: 'text', information: 'Optional: guardrail resource ID or ARN' },
+      { key: 'guardrailVersion', label: 'Guardrail Version', type: 'text', information: 'Optional: e.g., "DRAFT" or version number' },
+      { key: 'guardrailTrace', label: 'Enable Guardrail Trace', type: 'boolean', defaultValue: false }
+    ]
   }
 ];
 
@@ -581,6 +594,11 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaEmModelsList, defaultValue: 'all-minilm' }
     ]
+  },
+  {
+    label: 'AWS Bedrock',
+    key: AiEngineProvider.AwsBedrock,
+    params: [{ key: 'model', label: 'Model id', type: 'openlist', source: AwsBedrockEmModelsList }]
   }
 ];
 

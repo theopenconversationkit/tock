@@ -16,10 +16,14 @@ from typing import Annotated, Union
 
 from fastapi import Body
 
+from gen_ai_orchestrator.models.document_compressor.awsbedrock.aws_bedrock_compressor_setting import (
+    AwsBedrockCompressorSetting,
+)
 from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
 
 DocumentCompressorSetting = Annotated[
-    Union[BloomzCompressorSetting], Body(discriminator='provider')
+    Union[BloomzCompressorSetting, AwsBedrockCompressorSetting],
+    Body(discriminator='provider'),
 ]

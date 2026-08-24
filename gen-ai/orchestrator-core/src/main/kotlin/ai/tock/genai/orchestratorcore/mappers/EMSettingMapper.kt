@@ -16,6 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
+import ai.tock.genai.orchestratorcore.models.em.AwsBedrockEMSetting
 import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
@@ -51,6 +52,8 @@ object EMSettingMapper {
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
+                is AwsBedrockEMSetting ->
+                    AwsBedrockEMSetting(model = model)
                 else ->
                     throw IllegalArgumentException("Unsupported EM Setting")
             }
@@ -90,6 +93,8 @@ object EMSettingMapper {
                     )
                 is OllamaEMSetting ->
                     OllamaEMSetting(model = model, baseUrl = baseUrl)
+                is AwsBedrockEMSetting ->
+                    AwsBedrockEMSetting(model = model)
                 else ->
                     throw IllegalArgumentException("Unsupported EM Setting")
             }

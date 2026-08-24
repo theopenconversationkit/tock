@@ -16,16 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.models.em
 
-enum class EMProvider {
-    OpenAI,
-    AzureOpenAIService,
-    Ollama,
-    AwsBedrock,
-    ;
-
-    companion object {
-        fun findByName(provider: String): EMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
-    }
-}
+data class AwsBedrockEMSetting<T>(
+    val model: String,
+) : EMSettingBase<T>(EMProvider.AwsBedrock)

@@ -34,7 +34,8 @@ export interface ProvidersConfigurationParam {
 export enum AiEngineProvider {
   OpenAI = 'OpenAI',
   AzureOpenAIService = 'AzureOpenAIService',
-  Ollama = 'Ollama'
+  Ollama = 'Ollama',
+  AwsBedrock = 'AwsBedrock'
 }
 
 export enum AiEngineSettingKeyName {
@@ -126,6 +127,31 @@ export const OpenAIEmbeddingModel: string[] = ['text-embedding-3-small', 'text-e
 
 export const OllamaLlmModelsList: string[] = ['llama2', 'llama3', 'llama3.1', 'llama3.1:8b', 'llama3.2'];
 
+export const AwsBedrockLlmModelsList: string[] = [
+  // Cheap / low-latency tiers, well-suited for RAG at scale
+  'amazon.nova-micro-v1:0',
+  'amazon.nova-lite-v1:0',
+  'amazon.titan-text-lite-v1',
+  'anthropic.claude-3-haiku-20240307-v1:0',
+  'anthropic.claude-3-5-haiku-20241022-v1:0',
+  'meta.llama3-1-8b-instruct-v1:0',
+  'mistral.mistral-7b-instruct-v0:2',
+  'cohere.command-light-text-v14',
+
+  // Stronger, more creative mid-tier models, well-suited for sentence-generation training data
+  'amazon.nova-pro-v1:0',
+  'anthropic.claude-3-5-sonnet-20241022-v2:0',
+  'meta.llama3-1-70b-instruct-v1:0',
+  'mistral.mistral-large-2407-v1:0'
+];
+
 export const OllamaEmModelsList: string[] = ['mxbai-embed-large', 'nomic-embed-text', 'all-minilm'];
+
+export const AwsBedrockEmModelsList: string[] = [
+  'amazon.titan-embed-text-v1',
+  'amazon.titan-embed-text-v2:0',
+  'cohere.embed-english-v3',
+  'cohere.embed-multilingual-v3'
+];
 
 export const ReasoningEffortValues: string[] = ['minimal', 'low', 'medium', 'high'];

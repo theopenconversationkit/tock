@@ -25,6 +25,7 @@ class EMProvider(str, Enum):
     AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
     OLLAMA = 'Ollama'
     BLOOMZ = 'Bloomz'
+    AWS_BEDROCK = 'AwsBedrock'
 
     @classmethod
     def has_value(cls, value) -> bool:

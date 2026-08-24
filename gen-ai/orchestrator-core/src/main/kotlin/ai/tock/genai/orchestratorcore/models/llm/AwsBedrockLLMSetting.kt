@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.em
+package ai.tock.genai.orchestratorcore.models.llm
 
-enum class EMProvider {
-    OpenAI,
-    AzureOpenAIService,
-    Ollama,
-    AwsBedrock,
-    ;
-
-    companion object {
-        fun findByName(provider: String): EMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+data class AwsBedrockLLMSetting<T>(
+    override val temperature: String,
+    val model: String,
+    val guardrailId: String? = null,
+    val guardrailVersion: String? = null,
+    val guardrailTrace: Boolean = false,
+) : LLMSettingBase<T>(provider = LLMProvider.AwsBedrock, temperature = temperature) {
+    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
+        return this.copy(temperature = temperature)
     }
 }
