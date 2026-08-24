@@ -1079,6 +1079,13 @@ class FaqAdminServiceTest : AbstractTest() {
                     intentName = existingIntent.name,
                 )
 
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    namespace,
+                    botId,
+                    existingIntent.name,
+                )
+            } returns existingStory.copy(category = FAQ_CATEGORY)
             every { intentDAO.getIntentByNamespaceAndName(namespace, existingIntent.name) } returns existingIntent
             every {
                 faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId, botId, namespace)
@@ -1110,6 +1117,13 @@ class FaqAdminServiceTest : AbstractTest() {
             val importedFaq = faqDefinitionRequest.copy(id = null, intentId = null)
             val createdAnswer = mockedI18n.copy(_id = i18nId2)
 
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    namespace,
+                    botId,
+                    importedFaq.intentName,
+                )
+            } returns null
             every { intentDAO.getIntentByNamespaceAndName(namespace, importedFaq.intentName) } returns null
             every { i18nDAO.save(any<I18nLabel>()) } just Runs
             every { FaqAdminService.saveFAQ(any(), userLogin, applicationDefinition) } answers { firstArg() }
@@ -1130,8 +1144,9 @@ class FaqAdminServiceTest : AbstractTest() {
         }
 
         @Test
-        fun `GIVEN a classic story using the target intent WHEN importing THEN reject before writing`() {
+        fun `GIVEN classic stories using target intents WHEN importing THEN report all conflicts before processing`() {
             val importedFaq = faqDefinitionRequest.copy(intentName = existingIntent.name)
+            val otherImportedFaq = faqDefinitionRequest.copy(intentName = "other-conflicting-intent")
             val existingClassicStory =
                 existingStory.copy(
                     botId = botId,
@@ -1140,10 +1155,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     category = "default",
                 )
 
-            every { intentDAO.getIntentByNamespaceAndName(namespace, existingIntent.name) } returns existingIntent
-            every {
-                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(intentId, botId, namespace)
-            } returns null
             every {
                 storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
                     namespace,
@@ -1151,24 +1162,56 @@ class FaqAdminServiceTest : AbstractTest() {
                     existingIntent.name,
                 )
             } returns existingClassicStory
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    namespace,
+                    botId,
+                    otherImportedFaq.intentName,
+                )
+            } returns existingClassicStory
 
-            assertThrows<BadRequestException> {
-                FaqAdminService.importFAQs(listOf(importedFaq), userLogin, applicationDefinition)
+            val exception =
+                assertThrows<BadRequestException> {
+                    FaqAdminService.importFAQs(listOf(importedFaq, otherImportedFaq), userLogin, applicationDefinition)
+                }
+            assertTrue(
+                exception.httpResponseBody.errors.single().message.contains(
+                    "[${existingIntent.name}, ${otherImportedFaq.intentName}]",
+                ),
+            )
+            verify(exactly = 0) { intentDAO.getIntentByNamespaceAndName(any(), any()) }
+            verify(exactly = 0) {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(any(), any(), any())
             }
             verify(exactly = 0) { i18nDAO.save(any<I18nLabel>()) }
         }
 
         @Test
-        fun `GIVEN an invalid FAQ in the batch WHEN importing THEN reject before writing`() {
-            val validFaq = faqDefinitionRequest.copy(intentName = "valid-intent")
-            every { intentDAO.getIntentByNamespaceAndName(namespace, validFaq.intentName) } returns null
-
-            assertThrows<BadRequestException> {
-                FaqAdminService.importFAQs(
-                    listOf(validFaq, faqDefinitionRequest.copy(intentName = "invalid-intent", utterances = emptyList())),
-                    userLogin,
-                    applicationDefinition,
+        fun `GIVEN invalid FAQs in the batch WHEN importing THEN report all errors before processing`() {
+            val missingUtteranceFaq = faqDefinitionRequest.copy(intentName = "missing-utterance", utterances = emptyList())
+            val missingAnswerFaq =
+                faqDefinitionRequest.copy(
+                    intentName = "missing-answer",
+                    answer = faqDefinitionRequest.answer.copy(i18n = linkedSetOf()),
                 )
+            every {
+                storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(any(), any(), any())
+            } returns null
+
+            val exception =
+                assertThrows<BadRequestException> {
+                    FaqAdminService.importFAQs(
+                        listOf(missingUtteranceFaq, missingAnswerFaq),
+                        userLogin,
+                        applicationDefinition,
+                    )
+                }
+            val errorMessage = exception.httpResponseBody.errors.single().message
+            assertTrue(errorMessage.contains("FAQ 'missing-utterance' has no utterance."))
+            assertTrue(errorMessage.contains("FAQ 'missing-answer' has no answer."))
+            verify(exactly = 0) { intentDAO.getIntentByNamespaceAndName(any(), any()) }
+            verify(exactly = 0) {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotIdAndNamespace(any(), any(), any())
             }
             verify(exactly = 0) { i18nDAO.save(any<I18nLabel>()) }
         }

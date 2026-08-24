@@ -164,10 +164,33 @@ object FaqAdminService {
             badRequest("Duplicated FAQ intent names in import: ${duplicatedIntentNames.joinToString()}")
         }
 
+        val errors = queries.mapNotNull { validateImportedFAQ(it, application) }.toMutableList()
+        val conflictingIntentNames =
+            queries.mapNotNull { query ->
+                storyDefinitionDAO
+                    .getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                        application.namespace,
+                        application.name,
+                        query.intentName,
+                    )
+                    ?.takeIf { it.category != FAQ_CATEGORY }
+                    ?.let { query.intentName }
+            }
+
+        if (conflictingIntentNames.isNotEmpty()) {
+            errors +=
+                "The following FAQs do not correspond to FAQs in the bot — " +
+                "[${conflictingIntentNames.joinToString()}]. They exist as stories of a different type and cannot " +
+                "be updated. Please first review whether these non-FAQ stories are still relevant and delete them " +
+                "if possible; otherwise, remove the listed FAQs from the import."
+        }
+
+        if (errors.isNotEmpty()) {
+            badRequest("Import failed: ${errors.joinToString(" ")}")
+        }
+
         val queriesWithExistingFaq =
             queries.map { query ->
-                validateImportedFAQ(query, application)
-
                 val existingIntent = intentDAO.getIntentByNamespaceAndName(application.namespace, query.intentName)
                 val existingFaq =
                     existingIntent?.let {
@@ -177,18 +200,6 @@ object FaqAdminService {
                             application.namespace,
                         )
                     }
-
-                if (existingFaq == null && existingIntent != null) {
-                    val existingStory =
-                        storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
-                            application.namespace,
-                            application.name,
-                            query.intentName,
-                        )
-                    if (existingStory != null && existingStory.category != FAQ_CATEGORY) {
-                        badRequest("A story already exists for intent '${query.intentName}'")
-                    }
-                }
 
                 query to existingFaq
             }
@@ -234,14 +245,15 @@ object FaqAdminService {
     private fun validateImportedFAQ(
         query: FaqDefinitionRequest,
         application: ApplicationDefinition,
-    ) {
-        when {
-            query.title.isBlank() -> badRequest("FAQ title is missing")
-            query.intentName.isBlank() -> badRequest("FAQ intent name is missing")
-            query.utterances.isEmpty() -> badRequest("FAQ '${query.intentName}' has no utterance")
-            query.answer.i18n.isEmpty() -> badRequest("FAQ '${query.intentName}' has no answer")
+    ): String? {
+        return when {
+            query.title.isBlank() -> "FAQ title is missing."
+            query.intentName.isBlank() -> "FAQ intent name is missing."
+            query.utterances.isEmpty() -> "FAQ '${query.intentName}' has no utterance."
+            query.answer.i18n.isEmpty() -> "FAQ '${query.intentName}' has no answer."
             query.language !in application.supportedLocales ->
-                badRequest("FAQ '${query.intentName}' uses unsupported locale '${query.language}'")
+                "FAQ '${query.intentName}' uses unsupported locale '${query.language}'."
+            else -> null
         }
     }
 
