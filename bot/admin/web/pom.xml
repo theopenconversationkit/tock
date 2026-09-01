@@ -15,16 +15,14 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>ai.tock</groupId>
     <artifactId>tock-bot-admin</artifactId>
-    <version>26.3.4-SNAPSHOT</version>
+    <version>26.3.4</version>
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
@@ -142,7 +140,7 @@
             </goals>
             <configuration>
               <target>
-                <echo message="Build environment: ${env}"/>
+                <echo message="Build environment: ${env}" />
               </target>
             </configuration>
           </execution>
@@ -247,12 +245,9 @@
                 </goals>
                 <configuration>
                   <target>
-                    <echo message="REC environment detected: overwriting env-banner.json with REC banner"/>
+                    <echo message="REC environment detected: overwriting env-banner.json with REC banner" />
 
-                    <echo
-                      file="${project.build.frontend.directory}/src/assets/env-banner.json"
-                      message='{ "label": "REC", "color": "#e2504f" }'
-                      encoding="UTF-8"/>
+                    <echo file="${project.build.frontend.directory}/src/assets/env-banner.json" message="{ &quot;label&quot;: &quot;REC&quot;, &quot;color&quot;: &quot;#e2504f&quot; }" encoding="UTF-8" />
                   </target>
                 </configuration>
               </execution>
