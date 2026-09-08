@@ -139,31 +139,93 @@ export interface BotIdentity {
 
 export enum BotHistoryEventType {
   created = 'created',
-  ingestion = 'ingestion',
-  ragSettings = 'rag-settings',
-  vectorStoreSettings = 'vector-store-settings',
-  promptChange = 'prompt-change',
   connector = 'connector',
-  evaluation = 'evaluation'
+  evaluation = 'evaluation',
+  /**
+   * The whole BotRAGConfiguration lives in one document, prompts and indexSessionId
+   * included: a single save produces a single event, whatever it touched. Nothing is
+   * excluded from the snapshot — an audit trail must not hide a change.
+   */
+  ragSettings = 'rag-settings',
+  /** Bot-level vector database override (configuration/vector-db-settings). */
+  vectorStore = 'vector-store',
+  compressor = 'compressor',
+  observability = 'observability',
+  /** Stored under the business-rules configuration; covered/excluded topics. */
+  promptContext = 'prompt-context'
 }
 
+/**
+ * How a config snapshot is rendered in the detail modal.
+ * - `kv`   flat key/value diff (vector store, compressor, observability)
+ * - `rag`  composite: key/value for settings, text diff for each prompt
+ * - `tags` added/removed topics (prompt-context)
+ */
+export type BotHistorySnapshotKind = 'kv' | 'rag' | 'tags';
+
+/** Which event types carry an inspectable snapshot, and how to render it. */
+export const BOT_HISTORY_SNAPSHOT_KINDS: Partial<Record<BotHistoryEventType, BotHistorySnapshotKind>> = {
+  [BotHistoryEventType.ragSettings]: 'rag',
+  [BotHistoryEventType.vectorStore]: 'kv',
+  [BotHistoryEventType.compressor]: 'kv',
+  [BotHistoryEventType.observability]: 'kv',
+  [BotHistoryEventType.promptContext]: 'tags'
+};
+
+/**
+ * A config snapshot, already sanitized server side (no API keys, no secrets).
+ * `previous` is the state at the preceding change of the same type, null for the first
+ * one, in which case the modal shows the current snapshot alone with no diff.
+ */
+export interface BotHistorySnapshot {
+  previous: Record<string, unknown> | null;
+  current: Record<string, unknown>;
+}
+
+/**
+ * An event carries a stable type and raw interpolation values, never a rendered label:
+ * the backend has no business knowing the reader's locale, and a label frozen at write
+ * time would never translate nor format numbers correctly.
+ *
+ * The front resolves `dashboard.history.event.<type>.label` / `.detail` and interpolates
+ * `params`. An unknown type degrades to a generic label rather than breaking.
+ */
 export interface BotHistoryEvent {
   id: string;
   date: string;
   type: BotHistoryEventType;
-  /** Short headline, already resolved for display. */
-  label: string;
-  /** Optional second line: what changed, which index, which score. */
-  detail?: string;
+  /** Interpolation values for the translated label and detail. Keys are per type. */
+  params?: Record<string, string | number>;
   author?: string;
+  /** Present only on config events; drives the clickable detail modal. */
+  snapshot?: BotHistorySnapshot;
 }
 
 export const BOT_HISTORY_EVENT_ICONS: Record<BotHistoryEventType, string> = {
   [BotHistoryEventType.created]: 'stars',
-  [BotHistoryEventType.ingestion]: 'database-add',
-  [BotHistoryEventType.ragSettings]: 'sliders',
-  [BotHistoryEventType.vectorStoreSettings]: 'hdd-network',
-  [BotHistoryEventType.promptChange]: 'chat-square-quote',
   [BotHistoryEventType.connector]: 'plug',
-  [BotHistoryEventType.evaluation]: 'eyedropper'
+  [BotHistoryEventType.evaluation]: 'eyedropper',
+  [BotHistoryEventType.ragSettings]: 'sliders',
+  [BotHistoryEventType.vectorStore]: 'hdd-network',
+  [BotHistoryEventType.compressor]: 'file-zip',
+  [BotHistoryEventType.observability]: 'graph-up',
+  [BotHistoryEventType.promptContext]: 'card-list'
 };
+
+/** Fields of the RAG snapshot rendered as text diffs rather than key/value. */
+export const RAG_PROMPT_SNAPSHOT_FIELDS: { key: string; labelKey: string }[] = [
+  { key: 'questionCondensingPrompt', labelKey: 'dashboard.history.snapshot.condensing-prompt' },
+  { key: 'questionAnsweringPrompt', labelKey: 'dashboard.history.snapshot.answering-prompt' }
+];
+
+/**
+ * The index session lives in BotRAGConfiguration like any other field, so a corpus
+ * change is a plain RAG settings event. It matters far more than a threshold tweak
+ * though, so the front derives a facet from the snapshot to surface and filter it.
+ */
+export const INDEX_SESSION_SNAPSHOT_FIELD = 'indexSessionId';
+
+/** Pseudo-type used only as a client-side filter facet, never emitted by the backend. */
+export const INDEX_SESSION_FACET = 'index-session';
+
+export const INDEX_SESSION_FACET_ICON = 'database-add';

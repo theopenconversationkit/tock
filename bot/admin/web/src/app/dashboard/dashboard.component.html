@@ -125,6 +125,7 @@
     <tock-bot-history
       [events]="history"
       [state]="historyState"
+      (onInspect)="inspectHistoryEvent($event)"
     ></tock-bot-history>
   </div>
 

@@ -1,0 +1,161 @@
+<nb-card class="dialog-card">
+  <nb-card-header class="d-flex align-items-center gap-2">
+    <i class="bi bi-{{ icon }}"></i>
+    <span class="flex-grow-1">
+      <span class="d-block">{{ labelKey | transloco }}</span>
+      <span class="snapshot-sub"> {{ event.date | date: 'longDate' }}@if (event.author) { · {{ event.author }} } </span>
+    </span>
+    <button
+      nbButton
+      ghost
+      size="tiny"
+      (click)="close()"
+      [attr.aria-label]="'dashboard.common.close' | transloco"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="snapshot-note">
+      <i class="bi bi-shield-check"></i>
+      <span>{{ 'dashboard.history.snapshot.sanitized' | transloco }}</span>
+    </div>
+
+    @if (isCorpusChange) {
+    <div class="snapshot-section snapshot-corpus">
+      <h3>{{ 'dashboard.history.snapshot.corpus' | transloco }}</h3>
+      <div class="corpus-sessions">
+        <span class="corpus-session corpus-session-old">{{ previousSessionId }}</span>
+        <i class="bi bi-arrow-right"></i>
+        <span class="corpus-session corpus-session-new">{{ currentSessionId }}</span>
+      </div>
+      <div class="snapshot-sub mt-1">{{ 'dashboard.history.snapshot.corpus-hint' | transloco }}</div>
+    </div>
+    } @if (firstOfType) {
+    <div class="snapshot-note snapshot-note-info">
+      <i class="bi bi-info-circle"></i>
+      <span>{{ 'dashboard.history.snapshot.first-of-type' | transloco }}</span>
+    </div>
+    }
+
+    <!-- ---------- kv : vector store, compressor, observability ---------- -->
+    @if (kind === 'kv') {
+    <ng-container
+      [ngTemplateOutlet]="kvTable"
+      [ngTemplateOutletContext]="{ $implicit: kvDiff }"
+    ></ng-container>
+    }
+
+    <!-- ---------- rag : composite, one section per field nature ---------- -->
+    @if (kind === 'rag') { @for (section of ragSections; track section.titleKey) {
+    <div class="snapshot-section">
+      <h3>{{ section.titleKey | transloco }}</h3>
+      @if (section.kind === 'kv') {
+      <ng-container
+        [ngTemplateOutlet]="kvTable"
+        [ngTemplateOutletContext]="{ $implicit: section.kv }"
+      ></ng-container>
+      } @else {
+      <ng-container
+        [ngTemplateOutlet]="textDiff"
+        [ngTemplateOutletContext]="{ $implicit: section.text }"
+      ></ng-container>
+      }
+    </div>
+    } }
+
+    <!-- ---------- tags : prompt-context ---------- -->
+    @if (kind === 'tags') {
+    <div class="snapshot-section">
+      <h3>{{ 'dashboard.history.snapshot.covered-topics' | transloco }}</h3>
+      <ng-container
+        [ngTemplateOutlet]="tagList"
+        [ngTemplateOutletContext]="{ $implicit: coveredTags() }"
+      ></ng-container>
+    </div>
+    <div class="snapshot-section">
+      <h3>{{ 'dashboard.history.snapshot.excluded-topics' | transloco }}</h3>
+      <ng-container
+        [ngTemplateOutlet]="tagList"
+        [ngTemplateOutletContext]="{ $implicit: excludedTags() }"
+      ></ng-container>
+    </div>
+    <div class="tag-legend">
+      <span><span class="tag-swatch tag-added"></span> {{ 'dashboard.history.snapshot.added' | transloco }}</span>
+      <span><span class="tag-swatch tag-removed"></span> {{ 'dashboard.history.snapshot.removed' | transloco }}</span>
+      <span><span class="tag-swatch tag-kept"></span> {{ 'dashboard.history.snapshot.kept' | transloco }}</span>
+    </div>
+    }
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-between align-items-center">
+    <span class="snapshot-sub"> @if (!firstOfType) { {{ 'dashboard.history.snapshot.compared' | transloco }} } </span>
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="close()"
+    >
+      {{ 'dashboard.common.close' | transloco }}
+    </button>
+  </nb-card-footer>
+</nb-card>
+
+<!-- ============ reusable templates ============ -->
+
+<ng-template
+  #kvTable
+  let-diff
+>
+  <div class="kv-diff">
+    <div class="kv-row kv-head">
+      <span>{{ 'dashboard.history.snapshot.parameter' | transloco }}</span>
+      <span>{{ 'dashboard.history.snapshot.before' | transloco }}</span>
+      <span>{{ 'dashboard.history.snapshot.after' | transloco }}</span>
+    </div>
+    @for (row of diff.rows; track row.key) {
+    <div
+      class="kv-row"
+      [class.kv-changed]="row.changed"
+    >
+      <span class="kv-key">{{ row.key }}</span>
+      <span class="kv-old"> @if (row.before === null) { <span class="kv-empty">—</span> } @else { {{ row.before }} } </span>
+      <span class="kv-new"> @if (row.after === null) { <span class="kv-empty">—</span> } @else { {{ row.after }} } </span>
+    </div>
+    }
+  </div>
+  <div class="snapshot-sub mt-1">
+    {{ 'dashboard.history.snapshot.changed-count' | transloco: { changed: diff.changedCount, total: diff.rows.length } }}
+  </div>
+</ng-template>
+
+<ng-template
+  #textDiff
+  let-lines
+>
+  <div class="text-diff">
+    @for (line of lines; track $index) {
+    <div class="text-line text-{{ line.kind }}">
+      <span class="text-gutter">{{ line.kind === 'add' ? '+' : line.kind === 'del' ? '−' : ' ' }}</span>
+      <span class="text-content">{{ line.text || ' ' }}</span>
+    </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template
+  #tagList
+  let-tags
+>
+  <div class="tags">
+    @for (tag of tags; track tag.value) {
+    <span class="tag tag-{{ tag.status }}">
+      @if (tag.status === 'added') { <i class="bi bi-plus"></i> }
+      {{ tag.value }}
+    </span>
+    } @empty {
+    <span class="snapshot-sub">—</span>
+    }
+  </div>
+</ng-template>

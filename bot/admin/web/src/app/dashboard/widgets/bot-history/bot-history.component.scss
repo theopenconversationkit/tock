@@ -35,12 +35,20 @@
   color: var(--text-hint-color);
 }
 
+.history-filter-all {
+  margin-right: 0.25rem;
+  font-weight: 600;
+}
+
 /* The widget is the only place this history is shown, so it carries its own scroll
    rather than relying on a dedicated view. */
 .history-scroller {
   position: relative;
   max-height: 22rem;
   overflow-y: auto;
+  /* Only vertical scrolling: a long session id or detail line must wrap, never
+     push a horizontal scrollbar. */
+  overflow-x: hidden;
   padding-right: 0.25rem;
 }
 
@@ -145,4 +153,41 @@
 
 .history-event-author {
   font-style: italic;
+}
+
+.history-event-body .metric-label {
+  overflow-wrap: anywhere;
+}
+
+/* an event carrying a snapshot is clickable */
+.history-event-body.actionable {
+  cursor: pointer;
+  margin: 0 -0.5rem;
+  padding: 0.125rem 0.5rem 0.875rem;
+  border-radius: var(--border-radius);
+
+  &:hover {
+    background: var(--background-basic-color-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-default);
+    outline-offset: -2px;
+  }
+}
+
+.history-event-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  margin-top: 0.1875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary-default);
+}
+
+/* The corpus facet is derived from RAG snapshots, not a backend event type. */
+.history-filter-derived {
+  border-style: dashed;
+  border-color: var(--color-info-default);
 }

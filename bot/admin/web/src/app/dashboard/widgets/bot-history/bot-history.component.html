@@ -19,19 +19,30 @@
       <div class="history-event">
         <div class="history-event-marker">
           <span class="history-event-dot history-event-{{ event.type }}">
-            <i class="bi bi-{{ iconOf(event.type) }}"></i>
+            <i class="bi bi-{{ iconOf(event) }}"></i>
           </span>
         </div>
 
-        <div class="history-event-body">
+        <div
+          class="history-event-body"
+          [class.actionable]="hasSnapshot(event)"
+          [attr.role]="hasSnapshot(event) ? 'button' : null"
+          [attr.tabindex]="hasSnapshot(event) ? 0 : null"
+          (click)="inspect(event)"
+          (keydown.enter)="inspect(event)"
+          (keydown.space)="inspect(event)"
+        >
           <div class="history-event-head">
-            <span class="history-event-label">{{ event.label }}</span>
+            <span class="history-event-label">{{ labelKey(event) | transloco }}</span>
             <span class="history-event-date">{{ event.date | date: 'dd MMM' }}</span>
           </div>
-          @if (event.detail) {
-          <div class="metric-label">{{ event.detail }}</div>
+
+          @if (hasDetail(event)) {
+          <div class="metric-label">{{ detailKey(event) | transloco: event.params }}</div>
           } @if (event.author) {
           <div class="metric-label history-event-author">{{ event.author }}</div>
+          } @if (hasSnapshot(event)) {
+          <span class="history-event-open"> {{ 'dashboard.history.inspect' | transloco }} <i class="bi bi-arrow-right-short"></i> </span>
           }
         </div>
       </div>
@@ -39,16 +50,28 @@
     </div>
 
     <div class="history-filters">
-      @for (filter of filters; track filter.type) {
+      <button
+        type="button"
+        class="history-filter history-filter-all"
+        [class.history-filter-off]="!allSelected"
+        [attr.aria-pressed]="allSelected"
+        (click)="showAll()"
+      >
+        {{ 'dashboard.history.all-types' | transloco }}
+      </button>
+
+      @for (filter of filters; track filter.facet) {
       <button
         type="button"
         class="history-filter"
         [class.history-filter-off]="!filter.selected"
+        [class.history-filter-derived]="filter.facet === indexSessionFacet"
         [attr.aria-pressed]="filter.selected"
-        (click)="toggleFilter(filter)"
+        [nbTooltip]="'dashboard.history.filter-hint' | transloco"
+        (click)="selectFilter(filter, $event)"
       >
         <i class="bi bi-{{ filter.icon }}"></i>
-        {{ 'dashboard.history.type.' + filter.type | transloco }}
+        {{ facetLabelKey(filter.facet) | transloco }}
         <span class="history-filter-count">{{ filter.count }}</span>
       </button>
       }

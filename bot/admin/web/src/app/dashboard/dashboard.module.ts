@@ -53,6 +53,7 @@ import { IngestionNotesComponent } from './modals/ingestion-notes/ingestion-note
 import { BotIdentityComponent } from './widgets/bot-identity/bot-identity.component';
 import { BotHistoryComponent } from './widgets/bot-history/bot-history.component';
 import { BotIdentityEditComponent } from './modals/bot-identity-edit/bot-identity-edit.component';
+import { HistorySnapshotComponent } from './modals/history-snapshot/history-snapshot.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { BotIdentityEditComponent } from './modals/bot-identity-edit/bot-identit
     GenAiConfigurationComponent,
     ContactEditComponent,
     BotIdentityEditComponent,
-    IngestionNotesComponent
+    IngestionNotesComponent,
+    HistorySnapshotComponent
   ],
   imports: [
     CommonModule,

@@ -157,14 +157,76 @@
     "count": "{{visible}} événements sur {{total}}",
     "empty-title": "Aucun historique",
     "empty-message": "Rien n'a encore été enregistré pour ce bot.",
+    "inspect": "Voir le détail",
+    "all-types": "Tout",
+    "filter-hint": "Clic : isoler ce type · Ctrl/Cmd+clic : ajouter à la sélection",
     "type": {
       "created": "Création",
-      "ingestion": "Ingestions",
-      "rag-settings": "Paramètres RAG",
-      "vector-store-settings": "Vector store",
-      "prompt-change": "Prompts",
       "connector": "Connecteurs",
-      "evaluation": "Évaluations"
+      "evaluation": "Évaluations",
+      "rag-settings": "Paramètres RAG",
+      "vector-store": "Base vectorielle",
+      "compressor": "Compresseur",
+      "observability": "Observabilité",
+      "prompt-context": "Prompt-context",
+      "index-session": "Corpus"
+    },
+    "event": {
+      "created": {
+        "label": "Bot créé",
+        "detail": ""
+      },
+      "connector": {
+        "label": "Connecteur ajouté",
+        "detail": "{{connector}} — {{label}}"
+      },
+      "evaluation": {
+        "label": "Évaluation validée",
+        "detail": "{{positiveRate}}% positives sur {{dialogCount}} dialogues"
+      },
+      "rag-settings": {
+        "label": "Paramètres RAG modifiés",
+        "detail": ""
+      },
+      "vector-store": {
+        "label": "Base vectorielle modifiée",
+        "detail": ""
+      },
+      "compressor": {
+        "label": "Compresseur modifié",
+        "detail": ""
+      },
+      "observability": {
+        "label": "Observabilité modifiée",
+        "detail": ""
+      },
+      "prompt-context": {
+        "label": "Prompt-context modifié",
+        "detail": ""
+      },
+      "index-session": {
+        "label": "Corpus mis à jour",
+        "detail": "{{documentCount}} documents · {{chunkCount}} chunks"
+      }
+    },
+    "snapshot": {
+      "sanitized": "Snapshot expurgé des clés d'API et données sensibles avant enregistrement.",
+      "first-of-type": "Première modification de ce type : état enregistré, sans comparaison.",
+      "compared": "Comparé au changement de même type précédent",
+      "settings": "Paramètres",
+      "corpus": "Corpus",
+      "corpus-hint": "La session d'indexation a changé : le bot répond désormais sur un autre corpus.",
+      "condensing-prompt": "Prompt de condensation",
+      "answering-prompt": "Prompt de réponse",
+      "covered-topics": "Sujets couverts",
+      "excluded-topics": "Sujets exclus",
+      "parameter": "Paramètre",
+      "before": "Avant",
+      "after": "Après",
+      "changed-count": "{{changed}} paramètre(s) modifié(s) sur {{total}}.",
+      "added": "Ajouté",
+      "removed": "Retiré",
+      "kept": "Inchangé"
     }
   },
   "no-connector": "Aucun connecteur n'est déclaré pour ce bot. Les chiffres d'usage resteront vides tant qu'il n'y en aura pas."

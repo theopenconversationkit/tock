@@ -25,6 +25,7 @@ import { EvaluationSampleDefinition, EvaluationSampleStatus } from '../quality/s
 import { BotIdentityEditComponent } from './modals/bot-identity-edit/bot-identity-edit.component';
 import { ContactEditComponent } from './modals/contact-edit/contact-edit.component';
 import { IngestionNotesComponent } from './modals/ingestion-notes/ingestion-notes.component';
+import { HistorySnapshotComponent } from './modals/history-snapshot/history-snapshot.component';
 import {
   BotContact,
   BotHistoryEvent,
@@ -305,6 +306,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe((saved) => (this.identity = saved));
     });
+  }
+
+  inspectHistoryEvent(event: BotHistoryEvent): void {
+    this.dialog.openDialog(HistorySnapshotComponent, { context: { event } });
   }
 
   private loadEvaluation(): void {

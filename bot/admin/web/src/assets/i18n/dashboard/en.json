@@ -157,14 +157,76 @@
     "count": "{{visible}} of {{total}} events",
     "empty-title": "No history yet",
     "empty-message": "Nothing has been recorded for this bot.",
+    "inspect": "View detail",
+    "all-types": "All",
+    "filter-hint": "Click: isolate this type · Ctrl/Cmd+click: add to selection",
     "type": {
       "created": "Creation",
-      "ingestion": "Ingestions",
-      "rag-settings": "RAG settings",
-      "vector-store-settings": "Vector store",
-      "prompt-change": "Prompts",
       "connector": "Connectors",
-      "evaluation": "Evaluations"
+      "evaluation": "Evaluations",
+      "rag-settings": "RAG settings",
+      "vector-store": "Vector database",
+      "compressor": "Compressor",
+      "observability": "Observability",
+      "prompt-context": "Prompt context",
+      "index-session": "Corpus"
+    },
+    "event": {
+      "created": {
+        "label": "Bot created",
+        "detail": ""
+      },
+      "connector": {
+        "label": "Connector added",
+        "detail": "{{connector}} — {{label}}"
+      },
+      "evaluation": {
+        "label": "Evaluation validated",
+        "detail": "{{positiveRate}}% positive on {{dialogCount}} dialogs"
+      },
+      "rag-settings": {
+        "label": "RAG settings updated",
+        "detail": ""
+      },
+      "vector-store": {
+        "label": "Vector database updated",
+        "detail": ""
+      },
+      "compressor": {
+        "label": "Compressor updated",
+        "detail": ""
+      },
+      "observability": {
+        "label": "Observability updated",
+        "detail": ""
+      },
+      "prompt-context": {
+        "label": "Prompt context updated",
+        "detail": ""
+      },
+      "index-session": {
+        "label": "Corpus updated",
+        "detail": "{{documentCount}} documents · {{chunkCount}} chunks"
+      }
+    },
+    "snapshot": {
+      "sanitized": "Snapshot stripped of API keys and sensitive data before saving.",
+      "first-of-type": "First change of this type: recorded state, no comparison.",
+      "compared": "Compared to the previous change of the same type",
+      "settings": "Settings",
+      "corpus": "Corpus",
+      "corpus-hint": "The index session changed: the bot now answers from a different corpus.",
+      "condensing-prompt": "Condensing prompt",
+      "answering-prompt": "Answering prompt",
+      "covered-topics": "Covered topics",
+      "excluded-topics": "Excluded topics",
+      "parameter": "Parameter",
+      "before": "Before",
+      "after": "After",
+      "changed-count": "{{changed}} of {{total}} parameter(s) changed.",
+      "added": "Added",
+      "removed": "Removed",
+      "kept": "Unchanged"
     }
   },
   "no-connector": "No connector is declared for this bot. Usage figures will stay empty until one is configured."

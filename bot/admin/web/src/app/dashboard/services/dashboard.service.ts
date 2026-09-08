@@ -425,77 +425,166 @@ export class DashboardService {
     const now = Date.now();
     const day = 86400000;
 
-    // Roughly two years and eight months of history.
     const createdAt = now - 985 * day;
     const authors = ['r.leroy', 'm.bekkari', 'c.tanguy', 's.morvan'];
-    const pick = (seed: number, list: string[]) => list[seed % list.length];
+    const pick = (seed: number) => authors[seed % authors.length];
+
+    // Baseline RAG configuration, reused to build realistic before/after snapshots.
+    const ragBase = {
+      questionCondensingLlmSetting: { provider: 'AzureOpenAIService', model: 'gpt-4o', temperature: 0.2 },
+      questionAnsweringLlmSetting: { provider: 'AzureOpenAIService', model: 'gpt-4o', temperature: 0.2 },
+      emSetting: { provider: 'AzureOpenAIService', model: 'text-embedding-3-large' },
+      indexSessionId: '8f14e45f-ceea-4a5b-9c2f-3d1b70e12a44',
+      maxDocumentsRetrieved: 4,
+      documentsRequired: false,
+      documentSearchType: 'HYBRID_SEARCH',
+      maxMessagesFromHistory: 5,
+      questionCondensingPrompt: { template: "Reformule la question en tenant compte de l'historique." },
+      questionAnsweringPrompt: {
+        template: "Tu es l'assistant de l'assurance habitation.\nRéponds à partir des documents fournis."
+      }
+    };
 
     events.push({
       id: 'created',
       date: new Date(createdAt).toISOString(),
       type: BotHistoryEventType.created,
-      label: 'Bot created',
-      author: authors[0]
+      author: pick(0)
     });
 
     events.push({
       id: 'connector-0',
       date: new Date(createdAt + 6 * day).toISOString(),
       type: BotHistoryEventType.connector,
-      label: 'Web connector added',
-      detail: 'Customer portal',
-      author: authors[1]
+      params: { connector: 'web', label: 'Portail client' },
+      author: pick(1)
     });
 
-    // Ingestions roughly every two weeks, more frequent once the bot went live.
-    let cursor = createdAt + 20 * day;
-    let index = 0;
-    while (cursor < now) {
-      const documents = 1200 + ((index * 137) % 1400);
-      events.push({
-        id: `ingestion-${index}`,
-        date: new Date(cursor).toISOString(),
-        type: BotHistoryEventType.ingestion,
-        label: 'Corpus ingested',
-        detail: `${documents} documents · session ${(index * 7919).toString(16).padStart(8, '0').slice(0, 8)}`,
-        author: 'qallam'
-      });
-      cursor += (index < 20 ? 21 : 14) * day;
-      index++;
-    }
-
-    // Settings and prompt changes, sparser and irregular.
-    [40, 96, 180, 260, 355, 470, 560, 690, 780, 910].forEach((offset, i) => {
-      events.push({
-        id: `settings-${i}`,
-        date: new Date(createdAt + offset * day).toISOString(),
-        type: i % 3 === 0 ? BotHistoryEventType.vectorStoreSettings : BotHistoryEventType.ragSettings,
-        label: i % 3 === 0 ? 'Vector store settings updated' : 'RAG settings updated',
-        detail: i % 3 === 0 ? 'Search mode changed to hybrid' : `Documents retrieved set to ${4 + (i % 4)}`,
-        author: pick(i, authors)
-      });
+    // First RAG configuration: no predecessor, the modal shows the state alone.
+    events.push({
+      id: 'rag-0',
+      date: new Date(createdAt + 30 * day).toISOString(),
+      type: BotHistoryEventType.ragSettings,
+      author: pick(2),
+      snapshot: { previous: null, current: ragBase }
     });
 
-    [70, 210, 400, 615, 830, 940].forEach((offset, i) => {
+    // Corpus updates: plain RAG settings events whose indexSessionId moved. The front
+    // derives the corpus facet from the snapshot rather than from a dedicated type.
+    const corpusUpdates = [
+      { offset: 3, session: 'c4f2a1d8-77b3-4e21-9a08-51ce62d4a913', documents: 2417, chunks: 31680 },
+      { offset: 34, session: 'b1d90e77-2a4c-4f60-8e15-90ab73c1f228', documents: 2311, chunks: 30112 },
+      { offset: 61, session: '5e7c3b90-14da-4c8f-b7e2-2f4109ad6b55', documents: 2088, chunks: 27340 }
+    ];
+
+    corpusUpdates.forEach((update, index) => {
+      const previousSession = corpusUpdates[index + 1]?.session ?? ragBase.indexSessionId;
       events.push({
-        id: `prompt-${i}`,
-        date: new Date(createdAt + offset * day).toISOString(),
-        type: BotHistoryEventType.promptChange,
-        label: 'Answering prompt updated',
-        detail: i % 2 === 0 ? 'Tone and out-of-scope handling' : 'Business name and greeting',
-        author: pick(i + 1, authors)
+        id: `corpus-${index}`,
+        date: new Date(now - update.offset * day).toISOString(),
+        type: BotHistoryEventType.ragSettings,
+        params: { documentCount: update.documents, chunkCount: update.chunks },
+        author: 'qallam',
+        snapshot: {
+          previous: { ...ragBase, indexSessionId: previousSession },
+          current: { ...ragBase, indexSessionId: update.session }
+        }
       });
     });
 
+    // Retrieval thresholds only.
+    events.push({
+      id: 'rag-1',
+      date: new Date(now - 12 * day).toISOString(),
+      type: BotHistoryEventType.ragSettings,
+      author: pick(0),
+      snapshot: {
+        previous: { ...ragBase, maxDocumentsRetrieved: 4, documentsRequired: false },
+        current: { ...ragBase, maxDocumentsRetrieved: 6, documentsRequired: true }
+      }
+    });
+
+    // Search type — a RAG settings field, not a vector store change.
+    events.push({
+      id: 'rag-2',
+      date: new Date(now - 20 * day).toISOString(),
+      type: BotHistoryEventType.ragSettings,
+      author: pick(3),
+      snapshot: {
+        previous: { ...ragBase, documentSearchType: 'SIMILARITY_SEARCH' },
+        current: { ...ragBase, documentSearchType: 'HYBRID_SEARCH' }
+      }
+    });
+
+    // Model and answering prompt changed in the same save.
+    events.push({
+      id: 'rag-3',
+      date: new Date(now - 47 * day).toISOString(),
+      type: BotHistoryEventType.ragSettings,
+      author: pick(1),
+      snapshot: {
+        previous: {
+          ...ragBase,
+          questionAnsweringLlmSetting: { provider: 'AzureOpenAIService', model: 'gpt-4-turbo', temperature: 0.0 },
+          questionAnsweringPrompt: {
+            template: "Tu es l'assistant de l'assurance habitation.\nRéponds à partir des documents fournis.\nSi tu ne sais pas, dis-le."
+          }
+        },
+        current: {
+          ...ragBase,
+          questionAnsweringPrompt: {
+            template:
+              "Tu es Léa, l'assistante de l'assurance habitation.\nRéponds à partir des documents fournis, avec un ton courtois.\nSi la réponse n'est pas dans les documents, invite l'utilisateur à contacter un conseiller.\nNe réponds jamais sur l'assurance auto ou santé."
+          }
+        }
+      }
+    });
+
+    // A genuine bot-level vector database override — rare but real.
+    events.push({
+      id: 'vs-0',
+      date: new Date(now - 75 * day).toISOString(),
+      type: BotHistoryEventType.vectorStore,
+      author: pick(2),
+      snapshot: {
+        previous: { enabled: false, setting: { provider: 'PGVector', host: 'vector-shared', port: 5432, database: 'tock' } },
+        current: { enabled: true, setting: { provider: 'PGVector', host: 'vector-assurance', port: 5432, database: 'habitation' } }
+      }
+    });
+
+    events.push({
+      id: 'pc-0',
+      date: new Date(now - 27 * day).toISOString(),
+      type: BotHistoryEventType.promptContext,
+      author: pick(1),
+      snapshot: {
+        previous: { coveredTopics: ['Résiliation', 'Sinistre', 'Cotisation'], excludedTopics: ['Assurance auto'] },
+        current: {
+          coveredTopics: ['Résiliation', 'Sinistre', 'Cotisation', 'Bénéficiaire'],
+          excludedTopics: ['Assurance auto', 'Assurance santé']
+        }
+      }
+    });
+
+    events.push({
+      id: 'obs-0',
+      date: new Date(now - 120 * day).toISOString(),
+      type: BotHistoryEventType.observability,
+      author: pick(0),
+      snapshot: {
+        previous: { enabled: false, setting: { provider: 'Langfuse' } },
+        current: { enabled: true, setting: { provider: 'Langfuse', publicUrl: 'https://langfuse.example.com' } }
+      }
+    });
+
+    // Evaluations, no snapshot.
     [150, 330, 520, 700, 880, 960].forEach((offset, i) => {
-      const positive = 74 + ((i * 13) % 22);
       events.push({
         id: `evaluation-${i}`,
         date: new Date(createdAt + offset * day).toISOString(),
         type: BotHistoryEventType.evaluation,
-        label: 'Evaluation validated',
-        detail: `${positive}% positive on ${120 + i * 20} dialogs`,
-        author: pick(i + 2, authors)
+        params: { positiveRate: 74 + ((i * 13) % 22), dialogCount: 120 + i * 20 },
+        author: pick(i + 2)
       });
     });
 
