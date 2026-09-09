@@ -443,7 +443,13 @@ back) :
 
 ---
 
-## 7. Récapitulatif des points à trancher
+## 7. Ajout des deux nouvelles tables au script de purge de suppression de bot
+
+Les deux tables introduites par ce dev (Notes de session d'ingestion et Contacts) devront etre supprimées avec le reste à la suppression de leur bot.
+
+---
+
+## 8. Récapitulatif des points à trancher
 
 Les décisions déjà prises avec l'équipe front, listées pour mémoire :
 
