@@ -44,7 +44,7 @@ import csv
 import re
 import sys
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
 import pandas as pd
@@ -234,7 +234,7 @@ def main():
 
         em_factory = get_em_factory(input_config.em_setting)
 
-        index_name = input_config.document_index_name
+        index_name: Optional[str] = input_config.document_index_name
         if index_name is None:
             # generating index name
             index_name = normalize_index_name(

@@ -11,7 +11,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.13"
 docopt-ng = "^0.9.0"
 pandas = "^2.2.3"
 openpyxl = "^3.1.5"
@@ -30,12 +30,7 @@ aiohttp = "^3.13.3"
 aiohttp-socks = "^0.10.1"
 pydantic = "^2.11.1"
 humanize = "^4.12.2"
-langfuse = "==3.9.0"
-ragas = "^0.2.13"
 rapidfuzz = "^3.12.2"
-sacrebleu = "^2.5.1"
-rouge_score = "^0.1.2"
-python-pptx = "^1.0.2"
 python-magic = "^0.4.27"
 markdown-it-py= "^3.0.0"
 backoff = "^2.2.1"
