@@ -49,8 +49,8 @@ from uuid import uuid4
 
 import pandas as pd
 from docopt import docopt
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.dataframe import DataFrameLoader
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import VectorStoreProvider
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import ActivityStatus, StatusWithReason
@@ -59,9 +59,7 @@ from scripts.indexing.vectorisation.models import (
     RunVectorisationOutput,
 )
 
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
+
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_vector_store_factory,
@@ -197,8 +195,13 @@ def main():
             # Replace any empty strings in 'source' with None
             df_filtered['source'] = df_filtered['source'].replace('', None)
 
-        loader = DataFrameLoader(df_filtered, page_content_column='text')
-        docs = loader.load()
+        docs = [
+            Document(
+                page_content=str(row['text']),
+                metadata={k: v for k, v in row.items() if k != 'text'},
+            )
+            for _, row in df_filtered.iterrows()
+        ]
         documents_count = len(docs)
 
         # Add metadata to each document
@@ -252,6 +255,13 @@ def main():
         vector_store = vector_store_factory.get_vector_store(async_mode=False)
 
         # Index all chunks in vector DB
+        if input_config.embedding_max_chunks is not None:
+            logger.debug(
+                f"Limiting indexation to the first {input_config.embedding_max_chunks} chunks "
+                f"(out of {len(splitted_docs)})"
+            )
+            splitted_docs = splitted_docs[: input_config.embedding_max_chunks]
+
         chunks_count = len(splitted_docs)
         for i in range(0, len(splitted_docs), input_config.embedding_bulk_size):
             vector_store.add_documents(
@@ -274,12 +284,15 @@ def main():
         status=activity_status,
         index_name=index_name,
         session_uuid=session_uuid,
-        chunks_count=documents_count,
-        items_count=chunks_count,
+        chunks_count=chunks_count,
+        items_count=documents_count,
         duration=datetime.now() - start_time,
         success_rate=100,
     )
     logger.debug(f"\n{output.format()}")
+
+    if activity_status.status == ActivityStatus.FAILED:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
