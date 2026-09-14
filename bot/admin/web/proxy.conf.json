@@ -1,0 +1,12 @@
+{
+  "/rest": {
+    "target": "http://127.0.0.1:7999",
+    "secure": false,
+    "changeOrigin": true,
+    "headers": {
+      "Accept-Encoding": "identity"
+    },
+    "proxyTimeout": 60000,
+    "timeout": 60000
+  }
+}
