@@ -11,9 +11,9 @@ le front attend et sous quelle forme.
 
 ## Implémentation DERCBOT-2100
 
-Le raccordement réalisé et les précisions de contrat sont décrits dans
-[implementation-back.md](implementation-back.md), avec un parcours de test manuel.
-Les propositions ci-dessous restent la référence initiale du chantier.
+> **À lire en complément des propositions initiales ci-dessous.** Les encarts
+> **« Réalisé — DERCBOT-2100 »** précisent les ajustements et leur raison. Les choix
+> laissés ouverts par cette doc et les ajouts demandés ensuite sont signalés comme tels.
 
 ## Table des matières
 
@@ -23,7 +23,8 @@ Les propositions ci-dessous restent la référence initiale du chantier.
 4. [Historique du bot (timeline)](#4-historique-du-bot-timeline)
 5. [Notes de session d'ingestion](#5-notes-de-session-dingestion)
 6. [Sécurité — expurgation des snapshots](#6-sécurité--expurgation-des-snapshots)
-7. [Récapitulatif des points à trancher](#7-récapitulatif-des-points-à-trancher)
+7. [Suppression des données du bot](#7-ajout-des-deux-nouvelles-tables-au-script-de-purge-de-suppression-de-bot)
+8. [Récapitulatif des points à trancher](#8-récapitulatif-des-points-à-trancher)
 
 ---
 
@@ -45,6 +46,14 @@ Le widget prend l'entrée `isCurrent == true` et affiche date, volumétries et s
 cas d'anomalie « la session configurée n'existe pas dans le store » se déduit sans appel
 supplémentaire : aucune entrée `isCurrent` ⇒ alerte. Le provider et l'embedding viennent
 de la config RAG que le widget lit déjà.
+
+> **Réalisé — DERCBOT-2100 : adaptation au contrat livré sur master.**
+> `/indexes` renvoie une enveloppe `{indexes: [...]}`. Le front la déballe et appelle
+> aussi `/capabilities` : le fournisseur effectif peut venir de la configuration serveur,
+> et OpenSearch ne permet pas encore de lister les index. Cela évite de signaler à tort
+> une session absente. Les widgets Index et Configuration GenAI restent réservés à
+> `admin`, car leurs routes existantes exigent ce rôle ; les autres widgets sont
+> consultables avec `botUser`.
 
 **Widgets d'usage** (messages traités, retours, issue des réponses, sujets traités,
 dernière évaluation). Déjà branchés sur les endpoints existants : `POST /dialogs/stats`,
@@ -70,6 +79,11 @@ associée à la paire namespace/botId — à votre appréciation) :
 | `notes`       | `String?` | Note libre : objet, public, périmètre   |
 
 Le nom technique n'est **pas** stocké : il vient déjà de l'application.
+
+> **Réalisé — DERCBOT-2100 : option prévue par la doc.** Identité et contacts sont
+> regroupés dans `bot_dashboard_metadata`, un document par `{namespace, botId}`.
+> L'entité associée évite de modifier le modèle NLP `ApplicationDefinition` et ses
+> conversions. Les deux blocs sont mis à jour séparément.
 
 ### Endpoints
 
@@ -133,6 +147,11 @@ PUT  /bots/{botId}/contacts      (rôle : admin)
 Le `PUT` remplace la liste complète (le front édite contact par contact mais renvoie
 l'ensemble, ce qui simplifie la concurrence).
 
+> **Réalisé — DERCBOT-2100 : identifiant ajouté.** Chaque contact reçoit un `id`
+> stable côté serveur, conservé au PUT suivant : le front en a besoin pour identifier
+> le contact à modifier/supprimer. Le remplacement de la liste entière est conservé ;
+> deux éditions concurrentes restent soumises à la règle « dernière écriture gagnante ».
+
 **Exemple de réponse `GET` :**
 
 ```json
@@ -181,6 +200,17 @@ fonctionnellement (l'utilisateur ouvre les settings et clique « Enregistrer » 
 toucher) ne doit **pas** générer d'entrée. Le service compare l'état à écrire au dernier
 snapshot du même type et n'émet que s'ils diffèrent. Cette comparaison sert uniquement à
 décider s'il faut écrire ; elle n'introduit pas de couplage durable.
+
+> **Réalisé — DERCBOT-2100 : comparaison supplémentaire.** L'état persisté avant
+> sauvegarde est aussi comparé à l'état enregistré. Sans cela, un bot ancien sans
+> historique produirait un premier événement même en enregistrant sans rien changer.
+> `previous` reste bien le dernier snapshot historisé, ou `null` au premier changement.
+>
+> **Ajout demandé ensuite : création estimée des anciens bots.** Sans événement
+> `created`, la lecture ajoute une création datée d'après l'identifiant Mongo de
+> l'application, avec `estimated: true`, sans auteur et avec une explication dans le
+> front. Aucun backfill ni événement écrit en base : le modèle ne possède pas de date
+> de création, et un import peut rendre cette estimation différente de la date d'origine.
 
 ### 4.2 Collection
 
@@ -263,6 +293,16 @@ Conséquences pour le back, qui simplifient le travail :
 compresseur, la config observabilité, la config business-rules. Cinq points, tous déjà
 centralisés dans les services admin.
 
+> **Réalisé — DERCBOT-2100 : un point d'écriture supplémentaire.** L'import de
+> stories peut désactiver directement le RAG sans passer par `RAGService.save` ; il est
+> donc instrumenté aussi pour ne pas manquer ce changement. Les écritures directes en
+> Mongo ne sont pas observées.
+>
+> **Limite de garantie :** la sauvegarde métier puis l'historique sont deux écritures
+> distinctes. Une panne de journalisation est loguée sans faire échouer la sauvegarde
+> déjà réussie ; un événement peut manquer. C'est le choix minimal retenu pour cette
+> timeline informative, pas une garantie d'audit transactionnel.
+
 ### 4.5 Snapshots
 
 Le snapshot capture l'état complet de la config au moment du changement, **pas un diff** :
@@ -331,6 +371,12 @@ GET /bots/{botId}/history?before={date}&limit={n}
 ```
 
 Noter l'absence de tout champ `label`/`detail` : le rendu est entièrement côté front.
+
+> **Réalisé — DERCBOT-2100 : curseur date + identifiant.** `before` reçoit désormais
+> un curseur opaque fourni dans `nextCursor` ; le front le renvoie tel quel. Une date
+> seule pourrait sauter des événements survenus à la même milliseconde. Le tri et l'index
+> incluent donc `_id`, traité comme une chaîne conformément au stockage Mongo de TOCK.
+> Réponse : `{events, hasMore, nextCursor}`. Limite : 50 par défaut, de 1 à 200.
 
 ---
 
@@ -438,6 +484,14 @@ sur l'ensemble des configs concernées (RAG, vector store, compresseur, observab
 `prompt-context` (`business-rules`) ne contient que des listes de sujets — aucun secret,
 expurgation triviale.
 
+> **Réalisé — DERCBOT-2100 : expurgation élargie.** Les configs contiennent aussi
+> `password` (PostgreSQL) et `secretKey` (observabilité) : ces champs sont retirés avec
+> `apiKey`, récursivement. Les snapshots partent des entités persistées, car les DTO
+> peuvent résoudre des secrets. Les champs techniques de premier niveau (`id`, `_id`,
+> `namespace`, `botId`) sont exclus ; le contenu fonctionnel est conservé.
+> Un changement limité aux secrets ne produit aucun événement, puisque les états
+> expurgés sont identiques, plutôt qu'une entrée avec un diff vide.
+
 **Conséquences assumées de l'expurgation** (à documenter côté front, mais qui découlent du
 back) :
 
@@ -452,6 +506,11 @@ back) :
 ## 7. Ajout des deux nouvelles tables au script de purge de suppression de bot
 
 Les deux tables introduites par ce dev (Notes de session d'ingestion et Contacts) devront etre supprimées avec le reste à la suppression de leur bot.
+
+> **Réalisé — DERCBOT-2100 : trois collections à nettoyer.** La suppression du bot
+> efface `bot_dashboard_metadata`, `bot_index_session_note` et `bot_history_event` :
+> l'historique appartient lui aussi au bot supprimé. La purge d'une session vectorielle
+> seule conserve ses notes, comme prévu. Aucun TTL n'est ajouté à l'historique.
 
 ---
 
