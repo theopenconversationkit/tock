@@ -49,9 +49,8 @@ from uuid import uuid4
 
 import pandas as pd
 from docopt import docopt
-from gen_ai_orchestrator.models.vector_stores.vector_store_provider import VectorStoreProvider
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from scripts.common.logging_config import configure_logging
 from scripts.common.models import ActivityStatus, StatusWithReason
 from scripts.indexing.vectorisation.models import (
@@ -59,7 +58,9 @@ from scripts.indexing.vectorisation.models import (
     RunVectorisationOutput,
 )
 
-
+from gen_ai_orchestrator.models.vector_stores.vector_store_provider import (
+    VectorStoreProvider,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_vector_store_factory,
