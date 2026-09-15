@@ -33,6 +33,8 @@ export class DashboardWidgetComponent {
   @Input() icon: string;
   @Input() state: WidgetState = WidgetState.loading;
 
+  @Input() showFooterWhenEmpty: boolean = false;
+
   @Input() skeletonLines: number = 4;
 
   @Input() emptyIcon: string = 'inbox';

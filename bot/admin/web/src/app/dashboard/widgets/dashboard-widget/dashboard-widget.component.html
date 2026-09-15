@@ -42,7 +42,7 @@
     } }
   </nb-card-body>
 
-  @if (footerTemplate && state === WidgetState.ready) {
+  @if (footerTemplate && (state === WidgetState.ready || (showFooterWhenEmpty && state === WidgetState.empty))) {
   <nb-card-footer>
     <ng-container [ngTemplateOutlet]="footerTemplate"></ng-container>
   </nb-card-footer>
