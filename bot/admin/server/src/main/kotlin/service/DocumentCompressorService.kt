@@ -79,7 +79,20 @@ object DocumentCompressorService {
      * @throws [BadRequestException] if the document compressor configuration is invalid
      * @return [BotDocumentCompressorConfiguration]
      */
-    fun saveDocumentCompressor(documentCompressorConfig: BotDocumentCompressorConfigurationDTO): BotDocumentCompressorConfiguration {
+    fun saveDocumentCompressor(
+        documentCompressorConfig: BotDocumentCompressorConfigurationDTO,
+        author: String? = null,
+    ): BotDocumentCompressorConfiguration =
+        BotHistoryService.configuration(
+            documentCompressorConfig.namespace,
+            documentCompressorConfig.botId,
+            "compressor",
+            author,
+            previous = { documentCompressorConfigurationDAO.findByNamespaceAndBotId(documentCompressorConfig.namespace, documentCompressorConfig.botId) },
+            save = { saveWithValidation(documentCompressorConfig) },
+        )
+
+    private fun saveWithValidation(documentCompressorConfig: BotDocumentCompressorConfigurationDTO): BotDocumentCompressorConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(documentCompressorConfig.namespace, documentCompressorConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${documentCompressorConfig.namespace}, botId = ${documentCompressorConfig.botId}]")
         return saveDocumentCompressorConfiguration(documentCompressorConfig)

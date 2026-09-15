@@ -93,6 +93,8 @@
     <tock-knowledge-index
       [index]="knowledgeIndex"
       [notes]="ingestionNotes"
+      [notesError]="ingestionNotesError"
+      (retryNotes)="loadIngestionNotes(knowledgeIndex.indexSessionId)"
       [state]="knowledgeIndexState"
       (onEditNotes)="editIngestionNotes()"
     ></tock-knowledge-index>
@@ -125,6 +127,10 @@
     <tock-bot-history
       [events]="history"
       [state]="historyState"
+      [hasMore]="!!historyCursor"
+      [loadingMore]="historyLoadingMore"
+      [pageError]="historyPageError"
+      (loadMore)="loadMoreHistory()"
       (onInspect)="inspectHistoryEvent($event)"
     ></tock-bot-history>
   </div>

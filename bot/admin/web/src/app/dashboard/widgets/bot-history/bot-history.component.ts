@@ -57,6 +57,11 @@ export class BotHistoryComponent implements OnChanges {
   @Input() events: BotHistoryEvent[] = [];
   @Input() state: WidgetState = WidgetState.loading;
 
+  @Input() hasMore = false;
+  @Input() loadingMore = false;
+  @Input() pageError = false;
+  @Output() loadMore = new EventEmitter<void>();
+
   @Output() onInspect = new EventEmitter<BotHistoryEvent>();
 
   WidgetState = WidgetState;

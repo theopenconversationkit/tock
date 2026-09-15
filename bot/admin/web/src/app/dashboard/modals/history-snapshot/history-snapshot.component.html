@@ -81,6 +81,13 @@
         [ngTemplateOutletContext]="{ $implicit: excludedTags() }"
       ></ng-container>
     </div>
+    <div class="snapshot-section">
+      <h3>{{ 'dashboard.history.snapshot.lexicon' | transloco }}</h3>
+      <ng-container
+        [ngTemplateOutlet]="kvTable"
+        [ngTemplateOutletContext]="{ $implicit: kvDiff }"
+      ></ng-container>
+    </div>
     <div class="tag-legend">
       <span><span class="tag-swatch tag-added"></span> {{ 'dashboard.history.snapshot.added' | transloco }}</span>
       <span><span class="tag-swatch tag-removed"></span> {{ 'dashboard.history.snapshot.removed' | transloco }}</span>

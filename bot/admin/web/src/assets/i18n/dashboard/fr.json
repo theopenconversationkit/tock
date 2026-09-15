@@ -77,7 +77,9 @@
     "notes-empty-title": "Aucune note sur cette ingestion",
     "notes-empty-message": "Consignez ce qui est entré dans cet index — sources, options du pipeline, exclusions délibérées.",
     "notes-add": "Ajouter des notes",
-    "notes-loading": "Chargement des notes…"
+    "notes-loading": "Chargement des notes…",
+    "inspection-unavailable": "L’inspection des index n’est pas disponible pour ce fournisseur.",
+    "notes-retry": "Notes indisponibles : réessayer"
   },
   "contacts": {
     "title": "Contacts",
@@ -226,8 +228,11 @@
       "changed-count": "{{changed}} paramètre(s) modifié(s) sur {{total}}.",
       "added": "Ajouté",
       "removed": "Retiré",
-      "kept": "Inchangé"
-    }
+      "kept": "Inchangé",
+      "lexicon": "Lexique"
+    },
+    "load-more": "Charger la suite",
+    "page-error": "Chargement impossible. Réessayez."
   },
   "no-connector": "Aucun connecteur n'est déclaré pour ce bot. Les chiffres d'usage resteront vides tant qu'il n'y en aura pas."
 }

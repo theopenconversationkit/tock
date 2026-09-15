@@ -77,6 +77,7 @@ export interface KnowledgeIndex {
   embeddingLabel: string | null;
   /** False when the session configured in the RAG settings has no matching collection. */
   existsInStore: boolean;
+  inspectionSupported?: boolean;
 }
 
 /** Free-form notes attached to one ingestion session. */
@@ -229,3 +230,10 @@ export const INDEX_SESSION_SNAPSHOT_FIELD = 'indexSessionId';
 export const INDEX_SESSION_FACET = 'index-session';
 
 export const INDEX_SESSION_FACET_ICON = 'database-add';
+
+/** Cursor page returned by the history endpoint. */
+export interface BotHistoryPage {
+  events: BotHistoryEvent[];
+  hasMore: boolean;
+  nextCursor: string | null;
+}

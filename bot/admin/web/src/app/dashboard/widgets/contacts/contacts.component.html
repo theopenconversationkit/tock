@@ -6,6 +6,7 @@
   [emptyMessage]="'dashboard.contacts.empty-message' | transloco"
 >
   <ng-template #widgetFooter>
+    @if (canEdit) {
     <button
       nbButton
       ghost
@@ -15,6 +16,7 @@
       <i class="bi bi-plus-lg"></i>
       {{ 'dashboard.contacts.add' | transloco }}
     </button>
+    }
   </ng-template>
 
   <ng-template #widgetBody>

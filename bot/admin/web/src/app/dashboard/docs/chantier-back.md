@@ -9,6 +9,12 @@ Le front est maquetté et en grande partie développé. Il consomme aujourd'hui 
 pour tout ce qui n'existe pas encore côté back. Chaque section ci-dessous indique ce que
 le front attend et sous quelle forme.
 
+## Implémentation DERCBOT-2100
+
+Le raccordement réalisé et les précisions de contrat sont décrits dans
+[implementation-back.md](implementation-back.md), avec un parcours de test manuel.
+Les propositions ci-dessous restent la référence initiale du chantier.
+
 ## Table des matières
 
 1. [Ce qui ne demande aucun développement](#1-ce-qui-ne-demande-aucun-développement)

@@ -19,7 +19,7 @@ import { EvaluationSampleDefinition } from '../../quality/samples/models';
 import { RagSettings } from '../../rag/rag-settings/models/rag-settings';
 import {
   BotContact,
-  BotHistoryEvent,
+  BotHistoryPage,
   BotIdentity,
   DashboardAnswerOutcome,
   DashboardPeriod,
@@ -81,5 +81,5 @@ export abstract class DashboardService {
   abstract saveBotIdentity(namespace: string, applicationName: string, identity: BotIdentity): Observable<BotIdentity>;
 
   // --- history (GET /bots/{botId}/history) ---
-  abstract getBotHistory(namespace: string, applicationName: string): Observable<BotHistoryEvent[]>;
+  abstract getBotHistory(namespace: string, applicationName: string, before?: string): Observable<BotHistoryPage>;
 }

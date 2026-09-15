@@ -53,7 +53,7 @@ export function flattenSnapshot(value: unknown, prefix = ''): Record<string, str
     const path = prefix ? `${prefix}.${key}` : key;
 
     if (Array.isArray(raw)) {
-      out[path] = raw.join(', ');
+      out[path] = raw.map((item) => (typeof item === 'object' ? JSON.stringify(item) : String(item))).join(', ');
     } else if (raw !== null && typeof raw === 'object') {
       Object.assign(out, flattenSnapshot(raw, path));
     } else {

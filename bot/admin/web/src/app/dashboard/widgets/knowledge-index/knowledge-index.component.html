@@ -10,7 +10,9 @@
   unavailableLink="/rag/settings"
 >
   <ng-template #widgetBody>
-    @if (!index.existsInStore) {
+    @if (index.inspectionSupported === false) {
+    <nb-alert status="info">{{ 'dashboard.knowledge-index.inspection-unavailable' | transloco }}</nb-alert>
+    } @else if (!index.existsInStore) {
     <nb-alert
       status="danger"
       class="mb-3"
@@ -87,7 +89,16 @@
     </div>
 
     <div class="index-notes">
-      @if (!notesLoaded) {
+      @if (notesError) {
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="retryNotes.emit()"
+      >
+        {{ 'dashboard.knowledge-index.notes-retry' | transloco }}
+      </button>
+      } @else if (!notesLoaded) {
       <div class="metric-label">{{ 'dashboard.knowledge-index.notes-loading' | transloco }}</div>
       } @else if (hasNotes) {
       <div class="index-notes-head">

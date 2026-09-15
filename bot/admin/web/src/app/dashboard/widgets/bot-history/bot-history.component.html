@@ -79,6 +79,19 @@
   </ng-template>
 
   <ng-template #widgetFooter>
+    @if (pageError) {
+    <span class="text-danger">{{ 'dashboard.history.page-error' | transloco }}</span>
+    } @if (hasMore) {
+    <button
+      nbButton
+      ghost
+      size="small"
+      [disabled]="loadingMore"
+      (click)="loadMore.emit()"
+    >
+      {{ 'dashboard.history.load-more' | transloco }}
+    </button>
+    }
     <span class="metric-label">
       {{ 'dashboard.history.count' | transloco: { visible: visibleCount, total: events.length } }}
     </span>

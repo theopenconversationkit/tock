@@ -57,6 +57,7 @@ object BusinessRulesService {
         namespace: String,
         botId: String,
         businessRulesConfig: BotBusinessRulesConfigurationDTO,
+        author: String? = null,
     ): BotBusinessRulesConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: $namespace, botId = $botId]")
@@ -64,7 +65,14 @@ object BusinessRulesService {
         logger.info {
             "Saving the Business Rules Configuration [namespace: $namespace, botId: $botId]"
         }
-        return saveBusinessRulesConfiguration(namespace, botId, businessRulesConfig)
+        return BotHistoryService.configuration(
+            namespace,
+            botId,
+            "prompt-context",
+            author,
+            previous = { businessRulesConfigurationDAO.findByNamespaceAndBotId(namespace, botId) },
+            save = { saveBusinessRulesConfiguration(namespace, botId, businessRulesConfig) },
+        )
     }
 
     private fun saveBusinessRulesConfiguration(

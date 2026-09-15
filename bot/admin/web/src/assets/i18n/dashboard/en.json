@@ -77,7 +77,9 @@
     "notes-empty-title": "No notes on this ingestion",
     "notes-empty-message": "Record what went into this index — sources, pipeline options, deliberate exclusions.",
     "notes-add": "Add notes",
-    "notes-loading": "Loading notes…"
+    "notes-loading": "Loading notes…",
+    "inspection-unavailable": "Index inspection is unavailable for this provider.",
+    "notes-retry": "Notes unavailable: try again"
   },
   "contacts": {
     "title": "Contacts",
@@ -226,8 +228,11 @@
       "changed-count": "{{changed}} of {{total}} parameter(s) changed.",
       "added": "Added",
       "removed": "Removed",
-      "kept": "Unchanged"
-    }
+      "kept": "Unchanged",
+      "lexicon": "Lexicon"
+    },
+    "load-more": "Load more",
+    "page-error": "Could not load this page. Try again."
   },
   "no-connector": "No connector is declared for this bot. Usage figures will stay empty until one is configured."
 }

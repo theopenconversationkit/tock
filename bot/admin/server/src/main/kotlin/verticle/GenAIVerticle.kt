@@ -77,10 +77,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 PATH_CONFIG_RAG,
                 admin,
             ) { context: RoutingContext, request: BotRAGConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'RAG' configuration..." }
                     BotRAGConfigurationDTO(
-                        RAGService.saveRag(request),
+                        RAGService.saveRag(request.copy(namespace = app.namespace, botId = app.name), context.userLogin),
                     )
                 }
             }
@@ -113,7 +113,7 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'Business Rules' configuration..." }
                     BotBusinessRulesConfigurationDTO(
-                        BusinessRulesService.saveBusinessRules(app.namespace, app.name, request),
+                        BusinessRulesService.saveBusinessRules(app.namespace, app.name, request, context.userLogin),
                     )
                 }
             }
@@ -182,10 +182,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 PATH_CONFIG_VECTOR_STORE,
                 admin,
             ) { context: RoutingContext, request: BotVectorStoreConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'Vector Store' configuration..." }
                     BotVectorStoreConfigurationDTO(
-                        VectorStoreService.saveVectorStore(request),
+                        VectorStoreService.saveVectorStore(request.copy(namespace = app.namespace, botId = app.name), context.userLogin),
                     )
                 }
             }
@@ -217,10 +217,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 PATH_CONFIG_VECTOR_OBSERVABILITY,
                 admin,
             ) { context: RoutingContext, request: BotObservabilityConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'Observability' configuration..." }
                     BotObservabilityConfigurationDTO(
-                        ObservabilityService.saveObservability(request),
+                        ObservabilityService.saveObservability(request.copy(namespace = app.namespace, botId = app.name), context.userLogin),
                     )
                 }
             }
@@ -252,10 +252,10 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 PATH_CONFIG_DOCUMENT_COMPRESSOR,
                 admin,
             ) { context: RoutingContext, request: BotDocumentCompressorConfigurationDTO ->
-                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) {
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Saving 'Document Compressor' configuration..." }
                     BotDocumentCompressorConfigurationDTO(
-                        DocumentCompressorService.saveDocumentCompressor(request),
+                        DocumentCompressorService.saveDocumentCompressor(request.copy(namespace = app.namespace, botId = app.name), context.userLogin),
                     )
                 }
             }

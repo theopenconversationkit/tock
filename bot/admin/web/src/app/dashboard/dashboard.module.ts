@@ -38,9 +38,6 @@ import { DashboardTabsComponent } from './dashboard-tabs.component';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardService } from './services/dashboard.service';
 import { DashboardRestService } from './services/dashboard-rest.service';
-// To run the dashboard against mocks for the not-yet-delivered endpoints, swap the
-// provider below to useClass: DashboardMockService.
-import { DashboardMockService } from './services/dashboard-mock.service';
 import { DashboardStateService } from './services/dashboard-state.service';
 import { DashboardWidgetComponent } from './widgets/dashboard-widget/dashboard-widget.component';
 import { DashboardDeltaComponent } from './widgets/dashboard-delta/dashboard-delta.component';
@@ -103,7 +100,7 @@ import { HistorySnapshotComponent } from './modals/history-snapshot/history-snap
     DashboardRoutingModule
   ],
   providers: [
-    { provide: DashboardService, useClass: DashboardMockService },
+    { provide: DashboardService, useClass: DashboardRestService },
     DashboardStateService,
     provideTranslocoScope({ scope: 'dashboard', alias: 'dashboard' })
   ]

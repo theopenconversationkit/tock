@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, combineLatest, skip, takeUntil } from 'rxjs';
 
 import { BotConfigurationService } from '../core/bot-configuration.service';
@@ -77,6 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   knowledgeIndexState: WidgetState = WidgetState.loading;
 
   ingestionNotes: IngestionNotes;
+  ingestionNotesError = false;
 
   contacts: BotContact[] = [];
   contactsState: WidgetState = WidgetState.loading;
@@ -86,6 +87,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   history: BotHistoryEvent[] = [];
   historyState: WidgetState = WidgetState.loading;
+  historyCursor: string | null = null;
+  historyLoadingMore = false;
+  historyPageError = false;
+  private readonly reload$ = new Subject<void>();
 
   evaluations: EvaluationSampleDefinition[] = [];
   evaluationState: WidgetState = WidgetState.loading;
@@ -93,13 +98,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   genAiConfiguration: GenAiConfiguration;
   genAiConfigurationState: WidgetState = WidgetState.loading;
 
-  constructor(
-    public state: StateService,
-    private botConfiguration: BotConfigurationService,
-    private dashboardService: DashboardService,
-    private dashboardState: DashboardStateService,
-    private dialog: DialogService
-  ) {}
+  readonly state = inject(StateService);
+  private readonly botConfiguration = inject(BotConfigurationService);
+  private readonly dashboardService = inject(DashboardService);
+  private readonly dashboardState = inject(DashboardStateService);
+  private readonly dialog = inject(DialogService);
 
   ngOnInit(): void {
     // The state service is provided by the module, so it outlives this component:
@@ -169,6 +172,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadAll(): void {
+    this.reload$.next();
+    this.ingestionNotes = null;
     this.loadPeriodDependentWidgets();
     this.loadKnowledgeIndex();
     this.loadContacts();
@@ -188,7 +193,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.usageState = WidgetState.loading;
     this.dashboardService
       .getUsage(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (usage) => {
           this.usage = usage;
@@ -202,7 +207,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.outcomeState = WidgetState.loading;
     this.dashboardService
       .getAnswerOutcome(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (outcome) => {
           this.outcome = outcome;
@@ -217,7 +222,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.topicsState = WidgetState.loading;
     this.dashboardService
       .getTopics(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (topics) => {
           this.topics = topics;
@@ -233,7 +238,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.knowledgeIndexState = WidgetState.loading;
     this.dashboardService
       .getKnowledgeIndex(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (index) => {
           this.knowledgeIndex = index;
@@ -246,18 +251,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private loadIngestionNotes(indexSessionId: string): void {
+  loadIngestionNotes(indexSessionId: string): void {
+    this.ingestionNotesError = false;
     this.dashboardService
       .getIngestionNotes(this.namespace, this.applicationName, indexSessionId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((notes) => (this.ingestionNotes = notes));
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
+      .subscribe({
+        next: (notes) => (this.ingestionNotes = notes),
+        error: () => (this.ingestionNotesError = true)
+      });
   }
 
   private loadContacts(): void {
     this.contactsState = WidgetState.loading;
     this.dashboardService
       .getContacts(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (contacts) => {
           this.contacts = contacts;
@@ -271,7 +280,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.identityState = WidgetState.loading;
     this.dashboardService
       .getBotIdentity(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (identity) => {
           this.identity = identity;
@@ -282,16 +291,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadHistory(): void {
+    this.history = [];
+    this.historyCursor = null;
+    this.historyLoadingMore = false;
+    this.historyPageError = false;
     this.historyState = WidgetState.loading;
+    this.fetchHistory();
+  }
+
+  loadMoreHistory(): void {
+    if (!this.historyCursor || this.historyLoadingMore) return;
+    this.fetchHistory(this.historyCursor);
+  }
+
+  private fetchHistory(before?: string): void {
+    this.historyLoadingMore = !!before;
+    this.historyPageError = false;
     this.dashboardService
-      .getBotHistory(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .getBotHistory(this.namespace, this.applicationName, before)
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
-        next: (history) => {
-          this.history = history;
-          this.historyState = history.length ? WidgetState.ready : WidgetState.empty;
+        next: (page) => {
+          this.history = before ? [...this.history, ...page.events] : page.events;
+          this.historyCursor = page.hasMore ? page.nextCursor : null;
+          this.historyLoadingMore = false;
+          this.historyState = this.history.length ? WidgetState.ready : WidgetState.empty;
         },
-        error: () => (this.historyState = WidgetState.error)
+        error: () => {
+          this.historyLoadingMore = false;
+          if (before) this.historyPageError = true;
+          else this.historyState = WidgetState.error;
+        }
       });
   }
 
@@ -300,10 +330,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       context: { identity: this.identity, technicalName: this.applicationName }
     });
 
-    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$)).subscribe((identity: BotIdentity) => {
+    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$), takeUntil(this.reload$)).subscribe((identity: BotIdentity) => {
       this.dashboardService
         .saveBotIdentity(this.namespace, this.applicationName, identity)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
         .subscribe((saved) => (this.identity = saved));
     });
   }
@@ -316,7 +346,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.evaluationState = WidgetState.loading;
     this.dashboardService
       .getEvaluationSamples(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (samples) => {
           // Only validated samples are reported. In-progress and abandoned ones are ignored.
@@ -337,7 +367,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.genAiConfigurationState = WidgetState.loading;
     this.dashboardService
       .getGenAiConfiguration(this.namespace, this.applicationName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe({
         next: (configuration) => {
           this.genAiConfiguration = configuration;
@@ -349,7 +379,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   addContact(): void {
     const modal = this.dialog.openDialog(ContactEditComponent, {});
-    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$)).subscribe((contact: BotContact) => {
+    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$), takeUntil(this.reload$)).subscribe((contact: BotContact) => {
       this.persistContacts([...this.contacts, contact]);
     });
   }
@@ -357,11 +387,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   editContact(contact: BotContact): void {
     const modal = this.dialog.openDialog(ContactEditComponent, { context: { contact } });
 
-    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$)).subscribe((updated: BotContact) => {
+    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$), takeUntil(this.reload$)).subscribe((updated: BotContact) => {
       this.persistContacts(this.contacts.map((c) => (c.id === updated.id ? updated : c)));
     });
 
-    modal.componentRef.instance.onDelete.pipe(takeUntil(this.destroy$)).subscribe((removed: BotContact) => {
+    modal.componentRef.instance.onDelete.pipe(takeUntil(this.destroy$), takeUntil(this.reload$)).subscribe((removed: BotContact) => {
       this.persistContacts(this.contacts.filter((c) => c.id !== removed.id));
     });
   }
@@ -369,7 +399,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private persistContacts(contacts: BotContact[]): void {
     this.dashboardService
       .saveContacts(this.namespace, this.applicationName, contacts)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
       .subscribe((saved) => {
         this.contacts = saved;
         this.contactsState = saved.length ? WidgetState.ready : WidgetState.empty;
@@ -386,10 +416,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const modal = this.dialog.openDialog(IngestionNotesComponent, { context: { notes } });
 
-    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$)).subscribe((updated: IngestionNotes) => {
+    modal.componentRef.instance.onSave.pipe(takeUntil(this.destroy$), takeUntil(this.reload$)).subscribe((updated: IngestionNotes) => {
       this.dashboardService
         .saveIngestionNotes(this.namespace, this.applicationName, updated)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
         .subscribe((saved) => (this.ingestionNotes = saved));
     });
   }

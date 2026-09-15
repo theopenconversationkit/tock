@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, inject, EventEmitter, Input, Output } from '@angular/core';
 
 import { StateService } from '../../../core-nlp/state.service';
 import { UserRole } from '../../../model/auth';
@@ -32,13 +32,15 @@ const STALE_INDEX_THRESHOLD_DAYS = 30;
 export class KnowledgeIndexComponent {
   @Input() index: KnowledgeIndex;
   @Input() notes: IngestionNotes;
+  @Input() notesError = false;
+  @Output() retryNotes = new EventEmitter<void>();
   @Input() state: WidgetState = WidgetState.loading;
 
   @Output() onEditNotes = new EventEmitter<void>();
 
   WidgetState = WidgetState;
 
-  constructor(public state$: StateService) {}
+  readonly state$ = inject(StateService);
 
   get canEdit(): boolean {
     return this.state$.hasRole(UserRole.admin);

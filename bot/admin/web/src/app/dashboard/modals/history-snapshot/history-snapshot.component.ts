@@ -45,7 +45,7 @@ interface RagSection {
 export class HistorySnapshotComponent implements OnInit {
   @Input() event: BotHistoryEvent;
 
-  readonly dialogRef = inject(NbDialogRef<HistorySnapshotComponent>);
+  readonly dialogRef = inject<NbDialogRef<HistorySnapshotComponent>>(NbDialogRef);
 
   kind: BotHistorySnapshotKind;
   icon: string;
@@ -83,13 +83,21 @@ export class HistorySnapshotComponent implements OnInit {
     } else if (this.kind === 'rag') {
       this.ragSections = this.buildRagSections(previous, current);
     }
+    if (this.kind === 'tags') {
+      const lexicon = (snapshot: Record<string, unknown> | null): Record<string, unknown> | null => {
+        if (!snapshot) return null;
+        const groups = (snapshot['lexiconGroups'] ?? []) as { id: number; terms: string[] }[];
+        return Object.fromEntries(groups.map((group) => [String(group.id), group.terms]));
+      };
+      this.kvDiff = buildKvDiff(lexicon(previous), lexicon(current) ?? {});
+    }
     // 'tags' is rendered directly from coveredTags() / excludedTags() in the template.
   }
 
   coveredTags(): TagDiff[] {
     const snap = this.event.snapshot;
     return buildTagDiff(
-      snap?.previous ? ((snap.previous['coveredTopics'] as string[]) ?? []) : null,
+      snap?.previous ? (snap.previous['coveredTopics'] as string[]) ?? [] : null,
       (snap?.current['coveredTopics'] as string[]) ?? []
     );
   }
@@ -97,7 +105,7 @@ export class HistorySnapshotComponent implements OnInit {
   excludedTags(): TagDiff[] {
     const snap = this.event.snapshot;
     return buildTagDiff(
-      snap?.previous ? ((snap.previous['excludedTopics'] as string[]) ?? []) : null,
+      snap?.previous ? (snap.previous['excludedTopics'] as string[]) ?? [] : null,
       (snap?.current['excludedTopics'] as string[]) ?? []
     );
   }
@@ -110,7 +118,13 @@ export class HistorySnapshotComponent implements OnInit {
     const stripPrompts = (obj: Record<string, unknown> | null): Record<string, unknown> | null => {
       if (!obj) return obj;
       const clone = { ...obj };
-      promptKeys.forEach((key) => delete clone[key]);
+      promptKeys.forEach((key) => {
+        const prompt = clone[key] as Record<string, unknown> | undefined;
+        if (prompt) {
+          const { template, ...metadata } = prompt;
+          clone[key] = metadata;
+        }
+      });
       return clone;
     };
 

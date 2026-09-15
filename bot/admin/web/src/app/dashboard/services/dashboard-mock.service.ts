@@ -16,7 +16,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 
-import { BotContact, BotHistoryEvent, BotHistoryEventType, BotIdentity, IngestionNotes } from '../models/dashboard.model';
+import { BotContact, BotHistoryEvent, BotHistoryEventType, BotHistoryPage, BotIdentity, IngestionNotes } from '../models/dashboard.model';
 import { DashboardRestService } from './dashboard-rest.service';
 
 /**
@@ -89,8 +89,8 @@ export class DashboardMockService extends DashboardRestService {
     return of({ ...this.mockIdentity }).pipe(delay(200));
   }
 
-  override getBotHistory(namespace: string, applicationName: string): Observable<BotHistoryEvent[]> {
-    return of(this.buildMockHistory()).pipe(delay(300));
+  override getBotHistory(namespace: string, applicationName: string): Observable<BotHistoryPage> {
+    return of({ events: this.buildMockHistory(), hasMore: false, nextCursor: null }).pipe(delay(300));
   }
 
   private buildMockHistory(): BotHistoryEvent[] {

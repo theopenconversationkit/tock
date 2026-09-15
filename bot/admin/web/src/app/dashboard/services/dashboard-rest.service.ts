@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { inject, Injectable } from '@angular/core';
-import { Observable, catchError, forkJoin, map, of } from 'rxjs';
+import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { DashboardService } from './dashboard.service';
@@ -31,7 +31,7 @@ import { ObservabilitySettings } from '../../configuration/observability-setting
 import { VectorDbProvider } from '../../configuration/vector-db-settings/models/providers-configuration';
 import {
   BotContact,
-  BotHistoryEvent,
+  BotHistoryPage,
   BotIdentity,
   DashboardAnswerOutcome,
   DashboardPeriod,
@@ -61,12 +61,6 @@ interface VectorStoreIndex {
   documentCount: number | null;
   chunkCount: number | null;
   isCurrent: boolean;
-}
-
-/** Paginated envelope of GET /bots/{botId}/history. */
-interface BotHistoryResponse {
-  events: BotHistoryEvent[];
-  hasMore?: boolean;
 }
 
 @Injectable()
@@ -262,7 +256,7 @@ export class DashboardRestService extends DashboardService {
 
   private getSettings<T>(applicationName: string, resource: string): Observable<T> {
     const url = `/gen-ai/bots/${applicationName}/configuration/${resource}`;
-    return this.rest.get<T>(url, (settings: T) => settings).pipe(catchError(() => of(null as T)));
+    return this.rest.get<T>(url, (settings: T) => settings);
   }
 
   private buildChecks(
@@ -327,44 +321,47 @@ export class DashboardRestService extends DashboardService {
    * The index list comes from the vector store itself. Each entry carries its session id,
    * ingestion date and volumes; the current one is flagged. No isCurrent entry means the
    * session configured in the RAG settings is missing from the store — an anomaly the
-   * widget surfaces. Provider and embedding come from the RAG configuration.
+   * widget surfaces. The provider comes from inspection capabilities; embedding comes from the RAG configuration.
    */
   getKnowledgeIndex(namespace: string, applicationName: string): Observable<KnowledgeIndex> {
-    return forkJoin([
-      this.getRagSettings(applicationName),
-      this.getSettings<VectorDbSettings>(applicationName, 'vector-store'),
-      this.getIndexes(applicationName)
-    ]).pipe(
-      map(([rag, vectorDb, indexes]) => {
-        if (!rag?.enabled || !rag?.indexSessionId) {
-          return null;
-        }
-
-        const current = (indexes ?? []).find((index) => index.isCurrent);
-
-        return {
-          indexSessionId: rag.indexSessionId,
-          indexName: current?.indexName ?? rag.indexName,
-          provider: (vectorDb?.setting?.provider ?? VectorDbProvider.PGVector) as VectorDbProvider,
-          embeddingLabel: [rag.emSetting?.provider, rag.emSetting?.model].filter(Boolean).join(' · ') || null,
-          indexDatetime: current?.indexDatetime ?? null,
-          documentCount: current?.documentCount ?? null,
-          chunkCount: current?.chunkCount ?? null,
-          // No current index in the store while a session is configured = broken config.
-          existsInStore: !!current
-        };
+    return this.getRagSettings(applicationName).pipe(
+      switchMap((rag) => {
+        if (!rag?.enabled || !rag.indexSessionId) return of(null);
+        return this.rest
+          .get<{ provider: VectorDbProvider; supportsIndexListing: boolean }>(
+            `/gen-ai/bots/${applicationName}/vector-store/capabilities`,
+            (capabilities) => capabilities
+          )
+          .pipe(
+            switchMap((capabilities) => {
+              if (typeof capabilities?.supportsIndexListing !== 'boolean') throw new Error('Vector store capabilities unavailable');
+              return (capabilities.supportsIndexListing ? this.getIndexes(applicationName) : of([])).pipe(
+                map((indexes) => {
+                  const current = indexes.find((index) => index.isCurrent);
+                  return {
+                    indexSessionId: rag.indexSessionId,
+                    indexName: current?.indexName ?? rag.indexName,
+                    provider: capabilities.provider,
+                    embeddingLabel: [rag.emSetting?.provider, rag.emSetting?.model].filter(Boolean).join(' · ') || null,
+                    indexDatetime: current?.indexDatetime || null,
+                    documentCount: current?.documentCount ?? null,
+                    chunkCount: current?.chunkCount ?? null,
+                    existsInStore: !!current,
+                    inspectionSupported: capabilities.supportsIndexListing
+                  };
+                })
+              );
+            })
+          );
       })
     );
   }
 
   private getIndexes(applicationName: string): Observable<VectorStoreIndex[]> {
-    const url = `/gen-ai/bots/${applicationName}/vector-store/indexes`;
-    return this.rest
-      .get<VectorStoreIndex[]>(url, (indexes: VectorStoreIndex[]) => indexes ?? [])
-      .pipe(
-        // The store may be unreachable or empty; degrade to no index rather than erroring the widget.
-        catchError(() => of([] as VectorStoreIndex[]))
-      );
+    return this.rest.get<VectorStoreIndex[]>(`/gen-ai/bots/${applicationName}/vector-store/indexes`, (response) => {
+      if (!response || !Array.isArray(response.indexes)) throw new Error('Vector store indexes unavailable');
+      return response.indexes;
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -373,12 +370,7 @@ export class DashboardRestService extends DashboardService {
 
   getIngestionNotes(namespace: string, applicationName: string, indexSessionId: string): Observable<IngestionNotes> {
     const url = `/bots/${applicationName}/index-sessions/${indexSessionId}/note`;
-    return this.rest
-      .get<IngestionNotes>(url, (notes: IngestionNotes) => notes)
-      .pipe(
-        // No note yet is a normal case, not an error.
-        catchError(() => of({ indexSessionId, text: '', updatedAt: null, updatedBy: null }))
-      );
+    return this.rest.get<IngestionNotes>(url, (notes) => notes);
   }
 
   saveIngestionNotes(namespace: string, applicationName: string, notes: IngestionNotes): Observable<IngestionNotes> {
@@ -419,11 +411,9 @@ export class DashboardRestService extends DashboardService {
   // History — GET /bots/{botId}/history
   // ---------------------------------------------------------------------------
 
-  getBotHistory(namespace: string, applicationName: string): Observable<BotHistoryEvent[]> {
-    const url = `/bots/${applicationName}/history`;
-    return this.rest
-      .get<BotHistoryResponse>(url, (response: BotHistoryResponse) => response)
-      .pipe(map((response) => response?.events ?? []));
+  getBotHistory(namespace: string, applicationName: string, before?: string): Observable<BotHistoryPage> {
+    const query = before ? `?before=${encodeURIComponent(before)}` : '';
+    return this.rest.get<BotHistoryPage>(`/bots/${applicationName}/history${query}`, (response) => response);
   }
 
   // ---------------------------------------------------------------------------
