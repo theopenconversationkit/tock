@@ -108,14 +108,16 @@ open class EventListenerBase : EventListener {
                         ?.allActions()
                         ?.firstOrNull { it.id.toString() == event.actionId && PlayerType.bot == it.playerId.type }
 
-                if (action != null) {
+                if (action != null && (event.replaceExisting || action.metadata.feedback == null)) {
                     action.metadata.feedback = event.feedback
                     userTimelineDAO.save(timeline, controller.botDefinition)
+                } else if (action != null) {
+                    logger.debug("Feedback ignored: action ${event.actionId} already has feedback.")
                 } else {
                     logger.warn("Feedback ignored: no action found with id ${event.actionId} in the current dialog.")
                 }
             }
-            return false
+            return true
         }
     }
 

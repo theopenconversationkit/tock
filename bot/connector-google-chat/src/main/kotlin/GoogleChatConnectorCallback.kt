@@ -34,6 +34,7 @@ data class GoogleChatConnectorCallback(
     private val introMessage: String?,
     val useThread: Boolean,
     private val waitingMessage: String,
+    private val feedback: GoogleChatFeedback? = null,
 ) : ConnectorCallbackBase(applicationId, googleChatConnectorType) {
     private val logger = KotlinLogging.logger {}
     var processingMessageName: String? = null
@@ -84,10 +85,13 @@ data class GoogleChatConnectorCallback(
     /**
      * Sends message to the Google Chat space/thread.
      */
-    fun sendGoogleMessageAndGetName(message: GoogleChatConnectorMessage): String? {
+    fun sendGoogleMessageAndGetName(
+        message: GoogleChatConnectorMessage,
+        feedbackActionId: String? = null,
+    ): String? {
         var messageName: String? = null
         try {
-            val googleMessage = message.toGoogleMessage()
+            val googleMessage = message.toGoogleMessage().withFeedback(feedbackActionId)
             logger.debug { "Google Message content: $googleMessage" }
 
             if (useThread) {
@@ -126,15 +130,17 @@ data class GoogleChatConnectorCallback(
     fun patchGoogleMessage(
         messageName: String,
         message: GoogleChatConnectorMessage,
+        feedbackActionId: String? = null,
     ) {
         try {
+            val googleMessage = message.toGoogleMessage().withFeedback(feedbackActionId)
             chatService
                 .spaces()
                 .messages()
                 .patch(
                     messageName,
-                    message.toGoogleMessage(),
-                ).setUpdateMask("text")
+                    googleMessage,
+                ).setUpdateMask(if (googleMessage.accessoryWidgets == null) "text" else "text,accessoryWidgets")
                 .execute()
 
             logger.info {
@@ -146,4 +152,11 @@ data class GoogleChatConnectorCallback(
             }
         }
     }
+
+    private fun com.google.api.services.chat.v1.model.Message.withFeedback(actionId: String?) =
+        if (actionId == null || feedback == null) {
+            this
+        } else {
+            feedback.addButtons(this, actionId)
+        }
 }

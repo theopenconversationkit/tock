@@ -15,8 +15,11 @@
  */
 package ai.tock.bot.connector.googlechat
 
+import ai.tock.bot.engine.action.ActionFeedback
+import ai.tock.bot.engine.action.FeedbackVote
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.event.FeedbackEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
 import com.google.gson.JsonObject
@@ -38,4 +41,50 @@ internal object GoogleChatRequestConverter {
         val botId = PlayerId(applicationId, PlayerType.bot)
         return SendSentence(playerId, applicationId, botId, text)
     }
+
+    fun toFeedbackRequest(
+        messageEvent: JsonObject,
+        chatEvent: JsonObject,
+        applicationId: String,
+    ): GoogleChatFeedbackRequest? {
+        val parameters =
+            messageEvent
+                .getAsJsonObject("commonEventObject")
+                ?.getAsJsonObject("parameters")
+                ?: return null
+        if (parameters.string(GOOGLE_CHAT_FEEDBACK_ACTION_PARAMETER) != GOOGLE_CHAT_FEEDBACK_ACTION_VALUE) return null
+
+        val actionId = parameters.string(GOOGLE_CHAT_FEEDBACK_ACTION_ID_PARAMETER)?.takeIf { it.isNotBlank() } ?: return null
+        val vote =
+            parameters
+                .string(GOOGLE_CHAT_FEEDBACK_VOTE_PARAMETER)
+                ?.let { value -> FeedbackVote.entries.firstOrNull { it.name == value } }
+                ?: return null
+        val userId = chatEvent.getAsJsonObject("user")?.string("name") ?: return null
+        val messageName =
+            chatEvent
+                .getAsJsonObject("buttonClickedPayload")
+                ?.getAsJsonObject("message")
+                ?.string("name")
+                ?: return null
+
+        val event =
+            FeedbackEvent(
+                userId = PlayerId(userId),
+                recipientId = PlayerId(applicationId, PlayerType.bot),
+                applicationId = applicationId,
+                actionId = actionId,
+                feedback = ActionFeedback(vote),
+            ).apply { replaceExisting = false }
+
+        return GoogleChatFeedbackRequest(event, messageName, vote)
+    }
+
+    private fun JsonObject.string(name: String): String? = get(name)?.takeUnless { it.isJsonNull }?.asString
 }
+
+internal data class GoogleChatFeedbackRequest(
+    val event: FeedbackEvent,
+    val messageName: String,
+    val vote: FeedbackVote,
+)

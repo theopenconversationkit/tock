@@ -36,6 +36,7 @@ import com.google.auth.oauth2.ServiceAccountCredentials
 import mu.KotlinLogging
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.net.URI
 import kotlin.reflect.KClass
 
 private const val CHAT_SCOPE = "https://www.googleapis.com/auth/chat.bot"
@@ -49,6 +50,7 @@ private const val INTRO_MESSAGE_PARAMETER = "introMessage"
 private const val USE_THREAD_PARAMETER = "useThread"
 private const val SOURCES_LABEL_PARAMETER = "sourcesLabel"
 private const val WAITING_MESSAGE_PARAMETER = "waitingMessage"
+private const val ENABLE_FEEDBACK_PARAMETER = "enableFeedback"
 
 // Lifetime (in seconds) of each impersonated access token.
 // This is the TTL of a single token, not a hard limit on the connector:
@@ -61,8 +63,24 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
 
     override val connectorType: ConnectorType get() = googleChatConnectorType
 
+    override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
+        super.check(connectorConfiguration) +
+            listOfNotNull(
+                if (
+                    connectorConfiguration.parameters[ENABLE_FEEDBACK_PARAMETER] == "1" &&
+                    !connectorConfiguration.parameters[AUTH_AUDIENCE_PARAMETER].isAbsoluteHttpsUrl()
+                ) {
+                    "Authentication Audience must be an absolute HTTPS URL when feedback buttons are enabled"
+                } else {
+                    null
+                },
+            )
+
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
+            val authenticationAudience =
+                connectorConfiguration.parameters[AUTH_AUDIENCE_PARAMETER]
+                    ?: error("Parameter Authentication Audience not present")
             val gsaToImpersonate = connectorConfiguration.parameters[GSA_TO_IMPERSONATE_PARAMETER]
 
             val credentials: GoogleCredentials =
@@ -99,10 +117,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     .build()
 
             val authorisationHandler =
-                GoogleChatAuthorisationHandler(
-                    connectorConfiguration.parameters[AUTH_AUDIENCE_PARAMETER]
-                        ?: error("Parameter Authentication Audience not present"),
-                )
+                GoogleChatAuthorisationHandler(authenticationAudience)
 
             val introMessage =
                 connectorConfiguration.parameters[INTRO_MESSAGE_PARAMETER]?.takeIf { it.isNotBlank() }
@@ -120,6 +135,16 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     ?.takeIf { it.isNotBlank() }
                     ?: "\uD83D\uDCAD Thinking..."
 
+            val feedback =
+                if (connectorConfiguration.parameters[ENABLE_FEEDBACK_PARAMETER] == "1") {
+                    require(authenticationAudience.isAbsoluteHttpsUrl()) {
+                        "Authentication Audience must be an absolute HTTPS URL when feedback buttons are enabled"
+                    }
+                    GoogleChatFeedback(callbackUrl = authenticationAudience)
+                } else {
+                    null
+                }
+
             return GoogleChatConnector(
                 connectorId,
                 path,
@@ -131,6 +156,7 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                 useThread,
                 sourcesLabel,
                 waitingMessage,
+                feedback,
             )
         }
     }
@@ -242,12 +268,22 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
                     WAITING_MESSAGE_PARAMETER,
                     false,
                 ),
+                ConnectorTypeConfigurationField(
+                    "Enable feedback buttons (true = 1, false = 0)",
+                    ENABLE_FEEDBACK_PARAMETER,
+                    false,
+                ),
             ),
             svgIcon = resourceAsString("/google_chat.svg"),
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> =
         setOf(GoogleChatConnectorTextMessageOut::class)
+
+    private fun String?.isAbsoluteHttpsUrl(): Boolean {
+        val uri = runCatching { URI(this ?: return false) }.getOrNull() ?: return false
+        return uri.isAbsolute && uri.scheme.equals("https", ignoreCase = true) && !uri.host.isNullOrBlank()
+    }
 }
 
 internal class GoogleChatConnectorProviderService : ConnectorProvider by GoogleChatConnectorProvider
