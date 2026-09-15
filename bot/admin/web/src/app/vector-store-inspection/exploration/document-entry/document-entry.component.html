@@ -1,0 +1,104 @@
+<nb-card class="shadow-sm mb-3">
+  <nb-card-body class="list-grid">
+    <div
+      (click)="switchChunksDetail()"
+      class="pointer unselectable"
+      [nbTooltip]="'vsi.exploration.show_chunks_tooltip' | transloco"
+    >
+      <div class="list-entry-name font-weight-bold ellipsis">{{ document.title }}</div>
+      <div class="list-entry-desc text-muted">{{ document.documentId }}</div>
+    </div>
+
+    <div class="ellipsis">
+      @if (hasWebSource) {
+      <a
+        [href]="document.source"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="list-entry-desc"
+        [nbTooltip]="document.source"
+      >
+        {{ document.source }}
+      </a>
+      } @else if (document.source) {
+      <div
+        class="list-entry-desc text-muted"
+        [nbTooltip]="'vsi.exploration.non_url_source_tooltip' | transloco"
+      >
+        <nb-icon
+          icon="exclamation-triangle"
+          class="mr-1 text-warning"
+        ></nb-icon>
+        {{ document.source }}
+      </div>
+      }
+    </div>
+
+    <div class="d-flex align-items-center justify-content-end gap-2">
+      <span class="list-entry-name">{{ document.chunkCount }}</span>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        size="small"
+        [nbTooltip]="'vsi.exploration.show_chunks_tooltip' | transloco"
+        (click)="switchChunksDetail()"
+      >
+        <nb-icon [icon]="displayChunks ? 'chevron-up' : 'chevron-down'"></nb-icon>
+      </button>
+    </div>
+  </nb-card-body>
+
+  @if (displayChunks) {
+  <nb-card-body class="background-basic-color-2 p-2 pt-1 inner-shade-top">
+    <div class="details-wrapper scrollbar-narrow">
+      @for (chunk of document.chunks; track chunk.chunkId) {
+      <div
+        class="background-basic-color-1 rounded px-2 py-1 mt-1 font-size-small d-flex justify-content-between align-items-start gap-2"
+        [class.pinned-chunk]="isPinned(chunk.chunkId)"
+      >
+        <div class="chunk-rank text-muted">{{ chunk.chunk }}</div>
+
+        <div class="flex-grow-1 chunk-content">
+          @if (isNearEmpty(chunk)) {
+          <span
+            class="text-warning"
+            [nbTooltip]="'vsi.exploration.near_empty_tooltip' | transloco"
+          >
+            <nb-icon
+              icon="exclamation-triangle"
+              class="mr-1"
+            ></nb-icon>
+          </span>
+          }
+          <span class="text-muted">{{ chunk.content }}</span>
+
+          @if (chunk.metadata) {
+          <div class="mt-2 pt-2 border-top">
+            <tock-vector-store-metadata [metadata]="chunk.metadata"></tock-vector-store-metadata>
+          </div>
+          }
+        </div>
+
+        <div class="d-flex align-items-center gap-1">
+          <span class="text-muted chunk-length">{{ chunk.contentLength }}</span>
+          <button
+            nbButton
+            ghost
+            size="tiny"
+            [status]="isPinned(chunk.chunkId) ? 'primary' : 'basic'"
+            [disabled]="!state.canPin(chunk.chunkId)"
+            [nbTooltip]="
+              (isPinned(chunk.chunkId) ? 'vsi.exploration.unpin_chunk_tooltip' : 'vsi.exploration.pin_chunk_tooltip') | transloco
+            "
+            (click)="togglePin(chunk)"
+          >
+            <nb-icon [icon]="isPinned(chunk.chunkId) ? 'pin-angle-fill' : 'pin-angle'"></nb-icon>
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </nb-card-body>
+  }
+</nb-card>

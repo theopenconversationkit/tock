@@ -131,6 +131,8 @@
     "observability-settings": "Paramètres d'observabilité",
     "vector-db-settings": "Paramètres base vectorielle",
     "playground": "Bac à sable",
+    "vector-store-inspection-exploration": "Exploration base vectorielle",
+    "vector-store-inspection-diagnostic": "Diagnostic de recherche",
     "test": "Test",
     "test-plans": "Plans de test",
     "activity": "Activité",
@@ -192,7 +194,8 @@
       "create-faq": "Créer une FAQ avec cette paire question/réponse",
       "view-observability": "Voir les détails d'observabilité",
       "feedback-positive": "Ce message a reçu un retour positif.",
-      "feedback-negative": "Ce message a reçu un retour négatif."
+      "feedback-negative": "Ce message a reçu un retour négatif.",
+      "open-in-vector-store-diagnostic": "Diagnostiquer la recherche"
     },
     "chat-ui-message": {
       "switch-formatting-tooltip": "Mise en forme du message",

@@ -1,0 +1,199 @@
+<div class="d-flex align-items-center mb-2">
+  <h1 class="flex-grow-1 m-0">{{ 'vsi.exploration.title' | transloco }}</h1>
+  <section class="grid-actions">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      [nbTooltip]="'vsi.exploration.refresh_tooltip' | transloco"
+      (click)="fetchDocuments()"
+    >
+      <nb-icon icon="arrow-repeat"></nb-icon>
+    </button>
+  </section>
+</div>
+
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'vsi.common.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @else {
+
+<nb-card class="shadow-sm mb-2">
+  <nb-card-body>
+    <div class="index-grid">
+      <tock-vector-store-index-selector
+        [indexes]="indexes"
+        [selected]="currentIndex"
+        [label]="'vsi.common.index_label' | transloco"
+        [placeholder]="'vsi.common.index_placeholder' | transloco"
+        (indexChange)="selectIndex($event)"
+      ></tock-vector-store-index-selector>
+
+      @if (currentIndex) {
+      <div class="d-flex flex-column justify-content-center">
+        <div class="list-entry-desc text-muted pt-1">
+          {{ 'vsi.exploration.ingested_on' | transloco }}
+          {{ currentIndex.indexDatetime | date: 'y/MM/dd - HH:mm' }}
+        </div>
+        <div class="list-entry-desc text-muted ellipsis">{{ currentIndex.indexSessionId }}</div>
+      </div>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
+
+@if (stats) {
+<div class="stats-grid mt-1">
+  <nb-card class="shadow-sm mb-0">
+    <nb-card-body class="p-3">
+      <div class="stat-value">{{ stats.documentCount | number }}</div>
+      <div class="list-entry-desc text-muted">{{ 'vsi.exploration.documents_stat' | transloco }}</div>
+    </nb-card-body>
+  </nb-card>
+  <nb-card class="shadow-sm mb-0">
+    <nb-card-body class="p-3">
+      <div class="stat-value">{{ stats.chunkCount | number }}</div>
+      <div class="list-entry-desc text-muted">{{ 'vsi.exploration.chunks_stat' | transloco }}</div>
+    </nb-card-body>
+  </nb-card>
+  <nb-card class="shadow-sm mb-0">
+    <nb-card-body class="p-3">
+      <div class="stat-value">{{ stats.chunksPerDocumentAvg | number: '1.0-1' }}</div>
+      <div class="list-entry-desc text-muted">{{ 'vsi.exploration.chunks_per_document_stat' | transloco }}</div>
+    </nb-card-body>
+  </nb-card>
+  <nb-card class="shadow-sm mb-0">
+    <nb-card-body class="p-3">
+      <div class="stat-value">{{ stats.chunkLengthMedian | number }}</div>
+      <div class="list-entry-desc text-muted">{{ 'vsi.exploration.median_length_stat' | transloco }}</div>
+    </nb-card-body>
+  </nb-card>
+</div>
+}
+
+<div class="d-flex align-items-center gap-1 mt-3">
+  <nb-select
+    class="anomaly-select"
+    size="small"
+    [selected]="activeAnomaly"
+    (selectedChange)="selectAnomaly($event)"
+    (blur)="hideTooltips()"
+    [placeholder]="'vsi.exploration.all_documents' | transloco"
+  >
+    <nb-option [value]="null">{{ 'vsi.exploration.all_documents' | transloco }}</nb-option>
+    @for (anomaly of anomalies; track anomaly.code) {
+    <nb-option
+      [value]="anomaly.code"
+      [disabled]="!anomaly.count"
+      [nbTooltip]="'vsi.exploration.anomalies.' + anomaly.code + '_tooltip' | transloco"
+    >
+      {{ 'vsi.exploration.anomalies.' + anomaly.code | transloco }} ({{ anomaly.count | number }})
+    </nb-option>
+    }
+  </nb-select>
+
+  <nb-form-field class="flex-grow-1">
+    <nb-icon
+      nbPrefix
+      icon="search"
+    ></nb-icon>
+    <input
+      nbInput
+      fullWidth
+      fieldSize="small"
+      type="text"
+      [placeholder]="'vsi.exploration.filter_placeholder' | transloco"
+      [(ngModel)]="textFilter"
+      (keyup.enter)="applyTextFilter()"
+    />
+    @if (textFilter) {
+    <button
+      nbSuffix
+      nbButton
+      ghost
+      size="small"
+      [nbTooltip]="'vsi.exploration.clear_filter_tooltip' | transloco"
+      (click)="clearTextFilter()"
+    >
+      <nb-icon icon="x-lg"></nb-icon>
+    </button>
+    }
+  </nb-form-field>
+
+  <button
+    nbButton
+    status="primary"
+    size="tiny"
+    (click)="applyTextFilter()"
+  >
+    {{ 'vsi.exploration.filter_button' | transloco }}
+  </button>
+</div>
+
+@if (state.pinnedChunkIds$ | async; as pinned) { @if (pinned.length) {
+<div class="d-flex align-items-center gap-2 mt-3 font-size-small text-muted">
+  <nb-icon icon="pin-angle-fill"></nb-icon>
+  <span class="flex-grow-1">
+    {{ 'vsi.exploration.pinned_count' | transloco: { count: pinned.length } }}
+  </span>
+  <button
+    nbButton
+    ghost
+    size="tiny"
+    (click)="state.clearPins()"
+  >
+    {{ 'vsi.exploration.clear_pins_button' | transloco }}
+  </button>
+  <button
+    nbButton
+    size="tiny"
+    status="primary"
+    routerLink="/vector-store-inspection/diagnostic"
+  >
+    {{ 'vsi.exploration.go_to_diagnostic_button' | transloco }}
+  </button>
+</div>
+} } @if (loading && !documents.length) {
+<nb-card
+  [nbSpinner]="loading"
+  class="shadow-sm mt-3"
+>
+  <nb-card-body class="p-4">&nbsp;</nb-card-body>
+</nb-card>
+} @if (!loading && !documents.length) {
+<tock-no-data-found
+  [title]="'vsi.exploration.no_document_found' | transloco"
+  [message]="hasActiveFilter ? ('vsi.exploration.no_document_filtered_message' | transloco) : undefined"
+  class="mt-4"
+></tock-no-data-found>
+
+@if (hasActiveFilter) {
+<div class="d-flex justify-content-center mt-2">
+  <button
+    nbButton
+    ghost
+    size="small"
+    (click)="clearFilters()"
+  >
+    {{ 'vsi.exploration.clear_filters_button' | transloco }}
+  </button>
+</div>
+} } @if (documents.length) {
+<div class="d-flex justify-content-end mt-3">
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="paginationChange()"
+  ></tock-pagination>
+</div>
+
+<div
+  class="list-grid list-header text-muted mt-0"
+  [nbSpinner]="loading"
+>
+  <div class="ellipsis">{{ 'vsi.exploration.document_column' | transloco }}</div>
+  <div class="ellipsis">{{ 'vsi.exploration.source_column' | transloco }}</div>
+  <div class="ellipsis text-right">{{ 'vsi.exploration.chunks_column' | transloco }}</div>
+</div>
+
+@for (document of documents; track trackByDocumentId($index, document)) {
+<tock-vector-store-document-entry [document]="document"></tock-vector-store-document-entry>
+} } }

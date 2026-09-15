@@ -63,6 +63,10 @@ const routes: Routes = [
     path: 'playground',
     loadChildren: () => import('./playground/playground.module').then((m) => m.PlaygroundModule)
   },
+  {
+    path: 'vector-store-inspection',
+    loadChildren: () => import('./vector-store-inspection/vector-store-inspection.module').then((m) => m.VectorStoreInspectionModule)
+  },
   { path: '**', redirectTo: '/language-understanding/inbox' }
 ];
 

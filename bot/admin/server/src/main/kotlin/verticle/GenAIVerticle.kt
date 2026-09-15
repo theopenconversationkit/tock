@@ -26,12 +26,16 @@ import ai.tock.bot.admin.model.genai.BotSentenceGenerationInfoDTO
 import ai.tock.bot.admin.model.genai.BotVectorStoreConfigurationDTO
 import ai.tock.bot.admin.model.genai.PlaygroundRequest
 import ai.tock.bot.admin.model.genai.SentenceGenerationRequest
+import ai.tock.bot.admin.model.genai.VectorStoreInspectionCondenseRequestDTO
+import ai.tock.bot.admin.model.genai.VectorStoreInspectionDocumentsRequestDTO
+import ai.tock.bot.admin.model.genai.VectorStoreInspectionSearchRequestDTO
 import ai.tock.bot.admin.service.BusinessRulesService
 import ai.tock.bot.admin.service.CompletionService
 import ai.tock.bot.admin.service.DocumentCompressorService
 import ai.tock.bot.admin.service.ObservabilityService
 import ai.tock.bot.admin.service.RAGService
 import ai.tock.bot.admin.service.SentenceGenerationService
+import ai.tock.bot.admin.service.VectorStoreInspectionAdminService
 import ai.tock.bot.admin.service.VectorStoreService
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
@@ -52,6 +56,14 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
         private const val PATH_CONFIG_VECTOR_OBSERVABILITY = "/gen-ai/bots/:botId/configuration/observability"
         private const val PATH_CONFIG_DOCUMENT_COMPRESSOR = "/gen-ai/bots/:botId/configuration/document-compressor"
         private const val PATH_CONFIG_BUSINESS_RULES = "/gen-ai/bots/:botId/configuration/business-rules"
+
+        // Vector store inspection
+        private const val PATH_VECTOR_STORE_INSPECTION = "/gen-ai/bots/:botId/vector-store"
+        private const val PATH_VECTOR_STORE_CAPABILITIES = "$PATH_VECTOR_STORE_INSPECTION/capabilities"
+        private const val PATH_VECTOR_STORE_INDEXES = "$PATH_VECTOR_STORE_INSPECTION/indexes"
+        private const val PATH_VECTOR_STORE_DOCUMENTS = "$PATH_VECTOR_STORE_INSPECTION/documents"
+        private const val PATH_VECTOR_STORE_CONDENSE = "$PATH_VECTOR_STORE_INSPECTION/condense"
+        private const val PATH_VECTOR_STORE_SEARCH = "$PATH_VECTOR_STORE_INSPECTION/search"
 
         // Completion
         private const val PATH_COMPLETION_SENTENCE_GENERATION = "/gen-ai/bots/:botId/completion/sentence-generation"
@@ -267,6 +279,52 @@ class GenAIVerticle : AbstractNamespaceRetriever() {
                 checkNamespaceAndExecute(context, ::currentContextApp) { app ->
                     logger.info { "Deleting 'Document Compressor' configuration..." }
                     DocumentCompressorService.deleteConfig(app.namespace, app.name)
+                }
+            }
+
+            // ---------------------------------- Vector Store Inspection ----------------------------------
+            blockingJsonGet(
+                PATH_VECTOR_STORE_CAPABILITIES,
+                admin,
+            ) { context: RoutingContext ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.getCapabilities(app.namespace, app.name)
+                }
+            }
+
+            blockingJsonGet(
+                PATH_VECTOR_STORE_INDEXES,
+                admin,
+            ) { context: RoutingContext ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.getIndexes(app.namespace, app.name)
+                }
+            }
+
+            blockingJsonPost(
+                PATH_VECTOR_STORE_DOCUMENTS,
+                admin,
+            ) { context: RoutingContext, request: VectorStoreInspectionDocumentsRequestDTO ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.getDocuments(request, app.namespace, app.name)
+                }
+            }
+
+            blockingJsonPost(
+                PATH_VECTOR_STORE_CONDENSE,
+                admin,
+            ) { context: RoutingContext, request: VectorStoreInspectionCondenseRequestDTO ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.condense(request, app.namespace, app.name)
+                }
+            }
+
+            blockingJsonPost(
+                PATH_VECTOR_STORE_SEARCH,
+                admin,
+            ) { context: RoutingContext, request: VectorStoreInspectionSearchRequestDTO ->
+                return@blockingJsonPost checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    VectorStoreInspectionAdminService.search(request, app.namespace, app.name)
                 }
             }
 

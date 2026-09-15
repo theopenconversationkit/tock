@@ -207,6 +207,17 @@
         >
           <nb-icon icon="joystick"></nb-icon>
         </button>
+        } @if (isAdmin() && action.metadata?.isGenAiRagAnswer && $any(action).ragDebug?.user_question) {
+        <button
+          nbButton
+          ghost
+          size="small"
+          [nbTooltip]="'shared.chat-ui-dialog-logger.open-in-vector-store-diagnostic' | transloco"
+          (click)="goToVectorStoreDiagnostic(action)"
+          class="mb-1"
+        >
+          <nb-icon icon="binoculars"></nb-icon>
+        </button>
         } @if (action.metadata?.isGenAiRagAnswer) {
         <button
           nbButton

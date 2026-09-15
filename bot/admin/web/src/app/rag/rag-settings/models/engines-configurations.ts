@@ -597,13 +597,19 @@ export const EnginesConfigurations: {
   emSetting: EnginesConfigurations_Embedding
 };
 
+export enum DocumentSearchType {
+  SIMILARITY_SEARCH = 'SIMILARITY_SEARCH',
+  FULL_TEXT_SEARCH = 'FULL_TEXT_SEARCH',
+  HYBRID_SEARCH = 'HYBRID_SEARCH'
+}
+
 export interface DocumentSearchTypeOption {
-  key: string;
+  key: DocumentSearchType;
   label: string;
 }
 
 export const DocumentSearchTypes: DocumentSearchTypeOption[] = [
-  { key: 'SIMILARITY_SEARCH', label: 'Similarity search' },
-  { key: 'FULL_TEXT_SEARCH', label: 'Full text search' },
-  { key: 'HYBRID_SEARCH', label: 'Hybrid search' }
+  { key: DocumentSearchType.SIMILARITY_SEARCH, label: 'Similarity search' },
+  { key: DocumentSearchType.FULL_TEXT_SEARCH, label: 'Full text search' },
+  { key: DocumentSearchType.HYBRID_SEARCH, label: 'Hybrid search' }
 ];

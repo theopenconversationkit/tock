@@ -26,10 +26,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Subject, filter, take, takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'tock-bot-admin-root',
-    templateUrl: './bot-admin-app.component.html',
-    styleUrls: ['./bot-admin-app.component.css'],
-    standalone: false
+  selector: 'tock-bot-admin-root',
+  templateUrl: './bot-admin-app.component.html',
+  styleUrls: ['./bot-admin-app.component.css'],
+  standalone: false
 })
 export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -292,15 +292,27 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
-            link: '/configuration/vector-db-settings',
-            title: t('menu-items.vector-db-settings'),
+            link: '/playground',
+            title: t('menu-items.playground'),
+            icon: 'joystick',
+            hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
+            link: '/vector-store-inspection/diagnostic',
+            title: t('menu-items.vector-store-inspection-diagnostic'),
+            icon: 'binoculars',
+            hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
+            link: '/vector-store-inspection/exploration',
+            title: t('menu-items.vector-store-inspection-exploration'),
             icon: 'database',
             hidden: !this.state.hasRole(UserRole.admin)
           },
           {
-            link: '/playground',
-            title: t('menu-items.playground'),
-            icon: 'joystick',
+            link: '/configuration/vector-db-settings',
+            title: t('menu-items.vector-db-settings'),
+            icon: 'database-gear',
             hidden: !this.state.hasRole(UserRole.admin)
           }
         ]
