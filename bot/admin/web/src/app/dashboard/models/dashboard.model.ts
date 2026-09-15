@@ -198,6 +198,8 @@ export interface BotHistoryEvent {
   /** Interpolation values for the translated label and detail. Keys are per type. */
   params?: Record<string, string | number>;
   author?: string;
+  /** Creation date inferred from the application identifier for older bots. */
+  estimated?: boolean;
   /** Present only on config events; drives the clickable detail modal. */
   snapshot?: BotHistorySnapshot;
 }

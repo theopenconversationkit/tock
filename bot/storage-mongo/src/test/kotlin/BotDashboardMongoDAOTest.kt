@@ -23,7 +23,9 @@ import ai.tock.bot.admin.dashboard.BotHistorySnapshot
 import ai.tock.bot.admin.dashboard.BotIdentity
 import ai.tock.bot.admin.dashboard.BotIndexSessionNote
 import ai.tock.shared.getDatabase
+import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -47,11 +49,23 @@ class BotDashboardMongoDAOTest : AbstractTest(false) {
             dao.saveNote(BotIndexSessionNote("ns", "bot", "purged", "new"))
             assertEquals("new", dao.note("ns", "bot", "purged")!!.text)
             val date = Instant.parse("2026-09-15T12:00:00Z")
-            repeat(5) { dao.append(BotHistoryEvent("ns", "bot", "rag-settings", "alice", snapshot = BotHistorySnapshot(null, mapOf("maxDocumentsRetrieved" to it)), date = date)) }
+            repeat(5) {
+                dao.append(
+                    BotHistoryEvent(
+                        "ns",
+                        "bot",
+                        "rag-settings",
+                        "alice",
+                        snapshot = BotHistorySnapshot(null, mapOf("maxDocumentsRetrieved" to it)),
+                        date = date,
+                        _id = ObjectId().toHexString().toId(),
+                    ),
+                )
+            }
             dao.append(BotHistoryEvent("other", "bot", "created", "bob", date = date))
             val first = dao.history("ns", "bot", null, 2)
-            val second = dao.history("ns", "bot", first.last().let { BotHistoryCursor(it.date, it._id) }, 2)
-            val third = dao.history("ns", "bot", second.last().let { BotHistoryCursor(it.date, it._id) }, 2)
+            val second = dao.history("ns", "bot", first.last().let { BotHistoryCursor(it.date, it._id.toString().toId()) }, 2)
+            val third = dao.history("ns", "bot", second.last().let { BotHistoryCursor(it.date, it._id.toString().toId()) }, 2)
             assertEquals(5, (first + second + third).map { it._id }.distinct().size)
             assertEquals(first.first(), dao.latest("ns", "bot", "rag-settings"))
             dao.delete("ns", "bot")

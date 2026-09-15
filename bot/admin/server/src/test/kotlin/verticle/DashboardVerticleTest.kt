@@ -39,6 +39,7 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.impl.UserContextInternal
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -69,11 +70,12 @@ class DashboardVerticleTest {
             },
         )
         mockkObject(FrontClient)
-        every { FrontClient.getApplicationByNamespaceAndName("ns", "bot") } returns ApplicationDefinition("bot", namespace = "ns")
+        every { FrontClient.getApplicationByNamespaceAndName("ns", "bot") } returns ApplicationDefinition("bot", namespace = "ns", _id = "69a005172e453ac08b2a4d36".toId())
         every { FrontClient.getApplicationByNamespaceAndName("ns", "foreign") } returns ApplicationDefinition("foreign", namespace = "other")
         every { dao.metadata(any(), any()) } returns null
         every { dao.note(any(), any(), any()) } returns null
         every { dao.history(any(), any(), any(), any()) } returns emptyList()
+        every { dao.latest(any(), any(), any()) } returns null
         val vertx = Vertx.vertx()
         val web = TestWebVerticle()
         web.router.route().handler(BodyHandler.create()).handler { context ->
@@ -115,6 +117,11 @@ class DashboardVerticleTest {
             val history = request("/bots/bot/history")
             assertEquals(200, history.statusCode())
             assertEquals(false, JsonObject(history.body()).getBoolean("hasMore"))
+            val creation = JsonObject(history.body()).getJsonArray("events").getJsonObject(0)
+            assertEquals("created", creation.getString("type"))
+            assertEquals(true, creation.getBoolean("estimated"))
+            assertEquals("2026-02-26T08:32:23Z", creation.getString("date"))
+            assertEquals(null, creation.getString("author"))
             assertEquals(400, request("/bots/bot/history?before=invalid").statusCode())
             assertEquals(400, request("/bots/bot/history?limit=0").statusCode())
         } finally {

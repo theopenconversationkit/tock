@@ -91,20 +91,22 @@ export class BotHistoryComponent implements OnChanges {
 
   /** Translation key for the label, derived from the type; corpus wording when relevant. */
   labelKey(event: BotHistoryEvent): string {
+    if (event.estimated) return 'dashboard.history.event.created.estimatedLabel';
     return this.isCorpusChange(event)
       ? `dashboard.history.event.${INDEX_SESSION_FACET}.label`
       : `dashboard.history.event.${event.type}.label`;
   }
 
   detailKey(event: BotHistoryEvent): string {
+    if (event.estimated) return 'dashboard.history.event.created.estimatedDetail';
     return this.isCorpusChange(event)
       ? `dashboard.history.event.${INDEX_SESSION_FACET}.detail`
       : `dashboard.history.event.${event.type}.detail`;
   }
 
-  /** Only events carrying interpolation values render a detail line. */
+  /** Estimates explain their source; other details use interpolation values. */
   hasDetail(event: BotHistoryEvent): boolean {
-    return !!event.params && Object.keys(event.params).length > 0;
+    return !!event.estimated || (!!event.params && Object.keys(event.params).length > 0);
   }
 
   iconOf(event: BotHistoryEvent): string {

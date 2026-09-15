@@ -50,7 +50,7 @@ class DashboardVerticle : AbstractNamespaceRetriever() {
                 checkNamespaceAndExecute(
                     context,
                     ::currentContextApp,
-                ) { app -> BotDashboardService.history(app.namespace, app.name, context.request().getParam("before"), context.request().getParam("limit")) }
+                ) { app -> BotDashboardService.history(app.namespace, app.name, context.request().getParam("before"), context.request().getParam("limit"), app._id.toString()) }
             }
         }
     }

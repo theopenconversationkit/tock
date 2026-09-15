@@ -37,6 +37,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
+import org.litote.kmongo.toId
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -143,8 +144,8 @@ class BotDashboardServiceTest {
 
     @Test
     fun `page cursor round trips date and id and limits are validated`() {
-        val first = BotHistoryEvent("ns", "bot", "created", "alice", date = Instant.parse("2026-09-15T12:00:00Z"))
-        every { dao.history("ns", "bot", null, 2) } returns listOf(first, first.copy(_id = newId()))
+        val first = BotHistoryEvent("ns", "bot", "created", "alice", date = Instant.parse("2026-09-15T12:00:00Z"), _id = "69a005172e453ac08b2a4d39".toId())
+        every { dao.history("ns", "bot", null, 2) } returns listOf(first, first.copy(_id = "69a005172e453ac08b2a4d38".toId()))
         val page = BotDashboardService.history("ns", "bot", null, "1")
         assertTrue(page.hasMore)
         assertEquals(1, page.events.size)
@@ -153,5 +154,55 @@ class BotDashboardServiceTest {
         assertEquals(first._id, cursor.id)
         assertFailsWith<BadRequestException> { BotDashboardService.history("ns", "bot", null, "0") }
         assertFailsWith<BadRequestException> { BotDashboardService.history("ns", "bot", "broken", null) }
+    }
+
+    @Test
+    fun `estimated creation is merged once across pages including equal dates without writing`() {
+        val appId = "69a005172e453ac08b2a4d36"
+        val date = Instant.parse("2026-02-26T08:32:23Z")
+        val events =
+            listOf(
+                BotHistoryEvent("ns", "bot", "connector", "alice", date = date.plusSeconds(1), _id = "69a005172e453ac08b2a4d38".toId()),
+                BotHistoryEvent("ns", "bot", "connector", "alice", date = date, _id = "69a005172e453ac08b2a4d37".toId()),
+                BotHistoryEvent("ns", "bot", "connector", "alice", date = date, _id = "69a005172e453ac08b2a4d35".toId()),
+            )
+        every { dao.history("ns", "bot", any(), any()) } answers {
+            val cursor = thirdArg<ai.tock.bot.admin.dashboard.BotHistoryCursor?>()
+            events.filter { cursor == null || it.date < cursor.date || (it.date == cursor.date && it._id.toString() < cursor.id.toString()) }.take(arg(3))
+        }
+        for (limit in listOf("1", "2", "3", "10")) {
+            val collected = mutableListOf<BotHistoryEventResponse>()
+            var cursor: String? = null
+            do {
+                val page = BotDashboardService.history("ns", "bot", cursor, limit, appId)
+                collected.addAll(page.events)
+                cursor = page.nextCursor
+                assertEquals(page.hasMore, cursor != null)
+                assertTrue(collected.size <= 4)
+            } while (cursor != null)
+            assertEquals(listOf(events[0]._id.toString(), events[1]._id.toString(), appId, events[2]._id.toString()), collected.map { it.id })
+            val creation = collected.single { it.type == "created" }
+            assertTrue(creation.estimated)
+            assertEquals(date, creation.date)
+            assertNull(creation.author)
+        }
+        verify(exactly = 0) { dao.append(any()) }
+    }
+
+    @Test
+    fun `real creation takes precedence and invalid application ids have no estimate`() {
+        val created = BotHistoryEvent("ns", "bot", "created", "alice")
+        every { dao.latest("ns", "bot", "created") } returns created
+        every { dao.history("ns", "bot", null, 51) } returns listOf(created)
+        val real = BotDashboardService.history("ns", "bot", null, null, "69a005172e453ac08b2a4d36").events.single()
+        assertFalse(real.estimated)
+        assertEquals("alice", real.author)
+        assertEquals(created.date, real.date)
+        every { dao.latest("ns", "bot", "created") } returns null
+        every { dao.history("ns", "bot", null, 51) } returns emptyList()
+        assertTrue(BotDashboardService.history("ns", "bot", null, null, "legacy-id").events.isEmpty())
+        val estimate = BotDashboardService.history("ns", "bot", null, null, "69a005172e453ac08b2a4d36")
+        assertEquals(1, estimate.events.size)
+        assertFalse(estimate.hasMore)
     }
 }

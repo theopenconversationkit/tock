@@ -19,7 +19,6 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.dashboard.BotContact
 import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dashboard.BotHistoryCursor
-import ai.tock.bot.admin.dashboard.BotHistoryEvent
 import ai.tock.bot.admin.dashboard.BotHistorySnapshot
 import ai.tock.bot.admin.dashboard.BotIdentity
 import ai.tock.bot.admin.dashboard.BotIndexSessionNote
@@ -27,7 +26,7 @@ import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import org.bson.types.ObjectId
-import org.litote.kmongo.id.toId
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.Base64
 import java.util.UUID
@@ -52,9 +51,10 @@ data class BotHistoryEventResponse(
     val id: String,
     val date: Instant,
     val type: String,
-    val author: String,
+    val author: String?,
     val params: Map<String, Any?>,
     val snapshot: BotHistorySnapshot?,
+    val estimated: Boolean = false,
 )
 
 data class BotHistoryResponse(
@@ -125,31 +125,46 @@ object BotDashboardService {
         botId: String,
         before: String?,
         limit: String?,
+        applicationId: String? = null,
     ): BotHistoryResponse {
         val size = if (limit == null) 50 else limit.toIntOrNull() ?: throw BadRequestException("Invalid limit")
         if (size !in 1..200) throw BadRequestException("Limit must be between 1 and 200")
-        val found = dao.history(namespace, botId, before?.let { decodeCursor(it) }, size + 1)
+        val cursor = before?.let { decodeCursor(it) }
+        val creation =
+            applicationId
+                ?.takeIf { ObjectId.isValid(it) }
+                ?.takeIf { dao.latest(namespace, botId, "created") == null }
+                ?.let {
+                    // The application's identifier dates its creation in this database, not necessarily its original creation before an import.
+                    BotHistoryEventResponse(it, ObjectId(it).date.toInstant(), "created", null, emptyMap(), null, estimated = true)
+                }?.takeIf { cursor == null || it.date < cursor.date || (it.date == cursor.date && it.id < cursor.id.toString()) }
+        val found =
+            (
+                dao
+                    .history(namespace, botId, cursor, size + 1)
+                    .map { BotHistoryEventResponse(it._id.toString(), it.date, it.type, it.author, it.params, it.snapshot) } + listOfNotNull(creation)
+            ).sortedWith(compareByDescending<BotHistoryEventResponse> { it.date }.thenByDescending { it.id })
         val page = found.take(size)
         val hasMore = found.size > size
         return BotHistoryResponse(
-            page.map { BotHistoryEventResponse(it._id.toString(), it.date, it.type, it.author, it.params, it.snapshot) },
+            page,
             hasMore,
             if (hasMore) encodeCursor(page.last()) else null,
         )
     }
 
-    internal fun encodeCursor(event: BotHistoryEvent): String =
+    internal fun encodeCursor(event: BotHistoryEventResponse): String =
         Base64
             .getUrlEncoder()
             .withoutPadding()
-            .encodeToString("${event.date.toEpochMilli()}|${event._id}".toByteArray(Charsets.UTF_8))
+            .encodeToString("${event.date.toEpochMilli()}|${event.id}".toByteArray(Charsets.UTF_8))
 
     internal fun decodeCursor(value: String): BotHistoryCursor =
         try {
             require(value.length <= 256)
             val parts = String(Base64.getUrlDecoder().decode(value), Charsets.UTF_8).split('|')
             require(parts.size == 2 && parts[1].matches(Regex("[0-9a-fA-F]{24}")))
-            BotHistoryCursor(Instant.ofEpochMilli(parts[0].toLong()), ObjectId(parts[1]).toId())
+            BotHistoryCursor(Instant.ofEpochMilli(parts[0].toLong()), parts[1].toId())
         } catch (_: Exception) {
             throw BadRequestException("Invalid history cursor")
         }
