@@ -177,7 +177,7 @@
       "created": {
         "label": "Bot créé",
         "detail": "",
-        "estimatedLabel": "Bot créé (date estimée)",
+        "estimatedLabel": "Bot créé",
         "estimatedDetail": "Date déduite de l’identifiant de l’application. Elle peut différer de la création d’origine en cas d’import ou de restauration."
       },
       "connector": {
