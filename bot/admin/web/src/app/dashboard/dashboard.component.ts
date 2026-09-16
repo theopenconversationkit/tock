@@ -92,7 +92,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   historyCursor: string | null = null;
   historyLoadingMore = false;
   historyPageError = false;
+  // Cancels every in-flight request; emitted only on bot change (loadAll).
   private readonly reload$ = new Subject<void>();
+  // Cancels only the period-dependent requests; emitted on period/tests change, so a
+  // period click never aborts the other widgets still loading (see ANG-14).
+  private readonly periodReload$ = new Subject<void>();
 
   evaluations: EvaluationSampleDefinition[] = [];
   evaluationState: WidgetState = WidgetState.loading;
@@ -176,8 +180,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadAll(): void {
-    // loadPeriodDependentWidgets() emits reload$ first, cancelling any in-flight request
-    // from the previous bot before the fresh batch below subscribes.
+    // Cancel every in-flight request from the previous bot before the fresh batch below
+    // subscribes. loadPeriodDependentWidgets() additionally emits periodReload$, harmless
+    // here since reload$ already covers the period loaders too.
+    this.reload$.next();
     this.ingestionNotes = null;
     this.loadPeriodDependentWidgets();
     this.loadKnowledgeIndex();
@@ -189,10 +195,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadPeriodDependentWidgets(): void {
-    // Cancel any period request still in flight: clicking two periods quickly could
-    // otherwise let a stale response overwrite the current one. loadAll() already emits
-    // reload$ on bot change; this covers the period/tests axis.
-    this.reload$.next();
+    // Cancel only period requests still in flight. This runs both on bot change (via
+    // loadAll, where reload$ has already cancelled everything) and on a plain period /
+    // tests change, where the other widgets must keep loading untouched.
+    this.periodReload$.next();
     this.loadUsage();
     this.loadOutcome();
     this.loadTopics();
@@ -202,7 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.usageState = WidgetState.loading;
     this.dashboardService
       .getUsage(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$), takeUntil(this.periodReload$))
       .subscribe({
         next: (usage) => {
           this.usage = usage;
@@ -216,7 +222,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.outcomeState = WidgetState.loading;
     this.dashboardService
       .getAnswerOutcome(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$), takeUntil(this.periodReload$))
       .subscribe({
         next: (outcome) => {
           this.outcome = outcome;
@@ -231,7 +237,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.topicsState = WidgetState.loading;
     this.dashboardService
       .getTopics(this.namespace, this.applicationName, this.period, this.displayTests)
-      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
+      .pipe(takeUntil(this.destroy$), takeUntil(this.reload$), takeUntil(this.periodReload$))
       .subscribe({
         next: (topics) => {
           this.topics = topics;
@@ -449,6 +455,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.reload$.complete();
+    this.periodReload$.complete();
     this.destroy$.next(null);
     this.destroy$.complete();
   }
