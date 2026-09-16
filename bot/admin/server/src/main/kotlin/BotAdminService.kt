@@ -81,6 +81,8 @@ import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
+import ai.tock.bot.admin.service.BotDashboardService
+import ai.tock.bot.admin.service.BotHistoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -690,8 +692,21 @@ object BotAdminService {
         }
     }
 
-    fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
+    fun saveApplicationConfiguration(
+        conf: BotApplicationConfiguration,
+        author: String? = null,
+    ) {
+        val previous = if (author == null) null else applicationConfigurationDAO.getConfigurationById(conf._id)
         applicationConfigurationDAO.save(conf)
+        if (author != null && previous != conf && conf.targetConfigurationId == null) {
+            BotHistoryService.record(
+                conf.namespace,
+                conf.botId,
+                "connector",
+                author,
+                mapOf("connector" to conf.connectorType.id, "label" to conf.name),
+            )
+        }
         if (applicationConfigurationDAO.getBotConfigurationsByNamespaceAndNameAndBotId(
                 conf.namespace,
                 conf.name,
@@ -825,7 +840,7 @@ object BotAdminService {
                     val controller =
                         BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
                     val storyConf = it.toStoryDefinitionConfiguration(controller)
-                    importStory(namespace, storyConf, botConf, ragConfiguration, controller, dump.mode)
+                    importStory(namespace, storyConf, botConf, ragConfiguration, controller, dump.mode, user)
                 } catch (e: Exception) {
                     logger.error("import error with story $it", e)
                 }
@@ -840,6 +855,7 @@ object BotAdminService {
         ragConfiguration: BotRAGConfiguration?,
         controller: BotStoryDefinitionConfigurationDumpController,
         importMode: StoriesImportMode,
+        author: UserLogin,
     ) {
         var storyToSave = manageExistingStory(botConf, storyToImport)
 
@@ -849,7 +865,14 @@ object BotAdminService {
                 ragConfigurationDAO
                     .findByNamespaceAndBotId(namespace, botConf.botId)
                     ?.let {
-                        ragConfigurationDAO.save(it.copy(enabled = false))
+                        BotHistoryService.configuration(
+                            namespace,
+                            botConf.botId,
+                            "rag-settings",
+                            author,
+                            previous = { it },
+                            save = { ragConfigurationDAO.save(it.copy(enabled = false)) },
+                        )
                     }
             } else if (importMode == StoriesImportMode.RAG_ON) {
                 storyToSave = storyToSave.copy(features = prepareEndingFeatures(storyToSave, false))
@@ -1681,6 +1704,9 @@ object BotAdminService {
 
         // delete evaluation samples and their evaluations
         evaluationSampleDAO.deleteByNamespaceAndBotId(app.namespace, app.name)
+
+        // A dashboard purge failure must not prevent the existing configuration and secret cleanup.
+        BotDashboardService.delete(app.namespace, app.name)
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {

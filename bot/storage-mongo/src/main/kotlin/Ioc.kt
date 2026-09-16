@@ -23,6 +23,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
+import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dataset.DatasetDAO
 import ai.tock.bot.admin.dataset.DatasetRunDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -72,6 +73,7 @@ val botMongoModule =
         bind<CoroutineDatabase>(MONGO_DATABASE) with provider { instance<AsyncMongoDatabase>(MONGO_DATABASE).coroutine }
         bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
         bind<BotBusinessRulesConfigurationDAO>() with provider { BotBusinessRulesConfigurationMongoDAO }
+        bind<BotDashboardDAO>() with singleton { BotDashboardMongoDAO(instance(MONGO_DATABASE)) }
         bind<BotRAGConfigurationDAO>() with provider { BotRAGConfigurationMongoDAO }
         bind<BotObservabilityConfigurationDAO>() with provider { BotObservabilityConfigurationMongoDAO }
         bind<BotDocumentCompressorConfigurationDAO>() with provider { BotDocumentCompressorConfigurationMongoDAO }

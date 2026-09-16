@@ -100,6 +100,7 @@
   },
   "env-banner": { "hide": "Hide environment indicator" },
   "menu": {
+    "dashboard": "Dashboard",
     "language-understanding": "Language Understanding",
     "stories-answers": "Stories & Answers",
     "gen-ai": "Gen AI",

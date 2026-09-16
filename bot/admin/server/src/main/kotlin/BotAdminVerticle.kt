@@ -43,12 +43,14 @@ import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.module.satisfactionContentModule
+import ai.tock.bot.admin.service.BotHistoryService
 import ai.tock.bot.admin.service.DataMigrationService
 import ai.tock.bot.admin.service.DatasetRunWorker
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.DashboardVerticle
 import ai.tock.bot.admin.verticle.DatasetsVerticle
 import ai.tock.bot.admin.verticle.DialogVerticle
 import ai.tock.bot.admin.verticle.EvaluationVerticle
@@ -170,6 +172,7 @@ open class BotAdminVerticle : AdminVerticle() {
         aiVerticle.configure(this)
         datasetsVerticle.configure(this)
         evaluationVerticle.configure(this)
+        DashboardVerticle().configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -568,7 +571,7 @@ open class BotAdminVerticle : AdminVerticle() {
                             }
                         }
                     try {
-                        BotAdminService.saveApplicationConfiguration(filledConf)
+                        BotAdminService.saveApplicationConfiguration(filledConf, context.userLogin)
                         // add rest connector
                         if (bot._id == null && bot.connectorType != rest) {
                             addRestConnector(filledConf).apply {
@@ -1138,6 +1141,13 @@ open class BotAdminVerticle : AdminVerticle() {
         findTestService().registerServices().invoke(this)
 
         configureStaticHandling()
+    }
+
+    override fun onApplicationCreated(
+        app: ApplicationDefinition,
+        author: String,
+    ) {
+        BotHistoryService.record(app.namespace, app.name, "created", author)
     }
 
     override fun deleteApplication(app: ApplicationDefinition) {

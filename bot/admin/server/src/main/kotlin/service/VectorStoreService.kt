@@ -84,7 +84,20 @@ object VectorStoreService {
      * @throws [BadRequestException] if the vector store configuration is invalid
      * @return [BotVectorStoreConfiguration]
      */
-    fun saveVectorStore(vectorStoreConfig: BotVectorStoreConfigurationDTO): BotVectorStoreConfiguration {
+    fun saveVectorStore(
+        vectorStoreConfig: BotVectorStoreConfigurationDTO,
+        author: String? = null,
+    ): BotVectorStoreConfiguration =
+        BotHistoryService.configuration(
+            vectorStoreConfig.namespace,
+            vectorStoreConfig.botId,
+            "vector-store",
+            author,
+            previous = { vectorStoreConfigurationDAO.findByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId) },
+            save = { saveWithValidation(vectorStoreConfig) },
+        )
+
+    private fun saveWithValidation(vectorStoreConfig: BotVectorStoreConfigurationDTO): BotVectorStoreConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: ${vectorStoreConfig.namespace}, botId = ${vectorStoreConfig.botId}]")
         return saveVectorStoreConfiguration(vectorStoreConfig)

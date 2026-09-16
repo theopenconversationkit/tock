@@ -1,0 +1,42 @@
+<nb-card class="dialog-card">
+  <nb-card-header class="d-flex align-items-center gap-05">
+    <i class="bi bi-journal-text"></i>
+    <span class="flex-grow-1">{{ 'dashboard.ingestion-notes.title' | transloco }}</span>
+    <button nbButton ghost size="tiny" (click)="cancel()" [attr.aria-label]="'dashboard.common.close' | transloco">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body [formGroup]="form">
+    <p class="metric-label mb-3">
+      {{ 'dashboard.ingestion-notes.intro' | transloco: { session: notes.indexSessionId } }}
+    </p>
+
+    <tock-form-control
+      [label]="'dashboard.ingestion-notes.label' | transloco"
+      name="text"
+      [controls]="form.controls.text"
+      [information]="'dashboard.ingestion-notes.help' | transloco"
+    >
+      <textarea
+        nbInput
+        fullWidth
+        rows="10"
+        formControlName="text"
+        [placeholder]="'dashboard.ingestion-notes.placeholder' | transloco"
+      ></textarea>
+    </tock-form-control>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex align-items-center gap-05">
+    <span class="flex-grow-1 metric-label">
+      @if (notes.updatedAt) {
+        {{ 'dashboard.ingestion-notes.meta' | transloco: { date: notes.updatedAt | date: 'short', author: notes.updatedBy } }}
+      }
+    </span>
+    <button nbButton ghost size="small" (click)="cancel()">{{ 'dashboard.common.cancel' | transloco }}</button>
+    <button nbButton status="primary" size="small" (click)="save()">
+      {{ 'dashboard.ingestion-notes.save' | transloco }}
+    </button>
+  </nb-card-footer>
+</nb-card>

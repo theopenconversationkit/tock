@@ -18,7 +18,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/language-understanding/inbox', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule)
+  },
   {
     path: 'language-understanding',
     loadChildren: () => import('./language-understanding/language-understanding.module').then((m) => m.LanguageUnderstandingModule)
@@ -67,7 +71,7 @@ const routes: Routes = [
     path: 'vector-store-inspection',
     loadChildren: () => import('./vector-store-inspection/vector-store-inspection.module').then((m) => m.VectorStoreInspectionModule)
   },
-  { path: '**', redirectTo: '/language-understanding/inbox' }
+  { path: '**', redirectTo: '/dashboard' }
 ];
 
 @NgModule({
