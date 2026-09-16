@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
+import { TranslocoService } from '@jsverse/transloco';
 import { Subject, combineLatest, skip, takeUntil } from 'rxjs';
 
 import { BotConfigurationService } from '../core/bot-configuration.service';
@@ -103,6 +105,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
   private readonly dashboardState = inject(DashboardStateService);
   private readonly dialog = inject(DialogService);
+  private readonly toastr = inject(NbToastrService);
+  private readonly transloco = inject(TranslocoService);
 
   ngOnInit(): void {
     // The state service is provided by the module, so it outlives this component:
@@ -172,7 +176,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadAll(): void {
-    this.reload$.next();
+    // loadPeriodDependentWidgets() emits reload$ first, cancelling any in-flight request
+    // from the previous bot before the fresh batch below subscribes.
     this.ingestionNotes = null;
     this.loadPeriodDependentWidgets();
     this.loadKnowledgeIndex();
@@ -184,6 +189,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadPeriodDependentWidgets(): void {
+    // Cancel any period request still in flight: clicking two periods quickly could
+    // otherwise let a stale response overwrite the current one. loadAll() already emits
+    // reload$ on bot change; this covers the period/tests axis.
+    this.reload$.next();
     this.loadUsage();
     this.loadOutcome();
     this.loadTopics();
@@ -334,8 +343,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.dashboardService
         .saveBotIdentity(this.namespace, this.applicationName, identity)
         .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
-        .subscribe((saved) => (this.identity = saved));
+        .subscribe({
+          next: (saved) => (this.identity = saved),
+          error: () => this.notifySaveError()
+        });
     });
+  }
+
+  /** The edit modals close before the server responds, so a failed save has to surface
+   *  as a toast rather than by reopening the form. */
+  private notifySaveError(): void {
+    this.toastr.danger(this.transloco.translate('common.messages.an-error-occured'), this.transloco.translate('common.messages.error'));
   }
 
   inspectHistoryEvent(event: BotHistoryEvent): void {
@@ -400,9 +418,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dashboardService
       .saveContacts(this.namespace, this.applicationName, contacts)
       .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
-      .subscribe((saved) => {
-        this.contacts = saved;
-        this.contactsState = saved.length ? WidgetState.ready : WidgetState.empty;
+      .subscribe({
+        next: (saved) => {
+          this.contacts = saved;
+          this.contactsState = saved.length ? WidgetState.ready : WidgetState.empty;
+        },
+        error: () => this.notifySaveError()
       });
   }
 
@@ -420,7 +441,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.dashboardService
         .saveIngestionNotes(this.namespace, this.applicationName, updated)
         .pipe(takeUntil(this.destroy$), takeUntil(this.reload$))
-        .subscribe((saved) => (this.ingestionNotes = saved));
+        .subscribe({
+          next: (saved) => (this.ingestionNotes = saved),
+          error: () => this.notifySaveError()
+        });
     });
   }
 

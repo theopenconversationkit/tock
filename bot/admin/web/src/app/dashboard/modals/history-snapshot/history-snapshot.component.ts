@@ -62,6 +62,10 @@ export class HistorySnapshotComponent implements OnInit {
   kvDiff: KvDiffResult;
   ragSections: RagSection[] = [];
 
+  /** Precomputed once for the tags snapshot, rather than recomputed on every CD cycle. */
+  coveredTags: TagDiff[] = [];
+  excludedTags: TagDiff[] = [];
+
   ngOnInit(): void {
     this.kind = BOT_HISTORY_SNAPSHOT_KINDS[this.event.type];
     this.firstOfType = !this.event.snapshot?.previous;
@@ -84,6 +88,9 @@ export class HistorySnapshotComponent implements OnInit {
       this.ragSections = this.buildRagSections(previous, current);
     }
     if (this.kind === 'tags') {
+      this.coveredTags = this.tagDiff('coveredTopics');
+      this.excludedTags = this.tagDiff('excludedTopics');
+
       const lexicon = (snapshot: Record<string, unknown> | null): Record<string, unknown> | null => {
         if (!snapshot) return null;
         const groups = (snapshot['lexiconGroups'] ?? []) as { id: number; terms: string[] }[];
@@ -91,23 +98,11 @@ export class HistorySnapshotComponent implements OnInit {
       };
       this.kvDiff = buildKvDiff(lexicon(previous), lexicon(current) ?? {});
     }
-    // 'tags' is rendered directly from coveredTags() / excludedTags() in the template.
   }
 
-  coveredTags(): TagDiff[] {
+  private tagDiff(field: string): TagDiff[] {
     const snap = this.event.snapshot;
-    return buildTagDiff(
-      snap?.previous ? (snap.previous['coveredTopics'] as string[]) ?? [] : null,
-      (snap?.current['coveredTopics'] as string[]) ?? []
-    );
-  }
-
-  excludedTags(): TagDiff[] {
-    const snap = this.event.snapshot;
-    return buildTagDiff(
-      snap?.previous ? (snap.previous['excludedTopics'] as string[]) ?? [] : null,
-      (snap?.current['excludedTopics'] as string[]) ?? []
-    );
+    return buildTagDiff(snap?.previous ? (snap.previous[field] as string[]) ?? [] : null, (snap?.current[field] as string[]) ?? []);
   }
 
   private buildRagSections(previous: Record<string, unknown> | null, current: Record<string, unknown>): RagSection[] {
@@ -137,12 +132,24 @@ export class HistorySnapshotComponent implements OnInit {
     RAG_PROMPT_SNAPSHOT_FIELDS.forEach((field) => {
       const before = this.templateOf(previous, field.key);
       const after = this.templateOf(current, field.key);
-      if (this.firstOfType || before !== after) {
+
+      if (this.firstOfType) {
+        // No predecessor: show the prompt as-is, unmarked, matching the "recorded state,
+        // no comparison" banner. An all-green diff would contradict it.
+        sections.push({ titleKey: field.labelKey, kind: 'text', text: this.plainTextLines(after) });
+      } else if (before !== after) {
         sections.push({ titleKey: field.labelKey, kind: 'text', text: buildTextDiff(before, after) });
       }
     });
 
     return sections;
+  }
+
+  /** A prompt shown without diff marking: every line is context. */
+  private plainTextLines(text: string): TextDiffLine[] {
+    return String(text ?? '')
+      .split('\n')
+      .map((line) => ({ kind: 'ctx' as const, text: line }));
   }
 
   private templateOf(obj: Record<string, unknown> | null, key: string): string {

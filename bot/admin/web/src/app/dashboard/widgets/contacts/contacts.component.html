@@ -53,7 +53,7 @@
         ghost
         size="tiny"
         (click)="onEdit.emit(contact)"
-        [attr.aria-label]="'Edit ' + contact.name"
+        [attr.aria-label]="'dashboard.contacts.edit-aria' | transloco: { name: contact.name }"
       >
         <i class="bi bi-pencil"></i>
         {{ 'dashboard.common.edit' | transloco }}

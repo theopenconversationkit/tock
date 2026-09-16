@@ -93,7 +93,8 @@ export interface IngestionNotes {
  * `role` is free text on purpose: a closed list would not survive contact with reality.
  */
 export interface BotContact {
-  id: string;
+  /** Generated server side on first save; absent when adding a new contact. */
+  id?: string;
   role: string;
   name: string;
   email?: string;

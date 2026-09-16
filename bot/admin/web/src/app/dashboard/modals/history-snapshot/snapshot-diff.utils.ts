@@ -52,9 +52,15 @@ export function flattenSnapshot(value: unknown, prefix = ''): Record<string, str
   for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
     const path = prefix ? `${prefix}.${key}` : key;
 
+    if (raw === null || raw === undefined) {
+      // Skip the key entirely: buildKvDiff then reports it as a real null (rendered as
+      // an em dash), instead of the literal string "null" that a String(raw) would emit.
+      continue;
+    }
+
     if (Array.isArray(raw)) {
       out[path] = raw.map((item) => (typeof item === 'object' ? JSON.stringify(item) : String(item))).join(', ');
-    } else if (raw !== null && typeof raw === 'object') {
+    } else if (typeof raw === 'object') {
       Object.assign(out, flattenSnapshot(raw, path));
     } else {
       out[path] = String(raw);

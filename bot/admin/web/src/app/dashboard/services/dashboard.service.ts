@@ -33,9 +33,9 @@ import {
 /**
  * Data access contract for the bot dashboard.
  *
- * Abstract on purpose: the module binds it to DashboardRestService in production and can
- * swap in DashboardMockService by changing a single provider line. Every widget depends
- * on this class, never on a concrete implementation.
+ * Abstract on purpose: the module binds it to DashboardRestService, and a mock
+ * implementation can be swapped in by changing a single provider line. Every widget
+ * depends on this class, never on a concrete implementation.
  */
 export abstract class DashboardService {
   // --- usage (POST /dialogs/stats) ---

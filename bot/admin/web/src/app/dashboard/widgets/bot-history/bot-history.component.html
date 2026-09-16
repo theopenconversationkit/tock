@@ -15,33 +15,36 @@
       @for (group of groups; track group.year) {
       <div class="history-year">{{ group.year }}</div>
 
-      @for (event of group.events; track event.id) {
+      @for (row of group.rows; track row.event.id) {
       <div class="history-event">
         <div class="history-event-marker">
-          <span class="history-event-dot history-event-{{ event.type }}">
-            <i class="bi bi-{{ iconOf(event) }}"></i>
+          <span
+            class="history-event-dot history-event-{{ row.event.type }}"
+            [class.history-event-estimated]="row.event.estimated"
+          >
+            <i class="bi bi-{{ row.icon }}"></i>
           </span>
         </div>
 
         <div
           class="history-event-body"
-          [class.actionable]="hasSnapshot(event)"
-          [attr.role]="hasSnapshot(event) ? 'button' : null"
-          [attr.tabindex]="hasSnapshot(event) ? 0 : null"
-          (click)="inspect(event)"
-          (keydown.enter)="inspect(event)"
-          (keydown.space)="inspect(event)"
+          [class.actionable]="row.clickable"
+          [attr.role]="row.clickable ? 'button' : null"
+          [attr.tabindex]="row.clickable ? 0 : null"
+          (click)="inspect(row.event)"
+          (keydown.enter)="inspect(row.event)"
+          (keydown.space)="inspect(row.event)"
         >
           <div class="history-event-head">
-            <span class="history-event-label">{{ labelKey(event) | transloco }}</span>
-            <span class="history-event-date">{{ event.date | date: 'dd MMM' }}</span>
+            <span class="history-event-label">{{ row.labelKey | transloco }}</span>
+            <span class="history-event-date">{{ row.event.date | date: 'dd MMM' }}</span>
           </div>
 
-          @if (hasDetail(event)) {
-          <div class="metric-label">{{ detailKey(event) | transloco: event.params }}</div>
-          } @if (event.author) {
-          <div class="metric-label history-event-author">{{ event.author }}</div>
-          } @if (hasSnapshot(event)) {
+          @if (row.hasDetail) {
+          <div class="metric-label">{{ row.detailKey | transloco: row.event.params }}</div>
+          } @if (row.event.author) {
+          <div class="metric-label history-event-author">{{ row.event.author }}</div>
+          } @if (row.clickable) {
           <span class="history-event-open"> {{ 'dashboard.history.inspect' | transloco }} <i class="bi bi-arrow-right-short"></i> </span>
           }
         </div>

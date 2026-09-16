@@ -21,7 +21,6 @@
   "questions-answered": {
     "title": "Messages traités",
     "unit": "messages traités",
-    "daily-volume": "volume quotidien",
     "chart-label": "Messages traités par jour sur la période",
     "empty-title": "Aucune activité sur la période",
     "empty-message": "Aucun message n'a été traité sur la plage sélectionnée. Élargissez la période, ou incluez les tests.",
@@ -86,7 +85,8 @@
     "add": "Ajouter un contact",
     "link": "Lien",
     "empty-title": "Aucun contact",
-    "empty-message": "Listez les équipes responsables de ce bot pour que chacun sache à qui s'adresser."
+    "empty-message": "Listez les équipes responsables de ce bot pour que chacun sache à qui s'adresser.",
+    "edit-aria": "Modifier {{name}}"
   },
   "contact-edit": {
     "title-add": "Ajouter un contact",
@@ -177,7 +177,7 @@
       "created": {
         "label": "Bot créé",
         "detail": "",
-        "estimatedLabel": "Bot créé",
+        "estimatedLabel": "Bot créé (estimée)",
         "estimatedDetail": "Date déduite de l’identifiant de l’application. Elle peut différer de la création d’origine en cas d’import ou de restauration."
       },
       "connector": {

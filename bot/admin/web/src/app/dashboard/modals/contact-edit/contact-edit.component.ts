@@ -86,7 +86,7 @@ export class ContactEditComponent implements OnInit {
     this.onSave.emit({
       id: this.contact?.id,
       ...this.form.getRawValue()
-    } as BotContact);
+    });
 
     this.dialogRef.close();
   }

@@ -26,10 +26,19 @@ import {
   WidgetState
 } from '../../models/dashboard.model';
 
+interface HistoryRow {
+  event: BotHistoryEvent;
+  icon: string;
+  labelKey: string;
+  detailKey: string;
+  hasDetail: boolean;
+  clickable: boolean;
+}
+
 interface HistoryGroup {
   /** Year label, used as a sticky separator while scrolling back in time. */
   year: number;
-  events: BotHistoryEvent[];
+  rows: HistoryRow[];
 }
 
 /**
@@ -110,6 +119,7 @@ export class BotHistoryComponent implements OnChanges {
   }
 
   iconOf(event: BotHistoryEvent): string {
+    if (event.estimated) return 'question-circle';
     return this.isCorpusChange(event) ? INDEX_SESSION_FACET_ICON : BOT_HISTORY_EVENT_ICONS[event.type];
   }
 
@@ -153,15 +163,29 @@ export class BotHistoryComponent implements OnChanges {
     this.groups = visible.reduce<HistoryGroup[]>((groups, event) => {
       const year = new Date(event.date).getFullYear();
       const last = groups[groups.length - 1];
+      const row = this.toRow(event);
 
       if (last?.year === year) {
-        last.events.push(event);
+        last.rows.push(row);
       } else {
-        groups.push({ year, events: [event] });
+        groups.push({ year, rows: [row] });
       }
 
       return groups;
     }, []);
+  }
+
+  /** Precompute every per-event derived value once, so the template binds to fields
+   *  instead of calling methods on each change-detection cycle. */
+  private toRow(event: BotHistoryEvent): HistoryRow {
+    return {
+      event,
+      icon: this.iconOf(event),
+      labelKey: this.labelKey(event),
+      detailKey: this.detailKey(event),
+      hasDetail: this.hasDetail(event),
+      clickable: this.hasSnapshot(event)
+    };
   }
 
   /**

@@ -112,14 +112,41 @@
   color: var(--color-success-hover);
 }
 
-.history-event-ingestion {
+.history-event-connector {
   background: var(--color-info-transparent-200);
   color: var(--color-info-hover);
 }
 
-.history-event-prompt-change {
+.history-event-rag-settings {
+  background: var(--color-primary-transparent-200);
+  color: var(--color-primary-hover);
+}
+
+.history-event-vector-store {
+  background: var(--color-info-transparent-200);
+  color: var(--color-info-hover);
+}
+
+.history-event-compressor {
   background: var(--color-warning-transparent-200);
   color: var(--color-warning-hover);
+}
+
+.history-event-observability {
+  background: var(--color-warning-transparent-200);
+  color: var(--color-warning-hover);
+}
+
+.history-event-prompt-context {
+  background: var(--color-warning-transparent-200);
+  color: var(--color-warning-hover);
+}
+
+/* Creation date inferred from the ObjectId: dashed outline to flag it as an estimate. */
+.history-event-estimated {
+  background: transparent;
+  color: var(--text-hint-color);
+  border: 1px dashed var(--color-basic-500);
 }
 
 .history-event-body {

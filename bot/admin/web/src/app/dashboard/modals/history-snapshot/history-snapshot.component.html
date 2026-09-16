@@ -71,14 +71,14 @@
       <h3>{{ 'dashboard.history.snapshot.covered-topics' | transloco }}</h3>
       <ng-container
         [ngTemplateOutlet]="tagList"
-        [ngTemplateOutletContext]="{ $implicit: coveredTags() }"
+        [ngTemplateOutletContext]="{ $implicit: coveredTags }"
       ></ng-container>
     </div>
     <div class="snapshot-section">
       <h3>{{ 'dashboard.history.snapshot.excluded-topics' | transloco }}</h3>
       <ng-container
         [ngTemplateOutlet]="tagList"
-        [ngTemplateOutletContext]="{ $implicit: excludedTags() }"
+        [ngTemplateOutletContext]="{ $implicit: excludedTags }"
       ></ng-container>
     </div>
     <div class="snapshot-section">

@@ -21,7 +21,6 @@
   "questions-answered": {
     "title": "Messages handled",
     "unit": "messages handled",
-    "daily-volume": "daily volume",
     "chart-label": "Daily messages handled over the period",
     "empty-title": "No activity in this period",
     "empty-message": "No message was handled over the selected range. Try a wider period, or include tests.",
@@ -86,7 +85,8 @@
     "add": "Add a contact",
     "link": "Link",
     "empty-title": "No contacts yet",
-    "empty-message": "List the teams responsible for this bot so anyone landing here knows who to reach."
+    "empty-message": "List the teams responsible for this bot so anyone landing here knows who to reach.",
+    "edit-aria": "Edit {{name}}"
   },
   "contact-edit": {
     "title-add": "Add a contact",
@@ -177,7 +177,7 @@
       "created": {
         "label": "Bot created",
         "detail": "",
-        "estimatedLabel": "Bot created",
+        "estimatedLabel": "Bot created (estimated)",
         "estimatedDetail": "Date inferred from the application identifier. It may differ from the original creation date after an import or restore."
       },
       "connector": {
