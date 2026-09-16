@@ -437,8 +437,28 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
     this.initForm(this.settingsBackup);
   }
 
+  private normalizeStringValues(control: FormGroup): void {
+    Object.entries(control.controls).forEach(([key, childControl]) => {
+      if (childControl instanceof FormGroup) {
+        this.normalizeStringValues(childControl);
+        return;
+      }
+
+      const value = childControl.value;
+
+      if (typeof value === 'string') {
+        const trimmedValue = value.trim();
+
+        childControl.setValue(trimmedValue || null, { emitEvent: false });
+      }
+    });
+  }
+
   submit(): void {
     this.isSubmitted = true;
+
+    this.normalizeStringValues(this.form);
+
     if (this.canSave && this.form.dirty) {
       this.loading = true;
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
@@ -467,6 +487,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
               status: 'success'
             }
           );
+
           this.loading = false;
         },
         error: (error) => {
@@ -487,6 +508,7 @@ export class RagSettingsComponent implements OnInit, CanComponentDeactivate, Dir
               }
             });
           }
+
           this.loading = false;
         }
       });
