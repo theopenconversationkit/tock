@@ -16,23 +16,42 @@
 
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.BotAdminService
+import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.businessrules.BotBusinessRulesConfigurationDAO
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dashboard.BotContact
 import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dashboard.BotHistoryEvent
 import ai.tock.bot.admin.dashboard.BotHistorySnapshot
+import ai.tock.bot.admin.dataset.DatasetDAO
+import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
+import ai.tock.bot.admin.indicators.IndicatorDAO
+import ai.tock.bot.admin.indicators.metric.MetricDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorStoreSetting
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.security.key.RawSecretKey
 import ai.tock.shared.tockInternalInjector
+import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -140,6 +159,49 @@ class BotDashboardServiceTest {
         assertNotNull(saved.updatedAt)
         BotDashboardService.saveNote("ns", "bot", "purged-session", BotNoteRequest("still useful"), "alice")
         verify { dao.saveNote(match { it.namespace == "ns" && it.botId == "bot" && it.indexSessionId == "purged-session" && it.updatedBy == "alice" }) }
+    }
+
+    @Test
+    fun `dashboard purge failure occurs after configuration and secret cleanup and is propagated`() {
+        val vectorStoreDAO = mockk<BotVectorStoreConfigurationDAO>(relaxed = true)
+        val evaluationDAO = mockk<EvaluationSampleDAO>(relaxed = true)
+        val secret = RawSecretKey("test-secret")
+        val config = BotVectorStoreConfiguration(newId(), "ns", "bot", true, PGVectorStoreSetting("localhost", 5432, "user", secret, "db"))
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(
+            Kodein {
+                bind<BotDashboardDAO>() with singleton { dao }
+                bind<BotApplicationConfigurationDAO>() with singleton { mockk(relaxed = true) }
+                bind<StoryDefinitionConfigurationDAO>() with singleton { mockk(relaxed = true) }
+                bind<BotBusinessRulesConfigurationDAO>() with singleton { mockk { every { findByNamespaceAndBotId(any(), any()) } returns null } }
+                bind<BotRAGConfigurationDAO>() with singleton { mockk { every { findByNamespaceAndBotId(any(), any()) } returns null } }
+                bind<BotSentenceGenerationConfigurationDAO>() with singleton { mockk { every { findByNamespaceAndBotId(any(), any()) } returns null } }
+                bind<BotObservabilityConfigurationDAO>() with singleton { mockk { every { findByNamespaceAndBotId(any(), any()) } returns null } }
+                bind<BotDocumentCompressorConfigurationDAO>() with singleton { mockk { every { findByNamespaceAndBotId(any(), any()) } returns null } }
+                bind<BotVectorStoreConfigurationDAO>() with singleton { vectorStoreDAO }
+                bind<DatasetDAO>() with singleton { mockk(relaxed = true) }
+                bind<IndicatorDAO>() with singleton { mockk(relaxed = true) }
+                bind<MetricDAO>() with singleton { mockk(relaxed = true) }
+                bind<EvaluationSampleDAO>() with singleton { evaluationDAO }
+                bind<I18nDAO>() with singleton { mockk(relaxed = true) }
+            },
+        )
+        every { vectorStoreDAO.findByNamespaceAndBotId("ns", "bot") } returns config
+        val failure = IllegalStateException("Dashboard purge failed")
+        every { dao.delete("ns", "bot") } throws failure
+        mockkObject(SecurityUtils)
+        try {
+            every { SecurityUtils.deleteSecret(secret) } returns Unit
+            assertEquals(failure, assertFailsWith<IllegalStateException> { BotAdminService.deleteApplication(ApplicationDefinition("bot", namespace = "ns")) })
+            verifyOrder {
+                vectorStoreDAO.delete(config._id)
+                SecurityUtils.deleteSecret(secret)
+                evaluationDAO.deleteByNamespaceAndBotId("ns", "bot")
+                dao.delete("ns", "bot")
+            }
+        } finally {
+            unmockkObject(SecurityUtils)
+        }
     }
 
     @Test

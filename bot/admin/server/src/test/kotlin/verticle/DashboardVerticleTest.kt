@@ -108,8 +108,22 @@ class DashboardVerticleTest {
             assertEquals("alice", JsonObject(identity.body()).getString("updatedBy"))
             assertNotNull(JsonObject(identity.body()).getString("updatedAt"))
             assertEquals(200, request("/bots/bot/identity", role = "botUser").statusCode())
-            assertEquals(401, request("/bots/bot/identity", """{"displayName":"forbidden"}""", "botUser").statusCode())
+            assertEquals(401, request("/bots/bot/identity", """{"displayName":"forbidden","notes":""}""", "botUser").statusCode())
             assertEquals(401, request("/bots/foreign/identity").statusCode())
+            for (body in listOf("""{"displayName":"Lea"}""", """{"notes":"test"}""", """{"displayName":null,"notes":"test"}""")) {
+                assertEquals(400, request("/bots/bot/identity", body).statusCode())
+            }
+            verify(exactly = 1) { dao.saveIdentity(any(), any(), any()) }
+            assertEquals(200, request("/bots/bot/identity", """{"displayName":"","notes":""}""").statusCode())
+            verify { dao.saveIdentity("ns", "bot", match { it.displayName.isEmpty() && it.notes.isEmpty() }) }
+            for ((path, body) in listOf("contacts" to """[{"role":"owner","name":"Alice"}]""", "index-sessions/purged/note" to """{"text":"retained"}""")) {
+                assertEquals(200, request("/bots/bot/$path", role = "botUser").statusCode())
+                assertEquals(401, request("/bots/bot/$path", body, "botUser").statusCode())
+                assertEquals(401, request("/bots/foreign/$path").statusCode())
+                assertEquals(401, request("/bots/foreign/$path", body).statusCode())
+            }
+            verify(exactly = 0) { dao.saveContacts(any(), any(), any()) }
+            verify(exactly = 0) { dao.saveNote(any()) }
             assertEquals(200, request("/bots/bot/contacts", """[{"role":"owner","name":"Alice"}]""").statusCode())
             verify { dao.saveContacts("ns", "bot", match { it.single().id != null }) }
             assertEquals(200, request("/bots/bot/index-sessions/purged/note", """{"text":"retained"}""").statusCode())

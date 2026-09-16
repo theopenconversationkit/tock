@@ -113,6 +113,7 @@ PUT  /bots/{botId}/identity      (rôle : admin)
 ```
 
 `updatedAt` / `updatedBy` sont renseignés côté serveur.
+Les deux champs `displayName` et `notes` sont obligatoires dans le `PUT` et non nuls ; une chaîne vide permet d'effacer leur valeur.
 
 ---
 

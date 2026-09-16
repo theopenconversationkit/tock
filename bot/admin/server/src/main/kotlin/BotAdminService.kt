@@ -1634,7 +1634,6 @@ object BotAdminService {
     }
 
     fun deleteApplication(app: ApplicationDefinition) {
-        BotDashboardService.delete(app.namespace, app.name)
         applicationConfigurationDAO
             .getConfigurationsByNamespaceAndNlpModel(
                 app.namespace,
@@ -1705,6 +1704,9 @@ object BotAdminService {
 
         // delete evaluation samples and their evaluations
         evaluationSampleDAO.deleteByNamespaceAndBotId(app.namespace, app.name)
+
+        // A dashboard purge failure must not prevent the existing configuration and secret cleanup.
+        BotDashboardService.delete(app.namespace, app.name)
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {

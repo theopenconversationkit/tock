@@ -77,7 +77,8 @@ object BotDashboardService {
         request: BotIdentityRequest,
         author: String,
     ): BotIdentity {
-        val saved = BotIdentity(request.displayName.orEmpty(), request.notes.orEmpty(), Instant.now(), author)
+        if (request.displayName == null || request.notes == null) throw BadRequestException("Identity displayName and notes are required")
+        val saved = BotIdentity(request.displayName, request.notes, Instant.now(), author)
         dao.saveIdentity(namespace, botId, saved)
         return saved
     }
