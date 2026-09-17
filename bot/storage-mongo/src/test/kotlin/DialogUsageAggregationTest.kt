@@ -85,6 +85,8 @@ class DialogUsageAggregationTest : AbstractTest(false) {
                     dialog("ns", listOf(action("2026-03-01T00:00:00Z")), listOf(action("2026-04-01T00:00:00Z"))),
                     dialog("other", listOf(action(from), action(from, "bot", vote = "UP"))),
                     dialog("ns", listOf(action("2026-01-01T00:00:00Z"))),
+                    // The in-range action belongs to another app, even though the dialog belongs to both.
+                    dialog("ns", listOf(action("2026-01-01T00:00:00Z"), action(from, app = "foreign"))),
                 ),
             )
             val pipeline = DialogUsageAggregation.pipeline(query, setOf("prod", "test-bot"))
@@ -104,6 +106,11 @@ class DialogUsageAggregationTest : AbstractTest(false) {
             // Removing only the early date filter must preserve exact counts.
             val unfiltered = listOf(match(and(eq("namespace", "ns"), `in`("applicationIds", listOf("prod", "test-bot"))))) + pipeline.drop(1)
             assertEquals(stats, DialogUsageAggregation.result(collection.aggregate(unfiltered).toList()))
+            val instant = DialogUsageAggregation.pipeline(query.copy(to = query.from), setOf("prod"))
+            val instantStats = DialogUsageAggregation.result(collection.aggregate(instant).toList())
+            assertEquals(1L, instantStats.allUserActions.single().total)
+            assertEquals(1L, instantStats.allFeedbackUp.single().total)
+            assertEquals(0L, instantStats.allFeedbackDown.single().total)
             val empty = DialogUsageAggregation.pipeline(query.copy(from = query.to!!.plusDays(10), to = query.to!!.plusDays(11)), setOf("prod"))
             assertEquals(DialogUsageStats(), DialogUsageAggregation.result(collection.aggregate(empty).toList()))
         } finally {

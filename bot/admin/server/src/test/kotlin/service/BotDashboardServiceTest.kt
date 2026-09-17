@@ -113,7 +113,18 @@ class BotDashboardServiceTest {
         for (invalid in listOf(query.copy(from = null), query.copy(to = null), query.copy(from = query.to, to = query.from))) {
             assertFailsWith<BadRequestException> { BotDashboardService.usage(invalid) }
         }
-        verify(exactly = 1) { reports.calculateDialogUsage(any()) }
+        val instant = query.copy(to = from)
+        every { reports.calculateDialogUsage(instant) } returns DialogUsageStats(allUserActions = listOf(CountResult("prod", 1)))
+        assertEquals(
+            1L,
+            BotDashboardService
+                .usage(instant)
+                .prod.allUserActions
+                .single()
+                .total,
+        )
+        verify(exactly = 1) { reports.calculateDialogUsage(instant) }
+        verify(exactly = 2) { reports.calculateDialogUsage(any()) }
         verify(exactly = 0) { reports.calculateDialogStats(any()) }
     }
 

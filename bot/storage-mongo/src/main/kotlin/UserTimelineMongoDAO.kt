@@ -220,6 +220,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     ),
                 )
                 dialogCol.ensureIndex(GroupId)
+                dialogCol.createIndex(DialogUsageAggregation.index)
 
                 dialogTextCol.ensureUniqueIndex(Text, DialogId)
                 dialogTextCol.ensureIndex(

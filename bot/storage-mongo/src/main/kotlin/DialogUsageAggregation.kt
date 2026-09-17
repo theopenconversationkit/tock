@@ -37,6 +37,9 @@ import org.bson.conversions.Bson
 
 /** One traversal of the relevant actions for all dashboard usage counters. */
 internal object DialogUsageAggregation {
+    val index: Document
+        get() = Document("namespace", 1).append("stories.actions.applicationId", 1).append("stories.actions.date", 1)
+
     fun pipeline(
         query: DialogStatsQuery,
         applicationIds: Set<String>,
@@ -45,11 +48,14 @@ internal object DialogUsageAggregation {
         query.from?.let { dates.append("\$gte", it.toInstant()) }
         query.to?.let { dates.append("\$lte", it.toInstant()) }
         val scope = mutableListOf<Bson>(eq("namespace", query.namespace), `in`("applicationIds", applicationIds))
+        val scopedAction = Document("applicationId", Document("\$in", applicationIds.toList()))
         if (dates.isNotEmpty()) {
             // Both bounds must apply to the same action, including in conversations
             // spanning the whole period. Never substitute a lastUpdateDate range here.
-            scope += elemMatch("stories", elemMatch("actions", Document("date", dates)))
+            scopedAction.append("date", dates)
         }
+        // Match at the common indexed path so MongoDB can compound the application/date bounds.
+        scope += elemMatch("stories.actions", scopedAction)
         val actions = mutableListOf<Bson>(`in`("stories.actions.applicationId", applicationIds))
         query.from?.let { actions += gte("stories.actions.date", it.toInstant()) }
         query.to?.let { actions += lte("stories.actions.date", it.toInstant()) }

@@ -18,6 +18,7 @@ package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.dashboard.BotDashboardDAO
+import ai.tock.bot.admin.dialog.CountByDateResult
 import ai.tock.bot.admin.dialog.CountResult
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogUsageStats
@@ -66,7 +67,13 @@ class DashboardVerticleTest {
         val originalInjector = tockInternalInjector
         val dao = mockk<BotDashboardDAO>(relaxed = true)
         val reports = mockk<DialogReportDAO>()
-        every { reports.calculateDialogUsage(any()) } returns DialogUsageStats(allUserActions = listOf(CountResult("prod", 7)))
+        every { reports.calculateDialogUsage(any()) } returns
+            DialogUsageStats(
+                allUserActions = listOf(CountResult("prod", 7), CountResult("test-bot", 3)),
+                allUserActionsByDate = listOf(CountByDateResult("prod", "2026-09-01", 7), CountByDateResult("test-bot", "2026-09-01", 3)),
+                allFeedbackUp = listOf(CountResult("prod", 5), CountResult("test-bot", 2)),
+                allFeedbackDown = listOf(CountResult("prod", 2), CountResult("test-bot", 1)),
+            )
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(
             Kodein {
@@ -113,22 +120,24 @@ class DashboardVerticleTest {
             val usageBody = """{"namespace":"other","applicationName":"other","from":"2026-09-01T00:00:00Z","to":"2026-09-02T00:00:00Z"}"""
             val usage = request("/bots/bot/usage", usageBody, "botUser", "POST")
             assertEquals(200, usage.statusCode())
-            assertEquals(
-                7,
-                JsonObject(usage.body())
-                    .getJsonObject("prod")
-                    .getJsonArray("allUserActions")
-                    .getJsonObject(0)
-                    .getInteger("total"),
-            )
-            assertEquals(
-                "prod",
-                JsonObject(usage.body())
-                    .getJsonObject("prod")
-                    .getJsonArray("allUserActions")
-                    .getJsonObject(0)
-                    .getString("_id"),
-            )
+            val expected =
+                JsonObject(
+                    """{
+                "prod": {
+                    "allUserActions": [{"_id":"prod","total":7}],
+                    "allUserActionsByDate": [{"applicationId":"prod","date":"2026-09-01","total":7}],
+                    "allFeedbackUp": [{"_id":"prod","total":5}],
+                    "allFeedbackDown": [{"_id":"prod","total":2}]
+                },
+                "test": {
+                    "allUserActions": [{"_id":"test-bot","total":3}],
+                    "allUserActionsByDate": [{"applicationId":"test-bot","date":"2026-09-01","total":3}],
+                    "allFeedbackUp": [{"_id":"test-bot","total":2}],
+                    "allFeedbackDown": [{"_id":"test-bot","total":1}]
+                }
+            }""",
+                )
+            assertEquals(expected, JsonObject(usage.body()))
             verify(exactly = 1) { reports.calculateDialogUsage(match { it.namespace == "ns" && it.applicationName == "bot" }) }
             assertEquals(401, request("/bots/foreign/usage", usageBody, "botUser", "POST").statusCode())
             assertEquals(401, request("/bots/bot/usage", usageBody, "nlpUser", "POST").statusCode())

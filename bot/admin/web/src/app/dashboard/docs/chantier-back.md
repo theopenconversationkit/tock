@@ -72,17 +72,32 @@ La réponse conserve les branches `prod` / `test` et ne contient que
 
 Chaque période déclenche une agrégation MongoDB, contre huit avec `/dialogs/stats`.
 Les deux périodes restent demandées en parallèle : deux agrégations par chargement.
-La présélection utilise les dates des actions dans un double `$elemMatch` avant les
-`$unwind`, puis conserve le filtre exact sur chaque action. Les jours restent en
+La présélection exige application et date sur la même action dans un `$elemMatch`
+sur `stories.actions` avant les `$unwind`, puis conserve le filtre exact sur chaque action. Les jours restent en
 Europe/Paris et les votes sont comptés à la date de l'action bot, comme auparavant.
 Les autres écrans continuent à utiliser `/dialogs/stats`.
 
-Le correctif ne comporte ni migration ni création automatique d'index. Avant livraison,
-mesurer les deux appels sur des bots représentatifs et comparer leurs compteurs avec
-`/dialogs/stats`. En REC, relever les plans `explain("executionStats")` et les volumes
-après présélection/dépliage pour décider si un index temporel supplémentaire est utile.
-Ne pas associer naïvement `applicationIds` et `stories.actions.date` dans un index
-composé : ces champs traversent des tableaux indépendants.
+L'initialisation du DAO crée l'index composé
+`{namespace: 1, "stories.actions.applicationId": 1, "stories.actions.date": 1}`.
+Le `$elemMatch` porte directement sur le chemin commun de l'index pour permettre
+à MongoDB de combiner les bornes application/date. Les deux champs imbriqués appartiennent
+au même tableau d'actions. Ne pas remplacer
+l'application imbriquée par `applicationIds` top-level dans cet index : cela associerait
+des tableaux indépendants. La construction initiale de l'index et sa taille dépendent
+du volume d'actions conservé ; aucune migration des documents n'est nécessaire.
+
+Le test d'intégration appelle le DAO réel (configurations, collection et pilote réactif),
+y compris sans connecteur. Un test `explain("executionStats")` compare les documents
+examinés avec l'index existant et le nouvel index sur une période sélective.
+Sur le jeu synthétique de 1 010 dialogues (10 dans la période), MongoDB 7 examine
+1 010 documents avec l'index existant contre 10 avec le nouvel index ; le plan
+sans index forcé examine également 10 documents.
+Avant livraison, mesurer les deux appels sur des bots représentatifs et comparer leurs
+compteurs avec `/dialogs/stats` ; le gain local ne préjuge pas des temps de réponse en REC.
+
+Le contrat conserve les bornes inclusives : `from == to` compte les actions à cet instant.
+Les tests frontend vérifient l'alignement des jours calendaires, sans exiger des durées
+horaires identiques entre périodes traversant un changement d'heure.
 
 ---
 
