@@ -18,6 +18,9 @@ package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.dashboard.BotDashboardDAO
+import ai.tock.bot.admin.dialog.CountResult
+import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.security.TockUser
@@ -62,11 +65,14 @@ class DashboardVerticleTest {
     fun `HTTP routes enforce roles namespace and serialize dashboard contracts`() {
         val originalInjector = tockInternalInjector
         val dao = mockk<BotDashboardDAO>(relaxed = true)
+        val reports = mockk<DialogReportDAO>()
+        every { reports.calculateDialogUsage(any()) } returns DialogUsageStats(allUserActions = listOf(CountResult("prod", 7)))
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(
             Kodein {
                 import(AbstractTest.defaultModulesBinding())
                 bind<BotDashboardDAO>() with singleton { dao }
+                bind<DialogReportDAO>(overrides = true) with singleton { reports }
             },
         )
         mockkObject(FrontClient)
@@ -98,11 +104,37 @@ class DashboardVerticleTest {
                 path: String,
                 body: String? = null,
                 role: String = "admin",
+                method: String = "PUT",
             ): HttpResponse<String> {
                 val builder = HttpRequest.newBuilder(URI("http://127.0.0.1:${server.actualPort()}$path")).header("Test-Role", role)
-                if (body != null) builder.header("Content-Type", "application/json").PUT(HttpRequest.BodyPublishers.ofString(body))
+                if (body != null) builder.header("Content-Type", "application/json").method(method, HttpRequest.BodyPublishers.ofString(body))
                 return client.send(builder.build(), HttpResponse.BodyHandlers.ofString())
             }
+            val usageBody = """{"namespace":"other","applicationName":"other","from":"2026-09-01T00:00:00Z","to":"2026-09-02T00:00:00Z"}"""
+            val usage = request("/bots/bot/usage", usageBody, "botUser", "POST")
+            assertEquals(200, usage.statusCode())
+            assertEquals(
+                7,
+                JsonObject(usage.body())
+                    .getJsonObject("prod")
+                    .getJsonArray("allUserActions")
+                    .getJsonObject(0)
+                    .getInteger("total"),
+            )
+            assertEquals(
+                "prod",
+                JsonObject(usage.body())
+                    .getJsonObject("prod")
+                    .getJsonArray("allUserActions")
+                    .getJsonObject(0)
+                    .getString("_id"),
+            )
+            verify(exactly = 1) { reports.calculateDialogUsage(match { it.namespace == "ns" && it.applicationName == "bot" }) }
+            assertEquals(401, request("/bots/foreign/usage", usageBody, "botUser", "POST").statusCode())
+            assertEquals(401, request("/bots/bot/usage", usageBody, "nlpUser", "POST").statusCode())
+            assertEquals(400, request("/bots/bot/usage", """{"namespace":"ns","applicationName":"bot"}""", "botUser", "POST").statusCode())
+            verify(exactly = 1) { reports.calculateDialogUsage(any()) }
+            verify(exactly = 0) { reports.calculateDialogStats(any()) }
             val identity = request("/bots/bot/identity", """{"displayName":"Lea","notes":"test"}""")
             assertEquals(200, identity.statusCode())
             assertEquals("alice", JsonObject(identity.body()).getString("updatedBy"))

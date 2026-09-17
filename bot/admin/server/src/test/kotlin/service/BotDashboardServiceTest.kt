@@ -30,6 +30,11 @@ import ai.tock.bot.admin.dashboard.BotDashboardDAO
 import ai.tock.bot.admin.dashboard.BotHistoryEvent
 import ai.tock.bot.admin.dashboard.BotHistorySnapshot
 import ai.tock.bot.admin.dataset.DatasetDAO
+import ai.tock.bot.admin.dialog.CountByDateResult
+import ai.tock.bot.admin.dialog.CountResult
+import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.DialogStatsQuery
+import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.bot.admin.evaluation.EvaluationSampleDAO
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.MetricDAO
@@ -58,6 +63,7 @@ import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -79,6 +85,36 @@ class BotDashboardServiceTest {
     @AfterEach
     fun cleanup() {
         tockInternalInjector = originalInjector
+    }
+
+    @Test
+    fun `usage separates test connectors and rejects missing or inverted dates`() {
+        val reports = mockk<DialogReportDAO>()
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(Kodein { bind<DialogReportDAO>() with singleton { reports } })
+        val from = ZonedDateTime.parse("2026-09-01T00:00:00Z")
+        val query = DialogStatsQuery("ns", "bot", from, from.plusDays(1))
+        every { reports.calculateDialogUsage(query) } returns
+            DialogUsageStats(
+                allUserActions = listOf(CountResult("prod", 3), CountResult("test-bot", 2)),
+                allUserActionsByDate = listOf(CountByDateResult("prod", "2026-09-01", 3), CountByDateResult("test-bot", "2026-09-01", 2)),
+                allFeedbackUp = listOf(CountResult("test-bot", 1)),
+                allFeedbackDown = listOf(CountResult("prod", 1)),
+            )
+        val result = BotDashboardService.usage(query)
+        assertEquals(listOf(CountResult("prod", 3)), result.prod.allUserActions)
+        assertEquals(listOf(CountResult("test-bot", 2)), result.test.allUserActions)
+        assertEquals(1, result.prod.allUserActionsByDate.size)
+        assertEquals(1, result.test.allUserActionsByDate.size)
+        assertEquals(emptyList(), result.prod.allFeedbackUp)
+        assertEquals(listOf(CountResult("test-bot", 1)), result.test.allFeedbackUp)
+        assertEquals(listOf(CountResult("prod", 1)), result.prod.allFeedbackDown)
+        assertEquals(emptyList(), result.test.allFeedbackDown)
+        for (invalid in listOf(query.copy(from = null), query.copy(to = null), query.copy(from = query.to, to = query.from))) {
+            assertFailsWith<BadRequestException> { BotDashboardService.usage(invalid) }
+        }
+        verify(exactly = 1) { reports.calculateDialogUsage(any()) }
+        verify(exactly = 0) { reports.calculateDialogStats(any()) }
     }
 
     @Test

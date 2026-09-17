@@ -22,6 +22,9 @@ import ai.tock.bot.admin.dashboard.BotHistoryCursor
 import ai.tock.bot.admin.dashboard.BotHistorySnapshot
 import ai.tock.bot.admin.dashboard.BotIdentity
 import ai.tock.bot.admin.dashboard.BotIndexSessionNote
+import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.DialogStatsQuery
+import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -63,8 +66,33 @@ data class BotHistoryResponse(
     val nextCursor: String?,
 )
 
+data class BotUsageResponse(
+    val prod: DialogUsageStats,
+    val test: DialogUsageStats,
+)
+
 object BotDashboardService {
     private val dao: BotDashboardDAO get() = injector.provide()
+
+    fun usage(query: DialogStatsQuery): BotUsageResponse {
+        val from = query.from
+        val to = query.to
+        if (from == null || to == null || from.isAfter(to)) {
+            throw BadRequestException("A valid usage date range is required")
+        }
+        val stats = injector.provide<DialogReportDAO>().calculateDialogUsage(query)
+
+        fun branch(test: Boolean): DialogUsageStats {
+            fun matches(applicationId: String) = applicationId.startsWith("test-") == test
+            return DialogUsageStats(
+                allUserActions = stats.allUserActions.filter { matches(it.applicationId) },
+                allUserActionsByDate = stats.allUserActionsByDate.filter { matches(it.applicationId) },
+                allFeedbackUp = stats.allFeedbackUp.filter { matches(it.applicationId) },
+                allFeedbackDown = stats.allFeedbackDown.filter { matches(it.applicationId) },
+            )
+        }
+        return BotUsageResponse(prod = branch(false), test = branch(true))
+    }
 
     fun identity(
         namespace: String,

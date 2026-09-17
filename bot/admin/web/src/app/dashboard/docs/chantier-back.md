@@ -62,6 +62,30 @@ dernière évaluation). Déjà branchés sur les endpoints existants : `POST /di
 
 ---
 
+## Correctif de performance DERCBOT-2100
+
+Les widgets Messages handled et User feedback utilisent désormais
+`POST /bots/{botId}/usage` avec les mêmes bornes `from` / `to` inclusives.
+Le serveur détermine le namespace et le bot depuis le contexte authentifié et l'URL.
+La réponse conserve les branches `prod` / `test` et ne contient que
+`allUserActions`, `allUserActionsByDate`, `allFeedbackUp` et `allFeedbackDown`.
+
+Chaque période déclenche une agrégation MongoDB, contre huit avec `/dialogs/stats`.
+Les deux périodes restent demandées en parallèle : deux agrégations par chargement.
+La présélection utilise les dates des actions dans un double `$elemMatch` avant les
+`$unwind`, puis conserve le filtre exact sur chaque action. Les jours restent en
+Europe/Paris et les votes sont comptés à la date de l'action bot, comme auparavant.
+Les autres écrans continuent à utiliser `/dialogs/stats`.
+
+Le correctif ne comporte ni migration ni création automatique d'index. Avant livraison,
+mesurer les deux appels sur des bots représentatifs et comparer leurs compteurs avec
+`/dialogs/stats`. En REC, relever les plans `explain("executionStats")` et les volumes
+après présélection/dépliage pour décider si un index temporel supplémentaire est utile.
+Ne pas associer naïvement `applicationIds` et `stories.actions.date` dans un index
+composé : ces champs traversent des tableaux indépendants.
+
+---
+
 ## 2. About — identité du bot
 
 Le nom technique d'un bot (son `botId`) diffère toujours du nom sous lequel l'assistant

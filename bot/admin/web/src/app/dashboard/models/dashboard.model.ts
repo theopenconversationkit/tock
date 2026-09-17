@@ -36,7 +36,7 @@ export enum WidgetState {
   error = 'error'
 }
 
-/** POST /dialogs/stats - prod branch only, test dialogs are deliberately ignored. */
+/** POST /bots/{applicationName}/usage - current and previous periods, with optional test exchanges. */
 export interface DashboardUsage {
   total: number;
   previousTotal: number | null;
