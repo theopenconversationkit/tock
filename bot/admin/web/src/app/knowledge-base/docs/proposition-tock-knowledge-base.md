@@ -35,9 +35,9 @@ La proposition consiste à ajouter à Tock une base de connaissances interne, fa
 
 Une entrée porte :
 
-- un **titre**, court, qui identifie l'entrée dans le studio et sert de référence affichée à défaut d'URL ;
-- une **question principale** et, optionnellement, des **variantes de formulation** ;
-- une **réponse** en markdown ;
+- un **intitulé**, qui est la formulation principale de l'entrée : ce qu'elle dit, tel qu'un utilisateur le formulerait. Il joue le rôle que tiendrait une question dans une FAQ, **sans imposer la dichotomie question / réponse** : une entrée peut parfaitement énoncer un fait plutôt que répondre à une question. Il identifie aussi l'entrée dans le studio et sert de référence affichée à défaut d'URL ;
+- optionnellement, des **termes de rapprochement** : autres formulations, synonymes, mots-clés, tout ce qui aide l'entrée à être retrouvée ;
+- un **contenu** en markdown ;
 - une **URL de référence optionnelle**, pour renvoyer vers une ressource distante en lien avec la donnée ;
 - des **tags**, un **statut** (brouillon / publiée) ;
 - une traçabilité (auteur, date de création, date de modification).
@@ -64,11 +64,11 @@ La **synchronisation reste nécessaire, mais comme réparation, pas comme valida
 
 Un **journal de projection** en Mongo enregistre un document par `(indexSessionId, entryId, contentHash)`, d'où se déduisent trois états :
 
-| État | Signification |
-| --- | --- |
-| `indexed` | publiée et présente dans l'index de la session courante, à jour |
-| `pending` | publiée mais absente ou obsolète dans l'index courant |
-| `orphan` | présente dans l'index courant alors qu'aucune entrée en vigueur ne la justifie |
+| État      | Signification                                                                  |
+| --------- | ------------------------------------------------------------------------------ |
+| `indexed` | publiée et présente dans l'index de la session courante, à jour                |
+| `pending` | publiée mais absente ou obsolète dans l'index courant                          |
+| `orphan`  | présente dans l'index courant alors qu'aucune entrée en vigueur ne la justifie |
 
 Une entrée dépubliée retombe en `none`, jamais en `orphan`, puisque ses lignes sont retirées sur-le-champ. L'état `orphan` ne concerne par ailleurs que **l'index courant** : lors d'un changement de session, les lignes de l'ancienne session vivent dans un autre index qui n'est plus interrogé, donc elles ne sont pas orphelines, elles sont hors de portée. Le bilan d'un changement de session est « toutes les entrées publiées en attente, zéro orpheline ».
 
@@ -114,21 +114,20 @@ La mise en production suppose donc de reprendre ce qui vit aujourd'hui en FAQ. L
 
 Correspondance retenue :
 
-| FAQ | Entrée KB | Note |
-| --- | --- | --- |
-| `title` | `title` | |
-| `utterances[0]` | `question` | |
-| `utterances[1..n]` | `questionVariants` | |
-| `answer.i18n[locale]` | `answer` | l'import détecte les locales présentes ; s'il y en a plusieurs, il demande laquelle retenir, les autres sont ignorées |
-| `tags` | `tags` | |
-| `footnotes[0].url` | `sourceUrl` | uniquement si c'est une URL `http(s)` |
-| `description` | — | note interne sans équivalent côté KB, ignorée |
-| `enabled` | — | affiché dans la prévisualisation pour permettre le tri, mais ne détermine pas le statut |
-| `intentName`, `applicationName`, identifiants | — | propres au mécanisme NLU |
+| FAQ                                           | Entrée KB     | Note                                                                                                                  |
+| --------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `utterances[0]`                               | `title`       | le titre de la FAQ n'est pas repris : c'est la première utterance qui constitue la formulation principale             |
+| `utterances[1..n]`                            | `searchHints` |                                                                                                                       |
+| `answer.i18n[locale]`                         | `content`     | l'import détecte les locales présentes ; s'il y en a plusieurs, il demande laquelle retenir, les autres sont ignorées |
+| `tags`                                        | `tags`        |                                                                                                                       |
+| `footnotes[0].url`                            | `sourceUrl`   | uniquement si c'est une URL `http(s)`                                                                                 |
+| `description`                                 | —             | note interne sans équivalent côté KB, ignorée                                                                         |
+| `enabled`                                     | —             | affiché dans la prévisualisation pour permettre le tri, mais ne détermine pas le statut                               |
+| `intentName`, `applicationName`, identifiants | —             | propres au mécanisme NLU                                                                                              |
 
 L'import est **prévisualisé avant application** : locales détectées, nombre d'entrées lues, correspondances établies, lignes écartées et motif. Les entrées sont créées en **brouillon**, sans exception : un import qui pousserait d'office des dizaines d'entrées dans l'index sans relecture serait le contraire de ce que la feature cherche à apporter. Le rapport d'import propose ensuite une publication en lot des entrées importées (§3.6), l'utilisateur venant précisément de les relire.
 
-Les doublons sont détectés sur la question normalisée, avec trois politiques au choix : ignorer, mettre à jour l'entrée existante, ou créer malgré tout.
+Les doublons sont détectés sur l'intitulé normalisé, avec trois politiques au choix : ignorer, mettre à jour l'entrée existante, ou créer malgré tout.
 
 Tock ne touche pas aux FAQ d'origine après un import. La migration est une opération ponctuelle, et la personne qui la mène supprime elle-même les FAQ devenues inutiles une fois l'import validé.
 
@@ -147,9 +146,8 @@ L'export sert au transfert entre recette et production, dans les deux sens. Enve
     {
       "sourceId": "…",
       "title": "…",
-      "question": "…",
-      "questionVariants": ["…"],
-      "answer": "…",
+      "searchHints": ["…"],
+      "content": "…",
       "sourceUrl": null,
       "tags": ["…"],
       "status": "PUBLISHED"
@@ -173,25 +171,23 @@ Deux points d'entrée :
 
 Contrainte d'implémentation : publier cent entrées, c'est cent projections. L'opération passe par un **appel groupé** côté orchestrateur, jamais par une boucle d'appels depuis le studio. Elle renvoie un rapport par entrée, et un échec partiel laisse les entrées concernées en attente au lieu de faire échouer l'ensemble. C'est la même mécanique que la réparation d'index (§3.3) et que la création d'index en mode autonome : une seule capacité de projection par lot les sert toutes les trois.
 
-
 ## 4. Modèle de données
 
 ### 4.1 Collection `knowledge_base_entry`
 
-| Champ | Type | Note |
-| --- | --- | --- |
-| `_id` | ObjectId | |
-| `namespace` | String | |
-| `botIds` | List\<String\> | liste et non scalaire, pour ne pas fermer une mutualisation ultérieure ; un seul élément en v1 |
-| `title` | String | libellé court ; initialisé par défaut avec la question, éditable |
-| `question` | String | question principale, embeddée |
-| `questionVariants` | List\<String\> | formulations alternatives, embeddées |
-| `answer` | String | markdown, embeddée |
-| `sourceUrl` | String? | ressource distante optionnelle |
-| `tags` | List\<String\> | |
-| `status` | Enum | `DRAFT` / `PUBLISHED` |
-| `contentHash` | String | empreinte du contenu projeté |
-| `author`, `createdAt`, `updatedAt` | | traçabilité |
+| Champ                              | Type           | Note                                                                                           |
+| ---------------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| `_id`                              | ObjectId       |                                                                                                |
+| `namespace`                        | String         |                                                                                                |
+| `botIds`                           | List\<String\> | liste et non scalaire, pour ne pas fermer une mutualisation ultérieure ; un seul élément en v1 |
+| `title`                            | String         | formulation principale de l'entrée, embeddée                                                   |
+| `searchHints`                      | List\<String\> | facultatif ; formulations alternatives, synonymes, mots-clés, embeddés                         |
+| `content`                          | String         | markdown, embeddé                                                                              |
+| `sourceUrl`                        | String?        | ressource distante optionnelle                                                                 |
+| `tags`                             | List\<String\> |                                                                                                |
+| `status`                           | Enum           | `DRAFT` / `PUBLISHED`                                                                          |
+| `contentHash`                      | String         | empreinte du contenu projeté                                                                   |
+| `author`, `createdAt`, `updatedAt` |                | traçabilité                                                                                    |
 
 ### 4.2 Collection `knowledge_base_projection`
 
@@ -220,32 +216,32 @@ Aucune métadonnée de langue n'est portée : les chunks issus des chaînes d'in
 
 ### 4.4 Stratégie d'embedding
 
-**Une entrée donne une ligne unique**, dont le contenu embeddé est l'entrée complète : titre, question principale, variantes, réponse. Ce contenu est aussi celui qui est servi au modèle de réponse.
+**Une entrée donne une ligne unique**, dont le contenu embeddé est l'entrée complète : intitulé, termes de rapprochement, contenu. Ce contenu est aussi celui qui est servi au modèle de réponse.
 
 Trois raisons :
 
 1. **Comparabilité des scores.** Les chaînes d'ingestion embeddent le contenu documentaire. Une ligne KB qui n'embedderait que la question vivrait dans une autre région de l'espace vectoriel et ses scores ne seraient pas comparables à ceux des chunks. En mode mixte, c'est exactement le contraire de ce qu'on cherche.
-2. **La valeur sémantique est dans la réponse.** C'est elle qui porte le vocabulaire métier, donc le recouvrement avec les questions réelles des utilisateurs. Faire reposer la remontée sur la seule question suppose que le rédacteur métier ait anticipé les formulations, ce qui n'est pas une hypothèse raisonnable.
+2. **La valeur sémantique est dans le contenu.** C'est lui qui porte le vocabulaire métier, donc le recouvrement avec les questions réelles des utilisateurs. Faire reposer la remontée sur le seul intitulé suppose que le rédacteur métier ait anticipé les formulations, ce qui n'est pas une hypothèse raisonnable.
 3. **Les modèles d'embedding utilisés sont entraînés en asymétrique**, requête vers passage. C'est précisément le cas question utilisateur vers contenu de réponse.
 
-Les variantes de formulation restent utiles, mais comme **vocabulaire de rappel intégré au texte embeddé**, pas comme lignes distinctes. Deux conséquences pratiques :
+Les termes de rapprochement restent utiles, mais comme **vocabulaire de rappel intégré au texte embeddé**, pas comme lignes distinctes. Deux conséquences pratiques :
 
 - on ne dépend plus du dédoublonnage RRF, dont la clé est `(id, chunk)` et qui n'intervient qu'en mode hybride : en similarité pure, plusieurs lignes issues de la même entrée occuperaient plusieurs places du top-k pour une seule et même réponse ;
-- il faut garder les variantes peu nombreuses, une liste trop longue diluant le vecteur.
+- il faut garder les termes peu nombreux, une liste trop longue diluant le vecteur.
 
 #### Forme du contenu
 
 Elle est normée par l'existant et doit être reproduite. Le script d'indexation encadre le texte dans une fence markdown, puis préfixe par le titre suivi d'une ligne vide. `get_source_content()` retire exactement ce préfixe pour l'affichage. Une ligne KB prend donc la même forme :
 
-```
+````
 {title}
 
 ```markdown
-{question}
-{variantes, une par ligne}
+{termes de rapprochement, un par ligne}
 
-{answer}
-```
+{content}
+````
+
 ```
 
 Sans cela, les entrées KB s'afficheraient différemment des chunks documentaires dans les footnotes comme dans l'outil d'inspection, et leur contenu ne serait pas comparable à l'embedding près.
@@ -346,3 +342,4 @@ Cela reste une limite structurelle de la chaîne actuelle, à traiter par le cha
 4. **Nommage upstream.** « Knowledge Base » risque une confusion avec les FAQ existantes pour la communauté. Alternatives à discuter : *Curated Answers*, *Knowledge Entries*, *Internal Knowledge*.
 5. **Suppression d'une entrée.** Suppression physique des lignes dans l'index, ou dépublication laissant l'entrée en base avec nettoyage à la resynchronisation ? La première est plus propre, la seconde plus tolérante aux pannes de la base vectorielle. À trancher conjointement avec la piste des identifiants de ligne déterministes (§5.2), qui rendrait la suppression triviale.
 6. **Mutualisation front du service d'inspection.** Le test de remontée appelle le service de recherche du module `vector-store-inspection`, déjà structuré en classe abstraite avec implémentations mock et REST interchangeables. Pour éviter une dépendance entre deux features de haut niveau, il est proposé de remonter cette abstraction, ses deux implémentations et ses modèles dans `shared/services`. Décision front, sans impact sur les contrats d'API.
+```
