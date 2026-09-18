@@ -50,14 +50,14 @@ Une entrée porte :
 
 ### 3.3 Projection et synchronisation
 
-**Tout est en temps réel, rien n'est différé.** Créer ou modifier une entrée publiée l'indexe immédiatement ; la dépublier ou la supprimer retire ses lignes immédiatement. Les trois actions du métier ont le même régime, et l'enregistrement remonte une erreur directe si l'orchestrateur ou la base vectorielle ne répond pas.
+**Tout est en temps réel, rien n'attend une validation ultérieure.** Créer ou modifier une entrée publiée l'indexe, la dépublier ou la supprimer retire ses lignes, sans qu'aucune action supplémentaire soit requise. L'entrée elle-même est écrite en base immédiatement ; sa projection dans l'index est confiée à une tâche (§3.6) qui aboutit en général en moins d'une seconde, et dont l'échec éventuel est rapporté sur l'entrée que l'utilisateur vient d'enregistrer.
 
 C'est le couple brouillon / publiée qui joue le rôle de validation en deux temps : on prépare en brouillon, on active en publiant. Ajouter une synchronisation explicite ferait doublon, viderait le statut « publiée » de son sens, et ouvrirait un mode d'échec silencieux où le bot continue de répondre faux parce que personne n'a cliqué.
 
 La **synchronisation reste nécessaire, mais comme réparation, pas comme validation**. Elle ne s'affiche donc que lorsqu'un écart existe, et son libellé doit le dire. Trois causes produisent un écart, toutes extérieures à l'action de l'utilisateur :
 
 - une nouvelle session d'index a été configurée sur le bot, cas dominant en mode mixte, puisqu'on ne se couple à aucune chaîne d'ingestion et que Tock n'est pas notifié de la fin d'une ingestion tierce ;
-- une écriture ou une suppression a échoué, la base vectorielle étant injoignable ;
+- une projection a échoué, la base vectorielle étant injoignable ;
 - l'index a été modifié hors de Tock.
 
 #### États
@@ -86,7 +86,7 @@ Point de vigilance : le journal n'est fiable que tant que toutes les écritures 
 
 #### Réparation
 
-Vu les volumes, une reprojection intégrale est acceptable ; le `contentHash` sert uniquement à éviter le travail inutile.
+Vu les volumes, une reprojection intégrale est acceptable ; le `contentHash` sert uniquement à éviter le travail inutile. Comme toute écriture vers l'index, la réparation est une tâche suivie (§3.6).
 
 ### 3.4 Test de remontée
 
@@ -160,16 +160,41 @@ Rien de ce qui est propre à un environnement n'est exporté : ni identifiants i
 
 L'importateur accepte les deux formes et les distingue par leur structure : l'enveloppe ci-dessus, reconnue à son champ `format`, pour un export KB, un tableau nu d'objets portant `utterances` et `answer.i18n` pour un export FAQ. Un fichier qui ne correspond à ni l'un ni l'autre est refusé avec un message explicite plutôt qu'interprété au mieux.
 
-### 3.6 Actions en lot
+### 3.6 Actions en lot et suivi des traitements
 
 Le régime temps réel rend chaque action immédiate, mais il ne dit rien du nombre d'entrées concernées. Préparer plusieurs brouillons puis tout activer d'un coup est un usage naturel, et c'est indispensable après un import : reprendre une centaine de FAQ en les éditant une à une pour les publier serait inacceptable.
 
-Deux points d'entrée :
+Deux points d'entrée pour la publication groupée :
 
 - dans le **rapport d'import**, une action directe sur les entrées qui viennent d'être importées ;
 - sur la **liste**, une sélection multiple offrant publication et dépublication groupées, utile aussi hors import.
 
-Contrainte d'implémentation : publier cent entrées, c'est cent projections. L'opération passe par un **appel groupé** côté orchestrateur, jamais par une boucle d'appels depuis le studio. Elle renvoie un rapport par entrée, et un échec partiel laisse les entrées concernées en attente au lieu de faire échouer l'ensemble. C'est la même mécanique que la réparation d'index (§3.3) et que la création d'index en mode autonome : une seule capacité de projection par lot les sert toutes les trois.
+#### Tout passe par une tâche
+
+Publier cent entrées, c'est cent projections. Le studio émet **un seul appel**, le serveur met le travail en file et rend compte de son avancement, sur le principe déjà en place pour l'exécution des datasets : le front interroge à intervalle et reflète la progression.
+
+La décision structurante est que **l'écriture unitaire emprunte exactement le même chemin**. Une première version prévoyait de traiter l'entrée seule en ligne et de renvoyer une tâche déjà terminée ; c'était une mauvaise idée pour deux raisons. Le serveur aurait eu deux comportements sur un même endpoint, et le front aurait dû gérer les deux formes de réponse, donc le branchement était payé deux fois. Surtout, un enregistrement synchrone pendant qu'un lot tourne met **deux écrivains sur le même index**, éventuellement sur la même entrée. La mise en file supprime ce risque par construction : ce n'est pas un gain de simplicité, c'est un gain de correction.
+
+Le coût est d'une seconde d'attente sur un enregistrement unitaire, ce qui est négligeable au regard du problème évité.
+
+Seule la projection est mise en file. **L'entrée elle-même est écrite en base immédiatement** et revient dans la réponse, accompagnée de la tâche qui la projettera. Corollaire utile : les champs de projection d'une entrée ne sont plus modifiés à l'enregistrement, ils décrivent ce que contient réellement l'index, et seule la tâche est habilitée à les changer. L'état affiché reste donc honnête pendant toute la durée du traitement.
+
+#### Modèle de tâche
+
+Six types partagent le même modèle : enregistrement, suppression, publication, dépublication, réparation d'index, création d'index. Quatre états : `QUEUED`, `RUNNING`, `COMPLETED`, `FAILED`.
+
+Une tâche porte sa progression (`total`, `done`, `failed`), la liste des entrées en échec avec leur motif, le nombre de lignes écrites et supprimées, et l'état de synchronisation une fois terminée, ce qui évite un appel supplémentaire pour rafraîchir le bandeau.
+
+**Un échec partiel ne fait pas échouer la tâche** : les entrées concernées restent en attente et sont listées. L'état `FAILED` est réservé à la tâche qui n'a pas pu s'exécuter du tout.
+
+Deux endpoints suffisent au suivi :
+
+- `GET /knowledge-base/jobs/:jobId` — interrogation pendant l'exécution ;
+- `GET /knowledge-base/jobs/active` — tâche en cours sur le bot, quelle qu'en soit l'origine.
+
+Le second n'est pas un confort. Il couvre deux situations qui se produiront : l'utilisateur recharge sa page pendant une publication de cent entrées, et un collègue a lancé une réparation d'index depuis un autre poste. Sans lui, l'écran affiche un état faux.
+
+Puisque le serveur met en file, l'interface n'a pas à empêcher d'enchaîner les actions : elles se succèdent au lieu de se concurrencer.
 
 ## 4. Modèle de données
 
@@ -275,6 +300,8 @@ Deux capacités à créer :
 - `POST /knowledge-base/index` — embedding et upsert d'un lot de lignes, avec création de l'index si nécessaire ;
 - `POST /knowledge-base/delete` — suppression des lignes d'une entrée.
 
+Elles sont appelées par le serveur admin depuis la file de tâches décrite en §3.6, et servent indifféremment une entrée ou cent : la projection unitaire n'est pas un cas particulier.
+
 **Piste de simplification à vérifier.** En posant des identifiants de ligne déterministes dérivés de l'identifiant d'entrée, `add_documents(ids=…)` réalise un upsert et la suppression se fait par identifiant, sans filtre sur métadonnée. Si le comportement se confirme sur les versions de `langchain_postgres` et du client OpenSearch utilisées, cela simplifie la seconde capacité et règle le point d'arbitrage sur le mode de suppression (§8).
 
 À noter pour éviter une fausse piste : l'endpoint `/qa` existant fait bien de la récupération pure, mais il est câblé en dur sur OpenSearch et ne renvoie que titre, URL et contenu, sans rang, score ni épinglage. Il ne peut pas servir au test de remontée, qui s'appuie sur `/vector-store-inspection/search`.
@@ -326,6 +353,7 @@ Cela reste une limite structurelle de la chaîne actuelle, à traiter par le cha
 - Test de remontée sur l'index courant
 - Import du JSON d'export des FAQ, prévisualisé, et export JSON des entrées (§3.5)
 - Publication et dépublication en lot, depuis le rapport d'import et depuis la liste (§3.6)
+- File de tâches côté serveur et suivi de progression côté studio, pour toute écriture vers l'index (§3.6)
 
 ### Hors v1, évolutions identifiées
 
@@ -341,5 +369,6 @@ Cela reste une limite structurelle de la chaîne actuelle, à traiter par le cha
 3. **Priorité KB dans le prompt d'answering.** On ajoute la règle de préséance ou on laisse le LLM arbitrer ?
 4. **Nommage upstream.** « Knowledge Base » risque une confusion avec les FAQ existantes pour la communauté. Alternatives à discuter : *Curated Answers*, *Knowledge Entries*, *Internal Knowledge*.
 5. **Suppression d'une entrée.** Suppression physique des lignes dans l'index, ou dépublication laissant l'entrée en base avec nettoyage à la resynchronisation ? La première est plus propre, la seconde plus tolérante aux pannes de la base vectorielle. À trancher conjointement avec la piste des identifiants de ligne déterministes (§5.2), qui rendrait la suppression triviale.
-6. **Mutualisation front du service d'inspection.** Le test de remontée appelle le service de recherche du module `vector-store-inspection`, déjà structuré en classe abstraite avec implémentations mock et REST interchangeables. Pour éviter une dépendance entre deux features de haut niveau, il est proposé de remonter cette abstraction, ses deux implémentations et ses modèles dans `shared/services`. Décision front, sans impact sur les contrats d'API.
+6. **Verrouillage des entrées pendant un lot.** Les tâches s'exécutant en file, deux écritures ne se concurrencent plus sur l'index. Reste à décider si le serveur doit en outre empêcher l'édition d'une entrée déjà comprise dans un lot en attente, ou laisser la dernière écriture l'emporter.
+7. **Mutualisation front du service d'inspection.** Le test de remontée appelle le service de recherche du module `vector-store-inspection`, déjà structuré en classe abstraite avec implémentations mock et REST interchangeables. Pour éviter une dépendance entre deux features de haut niveau, il est proposé de remonter cette abstraction, ses deux implémentations et ses modèles dans `shared/services`. Décision front, sans impact sur les contrats d'API.
 ```
