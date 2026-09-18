@@ -29,7 +29,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <aws-secretsmanager-caching>1.1.0</aws-secretsmanager-caching>
+        <aws-secretsmanager-caching>2.2.0</aws-secretsmanager-caching>
     </properties>
 
     <build>
@@ -105,9 +105,12 @@
             <version>${aws-secretsmanager-caching}</version>
         </dependency>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sts</artifactId>
-            <version>${aws-sdk}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
         </dependency>
     </dependencies>
 </project>
