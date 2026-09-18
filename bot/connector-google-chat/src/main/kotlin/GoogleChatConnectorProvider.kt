@@ -176,7 +176,6 @@ internal object GoogleChatConnectorProvider : ConnectorProvider {
             null,
             listOf(CHAT_SCOPE),
             IMPERSONATION_TOKEN_LIFETIME_SECONDS,
-            null,
         )
     }
 

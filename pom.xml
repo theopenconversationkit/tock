@@ -31,64 +31,66 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>2.4.0</kotlin>
+        <kotlin>2.4.20</kotlin>
         <coroutine>1.11.0</coroutine>
 
-        <slf4j>2.0.18</slf4j>
-        <logback>1.5.37</logback>
+        <slf4j>2.0.19</slf4j>
+        <logback>1.6.3</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>5.6.0</kmongo>
-        <jackson>2.22.0</jackson>
+        <jackson>2.22.2</jackson>
         <jackson-annotation>2.22</jackson-annotation>
-        <jackson-databind>2.22.0</jackson-databind>
-        <jackson-module>2.22.0</jackson-module>
+        <jackson-databind>2.22.2</jackson-databind>
+        <jackson-module>2.22.2</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>5.1.3</vertx>
+        <vertx>5.2.0</vertx>
         <retrofit>3.0.0</retrofit>
-        <okhttp>5.4.0</okhttp>
+        <okhttp>5.5.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>33.6.0-jre</guava>
+        <guava>33.7.1-jre</guava>
         <google-auth>1.39.0</google-auth>
-        <google-http-client>2.1.1</google-http-client>
+        <google-http-client>2.2.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.14.1</commons-csv>
         <commons-io>2.22.0</commons-io>
         <commons-text>1.15.0</commons-text>
         <emoji>5.1.1</emoji>
-        <commons-codec>1.22.0</commons-codec>
+        <commons-codec>1.22.1</commons-codec>
         <commons-lang>3.20.0</commons-lang>
         <commons-logging>1.4.0</commons-logging>
-        <commonmark>0.29.0</commonmark>
-        <json>20260522</json>
+        <commonmark>0.30.0</commonmark>
+        <json>20260814</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.84.0</google>
+        <google>26.88.1</google>
         <aws-sdk>1.12.797</aws-sdk>
-        <aws-sagemaker>2.46.20</aws-sagemaker>
-        <pac4j>6.5.4</pac4j>
-        <vertx-pac4j>7.0.2</vertx-pac4j>
-        <okhttp-eventsource>4.3.0</okhttp-eventsource>
+        <aws-sagemaker>2.55.0</aws-sagemaker>
+        <pac4j>6.5.8</pac4j>
+        <vertx-pac4j>7.0.3</vertx-pac4j>
+        <okhttp-eventsource>5.0.0</okhttp-eventsource>
         <graphql-kotlin>6.3.0</graphql-kotlin>
         <openai>4.1.0</openai>
 
-        <junit-jupiter>6.1.1</junit-jupiter>
+        <junit-jupiter>6.1.3</junit-jupiter>
         <testcontainer>1.21.4</testcontainer>
 
         <mockk>1.14.11</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.18.10-jdk5</byte-buddy>
+        <byte-buddy>1.18.14-jdk5</byte-buddy>
         <atrium>1.2.0</atrium>
         <serialization>1.6.2</serialization>
 
+        <!-- Pinned below 3.6.0: that version breaks ByteBuddy/Mockito's external self-attach on JDK 21+
+             ("Could not self-attach to current VM using external process"). No fixed release yet upstream. -->
         <plugin.surefire>3.5.6</plugin.surefire>
         <plugin.source>3.4.0</plugin.source>
         <plugin.release>3.3.1</plugin.release>
@@ -96,14 +98,14 @@
         <plugin.publishing-maven>0.8.0</plugin.publishing-maven>
         <plugin.dokka>2.2.0</plugin.dokka>
         <plugin.assembly>3.8.0</plugin.assembly>
-        <plugin.frontend>2.0.1</plugin.frontend>
+        <plugin.frontend>2.0.2</plugin.frontend>
         <plugin.clean>3.5.0</plugin.clean>
-        <plugin.jar>3.5.0</plugin.jar>
+        <plugin.jar>3.5.1</plugin.jar>
         <plugin.ant>3.1.0</plugin.ant>
         <plugin.shade>3.6.2</plugin.shade>
         <plugin.dependency>3.11.0</plugin.dependency>
         <plugin.resources>3.5.0</plugin.resources>
-        <plugin.deploy>3.1.4</plugin.deploy>
+        <plugin.deploy>3.2.0</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
         <plugin.ant>3.2.0</plugin.ant>
         <plugin.ktlint>1.8.0</plugin.ktlint>
