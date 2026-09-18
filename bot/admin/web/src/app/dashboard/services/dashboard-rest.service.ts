@@ -20,7 +20,7 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { DashboardService } from './dashboard.service';
 import { RagAnswerStatus } from '../../shared/utils/dialog.utils';
 import { snakeCaseToDisplayLabel } from '../../shared/utils';
-import { CountByDateResult, CountResult, DialogStatsGroupResult, DialogStatsQueryResult } from '../../shared/model/dialog-data';
+import { CountByDateResult, CountResult, DialogStatsQueryResult } from '../../shared/model/dialog-data';
 import { MetricGroupResult, MetricResult } from '../../metrics/models/metrics.model';
 import { EvaluationSampleDefinition } from '../../quality/samples/models';
 import { getEvaluationBaseUrl } from '../../quality/samples/utils';
@@ -51,6 +51,12 @@ const RAG_TOPICS_INDICATOR = 'rag_topics';
 
 const TOPICS_DISPLAYED = 6;
 
+type DialogUsageStats = Pick<DialogStatsQueryResult, 'allUserActions' | 'allUserActionsByDate' | 'allFeedbackUp' | 'allFeedbackDown'>;
+interface DialogUsageGroupResult {
+  prod: DialogUsageStats;
+  test: DialogUsageStats;
+}
+
 const METRICS_GROUP_BY = ['APPLICATION_ID', 'TYPE', 'INDICATOR_NAME', 'INDICATOR_VALUE_NAME'];
 
 /** One entry of GET /gen-ai/bots/{botId}/vector-store/indexes (PR #2086). */
@@ -68,12 +74,12 @@ export class DashboardRestService extends DashboardService {
   private readonly rest = inject(RestService);
 
   // ---------------------------------------------------------------------------
-  // Usage — POST /dialogs/stats
+  // Usage — POST /bots/{applicationName}/usage
   // ---------------------------------------------------------------------------
 
   /**
    * The backend always computes both the `test` and `prod` branches, splitting on the
-   * `test-` applicationId prefix (BotAdminService.groupByAppConfigType). The query
+   * `test-` applicationId prefix. The query
    * itself carries no test flag: `includeTests` only decides which branches are summed.
    */
   getUsage(namespace: string, applicationName: string, period: DashboardPeriod, includeTests: boolean): Observable<DashboardUsage> {
@@ -104,16 +110,12 @@ export class DashboardRestService extends DashboardService {
   }
 
   /** Sums one counter over the `prod` branch, plus `test` when tests are displayed. */
-  private mergedTotal(
-    result: DialogStatsGroupResult,
-    includeTests: boolean,
-    pick: (stats: DialogStatsQueryResult) => CountResult[]
-  ): number {
+  private mergedTotal(result: DialogUsageGroupResult, includeTests: boolean, pick: (stats: DialogUsageStats) => CountResult[]): number {
     const branches = includeTests ? [result?.prod, result?.test] : [result?.prod];
     return branches.reduce((sum, branch) => sum + this.sumCounts(branch ? pick(branch) : []), 0);
   }
 
-  private mergedByDate(result: DialogStatsGroupResult, includeTests: boolean): CountByDateResult[] {
+  private mergedByDate(result: DialogUsageGroupResult, includeTests: boolean): CountByDateResult[] {
     return includeTests
       ? [...(result?.prod?.allUserActionsByDate ?? []), ...(result?.test?.allUserActionsByDate ?? [])]
       : result?.prod?.allUserActionsByDate ?? [];
@@ -123,8 +125,8 @@ export class DashboardRestService extends DashboardService {
     namespace: string,
     applicationName: string,
     range: { from: Date; to: Date }
-  ): Observable<DialogStatsGroupResult> {
-    return this.rest.post<unknown, DialogStatsGroupResult>('/dialogs/stats', {
+  ): Observable<DialogUsageGroupResult> {
+    return this.rest.post<unknown, DialogUsageGroupResult>(`/bots/${applicationName}/usage`, {
       namespace,
       applicationName,
       from: range.from,
@@ -132,7 +134,7 @@ export class DashboardRestService extends DashboardService {
     });
   }
 
-  private positiveRate(result: DialogStatsGroupResult, includeTests: boolean): number | null {
+  private positiveRate(result: DialogUsageGroupResult, includeTests: boolean): number | null {
     const up = this.mergedTotal(result, includeTests, (stats) => stats.allFeedbackUp);
     const down = this.mergedTotal(result, includeTests, (stats) => stats.allFeedbackDown);
     return up + down ? up / (up + down) : null;

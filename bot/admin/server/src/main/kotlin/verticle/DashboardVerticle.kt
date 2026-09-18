@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.dashboard.BotContact
+import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.service.BotDashboardService
 import ai.tock.bot.admin.service.BotIdentityRequest
 import ai.tock.bot.admin.service.BotNoteRequest
@@ -28,6 +29,12 @@ import io.vertx.ext.web.RoutingContext
 class DashboardVerticle : AbstractNamespaceRetriever() {
     fun configure(verticle: WebVerticle) {
         with(verticle) {
+            blockingJsonPost("/bots/:botId/usage", setOf(botUser)) { context, query: DialogStatsQuery ->
+                checkNamespaceAndExecute(context, ::currentContextApp) { app ->
+                    BotDashboardService.usage(query.copy(namespace = app.namespace, applicationName = app.name))
+                }
+            }
+
             blockingJsonGet("/bots/:botId/identity", setOf(botUser, admin)) { context ->
                 checkNamespaceAndExecute(context, ::currentContextApp) { app -> BotDashboardService.identity(app.namespace, app.name) }
             }

@@ -29,6 +29,7 @@ import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.DialogStatsQuery
 import ai.tock.bot.admin.dialog.DialogStatsQueryResult
+import ai.tock.bot.admin.dialog.DialogUsageStats
 import ai.tock.bot.admin.dialog.IntentTypeEnum
 import ai.tock.bot.admin.dialog.RatingReportQueryResult
 import ai.tock.bot.admin.evaluation.Evaluation
@@ -219,6 +220,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     ),
                 )
                 dialogCol.ensureIndex(GroupId)
+                dialogCol.createIndex(DialogUsageAggregation.index)
 
                 dialogTextCol.ensureUniqueIndex(Text, DialogId)
                 dialogTextCol.ensureIndex(
@@ -1525,6 +1527,18 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 ),
             ),
         )
+
+    override fun calculateDialogUsage(query: DialogStatsQuery): DialogUsageStats {
+        val applicationIds =
+            getConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
+                .map { it.applicationId }
+                .toSet()
+        if (applicationIds.isEmpty()) return DialogUsageStats()
+        return runBlocking {
+            val rows = dialogCol.aggregate<Document>(DialogUsageAggregation.pipeline(query, applicationIds)).toList()
+            DialogUsageAggregation.result(rows)
+        }
+    }
 
     /**
      * Calculates dialog statistics for a given [DialogStatsQuery].

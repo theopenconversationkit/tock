@@ -38,7 +38,7 @@ import {
  * depends on this class, never on a concrete implementation.
  */
 export abstract class DashboardService {
-  // --- usage (POST /dialogs/stats) ---
+  // --- usage (POST /bots/{applicationName}/usage) ---
   abstract getUsage(namespace: string, applicationName: string, period: DashboardPeriod, includeTests: boolean): Observable<DashboardUsage>;
 
   // --- answer outcome & topics (POST /bot/{applicationName}/metrics) ---
