@@ -19,7 +19,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { Observable, Subject, debounceTime, interval, switchMap, takeUntil, takeWhile } from 'rxjs';
 
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -29,12 +29,15 @@ import { Pagination } from '../../shared/components/pagination/pagination.compon
 import {
   KnowledgeBaseEntry,
   KnowledgeBaseEntryStatus,
+  KnowledgeBaseJobState,
   KnowledgeBaseExportEnvelope,
+  KnowledgeBaseJob,
   KnowledgeBaseProjectionState,
   KnowledgeBaseSearchQuery,
   KnowledgeBaseSortField,
   KnowledgeBaseSyncStatus,
-  SortDirection
+  SortDirection,
+  isJobFinished
 } from '../models';
 import { KnowledgeBaseMockScenario } from '../services/knowledge-base-mock-data';
 import { KnowledgeBaseMockService } from '../services/knowledge-base-mock.service';
@@ -61,7 +64,6 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
 
   loading: boolean = true;
-  syncing: boolean = false;
 
   configurations: BotApplicationConfiguration[];
 
@@ -80,8 +82,14 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   /** Ids selected for a bulk action. Kept across pages on purpose: a filtered, paged
    *  selection is exactly how a post import publication is done. */
   selection = new Set<string>();
-  bulkRunning: boolean = false;
   exporting: boolean = false;
+
+  /** Batch job currently running on this bot, whoever started it. */
+  job: KnowledgeBaseJob | null = null;
+
+  get jobRunning(): boolean {
+    return !!this.job && !isJobFinished(this.job);
+  }
 
   filtersForm = new FormGroup({
     search: new FormControl<string>(''),
@@ -110,6 +118,15 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
     });
 
     this.mockService?.scenario$.pipe(takeUntil(this.destroy$)).subscribe((scenario) => (this.currentMockScenario = scenario));
+
+    // A batch may already be running: a reload, or someone else's action, is picked up
+    // rather than ignored.
+    this.knowledgeBaseService
+      .getActiveJob()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((job) => {
+        if (job) this.followJob(job);
+      });
   }
 
   refresh(): void {
@@ -202,8 +219,13 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   deleteEntry(entry: KnowledgeBaseEntry): void {
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: this.transloco.translate('knowledge-base.entries-board.delete_entry_title'),
-        subtitle: this.transloco.translate('knowledge-base.entries-board.delete_entry_subtitle', { title: entry.title }),
+        title: this.transloco.translate('knowledge-base.entry-detail.delete_dialog_title'),
+        subtitle: this.transloco.translate(
+          entry.projectionState === KnowledgeBaseProjectionState.INDEXED
+            ? 'knowledge-base.entry-detail.delete_dialog_subtitle_indexed'
+            : 'knowledge-base.entry-detail.delete_dialog_subtitle_draft',
+          { title: entry.title }
+        ),
         actions: [
           { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
           { actionName: 'delete', buttonStatus: 'danger' }
@@ -231,33 +253,7 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   // ---------------------------------------------------------------- Index actions
 
   synchronize(): void {
-    this.syncing = true;
-
-    this.knowledgeBaseService
-      .synchronize()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (result) => {
-          this.syncing = false;
-          this.toastrService.show(
-            this.transloco.translate('knowledge-base.entries-board.synchronized_message', {
-              projected: result.projected,
-              removed: result.removed
-            }),
-            this.transloco.translate('knowledge-base.entries-board.success_title'),
-            { duration: 5000, status: 'success' }
-          );
-          this.refresh();
-        },
-        error: () => {
-          this.syncing = false;
-          this.toastrService.show(
-            this.transloco.translate('knowledge-base.entries-board.synchronization_failed_message'),
-            this.transloco.translate('knowledge-base.entries-board.error_title'),
-            { duration: 6000, status: 'danger' }
-          );
-        }
-      });
+    this.runJob(this.knowledgeBaseService.synchronize());
   }
 
   createIndex(): void {
@@ -273,31 +269,7 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((result) => {
-      if (result !== 'create') return;
-
-      this.syncing = true;
-      this.knowledgeBaseService
-        .createIndex()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (res) => {
-            this.syncing = false;
-            this.toastrService.show(
-              this.transloco.translate('knowledge-base.entries-board.index_created_message', { projected: res.projected }),
-              this.transloco.translate('knowledge-base.entries-board.success_title'),
-              { duration: 6000, status: 'success' }
-            );
-            this.refresh();
-          },
-          error: () => {
-            this.syncing = false;
-            this.toastrService.show(
-              this.transloco.translate('knowledge-base.entries-board.index_creation_failed_message'),
-              this.transloco.translate('knowledge-base.entries-board.error_title'),
-              { duration: 6000, status: 'danger' }
-            );
-          }
-        });
+      if (result === 'create') this.runJob(this.knowledgeBaseService.createIndex());
     });
   }
 
@@ -330,36 +302,73 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   }
 
   bulkUpdateStatus(status: KnowledgeBaseEntryStatus): void {
+    // No guard on a running job: everything is queued server side, so actions line up
+    // instead of competing.
     if (!this.selectionCount) return;
 
-    this.bulkRunning = true;
+    this.runJob(this.knowledgeBaseService.bulkUpdateStatus([...this.selection], status));
+  }
 
-    this.knowledgeBaseService
-      .bulkUpdateStatus([...this.selection], status)
-      .pipe(takeUntil(this.destroy$))
+  // ---------------------------------------------------------------- Job follow up
+
+  /**
+   * Polls a job until it finishes, on the same principle as the dataset run follow up.
+   * A job that comes back already finished — a single entry handled inline by the server —
+   * is simply displayed, never polled.
+   */
+  private followJob(job: KnowledgeBaseJob): void {
+    this.job = job;
+
+    if (isJobFinished(job)) {
+      this.onJobFinished(job);
+      return;
+    }
+
+    interval(800)
+      .pipe(
+        switchMap(() => this.knowledgeBaseService.getJob(job.id)),
+        takeWhile((current) => !isJobFinished(current), true),
+        takeUntil(this.destroy$)
+      )
       .subscribe({
-        next: (result) => {
-          this.bulkRunning = false;
-          this.clearSelection();
-          this.toastrService.show(
-            this.transloco.translate(
-              status === KnowledgeBaseEntryStatus.PUBLISHED ? 'knowledge-base.bulk.published_message' : 'knowledge-base.bulk.unpublished_message',
-              { count: result.succeeded }
-            ),
-            this.transloco.translate('knowledge-base.entries-board.success_title'),
-            { duration: 5000, status: result.failed ? 'warning' : 'success' }
-          );
-          this.refresh();
+        next: (current) => {
+          this.job = current;
+          if (isJobFinished(current)) this.onJobFinished(current);
         },
-        error: () => {
-          this.bulkRunning = false;
-          this.toastrService.show(
-            this.transloco.translate('knowledge-base.bulk.failed_message'),
-            this.transloco.translate('knowledge-base.entries-board.error_title'),
-            { duration: 6000, status: 'danger' }
-          );
-        }
+        error: () => (this.job = null)
       });
+  }
+
+  private onJobFinished(job: KnowledgeBaseJob): void {
+    this.clearSelection();
+    this.refresh();
+
+    const failed = job.state === KnowledgeBaseJobState.FAILED;
+
+    this.toastrService.show(
+      this.transloco.translate(failed ? 'knowledge-base.job.failed_message' : `knowledge-base.job.done_${job.type.toLowerCase()}`, {
+        projected: job.projected,
+        removed: job.removed,
+        failed: job.failures.length
+      }),
+      this.transloco.translate(failed ? 'knowledge-base.entries-board.error_title' : 'knowledge-base.entries-board.success_title'),
+      { duration: 6000, status: failed ? 'danger' : job.failures.length ? 'warning' : 'success' }
+    );
+
+    // The card stays on screen a moment so the outcome can be read, then clears itself.
+    setTimeout(() => (this.job = null), job.failures.length ? 15000 : 4000);
+  }
+
+  private runJob(request: Observable<KnowledgeBaseJob>): void {
+    request.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (job) => this.followJob(job),
+      error: () =>
+        this.toastrService.show(
+          this.transloco.translate('knowledge-base.job.failed_message'),
+          this.transloco.translate('knowledge-base.entries-board.error_title'),
+          { duration: 6000, status: 'danger' }
+        )
+    });
   }
 
   // ---------------------------------------------------------------- Import / export

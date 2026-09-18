@@ -59,9 +59,8 @@ function daysAgo(days: number, hours: number = 0): string {
 
 interface SeedEntry {
   title: string;
-  question: string;
-  questionVariants: string[];
-  answer: string;
+  searchHints: string[];
+  content: string;
   sourceUrl: string | null;
   tags: string[];
   status: KnowledgeBaseEntryStatus;
@@ -74,10 +73,9 @@ interface SeedEntry {
 
 const SEED: SeedEntry[] = [
   {
-    title: 'Plafond de retrait par carte',
-    question: 'Quel est le plafond de retrait de ma carte bancaire ?',
-    questionVariants: ['Combien puis-je retirer par semaine ?', 'Je ne peux plus retirer au distributeur, pourquoi ?'],
-    answer:
+    title: 'Quel est le plafond de retrait de ma carte bancaire ?',
+    searchHints: ['Combien puis-je retirer par semaine ?', 'Je ne peux plus retirer au distributeur, pourquoi ?'],
+    content:
       "Le plafond de retrait dépend de la gamme de la carte. Il est consultable à tout moment depuis l'application, rubrique Mes cartes, puis Plafonds. Une modification temporaire peut être demandée en ligne pour une durée maximale de 30 jours ; au-delà, elle nécessite un accord du conseiller.",
     sourceUrl: 'https://intranet.example.com/cartes/plafonds',
     tags: ['cartes', 'quotidien'],
@@ -89,10 +87,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 12
   },
   {
-    title: 'Opposition sur carte perdue ou volée',
-    question: 'Comment faire opposition sur ma carte ?',
-    questionVariants: ["J'ai perdu ma carte bancaire", 'Ma carte a été volée, que faire ?', 'Bloquer ma carte'],
-    answer:
+    title: 'Comment faire opposition sur ma carte ?',
+    searchHints: ["J'ai perdu ma carte bancaire", 'Ma carte a été volée, que faire ?', 'Bloquer ma carte'],
+    content:
       "L'opposition peut être posée immédiatement depuis l'application, rubrique Mes cartes, bouton Bloquer ma carte. Elle est également possible 24h/24 par téléphone au numéro d'opposition figurant au dos des relevés. Le blocage est immédiat et irréversible : une nouvelle carte est commandée automatiquement et livrée sous 5 jours ouvrés.",
     sourceUrl: 'https://intranet.example.com/cartes/opposition',
     tags: ['cartes', 'urgence'],
@@ -104,10 +101,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Délai de virement SEPA',
-    question: 'En combien de temps un virement SEPA est-il reçu ?',
-    questionVariants: ['Mon virement met combien de temps ?', 'Quand mon bénéficiaire recevra-t-il le virement ?'],
-    answer:
+    title: 'En combien de temps un virement SEPA est-il reçu ?',
+    searchHints: ['Mon virement met combien de temps ?', 'Quand mon bénéficiaire recevra-t-il le virement ?'],
+    content:
       "Un virement SEPA classique émis avant 16h un jour ouvré est crédité sur le compte du bénéficiaire le jour ouvré suivant. Émis après 16h, un week-end ou un jour férié, il est traité le jour ouvré suivant. Le virement instantané, lorsqu'il est disponible pour le bénéficiaire, est crédité en moins de 10 secondes, 7j/7.",
     sourceUrl: null,
     tags: ['virements', 'quotidien'],
@@ -119,10 +115,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 3
   },
   {
-    title: "Ajout d'un bénéficiaire de virement",
-    question: 'Comment ajouter un nouveau bénéficiaire ?',
-    questionVariants: ['Enregistrer un IBAN', "Je veux virer de l'argent à quelqu'un de nouveau"],
-    answer:
+    title: 'Comment ajouter un nouveau bénéficiaire ?',
+    searchHints: ['Enregistrer un IBAN', "Je veux virer de l'argent à quelqu'un de nouveau"],
+    content:
       "L'ajout se fait depuis l'application, rubrique Virements, puis Bénéficiaires, bouton Ajouter. Une validation par l'application sécurisée est demandée. Le bénéficiaire est utilisable immédiatement après validation, sans délai d'attente.",
     sourceUrl: 'https://intranet.example.com/virements/beneficiaires',
     tags: ['virements'],
@@ -134,10 +129,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 0
   },
   {
-    title: 'Frais de tenue de compte',
-    question: 'Quels sont les frais de tenue de compte ?',
-    questionVariants: ['Combien coûte mon compte par mois ?'],
-    answer:
+    title: 'Quels sont les frais de tenue de compte ?',
+    searchHints: ['Combien coûte mon compte par mois ?'],
+    content:
       'Les frais de tenue de compte sont détaillés dans la brochure tarifaire en vigueur, disponible en agence et en ligne. Ils sont prélevés mensuellement et apparaissent sur le relevé sous le libellé Frais de tenue de compte. Certaines offres groupées de services les incluent.',
     sourceUrl: 'https://intranet.example.com/tarifs',
     tags: ['tarifs'],
@@ -149,10 +143,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 1
   },
   {
-    title: "Ouverture d'un livret A",
-    question: 'Comment ouvrir un livret A ?',
-    questionVariants: ['Je veux ouvrir un livret', 'Souscrire un livret A en ligne'],
-    answer:
+    title: 'Comment ouvrir un livret A ?',
+    searchHints: ['Je veux ouvrir un livret', 'Souscrire un livret A en ligne'],
+    content:
       "L'ouverture se fait en ligne depuis l'espace client, rubrique Épargne, ou en agence. Un seul livret A par personne est autorisé, tous établissements confondus. Le versement initial minimum est de 10 euros.",
     sourceUrl: null,
     tags: ['épargne'],
@@ -164,10 +157,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Contact du conseiller',
-    question: 'Comment contacter mon conseiller ?',
-    questionVariants: ["Je veux parler à quelqu'un", 'Prendre rendez-vous avec mon conseiller'],
-    answer:
+    title: 'Comment contacter mon conseiller ?',
+    searchHints: ["Je veux parler à quelqu'un", 'Prendre rendez-vous avec mon conseiller'],
+    content:
       "La messagerie sécurisée de l'espace client permet d'écrire directement au conseiller, avec une réponse sous 48h ouvrées. La prise de rendez-vous, en agence ou par téléphone, est disponible dans la rubrique Mon agence. Les coordonnées directes du conseiller figurent également dans cette rubrique.",
     sourceUrl: 'https://intranet.example.com/contact',
     tags: ['relation client'],
@@ -179,10 +171,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 9
   },
   {
-    title: "Contestation d'un prélèvement",
-    question: "Comment contester un prélèvement que je n'ai pas autorisé ?",
-    questionVariants: ['Un prélèvement inconnu sur mon compte', 'Se faire rembourser un prélèvement'],
-    answer:
+    title: "Comment contester un prélèvement que je n'ai pas autorisé ?",
+    searchHints: ['Un prélèvement inconnu sur mon compte', 'Se faire rembourser un prélèvement'],
+    content:
       "Un prélèvement SEPA autorisé peut être contesté sans motif dans les 8 semaines suivant le débit, directement depuis l'application, rubrique Opérations. En l'absence de mandat, le délai de contestation est porté à 13 mois. Le remboursement intervient sous 10 jours ouvrés après acceptation de la demande.",
     sourceUrl: 'https://intranet.example.com/prelevements/contestation',
     tags: ['prélèvements', 'litiges'],
@@ -194,10 +185,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Découvert autorisé',
-    question: 'Comment demander une autorisation de découvert ?',
-    questionVariants: ['Augmenter mon découvert', 'Je suis à découvert, que faire ?'],
-    answer:
+    title: 'Comment demander une autorisation de découvert ?',
+    searchHints: ['Augmenter mon découvert', 'Je suis à découvert, que faire ?'],
+    content:
       "La demande d'autorisation de découvert, ou de modification du montant autorisé, se fait auprès du conseiller. Elle donne lieu à une étude préalable. Un découvert non autorisé génère des frais et doit être régularisé au plus vite.",
     sourceUrl: null,
     tags: ['crédit'],
@@ -209,10 +199,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 2
   },
   {
-    title: 'Justificatif de domicile accepté',
-    question: 'Quels justificatifs de domicile sont acceptés ?',
-    questionVariants: ['Quel document pour prouver mon adresse ?'],
-    answer:
+    title: 'Quels justificatifs de domicile sont acceptés ?',
+    searchHints: ['Quel document pour prouver mon adresse ?'],
+    content:
       "Sont acceptées les factures d'électricité, de gaz, d'eau ou de téléphone fixe de moins de 3 mois, ainsi que la dernière quittance de loyer ou le dernier avis d'imposition. Une attestation d'hébergement accompagnée de la pièce d'identité de l'hébergeant est acceptée pour les personnes hébergées.",
     sourceUrl: 'https://intranet.example.com/kyc/justificatifs',
     tags: ['dossier client'],
@@ -224,10 +213,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Offre de bienvenue jeunes actifs',
-    question: "Quelle est l'offre en cours pour les 18-25 ans ?",
-    questionVariants: ['Offre jeune', 'Promotion ouverture de compte étudiant'],
-    answer:
+    title: "Quelle est l'offre en cours pour les 18-25 ans ?",
+    searchHints: ['Offre jeune', 'Promotion ouverture de compte étudiant'],
+    content:
       "L'offre de bienvenue jeunes actifs a pris fin le 30 juin. Aucune offre promotionnelle n'est en cours actuellement pour cette tranche d'âge. Les conditions tarifaires réduites pour les moins de 25 ans restent applicables.",
     sourceUrl: null,
     tags: ['offres'],
@@ -239,10 +227,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 4
   },
   {
-    title: 'Plafond du livret A',
-    question: 'Quel est le plafond du livret A ?',
-    questionVariants: ['Combien puis-je mettre au maximum sur mon livret A ?'],
-    answer:
+    title: 'Quel est le plafond du livret A ?',
+    searchHints: ['Combien puis-je mettre au maximum sur mon livret A ?'],
+    content:
       'Le plafond de versement du livret A est de 22 950 euros pour un particulier, hors capitalisation des intérêts. Les intérêts annuels peuvent porter le solde au-delà de ce plafond sans que cela pose de difficulté.',
     sourceUrl: null,
     tags: ['épargne'],
@@ -254,10 +241,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Mobilité bancaire',
-    question: 'Comment transférer mes prélèvements depuis une autre banque ?',
-    questionVariants: ['Service de mobilité bancaire', 'Changer de banque sans rien faire'],
-    answer:
+    title: 'Comment transférer mes prélèvements depuis une autre banque ?',
+    searchHints: ['Service de mobilité bancaire', 'Changer de banque sans rien faire'],
+    content:
       "Le service d'aide à la mobilité bancaire prend en charge le transfert des virements et prélèvements récurrents depuis l'ancienne banque. Il est gratuit et s'active à l'ouverture du compte, sur simple mandat signé. Le transfert est effectif sous 22 jours ouvrés.",
     sourceUrl: 'https://intranet.example.com/mobilite',
     tags: ['dossier client'],
@@ -269,10 +255,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: null
   },
   {
-    title: 'Blocage du code confidentiel',
-    question: 'Ma carte est bloquée après trois codes faux, que faire ?',
-    questionVariants: ["J'ai tapé trois fois le mauvais code", 'Débloquer ma carte après code erroné'],
-    answer:
+    title: 'Ma carte est bloquée après trois codes faux, que faire ?',
+    searchHints: ["J'ai tapé trois fois le mauvais code", 'Débloquer ma carte après code erroné'],
+    content:
       "Après trois saisies erronées, la carte est bloquée par sécurité. Le déblocage se fait par le conseiller, après vérification d'identité. Le code confidentiel reste inchangé ; en cas d'oubli, une demande de nouveau code doit être faite, avec un délai de réception d'environ 5 jours ouvrés.",
     sourceUrl: null,
     tags: ['cartes', 'urgence'],
@@ -284,10 +269,9 @@ const SEED: SeedEntry[] = [
     updatedDaysAgo: 0
   },
   {
-    title: 'Relevés bancaires en ligne',
-    question: 'Où trouver mes relevés de compte ?',
-    questionVariants: ['Télécharger mes relevés', 'Historique de mes relevés bancaires'],
-    answer:
+    title: 'Où trouver mes relevés de compte ?',
+    searchHints: ['Télécharger mes relevés', 'Historique de mes relevés bancaires'],
+    content:
       "Les relevés sont disponibles au format PDF dans l'espace client, rubrique Mes documents. L'historique couvre les 10 dernières années. Un relevé plus ancien peut être demandé au conseiller, avec des frais de recherche selon la brochure tarifaire.",
     sourceUrl: null,
     tags: ['quotidien'],
@@ -306,9 +290,8 @@ export function buildMockEntries(namespace: string, botId: string): KnowledgeBas
     namespace,
     botIds: [botId],
     title: seed.title,
-    question: seed.question,
-    questionVariants: seed.questionVariants,
-    answer: seed.answer,
+    searchHints: seed.searchHints,
+    content: seed.content,
     sourceUrl: seed.sourceUrl,
     tags: seed.tags,
     status: seed.status,

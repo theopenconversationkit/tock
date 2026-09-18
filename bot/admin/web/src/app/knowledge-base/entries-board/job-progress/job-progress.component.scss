@@ -1,0 +1,68 @@
+.job-progress {
+  font-size: 0.8rem;
+}
+
+.job-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.job-progress-label {
+  font-weight: 600;
+}
+
+.job-progress-counts {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.job-progress-track {
+  height: 0.35rem;
+  border-radius: 0.2rem;
+  background-color: var(--background-basic-color-3);
+  overflow: hidden;
+}
+
+.job-progress-bar {
+  height: 100%;
+  background-color: var(--color-primary-default);
+  transition: width 0.25s ease;
+
+  &--warning {
+    background-color: var(--color-warning-default);
+  }
+
+  &--danger {
+    background-color: var(--color-danger-default);
+  }
+}
+
+.job-progress-error {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--color-danger-default);
+}
+
+.job-progress-failures {
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+}
+
+.job-progress-failures-title {
+  color: var(--color-warning-default);
+  font-weight: 600;
+}
+
+.job-progress-failure {
+  font-size: 0.7rem;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

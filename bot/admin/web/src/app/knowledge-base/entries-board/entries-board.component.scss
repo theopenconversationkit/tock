@@ -75,12 +75,8 @@
   vertical-align: baseline;
 }
 
-.entry-question {
-  font-size: 0.78rem;
-}
-
-.entry-variants {
-  font-size: 0.68rem;
+.entry-hints {
+  font-size: 0.72rem;
   font-style: italic;
 }
 
@@ -150,4 +146,8 @@
     padding-bottom: 0.5rem;
     font-size: 0.82rem;
   }
+}
+
+.job-card {
+  border-left: 4px solid var(--color-primary-default);
 }

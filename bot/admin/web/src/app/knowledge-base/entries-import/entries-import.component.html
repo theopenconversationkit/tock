@@ -108,13 +108,11 @@
       <strong>{{ fileName }}</strong>
       <span class="mx-2">·</span>
       <span>
-        {{
-          (parsed.source === ImportSource.FAQ ? 'knowledge-base.import.source_faq' : 'knowledge-base.import.source_kb') | transloco
-        }}
+        {{ (parsed.source === ImportSource.FAQ ? 'knowledge-base.import.source_faq' : 'knowledge-base.import.source_kb') | transloco }}
       </span>
       @if (selectedLocale) {
       <span class="mx-2">·</span>
-      <span>{{ 'knowledge-base.import.locale_used' | transloco : { locale: selectedLocale } }}</span>
+      <span>{{ 'knowledge-base.import.locale_used' | transloco: { locale: selectedLocale } }}</span>
       }
     </div>
 
@@ -161,9 +159,10 @@
         </div>
 
         <div class="import-row-body">
-          <div class="import-row-title ellipsis">{{ candidate.payload.title || candidate.payload.question }}</div>
-          <div class="import-row-question ellipsis text-muted">{{ candidate.payload.question }}</div>
-          @if (candidate.issues.length) {
+          <div class="import-row-title ellipsis">{{ candidate.payload.title }}</div>
+          @if (candidate.payload.searchHints.length) {
+          <div class="import-row-hints ellipsis text-muted">{{ candidate.payload.searchHints.join(' · ') }}</div>
+          } @if (candidate.issues.length) {
           <div class="import-row-issues">
             @for (issue of candidate.issues; track issue) {
             <span class="import-issue">{{ issue | transloco }}</span>
@@ -173,10 +172,10 @@
         </div>
 
         <div class="import-row-side text-muted">
-          @if (candidate.payload.questionVariants.length) {
-          <span [nbTooltip]="'knowledge-base.entries-board.variants_column' | transloco">
+          @if (candidate.payload.searchHints.length) {
+          <span [nbTooltip]="'knowledge-base.entry-detail.hints_label' | transloco">
             <nb-icon icon="chat-quote"></nb-icon>
-            {{ candidate.payload.questionVariants.length }}
+            {{ candidate.payload.searchHints.length }}
           </span>
           } @if (candidate.faqEnabled === false) {
           <span
@@ -235,8 +234,12 @@
         icon="send"
         class="mr-2"
       ></nb-icon>
-      {{ 'knowledge-base.import.publish_imported' | transloco : { count: result.entryIds.length } }}
+      {{ 'knowledge-base.import.publish_imported' | transloco: { count: result.entryIds.length } }}
     </button>
+    } @if (publishJob) {
+    <div class="mt-3">
+      <tock-knowledge-base-job-progress [job]="publishJob"></tock-knowledge-base-job-progress>
+    </div>
     } @if (published) {
     <div class="import-published mt-3">
       <nb-icon
@@ -266,7 +269,7 @@
       [disabled]="!importableCount || busy"
       (click)="runImport()"
     >
-      {{ 'knowledge-base.import.run_button' | transloco : { count: importableCount } }}
+      {{ 'knowledge-base.import.run_button' | transloco: { count: importableCount } }}
     </button>
     } @if (step === 'report') {
     <button

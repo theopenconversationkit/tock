@@ -77,14 +77,22 @@
 
 <tock-knowledge-base-sync-banner
   [syncStatus]="syncStatus"
-  [busy]="syncing"
+  [busy]="jobRunning"
   (onSynchronize)="synchronize()"
   (onCreateIndex)="createIndex()"
   (onFilterPending)="filterByProjectionState(ProjectionState.PENDING)"
   (onFilterOrphan)="filterByProjectionState(ProjectionState.ORPHAN)"
 ></tock-knowledge-base-sync-banner>
 
-<nb-card class="shadow-sm mb-2">
+@if (job) {
+<nb-card class="shadow-sm mb-3 job-card">
+  <nb-card-body>
+    <tock-knowledge-base-job-progress [job]="job"></tock-knowledge-base-job-progress>
+  </nb-card-body>
+</nb-card>
+}
+
+<nb-card class="shadow-sm mb-3">
   <nb-card-body>
     <form
       [formGroup]="filtersForm"
@@ -175,7 +183,7 @@
 } @if (selectionCount) {
 <nb-card
   class="shadow-sm bulk-bar"
-  [nbSpinner]="bulkRunning"
+  [nbSpinner]="jobRunning"
 >
   <nb-card-body class="d-flex align-items-center gap-2">
     <span class="flex-grow-1">{{ 'knowledge-base.bulk.selected_count' | transloco: { count: selectionCount } }}</span>
@@ -183,7 +191,6 @@
       nbButton
       size="small"
       status="primary"
-      [disabled]="bulkRunning"
       (click)="bulkUpdateStatus(EntryStatus.PUBLISHED)"
     >
       <nb-icon
@@ -196,7 +203,6 @@
       nbButton
       size="small"
       ghost
-      [disabled]="bulkRunning"
       (click)="bulkUpdateStatus(EntryStatus.DRAFT)"
     >
       {{ 'knowledge-base.bulk.unpublish_button' | transloco }}
@@ -289,11 +295,8 @@
           ></nb-icon>
           }
         </div>
-        <div class="entry-question ellipsis text-muted">{{ entry.question }}</div>
-        @if (entry.questionVariants.length) {
-        <div class="entry-variants text-muted">
-          {{ 'knowledge-base.entries-board.variants_count' | transloco: { count: entry.questionVariants.length } }}
-        </div>
+        @if (entry.searchHints.length) {
+        <div class="entry-hints ellipsis text-muted">{{ entry.searchHints.join(' · ') }}</div>
         }
       </div>
 

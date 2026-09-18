@@ -107,11 +107,13 @@ function isKnowledgeBaseEnvelope(value: unknown): value is KnowledgeBaseExportEn
   return !!envelope && typeof envelope === 'object' && envelope.format === KNOWLEDGE_BASE_EXPORT_FORMAT && Array.isArray(envelope.entries);
 }
 
-/** A FAQ export is a bare array whose rows carry utterances and a localized answer. */
+/** A FAQ export is a bare array whose rows carry utterances and a localized content. */
 function isFaqExport(value: unknown): boolean {
   if (!Array.isArray(value) || !value.length) return false;
 
-  return value.every((row) => !!row && typeof row === 'object' && Array.isArray((row as RawFaqEntry).utterances) && !!(row as RawFaqEntry).answer);
+  return value.every(
+    (row) => !!row && typeof row === 'object' && Array.isArray((row as RawFaqEntry).utterances) && !!(row as RawFaqEntry).answer
+  );
 }
 
 // -------------------------------------------------------------------- Mapping
@@ -119,17 +121,16 @@ function isFaqExport(value: unknown): boolean {
 function mapKnowledgeBaseEnvelope(envelope: KnowledgeBaseExportEnvelope): ParsedImportRow[] {
   return envelope.entries.map((entry) => {
     const issues: string[] = [];
-    const question = (entry.question ?? '').trim();
-    const answer = (entry.answer ?? '').trim();
+    const title = (entry.title ?? '').trim();
+    const content = (entry.content ?? '').trim();
 
-    if (!question || !answer) issues.push('knowledge-base.import.issue_missing_question_or_answer');
+    if (!title || !content) issues.push('knowledge-base.import.issue_missing_title_or_content');
 
     return {
       payload: {
-        title: (entry.title ?? question).trim().slice(0, 120),
-        question,
-        questionVariants: (entry.questionVariants ?? []).map((variant) => variant.trim()).filter((variant) => !!variant),
-        answer,
+        title,
+        searchHints: (entry.searchHints ?? []).map((hint) => hint.trim()).filter((hint) => !!hint),
+        content,
         sourceUrl: httpUrlOrNull(entry.sourceUrl),
         tags: entry.tags ?? [],
         // Imported entries are always drafts, whatever the source file says.
@@ -137,38 +138,41 @@ function mapKnowledgeBaseEnvelope(envelope: KnowledgeBaseExportEnvelope): Parsed
       },
       sourceId: entry.sourceId ?? null,
       issues,
-      rejected: !question || !answer,
+      rejected: !title || !content,
       faqEnabled: null
     };
   });
 }
 
+/**
+ * The first utterance becomes the entry title: it is the natural phrasing, where the FAQ
+ * title is only a short internal label. The remaining utterances become matching terms.
+ */
 function mapFaqEntry(row: RawFaqEntry, locale: string): ParsedImportRow {
   const issues: string[] = [];
 
   const utterances = (row.utterances ?? []).map((utterance) => (utterance ?? '').trim()).filter((utterance) => !!utterance);
-  const question = utterances[0] ?? '';
-  const answer = pickLocalizedLabel(row, locale);
+  const title = utterances[0] ?? '';
+  const content = pickLocalizedLabel(row, locale);
 
-  if (!question) issues.push('knowledge-base.import.issue_no_utterance');
-  if (!answer) issues.push('knowledge-base.import.issue_no_answer_for_locale');
+  if (!title) issues.push('knowledge-base.import.issue_no_utterance');
+  if (!content) issues.push('knowledge-base.import.issue_no_content_for_locale');
 
   const sourceUrl = httpUrlOrNull(row.footnotes?.find((footnote) => httpUrlOrNull(footnote?.url))?.url ?? null);
   if (row.footnotes?.length && !sourceUrl) issues.push('knowledge-base.import.issue_footnote_without_url');
 
   return {
     payload: {
-      title: (row.title ?? question).trim().slice(0, 120),
-      question,
-      questionVariants: utterances.slice(1),
-      answer: answer ?? '',
+      title,
+      searchHints: utterances.slice(1),
+      content: content ?? '',
       sourceUrl,
       tags: row.tags ?? [],
       status: KnowledgeBaseEntryStatus.DRAFT
     },
     sourceId: row._id ?? row.id ?? null,
     issues,
-    rejected: !question || !answer,
+    rejected: !title || !content,
     faqEnabled: typeof row.enabled === 'boolean' ? row.enabled : null
   };
 }
@@ -203,7 +207,7 @@ function httpUrlOrNull(value: string | null | undefined): string | null {
   return /^https?:\/\/.+/.test(url) ? url : null;
 }
 
-/** Matching key for duplicate detection: the question, case and whitespace insensitive. */
-export function normalizeQuestion(question: string): string {
-  return question.trim().toLowerCase().replace(/\s+/g, ' ');
+/** Matching key for duplicate detection: the title, case and whitespace insensitive. */
+export function normalizeTitle(title: string): string {
+  return title.trim().toLowerCase().replace(/\s+/g, ' ');
 }

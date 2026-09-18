@@ -1,0 +1,60 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+@if (job) {
+<div class="job-progress">
+  <div class="job-progress-head">
+    <span class="job-progress-label">{{ labelKey | transloco }}</span>
+    <span class="job-progress-counts text-muted">
+      @if (running) {
+      {{ 'knowledge-base.job.progress_counts' | transloco: { done: job.progress.done, total: job.progress.total } }}
+      } @else if (job.state === JobState.FAILED) {
+      {{ 'knowledge-base.job.state_failed' | transloco }}
+      } @else {
+      {{ 'knowledge-base.job.done_counts' | transloco: { projected: job.projected, removed: job.removed } }}
+      }
+    </span>
+  </div>
+
+  <div class="job-progress-track">
+    <div
+      class="job-progress-bar"
+      [class.job-progress-bar--warning]="status === 'warning'"
+      [class.job-progress-bar--danger]="status === 'danger'"
+      [style.width.%]="job.state === JobState.FAILED ? 100 : percent"
+    ></div>
+  </div>
+
+  @if (job.error) {
+  <div class="job-progress-error">{{ job.error }}</div>
+  }
+
+  <!-- A partial failure does not fail the job: the entries concerned simply stay pending -->
+  @if (job.failures.length) {
+  <div class="job-progress-failures">
+    <div class="job-progress-failures-title">
+      {{ 'knowledge-base.job.failures_title' | transloco: { count: job.failures.length } }}
+    </div>
+    @for (failure of job.failures; track failure.entryId) {
+    <div class="job-progress-failure ellipsis">
+      <strong>{{ failure.title }}</strong>
+      <span class="text-muted"> — {{ failure.error }}</span>
+    </div>
+    }
+  </div>
+  }
+</div>
+}

@@ -18,17 +18,17 @@ import { Observable } from 'rxjs';
 
 import { PaginatedResult } from '../../model/nlp';
 import {
-  KnowledgeBaseBulkResult,
   KnowledgeBaseDuplicatePolicy,
   KnowledgeBaseEntry,
   KnowledgeBaseEntryPayload,
+  KnowledgeBaseEntrySaveResult,
   KnowledgeBaseEntryStatus,
   KnowledgeBaseExportEnvelope,
   KnowledgeBaseImportCandidate,
   KnowledgeBaseImportResult,
+  KnowledgeBaseJob,
   KnowledgeBaseRetrievalTest,
   KnowledgeBaseSearchQuery,
-  KnowledgeBaseSyncResult,
   KnowledgeBaseSyncStatus
 } from '../models';
 import { ParsedImportRow } from '../utils/import.utils';
@@ -57,6 +57,8 @@ import { ParsedImportRow } from '../utils/import.utils';
  *   POST   /bots/:botId/knowledge-base/sync              synchronize
  *   POST   /bots/:botId/knowledge-base/index             createIndex
  *   POST   /bots/:botId/knowledge-base/bulk-status       bulkUpdateStatus
+ *   GET    /bots/:botId/knowledge-base/jobs/:jobId       getJob
+ *   GET    /bots/:botId/knowledge-base/jobs/active       getActiveJob
  *   POST   /bots/:botId/knowledge-base/import/preview    previewImport
  *   POST   /bots/:botId/knowledge-base/import            importEntries
  *   GET    /bots/:botId/knowledge-base/export            exportEntries
@@ -70,17 +72,18 @@ export abstract class KnowledgeBaseService {
   abstract getEntry(entryId: string): Observable<KnowledgeBaseEntry>;
 
   /**
-   * Creates an entry. A published entry is projected synchronously: the call
-   * returns only once the row has been embedded and written to the current index,
-   * so that an editorial fix is immediately effective.
+   * Creates an entry. The entry itself is written immediately and comes back in the response;
+   * its projection into the index is queued like any other, and reported through the job.
+   * Per entry failures are carried by the job, so the editor still learns about them on the
+   * entry it just saved.
    */
-  abstract createEntry(payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntry>;
+  abstract createEntry(payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntrySaveResult>;
 
-  /** Same synchronous projection contract as createEntry. */
-  abstract updateEntry(entryId: string, payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntry>;
+  /** Same contract as createEntry. */
+  abstract updateEntry(entryId: string, payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntrySaveResult>;
 
   /** Removes the entry and its rows from the current index. */
-  abstract deleteEntry(entryId: string): Observable<boolean>;
+  abstract deleteEntry(entryId: string): Observable<KnowledgeBaseJob>;
 
   /** Distinct tags in use, for the list filter and the editor autocomplete. */
   abstract getTags(): Observable<string[]>;
@@ -92,13 +95,13 @@ export abstract class KnowledgeBaseService {
   abstract getSyncStatus(): Observable<KnowledgeBaseSyncStatus>;
 
   /** Reprojects every published entry and removes orphan rows from the current index. */
-  abstract synchronize(): Observable<KnowledgeBaseSyncResult>;
+  abstract synchronize(): Observable<KnowledgeBaseJob>;
 
   /**
    * Standalone mode: creates an index session from the knowledge base alone,
    * writes the rows and returns the session so the RAG configuration can be updated.
    */
-  abstract createIndex(): Observable<KnowledgeBaseSyncResult>;
+  abstract createIndex(): Observable<KnowledgeBaseJob>;
 
   /**
    * Answers "would this entry be retrieved for that question, and at what rank".
@@ -119,12 +122,24 @@ export abstract class KnowledgeBaseService {
   /**
    * Publishes or unpublishes several entries at once.
    *
-   * Publishing a hundred entries means a hundred projections: the implementation issues a
-   * single grouped call rather than a loop of per entry requests, and a partial failure leaves
-   * the affected entries pending instead of failing the whole operation. Same batched
+   * Publishing a hundred entries means a hundred projections: the front issues a single call,
+   * the server queues the work and reports progress through the job, and a partial failure
+   * leaves the affected entries pending instead of failing the whole operation. Same batched
    * projection capability as index repair and standalone index creation.
    */
-  abstract bulkUpdateStatus(entryIds: string[], status: KnowledgeBaseEntryStatus): Observable<KnowledgeBaseBulkResult>;
+  abstract bulkUpdateStatus(entryIds: string[], status: KnowledgeBaseEntryStatus): Observable<KnowledgeBaseJob>;
+
+  /**
+   * Current state of a job, polled by the front while it is not finished. Jobs run one after
+   * another, so a job may sit QUEUED behind a batch before it starts.
+   */
+  abstract getJob(jobId: string): Observable<KnowledgeBaseJob>;
+
+  /**
+   * Job still running on this bot, if any. Read on entering the feature so a reload, or
+   * another user's batch, is picked up rather than ignored.
+   */
+  abstract getActiveJob(): Observable<KnowledgeBaseJob | null>;
 
   // ------------------------------------------------------------------ Import / export
 

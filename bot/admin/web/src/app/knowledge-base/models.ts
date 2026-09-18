@@ -51,10 +51,18 @@ export interface KnowledgeBaseEntry {
   namespace: string;
   /** List and not a scalar so that cross bot sharing stays possible later. Always a single element for now. */
   botIds: string[];
+  /**
+   * Primary phrasing of the entry: what it says, as a user would put it. Plays the role a
+   * question would in a FAQ, without imposing the question / answer dichotomy — an entry may
+   * perfectly well state a fact rather than answer a question.
+   */
   title: string;
-  question: string;
-  questionVariants: string[];
-  answer: string;
+  /**
+   * Optional. Alternative phrasings, synonyms or keywords, embedded along with the content
+   * to widen the retrieval surface. Not questions: anything that helps the entry be found.
+   */
+  searchHints: string[];
+  content: string;
   sourceUrl: string | null;
   tags: string[];
   status: KnowledgeBaseEntryStatus;
@@ -69,10 +77,7 @@ export interface KnowledgeBaseEntry {
   updatedBy: string | null;
 }
 
-export type KnowledgeBaseEntryPayload = Pick<
-  KnowledgeBaseEntry,
-  'title' | 'question' | 'questionVariants' | 'answer' | 'sourceUrl' | 'tags' | 'status'
->;
+export type KnowledgeBaseEntryPayload = Pick<KnowledgeBaseEntry, 'title' | 'searchHints' | 'content' | 'sourceUrl' | 'tags' | 'status'>;
 
 export type KnowledgeBaseSortField = 'title' | 'updatedAt' | 'status';
 export type SortDirection = 'asc' | 'desc';
@@ -112,11 +117,83 @@ export interface KnowledgeBaseSyncStatus {
   counts: KnowledgeBaseCounts;
 }
 
-export interface KnowledgeBaseSyncResult {
-  status: KnowledgeBaseSyncStatus;
+// --------------------------------------------------------------------------
+// Jobs
+// --------------------------------------------------------------------------
+
+/**
+ * Anything that writes to the vector store goes through a job, batched or not, and every job
+ * is queued and polled the same way. A single entry save is not a special case: one path
+ * server side, one path in the front, one progress model, one polling endpoint.
+ *
+ * Queuing everything is also what removes the concurrency hazard: a save issued while a batch
+ * is running would otherwise have two writers on the same index, possibly on the same entry.
+ * Ordering comes for free from the queue.
+ *
+ * Note that only the projection is queued. The Mongo write is immediate, so the entry exists
+ * as soon as the call returns and it is its projection that progresses.
+ */
+export enum KnowledgeBaseJobType {
+  SAVE_ENTRY = 'SAVE_ENTRY',
+  DELETE_ENTRY = 'DELETE_ENTRY',
+  PUBLISH = 'PUBLISH',
+  UNPUBLISH = 'UNPUBLISH',
+  /** Reproject published entries and clean up orphan rows in the current index */
+  REPAIR_INDEX = 'REPAIR_INDEX',
+  /** Standalone mode: create the index session from the knowledge base */
+  CREATE_INDEX = 'CREATE_INDEX'
+}
+
+export enum KnowledgeBaseJobState {
+  QUEUED = 'QUEUED',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  /** The job itself could not run; per entry errors live in `failures` and do not fail the job */
+  FAILED = 'FAILED'
+}
+
+export interface KnowledgeBaseJobFailure {
+  entryId: string;
+  title: string;
+  /** Message or i18n key describing why this entry could not be projected */
+  error: string;
+}
+
+export interface KnowledgeBaseJobProgress {
+  total: number;
+  done: number;
+  failed: number;
+}
+
+export interface KnowledgeBaseJob {
+  id: string;
+  type: KnowledgeBaseJobType;
+  state: KnowledgeBaseJobState;
+  startedAt: string;
+  endedAt: string | null;
+  progress: KnowledgeBaseJobProgress;
+  /** Entries the job could not project. A partial failure does not fail the job. */
+  failures: KnowledgeBaseJobFailure[];
+  /** Rows written and removed in the index, known once the job is over */
   projected: number;
   removed: number;
-  failed: number;
+  /** Index state once the job is over, so the banner refreshes without another call */
+  syncStatus: KnowledgeBaseSyncStatus | null;
+  /** Set when state is FAILED */
+  error: string | null;
+}
+
+export function isJobFinished(job: KnowledgeBaseJob | null): boolean {
+  return !!job && (job.state === KnowledgeBaseJobState.COMPLETED || job.state === KnowledgeBaseJobState.FAILED);
+}
+
+/**
+ * Saving an entry returns the entry, already written, and the projection job it queued.
+ * The job is always present, even when there is nothing to project: no conditional shape.
+ */
+export interface KnowledgeBaseEntrySaveResult {
+  entry: KnowledgeBaseEntry;
+  job: KnowledgeBaseJob;
 }
 
 export type KnowledgeBaseSourceType = 'internal_kb' | 'document';
@@ -228,17 +305,4 @@ export interface KnowledgeBaseImportResult {
   failed: number;
   /** Ids of the entries created or updated, so they can be published in bulk right away */
   entryIds: string[];
-}
-
-export interface KnowledgeBaseBulkOutcome {
-  entryId: string;
-  ok: boolean;
-  /** i18n key when ok is false */
-  error: string | null;
-}
-
-export interface KnowledgeBaseBulkResult {
-  succeeded: number;
-  failed: number;
-  outcomes: KnowledgeBaseBulkOutcome[];
 }

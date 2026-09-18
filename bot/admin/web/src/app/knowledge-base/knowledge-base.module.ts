@@ -40,11 +40,13 @@ import { KnowledgeBaseRetrievalTestComponent } from './entry-detail/retrieval-te
 import { KnowledgeBaseMockService } from './services/knowledge-base-mock.service';
 import { KnowledgeBaseService } from './services/knowledge-base.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
+import { KnowledgeBaseJobProgressComponent } from './entries-board/job-progress/job-progress.component';
 
 @NgModule({
   declarations: [
     KnowledgeBaseEntriesBoardComponent,
     KnowledgeBaseSyncBannerComponent,
+    KnowledgeBaseJobProgressComponent,
     KnowledgeBaseEntryDetailComponent,
     KnowledgeBaseEntriesImportComponent,
     KnowledgeBaseRetrievalTestComponent

@@ -16,34 +16,36 @@
 
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, map, tap } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
 
 import { StateService } from '../../core-nlp/state.service';
 import { PaginatedResult } from '../../model/nlp';
 import { deepCopy } from '../../shared/utils';
 import { KnowledgeBaseService } from './knowledge-base.service';
-import { ParsedImportRow, normalizeQuestion } from '../utils/import.utils';
+import { ParsedImportRow, normalizeTitle } from '../utils/import.utils';
 import {
   KNOWLEDGE_BASE_EXPORT_FORMAT,
   KNOWLEDGE_BASE_EXPORT_VERSION,
-  KnowledgeBaseBulkOutcome,
-  KnowledgeBaseBulkResult,
   KnowledgeBaseCounts,
   KnowledgeBaseDuplicatePolicy,
+  KnowledgeBaseEntry,
+  KnowledgeBaseEntryPayload,
+  KnowledgeBaseEntrySaveResult,
+  KnowledgeBaseEntryStatus,
   KnowledgeBaseExportEnvelope,
   KnowledgeBaseImportCandidate,
   KnowledgeBaseImportCandidateState,
   KnowledgeBaseImportResult,
-  KnowledgeBaseEntry,
-  KnowledgeBaseEntryPayload,
-  KnowledgeBaseEntryStatus,
   KnowledgeBaseIndexMode,
+  KnowledgeBaseJob,
+  KnowledgeBaseJobState,
+  KnowledgeBaseJobType,
   KnowledgeBaseProjectionState,
   KnowledgeBaseRetrievalHit,
   KnowledgeBaseRetrievalTest,
   KnowledgeBaseSearchQuery,
-  KnowledgeBaseSyncResult,
-  KnowledgeBaseSyncStatus
+  KnowledgeBaseSyncStatus,
+  isJobFinished
 } from '../models';
 import {
   buildMockEntries,
@@ -120,7 +122,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     return of(deepCopy(entry)).pipe(delay(this.latency));
   }
 
-  createEntry(payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntry> {
+  createEntry(payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntrySaveResult> {
     const created: KnowledgeBaseEntry = {
       id: `kb-${Date.now()}`,
       namespace: this.stateService.currentApplication.namespace,
@@ -142,12 +144,17 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
 
     return of(created).pipe(
       delay(this.latency),
-      tap(() => (this.entries = [created, ...this.entries])),
-      map((entry) => deepCopy(entry))
+      map((entry) => {
+        this.entries = [created, ...this.entries];
+        return {
+          entry: deepCopy(entry),
+          job: this.queueEntryProjection(KnowledgeBaseJobType.SAVE_ENTRY, entry.id, payload.status)
+        };
+      })
     );
   }
 
-  updateEntry(entryId: string, payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntry> {
+  updateEntry(entryId: string, payload: KnowledgeBaseEntryPayload): Observable<KnowledgeBaseEntrySaveResult> {
     const index = this.entries.findIndex((e) => e.id === entryId);
     if (index === -1) return throwError(() => new Error('ENTRY_NOT_FOUND')).pipe(delay(this.latency));
 
@@ -159,32 +166,38 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       ...previous,
       ...payload,
       contentHash,
-      projectionState: this.nextProjectionState(previous, payload.status, contentChanged),
+      // The projection fields are left untouched here: they reflect what the index holds,
+      // and only the queued job is entitled to change them.
       updatedAt: new Date().toISOString(),
       updatedBy: this.currentUser()
     };
 
-    // Projection is synchronous on save: a published entry is embedded and upserted right away,
-    // an unpublished one has its rows removed right away.
-    if (updated.projectionState === KnowledgeBaseProjectionState.INDEXED) {
-      updated.projectedAt = new Date().toISOString();
-      updated.projectedIndexSessionId = this.currentIndexSessionId();
-    } else {
-      updated.projectedAt = null;
-      updated.projectedIndexSessionId = null;
-    }
-
     return of(updated).pipe(
       delay(this.latency),
-      tap(() => (this.entries = [...this.entries.slice(0, index), updated, ...this.entries.slice(index + 1)])),
-      map((entry) => deepCopy(entry))
+      map((entry) => {
+        this.entries = [...this.entries.slice(0, index), updated, ...this.entries.slice(index + 1)];
+        return {
+          entry: deepCopy(entry),
+          job: this.queueEntryProjection(KnowledgeBaseJobType.SAVE_ENTRY, entry.id, payload.status)
+        };
+      })
     );
   }
 
-  deleteEntry(entryId: string): Observable<boolean> {
-    return of(true).pipe(
+  deleteEntry(entryId: string): Observable<KnowledgeBaseJob> {
+    const removed = this.entries.find((e) => e.id === entryId) ?? null;
+    const wasIndexed = removed?.projectionState === KnowledgeBaseProjectionState.INDEXED;
+
+    return of(null).pipe(
       delay(this.latency),
-      tap(() => (this.entries = this.entries.filter((e) => e.id !== entryId)))
+      map(() => {
+        this.entries = this.entries.filter((e) => e.id !== entryId);
+
+        return this.enqueue(KnowledgeBaseJobType.DELETE_ENTRY, 1, () => {
+          this.refreshSyncStatus();
+          return { projected: 0, removed: wasIndexed ? 1 : 0 };
+        });
+      })
     );
   }
 
@@ -201,67 +214,57 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
   }
 
   /** Reprojects every published entry and removes the orphan rows from the current index. */
-  synchronize(): Observable<KnowledgeBaseSyncResult> {
-    const projected = this.entries.filter(
+  synchronize(): Observable<KnowledgeBaseJob> {
+    const pending = this.entries.filter(
       (e) => e.status === KnowledgeBaseEntryStatus.PUBLISHED && e.projectionState === KnowledgeBaseProjectionState.PENDING
-    ).length;
-    const removed = this.entries.filter((e) => e.projectionState === KnowledgeBaseProjectionState.ORPHAN).length;
-    const now = new Date().toISOString();
-    const sessionId = this.currentIndexSessionId();
-
-    const synchronized = this.entries.map((entry) => {
-      if (entry.status === KnowledgeBaseEntryStatus.PUBLISHED) {
-        return { ...entry, projectionState: KnowledgeBaseProjectionState.INDEXED, projectedAt: now, projectedIndexSessionId: sessionId };
-      }
-      return { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null };
-    });
-
-    return of(null).pipe(
-      delay(this.latency * 4),
-      tap(() => {
-        this.entries = synchronized;
-        this.lastProjectionAt = now;
-        this.refreshSyncStatus();
-      }),
-      map(() => ({
-        status: deepCopy(this.syncStatusSubject.getValue()),
-        projected,
-        removed,
-        failed: 0
-      }))
     );
+    const orphans = this.entries.filter((e) => e.projectionState === KnowledgeBaseProjectionState.ORPHAN);
+
+    return this.startJob(KnowledgeBaseJobType.REPAIR_INDEX, pending.length + orphans.length, () => {
+      const now = new Date().toISOString();
+      const sessionId = this.currentIndexSessionId();
+
+      this.entries = this.entries.map((entry) =>
+        entry.status === KnowledgeBaseEntryStatus.PUBLISHED
+          ? { ...entry, projectionState: KnowledgeBaseProjectionState.INDEXED, projectedAt: now, projectedIndexSessionId: sessionId }
+          : { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null }
+      );
+      this.lastProjectionAt = now;
+      this.refreshSyncStatus();
+
+      return { projected: pending.length, removed: orphans.length };
+    });
   }
 
   /**
    * Standalone mode: Tock creates the index session itself from the knowledge base,
    * writes the rows and returns the resulting session so that the RAG configuration can be updated.
    */
-  createIndex(): Observable<KnowledgeBaseSyncResult> {
-    return of(null).pipe(
-      delay(this.latency * 6),
-      map(() => {
-        this.indexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
-        this.indexSessionId = MOCK_INDEX_SESSION_ID;
-        this.indexName = MOCK_INDEX_NAME;
-        this.embeddingModelKnown = true;
+  createIndex(): Observable<KnowledgeBaseJob> {
+    const publishedCount = this.entries.filter((e) => e.status === KnowledgeBaseEntryStatus.PUBLISHED).length;
 
-        const projected = this.entries.filter((e) => e.status === KnowledgeBaseEntryStatus.PUBLISHED).length;
-        const now = new Date().toISOString();
-        this.entries = this.entries.map((entry) =>
-          entry.status === KnowledgeBaseEntryStatus.PUBLISHED
-            ? {
-                ...entry,
-                projectionState: KnowledgeBaseProjectionState.INDEXED,
-                projectedAt: now,
-                projectedIndexSessionId: MOCK_INDEX_SESSION_ID
-              }
-            : { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null }
-        );
-        this.lastProjectionAt = now;
-        this.refreshSyncStatus();
-        return { status: deepCopy(this.syncStatusSubject.getValue()), projected, removed: 0, failed: 0 };
-      })
-    );
+    return this.startJob(KnowledgeBaseJobType.CREATE_INDEX, publishedCount, () => {
+      this.indexMode = KnowledgeBaseIndexMode.TOCK_MANAGED;
+      this.indexSessionId = MOCK_INDEX_SESSION_ID;
+      this.indexName = MOCK_INDEX_NAME;
+      this.embeddingModelKnown = true;
+
+      const now = new Date().toISOString();
+      this.entries = this.entries.map((entry) =>
+        entry.status === KnowledgeBaseEntryStatus.PUBLISHED
+          ? {
+              ...entry,
+              projectionState: KnowledgeBaseProjectionState.INDEXED,
+              projectedAt: now,
+              projectedIndexSessionId: MOCK_INDEX_SESSION_ID
+            }
+          : { ...entry, projectionState: KnowledgeBaseProjectionState.NONE, projectedAt: null, projectedIndexSessionId: null }
+      );
+      this.lastProjectionAt = now;
+      this.refreshSyncStatus();
+
+      return { projected: publishedCount, removed: 0 };
+    });
   }
 
   // --------------------------------------------------------------------- Retrieval test (see the abstract class)
@@ -284,7 +287,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       source: candidate.entry.sourceUrl,
       sourceType: 'internal_kb',
       kbEntryId: candidate.entry.id,
-      content: `${candidate.entry.title}\n${candidate.entry.question}\n${candidate.entry.answer}`
+      content: `${candidate.entry.title}\n${candidate.entry.searchHints.join('\n')}\n${candidate.entry.content}`
     }));
 
     const documentHits: KnowledgeBaseRetrievalHit[] =
@@ -316,45 +319,57 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     }).pipe(delay(this.latency * 3));
   }
 
-  // --------------------------------------------------------------------- Bulk actions
+  // --------------------------------------------------------------------- Bulk actions and jobs
 
-  bulkUpdateStatus(entryIds: string[], status: KnowledgeBaseEntryStatus): Observable<KnowledgeBaseBulkResult> {
+  bulkUpdateStatus(entryIds: string[], status: KnowledgeBaseEntryStatus): Observable<KnowledgeBaseJob> {
     const targeted = new Set(entryIds);
-    const now = new Date().toISOString();
-    const sessionId = this.currentIndexSessionId();
+    const type = status === KnowledgeBaseEntryStatus.PUBLISHED ? KnowledgeBaseJobType.PUBLISH : KnowledgeBaseJobType.UNPUBLISH;
 
-    const updated = this.entries.map((entry) => {
-      if (!targeted.has(entry.id)) return entry;
+    return this.startJob(type, entryIds.length, () => {
+      const now = new Date().toISOString();
+      const sessionId = this.currentIndexSessionId();
+      let projected = 0;
+      let removed = 0;
 
-      const projected = status === KnowledgeBaseEntryStatus.PUBLISHED && this.hasIndex();
+      this.entries = this.entries.map((entry) => {
+        if (!targeted.has(entry.id)) return entry;
 
-      return {
-        ...entry,
-        status,
-        projectionState: projected ? KnowledgeBaseProjectionState.INDEXED : KnowledgeBaseProjectionState.NONE,
-        projectedAt: projected ? now : null,
-        projectedIndexSessionId: projected ? sessionId : null,
-        updatedAt: now,
-        updatedBy: this.currentUser()
-      };
+        const willProject = status === KnowledgeBaseEntryStatus.PUBLISHED && this.hasIndex();
+        if (willProject) projected++;
+        else if (entry.projectionState === KnowledgeBaseProjectionState.INDEXED) removed++;
+
+        return {
+          ...entry,
+          status,
+          projectionState: willProject ? KnowledgeBaseProjectionState.INDEXED : KnowledgeBaseProjectionState.NONE,
+          projectedAt: willProject ? now : null,
+          projectedIndexSessionId: willProject ? sessionId : null,
+          updatedAt: now,
+          updatedBy: this.currentUser()
+        };
+      });
+
+      return { projected, removed };
     });
+  }
 
-    const outcomes: KnowledgeBaseBulkOutcome[] = entryIds.map((entryId) => ({ entryId, ok: true, error: null }));
-
-    // Latency grows with the batch size: a grouped projection is still work.
+  getJob(jobId: string): Observable<KnowledgeBaseJob> {
     return of(null).pipe(
-      delay(this.latency + entryIds.length * 15),
-      map(() => {
-        this.entries = updated;
-        return { succeeded: outcomes.length, failed: 0, outcomes };
-      })
+      delay(150),
+      map(() => deepCopy(this.advance(jobId)))
     );
+  }
+
+  getActiveJob(): Observable<KnowledgeBaseJob | null> {
+    const running = this.jobs.map((tracked) => this.advance(tracked.job.id)).find((job) => !isJobFinished(job)) ?? null;
+
+    return of(running ? deepCopy(running) : null).pipe(delay(150));
   }
 
   // --------------------------------------------------------------------- Import / export
 
   previewImport(rows: ParsedImportRow[]): Observable<KnowledgeBaseImportCandidate[]> {
-    const existing = new Map(this.entries.map((entry) => [normalizeQuestion(entry.question), entry.id]));
+    const existing = new Map(this.entries.map((entry) => [normalizeTitle(entry.title), entry.id]));
 
     const candidates: KnowledgeBaseImportCandidate[] = rows.map((row) => {
       if (row.rejected) {
@@ -368,7 +383,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
         };
       }
 
-      const existingEntryId = existing.get(normalizeQuestion(row.payload.question)) ?? null;
+      const existingEntryId = existing.get(normalizeTitle(row.payload.title)) ?? null;
 
       return {
         payload: row.payload,
@@ -463,9 +478,8 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       entries: this.entries.map((entry) => ({
         sourceId: entry.id,
         title: entry.title,
-        question: entry.question,
-        questionVariants: entry.questionVariants,
-        answer: entry.answer,
+        searchHints: entry.searchHints,
+        content: entry.content,
         sourceUrl: entry.sourceUrl,
         tags: entry.tags,
         status: entry.status
@@ -473,6 +487,117 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     };
 
     return of(envelope).pipe(delay(this.latency));
+  }
+
+  // --------------------------------------------------------------------- Job machinery (MOCK ONLY)
+
+  /**
+   * Jobs run one after another, as the server queue would, and are advanced on read from the
+   * elapsed time rather than by a timer: nothing to leak, and progress stays deterministic
+   * for a demo. The effect on the store is applied once, when a job reaches its end.
+   */
+  private jobs: { job: KnowledgeBaseJob; startAt: number; durationMs: number; apply: () => { projected: number; removed: number } }[] = [];
+
+  private readonly perItemMs = 120;
+
+  /** End of the last queued job, so a new one lines up behind it instead of running in parallel. */
+  private get queueFreeAt(): number {
+    return this.jobs.reduce((latest, tracked) => Math.max(latest, tracked.startAt + tracked.durationMs), Date.now());
+  }
+
+  private enqueue(type: KnowledgeBaseJobType, total: number, apply: () => { projected: number; removed: number }): KnowledgeBaseJob {
+    const job: KnowledgeBaseJob = {
+      id: `job-${Date.now()}-${this.jobs.length}`,
+      type,
+      state: KnowledgeBaseJobState.QUEUED,
+      startedAt: new Date().toISOString(),
+      endedAt: null,
+      progress: { total, done: 0, failed: 0 },
+      failures: [],
+      projected: 0,
+      removed: 0,
+      syncStatus: null,
+      error: null
+    };
+
+    this.jobs.push({
+      job,
+      startAt: this.queueFreeAt,
+      // A floor keeps very small jobs visible in the demo.
+      durationMs: Math.max(700, total * this.perItemMs),
+      apply
+    });
+
+    return deepCopy(this.advance(job.id));
+  }
+
+  private startJob(
+    type: KnowledgeBaseJobType,
+    total: number,
+    apply: () => { projected: number; removed: number }
+  ): Observable<KnowledgeBaseJob> {
+    return of(null).pipe(
+      delay(this.latency),
+      map(() => this.enqueue(type, total, apply))
+    );
+  }
+
+  private advance(jobId: string): KnowledgeBaseJob {
+    const tracked = this.jobs.find((candidate) => candidate.job.id === jobId);
+    if (!tracked) throw new Error('JOB_NOT_FOUND');
+
+    const { job, startAt, durationMs } = tracked;
+    if (isJobFinished(job)) return job;
+
+    const now = Date.now();
+
+    if (now < startAt) {
+      job.state = KnowledgeBaseJobState.QUEUED;
+      return job;
+    }
+
+    const ratio = Math.min(1, (now - startAt) / durationMs);
+    job.progress.done = Math.floor(job.progress.total * ratio);
+    job.state = ratio >= 1 ? KnowledgeBaseJobState.COMPLETED : KnowledgeBaseJobState.RUNNING;
+
+    if (job.state === KnowledgeBaseJobState.COMPLETED) {
+      const outcome = tracked.apply();
+      job.progress.done = job.progress.total;
+      job.projected = outcome.projected;
+      job.removed = outcome.removed;
+      job.endedAt = new Date().toISOString();
+      this.refreshSyncStatus();
+      job.syncStatus = this.syncStatusSubject.getValue();
+    }
+
+    return job;
+  }
+
+  /**
+   * Projection of a single entry. Queued exactly like a batch, so a save issued while a batch
+   * is running lines up behind it instead of racing it on the same index.
+   */
+  private queueEntryProjection(type: KnowledgeBaseJobType, entryId: string, status: KnowledgeBaseEntryStatus): KnowledgeBaseJob {
+    return this.enqueue(type, 1, () => {
+      const index = this.entries.findIndex((entry) => entry.id === entryId);
+      if (index === -1) return { projected: 0, removed: 0 };
+
+      const entry = this.entries[index];
+      const wasIndexed = entry.projectionState === KnowledgeBaseProjectionState.INDEXED;
+      const willProject = status === KnowledgeBaseEntryStatus.PUBLISHED && this.hasIndex();
+      const now = new Date().toISOString();
+
+      const projectedEntry = {
+        ...entry,
+        projectionState: willProject ? KnowledgeBaseProjectionState.INDEXED : KnowledgeBaseProjectionState.NONE,
+        projectedAt: willProject ? now : null,
+        projectedIndexSessionId: willProject ? this.currentIndexSessionId() : null
+      };
+
+      this.entries = [...this.entries.slice(0, index), projectedEntry, ...this.entries.slice(index + 1)];
+
+      return { projected: willProject ? 1 : 0, removed: !willProject && wasIndexed ? 1 : 0 };
+    });
   }
 
   // --------------------------------------------------------------------- Mock scenario handling
@@ -572,31 +697,6 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     return this.stateService.user?.email?.split('@')[0] ?? 'unknown';
   }
 
-  private nextProjectionState(
-    previous: KnowledgeBaseEntry,
-    status: KnowledgeBaseEntryStatus,
-    contentChanged: boolean
-  ): KnowledgeBaseProjectionState {
-    if (!this.hasIndex()) return KnowledgeBaseProjectionState.NONE;
-
-    // Unpublishing is as synchronous as publishing: the rows are removed from the index
-    // right away, so the entry falls back to NONE and never to ORPHAN. Deferring the removal
-    // would leave the bot answering with an entry the user just withdrew.
-    //
-    // ORPHAN is reserved for rows the current index holds while no entry in force accounts
-    // for them: an index session change, a removal that failed because the store was
-    // unreachable, or a write made outside Tock. It is never produced by a normal edit.
-    if (status === KnowledgeBaseEntryStatus.DRAFT) {
-      return KnowledgeBaseProjectionState.NONE;
-    }
-
-    // A published entry is projected synchronously on save, so it is immediately up to date,
-    // whether its content changed or not.
-    void contentChanged;
-    void previous;
-    return KnowledgeBaseProjectionState.INDEXED;
-  }
-
   private refreshSyncStatus(): void {
     const entries = this.entriesSubject.getValue();
 
@@ -634,7 +734,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
       if (query.tag && !entry.tags.includes(query.tag)) return false;
 
       if (search) {
-        const haystack = [entry.title, entry.question, ...entry.questionVariants, entry.answer, ...entry.tags].join(' ').toLowerCase();
+        const haystack = [entry.title, ...entry.searchHints, entry.content, ...entry.tags].join(' ').toLowerCase();
         if (!haystack.includes(search)) return false;
       }
 
@@ -667,7 +767,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
 
   /** MOCK ONLY — stands in for the server side content hash. */
   private hash(payload: KnowledgeBaseEntryPayload): string {
-    const raw = [payload.title, payload.question, ...payload.questionVariants, payload.answer, payload.sourceUrl ?? ''].join('|');
+    const raw = [payload.title, ...payload.searchHints, payload.content, payload.sourceUrl ?? ''].join('|');
     let hash = 0;
     for (let i = 0; i < raw.length; i++) {
       hash = (hash << 5) - hash + raw.charCodeAt(i);
@@ -681,7 +781,7 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
     const tokens = question.split(/\W+/).filter((token) => token.length > 3);
     if (!tokens.length) return 0;
 
-    const haystack = [entry.title, entry.question, ...entry.questionVariants, entry.answer].join(' ').toLowerCase();
+    const haystack = [entry.title, ...entry.searchHints, entry.content].join(' ').toLowerCase();
     const matched = tokens.filter((token) => haystack.includes(token)).length;
 
     return matched === 0 ? 0 : Math.min(0.95, 0.45 + (matched / tokens.length) * 0.5);

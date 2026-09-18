@@ -9,7 +9,7 @@
 .entry-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 22rem;
-  gap: 0.5rem;
+  gap: 1rem;
   align-items: start;
 }
 
@@ -36,7 +36,7 @@
   margin-top: 0.25rem;
 }
 
-.variant-row {
+.hint-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 2rem;
   gap: 0.25rem;
@@ -111,12 +111,4 @@
   & + & {
     margin-top: 0.3rem;
   }
-}
-
-.delete-entry {
-  margin-top: 1.25rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border-basic-color-3);
-  display: flex;
-  justify-content: flex-end;
 }

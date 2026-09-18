@@ -45,6 +45,7 @@
       size="medium"
       [disabled]="!canSave"
       [nbSpinner]="saving"
+      [nbTooltip]="saveTooltipKey | transloco"
       (click)="save()"
     >
       <nb-icon
@@ -67,40 +68,39 @@
 >
   <!-- ------------------------------------------------------------ Content -->
   <div class="entry-main">
-    <nb-card class="shadow-sm">
+    <nb-card class="shadow-sm mb-2">
       <nb-card-body>
         <label
           class="label"
-          for="kb-question"
-          >{{ 'knowledge-base.entry-detail.question_label' | transloco }}</label
+          for="kb-title"
+          >{{ 'knowledge-base.entry-detail.title_label' | transloco }}</label
         >
         <input
           nbInput
           fullWidth
-          id="kb-question"
-          formControlName="question"
-          [status]="question.touched && question.invalid ? 'danger' : 'basic'"
-          [placeholder]="'knowledge-base.entry-detail.question_placeholder' | transloco"
-          (blur)="onQuestionBlur()"
+          id="kb-title"
+          formControlName="title"
+          [status]="title.touched && title.invalid ? 'danger' : 'basic'"
+          [placeholder]="'knowledge-base.entry-detail.title_placeholder' | transloco"
         />
-        @if (question.touched && question.hasError('required')) {
-        <div class="field-error">{{ 'knowledge-base.entry-detail.question_required' | transloco }}</div>
+        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.title_help' | transloco }}</div>
+        @if (title.touched && title.hasError('required')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.title_required' | transloco }}</div>
         }
 
-        <!-- Variants: one row by default, "+" adds more, empty rows are dropped on save -->
         <div class="mt-3">
-          <label class="label">{{ 'knowledge-base.entry-detail.variants_label' | transloco }}</label>
-          <div class="field-help text-muted mb-2">{{ 'knowledge-base.entry-detail.variants_help' | transloco }}</div>
+          <label class="label">{{ 'knowledge-base.entry-detail.hints_label' | transloco }}</label>
+          <div class="field-help text-muted mb-2">{{ 'knowledge-base.entry-detail.hints_help' | transloco }}</div>
 
-          <div formArrayName="questionVariants">
-            @for (variant of questionVariants.controls; track $index) {
-            <div class="variant-row">
+          <div formArrayName="searchHints">
+            @for (hint of searchHints.controls; track $index) {
+            <div class="hint-row">
               <input
                 nbInput
                 fullWidth
                 fieldSize="small"
                 [formControlName]="$index"
-                [placeholder]="'knowledge-base.entry-detail.variant_placeholder' | transloco"
+                [placeholder]="'knowledge-base.entry-detail.hint_placeholder' | transloco"
               />
               <button
                 nbButton
@@ -108,8 +108,8 @@
                 shape="round"
                 size="small"
                 type="button"
-                [nbTooltip]="'knowledge-base.entry-detail.remove_variant_tooltip' | transloco"
-                (click)="removeVariant($index)"
+                [nbTooltip]="'knowledge-base.entry-detail.remove_hint_tooltip' | transloco"
+                (click)="removeHint($index)"
               >
                 <nb-icon icon="x-lg"></nb-icon>
               </button>
@@ -123,21 +123,21 @@
             size="small"
             type="button"
             class="mt-1"
-            (click)="addVariant()"
+            (click)="addHint()"
           >
             <nb-icon
               icon="plus-lg"
               class="mr-1"
             ></nb-icon>
-            {{ 'knowledge-base.entry-detail.add_variant_button' | transloco }}
+            {{ 'knowledge-base.entry-detail.add_hint_button' | transloco }}
           </button>
         </div>
       </nb-card-body>
     </nb-card>
 
-    <nb-card class="shadow-sm mt-2">
+    <nb-card class="shadow-sm mb-2">
       <nb-card-header class="d-flex align-items-center">
-        <span class="flex-grow-1">{{ 'knowledge-base.entry-detail.answer_label' | transloco }}</span>
+        <span class="flex-grow-1">{{ 'knowledge-base.entry-detail.content_label' | transloco }}</span>
         <button
           nbButton
           ghost
@@ -160,24 +160,24 @@
           nbInput
           fullWidth
           rows="10"
-          formControlName="answer"
-          class="answer-textarea"
-          [status]="answer.touched && answer.invalid ? 'danger' : 'basic'"
-          [placeholder]="'knowledge-base.entry-detail.answer_placeholder' | transloco"
+          formControlName="content"
+          class="content-textarea"
+          [status]="content.touched && content.invalid ? 'danger' : 'basic'"
+          [placeholder]="'knowledge-base.entry-detail.content_placeholder' | transloco"
         ></textarea>
-        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.answer_help' | transloco }}</div>
-        @if (answer.touched && answer.hasError('required')) {
-        <div class="field-error">{{ 'knowledge-base.entry-detail.answer_required' | transloco }}</div>
+        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.content_help' | transloco }}</div>
+        @if (content.touched && content.hasError('required')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.content_required' | transloco }}</div>
         } } @else {
         <div
-          class="answer-preview"
+          class="content-preview"
           [innerHTML]="answerPreviewHtml"
         ></div>
         }
       </nb-card-body>
     </nb-card>
 
-    <div class="mt-2">
+    <div>
       <tock-knowledge-base-retrieval-test
         [entryId]="entry?.id ?? null"
         [syncStatus]="syncStatus"
@@ -190,7 +190,7 @@
 
   <!-- ------------------------------------------------------------ Metadata -->
   <div class="entry-side">
-    <nb-card class="shadow-sm">
+    <nb-card class="shadow-sm mb-2">
       <nb-card-body>
         <label
           class="label"
@@ -211,25 +211,6 @@
               | transloco
           }}
         </div>
-
-        <label
-          class="label mt-3"
-          for="kb-title"
-          >{{ 'knowledge-base.entry-detail.title_label' | transloco }}</label
-        >
-        <input
-          nbInput
-          fullWidth
-          fieldSize="small"
-          id="kb-title"
-          formControlName="title"
-          [status]="title.touched && title.invalid ? 'danger' : 'basic'"
-          [placeholder]="'knowledge-base.entry-detail.title_placeholder' | transloco"
-        />
-        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.title_help' | transloco }}</div>
-        @if (title.touched && title.hasError('required')) {
-        <div class="field-error">{{ 'knowledge-base.entry-detail.title_required' | transloco }}</div>
-        }
 
         <label
           class="label mt-3"
@@ -278,29 +259,11 @@
           (keyup.enter)="addTag()"
           (blur)="addTag()"
         />
-
-        @if (!isNew) {
-        <div class="delete-entry">
-          <button
-            nbButton
-            ghost
-            status="danger"
-            size="small"
-            (click)="delete()"
-          >
-            <nb-icon
-              icon="trash"
-              class="mr-2"
-            ></nb-icon>
-            {{ 'knowledge-base.entry-detail.delete_button' | transloco }}
-          </button>
-        </div>
-        }
       </nb-card-body>
     </nb-card>
 
     @if (entry) {
-    <nb-card class="shadow-sm mt-2">
+    <nb-card class="shadow-sm mb-2">
       <nb-card-body class="entry-meta">
         <div class="entry-meta-row">
           <span class="text-muted">{{ 'knowledge-base.entries-board.projection_column' | transloco }}</span>
@@ -322,6 +285,24 @@
           <span>{{ entry.updatedBy }}, {{ entry.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
         </div>
         }
+      </nb-card-body>
+    </nb-card>
+    } @if (!isNew) {
+    <nb-card class="shadow-sm mb-2">
+      <nb-card-header>{{ 'knowledge-base.entry-detail.delete_section_title' | transloco }}</nb-card-header>
+      <nb-card-body>
+        <button
+          nbButton
+          fullWidth
+          status="danger"
+          (click)="delete()"
+        >
+          <nb-icon
+            icon="trash"
+            class="mr-2"
+          ></nb-icon>
+          {{ 'knowledge-base.entry-detail.delete_button' | transloco }}
+        </button>
       </nb-card-body>
     </nb-card>
     }

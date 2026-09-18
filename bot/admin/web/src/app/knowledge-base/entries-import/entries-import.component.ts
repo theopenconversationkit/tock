@@ -18,7 +18,7 @@ import { Component, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NbToastrService } from '@nebular/theme';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, interval, switchMap, takeUntil, takeWhile } from 'rxjs';
 
 import {
   KnowledgeBaseDuplicatePolicy,
@@ -26,7 +26,9 @@ import {
   KnowledgeBaseImportCandidate,
   KnowledgeBaseImportCandidateState,
   KnowledgeBaseImportResult,
-  KnowledgeBaseImportSource
+  KnowledgeBaseImportSource,
+  KnowledgeBaseJob,
+  isJobFinished
 } from '../models';
 import { KnowledgeBaseService } from '../services/knowledge-base.service';
 import { KnowledgeBaseImportFormatError, ParsedImportFile, parseImportFile } from '../utils/import.utils';
@@ -71,8 +73,12 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
   duplicatePolicy: KnowledgeBaseDuplicatePolicy = KnowledgeBaseDuplicatePolicy.SKIP;
 
   result: KnowledgeBaseImportResult | null = null;
-  publishing: boolean = false;
+  publishJob: KnowledgeBaseJob | null = null;
   published: boolean = false;
+
+  get publishing(): boolean {
+    return !!this.publishJob && !isJobFinished(this.publishJob);
+  }
 
   // ---------------------------------------------------------------- File
 
@@ -189,30 +195,46 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
   publishImported(): void {
     if (!this.result?.entryIds.length) return;
 
-    this.publishing = true;
-
     this.knowledgeBaseService
       .bulkUpdateStatus(this.result.entryIds, KnowledgeBaseEntryStatus.PUBLISHED)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (bulk) => {
-          this.publishing = false;
-          this.published = true;
-          this.toastrService.show(
-            this.transloco.translate('knowledge-base.bulk.published_message', { count: bulk.succeeded }),
-            this.transloco.translate('knowledge-base.entries-board.success_title'),
-            { duration: 5000, status: bulk.failed ? 'warning' : 'success' }
-          );
-        },
-        error: () => {
-          this.publishing = false;
-          this.toastrService.show(
-            this.transloco.translate('knowledge-base.bulk.failed_message'),
-            this.transloco.translate('knowledge-base.entries-board.error_title'),
-            { duration: 6000, status: 'danger' }
-          );
-        }
+        next: (job) => this.followJob(job),
+        error: () => this.publishFailed()
       });
+  }
+
+  /** Publishing a hundred imported entries is a batch like any other: it is polled. */
+  private followJob(job: KnowledgeBaseJob): void {
+    this.publishJob = job;
+
+    if (isJobFinished(job)) {
+      this.published = true;
+      return;
+    }
+
+    interval(800)
+      .pipe(
+        switchMap(() => this.knowledgeBaseService.getJob(job.id)),
+        takeWhile((current) => !isJobFinished(current), true),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (current) => {
+          this.publishJob = current;
+          if (isJobFinished(current)) this.published = true;
+        },
+        error: () => this.publishFailed()
+      });
+  }
+
+  private publishFailed(): void {
+    this.publishJob = null;
+    this.toastrService.show(
+      this.transloco.translate('knowledge-base.job.failed_message'),
+      this.transloco.translate('knowledge-base.entries-board.error_title'),
+      { duration: 6000, status: 'danger' }
+    );
   }
 
   // ---------------------------------------------------------------- Navigation
@@ -226,6 +248,7 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
     this.selectedLocale = null;
     this.candidates = [];
     this.result = null;
+    this.publishJob = null;
     this.published = false;
   }
 
