@@ -1,0 +1,122 @@
+.grid-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
+}
+
+.entry-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .entry-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.field-help {
+  font-size: 0.72rem;
+}
+
+.field-error {
+  font-size: 0.72rem;
+  color: var(--color-danger-default);
+  margin-top: 0.25rem;
+}
+
+.variant-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2rem;
+  gap: 0.25rem;
+  align-items: center;
+
+  & + & {
+    margin-top: 0.25rem;
+  }
+}
+
+.answer-textarea {
+  font-family: var(--font-family-primary);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.answer-preview {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  min-height: 12rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--border-basic-color-4);
+  border-radius: var(--input-rectangle-border-radius);
+  background-color: var(--background-basic-color-2);
+
+  :first-child {
+    margin-top: 0;
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.entry-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.75rem;
+  background-color: var(--background-basic-color-3);
+  color: var(--text-hint-color);
+}
+
+.tag-remove {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-danger-default);
+  }
+}
+
+.entry-meta {
+  font-size: 0.75rem;
+}
+
+.entry-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  & + & {
+    margin-top: 0.3rem;
+  }
+}
+
+.delete-entry {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-basic-color-3);
+  display: flex;
+  justify-content: flex-end;
+}

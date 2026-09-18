@@ -1,0 +1,366 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+<div class="d-flex align-items-center mb-2">
+  <h1 class="flex-grow-1 m-0">{{ 'knowledge-base.entries-board.title' | transloco }}</h1>
+
+  <section class="grid-actions">
+    <!-- MOCK ONLY — demo scenario selector, hidden as soon as the mock is no longer provided -->
+    @if (mockEnabled) {
+    <nb-select
+      size="small"
+      [selected]="currentMockScenario"
+      (selectedChange)="changeMockScenario($event)"
+      [nbTooltip]="'knowledge-base.entries-board.mock_scenario_tooltip' | transloco"
+    >
+      @for (scenario of mockScenarios; track scenario) {
+      <nb-option [value]="scenario">
+        {{ 'knowledge-base.entries-board.mock_scenario_' + scenario | transloco }}
+      </nb-option>
+      }
+    </nb-select>
+    }
+
+    <button
+      nbButton
+      ghost
+      size="medium"
+      [nbTooltip]="'knowledge-base.import.import_tooltip' | transloco"
+      (click)="openImport()"
+    >
+      <nb-icon icon="box-arrow-in-down"></nb-icon>
+    </button>
+    <button
+      nbButton
+      ghost
+      size="medium"
+      [nbSpinner]="exporting"
+      [disabled]="exporting || !pagination.total"
+      [nbTooltip]="'knowledge-base.import.export_tooltip' | transloco"
+      (click)="exportEntries()"
+    >
+      <nb-icon icon="box-arrow-up"></nb-icon>
+    </button>
+    <button
+      nbButton
+      status="primary"
+      size="medium"
+      class="d-flex align-items-center"
+      [nbTooltip]="'knowledge-base.entries-board.create_entry_tooltip' | transloco"
+      (click)="createEntry()"
+    >
+      <nb-icon
+        icon="plus-lg"
+        class="mr-2"
+      ></nb-icon>
+      <span>{{ 'knowledge-base.entries-board.new_entry_button' | transloco }}</span>
+    </button>
+  </section>
+</div>
+
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'knowledge-base.entries-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @else {
+
+<tock-knowledge-base-sync-banner
+  [syncStatus]="syncStatus"
+  [busy]="syncing"
+  (onSynchronize)="synchronize()"
+  (onCreateIndex)="createIndex()"
+  (onFilterPending)="filterByProjectionState(ProjectionState.PENDING)"
+  (onFilterOrphan)="filterByProjectionState(ProjectionState.ORPHAN)"
+></tock-knowledge-base-sync-banner>
+
+<nb-card class="shadow-sm mb-2">
+  <nb-card-body>
+    <form
+      [formGroup]="filtersForm"
+      class="filters d-flex align-items-center gap-2"
+    >
+      <nb-form-field class="filter-search">
+        <nb-icon
+          nbPrefix
+          icon="search"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          formControlName="search"
+          [placeholder]="'knowledge-base.entries-board.search_placeholder' | transloco"
+        />
+      </nb-form-field>
+
+      <nb-select
+        size="small"
+        formControlName="status"
+        [placeholder]="'knowledge-base.entries-board.status_filter_placeholder' | transloco"
+      >
+        <nb-option [value]="null">{{ 'knowledge-base.entries-board.all_statuses' | transloco }}</nb-option>
+        <nb-option [value]="EntryStatus.PUBLISHED">{{ 'knowledge-base.status_published' | transloco }}</nb-option>
+        <nb-option [value]="EntryStatus.DRAFT">{{ 'knowledge-base.status_draft' | transloco }}</nb-option>
+      </nb-select>
+
+      <nb-select
+        size="small"
+        formControlName="projectionState"
+        [placeholder]="'knowledge-base.entries-board.projection_filter_placeholder' | transloco"
+      >
+        <nb-option [value]="null">{{ 'knowledge-base.entries-board.all_projection_states' | transloco }}</nb-option>
+        <nb-option [value]="ProjectionState.INDEXED">{{ 'knowledge-base.projection_indexed' | transloco }}</nb-option>
+        <nb-option [value]="ProjectionState.PENDING">{{ 'knowledge-base.projection_pending' | transloco }}</nb-option>
+        <nb-option [value]="ProjectionState.ORPHAN">{{ 'knowledge-base.projection_orphan' | transloco }}</nb-option>
+        <nb-option [value]="ProjectionState.NONE">{{ 'knowledge-base.projection_none' | transloco }}</nb-option>
+      </nb-select>
+
+      @if (tags.length) {
+      <nb-select
+        size="small"
+        formControlName="tag"
+        [placeholder]="'knowledge-base.entries-board.tag_filter_placeholder' | transloco"
+      >
+        <nb-option [value]="null">{{ 'knowledge-base.entries-board.all_tags' | transloco }}</nb-option>
+        @for (tag of tags; track tag) {
+        <nb-option [value]="tag">{{ tag }}</nb-option>
+        }
+      </nb-select>
+      } @if (hasActiveFilters) {
+      <button
+        nbButton
+        ghost
+        shape="round"
+        size="small"
+        [nbTooltip]="'knowledge-base.entries-board.reset_filters_tooltip' | transloco"
+        (click)="resetFilters()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+      }
+    </form>
+  </nb-card-body>
+</nb-card>
+
+@if (loading && !entries.length) {
+<nb-card
+  [nbSpinner]="loading"
+  class="shadow-sm"
+>
+  <nb-card-body class="p-4">&nbsp;</nb-card-body>
+</nb-card>
+} @if (!loading && !entries.length && !hasActiveFilters) {
+<tock-no-data-found
+  [title]="'knowledge-base.entries-board.no_entry_found' | transloco"
+  [message]="'knowledge-base.entries-board.no_entry_message' | transloco"
+  class="mt-4"
+></tock-no-data-found>
+} @if (!loading && !entries.length && hasActiveFilters) {
+<tock-no-data-found
+  [title]="'knowledge-base.entries-board.no_matching_entry' | transloco"
+  [message]="'knowledge-base.entries-board.no_matching_entry_message' | transloco"
+  class="mt-4"
+></tock-no-data-found>
+} @if (selectionCount) {
+<nb-card
+  class="shadow-sm bulk-bar"
+  [nbSpinner]="bulkRunning"
+>
+  <nb-card-body class="d-flex align-items-center gap-2">
+    <span class="flex-grow-1">{{ 'knowledge-base.bulk.selected_count' | transloco: { count: selectionCount } }}</span>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      [disabled]="bulkRunning"
+      (click)="bulkUpdateStatus(EntryStatus.PUBLISHED)"
+    >
+      <nb-icon
+        icon="send"
+        class="mr-1"
+      ></nb-icon>
+      {{ 'knowledge-base.bulk.publish_button' | transloco }}
+    </button>
+    <button
+      nbButton
+      size="small"
+      ghost
+      [disabled]="bulkRunning"
+      (click)="bulkUpdateStatus(EntryStatus.DRAFT)"
+    >
+      {{ 'knowledge-base.bulk.unpublish_button' | transloco }}
+    </button>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      size="small"
+      [nbTooltip]="'knowledge-base.bulk.clear_selection' | transloco"
+      (click)="clearSelection()"
+    >
+      <nb-icon icon="x-lg"></nb-icon>
+    </button>
+  </nb-card-body>
+</nb-card>
+} @if (entries.length) {
+<div [nbSpinner]="loading">
+  <div class="list-grid list-header text-muted">
+    <div class="select-cell">
+      <nb-checkbox
+        [checked]="allOnPageSelected"
+        [nbTooltip]="'knowledge-base.bulk.select_page' | transloco"
+        (checkedChange)="toggleSelectAllOnPage()"
+      ></nb-checkbox>
+    </div>
+    <div
+      class="ellipsis sortable-col"
+      [class.sort-active]="sortField === 'title'"
+      (click)="setSort('title')"
+    >
+      {{ 'knowledge-base.entries-board.entry_column' | transloco }}
+      <nb-icon
+        class="sort-icon"
+        [icon]="sortField === 'title' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+        [class.sort-icon--visible]="sortField === 'title'"
+      ></nb-icon>
+    </div>
+    <div class="ellipsis">{{ 'knowledge-base.entries-board.tags_column' | transloco }}</div>
+    <div
+      class="ellipsis sortable-col"
+      [class.sort-active]="sortField === 'status'"
+      (click)="setSort('status')"
+    >
+      {{ 'knowledge-base.entries-board.status_column' | transloco }}
+      <nb-icon
+        class="sort-icon"
+        [icon]="sortField === 'status' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+        [class.sort-icon--visible]="sortField === 'status'"
+      ></nb-icon>
+    </div>
+    <div class="ellipsis">{{ 'knowledge-base.entries-board.projection_column' | transloco }}</div>
+    <div
+      class="ellipsis sortable-col"
+      [class.sort-active]="sortField === 'updatedAt'"
+      (click)="setSort('updatedAt')"
+    >
+      {{ 'knowledge-base.entries-board.updated_column' | transloco }}
+      <nb-icon
+        class="sort-icon"
+        [icon]="sortField === 'updatedAt' && sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'"
+        [class.sort-icon--visible]="sortField === 'updatedAt'"
+      ></nb-icon>
+    </div>
+    <div class="ellipsis"></div>
+  </div>
+
+  @for (entry of entries; track trackById($index, entry)) {
+  <nb-card class="shadow-sm mb-2 entry-card">
+    <nb-card-body class="list-grid">
+      <div class="select-cell">
+        <nb-checkbox
+          [checked]="isSelected(entry)"
+          (checkedChange)="toggleSelection(entry)"
+        ></nb-checkbox>
+      </div>
+
+      <div class="entry-identity">
+        <div class="entry-title ellipsis">
+          <a
+            class="entry-link"
+            (click)="editEntry(entry)"
+            >{{ entry.title }}</a
+          >
+          @if (entry.sourceUrl) {
+          <nb-icon
+            icon="link-45deg"
+            class="ml-1 entry-url-icon"
+            [nbTooltip]="entry.sourceUrl"
+          ></nb-icon>
+          }
+        </div>
+        <div class="entry-question ellipsis text-muted">{{ entry.question }}</div>
+        @if (entry.questionVariants.length) {
+        <div class="entry-variants text-muted">
+          {{ 'knowledge-base.entries-board.variants_count' | transloco: { count: entry.questionVariants.length } }}
+        </div>
+        }
+      </div>
+
+      <div class="entry-tags ellipsis">
+        @for (tag of entry.tags; track tag) {
+        <span class="entry-tag">{{ tag }}</span>
+        }
+      </div>
+
+      <div>
+        <span
+          class="entry-badge"
+          [class.entry-badge--published]="entry.status === EntryStatus.PUBLISHED"
+        >
+          {{ (entry.status === EntryStatus.PUBLISHED ? 'knowledge-base.status_published' : 'knowledge-base.status_draft') | transloco }}
+        </span>
+      </div>
+
+      <div class="ellipsis">
+        <nb-icon
+          [icon]="projectionIcon(entry)"
+          [status]="projectionStatus(entry)"
+          class="mr-1"
+          [nbTooltip]="'knowledge-base.projection_' + entry.projectionState.toLowerCase() + '_help' | transloco"
+        ></nb-icon>
+        <span class="entry-projection-label">
+          {{ 'knowledge-base.projection_' + entry.projectionState.toLowerCase() | transloco }}
+        </span>
+      </div>
+
+      <div class="ellipsis text-muted entry-date">
+        {{ entry.updatedAt ?? entry.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+        <div class="entry-author ellipsis">{{ entry.updatedBy ?? entry.createdBy }}</div>
+      </div>
+
+      <div class="entry-actions">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          size="small"
+          [nbTooltip]="'knowledge-base.entries-board.edit_entry_tooltip' | transloco"
+          (click)="editEntry(entry)"
+        >
+          <nb-icon icon="pencil"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          shape="round"
+          size="small"
+          status="danger"
+          [nbTooltip]="'knowledge-base.entries-board.delete_entry_tooltip' | transloco"
+          (click)="deleteEntry(entry)"
+        >
+          <nb-icon icon="trash"></nb-icon>
+        </button>
+      </div>
+    </nb-card-body>
+  </nb-card>
+  }
+
+  <div class="d-flex justify-content-end mt-2">
+    <tock-pagination
+      [pagination]="pagination"
+      (onPaginationChange)="paginationChange()"
+    ></tock-pagination>
+  </div>
+</div>
+} }

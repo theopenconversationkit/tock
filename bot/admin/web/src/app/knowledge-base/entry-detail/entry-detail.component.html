@@ -1,0 +1,330 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+<div class="d-flex align-items-center mb-3">
+  <button
+    nbButton
+    ghost
+    shape="round"
+    class="mr-2"
+    [nbTooltip]="'knowledge-base.entry-detail.back_tooltip' | transloco"
+    (click)="cancel()"
+  >
+    <nb-icon icon="arrow-left"></nb-icon>
+  </button>
+
+  <h1 class="flex-grow-1 m-0">
+    {{ (isNew ? 'knowledge-base.entry-detail.new_title' : 'knowledge-base.entry-detail.edit_title') | transloco }}
+  </h1>
+
+  <section class="grid-actions">
+    <button
+      nbButton
+      ghost
+      size="medium"
+      (click)="cancel()"
+    >
+      {{ 'knowledge-base.entry-detail.cancel_button' | transloco }}
+    </button>
+    <button
+      nbButton
+      status="primary"
+      size="medium"
+      [disabled]="!canSave"
+      [nbSpinner]="saving"
+      (click)="save()"
+    >
+      <nb-icon
+        icon="save"
+        class="mr-2"
+      ></nb-icon>
+      {{ 'knowledge-base.entry-detail.save_button' | transloco }}
+    </button>
+  </section>
+</div>
+
+@if (configurations?.length === 0) {
+<tock-no-data-found [title]="'knowledge-base.entries-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
+} @else {
+
+<form
+  [formGroup]="form"
+  [nbSpinner]="loading"
+  class="entry-layout"
+>
+  <!-- ------------------------------------------------------------ Content -->
+  <div class="entry-main">
+    <nb-card class="shadow-sm">
+      <nb-card-body>
+        <label
+          class="label"
+          for="kb-question"
+          >{{ 'knowledge-base.entry-detail.question_label' | transloco }}</label
+        >
+        <input
+          nbInput
+          fullWidth
+          id="kb-question"
+          formControlName="question"
+          [status]="question.touched && question.invalid ? 'danger' : 'basic'"
+          [placeholder]="'knowledge-base.entry-detail.question_placeholder' | transloco"
+          (blur)="onQuestionBlur()"
+        />
+        @if (question.touched && question.hasError('required')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.question_required' | transloco }}</div>
+        }
+
+        <!-- Variants: one row by default, "+" adds more, empty rows are dropped on save -->
+        <div class="mt-3">
+          <label class="label">{{ 'knowledge-base.entry-detail.variants_label' | transloco }}</label>
+          <div class="field-help text-muted mb-2">{{ 'knowledge-base.entry-detail.variants_help' | transloco }}</div>
+
+          <div formArrayName="questionVariants">
+            @for (variant of questionVariants.controls; track $index) {
+            <div class="variant-row">
+              <input
+                nbInput
+                fullWidth
+                fieldSize="small"
+                [formControlName]="$index"
+                [placeholder]="'knowledge-base.entry-detail.variant_placeholder' | transloco"
+              />
+              <button
+                nbButton
+                ghost
+                shape="round"
+                size="small"
+                type="button"
+                [nbTooltip]="'knowledge-base.entry-detail.remove_variant_tooltip' | transloco"
+                (click)="removeVariant($index)"
+              >
+                <nb-icon icon="x-lg"></nb-icon>
+              </button>
+            </div>
+            }
+          </div>
+
+          <button
+            nbButton
+            ghost
+            size="small"
+            type="button"
+            class="mt-1"
+            (click)="addVariant()"
+          >
+            <nb-icon
+              icon="plus-lg"
+              class="mr-1"
+            ></nb-icon>
+            {{ 'knowledge-base.entry-detail.add_variant_button' | transloco }}
+          </button>
+        </div>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card class="shadow-sm mt-2">
+      <nb-card-header class="d-flex align-items-center">
+        <span class="flex-grow-1">{{ 'knowledge-base.entry-detail.answer_label' | transloco }}</span>
+        <button
+          nbButton
+          ghost
+          size="small"
+          type="button"
+          [nbTooltip]="'knowledge-base.entry-detail.toggle_preview_tooltip' | transloco"
+          (click)="toggleAnswerPreview()"
+        >
+          <nb-icon
+            [icon]="answerPreview ? 'pencil' : 'eye'"
+            class="mr-1"
+          ></nb-icon>
+          {{ (answerPreview ? 'knowledge-base.entry-detail.edit_mode' : 'knowledge-base.entry-detail.preview_mode') | transloco }}
+        </button>
+      </nb-card-header>
+
+      <nb-card-body>
+        @if (!answerPreview) {
+        <textarea
+          nbInput
+          fullWidth
+          rows="10"
+          formControlName="answer"
+          class="answer-textarea"
+          [status]="answer.touched && answer.invalid ? 'danger' : 'basic'"
+          [placeholder]="'knowledge-base.entry-detail.answer_placeholder' | transloco"
+        ></textarea>
+        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.answer_help' | transloco }}</div>
+        @if (answer.touched && answer.hasError('required')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.answer_required' | transloco }}</div>
+        } } @else {
+        <div
+          class="answer-preview"
+          [innerHTML]="answerPreviewHtml"
+        ></div>
+        }
+      </nb-card-body>
+    </nb-card>
+
+    <div class="mt-2">
+      <tock-knowledge-base-retrieval-test
+        [entryId]="entry?.id ?? null"
+        [syncStatus]="syncStatus"
+        [suggestions]="retrievalSuggestions"
+        [draft]="!isPublished"
+        [dirty]="form.dirty"
+      ></tock-knowledge-base-retrieval-test>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------ Metadata -->
+  <div class="entry-side">
+    <nb-card class="shadow-sm">
+      <nb-card-body>
+        <label
+          class="label"
+          for="kb-status"
+          >{{ 'knowledge-base.entries-board.status_column' | transloco }}</label
+        >
+        <nb-select
+          id="kb-status"
+          fullWidth
+          formControlName="status"
+        >
+          <nb-option [value]="EntryStatus.DRAFT">{{ 'knowledge-base.status_draft' | transloco }}</nb-option>
+          <nb-option [value]="EntryStatus.PUBLISHED">{{ 'knowledge-base.status_published' | transloco }}</nb-option>
+        </nb-select>
+        <div class="field-help text-muted mt-1">
+          {{
+            (isPublished ? 'knowledge-base.entry-detail.status_published_help' : 'knowledge-base.entry-detail.status_draft_help')
+              | transloco
+          }}
+        </div>
+
+        <label
+          class="label mt-3"
+          for="kb-title"
+          >{{ 'knowledge-base.entry-detail.title_label' | transloco }}</label
+        >
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          id="kb-title"
+          formControlName="title"
+          [status]="title.touched && title.invalid ? 'danger' : 'basic'"
+          [placeholder]="'knowledge-base.entry-detail.title_placeholder' | transloco"
+        />
+        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.title_help' | transloco }}</div>
+        @if (title.touched && title.hasError('required')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.title_required' | transloco }}</div>
+        }
+
+        <label
+          class="label mt-3"
+          for="kb-source"
+          >{{ 'knowledge-base.entry-detail.source_url_label' | transloco }}</label
+        >
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          id="kb-source"
+          formControlName="sourceUrl"
+          [status]="sourceUrl.touched && sourceUrl.invalid ? 'danger' : 'basic'"
+          placeholder="https://..."
+        />
+        <div class="field-help text-muted mt-1">{{ 'knowledge-base.entry-detail.source_url_help' | transloco }}</div>
+        @if (sourceUrl.touched && sourceUrl.hasError('pattern')) {
+        <div class="field-error">{{ 'knowledge-base.entry-detail.source_url_invalid' | transloco }}</div>
+        }
+
+        <label
+          class="label mt-3"
+          for="kb-tags"
+          >{{ 'knowledge-base.entries-board.tags_column' | transloco }}</label
+        >
+        <div class="tag-list">
+          @for (tag of tags; track tag) {
+          <span class="entry-tag">
+            {{ tag }}
+            <nb-icon
+              icon="x"
+              class="tag-remove"
+              (click)="removeTag(tag)"
+            ></nb-icon>
+          </span>
+          }
+        </div>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          id="kb-tags"
+          [(ngModel)]="tagInput"
+          [ngModelOptions]="{ standalone: true }"
+          [placeholder]="'knowledge-base.entry-detail.tag_placeholder' | transloco"
+          (keyup.enter)="addTag()"
+          (blur)="addTag()"
+        />
+
+        @if (!isNew) {
+        <div class="delete-entry">
+          <button
+            nbButton
+            ghost
+            status="danger"
+            size="small"
+            (click)="delete()"
+          >
+            <nb-icon
+              icon="trash"
+              class="mr-2"
+            ></nb-icon>
+            {{ 'knowledge-base.entry-detail.delete_button' | transloco }}
+          </button>
+        </div>
+        }
+      </nb-card-body>
+    </nb-card>
+
+    @if (entry) {
+    <nb-card class="shadow-sm mt-2">
+      <nb-card-body class="entry-meta">
+        <div class="entry-meta-row">
+          <span class="text-muted">{{ 'knowledge-base.entries-board.projection_column' | transloco }}</span>
+          <span>{{ 'knowledge-base.projection_' + entry.projectionState.toLowerCase() | transloco }}</span>
+        </div>
+        @if (entry.projectedAt) {
+        <div class="entry-meta-row">
+          <span class="text-muted">{{ 'knowledge-base.sync-banner.last_projection' | transloco }}</span>
+          <span>{{ entry.projectedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        }
+        <div class="entry-meta-row">
+          <span class="text-muted">{{ 'knowledge-base.entry-detail.created_by' | transloco }}</span>
+          <span>{{ entry.createdBy }}, {{ entry.createdAt | date: 'dd/MM/yyyy' }}</span>
+        </div>
+        @if (entry.updatedAt) {
+        <div class="entry-meta-row">
+          <span class="text-muted">{{ 'knowledge-base.entry-detail.updated_by' | transloco }}</span>
+          <span>{{ entry.updatedBy }}, {{ entry.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        }
+      </nb-card-body>
+    </nb-card>
+    }
+  </div>
+</form>
+}

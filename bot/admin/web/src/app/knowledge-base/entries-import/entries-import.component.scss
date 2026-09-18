@@ -1,0 +1,136 @@
+.import-card {
+  max-width: 60rem;
+}
+
+.import-help {
+  font-size: 0.82rem;
+}
+
+.import-formats {
+  font-size: 0.78rem;
+  padding-left: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.import-file-input {
+  font-size: 0.82rem;
+}
+
+.import-error {
+  display: flex;
+  align-items: flex-start;
+  font-size: 0.82rem;
+  color: var(--color-danger-default);
+}
+
+.import-section-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.import-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.import-summary-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+}
+
+.import-summary-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.import-meta {
+  font-size: 0.75rem;
+}
+
+.import-draft-notice,
+.import-published {
+  display: flex;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.import-rows {
+  max-height: 26rem;
+  overflow-y: auto;
+  border: 1px solid var(--border-basic-color-3);
+  border-radius: 0.25rem;
+}
+
+.import-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 6rem;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.35rem 0.5rem;
+
+  & + & {
+    border-top: 1px solid var(--border-basic-color-3);
+  }
+
+  &--rejected {
+    opacity: 0.6;
+  }
+}
+
+.import-row-state {
+  text-align: center;
+}
+
+.import-row-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.import-row-question {
+  font-size: 0.72rem;
+}
+
+.import-row-issues {
+  margin-top: 0.15rem;
+}
+
+.import-issue {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 0.05rem 0.4rem;
+  margin-right: 0.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--background-basic-color-3);
+  color: var(--text-hint-color);
+}
+
+.import-row-side {
+  font-size: 0.7rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.import-flag {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-basic-color-4);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

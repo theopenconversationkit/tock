@@ -1,0 +1,157 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+<nb-card class="shadow-sm">
+  <nb-card-header class="d-flex align-items-center">
+    <nb-icon
+      icon="search-heart"
+      class="mr-2"
+    ></nb-icon>
+    <span class="flex-grow-1">{{ 'knowledge-base.retrieval-test.title' | transloco }}</span>
+    @if (available && result) {
+    <button
+      nbButton
+      ghost
+      size="small"
+      [nbTooltip]="'knowledge-base.retrieval-test.open_in_diagnostic_tooltip' | transloco"
+      (click)="openInDiagnostic()"
+    >
+      <nb-icon
+        icon="binoculars"
+        class="mr-2"
+      ></nb-icon>
+      {{ 'knowledge-base.retrieval-test.open_in_diagnostic' | transloco }}
+    </button>
+    }
+  </nb-card-header>
+
+  <nb-card-body>
+    <p class="text-muted retrieval-help">{{ 'knowledge-base.retrieval-test.help' | transloco }}</p>
+
+    @if (!available) {
+    <div class="retrieval-unavailable">
+      <nb-icon
+        icon="info-circle"
+        class="mr-2"
+      ></nb-icon>
+      {{ unavailableReasonKey | transloco }}
+    </div>
+    } @else {
+
+    <!-- A draft is not projected, and unsaved edits are not in the index either -->
+    @if (draft || dirty) {
+    <div class="retrieval-notice mb-2">
+      <nb-icon
+        icon="exclamation-triangle"
+        status="warning"
+        class="mr-1"
+      ></nb-icon>
+      {{ (draft ? 'knowledge-base.retrieval-test.draft_notice' : 'knowledge-base.retrieval-test.dirty_notice') | transloco }}
+    </div>
+    }
+
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <nb-form-field class="flex-grow-1">
+        <nb-icon
+          nbPrefix
+          icon="chat-quote"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          [formControl]="questionControl"
+          [placeholder]="'knowledge-base.retrieval-test.question_placeholder' | transloco"
+          (keyup.enter)="run()"
+        />
+      </nb-form-field>
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="!canRun"
+        [nbSpinner]="running"
+        (click)="run()"
+      >
+        {{ 'knowledge-base.retrieval-test.run_button' | transloco }}
+      </button>
+    </div>
+
+    @if (suggestions.length) {
+    <div class="retrieval-suggestions mb-3">
+      <span class="text-muted mr-1">{{ 'knowledge-base.retrieval-test.suggestions_label' | transloco }}</span>
+      @for (suggestion of suggestions; track suggestion) {
+      <a
+        class="retrieval-suggestion"
+        (click)="useSuggestion(suggestion)"
+        >{{ suggestion }}</a
+      >
+      }
+    </div>
+    } @if (result) {
+    <div class="retrieval-result">
+      <!-- Headline verdict: this is what the user came for -->
+      @if (result.entryRank) {
+      <div class="retrieval-verdict retrieval-verdict--found">
+        <nb-icon
+          icon="check-circle"
+          status="success"
+          class="mr-2"
+        ></nb-icon>
+        {{ 'knowledge-base.retrieval-test.verdict_found' | transloco : { rank: result.entryRank, k: result.k } }}
+      </div>
+      } @else {
+      <div class="retrieval-verdict retrieval-verdict--missing">
+        <nb-icon
+          icon="x-circle"
+          status="danger"
+          class="mr-2"
+        ></nb-icon>
+        {{ 'knowledge-base.retrieval-test.verdict_not_retrieved' | transloco : { k: result.k } }}
+      </div>
+      }
+
+      <div class="retrieval-hits mt-2">
+        @for (hit of result.hits; track hit.rank) {
+        <div
+          class="retrieval-hit"
+          [class.retrieval-hit--tested]="isTestedEntry(hit)"
+        >
+          <div class="retrieval-hit-rank">{{ hit.rank }}</div>
+          <div class="retrieval-hit-body">
+            <div class="retrieval-hit-title ellipsis">
+              {{ hit.title }}
+              <span class="retrieval-hit-type">
+                {{
+                  (hit.sourceType === 'internal_kb'
+                    ? 'knowledge-base.retrieval-test.source_type_kb'
+                    : 'knowledge-base.retrieval-test.source_type_document'
+                  ) | transloco
+                }}
+              </span>
+            </div>
+            <div class="retrieval-hit-content">{{ hit.content }}</div>
+          </div>
+          <div class="retrieval-hit-score">{{ hit.score | number : '1.2-2' }}</div>
+        </div>
+        }
+      </div>
+
+      <p class="text-muted retrieval-footnote mt-2">{{ 'knowledge-base.retrieval-test.result_footnote' | transloco }}</p>
+    </div>
+    } }
+  </nb-card-body>
+</nb-card>

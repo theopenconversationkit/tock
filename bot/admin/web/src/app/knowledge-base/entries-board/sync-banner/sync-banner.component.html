@@ -1,0 +1,142 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+@if (visible) {
+<nb-card
+  [nbSpinner]="busy"
+  class="sync-banner shadow-sm mb-3"
+  [class]="'sync-banner--' + status"
+>
+  <nb-card-body class="d-flex align-items-start gap-3">
+    <nb-icon
+      [icon]="icon"
+      [status]="status"
+      class="sync-banner-icon"
+    ></nb-icon>
+
+    <div class="flex-grow-1">
+      <div class="sync-banner-title">{{ titleKey | transloco }}</div>
+
+      <!-- No index session configured yet: standalone mode entry point -->
+      @if (!hasIndex) {
+      <div class="text-muted sync-banner-message">
+        {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
+      </div>
+      }
+
+      <!-- Index configured but written by a third party pipeline: nothing is out of sync,
+           the risk is writing with an embedding model we cannot verify -->
+      @if (hasIndex && !outOfSync && embeddingWarning) {
+      <div class="text-muted sync-banner-message">
+        {{ 'knowledge-base.sync-banner.embedding_warning_message' | transloco }}
+      </div>
+      }
+
+      <!-- Index configured, projection out of date -->
+      @if (hasIndex && outOfSync) {
+      <div class="text-muted sync-banner-message">
+        @if (pending) {
+        <a
+          class="sync-banner-link"
+          (click)="onFilterPending.emit()"
+          >{{ 'knowledge-base.sync-banner.pending_count' | transloco: { count: pending } }}</a
+        >
+        } @if (pending && orphan) { <span class="mx-1">·</span> } @if (orphan) {
+        <a
+          class="sync-banner-link"
+          (click)="onFilterOrphan.emit()"
+          >{{ 'knowledge-base.sync-banner.orphan_count' | transloco: { count: orphan } }}</a
+        >
+        }
+      </div>
+      }
+
+      <div class="sync-banner-details text-muted mt-1">
+        @if (hasIndex) {
+        <span [nbTooltip]="syncStatus.indexName">
+          <nb-icon
+            icon="database"
+            class="mr-1"
+          ></nb-icon>
+          {{ syncStatus.indexSessionId }}
+        </span>
+        <span class="mx-2">·</span>
+        <span>
+          {{
+            (syncStatus.indexMode === IndexMode.TOCK_MANAGED
+              ? 'knowledge-base.sync-banner.index_mode_tock'
+              : 'knowledge-base.sync-banner.index_mode_external'
+            ) | transloco
+          }}
+        </span>
+        } @if (syncStatus.lastProjectionAt) {
+        <span class="mx-2">·</span>
+        <span>
+          {{ 'knowledge-base.sync-banner.last_projection' | transloco }}
+          {{ syncStatus.lastProjectionAt | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+        }
+      </div>
+
+      <!-- Writing into an index whose embedding model is unknown may silently produce unusable vectors -->
+      @if (embeddingWarning) {
+      <div class="sync-banner-warning mt-2">
+        <nb-icon
+          icon="exclamation-triangle"
+          status="warning"
+          class="mr-1"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.unknown_embedding_model_warning' | transloco }}
+      </div>
+      }
+    </div>
+
+    <div class="sync-banner-actions">
+      @if (!hasIndex) {
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="busy || !syncStatus.counts.published"
+        [nbTooltip]="'knowledge-base.sync-banner.create_index_tooltip' | transloco"
+        (click)="onCreateIndex.emit()"
+      >
+        <nb-icon
+          icon="database-add"
+          class="mr-2"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.create_index_button' | transloco }}
+      </button>
+      } @if (hasIndex && outOfSync) {
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="busy"
+        [nbTooltip]="'knowledge-base.sync-banner.repair_tooltip' | transloco"
+        (click)="onSynchronize.emit()"
+      >
+        <nb-icon
+          icon="arrow-repeat"
+          class="mr-2"
+        ></nb-icon>
+        {{ 'knowledge-base.sync-banner.repair_button' | transloco }}
+      </button>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
+}

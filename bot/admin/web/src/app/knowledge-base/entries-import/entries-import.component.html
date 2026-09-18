@@ -1,0 +1,290 @@
+<!--
+~ Copyright (C) 2017/2025 SNCF Connect & Tech
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+
+<div class="d-flex align-items-center mb-3">
+  <button
+    nbButton
+    ghost
+    shape="round"
+    class="mr-2"
+    [nbTooltip]="'knowledge-base.entry-detail.back_tooltip' | transloco"
+    (click)="backToList()"
+  >
+    <nb-icon icon="arrow-left"></nb-icon>
+  </button>
+  <h1 class="flex-grow-1 m-0">{{ 'knowledge-base.import.title' | transloco }}</h1>
+</div>
+
+<nb-card
+  class="shadow-sm import-card"
+  [nbSpinner]="busy"
+>
+  <nb-card-body>
+    <!-- ------------------------------------------------------------ File -->
+    @if (step === 'file') {
+    <p class="text-muted import-help">{{ 'knowledge-base.import.help' | transloco }}</p>
+
+    <ul class="import-formats text-muted">
+      <li>{{ 'knowledge-base.import.format_kb' | transloco }}</li>
+      <li>{{ 'knowledge-base.import.format_faq' | transloco }}</li>
+    </ul>
+
+    <input
+      type="file"
+      accept="application/json,.json"
+      class="import-file-input"
+      (change)="onFileSelected($event)"
+    />
+
+    @if (formatError) {
+    <div class="import-error mt-3">
+      <nb-icon
+        icon="x-octagon"
+        status="danger"
+        class="mr-2"
+      ></nb-icon>
+      <span>
+        <strong>{{ fileName }}</strong>
+        {{ formatError | transloco }}
+      </span>
+    </div>
+    } }
+
+    <!-- ------------------------------------------------------------ Locale -->
+    @if (step === 'locale') {
+    <div class="import-section-title">{{ 'knowledge-base.import.locale_title' | transloco }}</div>
+    <p class="text-muted import-help">{{ 'knowledge-base.import.locale_help' | transloco }}</p>
+
+    <div class="d-flex flex-wrap gap-2">
+      @for (locale of parsed.locales; track locale) {
+      <button
+        nbButton
+        size="small"
+        status="primary"
+        [ghost]="selectedLocale !== locale"
+        (click)="selectLocale(locale)"
+      >
+        {{ locale }}
+      </button>
+      }
+    </div>
+    }
+
+    <!-- ------------------------------------------------------------ Preview -->
+    @if (step === 'preview') {
+    <div class="import-summary">
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ candidates.length }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.rows_read' | transloco }}</span>
+      </div>
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ countOf(CandidateState.NEW) }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.rows_new' | transloco }}</span>
+      </div>
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ countOf(CandidateState.DUPLICATE) }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.rows_duplicate' | transloco }}</span>
+      </div>
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ countOf(CandidateState.REJECTED) }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.rows_rejected' | transloco }}</span>
+      </div>
+    </div>
+
+    <div class="import-meta text-muted mt-2">
+      <strong>{{ fileName }}</strong>
+      <span class="mx-2">·</span>
+      <span>
+        {{
+          (parsed.source === ImportSource.FAQ ? 'knowledge-base.import.source_faq' : 'knowledge-base.import.source_kb') | transloco
+        }}
+      </span>
+      @if (selectedLocale) {
+      <span class="mx-2">·</span>
+      <span>{{ 'knowledge-base.import.locale_used' | transloco : { locale: selectedLocale } }}</span>
+      }
+    </div>
+
+    @if (countOf(CandidateState.DUPLICATE)) {
+    <div class="mt-3">
+      <label class="label">{{ 'knowledge-base.import.duplicate_policy_label' | transloco }}</label>
+      <nb-select
+        size="small"
+        [(selected)]="duplicatePolicy"
+      >
+        <nb-option [value]="DuplicatePolicy.SKIP">{{ 'knowledge-base.import.policy_skip' | transloco }}</nb-option>
+        <nb-option [value]="DuplicatePolicy.UPDATE">{{ 'knowledge-base.import.policy_update' | transloco }}</nb-option>
+        <nb-option [value]="DuplicatePolicy.CREATE">{{ 'knowledge-base.import.policy_create' | transloco }}</nb-option>
+      </nb-select>
+    </div>
+    }
+
+    <div class="import-rows mt-3">
+      @for (candidate of candidates; track $index) {
+      <div
+        class="import-row"
+        [class.import-row--rejected]="candidate.state === CandidateState.REJECTED"
+      >
+        <div class="import-row-state">
+          @if (candidate.state === CandidateState.NEW) {
+          <nb-icon
+            icon="plus-circle"
+            status="success"
+            [nbTooltip]="'knowledge-base.import.rows_new' | transloco"
+          ></nb-icon>
+          } @if (candidate.state === CandidateState.DUPLICATE) {
+          <nb-icon
+            icon="files"
+            status="warning"
+            [nbTooltip]="'knowledge-base.import.rows_duplicate' | transloco"
+          ></nb-icon>
+          } @if (candidate.state === CandidateState.REJECTED) {
+          <nb-icon
+            icon="x-octagon"
+            status="danger"
+            [nbTooltip]="'knowledge-base.import.rows_rejected' | transloco"
+          ></nb-icon>
+          }
+        </div>
+
+        <div class="import-row-body">
+          <div class="import-row-title ellipsis">{{ candidate.payload.title || candidate.payload.question }}</div>
+          <div class="import-row-question ellipsis text-muted">{{ candidate.payload.question }}</div>
+          @if (candidate.issues.length) {
+          <div class="import-row-issues">
+            @for (issue of candidate.issues; track issue) {
+            <span class="import-issue">{{ issue | transloco }}</span>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="import-row-side text-muted">
+          @if (candidate.payload.questionVariants.length) {
+          <span [nbTooltip]="'knowledge-base.entries-board.variants_column' | transloco">
+            <nb-icon icon="chat-quote"></nb-icon>
+            {{ candidate.payload.questionVariants.length }}
+          </span>
+          } @if (candidate.faqEnabled === false) {
+          <span
+            class="import-flag"
+            [nbTooltip]="'knowledge-base.import.faq_disabled_tooltip' | transloco"
+            >{{ 'knowledge-base.import.faq_disabled' | transloco }}</span
+          >
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- ------------------------------------------------------------ Report -->
+    @if (step === 'report') {
+    <div class="import-summary">
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ result.created }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.created' | transloco }}</span>
+      </div>
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ result.updated }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.updated' | transloco }}</span>
+      </div>
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ result.skipped }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.skipped' | transloco }}</span>
+      </div>
+      @if (result.failed) {
+      <div class="import-summary-item">
+        <span class="import-summary-value">{{ result.failed }}</span>
+        <span class="text-muted">{{ 'knowledge-base.import.failed' | transloco }}</span>
+      </div>
+      }
+    </div>
+
+    <div class="import-draft-notice mt-3">
+      <nb-icon
+        icon="info-circle"
+        class="mr-2"
+      ></nb-icon>
+      {{ 'knowledge-base.import.drafts_notice' | transloco }}
+    </div>
+
+    @if (result.entryIds.length && !published) {
+    <button
+      nbButton
+      status="primary"
+      class="mt-3"
+      [nbSpinner]="publishing"
+      [disabled]="publishing"
+      (click)="publishImported()"
+    >
+      <nb-icon
+        icon="send"
+        class="mr-2"
+      ></nb-icon>
+      {{ 'knowledge-base.import.publish_imported' | transloco : { count: result.entryIds.length } }}
+    </button>
+    } @if (published) {
+    <div class="import-published mt-3">
+      <nb-icon
+        icon="check-circle"
+        status="success"
+        class="mr-2"
+      ></nb-icon>
+      {{ 'knowledge-base.import.published_notice' | transloco }}
+    </div>
+    } }
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-end gap-2">
+    @if (step === 'preview') {
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="reset()"
+    >
+      {{ 'knowledge-base.import.choose_another_file' | transloco }}
+    </button>
+    <button
+      nbButton
+      status="primary"
+      size="small"
+      [disabled]="!importableCount || busy"
+      (click)="runImport()"
+    >
+      {{ 'knowledge-base.import.run_button' | transloco : { count: importableCount } }}
+    </button>
+    } @if (step === 'report') {
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="reset()"
+    >
+      {{ 'knowledge-base.import.import_another' | transloco }}
+    </button>
+    <button
+      nbButton
+      status="primary"
+      size="small"
+      (click)="backToList()"
+    >
+      {{ 'knowledge-base.import.back_to_list' | transloco }}
+    </button>
+    }
+  </nb-card-footer>
+</nb-card>
