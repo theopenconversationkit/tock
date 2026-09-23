@@ -41,7 +41,11 @@ abstract class WhatsAppCloudSendBotMessage(
     @JsonProperty("messaging_product")
     val messagingProduct = "whatsapp"
 
-    abstract val to: String?
+    /**
+     * Business-Scoped User ID (BSUID) of the recipient. Phone numbers are not supported anymore.
+     */
+    @get:JsonProperty("recipient")
+    abstract val recipient: String?
 
     @get:JsonProperty("recipient_type")
     abstract val recipientType: WhatsAppCloudBotRecipientType?
