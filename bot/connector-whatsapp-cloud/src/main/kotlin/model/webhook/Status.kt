@@ -23,7 +23,11 @@ data class Status(
     @JsonProperty("id") val id: String,
     @JsonProperty("conversation") val conversation: Conversation?,
     @JsonProperty("pricing") val pricing: Pricing?,
-    @JsonProperty("recipient_id") val recipientId: String,
+    // Phone number of the recipient, can be omitted when the message was sent to a BSUID
+    @JsonProperty("recipient_id") val recipientId: String? = null,
+    // Business-Scoped User ID (BSUID) of the recipient, always present
+    @JsonProperty("recipient_user_id") val recipientUserId: String? = null,
+    @JsonProperty("recipient_parent_user_id") val recipientParentUserId: String? = null,
     @JsonProperty("status") val status: MessageStatus,
     @JsonProperty("timestamp") val timestamp: String,
     @JsonProperty("errors") val errors: List<Error> = emptyList(),

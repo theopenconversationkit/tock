@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.whatsapp.cloud.services
 
 import ai.tock.bot.connector.ConnectorException
-import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType.individual
@@ -44,11 +43,7 @@ object SendActionConverter {
             if (whatsappMessage is WhatsAppCloudBotMessage) {
                 prepareBotMessage(whatsappMessage, whatsAppCloudApiService, action.recipientId)
             } else if (stringText != null) {
-                WhatsAppCloudSendBotTextMessage(
-                    TextContent(stringText),
-                    individual,
-                    UserHashedIdCache.getRealId(action.recipientId.id),
-                )
+                prepareTextMessage(stringText, action.recipientId)
             } else {
                 throw ConnectorException("Action has neither bare text nor whatsapp-specific connector message: $action")
             }
@@ -63,7 +58,21 @@ object SendActionConverter {
     ) = try {
         message.prepareMessage(
             apiService,
-            (message.userId ?: recipientId.id).let { id -> UserHashedIdCache.getRealId(id) },
+            message.userId ?: recipientId.id,
+        )
+    } catch (e: Exception) {
+        logger.error(e)
+        null
+    }
+
+    private fun prepareTextMessage(
+        stringText: String,
+        recipientId: PlayerId,
+    ) = try {
+        WhatsAppCloudSendBotTextMessage(
+            TextContent(stringText),
+            individual,
+            recipientId.id,
         )
     } catch (e: Exception) {
         logger.error(e)

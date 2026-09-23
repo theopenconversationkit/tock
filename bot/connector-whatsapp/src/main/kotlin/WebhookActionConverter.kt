@@ -41,6 +41,7 @@ internal object WebhookActionConverter {
         client: WhatsAppClient,
     ): Event? {
         val senderId = createHashedId(message.from)
+
         return when (message) {
             is WhatsAppTextMessage -> {
                 SendSentence(

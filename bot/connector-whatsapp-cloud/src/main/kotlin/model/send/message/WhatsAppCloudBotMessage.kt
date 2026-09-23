@@ -18,7 +18,6 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudConnectorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotImageMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
@@ -68,7 +67,7 @@ abstract class WhatsAppCloudBotMessage(
     ): WhatsAppCloudSendBotMessage
 
     @get:JsonIgnore
-    val to: String get() = userId?.let { UserHashedIdCache.getRealId(it) } ?: "unknown"
+    val recipient: String get() = userId ?: "unknown"
 
     override fun toGenericMessage(): GenericMessage? =
         when (this) {

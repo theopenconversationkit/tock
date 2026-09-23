@@ -35,9 +35,13 @@ data class Metadata(
 
 data class Contact(
     @JsonProperty("profile") val profile: Profile?,
-    @JsonProperty("wa_id") val waId: String,
+    @JsonProperty("wa_id") val waId: String? = null,
+    // Business-Scoped User ID (BSUID): stable user identifier, used instead of the phone number
+    @JsonProperty("user_id") val userId: String? = null,
+    @JsonProperty("parent_user_id") val parentUserId: String? = null,
 )
 
 data class Profile(
     @JsonProperty("name") val name: String?,
+    @JsonProperty("username") val username: String? = null,
 )

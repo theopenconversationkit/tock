@@ -212,11 +212,21 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 }.forEach { change: Change ->
                     change.value.messages
                         .filter {
-                            restrictedPhoneNumbers?.contains(it.from) ?: true
+                            // Restriction is phone number based: messages without a phone number
+                            // (BSUID only) are not restricted.
+                            it.from?.let { from -> restrictedPhoneNumbers?.contains(from) } ?: true
                         }.forEach { message: WhatsAppCloudMessage ->
                             logger.debug { "received message $message" }
                             executor.executeBlocking {
-                                val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService)
+                                // The Business-Scoped User ID (BSUID) is carried on the contact entry, not on
+                                // the message itself, so it must be resolved before converting to an Event.
+                                val contact =
+                                    change.value.contacts.find {
+                                        (message.fromUserId != null && it.userId == message.fromUserId) ||
+                                            (message.from != null && it.waId == message.from)
+                                    }
+                                val userId = message.fromUserId ?: contact?.userId
+                                val event = WebhookActionConverter.toEvent(message, connectorId, whatsAppCloudApiService, userId)
                                 if (event != null) {
                                     whatsAppCloudApiService.sendTypingIndicator(phoneNumberId, message.id)
                                     controller.handle(
@@ -224,12 +234,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
                                         ConnectorData(
                                             WhatsAppConnectorCloudCallback(
                                                 applicationId = event.connectorId,
-                                                phoneNumber = message.from,
-                                                username =
-                                                    change.value.contacts
-                                                        .find { it.waId == message.from }
-                                                        ?.profile
-                                                        ?.name,
+                                                userId = userId,
+                                                username = contact?.profile?.name,
                                             ),
                                         ),
                                     )
@@ -287,7 +293,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
         userId: PlayerId,
     ): UserPreferences? =
         (callback as? WhatsAppConnectorCloudCallback)
-            ?.run { UserPreferences(username = username, phoneNumber = "+$phoneNumber") }
+            ?.run { UserPreferences(username = username) }
 
     override fun addSuggestions(
         text: CharSequence,
