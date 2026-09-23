@@ -18,6 +18,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
+from langchain_core.embeddings import DeterministicFakeEmbedding
+
 from gen_ai_orchestrator.routers.requests.knowledge_base_requests import (
     KnowledgeBaseDeleteRequest,
     KnowledgeBaseDocument,
@@ -27,7 +29,9 @@ from gen_ai_orchestrator.routers.requests.knowledge_base_requests import (
 from gen_ai_orchestrator.routers.responses.knowledge_base_responses import (
     KnowledgeBaseStoredRow,
 )
-from gen_ai_orchestrator.services.knowledge_base import knowledge_base_service as kb
+from gen_ai_orchestrator.services.knowledge_base import (
+    knowledge_base_service as kb,
+)
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import (
     PGVectorFactory,
 )
@@ -38,7 +42,6 @@ from gen_ai_orchestrator.services.langchain.rag_chain_builder import (
 from gen_ai_orchestrator.services.langchain.rag_response_builder import (
     get_source_content,
 )
-from langchain_core.embeddings import DeterministicFakeEmbedding
 
 
 def request(**updates):
@@ -243,16 +246,17 @@ async def test_pgvector_real_upsert_session_isolation_deletion_and_external_drif
 async def test_opensearch_real_creation_upsert_inspection_pins_and_owned_deletion():
     from uuid import uuid4
 
+    from langchain_community.vectorstores.opensearch_vector_search import (
+        OpenSearchVectorSearch,
+    )
+    from langchain_core.documents import Document
+
     from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
         VectorStoreInspectionSearchRequest,
     )
     from gen_ai_orchestrator.services.vector_store_inspection import (
         opensearch_inspection_service as inspection,
     )
-    from langchain_community.vectorstores.opensearch_vector_search import (
-        OpenSearchVectorSearch,
-    )
-    from langchain_core.documents import Document
 
     prefix = 'ns-kb-test-' + uuid4().hex + '-session-'
     name = prefix + 'one'
@@ -337,13 +341,14 @@ async def test_opensearch_real_creation_upsert_inspection_pins_and_owned_deletio
 
 @pytest.mark.asyncio
 async def test_opensearch_pinned_chunk_outside_results_has_no_rank_and_is_not_retrieved():
+    from langchain_core.documents import Document
+
     from gen_ai_orchestrator.routers.requests.vector_store_inspection_requests import (
         VectorStoreInspectionSearchRequest,
     )
     from gen_ai_orchestrator.services.vector_store_inspection import (
         opensearch_inspection_service as inspection,
     )
-    from langchain_core.documents import Document
 
     document = Document(
         page_content='Document\n\nBody',

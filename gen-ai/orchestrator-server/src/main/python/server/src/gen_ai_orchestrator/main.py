@@ -34,13 +34,15 @@ from gen_ai_orchestrator.routers.document_compressor_providers_router import (
     document_compressor_providers_router,
 )
 from gen_ai_orchestrator.routers.em_providers_router import em_providers_router
+from gen_ai_orchestrator.routers.knowledge_base_router import (
+    knowledge_base_router,
+)
 from gen_ai_orchestrator.routers.llm_providers_router import (
     llm_providers_router,
 )
 from gen_ai_orchestrator.routers.observability_providers_router import (
     observability_providers_router,
 )
-from gen_ai_orchestrator.routers.knowledge_base_router import knowledge_base_router
 from gen_ai_orchestrator.routers.qa_router import qa_router
 from gen_ai_orchestrator.routers.rag_router import rag_router
 from gen_ai_orchestrator.routers.vector_store_inspection_router import (
