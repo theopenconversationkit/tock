@@ -116,6 +116,7 @@ export class KnowledgeBaseRetrievalTestComponent implements OnDestroy {
     this.router.navigate(['/vector-store-inspection/diagnostic'], {
       queryParams: {
         chunkId: entryChunkId(this.entryId),
+        indexName: this.syncStatus?.indexName,
         question: this.questionControl.value?.trim() || null
       }
     });

@@ -69,6 +69,7 @@ export interface KnowledgeBaseEntry {
   /** Hash of the projected content, used to detect a stale projection */
   contentHash: string;
   projectionState: KnowledgeBaseProjectionState;
+  projectionError?: string | null;
   projectedAt: string | null; // ISO 8601
   projectedIndexSessionId: string | null;
   createdAt: string; // ISO 8601
@@ -100,6 +101,7 @@ export interface KnowledgeBaseCounts {
   indexed: number;
   pending: number;
   orphan: number;
+  failed?: number;
 }
 
 export interface KnowledgeBaseSyncStatus {
@@ -111,6 +113,8 @@ export interface KnowledgeBaseSyncStatus {
    * cannot be determined. Writing into such an index may silently produce unusable vectors
    * when the dimension happens to match.
    */
+  canCreateIndex?: boolean;
+  embeddingMismatch?: boolean;
   embeddingModelKnown: boolean;
   embeddingModel: string | null;
   lastProjectionAt: string | null; // ISO 8601
@@ -141,7 +145,8 @@ export enum KnowledgeBaseJobType {
   /** Reproject published entries and clean up orphan rows in the current index */
   REPAIR_INDEX = 'REPAIR_INDEX',
   /** Standalone mode: create the index session from the knowledge base */
-  CREATE_INDEX = 'CREATE_INDEX'
+  CREATE_INDEX = 'CREATE_INDEX',
+  VERIFY_INDEX = 'VERIFY_INDEX'
 }
 
 export enum KnowledgeBaseJobState {
@@ -200,7 +205,7 @@ export type KnowledgeBaseSourceType = 'internal_kb' | 'document';
 
 export interface KnowledgeBaseRetrievalHit {
   rank: number;
-  score: number;
+  score: number | null;
   title: string;
   source: string | null;
   sourceType: KnowledgeBaseSourceType;
@@ -299,6 +304,7 @@ export interface KnowledgeBaseImportPreview {
 }
 
 export interface KnowledgeBaseImportResult {
+  job?: KnowledgeBaseJob | null;
   created: number;
   updated: number;
   skipped: number;

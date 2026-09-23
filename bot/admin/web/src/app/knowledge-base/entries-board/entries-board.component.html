@@ -38,6 +38,16 @@
       nbButton
       ghost
       size="medium"
+      (click)="verifyIndex()"
+      [disabled]="!syncStatus?.indexSessionId"
+      [nbTooltip]="'knowledge-base.sync-banner.verify_button' | transloco"
+    >
+      <nb-icon icon="database-check"></nb-icon>
+    </button>
+    <button
+      nbButton
+      ghost
+      size="medium"
       [nbTooltip]="'knowledge-base.import.import_tooltip' | transloco"
       (click)="openImport()"
     >

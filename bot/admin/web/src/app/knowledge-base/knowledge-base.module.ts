@@ -19,6 +19,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 import {
+  NbAlertModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
@@ -37,7 +38,7 @@ import { KnowledgeBaseSyncBannerComponent } from './entries-board/sync-banner/sy
 import { KnowledgeBaseEntriesImportComponent } from './entries-import/entries-import.component';
 import { KnowledgeBaseEntryDetailComponent } from './entry-detail/entry-detail.component';
 import { KnowledgeBaseRetrievalTestComponent } from './entry-detail/retrieval-test/retrieval-test.component';
-import { KnowledgeBaseMockService } from './services/knowledge-base-mock.service';
+import { KnowledgeBaseRestService } from './services/knowledge-base-rest.service';
 import { KnowledgeBaseService } from './services/knowledge-base.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { KnowledgeBaseJobProgressComponent } from './entries-board/job-progress/job-progress.component';
@@ -58,6 +59,7 @@ import { KnowledgeBaseJobProgressComponent } from './entries-board/job-progress/
     BotSharedModule,
     TranslocoModule,
     KnowledgeBaseRoutingModule,
+    NbAlertModule,
     NbButtonModule,
     NbCardModule,
     NbCheckboxModule,
@@ -73,13 +75,7 @@ import { KnowledgeBaseJobProgressComponent } from './entries-board/job-progress/
     DatePipe,
     provideTranslocoScope({ scope: 'knowledge-base', alias: 'knowledge-base' }),
 
-    // Implementation switch. Components only ever inject the abstract KnowledgeBaseService.
-    // Moving to the real backend is: replace the two lines below with
-    //   { provide: KnowledgeBaseService, useClass: KnowledgeBaseRestService }
-    // The board's demo scenario selector injects KnowledgeBaseMockService optionally, so it
-    // disappears on its own once the mock is no longer provided.
-    KnowledgeBaseMockService,
-    { provide: KnowledgeBaseService, useExisting: KnowledgeBaseMockService }
+    { provide: KnowledgeBaseService, useClass: KnowledgeBaseRestService }
   ]
 })
 export class KnowledgeBaseModule {}

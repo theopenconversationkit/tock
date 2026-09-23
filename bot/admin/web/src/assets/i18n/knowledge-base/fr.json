@@ -60,7 +60,10 @@
     "embedding_warning_title": "Index produit hors de Tock",
     "embedding_warning_message": "Les entrées publiées sont indexées normalement, mais le modèle d'embedding de cet index n'a pas pu être vérifié.",
     "repair_button": "Réparer l'index",
-    "repair_tooltip": "Reprojeter les entrées publiées et nettoyer les lignes orphelines. Les créations, modifications et dépublications, elles, sont déjà appliquées."
+    "repair_tooltip": "Reprojeter les entrées publiées et nettoyer les lignes orphelines. Les créations, modifications et dépublications, elles, sont déjà appliquées.",
+    "verify_button": "Vérifier l’index",
+    "configuration_required": "Configurez les modèles RAG et le stockage, puis publiez au moins une entrée.",
+    "failed_count": "{{count}} entrée(s) en échec de synchronisation. Une réparation est nécessaire."
   },
   "entry-detail": {
     "new_title": "Nouvelle entrée",
@@ -79,7 +82,7 @@
     "remove_hint_tooltip": "Supprimer ce terme",
     "content_label": "Contenu",
     "content_placeholder": "Le contenu de l'entrée, en markdown",
-    "content_help": "Markdown simple. Ce texte est indexé et fourni tel quel au modèle, qui le reformulera dans sa réponse.",
+    "content_help": "Markdown simple. Ce texte est indexé et fourni tel quel au modèle, qui le reformulera dans sa réponse. Maximum 12 000 caractères.",
     "content_required": "Le contenu est obligatoire",
     "preview_mode": "Aperçu",
     "edit_mode": "Éditer",
@@ -89,12 +92,12 @@
     "source_url_invalid": "L'URL doit commencer par http:// ou https://",
     "tag_placeholder": "Ajouter un tag, puis Entrée",
     "status_draft_help": "Un brouillon n'est pas indexé et reste sans effet sur les réponses du bot.",
-    "status_published_help": "À l'enregistrement, l'entrée est indexée immédiatement et peut servir aux réponses du bot.",
+    "status_published_help": "À l'enregistrement, l'entrée est indexée à la fin du traitement et peut servir aux réponses du bot.",
     "save_tooltip_create_draft": "Enregistre un brouillon. Rien n'est envoyé au bot tant que l'entrée n'est pas publiée.",
-    "save_tooltip_create_published": "Crée l'entrée et l'indexe immédiatement : le bot pourra s'en servir dès la prochaine question.",
-    "save_tooltip_publish": "Publie l'entrée et l'indexe immédiatement : le bot pourra s'en servir dès la prochaine question.",
-    "save_tooltip_unpublish": "Retire l'entrée du bot immédiatement : elle ne sera plus utilisée dans les réponses, mais reste conservée ici en brouillon.",
-    "save_tooltip_update_published": "Met à jour l'entrée et réindexe immédiatement : le bot utilisera la nouvelle version dès la prochaine question.",
+    "save_tooltip_create_published": "Crée l'entrée et l'indexe à la fin du traitement : le bot pourra s'en servir après synchronisation.",
+    "save_tooltip_publish": "Publie l'entrée et l'indexe à la fin du traitement : le bot pourra s'en servir après synchronisation.",
+    "save_tooltip_unpublish": "Retire l'entrée du bot à la fin du traitement : elle ne sera plus utilisée dans les réponses, mais reste conservée ici en brouillon.",
+    "save_tooltip_update_published": "Met à jour l'entrée et réindexe à la fin du traitement : le bot utilisera la nouvelle version après synchronisation.",
     "save_tooltip_update_draft": "Met à jour le brouillon. Rien n'est envoyé au bot tant que l'entrée n'est pas publiée.",
     "save_tooltip_no_index": "Aucun index n'est configuré pour ce bot : l'entrée sera enregistrée mais ne pourra pas être utilisée dans les réponses.",
     "saved_create_draft": "Brouillon créé. Il n'est pas utilisé par le bot.",
@@ -109,7 +112,7 @@
     "delete_section_title": "Suppression de l'entrée",
     "delete_button": "Supprimer l'entrée",
     "delete_dialog_title": "Supprimer cette entrée ?",
-    "delete_dialog_subtitle_indexed": "« {{title}} » sera définitivement supprimée, et le bot cessera immédiatement de l'utiliser dans ses réponses. Cette action est irréversible.",
+    "delete_dialog_subtitle_indexed": "« {{title}} » sera définitivement supprimée, et le bot cessera à la fin du traitement de l'utiliser dans ses réponses. Cette action est irréversible.",
     "delete_dialog_subtitle_draft": "« {{title}} » sera définitivement supprimée. Elle n'est pas utilisée par le bot aujourd'hui, ses réponses ne changeront pas. Cette action est irréversible.",
     "created_by": "Créée par",
     "updated_by": "Modifiée par",
@@ -124,7 +127,7 @@
     "suggestions_label": "Utiliser :",
     "unavailable_no_index": "Aucun index n'est configuré pour ce bot : la recherche ne peut pas être testée.",
     "unavailable_not_saved": "Enregistrez l'entrée pour pouvoir tester sa remontée.",
-    "draft_notice": "Cette entrée est un brouillon : elle n'est pas dans l'index et ne remontera pas.",
+    "draft_notice": "Cette entrée est un brouillon. Le test porte sur les lignes encore présentes dans l’index, si un retrait est en attente.",
     "dirty_notice": "Modifications non enregistrées : le test porte sur la version actuellement indexée.",
     "verdict_found": "Entrée récupérée au rang {{rank}} sur {{k}}",
     "verdict_not_retrieved": "Entrée non récupérée : elle est hors des {{k}} passages transmis au modèle et n'aura aucun effet sur la réponse.",
@@ -169,13 +172,15 @@
     "skipped": "ignorées",
     "failed": "en échec",
     "failed_message": "L'import a échoué",
-    "drafts_notice": "Les entrées importées sont en brouillon : rien n'a été écrit dans l'index.",
+    "drafts_notice": "Les entrées importées sont en brouillon. Les versions déjà publiées sont retirées de l’index par le traitement ci-dessous.",
     "publish_imported": "Publier les {{count}} entrées importées",
     "published_notice": "Les entrées importées ont été publiées et indexées.",
     "import_another": "Importer un autre fichier",
     "back_to_list": "Retour à la liste",
     "issue_missing_title_or_content": "intitulé ou contenu manquant",
-    "issue_no_content_for_locale": "pas de contenu dans la langue retenue"
+    "issue_no_content_for_locale": "pas de contenu dans la langue retenue",
+    "error_version": "utilise une version de format non prise en charge.",
+    "issue_invalid": "Entrée invalide : vérifiez les champs et leurs limites."
   },
   "bulk": {
     "selected_count": "{{count}} entrée(s) sélectionnée(s)",
@@ -201,6 +206,22 @@
     "done_repair_index": "Index réparé : {{projected}} entrée(s) reprojetée(s), {{removed}} ligne(s) orpheline(s) supprimée(s)",
     "done_create_index": "Index créé : {{projected}} entrée(s) indexée(s)",
     "done_save_entry": "Entrée enregistrée",
-    "done_delete_entry": "Entrée supprimée"
+    "done_delete_entry": "Entrée supprimée",
+    "type_verify_index": "Vérification de l’index",
+    "done_verify_index": "Vérification terminée. Le bilan reflète les lignes présentes dans l’index.",
+    "index_failed": "Indexation échouée. Vérifiez le modèle, la taille du contenu et la disponibilité du stockage, puis réparez l’index.",
+    "delete_failed": "Retrait de l’index échoué. L’ancienne version peut encore être utilisée ; relancez la réparation.",
+    "projection_failed": "Synchronisation interrompue. Vérifiez les services puis relancez la réparation.",
+    "embedding_changed": "Le modèle d’embedding a changé depuis la première projection. Utilisez une nouvelle session compatible ; la publication est bloquée sur cet index.",
+    "configuration_changed": "La configuration a changé pendant le traitement. Vérifiez-la puis relancez la réparation.",
+    "activation_failed": "L’index a été alimenté mais la configuration RAG ne peut pas être activée. Vérifiez les paramètres des modèles."
+  },
+  "validation": {
+    "title": "Un intitulé de 1 à 300 caractères est requis.",
+    "content": "Le contenu doit contenir entre 1 et 12 000 caractères.",
+    "hints": "Maximum 30 termes de rapprochement de 300 caractères chacun.",
+    "tags": "Maximum 30 tags de 100 caractères chacun.",
+    "url": "Renseignez une URL HTTP(S) valide sans identifiants.",
+    "index_configuration": "Configurez le RAG et publiez au moins une entrée avant de créer un index."
   }
 }

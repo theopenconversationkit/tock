@@ -1634,6 +1634,9 @@ object BotAdminService {
     }
 
     fun deleteApplication(app: ApplicationDefinition) {
+        // Acquire the KB worker barrier before deleting settings needed by in-flight jobs.
+        ai.tock.bot.admin.service.KnowledgeBaseService.default
+            .purge(app.namespace, app.name)
         applicationConfigurationDAO
             .getConfigurationsByNamespaceAndNlpModel(
                 app.namespace,

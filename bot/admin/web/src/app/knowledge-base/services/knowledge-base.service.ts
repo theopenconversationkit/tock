@@ -95,6 +95,8 @@ export abstract class KnowledgeBaseService {
   abstract getSyncStatus(): Observable<KnowledgeBaseSyncStatus>;
 
   /** Reprojects every published entry and removes orphan rows from the current index. */
+  abstract verifyIndex(): Observable<KnowledgeBaseJob>;
+
   abstract synchronize(): Observable<KnowledgeBaseJob>;
 
   /**

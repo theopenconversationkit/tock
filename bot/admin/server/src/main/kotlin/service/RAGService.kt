@@ -106,6 +106,18 @@ object RAGService {
      * Save the RAG configuration
      * @param ragConfiguration [BotRAGConfigurationDTO]
      */
+    internal fun activateKnowledgeBaseIndex(
+        previous: BotRAGConfiguration,
+        updated: BotRAGConfiguration,
+    ) {
+        check(RAGValidationService.validate(updated).isEmpty()) { "knowledge-base.job.activation_failed" }
+        check(ragConfigurationDAO.saveIfUnchanged(previous, updated)) { "knowledge-base.job.configuration_changed" }
+        // Same activation behavior as the existing settings screen.
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(updated.namespace, updated.botId, Intent.UNKNOWN_INTENT_NAME.withoutNamespace())?.let {
+            storyDefinitionDAO.save(it.copy(features = prepareEndingFeatures(it, !updated.enabled)))
+        }
+    }
+
     private fun saveRagConfiguration(ragConfiguration: BotRAGConfigurationDTO): BotRAGConfiguration {
         val ragConfig = ragConfiguration.toBotRAGConfiguration()
 

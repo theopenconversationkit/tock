@@ -19,7 +19,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, Subject, debounceTime, interval, switchMap, takeUntil, takeWhile } from 'rxjs';
+import { Observable, Subject, debounceTime, interval, exhaustMap, takeUntil, takeWhile, filter, catchError, of } from 'rxjs';
 
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -62,6 +62,9 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   private mockService = inject(KnowledgeBaseMockService, { optional: true });
 
   destroy$: Subject<unknown> = new Subject();
+
+  private jobChanged$ = new Subject<void>();
+  private botKey: string | null = null;
 
   loading: boolean = true;
 
@@ -108,6 +111,13 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
+      const key = confs.length ? `${confs[0].namespace}/${confs[0].botId}` : null;
+      if (key !== this.botKey) {
+        this.jobChanged$.next();
+        this.job = null;
+        this.selection.clear();
+        this.botKey = key;
+      }
       this.configurations = confs;
       if (confs.length) this.refresh();
     });
@@ -119,15 +129,23 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
 
     this.mockService?.scenario$.pipe(takeUntil(this.destroy$)).subscribe((scenario) => (this.currentMockScenario = scenario));
 
-    // A batch may already be running: a reload, or someone else's action, is picked up
-    // rather than ignored.
-    this.knowledgeBaseService
-      .getActiveJob()
-      .pipe(takeUntil(this.destroy$))
+    interval(2000)
+      .pipe(
+        filter(() => !!this.configurations?.length && !this.jobRunning),
+        exhaustMap(() =>
+          this.knowledgeBaseService.getActiveJob().pipe(
+            takeUntil(this.jobChanged$),
+            catchError(() => of(null))
+          )
+        ),
+        takeUntil(this.destroy$)
+      )
       .subscribe((job) => {
         if (job) this.followJob(job);
       });
   }
+
+  private entriesRequest = 0;
 
   refresh(): void {
     this.fetchSyncStatus();
@@ -137,6 +155,8 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
 
   fetchEntries(): void {
     this.loading = true;
+    const requestId = ++this.entriesRequest;
+    const botKey = this.botKey;
 
     const query: KnowledgeBaseSearchQuery = {
       search: this.filtersForm.value.search,
@@ -152,27 +172,39 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
     this.knowledgeBaseService
       .searchEntries(query)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((result) => {
-        this.entries = result.rows;
-        this.pagination.total = result.total;
-        this.pagination.start = result.start;
-        this.pagination.end = result.end;
-        this.loading = false;
+      .subscribe({
+        next: (result) => {
+          if (requestId !== this.entriesRequest || botKey !== this.botKey) return;
+          this.entries = result.rows;
+          this.pagination.total = result.total;
+          this.pagination.start = result.start;
+          this.pagination.end = result.end;
+          this.loading = false;
+        },
+        error: () => {
+          if (requestId === this.entriesRequest) this.loading = false;
+        }
       });
   }
 
   fetchSyncStatus(): void {
+    const botKey = this.botKey;
     this.knowledgeBaseService
       .getSyncStatus()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((status) => (this.syncStatus = status));
+      .subscribe((status) => {
+        if (botKey === this.botKey) this.syncStatus = status;
+      });
   }
 
   fetchTags(): void {
+    const botKey = this.botKey;
     this.knowledgeBaseService
       .getTags()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((tags) => (this.tags = tags));
+      .subscribe((tags) => {
+        if (botKey === this.botKey) this.tags = tags;
+      });
   }
 
   // ---------------------------------------------------------------- Sorting and paging
@@ -239,7 +271,8 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
       this.knowledgeBaseService
         .deleteEntry(entry.id)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
+        .subscribe((job) => {
+          this.followJob(job);
           this.toastrService.show(
             this.transloco.translate('knowledge-base.entries-board.entry_deleted_message', { title: entry.title }),
             this.transloco.translate('knowledge-base.entries-board.success_title'),
@@ -251,6 +284,10 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------- Index actions
+
+  verifyIndex(): void {
+    this.runJob(this.knowledgeBaseService.verifyIndex());
+  }
 
   synchronize(): void {
     this.runJob(this.knowledgeBaseService.synchronize());
@@ -317,6 +354,8 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
    * is simply displayed, never polled.
    */
   private followJob(job: KnowledgeBaseJob): void {
+    if (this.jobRunning) return; // The discovery poll picks up the queued successor.
+    this.jobChanged$.next();
     this.job = job;
 
     if (isJobFinished(job)) {
@@ -326,8 +365,9 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
 
     interval(800)
       .pipe(
-        switchMap(() => this.knowledgeBaseService.getJob(job.id)),
+        exhaustMap(() => this.knowledgeBaseService.getJob(job.id)),
         takeWhile((current) => !isJobFinished(current), true),
+        takeUntil(this.jobChanged$),
         takeUntil(this.destroy$)
       )
       .subscribe({
@@ -340,6 +380,7 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
   }
 
   private onJobFinished(job: KnowledgeBaseJob): void {
+    this.job = job;
     this.clearSelection();
     this.refresh();
 
@@ -356,7 +397,12 @@ export class KnowledgeBaseEntriesBoardComponent implements OnInit, OnDestroy {
     );
 
     // The card stays on screen a moment so the outcome can be read, then clears itself.
-    setTimeout(() => (this.job = null), job.failures.length ? 15000 : 4000);
+    setTimeout(
+      () => {
+        if (this.job?.id === job.id && isJobFinished(this.job)) this.job = null;
+      },
+      job.failures.length ? 15000 : 4000
+    );
   }
 
   private runJob(request: Observable<KnowledgeBaseJob>): void {

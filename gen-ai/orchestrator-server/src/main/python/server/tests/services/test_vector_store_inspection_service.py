@@ -38,6 +38,8 @@ from gen_ai_orchestrator.services.vector_store_inspection.vector_store_inspectio
 
 def _search_request(**updates) -> VectorStoreInspectionSearchRequest:
     values = {
+        'vector_store_setting': {'provider': 'PGVector', 'host': 'localhost', 'port': 5432,
+                                 'database': 'test', 'username': 'test', 'password': {'type': 'Raw', 'secret': 'test'}},
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
             'api_key': {'type': 'Raw', 'secret': 'test'},

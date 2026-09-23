@@ -60,7 +60,10 @@
     "embedding_warning_title": "Index produced outside Tock",
     "embedding_warning_message": "Published entries are indexed normally, but the embedding model of this index could not be verified.",
     "repair_button": "Repair index",
-    "repair_tooltip": "Reproject published entries and clean up orphan rows. Creations, edits and unpublications are already applied."
+    "repair_tooltip": "Reproject published entries and clean up orphan rows. Creations, edits and unpublications are already applied.",
+    "verify_button": "Check index",
+    "configuration_required": "Configure the RAG models and storage, then publish at least one entry.",
+    "failed_count": "{{count}} entries failed to synchronize. Index repair is needed."
   },
   "entry-detail": {
     "new_title": "New entry",
@@ -79,7 +82,7 @@
     "remove_hint_tooltip": "Remove this term",
     "content_label": "Content",
     "content_placeholder": "The content of the entry, in markdown",
-    "content_help": "Plain markdown. This text is indexed and handed as is to the model, which will rephrase it in its answer.",
+    "content_help": "Plain markdown. This text is indexed and handed as is to the model, which will rephrase it in its answer. Maximum 12,000 characters.",
     "content_required": "The content is required",
     "preview_mode": "Preview",
     "edit_mode": "Edit",
@@ -89,12 +92,12 @@
     "source_url_invalid": "The URL must start with http:// or https://",
     "tag_placeholder": "Add a tag, then Enter",
     "status_draft_help": "A draft is not indexed and has no effect on the bot answers.",
-    "status_published_help": "On save, the entry is indexed immediately and can be used in the bot answers.",
+    "status_published_help": "On save, the entry is indexed when processing completes and can be used in the bot answers.",
     "save_tooltip_create_draft": "Saves a draft. Nothing reaches the bot until the entry is published.",
-    "save_tooltip_create_published": "Creates the entry and indexes it immediately: the bot can use it from the next question on.",
-    "save_tooltip_publish": "Publishes the entry and indexes it immediately: the bot can use it from the next question on.",
-    "save_tooltip_unpublish": "Withdraws the entry from the bot immediately: it will no longer be used in answers, but is kept here as a draft.",
-    "save_tooltip_update_published": "Updates the entry and reindexes immediately: the bot uses the new version from the next question on.",
+    "save_tooltip_create_published": "Creates the entry and indexes it when processing completes: the bot can use it from the next question on.",
+    "save_tooltip_publish": "Publishes the entry and indexes it when processing completes: the bot can use it from the next question on.",
+    "save_tooltip_unpublish": "Withdraws the entry from the bot when processing completes: it will no longer be used in answers, but is kept here as a draft.",
+    "save_tooltip_update_published": "Updates the entry and reindexes when processing completes: the bot uses the new version from the next question on.",
     "save_tooltip_update_draft": "Updates the draft. Nothing reaches the bot until the entry is published.",
     "save_tooltip_no_index": "No index is configured for this bot: the entry will be saved but cannot be used in answers.",
     "saved_create_draft": "Draft created. It is not used by the bot.",
@@ -109,7 +112,7 @@
     "delete_section_title": "Delete entry",
     "delete_button": "Delete entry",
     "delete_dialog_title": "Delete this entry?",
-    "delete_dialog_subtitle_indexed": "\"{{title}}\" will be permanently deleted, and the bot will immediately stop using it in its answers. This cannot be undone.",
+    "delete_dialog_subtitle_indexed": "\"{{title}}\" will be permanently deleted, and the bot will when processing completes stop using it in its answers. This cannot be undone.",
     "delete_dialog_subtitle_draft": "\"{{title}}\" will be permanently deleted. It is not used by the bot today, its answers will not change. This cannot be undone.",
     "created_by": "Created by",
     "updated_by": "Updated by",
@@ -124,7 +127,7 @@
     "suggestions_label": "Use:",
     "unavailable_no_index": "No index is configured for this bot: retrieval cannot be tested.",
     "unavailable_not_saved": "Save the entry to test its retrieval.",
-    "draft_notice": "This entry is a draft: it is not in the index and will not be retrieved.",
+    "draft_notice": "This entry is a draft. The test checks rows still in the index if removal is pending.",
     "dirty_notice": "Unsaved changes: the test runs against the currently indexed version.",
     "verdict_found": "Entry retrieved at rank {{rank}} of {{k}}",
     "verdict_not_retrieved": "Entry not retrieved: it is outside the {{k}} passages handed to the model and will have no effect on the answer.",
@@ -169,13 +172,15 @@
     "skipped": "skipped",
     "failed": "failed",
     "failed_message": "Import failed",
-    "drafts_notice": "Imported entries are drafts: nothing has been written to the index.",
+    "drafts_notice": "Imported entries are drafts. Previously published versions are removed by the job below.",
     "publish_imported": "Publish the {{count}} imported entries",
     "published_notice": "Imported entries have been published and indexed.",
     "import_another": "Import another file",
     "back_to_list": "Back to the list",
     "issue_missing_title_or_content": "missing heading or content",
-    "issue_no_content_for_locale": "no content in the chosen language"
+    "issue_no_content_for_locale": "no content in the chosen language",
+    "error_version": "uses an unsupported format version.",
+    "issue_invalid": "Invalid entry: check field values and limits."
   },
   "bulk": {
     "selected_count": "{{count}} entry(ies) selected",
@@ -201,6 +206,22 @@
     "done_repair_index": "Index repaired: {{projected}} entry(ies) reprojected, {{removed}} orphan row(s) removed",
     "done_create_index": "Index created: {{projected}} entry(ies) indexed",
     "done_save_entry": "Entry saved",
-    "done_delete_entry": "Entry deleted"
+    "done_delete_entry": "Entry deleted",
+    "type_verify_index": "Checking the index",
+    "done_verify_index": "Check complete. The status reflects the rows in the index.",
+    "index_failed": "Indexing failed. Check the model, content size and storage availability, then repair the index.",
+    "delete_failed": "Removal failed. The previous version may still be used; run index repair.",
+    "projection_failed": "Synchronization interrupted. Check the services, then run index repair.",
+    "embedding_changed": "The embedding model has changed since the first projection. Use a compatible new session; publishing to this index is blocked.",
+    "configuration_changed": "Configuration changed during processing. Check it, then run index repair.",
+    "activation_failed": "The index was populated but RAG could not be enabled. Check the model settings."
+  },
+  "validation": {
+    "title": "A title of 1 to 300 characters is required.",
+    "content": "Content must contain between 1 and 12,000 characters.",
+    "hints": "Use at most 30 search hints of 300 characters each.",
+    "tags": "Use at most 30 tags of 100 characters each.",
+    "url": "Enter a valid HTTP(S) URL without credentials.",
+    "index_configuration": "Configure RAG and publish at least one entry before creating an index."
   }
 }

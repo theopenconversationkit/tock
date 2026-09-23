@@ -20,7 +20,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NbToastrService } from '@nebular/theme';
-import { Subject, interval, switchMap, takeUntil, takeWhile } from 'rxjs';
+import { Subject, interval, exhaustMap, takeUntil, takeWhile } from 'rxjs';
 
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -82,7 +82,7 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
     // One empty row by default, a "+" button adds more. Rows left empty are dropped on save,
     // so hints stay optional without forcing the user to delete the default row.
     searchHints: new FormArray<FormControl<string>>([new FormControl<string>('', { nonNullable: true })]),
-    content: new FormControl<string>('', [Validators.required]),
+    content: new FormControl<string>('', [Validators.required, Validators.maxLength(12000)]),
     sourceUrl: new FormControl<string | null>(null, [Validators.pattern(/^https?:\/\/.+/)]),
     tags: new FormControl<string[]>([], { nonNullable: true }),
     status: new FormControl<KnowledgeBaseEntryStatus>(KnowledgeBaseEntryStatus.DRAFT, { nonNullable: true })
@@ -151,6 +151,15 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
           this.entry = entry;
           this.patchForm(entry);
           this.loading = false;
+          if (!this.job)
+            (this.route.snapshot.queryParamMap.get('jobId')
+              ? this.knowledgeBaseService.getJob(this.route.snapshot.queryParamMap.get('jobId'))
+              : this.knowledgeBaseService.getActiveJob()
+            )
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((job) => {
+                if (job) this.followJob(job, '', this.hasIndex);
+              });
         },
         error: () => {
           this.loading = false;
@@ -294,7 +303,7 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
         this.followJob(job, transition, indexed);
 
         // Land on the entry route so a reload, or the retrieval test, keeps working.
-        if (created) this.router.navigateByUrl(`/knowledge-base/detail/${entry.id}`);
+        if (created) this.router.navigate(['/knowledge-base/detail', entry.id], { queryParams: { jobId: job.id } });
       },
       error: () => {
         this.saving = false;
@@ -322,7 +331,7 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
 
     interval(600)
       .pipe(
-        switchMap(() => this.knowledgeBaseService.getJob(job.id)),
+        exhaustMap(() => this.knowledgeBaseService.getJob(job.id)),
         takeWhile((current) => !isJobFinished(current), true),
         takeUntil(this.destroy$)
       )
@@ -340,7 +349,14 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
 
   private onJobFinished(job: KnowledgeBaseJob, transition: string, indexed: boolean): void {
     this.saving = false;
-    this.job = null;
+    this.job = job;
+    if (this.entry)
+      this.knowledgeBaseService
+        .getEntry(this.entry.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((entry) => {
+          this.entry = entry; // Do not overwrite edits made while the previous projection was running.
+        });
 
     this.knowledgeBaseService
       .getSyncStatus()
@@ -349,12 +365,16 @@ export class KnowledgeBaseEntryDetailComponent implements OnInit, OnDestroy {
 
     if (job.state === KnowledgeBaseJobState.FAILED || job.failures.length) {
       this.toastrService.show(
-        job.failures.length ? job.failures[0].error : this.transloco.translate('knowledge-base.job.failed_message'),
+        job.failures.length
+          ? this.transloco.translate(job.failures[0].error)
+          : this.transloco.translate('knowledge-base.job.failed_message'),
         this.transloco.translate('knowledge-base.entries-board.error_title'),
         { duration: 8000, status: 'danger' }
       );
       return;
     }
+
+    if (!transition) return;
 
     const messageKey =
       this.isPublished && !indexed ? 'knowledge-base.entry-detail.saved_no_index' : `knowledge-base.entry-detail.saved_${transition}`;

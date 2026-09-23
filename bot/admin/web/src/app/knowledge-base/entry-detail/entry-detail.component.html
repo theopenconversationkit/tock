@@ -57,7 +57,8 @@
   </section>
 </div>
 
-@if (configurations?.length === 0) {
+@if (entry?.projectionError) { <nb-alert status="danger">{{ entry.projectionError | transloco }}</nb-alert> } @if (job) {
+<tock-knowledge-base-job-progress [job]="job"></tock-knowledge-base-job-progress> } @if (configurations?.length === 0) {
 <tock-no-data-found [title]="'knowledge-base.entries-board.no_bot_configuration_detected' | transloco"></tock-no-data-found>
 } @else {
 
@@ -181,7 +182,6 @@
       <tock-knowledge-base-retrieval-test
         [entryId]="entry?.id ?? null"
         [syncStatus]="syncStatus"
-        [suggestions]="retrievalSuggestions"
         [draft]="!isPublished"
         [dirty]="form.dirty"
       ></tock-knowledge-base-retrieval-test>

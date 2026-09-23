@@ -28,12 +28,18 @@
     ></nb-icon>
 
     <div class="flex-grow-1">
+      @if (syncStatus.counts.failed) {
+      <p>{{ 'knowledge-base.sync-banner.failed_count' | transloco: { count: syncStatus.counts.failed } }}</p>
+      }
       <div class="sync-banner-title">{{ titleKey | transloco }}</div>
 
       <!-- No index session configured yet: standalone mode entry point -->
       @if (!hasIndex) {
       <div class="text-muted sync-banner-message">
         {{ 'knowledge-base.sync-banner.no_index_message' | transloco: { published: syncStatus.counts.published } }}
+        @if (!syncStatus.canCreateIndex) {
+        <div>{{ 'knowledge-base.sync-banner.configuration_required' | transloco }}</div>
+        }
       </div>
       }
 
@@ -99,7 +105,12 @@
           status="warning"
           class="mr-1"
         ></nb-icon>
-        {{ 'knowledge-base.sync-banner.unknown_embedding_model_warning' | transloco }}
+        {{
+          (syncStatus.embeddingMismatch
+            ? 'knowledge-base.job.embedding_changed'
+            : 'knowledge-base.sync-banner.unknown_embedding_model_warning'
+          ) | transloco
+        }}
       </div>
       }
     </div>
@@ -110,7 +121,7 @@
         nbButton
         status="primary"
         size="small"
-        [disabled]="busy || !syncStatus.counts.published"
+        [disabled]="busy || !syncStatus.canCreateIndex"
         [nbTooltip]="'knowledge-base.sync-banner.create_index_tooltip' | transloco"
         (click)="onCreateIndex.emit()"
       >

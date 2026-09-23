@@ -214,6 +214,10 @@ export class KnowledgeBaseMockService extends KnowledgeBaseService {
   }
 
   /** Reprojects every published entry and removes the orphan rows from the current index. */
+  verifyIndex(): Observable<KnowledgeBaseJob> {
+    return this.startJob(KnowledgeBaseJobType.VERIFY_INDEX, 0, () => ({ projected: 0, removed: 0 }));
+  }
+
   synchronize(): Observable<KnowledgeBaseJob> {
     const pending = this.entries.filter(
       (e) => e.status === KnowledgeBaseEntryStatus.PUBLISHED && e.projectionState === KnowledgeBaseProjectionState.PENDING

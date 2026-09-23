@@ -18,7 +18,7 @@ import { Component, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { NbToastrService } from '@nebular/theme';
-import { Subject, interval, switchMap, takeUntil, takeWhile } from 'rxjs';
+import { Subject, interval, exhaustMap, takeUntil, takeWhile } from 'rxjs';
 
 import {
   KnowledgeBaseDuplicatePolicy,
@@ -28,6 +28,8 @@ import {
   KnowledgeBaseImportResult,
   KnowledgeBaseImportSource,
   KnowledgeBaseJob,
+  KnowledgeBaseJobState,
+  KnowledgeBaseJobType,
   isJobFinished
 } from '../models';
 import { KnowledgeBaseService } from '../services/knowledge-base.service';
@@ -143,10 +145,15 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
     this.knowledgeBaseService
       .previewImport(reparsed.rows)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((candidates) => {
-        this.candidates = candidates;
-        this.busy = false;
-        this.step = 'preview';
+      .subscribe({
+        next: (candidates) => {
+          this.candidates = candidates;
+          this.busy = false;
+          this.step = 'preview';
+        },
+        error: () => {
+          this.busy = false;
+        }
       });
   }
 
@@ -179,6 +186,7 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
           this.result = result;
           this.busy = false;
           this.step = 'report';
+          if (result.job) this.followJob(result.job);
         },
         error: () => {
           this.busy = false;
@@ -193,7 +201,7 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
 
   /** Bulk publication of what was just imported, offered right after the review. */
   publishImported(): void {
-    if (!this.result?.entryIds.length) return;
+    if (!this.result?.entryIds.length || this.publishing) return;
 
     this.knowledgeBaseService
       .bulkUpdateStatus(this.result.entryIds, KnowledgeBaseEntryStatus.PUBLISHED)
@@ -209,20 +217,24 @@ export class KnowledgeBaseEntriesImportComponent implements OnDestroy {
     this.publishJob = job;
 
     if (isJobFinished(job)) {
-      this.published = true;
+      this.published = job.type === KnowledgeBaseJobType.PUBLISH && job.state === KnowledgeBaseJobState.COMPLETED && !job.failures.length;
       return;
     }
 
     interval(800)
       .pipe(
-        switchMap(() => this.knowledgeBaseService.getJob(job.id)),
+        exhaustMap(() => this.knowledgeBaseService.getJob(job.id)),
         takeWhile((current) => !isJobFinished(current), true),
         takeUntil(this.destroy$)
       )
       .subscribe({
         next: (current) => {
           this.publishJob = current;
-          if (isJobFinished(current)) this.published = true;
+          if (isJobFinished(current))
+            this.published =
+              current.type === KnowledgeBaseJobType.PUBLISH &&
+              current.state === KnowledgeBaseJobState.COMPLETED &&
+              !current.failures.length;
         },
         error: () => this.publishFailed()
       });

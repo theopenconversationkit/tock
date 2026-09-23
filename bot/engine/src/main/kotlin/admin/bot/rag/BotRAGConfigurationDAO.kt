@@ -19,6 +19,12 @@ package ai.tock.bot.admin.bot.rag
 import org.litote.kmongo.Id
 
 interface BotRAGConfigurationDAO {
+    /** Atomically activate a newly populated KB session without overwriting concurrent settings edits. */
+    fun saveIfUnchanged(
+        previous: BotRAGConfiguration,
+        replacement: BotRAGConfiguration,
+    ): Boolean
+
     fun listenChanges(listener: () -> Unit)
 
     fun save(conf: BotRAGConfiguration): BotRAGConfiguration

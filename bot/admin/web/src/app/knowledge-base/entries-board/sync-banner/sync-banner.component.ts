@@ -59,12 +59,12 @@ export class KnowledgeBaseSyncBannerComponent {
   }
 
   get outOfSync(): boolean {
-    return this.pending > 0 || this.orphan > 0;
+    return this.pending > 0 || this.orphan > 0 || !!this.syncStatus?.counts.failed;
   }
 
   /** True when entries would be written into an index whose embedding model cannot be verified. */
   get embeddingWarning(): boolean {
-    return this.hasIndex && !this.syncStatus.embeddingModelKnown;
+    return this.hasIndex && (!this.syncStatus.embeddingModelKnown || !!this.syncStatus.embeddingMismatch);
   }
 
   get titleKey(): string {

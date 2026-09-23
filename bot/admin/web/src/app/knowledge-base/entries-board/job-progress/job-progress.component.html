@@ -39,7 +39,7 @@
   </div>
 
   @if (job.error) {
-  <div class="job-progress-error">{{ job.error }}</div>
+  <div class="job-progress-error">{{ job.error | transloco }}</div>
   }
 
   <!-- A partial failure does not fail the job: the entries concerned simply stay pending -->
@@ -51,7 +51,7 @@
     @for (failure of job.failures; track failure.entryId) {
     <div class="job-progress-failure ellipsis">
       <strong>{{ failure.title }}</strong>
-      <span class="text-muted"> — {{ failure.error }}</span>
+      <span class="text-muted"> — {{ failure.error | transloco }}</span>
     </div>
     }
   </div>
